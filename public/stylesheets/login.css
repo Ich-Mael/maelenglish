@@ -1,0 +1,110 @@
+/* *{box-sizing: border-box} */
+
+body{
+    background: linear-gradient(to bottom,
+                                rgba(34, 33, 34, 0.9),
+                                rgba(34, 33, 34, 0.8),
+                                rgba(34, 33, 34, 0.5),
+                                rgba(34, 33, 34, 0.4),
+                                rgba(34, 33, 34, 0.3),
+                                rgba(34, 33, 34, 0.3),
+                                rgba(34, 33, 34, 0.3),
+                                rgba(34, 33, 34, 0.3),
+                                rgba(34, 33, 34, 0.3),
+                                rgba(32, 20, 23, 0.5),
+                                rgba(40, 36, 41, 0.6)), url(https://images.pexels.com/photos/3762806/pexels-photo-3762806.jpeg?cs=srgb&dl=pexels-andrea-piacquadio-3762806.jpg&fm=jpg);
+    background-size: cover;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    font-family: fondamento;
+    min-height: 100%;
+}
+
+
+
+#login-wrapper{
+    margin:0;
+    /* width: 100vw; */
+    /* overflow: hidden; */
+    /* font-family: */
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 250, 240, 0.9);
+    background-size: cover;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    font-family: fondamento;
+}
+
+.login-div {
+    width: 330px;
+    background-color: rgba(32, 33, 34, 0.7);
+    -webkit-box-shadow: 6px -2px 16px -1px rgba(0, 0, 0, 0.64);
+    -moz-box-shadow: 6px -2px 16px -1px rgba(0, 0, 0, 0.64);
+    box-shadow: 6px -2px 16px -1px rgba(0, 0, 0, 0.64);
+    padding: 60px 35px 20px;
+    border-radius: 40px;
+    border: 0.3rem solid black;
+    /* box-shadow: 13px 13px 20px #cbced1, */
+    /*             -13px -13px 20px #fff; */
+}
+#login-header{
+    font-size: 1.5rem;
+    letter-spacing:0.1rem;
+    margin-bottom: 3rem;
+    font-family: Times New Roman;
+    /* border-radius: 2rem; */
+    padding: 0.4rem;
+    text-transform: uppercase;
+    border: 2px solid orangered;
+    border-radius: 5px;
+}
+
+.logo-text{
+    text-align: center;
+    font-size: 2rem;
+}
+
+.fields{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.fields input{
+    border: none;
+    font-size: 1.2rem;
+    outline: none;
+    margin: 1rem 0;
+}
+
+#username, #password {
+    width: 14rem;
+    border-radius: 0.4rem;
+    box-shadow:  2px -2px 5px #6b6666,
+                -2px 2px 5px #858080;
+}
+
+.pas-compte{
+    text-decoration: none;
+    color: rgba(181, 199, 230, 0.7);
+    font-size: 0.9rem;
+    padding: 0.4rem;
+    text-transform: capitalize;
+    text-align: center;
+    animation: all 0.3s;
+    color: antiquewhite;
+    width:15rem;
+    border: 1px solid whitesmoke;
+    background-color: #222;
+}
+.pas-compte:hover{
+    text-decoration: none;
+    color: antiquewhite;
+    border: 1px solid orangered;
+    background-color: #222;
+}
+

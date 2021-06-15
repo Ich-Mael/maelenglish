@@ -1,0 +1,489 @@
+*{
+    padding:0;
+    margin:0;
+}
+
+body{
+  margin: 0;
+  padding: auto;
+}
+
+.flash{
+    font-size: 1.2rem;
+    font-family: 'Kaushan Script', cursive;
+}
+
+
+/* Navbar */
+nav{
+    z-index: 300;
+    position: fixed;
+}
+
+#brand-name{
+    color: rgba(255, 250, 240, 0.9);
+    /* font-family: 'Albril Fatface', cursive; */
+    /* font-family: 'Esteban'; */
+    font-family:'Ultra', serif;
+    font-size:2.5rem;
+    /* border-bottom: 3px solid orangered; */
+    border-radius: 5%;
+    padding: 0 0.7rem;
+    /* text-shadow: 0.2rem 0.1rem 0.2rem rgba(34, 24, 67, 0.8); */
+}
+
+.nav-link{
+    font-size: 0.7rem;
+    letter-spacing: 0.2rem;
+    text-transform: capitalize;
+    color: rgba(15, 25, 20, 0.9);
+    transition: all 0.2s;
+    /* font-family: 'Abril Fatface', cursive; */
+	  /* font-family: 'Libre Baskerville', serif; */
+	  /* font-family: 'Noto Sans', sans-serif; */
+	  /* font-family: 'Vollkorn', serif; */
+    font-family: 'Chango', cursive;
+    font-weight: 800;
+}
+.nav-link:hover{
+  text-decoration: none;
+  color: rgb(66, 20, 1, 0.8);
+  font-weight:450;
+}
+
+.afro{
+    -webkit-text-stroke: 1px black;
+    letter-spacing: 0.2rem;
+    color:rgb(97, 95, 95);
+    text-shadow:
+        2px 2px 0  rgb(248, 243, 243),
+      -1px -1px 0 rgb(248, 243, 243),
+       1px -1px 0 rgb(248, 243, 243),
+       -1px 1px 0 rgb(248, 243, 243),
+        1px 1px 0 rgb(248, 243, 243);
+  }
+
+  .hk{
+    -webkit-text-stroke: 1px black;
+    letter-spacing: 0.2rem;
+    color: orangered;
+    text-shadow:
+        3px 3px 0 #000,
+      -1px -1px 0 #000,
+       1px -1px 0 #000,
+       -1px 1px 0 #000,
+        1px 1px 0 #000;
+  }
+
+  .afro-shadow{
+    color:rgb(97, 95, 95);
+  }
+
+  .hk-shadow{
+    color: orangered;
+  }
+
+  #user{
+      font-family: 'Kaushan Script', cursive;
+      text-transform: capitalize;
+      font-size: 1.5rem;
+      color:azure;
+  }
+
+  .user-shadow{
+      color:azure;
+      text-transform: capitalize;
+  }
+
+
+
+  .dropdown-menu{
+      border: 2px solid black;
+      background: #16222A;  /* fallback for old browsers */
+      background: -webkit-linear-gradient(to right,#16222ad2, #3a6073de, #3A6073 ,#16222aea);  /* Chrome 10-25, Safari 5.1-6 */
+      background: linear-gradient(to right,#16222ada, #3a6073de, #3a6073d0, #16222ae3); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */      
+  }
+
+  .dropdown-item{
+      font-size:1.2rem;
+      color:#dad2ce;
+      text-align: center;
+      font-family:'Vollkorn', serif;
+      font-weight: 400;
+  }
+
+  .dropdown-item:hover{
+      background-color: black;
+      color: whitesmoke;
+  }
+/* End Navbar */
+
+/* banner */
+
+#sky-wrapper{
+  position:relative; 
+  height:105vh;
+}
+
+#banner-wrapper{
+  position:absolute; 
+  z-index:2 ; 
+  top:0; 
+  left:0;
+   width:100%; 
+   height:100%;
+}
+
+#banner{
+  padding-top: 2rem;
+}
+
+.get-account{
+  text-align: center;
+  text-decoration: none;
+  color: skyblue;
+  /* font-family: 'Abril Fatface', cursive; */
+  /* font-family: 'Libre Baskerville', serif; */
+  /* font-family: 'Noto Sans', sans-serif; */
+  font-family: 'Vollkorn', serif;
+  /* font-family: 'Chango', cursive; */
+  font-weight: 800;
+  /* font-family: 'Kaushan Script', cursive; */
+  background-color: #222;
+  border: 2px solid whitesmoke;
+  margin: 3rem 4rem;
+  font-size:1.2rem;
+  width: 35rem;
+  padding: 1rem 1rem;
+  width: 35rem;
+  border-radius:0.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2rem;
+  display: inline;
+  transition: all 0.1s;
+}
+
+.get-account:hover{
+  color: rgba(245, 255, 255, 0.8);
+  border: 2px solid orangered;
+  font-weight: 400;
+  box-shadow: rgba(183, 232, 235, 0.25) 0px 4px 5px, rgba(183, 232, 235, 0.12) 0px -12px 30px, rgba(137, 210, 240, 0.12) 0px 4px 6px, rgba(137, 210, 240, 0.17) 0px 12px 13px, rgba(255, 255, 255, 0.09) 0px -3px 5px;
+}
+
+.account-wrapper{
+  display:flex;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+} 
+/* end  banner */
+/*  Main content */
+#site-content{
+  margin-top: 2rem;
+}
+
+#afro{
+    text-shadow: 1px 1px 2px rgba(255, 255, 230, 0.8);
+}
+
+
+.header{
+    margin-top: 2rem;
+    padding-top: 10rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 0 1rem;
+    align-items: center;
+}
+
+.header-text{
+  color: #f5f7f8;
+    font-family: 'Kaushan Script', cursive;
+    font-size: 4.5rem;
+    text-shadow: 0px 4px 3px rgba(255, 54, 4, 0.849),
+      1px 2px 8px rgba(255, 54, 4, 0.5),
+      1px 2px 3px rgba(255, 51, 9, 0.3);
+    font-weight: 500;
+}
+
+.motto{
+  text-align: center;
+  font-size: 2rem;
+  margin-top: 3rem;
+  padding: 0 1rem;
+  font-weight: 300;
+  /* text-transform: uppercase; */
+  font-family:'Chango', cursive ;
+  color: rgba(255, 255, 255, 0.822);
+  text-shadow: 0.2rem 0.1rem 0.2rem rgba(12, 248, 228, 0.63);
+}
+
+/*  End main content */
+
+/* Programs*/
+#programs{
+  text-transform: uppercase;
+  font-family: 'Merriweather', serif;
+  color: rgba(0, 0, 0, 0.548);
+  letter-spacing: 0.2rem;
+  font-size: 2.5rem;
+}
+
+.my-card{
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+
+.my-card:hover{
+  border: 3px solid rgb(14, 152, 194);
+  border-radius: 3px;
+}
+.course-link{
+  color:#232526;
+  padding: 0;
+  font-family: 'Ultra', serif;
+  text-decoration: none;
+}
+.course-btn:hover > .course-link{
+  text-decoration: none;
+  color:whitesmoke;
+}
+
+/* End Programs*/
+
+
+  /* footer */
+  #footer {
+    text-align: center;
+    color: #b9d5e2;
+    background-color: rgba(0, 0, 0, 0.849);
+    background-size: cover;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    min-height: fit-content;
+  }
+
+  .afrohk-footer{
+    color: #f5f7f8;
+    font-family: 'Kaushan Script', cursive;
+    font-size: 3.5rem;
+    text-shadow: 0px 4px 3px rgba(231, 46, 21, 0.4),
+      1px 2px 8px rgba(245, 46, 12, 0.5),
+      1px 2px 3px rgba(245, 25, 9, 0.3);
+    font-weight: 500;
+  }
+
+  .motto-footer{
+    font-family: 'Chango', cursive;
+    color: #e4faf9;
+    font-size: 1.5rem;
+  }
+
+
+
+  #call-manager {
+    width: 100%;
+    font-size: 1.2rem;
+    background: none;
+    outline: none;
+    border: none;
+
+  }
+
+  #send-mail {
+    color: #f1e5ec;
+    transition: all 0.5s;
+    text-decoration: none;
+  }
+
+  #call-manager-2 {
+    width: 100%;
+    font-size: 1.2rem;
+    background: none;
+    outline: none;
+    border: none;
+  }
+
+  #call-manager-3 {
+    width: 100%;
+    font-size: 1.2rem;
+    background: none;
+    outline: none;
+    border: none;
+  }
+
+  #call-manager-link-1 {
+    font-size: 1.2rem;
+    color: #e75d0d;
+    text-decoration: none;
+    transition: all 0.5s;
+  }
+
+  #call-manager-link-2 {
+    font-size: 1.2rem;
+    color: #e99b0a;
+    text-decoration: none;
+    transition: all 0.5s;
+  }
+  #call-manager-link-3 {
+    font-size: 1.2rem;
+    color: #1e90eebb;
+    text-decoration: none;
+    transition: all 0.5s;
+  }
+
+
+  #call-manager-link-1:hover, #call-manager-link-2:hover,#call-manager-link-3:hover, #send-mail:hover{
+    text-decoration: none;
+    font-size: 1.3rem;
+      }
+
+  #cont-ns {
+    font-size: 1.5rem;
+    font-family: 'Times New Roman', Times, serif;
+  }
+
+
+
+  hello {
+    font-size: 3.5rem;
+    font-family: 'Times New Roman', Times, serif;
+  }
+
+  .hear-from-you {
+    font-size: 2.5rem;
+    font-family: Libre;
+    text-transform: uppercase;
+    animation: anim2 2s infinite alternate;
+  }
+
+  @keyframes anim2 {
+    0% {
+      transform: translateY(4px);
+    }
+
+    100% {
+      transform: translateY(-4px);
+    }
+  }
+
+  .copyright-text {
+    padding: 0.2rem 1rem;
+    font-size: 1rem;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-weight: 400;
+  }
+
+  .creator {
+    font-size: 1.1rem;
+    padding: 0.5rem 0 0.2rem;
+  }
+
+  .creator i {
+    color: tomato;
+  }
+
+  .made-by{
+      background: #000428;  /* fallback for old browsers */
+      background: -webkit-linear-gradient(to right, #004e92, #000428);  /* Chrome 10-25, Safari 5.1-6 */
+      background: linear-gradient(to right, #004e92, #000428); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+margin: 0 0;
+  }
+
+
+  .creator span {
+      font-family: 'Kaushan Script', cursive;
+      color: rgba(207, 167, 207, 0.705);
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0 0.3rem;
+      text-shadow: 1px 2px 3px black, 2px 3px 4px black, 3px 4px 5px black;
+  }
+
+  /* End footer */
+
+  /* animations */
+
+
+
+  /*===================================
+
+  Responsiveness
+
+  ==================================*/
+
+  /* Extra small devices (phones, 600px and down) */
+  @media(max-width: 600px) {
+    .afrohk-footer, .header-text{
+      font-size: 3rem;
+    }
+      }
+
+  /* Small devices (portrait tablets and large phones, 600px and up) */
+  @media only screen and (max-width: 600px) {
+    .motto{
+      font-size: 1.4rem;
+    }
+  }
+
+  /* Medium devices (landscape tablets, 768px and up) */
+  @media (max-width: 600px) {
+.get-account{
+    display: inline;
+    font-size: 1rem;
+    transition: all 0.1s;
+}
+
+
+.account-wrapper{
+    display:flex;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+}
+
+#sky-wrapper{
+  position:relative; 
+  height:95vh;
+}
+
+.header-text{
+  color: rgba(255, 250, 240, 0.9);
+  font-size: 3rem;
+}
+
+.motto{
+text-align: center;
+font-size: 2rem;
+font-weight: 300;
+}
+
+#programs{
+  font-size: 1.2rem;
+}
+  }
+
+  /* Large devices (laptops/desktops, 992px and up) */
+  @media (min-width: 992px) {
+
+  .get-account{
+      display: inline;
+      transition: all 0.1s;
+  }
+  
+  .account-wrapper{
+      display:flex;
+      justify-content: center;
+      margin: 3rem;
+      padding: 0;
+  }
+  
+  #sky-wrapper{
+    position:relative; 
+    height:95vh;
+  }
+  }
+
+  /* Extra large devices (large laptops and desktops, 1200px and up) */
+  @media (min-width: 1200px) {}

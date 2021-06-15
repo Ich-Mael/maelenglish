@@ -1,0 +1,42 @@
+<% layout('layouts/boilerplate') %>
+<link href="stylesheets/login.css" rel="stylesheet" />
+<div id="login-wrapper" class="container my-2">
+  <div class="login-div">
+    <h1 class="text-center" id="login-header">Se Connecter</h1>
+    <form class="row g-3 validated-form mx-1" action="/login" method="POST"  novalidate>
+      <div class="fields">
+        <div class="col my-1">
+          <i class="bi bi-person-circle fs-5"></i>
+          <label class="form-label" for="username">Nom Utilisateur</label>
+          <input
+            class="form-control"
+            placeholder=""
+            id="username"
+            name="username"
+            type="text"
+            value=""
+            required
+          />
+        </div>
+        <div class="col my-2">
+          <i class="bi bi-shield-lock-fill fs-5"></i>
+          <label class="form-label" for="password">Mot de Passe</label>
+          <input
+              class="form-control"
+              id="password"
+              name="password"
+              type="password"
+              value=""
+              required
+          />
+        </div>
+        <div class="col-12 mt-4 pb-3 d-flex flex-column align-items-center justify-content-around">
+          <button type="submit" class="btn mx-2 my-2 btn-outline-info text-white">
+            Connexion
+          </button>
+          <a class="pas-compte mx-2 my-2 btn" href="/register">Obtenez gratuitement un compte</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

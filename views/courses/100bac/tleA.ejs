@@ -1,0 +1,3102 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+       <!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+      <!-- sytle -->
+        <link href="/stylesheets/100bac/100bactleA.css" rel="stylesheet"/>
+		<link rel="preconnect" href="https://fonts.gstatic.com">
+		<script src="https://kit.fontawesome.com/9ecb022092.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Chango&family=Fondamento&family=Kaushan+Script&family=Merriweather:wght@900&family=Ultra&display=swap" rel="stylesheet">
+        <title>Afro house of Knowledge </title>
+    </head>
+    <body class="">
+            <nav id="my-navbar" class="navbar navbar-expand-lg py-0 navbar-light bg-light sticky-top">
+                <div  class="container-fluid">
+                    <a class="navbar-brand" id="brand-name"  href="/">
+                        <!-- <img src="../images/logo_Afrohk.jpeg" alt="" width="50" height="50"> -->
+                        <span class="afro">Afro</span><span class="hk">HK</span>
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                        <div class="navbar-nav">
+                            <!-- <a class="nav-link active" aria-current="page" href="/">Acceuil</a>
+                            -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Nos Programmes
+                                  </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" href="/100bac">100 % BAC</a></li>
+                                    <li><a class="dropdown-item" href="/english">English for all</a></li>
+                                    <li><a class="dropdown-item" href="/xpaxetudiant">XPAX Etudiant</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#footer">Nous Contacter</a></li>
+                                </ul>
+                            </li>
+                        </div>
+                        <div class="navbar-nav ml-auto">
+                            <% if (!currentUser) {%>
+                                <a class="nav-link" href="/login">Connexion</a>
+                                <a class="nav-link" href="/register">Inscription</a>
+                            <%} else { %>
+                    <h3 id="user" class="px-3 align-self-center">Welcome <%=currentUser.username.toUpperCase()%></h3>
+                                <a class="nav-link btn py-2 px-2 btn-outline-danger" href="/logout">Deconnexion</a>
+                            <%}%>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- <div class="header-heading">
+                <h1 class="header-text">Tle A</h1>
+            </div> -->
+        <main class="">
+	<!--Header -->
+	<div id="header">
+		<div class="container">
+				<h1 id="welcome" class="display-4 mb-5 text-center">Bienvenue a la maison du Savoir</h1>
+				<h3 class="text-center animated bounce serie-text " >Opération 100% Réussite au BAC Serie A</h3>	
+				<hr class="my-hr">
+				<p class="text-center about my-5">
+					Consolider Votre Comprehension Et Exercez-vous dans les matières suivantes, selon vos besoins
+				</p>
+		</div>
+
+		<!--End Header-->
+		<!-- Section 1 nos cours -->
+		<div class="container my-5">
+			<div class="row mt-3">
+				<div class="col-12 col-md-4 mb-5 rounded">
+					<div class="d-flex mt- mb-2 justify-content-center">
+						<div class="card my-card" style="width: 18rem;">
+							<img class="card-img-top" style="height: 10rem;" src="https://images.pexels.com/photos/5212320/pexels-photo-5212320.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500" alt="Card image cap">
+							<div class="card-body comprendre-mon-cours">
+							  <p class="card-text text-center">A l'aide des videos, reviser votre cours de maths et assimiler bien les notions importantes</p>
+							  <button class="btn mt-1 course-btn btn-default btn-outline-dark">
+								<a href="#maths-section" class="course-link">Cours de Maths</a>
+							</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-12 col-md-4 mb-5 rounded ">
+					<div class="d-flex my-2 justify-content-center">
+					<div class="card my-card" style="width: 18rem ;">
+						<img class="card-img-top" style="height: 10rem;" src="https://images.unsplash.com/photo-1509228468518-180dd4864904?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8ZXF1YXRpb258ZW58MHx8MHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60" alt="Card image cap">
+						<div class="card-body comprendre-mon-cours">
+						  <p class="card-text text-center">A l'aide des videos, reviser votre cours de maths et assimiler bien les notions importantes</p>
+						  <button class="btn mt-1 course-btn btn-default btn-outline-dark">
+							<a href="#maths-exo-section" class="course-link">Exercices de Maths</a>
+						</button>
+						</div>
+					</div>
+						</div>
+				</div>
+				<div class="col-12 col-md-4 mb-5 rounded">
+					<div class="d-flex my-2 justify-content-center">
+					<div class="card my-card" style="width: 18rem;">
+						<img class="card-img-top" style="height: 10rem;" src="https://images.pexels.com/photos/159581/dictionary-reference-book-learning-meaning-159581.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500" alt="Card image cap">
+						<div class="card-body comprendre-mon-cours">
+						  <p class="card-text text-center">A l'aide des videos, reviser votre cours de maths et assimiler bien les notions importantes</p>
+						  <button class="btn mt-1 course-btn btn-default btn-outline-dark">
+							<a href="#section-anglais-ecrit" class="course-link">Anglais Ecrit et Oral</a>
+						</button>
+						</div>
+					</div>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--Fin Section 2 -->
+
+	 <!--Section 3 Mathematiques -->
+	 <h1 class="text-center py-2" style="font-family: cursive; font-size: 1.8rem; font-weight: 600;">Section Mathématiques
+	</h1>
+	<div id="maths-section">
+	  <!--Sous Section Cours De Maths-->
+	  <div class="chapters">
+		<h3 class="text-warning text-center pt-4">Explication du Cours et Exercices d'Entraînement</h3>
+		<p class="instruction-paragraph">
+		  Prenez le temps de bien suivre les explications dans les vidéos <br> Essayer les exercices
+		  d'entrainement pour mieux comprendre. <br>
+		  Bonne Concentration 😉...
+		</p>
+	  </div>
+		<!-- Dérivés -->
+		<div class="chapters">
+			<div class="chapter-header d-flex justify-content-center">
+				<button class="chapitre" type="button" data-toggle="collapse" data-target="#chap-1"
+					aria-expanded="false" aria-controls="collapseExample">
+					Chapitre 1: Dérivation et Etude de Fonction
+				</button>
+			</div>
+			<div class="collapse" id="chap-1">
+
+				<!--Videos Cours Chap-1 -->
+				<div class="row">
+					<!--Video 1 -->
+					<div class="col-md-6 px-5">
+						<div id="math-chap1-vid-1" class="col-md-12 py-3 my-2 border rounded border-info rounded">
+							<div class="row justify-content-center">
+								<!-- Button trigger modal 1 -->
+								<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+									data-target="#Modal-2a">
+									Cliquez ici pour regarder la vidéo 1
+								</button>
+
+								<!-- Modal for explanation 1-->
+								<div class="modal fade" id="Modal-2a" tabindex="-1" role="dialog"
+									aria-labelledby="exampleModalLabel" aria-hidden="true">
+									<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title text-danger" id="exampleModalLabel">
+													Exemple de calcul de dérivé
+												</h5>
+											</div>
+											<!-- Modal body -->
+											<div class="modal-body embed-responsive embed-responsive-21by9">
+												<iframe width="560" height="315"
+													src="https://www.youtube.com/embed/xLr6sqRqsN0" frameborder="0"
+													allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+													allowfullscreen></iframe>
+											</div>
+											<!--Modal footer-->
+											<div class="modal-footer">
+												<button type="button" class="btn text-center btn-danger"
+													data-dismiss="modal">Close</button>
+											</div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+							<div class="d-flex flex-column contenu-video-2">
+								<div class="d-inline-block">
+									<h4 class="mt-4 text-center">Contenu Vidéo 1</h4>
+								</div>
+								<div class="p-2">
+									<p class="text-center text-black">A Faire Plus tard</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--Video 2 -->
+					<div class="col-md-6 px-5">
+						<div id="math-chap1-vid-2" class="col-md-12 border rounded border-info py-3  my-2 rounded">
+							<div class="row justify-content-center">
+								<!-- Button trigger modal 1 -->
+								<button type="button" class="btn btn-success  mx-2" data-toggle="modal"
+									data-target="#Modal-2b">
+									Cliquez pour regarder la vidéo 2
+								</button>
+								<!-- Modal for explanation 1-->
+								<div class="modal fade" id="Modal-2b" tabindex="-1" role="dialog"
+									aria-labelledby="exampleModalLabel" aria-hidden="true">
+									<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title text-danger" id="exampleModalLabel">
+													Etude d'une fonction simple
+												</h5>
+											</div>
+											<!-- Modal body -->
+											<div class="modal-body embed-responsive embed-responsive-21by9">
+												<iframe width="560" height="315"
+													src="https://www.youtube.com/embed/Ch-lSfgPWXU" frameborder="0"
+													allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+													allowfullscreen></iframe>
+											</div>
+											<!--Modal footer-->
+											<div class="modal-footer">
+												<button type="button" class="btn text-center btn-danger"
+													data-dismiss="modal">Close</button>
+											</div>
+										</div>
+
+									</div>
+								</div>
+							</div>
+							<div class="d-flex flex-column contenu-video-2">
+								<div class="d-inline-block">
+									<h4 class=" mt-4 text-center">Contenu Vidéo 2</h4>
+								</div>
+								<div class="p-2">
+									<p class="text-center text-black">A Faire Plus tard</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Fin Videos Cours Chap-2 -->
+				<!--Fin Chapitre 2-->
+			</div>
+		</div>
+		<!--Fin Dérivés-->
+		<!--Fonction Ln-->
+		<div class="chapters">
+			<div class="chapter-header d-flex justify-content-center">
+				<button class="chapitre" type="button" data-toggle="collapse" data-target="#chap-2"
+					aria-expanded="false" aria-controls="collapseExample">
+					Chapitre 2: Fonction Logarithme Neperien
+				</button>
+			</div>
+			<div class="collapse" id="chap-2">
+				<!--Chapitre-2 -->
+				<!--Videos Cours Chap-2 -->
+				<div class="row">
+					<!--Video 1 -->
+					<div class="col-md-6 px-5">
+						<div id="math-chap1-vid-1" class="col-md-12 py-3 my-2 border rounded border-info rounded">
+							<div class="row justify-content-center">
+								<!-- Button trigger modal 1 -->
+								<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+									data-target="#Modal-2a">
+									Cliquez ici pour regarder la vidéo 1
+								</button>
+
+								<!-- Modal for explanation 1-->
+								<div class="modal fade" id="Modal-2a" tabindex="-1" role="dialog"
+									aria-labelledby="exampleModalLabel" aria-hidden="true">
+									<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title text-danger" id="exampleModalLabel">
+													La Fonction Logarithme Neperien
+												</h5>
+											</div>
+											<!-- Modal body -->
+											<div class="modal-body embed-responsive embed-responsive-21by9">
+												<iframe width="560" height="315"
+													src="https://www.youtube.com/embed/AEcXtdYmN_Y" frameborder="0"
+													allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+													allowfullscreen></iframe>
+											</div>
+											<!--Modal footer-->
+											<div class="modal-footer">
+												<button type="button" class="btn text-center btn-danger"
+													data-dismiss="modal">Close</button>
+											</div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+							<div class="d-flex flex-column contenu-video-2">
+								<div class="d-inline-block">
+									<h4 class="mt-4 text-center">Contenu Vidéo 1</h4>
+								</div>
+								<div class="p-2">
+									<p class="text-center text-black">A Faire Plus tard</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--Video 2 -->
+					<div class="col-md-6 px-5">
+						<div id="math-chap1-vid-2" class="col-md-12 border rounded border-info py-3  my-2 rounded">
+							<div class="row justify-content-center">
+								<!-- Button trigger modal 1 -->
+								<button type="button" class="btn btn-success  mx-2" data-toggle="modal"
+									data-target="#Modal-2b">
+									Cliquez pour regarder la vidéo 2
+								</button>
+								<!-- Modal for explanation 1-->
+								<div class="modal fade" id="Modal-2b" tabindex="-1" role="dialog"
+									aria-labelledby="exampleModalLabel" aria-hidden="true">
+									<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title text-danger" id="exampleModalLabel">
+													Resolution d'Equation comportant Ln
+												</h5>
+											</div>
+											<!-- Modal body -->
+											<div class="modal-body embed-responsive embed-responsive-21by9">
+												<iframe width="560" height="315"
+													src="https://www.youtube.com/embed/SeyMF4uikOI" frameborder="0"
+													allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+													allowfullscreen></iframe>
+											</div>
+											<!--Modal footer-->
+											<div class="modal-footer">
+												<button type="button" class="btn text-center btn-danger"
+													data-dismiss="modal">Close</button>
+											</div>
+										</div>
+
+									</div>
+								</div>
+							</div>
+							<div class="d-flex flex-column contenu-video-2">
+								<div class="d-inline-block">
+									<h4 class=" mt-4 text-center">Contenu Vidéo 2</h4>
+								</div>
+								<div class="p-2">
+									<p class="text-center text-black">A Faire Plus tard</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Fin Videos Cours Chap-2 -->
+				<!--Fin Chapitre 2-->
+			</div>
+		</div>
+		<!--Fin Fonction Ln-->
+		<!--Fonction Exponentielle-->
+		<div class="chapters">
+			<div class="chapter-header d-flex justify-content-center">
+				<button class="chapitre" type="button" data-toggle="collapse" data-target="#chap-3"
+					aria-expanded="false" aria-controls="collapseExample">
+					Chapitre 3: Fonction Exponentielle
+				</button>
+			</div>
+			<div class="collapse" id="chap-3">
+				<!--Chapitre 3 Tle D-->
+				<!--Video 1 -->
+				<div class="row">
+					<div class="col-md-6 px-5">
+						<div id="math-chap1-vid-1" class="col-md-12  py-3 my-2 border rounded border-info rounded">
+							<div class="row justify-content-center">
+								<!-- Button trigger modal 1 -->
+								<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+									data-target="#Modal-3a">
+									Cliquez ici pour regarder la vidéo 1
+								</button>
+								<!-- Modal for explanation 1-->
+								<div class="modal fade" id="Modal-3a" tabindex="-1" role="dialog"
+									aria-labelledby="exampleModalLabel" aria-hidden="true">
+									<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title text-danger" id="exampleModalLabel">
+													Fonction Exponentielle
+												</h5>
+											</div>
+											<!-- Modal body -->
+											<div class="modal-body embed-responsive embed-responsive-21by9">
+												<iframe width="560" height="315"
+													src="https://www.youtube.com/embed/sCcy4IQKits" frameborder="0"
+													allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+													allowfullscreen></iframe>
+											</div>
+											<!--Modal footer-->
+											<div class="modal-footer">
+												<button type="button" class="btn text-center btn-danger"
+													data-dismiss="modal">Close</button>
+											</div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+							<div class="d-flex flex-column contenu-video-2">
+								<div class="d-inline-block">
+									<h4 class="mt-4 text-center">Contenu Vidéo 2</h4>
+								</div>
+								<div class="p-2">
+									<p class="text-center text-black">A Faire Plus tard</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--Video 2 -->
+					<div class="col-md-6 px-5">
+						<div id="math-chap1-vid-2" class="col-md-12 border rounded border-info py-3 my-2 rounded">
+							<div class="row justify-content-center">
+								<!-- Button trigger modal 1 -->
+								<button type="button" class="btn btn-success  mx-2" data-toggle="modal"
+									data-target="#Modal-3b">
+									Cliquez pour regarder la vidéo 2
+								</button>
+
+								<!-- Modal for explanation 1-->
+								<div class="modal fade" id="Modal-3b" tabindex="-1" role="dialog"
+									aria-labelledby="exampleModalLabel" aria-hidden="true">
+									<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title text-danger" id="exampleModalLabel">
+													Résolution d'Equation comportant la fonction Expo
+												</h5>
+											</div>
+											<!-- Modal body -->
+											<div class="modal-body embed-responsive embed-responsive-21by9">
+												<iframe width="560" height="315"
+													src="https://www.youtube.com/embed/S3IJYmS7XJI" frameborder="0"
+													allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+													allowfullscreen></iframe>
+											</div>
+											<!--Modal footer-->
+											<div class="modal-footer">
+												<button type="button" class="btn text-center btn-danger"
+													data-dismiss="modal">Close</button>
+											</div>
+										</div>
+
+									</div>
+								</div>
+							</div>
+							<div class="d-flex flex-column contenu-video-2">
+								<div class="d-inline-block">
+									<h4 class=" mt-4 text-center">Contenu Vidéo 2</h4>
+								</div>
+								<div class="p-2">
+									<ol>
+										<p class="text-center text-black">A Faire Plus tard</p>
+									</ol>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--Fin videos cours Chap-3 -->
+				<!--Fin Chapitre-3 -->
+			</div>
+		</div>
+		<!-- Fin Fonction Exponentielle-->
+		<!-- Probabilités -->
+		<div class="chapters">
+			<div class="chapter-header d-flex justify-content-center">
+				<button class="chapitre" type="button" data-toggle="collapse" data-target="#chap-5"
+					aria-expanded="false" aria-controls="collapseExample">
+					Chapitre 4: Calcul de Probabilités
+				</button>
+			</div>
+			<div class="collapse" id="chap-5">
+				<!--Chapitre 5 Tle D-->
+				<div class="row">
+					<!--Video 1 -->
+					<div class="col-md-6 px-5">
+						<div id="math-chap1-vid-1" class="col-md-12 py-3 my-2 border rounded border-info">
+							<div class="row justify-content-center">
+								<!-- Button trigger modal 1 -->
+								<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+									data-target="#Modal-5a">
+									Cliquez ici pour regarder la vidéo 1
+								</button>
+
+								<!-- Modal for explanation 1-->
+								<div class="modal fade" id="Modal-5a" tabindex="-1" role="dialog"
+									aria-labelledby="exampleModalLabel" aria-hidden="true">
+									<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title text-danger" id="exampleModalLabel">
+													Calcul d'une loi de Probabilités
+												</h5>
+											</div>
+											<!-- Modal body -->
+											<div class="modal-body embed-responsive embed-responsive-21by9">
+												<iframe width="560" height="315"
+													src="https://www.youtube.com/embed/2Ge_4hclPnI" frameborder="0"
+													allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+													allowfullscreen></iframe>
+											</div>
+											<!--Modal footer-->
+											<div class="modal-footer">
+												<button type="button" class="btn text-center btn-danger"
+													data-dismiss="modal">Close</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="d-flex flex-column contenu-video-2">
+								<div class="d-inline-block">
+									<h4 class="mt-4 text-center">Contenu Vidéo 1</h4>
+								</div>
+								<div class="p-2">
+									<p class="text-center text-black">A Faire Plus tard</p>
+								</div>
+							</div>
+						</div>
+
+					</div>
+					<!--Video 2 -->
+					<div class="col-md-6 px-5">
+						<div id="math-chap1-vid-2" class="col-md-12 border rounded border-info col-sm py-3  my-2">
+							<div class="row justify-content-center">
+								<!-- Button trigger modal 1 -->
+								<button type="button" class="btn btn-success  mx-2" data-toggle="modal"
+									data-target="#Modal-5b">
+									Cliquez pour regarder la vidéo 2
+								</button>
+
+								<!-- Modal for explanation 1-->
+								<div class="modal fade" id="Modal-5b" tabindex="-1" role="dialog"
+									aria-labelledby="exampleModalLabel" aria-hidden="true">
+									<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title text-danger" id="exampleModalLabel">
+													Probabilité Conditionelle
+												</h5>
+											</div>
+											<!-- Modal body -->
+											<div class="modal-body embed-responsive embed-responsive-21by9">
+												<iframe width="560" height="315"
+													src="https://www.youtube.com/embed/5oBnmZVrOXE" frameborder="0"
+													allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+													allowfullscreen></iframe>
+											</div>
+											<!--Modal footer-->
+											<div class="modal-footer">
+												<button type="button" class="btn text-center btn-danger"
+													data-dismiss="modal">Close</button>
+											</div>
+										</div>
+
+									</div>
+								</div>
+							</div>
+							<div class="d-flex flex-column contenu-video-2">
+								<div class="d-inline-block">
+									<h4 class=" mt-4 text-center">Contenu Vidéo 2</h4>
+								</div>
+								<div class="p-2">
+									<p class="text-center text-black">A Faire Plus tard</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--Fin videos cours Chap-5 -->
+				<!--Fin Chapitre-5 -->
+			</div>
+		</div>
+		<!-- Fin Pobabilités-->
+		<!-- Suites Numeriques -->
+		<div class="chapters">
+			<div class="chapter-header d-flex justify-content-center">
+				<button class="chapitre" type="button" data-toggle="collapse" data-target="#chap-6"
+					aria-expanded="false" aria-controls="collapseExample">
+					Chapitre 5: Suites Numériques
+				</button>
+			</div>
+			<div class="collapse" id="chap-6">
+				<!--Chapitre 1 Tle D-->
+				<div class="row">
+					<!--Video 1 -->
+					<div class="col-md-6 px-5">
+						<div id="math-chap1-vid-1" class="col-12 col-sm  py-3 my-2 border rounded border-info">
+							<div class="row justify-content-center">
+								<!-- Button trigger modal 1 -->
+								<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+									data-target="#Modal-6a">
+									Cliquez ici pour regarder la vidéo 1
+								</button>
+
+								<!-- Modal for explanation 1-->
+								<div class="modal fade" id="Modal-6a" tabindex="-1" role="dialog"
+									aria-labelledby="exampleModalLabel" aria-hidden="true">
+									<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title text-danger" id="exampleModalLabel">
+													Suites Numeriques
+												</h5>
+											</div>
+											<!-- Modal body -->
+											<div class="modal-body embed-responsive embed-responsive-21by9">
+												<iframe width="560" height="315"
+													src="https://www.youtube.com/embed/MJv7_pkFcdA" frameborder="0"
+													allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+													allowfullscreen></iframe>>
+											</div>
+											<!--Modal footer-->
+											<div class="modal-footer">
+												<button type="button" class="btn text-center btn-danger"
+													data-dismiss="modal">Close</button>
+											</div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+							<div class="d-flex flex-column contenu-video-2">
+								<div class="d-inline-block">
+									<h4 class="mt-4 text-center">Contenu Vidéo 1</h4>
+								</div>
+								<div class="p-2">
+									<p class="text-center text-black">A Faire Plus tard</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--Video 2 -->
+					<div class="col-md-6 px-5">
+						<div id="math-chap1-vid-2" class="col-12 border  border-info col-sm py-3  my-2 rounded">
+							<div class="row justify-content-center">
+								<!-- Button trigger modal 1 -->
+								<button type="button" class="btn btn-success  mx-2" data-toggle="modal"
+									data-target="#Modal-6b">
+									Cliquez pour regarder la vidéo 2
+								</button>
+
+								<!-- Modal for explanation 1-->
+								<div class="modal fade" id="Modal-6b" tabindex="-1" role="dialog"
+									aria-labelledby="exampleModalLabel" aria-hidden="true">
+									<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title text-danger" id="exampleModalLabel">
+													Exercice type Bac
+												</h5>
+											</div>
+											<!-- Modal body -->
+											<div class="modal-body embed-responsive embed-responsive-21by9">
+												<iframe width="560" height="315"
+													src="https://www.youtube.com/embed/Iq0I4L_OX2s" frameborder="0"
+													allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+													allowfullscreen></iframe>
+											</div>
+											<!--Modal footer-->
+											<div class="modal-footer">
+												<button type="button" class="btn text-center btn-danger"
+													data-dismiss="modal">Close</button>
+											</div>
+										</div>
+
+									</div>
+								</div>
+							</div>
+							<div class="d-flex flex-column contenu-video-2">
+								<div class="d-inline-block">
+									<h4 class=" mt-4 text-center">Contenu Vidéo 2</h4>
+								</div>
+								<div class="p-2">
+									<p class="text-center text-black">A Faire Plus tard</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--Fin videos cours Chap-1 -->
+				<!--Fin Chapitre-1 -->
+			</div>
+		</div>
+		<!-- Fin Suites Numeriques-->
+	</div>
+	<!--Fin cours de maths-->
+	<!--section Exercice Corrigé-->
+	<h1 class="text-center py-4" style="font-family: cursive; font-size: 1.8rem; font-weight: 600;">Section Exercices et
+		Sujets Corrigés de Maths</h1>
+	<div id="maths-exo-section">
+		<div class="container d-flex-row justify-content-center">
+			<div class="instruction-paragraph">
+				<h3 class="text-warning text-center ">Dans cette section nous vous proposons</h3>
+				<ul class="types-exercices">
+					<li>Des exercices d'entrainement</li>
+					<li>Des exercices d'approfondissement</li>
+					<li>Des sujets propéses et sujets des examens du BAC</li>
+				</ul>
+			</div>
+		</div>
+		<!--EXOS-->
+		<div id="accordion">
+			<!--Exo Entrainement-->
+			<div class="card">
+				<div class="card-header" id="headingOne">
+					<div class="mb-0" id="exo-btn">
+						<div class="row animated shake justify-content-center">
+							<button id="exo-btn-1" class="btn" data-toggle="collapse" data-target="#collapseOne"
+								aria-expanded="true" aria-controls="collapseOne">
+								<p class="px-1">Exercices D'Entrainement</p>
+							</button>
+						</div>
+						</h5>
+					</div>
+					<div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+						<div class="card-body">
+							<div id="exo-ent">
+								<div class="row">
+									<!--Ent Limites et Contuinité -->
+									<div class="col-md-4 px-2">
+										<div id="math-Exo-Ent-1"
+											class="col-12 border rounded border-danger col-sm py-2 my-2 ">
+											<h5 class="chapitre-ent">Limites et Continuité</h5>
+											<!--Calcul de Limites-->
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#limites-Ent-1">
+													Exercices sur le calcul des limites
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="limites-Ent-1" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Calcul de limites
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body d-flex-row">
+																<div class="container">
+																	<h1>Pour les élèves de l'année prochaine</h1>
+																	<embed src="" type="application/pdf" width="100%"
+																		height="600px">
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<!--Continuité et Recherche d'asymptote-->
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#limites-Ent-2">
+													Continuité et Recherche d'asymptote
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="limites-Ent-2" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Continuité et Recherche d'asymptote
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body d-flex-row">
+																<div class="container">
+																	<h1>Pour les élèves de l'année prochaine</h1>
+																	<embed src="" type="application/pdf" width="100%"
+																		height="600px">
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!-- Dérivation -->
+									<div class="col-md-4 px-2">
+										<div id="math-Exo-Ent-1"
+											class="col-12 border rounded border-danger col-sm py-2 my-2 rounded">
+											<h5 class="chapitre-ent">Dérivation</h5>
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Derive-Ent-1">
+													Dérivées de fonctions numériques
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Derive-Ent-1" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Calcul de dériée de fonctions
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body d-flex-row">
+																<div class="container">
+																	<h1>Pour les élèves de l'année prochaine</h1>
+																	<embed src="" type="application/pdf" width="100%"
+																		height="600px">
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Derive-Ent-2">
+													Etude de fonctions numériques
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Derive-Ent-2" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Etude de fonctions numeriques
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body d-flex-row">
+																<div class="container">
+																	<h1>Pour les élèves de l'année prochaine</h1>
+																	<embed src="" type="application/pdf" width="100%"
+																		height="600px">
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!--Etude de fonction -->
+									<div class="col-md-4 px-2">
+										<div id="math-Exo-Ent-1"
+											class="col-12 border rounded border-danger col-sm py-2 my-2">
+											<h5 class="chapitre-ent">Etude de fonctions rationelles</h5>
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#EquaDiff-Ent-1">
+													Etude de fonctions rationelles 1
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="EquaDiff-Ent-1" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Etude de fonctions rationelles 1
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body d-flex-row">
+																<div class="container">
+																	<h1>Pour les élèves de l'année prochaine</h1>
+																	<embed src="" type="application/pdf" width="100%"
+																		height="600px">
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#EquaDiff-Ent-2">
+													Etude de fonctions rationelles 2
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="EquaDiff-Ent-2" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Etude de fonctions rationelles 2
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body d-flex-row">
+																<div class="container">
+																	<h1>Pour les élèves de l'année prochaine</h1>
+																	<embed src="" type="application/pdf" width="100%"
+																		height="600px">
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!--Fonction Ln-->
+									<div class="col-md-4 px-2">
+										<div id="math-Exo-Ent-1"
+											class="col-12 border rounded border-danger col-sm py-2 my-2 rounded">
+											<h5 class="chapitre-ent">Fonction Logarithme Népérien</h5>
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#ln-ent-1">
+													Equations - Inequations - Système d'équations
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="ln-ent-1" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Equations - Inequations - Système d'équations
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body d-flex-row">
+																<div class="container">
+																	<h1>Pour les élèves de l'année prochaine</h1>
+																	<embed src="" type="application/pdf" width="100%"
+																		height="600px">
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#ln-ent-2">
+													Limites - Primitives - Etude de fonction
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="ln-ent-2" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Limites - Primitives - Etude de fonction
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body d-flex-row">
+																<div class="container">
+																	<h1>Pour les élèves de l'année prochaine</h1>
+																	<embed src="" type="application/pdf" width="100%"
+																		height="600px">
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!--Fonction Exponentielle-->
+									<div class="col-md-4 px-2">
+										<div id="math-Exo-Ent-1"
+											class="col-12 border rounded border-danger col-sm py-2 my-2 rounded">
+											<h5 class="chapitre-ent">Fonction Exponentielle</h5>
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Expo-ent-1">
+													Equations-Inequations-Limites
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Expo-ent-1" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Equations-Inequations-Limites
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body d-flex-row">
+																<div class="container">
+																	<h1>Pour les élèves de l'année prochaine</h1>
+																	<embed src="" type="application/pdf" width="100%"
+																		height="600px">
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Expo-ent-2">
+													Etude de fonctions
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Expo-ent-2" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Etude de fonctions
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body d-flex-row">
+																<div class="container">
+																	<h1>Pour les élèves de l'année prochaine</h1>
+																	<embed src="" type="application/pdf" width="100%"
+																		height="600px">
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!-- Probabilités -->
+									<div class="col-md-4 px-2">
+										<div id="math-Exo-Ent-1"
+											class="col-12 border  border-danger col-sm py-2 my-2 rounded">
+											<h5 class="chapitre-ent">Probabilités</h5>
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Proba-Ent-1">
+													Denombrement et Calcul de Probabilités
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Proba-Ent-1" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Denombrement et Calcul de Probabilités
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body d-flex-row">
+																<div class="container">
+																	<h1>Pour les élèves de l'année prochaine</h1>
+																	<embed src="" type="application/pdf" width="100%"
+																		height="600px">
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Proba-Ent-2">
+													Probabilité Conditionelle
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Proba-Ent-2" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Probabilité Conditionelle
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body d-flex-row">
+																<div class="container">
+																	<embed src="" type="application/pdf" width="100%"
+																		height="600px">
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!-- Suites Numeriques-->
+									<div class="col-md-4 px-2">
+										<div id="math-Exo-Ent-1"
+											class="col-12 border rounded border-danger col-sm py-2 my-2 rounded">
+											<h5 class="chapitre-ent">Suites Numériques</h5>
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#SN-Ent-1">
+													Suites Numeriques Partie 1
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="SN-Ent-1" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Suites Numeriques Partie 1
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body d-flex-row">
+																<div class="container">
+																	<h1>Pour les élèves de l'année prochaine</h1>
+																	<embed src="" type="application/pdf" width="100%"
+																		height="600px">
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#SN-Ent-2">
+													Suites Numériques Partie 2
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="SN-Ent-2" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Suites Numériques Partie 2
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body d-flex-row">
+																<div class="container">
+																	<h1>Pour les élèves de l'année prochaine</h1>
+																	<embed src="" type="application/pdf" width="100%"
+																		height="600px">
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!--Equations Différentielles-->
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--Fin Exo Entrainement-->
+			<!--Exo Approfondissement-->
+			<div class="card">
+				<div class="card-header" id="headingTwo">
+					<h5 class="mb-0" id="exo-btn">
+						<div class="row justify-content-center">
+							<button id="exo-btn-2" class="btn btn-link collapsed" data-toggle="collapse"
+								data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+								<p class="px-1">Exercices D'Approfondissement</p>
+							</button>
+						</div>
+					</h5>
+				</div>
+				<div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+					<div class="card-body">
+						<div id="exo-ent">
+							<div class="row">
+								<!--Approfondissement Equations-->
+								<div class="col-md-4 px-2">
+									<div id="math-Exo-Ent-1"
+										class="col-12 col-sm py-2 my-2 border border-warning rounded">
+										<h5 class="chapitre-ent">Equations Et Inequations</h5>
+										<!--equation degre 3 et 4-->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+												data-target="#Nomb-Appro-1">
+												Equation de dégré 3 et 4 comportant la fonction ln
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="Nomb-Appro-1" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																Equation de dégré 3 et 4 comportant la fonction ln
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<h3>Pour les élèves de l'année prochaine</h3>
+																<embed src="" type="application/pdf" width="100%"
+																	height="400px">
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!--Forme Exponentielle-->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+												data-target="#Nomb-Appro-2">
+												Equation de dégré 3 et 4 comportant la fonction Expo
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="Nomb-Appro-2" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																Equation de dégré 3 et 4 comportant la fonction Expo
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<h3>Pour les élèves de l'année prochaine</h3>
+																<embed src="" type="application/pdf" width="100%"
+																	height="400px">
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!--Etude de fonction-->
+								<div class="col-md-4 px-2">
+									<div id="math-Exo-Ent-1"
+										class="col-12 col-sm py-2 my-2 border border-warning rounded">
+										<h5 class="chapitre-ent">Etudes de Fonctions Numériques</h5>
+										<!--Fonctions definies par Intervalles -->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+												data-target="#Etud-f-Appro-1">
+												Fonctions Numériques 1
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="Etud-f-Appro-1" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																Fonctions Numeriques 1
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<h3>Pour les élèves de l'année prochaine</h3>
+																<embed src="" type="application/pdf" width="100%"
+																	height="400px">
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!--Fonctions Trigonometriques-->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+												data-target="#Etud-f-Appro-2">
+												Fonctions Trigonometriques
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="Etud-f-Appro-2" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																Fonctions Trigonometriques
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<embed src="" type="application/pdf" width="100%"
+																	height="600px">
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!--Problèmes de Synthèse -->
+								<div class="col-md-4 px-2">
+									<div id="math-Exo-Ent-1"
+										class="col-12 col-sm py-2 my-2 border border-warning rounded">
+										<h5 class="chapitre-ent">Problèmes de Synthèse</h5>
+										<!--Fonctions definies par Intervalles -->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+												data-target="#PS-Appro-1">
+												Etude de fonctions
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="PS-Appro-1" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																Fonctions Ln
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<embed src="" type="application/pdf" width="100%"
+																	height="600px">
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!--Fonctions Trigonometriques-->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+												data-target="#Etud-f-Appro-2">
+												Fonctions Expo
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="Etud-f-Appro-2" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																Fonctions Expo
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<embed src="" type="application/pdf" width="100%"
+																	height="600px">
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!--Calcul Suites Numeriques-->
+								<div class="col-md-4 px-2">
+									<div id="math-Exo-Ent-1"
+										class="col-12 col-sm py-2 my-2 border border-warning rounded">
+										<h5 class="chapitre-ent">Suites Numériques</h5>
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+												data-target="#Int-Appro-1">
+												Suites Numériques
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="Int-Appro-1" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																Suites Numériques
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<embed src="" type="application/pdf" width="100%"
+																	height="600px">
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!--Calcul de Probabilités -->
+								<div class="col-md-4 px-2">
+									<div id="math-Exo-Ent-1"
+										class="col-12 col-sm py-2 my-2 border border-warning rounded">
+										<h5 class="chapitre-ent">Calcul de Probabilités</h5>
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+												data-target="#Int-Appro-1">
+												Calcul de Probabilités
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="Int-Appro-1" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																Calcul de Probabilités
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<embed src="" type="application/pdf" width="100%"
+																	height="600px">
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--Fin Exo Approfondissement-->
+			<!--Sujets et Examens-->
+			<div class="card">
+				<div class="card-header" id="headingThree">
+					<h5 class="mb-0" id="exo-btn">
+						<div class="row justify-content-center">
+							<button id="exo-btn-3" class="btn btn-link collapsed" data-toggle="collapse"
+								data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+								<p class="px-1">Sujets Proposés et Sujets des BAC</p>
+							</button>
+						</div>
+					</h5>
+				</div>
+				<div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+					<div class="card-body">
+						<div id="exo-ent">
+							<div class="row">
+								<!-- Sujets Proposés-->
+								<div class="col-md-4 px-2">
+									<div id="math-Exo-Ent-1"
+										class="col-12 col-sm py-2 my-2 border border-success rounded">
+										<h5 class="chapitre-ent">Sujets Proposés </h5>
+										<!--Sujet 1-->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-warning mx-2" data-toggle="modal"
+												data-target="#Sujet-Prop-1">
+												Sujet 1
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="Sujet-Prop-1" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																Sujet 1
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<embed
+																	src="./files/Tle-A/Maths/Sujets Proposes/Sujet-prop-1.pdf"
+																	type="application/pdf" width="100%" height="600px">
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!--Sujet 2-->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-warning mx-2" data-toggle="modal"
+												data-target="#Sujet-Prop-2">
+												Sujet 2
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="Sujet-Prop-2" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																Sujet 2
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<embed
+																	src="./files/Tle-A/Maths/Sujets Proposes/Sujet-prop-2.pdf"
+																	type="application/pdf" width="100%" height="600px">
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!--BAC Antérieur-->
+								<div class="col-md-4 px-2">
+									<div id="math-Exo-Ent-1"
+										class="col-12 col-sm py-2 my-2 border border-success rounded">
+										<h5 class="chapitre-ent">Sujets des BAC Antérieurs</h5>
+										<!--Sujets des BAC 2015-->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-danger mx-2" data-toggle="modal"
+												data-target="#Bac-Ant-1">
+												BAC 2015
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="Bac-Ant-1" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																BAC 2015
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<embed src="" type="application/pdf" width="100%"
+																	height="600px">
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!--Sujets des BAC 2016-->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-danger mx-2" data-toggle="modal"
+												data-target="#BAC-Ant-2">
+												BAC 2016
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="BAC-Ant-2" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																BAC 2016
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<embed src="" type="application/pdf" width="100%"
+																	height="600px">
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!--Sujet BAC Etrangers -->
+								<div class="col-md-4 px-2">
+									<div id="math-Exo-Ent-1"
+										class="col-12 col-sm py-2 my-2 border border-success rounded">
+										<h5 class="chapitre-ent">Sujets des BAC Etrangers</h5>
+										<!--Sujet des BAC Niger 2019 -->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-danger mx-2" data-toggle="modal"
+												data-target="#BAC-et-1">
+												BAC Niger 2019
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="BAC-et-1" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																BAC Niger 2019
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<embed src="" type="application/pdf" width="100%"
+																	height="600px">
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!--Sujet BAC TOGO 2019-->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-danger mx-2" data-toggle="modal"
+												data-target="#BAC-ET-2">
+												BAC TOGO 2019
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="BAC-ET-2" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																BAC TOGO 2019
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<embed src="" type="application/pdf" width="100%"
+																	height="600px">
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--Fin Sujets et Examens-->
+		</div>
+		<!--Fin EXOS-->
+	</div>
+	<!--Fin Exercice Corrigé-->
+
+	<!--Section 4 Anglais -->
+	<h1 class="text-center py-4" style="font-family: cursive; font-size: 1.8rem; font-weight: 600;">Section Anglais
+		Ecrit et Oral
+	</h1>
+	<div class="" id="section-anglais-ecrit">
+		<div class="container d-flex-row justify-content-center">
+			<div class="instruction-paragraph">
+				<h3 class="text-warning text-center ">Dans cette section nous vous proposons</h3>
+				<ul class="types-exercices">
+					<li>Des Cours de Revision De La Grammaire Anglaise</li>
+					<li>Des Cours sur les techniques de communication en Anglais</li>
+					<li>Des Exercices pratiques pour la maitrise de la langue Anglaise </li>
+					<li>Des Sujets des Devoirs et Examens du BAC</li>
+				</ul>
+			</div>
+		</div>
+		<!--Anglais  EXO -->
+		<div id="accordion">
+			<!--Revision de La grammaire -->
+			<div class="card">
+				<div class="card-header" id="headingOne">
+					<div class="mb-0" id="exo-btn">
+						<div class="row animated shake justify-content-center">
+							<button id="exo-btn-1" class="btn" data-toggle="collapse" data-target="#collapse-Eng-One"
+								aria-expanded="true" aria-controls="collapse-Eng-One">
+								<p>Révision de la Grammaire Anglaise</p>
+							</button>
+						</div>
+						</h5>
+					</div>
+					<div id="collapse-Eng-One" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+						<div class="card-body">
+							<div id="exo-ent">
+								<div class="row">
+									<!--Present Tenses-->
+									<div class="col-md-4 px-2">
+										<div id="math-Exo-Ent-1"
+											class="col-12 col-sm py-2 my-2 border rounded border-info rounded">
+											<h5 class="chapitre-ent">Present Tenses</h5>
+											<!--Simple Present - Simple Future-->
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Eng-c-1">
+													Simple Present - Present Progressive
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Eng-c-1" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Simple Present - Present Progressive
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body d-flex-row">
+																<div class="container">
+																	<p>For Next Year</p>
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<!-- Present Progressive - Present Perfect -->
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Eng-c-2">
+													Present Perfect - Present Perfect Progressive
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Eng-c-2" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Present Perfect - Present Perfect Progressive
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body d-flex-row">
+																<div class="container">
+																	<p>For Next Year</p>
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<!--Fin Present Tenses-->
+										</div>
+									</div>
+									<!--Future Tenses -->
+									<div class="col-md-4 px-2">
+										<div id="math-Exo-Ent-1"
+											class="col-12 col-sm py-2 my-2 border rounded border-info rounded">
+											<h5 class="chapitre-ent">Future Tenses</h5>
+											<!--Simple Future - Future Progressive-->
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Eng-c-3">
+													Simple Future - Future Progressive
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Eng-c-3" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Simple Future - Future Progressive
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body d-flex-row">
+																<div class="container">
+																	<p>For Next Year</p>
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<!-- Present Progressive - Present Perfect -->
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Eng-c-4">
+													Future Perfect - Future Perfect Progressive
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Eng-c-4" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Future Perfect - Future Perfect Progressive
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body d-flex-row">
+																<div class="container">
+																	<p>For Next Year</p>
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<!--Fin Future Tenses-->
+										</div>
+									</div>
+									<!-- Past Tenses -->
+									<div class="col-md-4 px-2">
+										<div id="math-Exo-Ent-1"
+											class="col-12 col-sm py-2 my-2 border  border-info rounded">
+											<h5 class="chapitre-ent">Past Tenses</h5>
+											<!--Simple Present - Simple Future-->
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Eng-c-5">
+													Simple Past - Past Progressive
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Eng-c-5" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Simple Past - Past Progressive
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body d-flex-row">
+																<div class="container">
+																	<p>For Next Year</p>
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<!-- Present Progressive - Present Perfect -->
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Eng-c-6">
+													Past Perfect - Past Perfect Progressive
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Eng-c-6" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Past Perfect - Past Perfect Progressive
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body d-flex-row">
+																<div class="container">
+																	<p>For Next Year</p>
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+
+											<!--Fin Present Tenses-->
+										</div>
+									</div>
+									<!---->
+								</div>
+
+							</div>
+							<!--Fin Exo Ent Nombres Complexes-->
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--Fin Revision de La grammaire-->
+			<!-- Techniques de communication -->
+			<div class="card">
+				<div class="card-header" id="headingOne">
+					<div class="mb-0" id="exo-btn">
+						<div class="row animated shake justify-content-center">
+							<button id="exo-btn-1a" class="btn" data-toggle="collapse" data-target="#collapse-Eng-One-a"
+								aria-expanded="true" aria-controls="collapse-Eng-One">
+								<p>Techniques de Communication</p>
+							</button>
+						</div>
+						</h5>
+					</div>
+					<div id="collapse-Eng-One-a" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+						<div class="card-body">
+							<div id="exo-ent">
+								<div class="row">
+									<!--Beginner Level-->
+									<div class="col-md-4 px-2">
+										<div id="math-Exo-Ent-1"
+											class="col-12 col-sm py-2 my-2 border rounded border-info rounded">
+											<h5 class="chapitre-ent">Beginner Level</h5>
+											<!--Introducing Yourself-->
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Eng-com-1">
+													Introducing yourself
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Eng-com-1" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Introducing yourself
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div
+																class="modal-body embed-responsive embed-responsive-21by9 d-flex-row">
+																<div class="container">
+																	<iframe width="560" height="315"
+																		src="https://www.youtube.com/embed/h-VKSSd9hko"
+																		frameborder="0"
+																		allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+																		allowfullscreen></iframe>
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<!-- Talking about family-->
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Eng-com-2">
+													Talking about my family
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Eng-com-2" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Talking about family
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div
+																class="modal-body embed-responsive embed-responsive-21by9 d-flex-row">
+																<div class="container">
+																	<iframe width="560" height="315"
+																		src="https://www.youtube.com/embed/vXI2lRCnTKw"
+																		frameborder="0"
+																		allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+																		allowfullscreen></iframe>
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!--Fin Beginner level-->
+									<!--Intermediate Level -->
+									<div class="col-md-4 px-2">
+										<div id="math-Exo-Ent-1"
+											class="col-12 col-sm py-2 my-2 border border-info rounded">
+											<h5 class="chapitre-ent">Intermediate Level</h5>
+											<!-- Describing Thing and Objects-->
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Eng-com-3">
+													Describing things and objects
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Eng-com-3" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Describing things and objects
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div
+																class="modal-body embed-responsive embed-responsive-21by9 d-flex-row">
+																<div class="container">
+																	<iframe width="560" height="315"
+																		src="https://www.youtube.com/embed/fuDFz8AijfM"
+																		frameborder="0"
+																		allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+																		allowfullscreen></iframe>
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<!-- Describing People -->
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Eng-com-4">
+													Describing people
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Eng-com-4" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Describing people
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div
+																class="modal-body embed-responsive embed-responsive-21by9 d-flex-row">
+																<div class="container">
+																	<iframe width="560" height="315"
+																		src="https://www.youtube.com/embed/x0YQX7gGkQs"
+																		frameborder="0"
+																		allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+																		allowfullscreen></iframe>
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!-- Fin Upper intermediate level -->
+									<!-- Advanced Level -->
+									<div class="col-md-4 px-2">
+										<div id="math-Exo-Ent-1"
+											class="col-12 col-sm py-2 my-2 border  border-info rounded">
+											<h5 class="chapitre-ent">Upper Intermediate Level</h5>
+											<!-- Talking About The Environment -->
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Eng-com-5">
+													Talking About The Environment
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Eng-com-5" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Talking About The Environment
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div
+																class="modal-body embed-responsive embed-responsive-21by9 d-flex-row">
+																<div class="container">
+																	<iframe width="560" height="315"
+																		src="https://www.youtube.com/embed/Oa7ntoCf8yU"
+																		frameborder="0"
+																		allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+																		allowfullscreen></iframe>
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<!-- How to Ask and give Directions -->
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Eng-com-6">
+													Talking About Technology
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Eng-com-6" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																Talking About Technology	
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div
+																class="modal-body embed-responsive embed-responsive-21by9 d-flex-row">
+																<div class="container">
+																	<iframe width="560" height="315" src="https://www.youtube.com/embed/UDrzuel0ME4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!--Fin Advanced Level-->
+									<!--Useful topics to know about-->
+									<div class="col-md-6 px-2">
+										<div id="math-Exo-Ent-1"
+											class="col-12 col-sm py-2 my-2 border  border-dark rounded">
+											<h5 class="chapitre-ent">Useful Topics To Know About</h5>
+											<!-- Talking About The Environment -->
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Eng-com-7">
+													Talking About The Environment
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Eng-com-7" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Talking About The Environment
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div
+																class="modal-body embed-responsive embed-responsive-21by9 d-flex-row">
+																<div class="container">
+																<h1>Not done yet</h1>	
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<!-- How to Ask and give Directions -->
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Eng-com-6">
+													Talking About Technology
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Eng-com-6" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																Talking About Technology	
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body embed-responsive embed-responsive-21by9 d-flex-row">
+																<div class="container">
+																	<h1>Not done yet</h1>	
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!--Fin Useful topics to know about-->
+
+									<!-- Vocabulary by topic -->
+									<div class="col-md-6 px-2">
+										<div id="math-Exo-Ent-1"
+											class="col-12 col-sm py-2 my-2 border  border-dark rounded">
+											<h5 class="chapitre-ent">Vocabulary By Topic</h5>
+											<!-- Talking About The Environment -->
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Eng-com-8">
+													Talking About The Environment
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Eng-com-8" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																	Talking About The Environment
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body embed-responsive embed-responsive-21by9 d-flex-row">
+																<div class="container">
+																	<h1>Not done yet</h1>
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<!-- Talking About Technology -->
+											<div class="row my-3 justify-content-center">
+												<!-- Button trigger modal 1 -->
+												<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+													data-target="#Eng-com-9">
+													Talking About Technology
+												</button>
+												<!-- Modal for explanation 1-->
+												<div class="modal fade" id="Eng-com-9" tabindex="-1" role="dialog"
+													aria-labelledby="exampleModalLabel" aria-hidden="true">
+													<div class="modal-dialog modal-lg modal-dialog-centered"
+														role="document">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title text-center text-primary"
+																	id="exampleModalLabel">
+																Talking About Technology	
+																</h5>
+															</div>
+															<!-- Modal body -->
+															<div class="modal-body embed-responsive embed-responsive-21by9 d-flex-row">
+																<div class="container">
+																	<h1>Not done yet</h1>
+																</div>
+															</div>
+															<!--Modal footer-->
+															<div class="modal-footer">
+																<button type="button" class="btn text-center btn-danger"
+																	data-dismiss="modal">Close</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								    <!--Fin  Vocabulary by topic -->	
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--Fin Techniques de communication-->
+			<!--Exercice pratiques-->
+			<div class="card">
+				<div class="card-header" id="headingTwo">
+					<h5 class="mb-0" id="exo-btn">
+						<div class="row justify-content-center">
+							<button id="exo-btn-2" class="btn btn-link collapsed" data-toggle="collapse"
+								data-target="#collapse-Eng-Two" aria-expanded="false" aria-controls="collapseTwo">
+								<p class="px-1">Exercices Pratiques pour la Maitrise de la Langue</p>
+							</button>
+						</div>
+					</h5>
+				</div>
+				<div id="collapse-Eng-Two" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+					<div class="card-body">
+						<div id="exo-ent">
+							<div class="row">
+								<!--Listening Comprehension-->
+								<div class="col-md-4 px-2">
+									<div id="math-Exo-Ent-1"
+										class="col-12 col-sm py-2 my-2 border  border-info rounded">
+										<h5 class="chapitre-ent">Listening Comprehension</h5>
+										<!--Simple Present - Simple Future-->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+												data-target="#Eng-d-1">
+												Listening 1
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="Eng-d-1" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																Listening 1
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<p>Not done yet</p>
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!-- Present Progressive - Present Perfect -->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+												data-target="#Eng-d-2">
+												Listening 2
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="Eng-d-2" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																Listening 2
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<p>Not done yet</p>
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!--Fin Present Tenses-->
+									</div>
+								</div>
+								<!--Reading Comprehension-->
+								<div class="col-md-4 px-2">
+									<div id="math-Exo-Ent-1"
+										class="col-12 col-sm py-2 my-2 border  border-info rounded">
+										<h5 class="chapitre-ent">Reading Comprehension</h5>
+										<!--Simple Future - Future Progressive-->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+												data-target="#Eng-d-3">
+												Reading Comprehension 1
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="Eng-d-3" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																Reading Comprehension 1
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<p>For Next Year</p>
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!-- Present Progressive - Present Perfect -->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+												data-target="#Eng-d-4">
+												Reading Comprehension 2
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="Eng-d-4" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																Reading Comprehension 2
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<p>Not Done yet</p>
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!--Fin Future Tenses-->
+									</div>
+								</div>
+								<!--Writing-->
+								<div class="col-md-4 px-2">
+									<div id="math-Exo-Ent-1"
+										class="col-12 col-sm py-2 my-2 border  border-info rounded">
+										<h5 class="chapitre-ent">Writing</h5>
+										<!--Simple Future - Future Progressive-->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+												data-target="#Eng-d-3">
+												Writing Exercise 1
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="Eng-d-3" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																Writing Exercise 1
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<p>For Next Year</p>
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!-- Present Progressive - Present Perfect -->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-success mx-2" data-toggle="modal"
+												data-target="#Eng-d-4">
+												Writing Exercise 2
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="Eng-d-4" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																Writing Exercise 2
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<p>Not Done yet</p>
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!--Fin Future Tenses-->
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--Fin Devoirs et Compo-->
+			<!--Sujets Bac-->
+			<div class="card">
+				<div class="card-header" id="headingThree">
+					<h5 class="mb-0" id="exo-btn">
+						<div class="row justify-content-center">
+							<button id="exo-btn-3" class="btn btn-link collapsed" data-toggle="collapse"
+								data-target="#collapse-Eng-Three" aria-expanded="false" aria-controls="collapseThree">
+								<p class="px-1">Sujets des Devoirs et Examens du BAC</p>
+							</button>
+						</div>
+					</h5>
+				</div>
+				<div id="collapse-Eng-Three" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+					<div class="card-body">
+						<div id="exo-ent">
+							<div class="row">
+								<!--Devoirs et Compo-->
+								<div class="col-md-6 px-2">
+									<div id="math-Exo-Ent-1"
+										class="col-12 col-sm py-2 my-2 border border-secondary rounded">
+										<h5 class="chapitre-ent">Sujets des Devoirs et Compositions</h5>
+										<!--Sujets des BAC 2015-->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-info mx-2" data-toggle="modal"
+												data-target="#Bac-Ant-Eng-1">
+												Sujet 1
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="Bac-Ant-Eng-1" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																Sujet 1
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<embed
+																	src="./files/Tle-A/Anglais/Sujets Proposes/Eng-Sujet-1.pdf"
+																	type="application/pdf" width="100%" height="600px">
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!--Sujets des BAC 2016-->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-info mx-2" data-toggle="modal"
+												data-target="#BAC-Ant-Eng-2">
+												Sujet 2
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="BAC-Ant-Eng-2" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																Sujet 2
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<embed
+																	src="./files/Tle-A/Anglais/Sujets Proposes/Eng-Sujet-2.pdf"
+																	type="application/pdf" width="100%" height="600px">
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!--BAC Antérieur-->
+								<div class="col-md-6 px-2">
+									<div id="math-Exo-Ent-1"
+										class="col-12 col-sm py-2 my-2 border border-secondary rounded">
+										<h5 class="chapitre-ent">Sujets des BAC Antérieurs</h5>
+										<!--Sujets des BAC 2015-->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-danger mx-2" data-toggle="modal"
+												data-target="#Bac-Ant-Eng-1">
+												BAC 2015
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="Bac-Ant-Eng-1" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																BAC 2015
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<h1>Not done yet</h1>
+																<embed src="" type="application/pdf" width="100%"
+																	height="600px">
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!--Sujets des BAC 2016-->
+										<div class="row my-3 justify-content-center">
+											<!-- Button trigger modal 1 -->
+											<button type="button" class="btn btn-danger mx-2" data-toggle="modal"
+												data-target="#BAC-Ant-Eng-2">
+												BAC 2016
+											</button>
+											<!-- Modal for explanation 1-->
+											<div class="modal fade" id="BAC-Ant-Eng-2" tabindex="-1" role="dialog"
+												aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg modal-dialog-centered"
+													role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title text-center text-primary"
+																id="exampleModalLabel">
+																BAC 2016
+															</h5>
+														</div>
+														<!-- Modal body -->
+														<div class="modal-body d-flex-row">
+															<div class="container">
+																<h1>Not done yet</h1>
+																<embed src="" type="application/pdf" width="100%"
+																	height="600px">
+															</div>
+														</div>
+														<!--Modal footer-->
+														<div class="modal-footer">
+															<button type="button" class="btn text-center btn-danger"
+																data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--Fin Sujets Bac-->
+		</div>
+		<!--Fin Anglais EXO-->
+	</div>
+	<!--Fin Section 4 Anglais -->
+    </main>
+ <!-- footer -->
+ <footer id="footer" class="d-flex-row justify-content-center">
+	<div class="text-center pt-3">
+		<h1 style="font-family:fondamento" class="">
+			<span class="afrohk-footer">Afro House of Knowledge</span>
+		</h1>
+		<p class="motto-footer px-2">Commited To Provide Digital Solutions For Education In Africa</p>
+	</div>
+	<hr class="my-2 " style="background-color: rgb(248, 244, 250);" />
+	<div class="contact py-3">
+		<div class="row justify-content-center">
+			<!--Hear from you-->
+			<div class="col-md-6">
+				<div class="col-12  justify-content-center">
+						<p class="hear-from-you ">It's Always <br>A Pleasure To <br> Hear From You</p>
+				</div>
+			</div>
+			<!--Send a Message-->
+			<div class="col-md-6">
+				<div class="col-12 d-flex justify-content-center">
+					<div class="row">
+						<div class="col-12 my-2">
+							<a id="send-mail" href="mailto:afrohouseofknowledge.com?subject=Feedback"><i
+									class="fa mx-2 fa-envelope-o" id="mail-icon" aria-hidden="true"></i>Nous envoyer
+								email</a>
+						</div>
+					</div>
+				</div>
+				<!--Contact Us-->
+				<div class="col-12">
+					<div class="col-12 d-flex justify-content-center">
+						<div class="row">
+							<div class="col-12 my-2">
+								<button id="call-manager" class="col-12">
+									<a id="call-manager-link-1" href="tel: +22664350101"><i class="fa mx-2 fa-phone"
+											aria-hidden="true"></i>Nous Contactez sur le reseau Orange</a>
+								</button>
+							</div>
+							<div class="col-12 my-2">
+								<button id="call-manager-2" class="col-12">
+									<a id="call-manager-link-2" href="tel: +22673034436"><i class="fa mx-2 fa-phone"
+											aria-hidden="true"></i>Nous Contactez sur le reseau telmob</a>
+								</button>
+							</div>
+							<div class="col-12 my-2">
+							  <button id="call-manager-2" class="col-12">
+								  <a id="call-manager-link-3" href="tel: +22678697928"><i class="fa mx-2 fa-phone"
+										  aria-hidden="true"></i>Nous Contactez sur le reseau Telecel</a>
+							  </button>
+						  </div>
+							<div class="col-12 my-2">
+								<button id="call-manager-3" class="col-12 text-success" data-toggle="collapse"
+									data-target="#collapseExample" aria-expanded="false"
+									aria-controls="collapseExample"><i class="fa mx-2 fa-whatsapp"
+										aria-hidden="true"></i>Contact Us On WhatsApp</button>
+								<div class="collapse" id="collapseExample">
+									<div class="px-0 card-body" style="font-family:'Times New Roman', Times, serif;">
+										+22664350101 or +22673034436 
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--Copyright-->
+	<div class="row made-by bg-secondary d-flex justify-content-center pt-3">
+		<div class="col-12 px-2 align-self-center col-md-6 copyright-text">
+			<p>Copyright &copy; 2020 Afro House of Knowledge. All right reserved</p>
+		</div>
+		<div class="col-12 px-2 align-self-center col-md-6 creator">
+			<p>Fait avec <i class="fas fa-heart"></i> par <span>Ich-Mael</span></p>
+		</div>
+	</div>
+</footer>
+<!-- End footer -->
+       <!-- Optional JavaScript -->
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+    crossorigin="anonymous"></script>
+
+    <script src="/javascripts/shared.js"></script>
+ 
+    </body>
+</html>
