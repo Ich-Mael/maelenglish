@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const passportLocalMongoose = require('passport-local-mongoose');
+const Schema = mongoose.Schema;
 
 const userSchema = new mongoose.Schema({
     name:{
@@ -27,9 +28,24 @@ const userSchema = new mongoose.Schema({
     role:{
         type: String,
         default: 'user',
-        enum:['user', 'admin', 'super-admin']
+        enum:['user', 'admin', 'super-admin', 'instructor', 'coach']
     },
-    ownedCourses:[]
+
+    coursesGiven: 
+    [{
+        course: { 
+            type: Schema.Types.ObjectId,
+             ref: 'course'
+            }
+    }],
+
+    courseTaken: 
+    [{
+        course: {
+            type: Schema.Types.ObjectId,
+            ref: 'course'
+        }
+    }]
 },
     {timestamps: true}
   );

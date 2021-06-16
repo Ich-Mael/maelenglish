@@ -1,72 +1,71 @@
-if(process.env.NODE_ENV !== "production"){
-    require('dotenv').config();
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
 }
 
-const express = require('express');
-const mongoose = require('mongoose');
-const ejsMate = require('ejs-mate');
-const session = require('express-session');
-const methodOverride = require('method-override');
-const flash = require('connect-flash');
-const User = require('./models/user');
-const catchAsync = require('./utilities/catchAsync');
-const userRoutes = require('./routes/user');
-const bacRoutes = require('./routes/100bac');
-const englishRoutes = require('./routes/english4all');
-const fasopreunariatRoutes = require('./routes/fasopreunariat');
-const path = require('path');
-const passport = require('passport');
-const LocalStrategy = require('passport-local');
-const MongoDBStore = require('connect-mongo');
+const express = require("express");
+const mongoose = require("mongoose");
+const ejsMate = require("ejs-mate");
+const session = require("express-session");
+const methodOverride = require("method-override");
+const flash = require("connect-flash");
+const User = require("./models/user");
+const catchAsync = require("./utilities/catchAsync");
+const userRoutes = require("./routes/user");
+const courseRoutes = require("./routes/course");
+const bacRoutes = require("./routes/100bac");
+const englishRoutes = require("./routes/english4all");
+const fasopreunariatRoutes = require("./routes/fasopreunariat");
+const path = require("path");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const MongoDBStore = require("connect-mongo");
 
 // bring in the app constants
 const { DB, PORT, SECRET } = require("./config");
 
 // connecting to the database
 const connectDB = catchAsync(async () => {
-        await mongoose
-            .connect(process.env.APP_DB, {
-                useNewUrlParser: true,
-                useCreateIndex: true,
-                useFindAndModify: false,
-                useUnifiedTopology: true });
+  await mongoose.connect(process.env.APP_DB, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true,
+  });
 });
 
 connectDB();
 
 const app = express();
 // setting up ejs-mate
-app.engine('ejs', ejsMate);
+app.engine("ejs", ejsMate);
 
 // Setting up ejs
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
 // parsing the body
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
 // setting for method override
-app.use(methodOverride('_method'));
+app.use(methodOverride("_method"));
 
 // serving the public directory
-app.use(express.static(path.join(__dirname, 'public')));
-
-
+app.use(express.static(path.join(__dirname, "public")));
 
 // setting up session
 const sessionConfig = {
-    store: MongoDBStore.create({
-        mongoUrl: process.env.APP_DB,
-        touchAfter: 24 * 60 * 60
-    }),
-    secret: process.env.SECRET || 'hereistheworstsecretever',
-    resave: false,
-    saveUninitialized: true,
-    cookie:{
-        httponly: true,
-        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
-        maxAge: 1000 * 60 * 60 * 24 * 7
-    }
+  store: MongoDBStore.create({
+    mongoUrl: process.env.APP_DB,
+    touchAfter: 24 * 60 * 60,
+  }),
+  secret: process.env.SECRET || "hereistheworstsecretever",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    httponly: true,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  },
 };
 
 //for cookies
@@ -79,50 +78,55 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser(function(user, done) {
+passport.serializeUser(
+  User.serializeUser(function (user, done) {
     done(null, user);
-}));
-passport.deserializeUser(User.deserializeUser(function(user, done) {
+  })
+);
+passport.deserializeUser(
+  User.deserializeUser(function (user, done) {
     done(null, user);
-}));
+  })
+);
 
 // setting up local variables
-app.use((req, res, next)=>{
-    res.locals.currentUser = req.user;
-    res.locals.success = req.flash('success');
-    res.locals.error = req.flash('error');
-    next();
+app.use((req, res, next) => {
+  res.locals.currentUser = req.user;
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
+  next();
 });
 
 // Landing page route
-app.get('/',(req, res)=>{
-    res.render('home');
+app.get("/", (req, res) => {
+  res.render("home");
 });
 
 //user routes
-app.use('/', userRoutes);
+app.use("/", userRoutes);
+
+app.use("/", courseRoutes);
 
 //courses routes
-app.use('/', bacRoutes);
+app.use("/", bacRoutes);
 
 // english for everybody routes
-app.use('/', englishRoutes);
+app.use("/", englishRoutes);
 
 // Fasopreunariat routes
-app.use('/', fasopreunariatRoutes);
+app.use("/", fasopreunariatRoutes);
 
-app.all('*', (req, res, next)=>{
-    res.render('errorpage');
+app.all("*", (req, res, next) => {
+  res.render("errorpage");
 });
 
 //error handling
+app.use((err, req, res, next) => {
+  res.render("errorpage");
+});
 
-// app.use((err, req, res, next)=>{
-//     res.render('errorpage');
-// });
-
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3000;
 // server
-app.listen(port, ()=>{
-    console.log('server is working');
+app.listen(port, () => {
+  console.log("server is working");
 });

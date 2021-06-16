@@ -1,7 +1,7 @@
-module.exports.checkCourseOwnership = course =>(req, res, next)=>{
-    if(!req.user.ownedCourses.some(arr => arr.indexOf(course)!==-1)){
+module.exports.checkCourseOwnership = courseTitle =>(req, res, next)=>{
+    if(!req.user.courseTaken.some(el => el.title === courseTitle)!==-1){
         res.render('noAccess');
-    } else{
+    }else{
         next();
     }
 };

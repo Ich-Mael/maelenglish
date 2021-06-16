@@ -6,13 +6,23 @@ const courseSchema = new Schema({
         type: String,
         required: true,
     },
+
     description:{
         type: String,
         required: true
     },
-    author:{
-        type: String,
-        required: true,
+
+    price: Number,
+
+    instructor: {
+        type: Schema.Types.ObjectId, 
+        ref: 'User',
+        required: [true,'The course title cannot be blank.']
+    },
+
+    student : {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
     },
 
 },
@@ -21,6 +31,6 @@ const courseSchema = new Schema({
   }
 );
 
-const course = mongoose.model('Course', courseSchema);
+module.exports  = mongoose.model('Course', courseSchema);
 
-module.exports = Course ;
+
