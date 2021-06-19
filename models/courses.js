@@ -19,11 +19,10 @@ const courseSchema = new Schema(
 
     price: Number,
 
-    instructor: {
+    instructors: [{
       type: Schema.Types.ObjectId,
       ref: "User",
-      // required: [true,'The course title cannot be blank.']
-    },
+    }],
 
     student: {
       type: Schema.Types.ObjectId,

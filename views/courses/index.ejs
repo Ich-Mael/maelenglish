@@ -28,4 +28,21 @@
 <!--Section 2-->
 <section id="all-course-view">
 	<h1 class="all-course-heading text-center">All Courses</h1>
+	<div class="container">
+	<% for(let course of courses) {%> 
+		<div class="row">
+			<div class="card-body">
+				<h3 class="card-title"><%= course.title %> </h3>
+				<h3 class="card-title">Main Instructor <%= course.instructors[0].surname %> - <%= course.instructors[0].name %></h3>
+				<h3 class="card-title">Instructor <%= course.instructors[1].surname %> - <%= course.instructors[1].name %></h3>
+				<p class="card-text"><%= course.description %></p>
+				<p class="card-text">
+				    <small class="text-warning"><%= course.price%></small>
+				</p>
+				<a class="btn btn-primary" href="/courses/<%=course._id%>">View <%=course.title%></a>
+			    </div>
+		</div>
+		<% } %> 
+	</div>
+
 </section>

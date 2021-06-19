@@ -11,6 +11,12 @@
 <form action="/courses" method="POST">
   <label for="title">Course title</label>
   <input type="text" name="course[title]" value="" />
+  <fieldset>
+    <label for="main-instructor">Main Instructor</label>
+    <input type="text" name="instructors[main]" value="" /> 
+    <label for="second-instructor">Second Instructor</label>
+    <input type="text" name="instructors[assistant]" value="" />
+  </fieldset>
   <label for="description">Description</label>
   <textarea name="course[description]" id="" cols="30" rows="10">
   </textarea>
