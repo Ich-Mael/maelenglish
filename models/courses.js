@@ -24,10 +24,10 @@ const courseSchema = new Schema(
       ref: "User",
     }],
 
-    student: {
+    student: [{
       type: Schema.Types.ObjectId,
       ref: "User",
-    },
+    }],
   },
   {
     timestamps: true,

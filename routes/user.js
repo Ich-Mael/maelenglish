@@ -2,6 +2,7 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 const User = require("../models/user");
+const Course = require("../models/courses");
 const { isLoggedIn, checkRoles } = require("../controllers/userController");
 
 // register a user form
@@ -60,6 +61,54 @@ router.get("/admindashboard", isLoggedIn, checkRoles("admin"), (req, res) => {
   res.render("admindashboard");
 });
 
+// Form for a new course
+router.get('/courses/new', isLoggedIn, checkRoles("admin"), (req, res)=>{
+	res.render('courses/new');
+});
+
+// creating a new course
+router.post('/courses',isLoggedIn, checkRoles("admin"), async(req, res)=>{
+	const course = new Course(req.body.course);
+	const instructorsList = req.body.instructors;
+
+	for( let property in instructorsList){
+        const instructor = await User.findOne({username: `${instructorsList[property]}`});
+       //pushing user to instructors array
+	course.instructors.push(instructor);
+	}
+       //saving course to database
+	await course.save();
+	res.redirect(`/courses/${course._id}`);
+});
+
+
+//==========================
+//     Managing students
+//==========================
+
+
+// adding a student to a course form
+router.get('/addstudent/new', isLoggedIn, checkRoles("admin"), (req, res)=>{
+	res.render('courses/addNewStudent');
+});
+
+
+// adding a student to a course
+router.post('/addstudent', isLoggedIn, checkRoles("admin"), async (req, res)=>{
+  const {courseTitle, student} = req.body;
+  const user = await User.findOne({username: student});
+  const course = await Course.findOne({title: courseTitle});
+  course.student.push(user);
+  await user.save();
+  user.coursesTaken.push(course);
+  await course.save();
+  res.send("user successfully registered for the course");
+});
+
+
+
+
+
 // Instructor route
 router.get(
   "/instructordashboard",
@@ -70,6 +119,4 @@ router.get(
   }
 );
 
-// Create a new course
-router.post("/course");
 module.exports = router;

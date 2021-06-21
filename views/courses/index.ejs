@@ -34,10 +34,12 @@
 			<div class="card-body">
 				<h3 class="card-title"><%= course.title %> </h3>
 				<h3 class="card-title">Main Instructor <%= course.instructors[0].surname %> - <%= course.instructors[0].name %></h3>
+				<% if(course.instructors[1]){%> 
 				<h3 class="card-title">Instructor <%= course.instructors[1].surname %> - <%= course.instructors[1].name %></h3>
+			<% }; %>
 				<p class="card-text"><%= course.description %></p>
 				<p class="card-text">
-				    <small class="text-warning"><%= course.price%></small>
+				    <small class="text-danger"><%= course.price%></small>
 				</p>
 				<a class="btn btn-primary" href="/courses/<%=course._id%>">View <%=course.title%></a>
 			    </div>
