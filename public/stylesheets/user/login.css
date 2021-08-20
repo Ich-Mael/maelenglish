@@ -1,18 +1,12 @@
 /* *{box-sizing: border-box} */
 
-body{
-    background: linear-gradient(to bottom,
-                                rgba(34, 33, 34, 0.9),
-                                rgba(34, 33, 34, 0.8),
-                                rgba(34, 33, 34, 0.5),
-                                rgba(34, 33, 34, 0.4),
-                                rgba(34, 33, 34, 0.3),
-                                rgba(34, 33, 34, 0.3),
-                                rgba(34, 33, 34, 0.3),
-                                rgba(34, 33, 34, 0.3),
-                                rgba(34, 33, 34, 0.3),
-                                rgba(32, 20, 23, 0.5),
-                                rgba(40, 36, 41, 0.6)), url(https://images.pexels.com/photos/3762806/pexels-photo-3762806.jpeg?cs=srgb&dl=pexels-andrea-piacquadio-3762806.jpg&fm=jpg);
+* {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    background: linear-gradient(to bottom, rgba(34, 33, 34, 0.9), rgba(34, 33, 34, 0.8), rgba(34, 33, 34, 0.5), rgba(34, 33, 34, 0.4), rgba(34, 33, 34, 0.3), rgba(34, 33, 34, 0.3), rgba(34, 33, 34, 0.3), rgba(34, 33, 34, 0.3), rgba(34, 33, 34, 0.3), rgba(32, 20, 23, 0.5), rgba(40, 36, 41, 0.6)), url(https://images.pexels.com/photos/3762806/pexels-photo-3762806.jpeg?cs=srgb&dl=pexels-andrea-piacquadio-3762806.jpg&fm=jpg);
     background-size: cover;
     background-attachment: fixed;
     background-repeat: no-repeat;
@@ -20,10 +14,8 @@ body{
     min-height: 100%;
 }
 
-
-
-#login-wrapper{
-    margin:0;
+#login-wrapper {
+    margin: 6rem 0;
     /* width: 100vw; */
     /* overflow: hidden; */
     /* font-family: */
@@ -32,11 +24,10 @@ body{
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: rgba(255, 250, 240, 0.9);
+    color: rgba(236, 227, 223, 0.9);
     background-size: cover;
     background-attachment: fixed;
     background-repeat: no-repeat;
-    font-family: fondamento;
 }
 
 .login-div {
@@ -45,66 +36,88 @@ body{
     -webkit-box-shadow: 6px -2px 16px -1px rgba(0, 0, 0, 0.64);
     -moz-box-shadow: 6px -2px 16px -1px rgba(0, 0, 0, 0.64);
     box-shadow: 6px -2px 16px -1px rgba(0, 0, 0, 0.64);
-    padding: 60px 35px 20px;
+    padding: 20px 35px 20px;
     border-radius: 40px;
     border: 0.3rem solid black;
     /* box-shadow: 13px 13px 20px #cbced1, */
     /*             -13px -13px 20px #fff; */
 }
-#login-header{
+
+#login-header {
     font-size: 1.5rem;
-    letter-spacing:0.1rem;
-    margin-bottom: 3rem;
-    font-family: Times New Roman;
+    letter-spacing: 0.1rem;
+    margin-bottom: 1rem;
+    color: orangered;
+    font-family: 'Kaushan Script', cursive;
     /* border-radius: 2rem; */
     padding: 0.4rem;
-    text-transform: uppercase;
-    border: 2px solid orangered;
     border-radius: 5px;
 }
 
-.logo-text{
+.logo-text {
     text-align: center;
     font-size: 2rem;
 }
 
-.fields{
+.fields {
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
-.fields input{
+.fields input {
     border: none;
     font-size: 1.2rem;
     outline: none;
     margin: 1rem 0;
 }
 
-#username, #password {
+#username,
+#password {
     width: 14rem;
     border-radius: 0.4rem;
-    box-shadow:  2px -2px 5px #6b6666,
-                -2px 2px 5px #858080;
+    box-shadow: 2px -2px 5px #6b6666, -2px 2px 5px #858080;
 }
 
-.pas-compte{
+.connexion {
     text-decoration: none;
     color: rgba(181, 199, 230, 0.7);
     font-size: 0.9rem;
     padding: 0.4rem;
-    text-transform: capitalize;
     text-align: center;
     animation: all 0.3s;
     color: antiquewhite;
-    width:15rem;
+    width: 15rem;
     border: 1px solid whitesmoke;
     background-color: #222;
 }
-.pas-compte:hover{
+
+.connexion:hover {
     text-decoration: none;
     color: antiquewhite;
     border: 1px solid orangered;
     background-color: #222;
 }
 
+.pas-compte {
+    color: antiquewhite;
+}
+
+.pas-compte:hover {
+    color: orangered;
+}
+
+.form-control {
+    height: 50px;
+    background-color: #1c1e21;
+    text-indent: 24px;
+    font-size: 15px;
+    color: aliceblue;
+}
+
+.form-control:focus {
+    background-color: #25272a;
+    box-shadow: none;
+    color: #fff;
+    border-color: #4f63e7
+}

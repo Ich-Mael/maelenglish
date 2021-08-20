@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const {isLoggedIn, checkRoles} = require('../controllers/userController');
-const {checkCourseOwnership} = require('../controllers/courseController');
+const { isLoggedIn, checkRoles } = require('../middlewares/userController');
+const { checkCourseOwnership } = require('../middlewares/courseController');
 
 
 //english for everybody
-router.get('/fasopreunariat', (req, res)=>{
+router.get('/fasopreunariat', (req, res) => {
     res.render("comingsoon");
 });
 
-module.exports = router ;
+module.exports = router;

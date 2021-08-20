@@ -2,8 +2,10 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 const User = require("../models/user");
+const catchAsync = require('../utilities/catchAsync');
 const Course = require("../models/courses");
-const { isLoggedIn, checkRoles } = require("../controllers/userController");
+const { isLoggedIn, checkRoles } = require("../middlewares/userController");
+const { checkCourseOwnership } = require("../middlewares/courseController");
 
 // register a user form
 router.get("/register", (req, res) => {
@@ -41,9 +43,9 @@ router.post(
         failureFlash: true,
         failureRedirect: "/login",
     }),
-    (req, res) => {
+    async(req, res) => {
         req.flash("success", "Welcome back " + req.user.username.toUpperCase());
-        const redirectUrl = req.session.returnTo || "/";
+        const redirectUrl = await req.session.returnTo || "/";
         delete req.session.returnTo;
         res.redirect(redirectUrl);
     }
@@ -52,8 +54,8 @@ router.post(
 // logout
 router.get("/logout", (req, res) => {
     req.logout();
-    req.flash("success", `Goodbye ! See you nextime!!`);
     res.redirect("/");
+    req.flash("success", `Goodbye ! See you nextime!!`);
 });
 
 // Admin route
@@ -61,59 +63,44 @@ router.get("/admindashboard", isLoggedIn, checkRoles("admin"), (req, res) => {
     res.render("admindashboard");
 });
 
-// Form for a new course
-router.get('/courses/new', isLoggedIn, checkRoles("admin"), (req, res) => {
-    res.render('courses/new');
-});
-
-// creating a new course
-router.post('/courses', isLoggedIn, checkRoles("admin"), async(req, res) => {
-    const course = new Course(req.body.course);
-    const instructorsList = req.body.instructors;
-
-    for (let property in instructorsList) {
-        const instructor = await User.findOne({ username: `${instructorsList[property]}` });
-        //pushing user to instructors array
-        course.instructors.push(instructor);
-
-        // adding course to user given courses
-        instructor.coursesGiven.push(course);
-        await instructor.save();
+// Instructor route
+router.get(
+    "/instructordashboard",
+    isLoggedIn,
+    checkRoles(["instructor", "admin"]),
+    (req, res) => {
+        res.render("instructor");
     }
-    //saving course to database
-    await course.save();
-    res.redirect(`/courses/${course._id}`);
-});
+);
 
+// user profile route
+router.get('/user/:id', isLoggedIn, catchAsync(async(req, res, next) => {
+    const id = req.params.id;
+    const user = await User.findById(id).populate('coursesTaken').populate('coursesGiven');
+    console.log(user);
+    res.render('user/userprofile', { user });
+}));
 
 //==========================
 //     Managing students
 //==========================
-
 
 // adding a student to a course form
 router.get('/addstudent/new', isLoggedIn, checkRoles("admin"), (req, res) => {
     res.render('courses/addNewStudent');
 });
 
-
 // adding a student to a course
-router.post('/addstudent', isLoggedIn, checkRoles("admin"), async(req, res) => {
+router.post('/addstudent', isLoggedIn, checkRoles("admin"), catchAsync(async(req, res) => {
     const { courseTitle, student } = req.body;
     const user = await User.findOne({ username: student });
     const course = await Course.findOne({ title: courseTitle });
     course.student.push(user);
     await course.save();
-    console.log(course);
     user.coursesTaken.push(course);
     await user.save();
-    console.log(user);
     res.send("user successfully registered for the course");
-});
-
-
-
-
+}));
 
 // Instructor route
 router.get(

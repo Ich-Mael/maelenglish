@@ -8,7 +8,14 @@ module.exports.isLoggedIn = (req, res, next) => {
 };
 
 module.exports.checkRoles = roles => (req, res, next) =>
-!roles.includes(req.user.role)
-    ? res.send('Not authorized')
-    : next();
+    !roles.includes(req.user.role) ?
+    res.send('Not authorized') :
+    next();
 
+module.exports.profileOwner = id => (req, res, next) => {
+    if (!(req.user._id === id)) {
+        res.send('Access not authorized');
+    } else {
+        next();
+    }
+};

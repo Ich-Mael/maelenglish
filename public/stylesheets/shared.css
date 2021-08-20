@@ -1,254 +1,298 @@
-
-.flash{
-    font-size: 1.5rem;
-    font-family: 'Kaushan Script', cursive;
-    letter-spacing: 0.2rem;
+* {
+    padding: 0;
+    margin: 0;
 }
 
-#brand-name{
+.flash {
+    font-size: 1rem;
+    padding: 0 0.5rem;
+    font-family: 'Libre Baskerville', serif;
+    letter-spacing: 0.1rem;
+}
+
+#brand-name {
     color: rgba(255, 250, 240, 0.9);
     /* font-family: 'Albril Fatface', cursive; */
     /* font-family: 'Esteban'; */
-    font-family:'Ultra', serif;
-    font-size:2.5rem;
+    font-family: 'Ultra', serif;
+    font-size: 2.5rem;
     /* border-bottom: 3px solid orangered; */
     border-radius: 5%;
     padding: 0 0.7rem;
     /* text-shadow: 0.2rem 0.1rem 0.2rem rgba(34, 24, 67, 0.8); */
 }
 
-#afro{
+#afro {
     color: rgba(5, 5, 2, 1);
     text-shadow: 1px 1px 1px rgba(255, 255, 230, 1);
 }
 
-.nav-link{
+.nav-link {
     font-size: 0.7rem;
     letter-spacing: 0.2rem;
     text-transform: capitalize;
     color: rgba(15, 25, 20, 0.9);
     transition: all 0.2s;
     /* font-family: 'Abril Fatface', cursive; */
-	  /* font-family: 'Libre Baskerville', serif; */
-	  /* font-family: 'Noto Sans', sans-serif; */
-	  /* font-family: 'Vollkorn', serif; */
+    /* font-family: 'Libre Baskerville', serif; */
+    /* font-family: 'Noto Sans', sans-serif; */
+    /* font-family: 'Vollkorn', serif; */
     font-family: 'Chango', cursive;
     font-weight: 800;
 }
-.nav-link:hover{
+
+.nav-link:hover {
     text-decoration: none;
     color: rgb(66, 20, 1, 0.8);
-    font-weight:450;
+    font-weight: 450;
 }
-.afro-shadow{
+
+.profile-link {
+    text-decoration: none;
+}
+
+.afro-shadow {
     -webkit-text-stroke: 1px black;
     letter-spacing: 0.2rem;
-    text-shadow:
-        2px 2px 0  rgb(248, 243, 243)        ,
-      -1px -1px 0 rgb(248, 243, 243),
-       1px -1px 0 rgb(248, 243, 243),
-       -1px 1px 0 rgb(248, 243, 243),
-        1px 1px 0 rgb(248, 243, 243);
-  }
+    text-shadow: 2px 2px 0 rgb(248, 243, 243), -1px -1px 0 rgb(248, 243, 243), 1px -1px 0 rgb(248, 243, 243), -1px 1px 0 rgb(248, 243, 243), 1px 1px 0 rgb(248, 243, 243);
+}
 
-  .hk-shadow{
+.hk-shadow {
     -webkit-text-stroke: 1px black;
     letter-spacing: 0.2rem;
-    text-shadow:
-        3px 3px 0 #000,
-      -1px -1px 0 #000,
-       1px -1px 0 #000,
-       -1px 1px 0 #000,
-        1px 1px 0 #000;
-  }
-  .afro{
-    color:rgb(97, 95, 95);
-  }
+    text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
 
-  .hk{
+.afro {
+    color: rgb(97, 95, 95);
+}
+
+.hk {
     color: orangered;
-  }
+}
 
-  #user{
-  font-family: 'Kaushan Script', cursive;
+#user {
+    font-family: 'Kaushan Script', cursive;
     font-size: 1.5rem;
     text-transform: capitalize;
-  }
-
-  .user-shadow{
-    color:azure;
-    text-transform: capitalize;
-  }
-
-
-  .dropdown-menu{
-    border: 2px solid black;
-    background: #16222A;  /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right,#16222ad2, #3a6073de, #3A6073 ,#16222aea);  /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right,#16222ada, #3a6073de, #3a6073d0, #16222ae3); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */      
 }
 
-.dropdown-item{
-    font-size:1.2rem;
-    color:#dad2ce;
+.user-shadow {
+    color: azure;
+    text-transform: capitalize;
+}
+
+.dropdown-menu {
+    border: 2px solid black;
+    background: #141E30;
+    /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #243B55, #141E30);
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #243B55, #141E30);
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.dropdown-item {
+    font-size: 1.2rem;
+    color: #dad2ce;
     text-align: center;
-    font-family:'Vollkorn', serif;
+    font-family: 'Vollkorn', serif;
     font-weight: 400;
 }
-  .dropdown-item:hover{
-      background-color: black;
-      color: whitesmoke;
-  }
-  /* End Navbar*/
+
+.dropdown-item:hover {
+    background-color: black;
+    color: whitesmoke;
+}
 
 
-  /* footer */
-  #footer {
+/* End Navbar*/
+
+
+/* footer */
+
+#footer {
     text-align: center;
     color: #b9d5e2;
-    background-color: rgba(0, 0, 0, 0.849);
+    /* background-color: #141e30b9; */
+    background: linear-gradient(to bottom, #141e30e1, #141e30e3, #141e30b9, #141e30b9, #141e30f1, #141e30e1, #141e30e3), url("https://images.pexels.com/photos/5537937/pexels-photo-5537937.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
+    /* background-color: #f5f7f8; */
     background-size: cover;
     background-attachment: fixed;
     background-repeat: no-repeat;
     font-family: Georgia, 'Times New Roman', Times, serif;
     min-height: fit-content;
-  }
+}
 
-  .afrohk-footer{
+.afrohk-footer {
     color: #f5f7f8;
     font-family: 'Kaushan Script', cursive;
     font-size: 3.5rem;
-    text-shadow: 0px 4px 3px rgba(231, 46, 21, 0.4),
-      1px 2px 8px rgba(245, 46, 12, 0.5),
-      1px 2px 3px rgba(245, 25, 9, 0.3);
+    text-shadow: 0px 4px 3px rgba(231, 46, 21, 0.4), 1px 2px 8px rgba(245, 46, 12, 0.5), 1px 2px 3px rgba(245, 25, 9, 0.3);
     font-weight: 500;
-  }
+}
 
-  .motto-footer{
+.motto-footer {
     font-family: 'Chango', cursive;
     color: #e4faf9;
     font-size: 1.5rem;
-  }
+}
 
-  #first-name-input,
-  #last-name-input,
-  #email-input {
+#first-name-input,
+#last-name-input,
+#email-input {
     width: 100%;
-  }
+}
 
-  #call-manager {
+#call-manager {
     width: 100%;
     font-size: 1.2rem;
+    font-family: 'Times New Roman', Times, serif;
     background: none;
     outline: none;
     border: none;
+}
 
-  }
-
-  #call-manager-2 {
+#call-manager-2 {
     width: 100%;
-    font-size: 1.2rem;
+    font-size: 1.0rem;
+    font-family: 'Times New Roman', Times, serif;
     background: none;
     outline: none;
     border: none;
-  }
+}
 
-  #call-manager-3 {
+#call-manager-3 {
     width: 100%;
-    font-size: 1.2rem;
+    font-size: 1.0rem;
     background: none;
     color: rgb(248, 244, 238);
     outline: none;
     border: none;
-  }
+}
 
-  #call-manager-link-1 {
-      text-decoration:none;
-    font-size: 1.2rem;
+#call-manager-link-1 {
+    text-decoration: none;
+    font-size: 1.0rem;
+    font-family: 'Times New Roman', Times, serif;
     color: #e75d0d;
     transition: all 0.5s;
-  }
+}
 
-  #call-manager-link-2 {
-      text-decoration:none;
-    font-size: 1.2rem;
+#call-manager-link-2 {
+    text-decoration: none;
+    font-size: 1.0rem;
     color: #e99b0a;
     transition: all 0.5s;
-  }
-  #call-manager-link-3 {
-      text-decoration:none;
-    font-size: 1.2rem;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+#call-manager-link-3 {
+    text-decoration: none;
+    font-size: 1.0rem;
     color: #1e90eebb;
     transition: all 0.5s;
-  }
+    font-family: 'Times New Roman', Times, serif;
+}
 
+#send-mail {
+    color: #f1e5ec;
+    transition: all 0.5s;
+    font-size: 1.0rem;
+    font-family: 'Times New Roman', Times, serif;
+    text-decoration: none;
+}
 
-  #call-manager-link-1:hover, #call-manager-link-2:hover,#call-manager-link-3:hover, #send-mail:hover{
+#call-manager-link-1:hover,
+#call-manager-link-2:hover,
+#call-manager-link-3:hover,
+#send-mail:hover {
     text-decoration: none;
     font-size: 1.3rem;
-      }
+}
 
-  #cont-ns {
-    font-size: 1.5rem;
+#cont-ns {
+    font-size: 1.0rem;
     font-family: 'Times New Roman', Times, serif;
-  }
+}
 
-  #send-mail {
+#send-mail {
     color: #f1e5ec;
-  }
+}
 
-  hello {
+hello {
     font-size: 3.5rem;
     font-family: 'Times New Roman', Times, serif;
-  }
+}
 
-  .hear-from-you {
-    font-size: 2.5rem;
-    font-family: Libre;
-    text-transform: uppercase;
+.hear-from-you {
+    font-size: 2rem;
+    padding-top: 2rem;
+    background-color: #000;
+    border-radius: 50%;
+    width: 16rem;
+    height: 16rem;
+    border: 2px solid rgb(248, 247, 247);
+    box-shadow: rgba(210, 210, 221, 0.25) 0px 50px 100px -20px, rgba(202, 197, 197, 0.3) 0px 30px 60px -30px, rgba(175, 182, 189, 0.35) 0px -2px 6px 0px inset;
+    font-family: 'Marck Script', cursive;
+    /* text-transform: uppercase; */
     animation: anim2 2s infinite alternate;
-  }
+}
 
-  @keyframes anim2 {
+.useful-links-header {
+    list-style: none;
+}
+
+.useful-links {
+    text-decoration: none;
+    color: #dad2ce;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 1.3rem;
+    padding: 0.5rem 0;
+}
+
+@keyframes anim2 {
     0% {
-      transform: translateY(4px);
+        transform: translateY(4px);
     }
-
     100% {
-      transform: translateY(-4px);
+        transform: translateY(-4px);
     }
-  }
+}
 
-  .made-by{
-      background: #000428;  /* fallback for old browsers */
-      background: -webkit-linear-gradient(to right, #004e92, #000428);  /* Chrome 10-25, Safari 5.1-6 */
-      background: linear-gradient(to right, #004e92, #000428); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-      margin: 0 0;
-  }
+.made-by {
+    background: #141E30;
+    /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #243B55, #141E30);
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #243B55, #141E30);
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
 
-  .copyright-text {
+.copyright-text {
     padding: 0.2rem 1rem;
     font-size: 1rem;
     font-family: Georgia, 'Times New Roman', Times, serif;
     font-weight: 400;
-  }
+}
 
-  .creator {
+.creator {
     font-size: 1.1rem;
     padding: 0.5rem 0 0.2rem;
-  }
+}
 
-  .creator i {
+.creator i {
     color: tomato;
-  }
+}
 
-  .creator span {
+.creator span {
     font-family: 'Kaushan Script', cursive;
-    color: rgba(207, 167, 207, 0.705);
+    color: rgba(243, 137, 16, 0.705);
     font-size: 1.5rem;
     font-weight: 600;
     margin: 0 0.3rem;
     text-shadow: 1px 2px 3px black, 2px 3px 4px black, 3px 4px 5px black;
-  }
+}
 
-  /* End footer */
+
+/* End footer */

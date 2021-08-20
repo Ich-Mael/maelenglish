@@ -6,15 +6,18 @@ const userSchema = new Schema({
     name: {
         type: String,
         required: true,
+        trim: true,
     },
 
     surname: {
         type: String,
+        trim: true,
         required: true,
     },
 
     username: {
         type: String,
+        trim: true,
         required: true,
         unique: true,
     },
@@ -22,6 +25,7 @@ const userSchema = new Schema({
     email: {
         type: String,
         required: true,
+        trim: true,
         unique: true,
     },
 
@@ -30,6 +34,8 @@ const userSchema = new Schema({
         default: "user",
         enum: ["user", "admin", "super-admin", "instructor", "coach"],
     },
+
+    ownedPrograms: [],
 
     coursesGiven: [{
         type: Schema.Types.ObjectId,
@@ -40,6 +46,14 @@ const userSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "Course",
     }],
+
+    grades: [
+        [{
+            type: Schema.Types.ObjectId,
+            ref: "course",
+
+        }]
+    ]
 }, { timestamps: true });
 
 userSchema.plugin(passportLocalMongoose);

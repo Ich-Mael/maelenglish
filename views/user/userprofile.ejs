@@ -1,0 +1,24 @@
+<% layout('layouts/boilerplate') %>
+    <link href="/stylesheets/user/userprofile.css" rel="stylesheet" />
+
+    <h1 class="welcome-msg text-center">
+        Hi
+        <%= user.username %> ! <span>Welcome to your dashboard</span>
+    </h1>
+
+    <div>
+        <h3>Mes cours</h3>
+        <% for(let course of user.coursesTaken) {%>
+            <div>
+                <%= course.title %>
+            </div>
+            <%}%>
+    </div>
+    <div>
+        <h3>Cours Dispenses</h3>
+        <% for(let course of user.coursesGiven) {%>
+            <div>
+                <%= course.title %>
+            </div>
+            <%}%>
+    </div>
