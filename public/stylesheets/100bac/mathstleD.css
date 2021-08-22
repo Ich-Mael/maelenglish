@@ -1,5 +1,5 @@
 body{
-
+    font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
 .maths-wrapper{
@@ -7,9 +7,9 @@ body{
 }
 
 .maths-title{
-    color: white;
-    padding-bottom:1rem;
-    text-shadow: 1px 2px 3px orange;
+    color: #333;
+    padding:1rem;
+    text-shadow: 1px 2px 3px orangered;
     font-family:'Kaushan Script', cursive;
     text-transform: capitalize;
     font-size: 3rem;
@@ -45,8 +45,8 @@ body{
 }
 
 .card-body{
-    width: 25rem;
 }
+
 #maths-section {
     background: linear-gradient(to top,
                                 rgba(0, 0, 0, 0.5),
@@ -55,7 +55,6 @@ body{
     background-size: cover;
     color: rgb(32, 30, 20);
     font-weight: 100;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     letter-spacing: 0.1;
     padding-bottom: 2rem;
 }
@@ -155,12 +154,75 @@ body{
             transform: rotate(40deg);
   }
 
+  /* Course */
+
+/* Course */
+
+.week-lesson{
+  margin: 0 5rem;
+  background-color: whitesmoke;
+  padding: 1rem 0 2rem 0;
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+}
+.week-lesson-img{
+  margin: 1rem;
+  width: 15rem;
+  height: 15rem;
+}
+
+
+
+.week-number{
+  display: inline;
+  margin: 0 1rem;
+  font-size: 1.7rem;
+  padding: 1rem 2rem;
+  align-self: center;
+  border-radius: 2px;
+  background-color: #222;
+  text-align: center;
+  font-family:'Kaushan Script', cursive;
+  color: whitesmoke;
+  border: 2px solid orangered;
+}
+
+.lesson-links{
+  margin: 2rem 1rem;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.self-practice-wrapper{
+  border: 1px solid black;
+  margin: 0 1rem;
+  background: #4B79A1;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #283E51, #4B79A1);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #283E51, #4B79A1); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
+
+.practice-alone{
+  margin: 0.5rem;
+  padding: 0;
+  color: whitesmoke;
+  letter-spacing: 0.17rem;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+}
+
+.self-practice-btn{
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  margin: 1rem;
+}
+
 
 /* TV Screen */
-
-body {
-  background-color: #333;
-}
 
 #tv-container {
   max-width: 1024px;
@@ -253,3 +315,109 @@ body {
     100% { box-shadow: 0 0 60px 0 rgba(200,220,255,0.6); }
   }
 }
+
+
+/*===================================
+
+  Responsiveness
+
+  ==================================*/
+
+/* Extra small devices (phones, 600px and down) */
+@media(max-width: 600px) {
+  .course-details{
+    padding-left: 2.2rem;
+  }
+
+  .img-wrapper > img{
+    width: 300px;
+    height: 300px;
+  }
+
+  .learn-with-us > h3{
+    font-size: 3rem;
+    padding: 1rem 0;
+  }
+
+  .week-lesson{
+    margin: 0 1rem;
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  }
+  .week-number{
+    display: block;
+    font-size: 1.0rem;
+    margin: 1rem 0 ;
+  }
+
+  .week-number span{
+    width: 2rem;
+    padding: 0 0.5rem;
+    border: 1px solid orangered;
+    color: whitesmoke;
+  }
+
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media(max-width: 800px) {
+  .course-details{
+    padding:1rem 5 rem;
+  }
+
+  .learn-with-us > h3{
+    font-size: 4rem;
+    padding: 1rem 0;
+  }
+  .img-wrapper > img{
+    width: 400px;
+    height: 400px;
+  }
+
+  .week-number{
+    display: block;
+    font-size: 1.2rem;
+    margin: 1rem 0 ;
+  }
+
+  .week-number span{
+    width: 2rem;
+    padding: 0 0.5rem;
+    border: 1px solid orangered;
+    color: whitesmoke;
+  }
+
+  .practice-alone{
+    font-size: 1rem;
+  }
+
+  .video-btn{
+    font-size: 0.9rem;
+  }
+}
+
+
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media (max-width: 1000px) {
+
+  .week-number{
+    display: block;
+    font-size: 1.0rem;
+    margin: 1rem 0 ;
+  }
+
+  .week-number span{
+    width: 2rem;
+    padding: 0 0.5rem;
+    border: 1px solid orangered;
+    color: whitesmoke;
+  }
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media (min-width: 992px) {
+
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media (min-width: 1200px) {}
