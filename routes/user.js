@@ -18,12 +18,14 @@ router.post("/register", async(req, res) => {
         const { name, surname, email, username, password } = req.body;
         const user = new User({ name, surname, email, username });
         const registeredUser = await User.register(user, password);
-        req.login(registeredUser, (err) => {
+        req.login(registeredUser, async(err) => {
             if (err) {
                 res.send("Something Went Wrong");
             } else {
-                req.flash("success", "Votre compte a été créé avec success");
-                res.redirect("/");
+        const redirectUrl = await req.session.returnTo || "/";
+        delete req.session.returnTo;
+        req.flash("success", "Votre compte a été créé avec success");
+        res.redirect(redirectUrl);
             }
         });
     } catch (e) {
@@ -52,15 +54,10 @@ router.post(
 );
 
 // logout
-router.get("/logout", (req, res) => {
-    req.logout();
-    res.redirect("/");
+router.get("/logout", async(req, res) => {
+    await req.logout();
     req.flash("success", `Goodbye ! See you nextime!!`);
-});
-
-// Admin route
-router.get("/admindashboard", isLoggedIn, checkRoles("admin"), (req, res) => {
-    res.render("admindashboard");
+    res.redirect("/");
 });
 
 // Instructor route
@@ -81,9 +78,16 @@ router.get('/user/:id', isLoggedIn, catchAsync(async(req, res, next) => {
     res.render('user/userprofile', { user });
 }));
 
-//==========================
-//     Managing students
-//==========================
+//==========================//==========================
+//   Admin Privileges  Managing students
+//==========================//==========================
+
+
+// Admin route
+router.get("/admindashboard", isLoggedIn, checkRoles("admin"), (req, res) => {
+    res.render("admindashboard");
+});
+
 
 // adding a student to a course form
 router.get('/addstudent/new', isLoggedIn, checkRoles("admin"), (req, res) => {
@@ -91,7 +95,7 @@ router.get('/addstudent/new', isLoggedIn, checkRoles("admin"), (req, res) => {
 });
 
 // adding a student to a course
-router.post('/addstudent', isLoggedIn, checkRoles("admin"), catchAsync(async(req, res) => {
+router.post('/addstudent', isLoggedIn, checkRoles(["admin", "student_manager"]), catchAsync(async(req, res) => {
     const { courseTitle, student } = req.body;
     const user = await User.findOne({ username: student });
     const course = await Course.findOne({ title: courseTitle });
@@ -101,6 +105,11 @@ router.post('/addstudent', isLoggedIn, checkRoles("admin"), catchAsync(async(req
     await user.save();
     res.send("user successfully registered for the course");
 }));
+
+
+//==========================//==========================
+//   Instrucctor Privileges  Managing courses
+//==========================//==========================
 
 // Instructor route
 router.get(

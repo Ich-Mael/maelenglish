@@ -6,9 +6,8 @@ const { checkCourseOwnership, checkProgramOwnership } = require('../middlewares/
 
 // xpax etudiant
 router.get('/xpaxetudiant', isLoggedIn, checkProgramOwnership('xpaxetudiant'), (req, res) => {
-    res.render("courses/xpaxEtudiant/home");
+    res.render("programs/xpaxEtudiant/home");
 });
-
 
 
 
