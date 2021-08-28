@@ -1,5 +1,6 @@
 <% layout('layouts/boilerplate') %>
 <link href="/stylesheets/100bac/mathstleD.css" rel="stylesheet"/>
+<script src="https://www.desmos.com/api/v1.5/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6&lang=es-ES,fr"></script>
 <h1 class="maths-title text-center">Cours de mathematiques Tle D</h1>
 <div class="maths-wrapper d-flex flex-column justify-content-center align-items-center container">
     <div id="course-menu-wrapper" class="col-2 d-flex flex-column justify-content-center align-items-center col-md-4">
@@ -41,6 +42,52 @@
     </div>
 </div>
 
+ <!-- Graph Calculator -->
+<div class="d-flex justify-content-center">
+  <button
+            type="button"
+            class="btn graph-btn"
+            data-bs-toggle="modal"
+            data-bs-target="#lesson-a-vid-1"
+          >Calculatrice Graphique</button>
+</div>
+          <!-- Modal  for video 1-->
+          <div
+            class="modal fade"
+            id="lesson-a-vid-1"
+            tabindex="-1"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-xl">
+              <div class="modal-content">
+                <div class="modal-header" style="background-color: #333; color: #fff" >
+                  <h5 class="modal-title" id="exampleModalLabel">Calculatrice Graphique</h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body d-flex justify-content-center align-items-center">
+<div id="calculator" style="width: 100%; height:500px; border: 2px solid #222"></div>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-danger"
+                    data-bs-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+ <!--End Graph Calculator -->
+
+
 <div id="maths-section">
 <div class="chapters">
     <h3 class="text-warning text-center pt-4">Explication du Cours et Exercices d'Entraînement</h3>
@@ -53,7 +100,7 @@
 </div>
 
 <!-- course chapters -->
-  <!-- chapter 1 Nombre complexes -->
+<!-- chapter 1 Nombre complexes -->
 <div class="week-wrapper">
   <div class="week-lesson my-3">
     <div class="lesson-info row">
@@ -822,6 +869,7 @@
             </div>
           </div>
     </div>
+
     <!-- Self practice -->
     <div class="self-practice-wrapper">
         <h3 class="practice-alone text-center">Il est temps de s’entraîner seul</h3>
@@ -836,7 +884,6 @@
       More exercises
   </button>
 </div>
-
 <div class="collapse" id="self-p-3-1">
   <div class="card card-body">
       self-practice 1
@@ -855,6 +902,7 @@
   </div>
 </div>
     </div>
+
       </div>
     </div>
   </div>
@@ -3280,3 +3328,11 @@
     </div>
   </div>
 </div>
+
+<!-- Graph calculator script -->
+<script>
+  var elt = document.getElementById('calculator');
+  var calculator = Desmos.GraphingCalculator(elt);
+  calculator.setExpression({ id: 'graph1', latex: 'y=x^2' });
+ calculator.updateSettings({ language: 'fr' });
+</script>
