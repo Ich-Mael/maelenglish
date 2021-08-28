@@ -15,6 +15,23 @@ body{
 
 }
 
+.scientific-calc-btn{
+    font-family:'Kaushan Script', cursive;
+    font-size: 1.2rem;
+    border: 2px solid rgb(30, 31, 29);
+    border-radius: 5px;
+  background-color: #333;
+    padding: 0.5rem 2rem;
+    border-radius: 5px;
+    color: rgb(247, 240, 240);
+    margin: 2rem 0.3rem;
+    outline: none;
+    letter-spacing: 0.2rem;
+    font-weight: 600;
+    transition: all 0.5s;
+
+}
+
 .graph-btn{
     font-family:'Kaushan Script', cursive;
     font-size: 1.2rem;
@@ -23,7 +40,7 @@ body{
     padding: 0.5rem 2rem;
     border-radius: 5px;
     color: #333;
-    margin: 2rem 0;
+    margin: 2rem 0.3rem;
     outline: none;
     letter-spacing: 0.2rem;
     font-weight: 600;
@@ -32,8 +49,14 @@ body{
 
 .graph-btn:hover{
   color: whitesmoke;
-    outline: none;
+  outline: none;
   background-color: #333;
+}
+.scientific-calc-btn:hover{
+  color: whitesmoke;
+    border: 2px solid rgb(41, 197, 245);
+  outline: none;
+  background-color: rgb(73, 73, 72); 
 }
 
 .course-menu-btn{
@@ -54,6 +77,7 @@ body{
 .course-menu-btn:hover{
     color: whitesmoke;
 }
+
 
 #course-menu{
     border: 1px solid orange;
