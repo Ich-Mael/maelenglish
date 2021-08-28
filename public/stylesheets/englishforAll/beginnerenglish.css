@@ -4,19 +4,21 @@ body{
 
 /* Section 1*/
 .course{
+
 }
 .course-announcement{
   background: linear-gradient(
     to bottom,
-    rgba(97, 205, 241, 0.726),
-    rgba(103, 193, 223, 0.637),
-    rgba(103, 193, 223, 0.637),
-    rgba(103, 193, 223, 0.637),
-    rgba(103, 193, 223, 0.637),
-    rgba(132, 201, 233, 0.712)
+    rgba(20, 20, 20, 0.926),
+    rgba(42, 42, 43, 0.437),
+    rgba(40, 40, 41, 0.437),
+    rgba(161, 174, 179, 0.337),
+    rgba(177, 196, 202, 0.437),
+    rgba(94, 97, 99, 0.312)
   ),
-              url("https://images.pexels.com/photos/256455/pexels-photo-256455.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500");
+              url("https://images.pexels.com/photos/1181414/pexels-photo-1181414.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260") top center;
   background-size: cover;
+ min-height: 90vh; 
   background-attachment: fixed;
   background-repeat: no-repeat;
 }
@@ -24,10 +26,23 @@ body{
 .course-heading{
   font-size: 3rem;
   padding: 1rem 0 0;
+  margin-right: 1rem;
   text-align: center;
   font-family: 'Abril Fatface', cursive;
   letter-spacing: 0.2rem;
-  color: rgba(22, 20, 20, 0.877);
+  color: rgba(236, 233, 233, 0.877);
+}
+
+.level{
+  background-color: rgb(24, 23, 23);
+  padding: 0.5rem 1rem;
+  font-size: 1.8rem;
+  margin-top: 0;
+  border: 2px solid orangered;
+  text-align: center;
+  font-family: 'Abril Fatface', cursive;
+  letter-spacing: 0.2rem;
+  color: rgba(233, 230, 230, 0.877);
 }
 
 .course-paragraph{
@@ -80,9 +95,10 @@ h3 > i{
   padding:0 1rem;
   margin: 1rem 2rem 1rem 2rem;
 }
+
 .encouragement{
-  font-family:Georgia, 'Times New Roman', Times, serif;
-  font-weight: 600;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-weight: 400;
   margin-top: 1rem;
   color: rgba(221, 219, 219, 0.808);
   padding: 1rem 0;
@@ -111,8 +127,6 @@ h3 > i{
 }
 
 
-
-
 .img-wrapper > img{
   border-radius: 1%;
   border: 3px solid rgb(56, 57, 58);
@@ -124,96 +138,8 @@ h3 > i{
 }
 
 /* Section 2 */
-.learn-with-us-wrapper{
-
-}
-
-
-.learn-with-us > h3{
-  font-size: 7rem;
-  padding: 3rem 0;
-  font-family: 'Ultra', serif;
-  color: rgba(39, 39, 38, 0.979);
-  text-shadow: 1px 1px 2px rgba(238, 53, 53, 0.959), 2px 3px 4px rgba(0, 0, 0, 0.959);
-  text-align: center;
-}
-
-
-.anywhere{
-  font-size: 2rem;
-  font-family: 'Kaushan Script', cursive;
-  font-weight: 500;
-  color: rgb(217, 235, 235);
-  padding: 1rem 1rem;
-  text-shadow: 1px 1px 2px rgba(13, 241, 241, 0.932);
-  z-index: 10;
-}
-
-.my-card{
-  box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
-}
 
 /* Fin Section 2 */
-
-/* Section 3 Testimonials */
-.about-us{
-  background: #bdc3c7;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right,#bdc3c7, #2c3e50, #bdc3c7);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right,#bdc3c7, #2c3e50, #bdc3c7); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
-}
-
-.about-us-heading{
-  font-family: 'Kaushan Script', cursive;
-  text-transform: uppercase;
-  text-align: center;
-  font-size: 2rem;
-  color: rgb(250, 248, 246);
-  padding: 3rem 0;
-  text-shadow: 1px 1px 2px rgba(8, 8, 8, 0.932);
-}
-
-.heading {
-  text-align: center;
-  color: #454343;
-  font-size: 30px;
-  font-weight: 700;
-  position: relative;
-  margin-bottom: 70px;
-  text-transform: uppercase;
-  z-index: 999;
-}
-.white-heading{
-  color: #ffffff;
-}
-.heading:after {
-  content: ' ';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  height: 40px;
-  width: 180px;
-  border-radius: 4px;
-  transform: translateX(-50%);
-  background: url(img/heading-line.png);
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.white-heading:after {
-  background: url(https://i.ibb.co/d7tSD1R/heading-line-white.png);
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.heading span {
-  font-size: 18px;
-  display: block;
-  font-weight: 500;
-}
-.white-heading span {
-  color: #ffffff;
-}
 
 /* Course */
 
@@ -561,6 +487,25 @@ h3 > i{
     border: 1px solid orangered;
     color: whitesmoke;
   }
+
+  .level{
+    background-color: rgb(24, 23, 23);
+    padding: 0.5rem 1rem;
+    font-size: 1.3rem;
+    margin-top: 0;
+    border: 2px solid orangered;
+    text-align: center;
+    font-family: 'Abril Fatface', cursive;
+    letter-spacing: 0.2rem;
+    color: rgba(233, 230, 230, 0.877);
+  }
+
+  .course-heading{
+    font-size: 2rem;
+    padding: 1rem 0.7rem;
+    text-align: center;
+  }
+  
 }
 
 /* Large devices (laptops/desktops, 992px and up) */
