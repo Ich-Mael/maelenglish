@@ -24,8 +24,8 @@ body{
 
 /* banner */
 .banner{
-    margin-top: 1rem;
-  margin-bottom: 15rem;
+    margin-top: 3rem;
+  margin-bottom: 18rem;
 }
 
 /* .quote-wrapper{ */
@@ -54,6 +54,16 @@ body{
   font-family: Georgia, 'Times New Roman', Times, serif;
     letter-spacing: 0.13em;
     margin: 0 1rem;
+}
+
+.free-lesson-link {
+  text-decoration: none;
+  color: #000;
+}
+
+.free-lesson-link:hover{
+  text-decoration: none;
+  color: rgb(247, 242, 242); 
 }
 
 /*btn_background*/

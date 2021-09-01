@@ -143,6 +143,9 @@ h3 > i{
 
 /* Course */
 
+.week-wrapper{
+  margin-bottom: 4rem;
+}
 .week-lesson{
   margin: 0 5rem;
   padding: 1rem 0 2rem 0;
