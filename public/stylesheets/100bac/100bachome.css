@@ -32,16 +32,13 @@ body {
 }
 
 .nav-link{
-    font-size: 0.8rem;
     letter-spacing: 0.2rem;
     color: rgba(77, 76, 75, 0.8);
     transition: all 0.2s;
-    font-family: Times New Roman;
-    font-weight: 800;
+    font-weight: 600;
 }
 .nav-link:hover{
     text-decoration: none;
-    font-size: 0.9rem;
     color: rgb(66, 20, 1, 0.8);
     font-weight:450;
 }

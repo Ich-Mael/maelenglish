@@ -120,15 +120,15 @@ app.use("/", englishRoutes);
 // Fasopreunariat routes
 app.use("/", fasopreunariatRoutes);
 
-// app.all("*", (req, res, next) => {
-//   res.render("errorpage");
-// });
+app.all("*", (req, res, next) => {
+  res.render("errorpage");
+});
 
-// //error handling
-// app.use((err, req, res, next) => {
-//   res.render("errorpage");
-// });
-//
+//error handling
+app.use((err, req, res, next) => {
+  res.render("errorpage");
+});
+
 const port = process.env.PORT || 3000;
 // server
 app.listen(port, () => {
