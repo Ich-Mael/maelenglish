@@ -1,9 +1,11 @@
-* {
+*{
     padding: 0;
     margin: 0;
 }
 
 body{
+    margin: 0;
+    padding: auto;
   font-family: 'Times New Roman', Times, serif;
 }
 
@@ -225,10 +227,6 @@ body{
     color: #f1e5ec;
 }
 
-hello {
-    font-size: 3.5rem;
-    font-family: 'Times New Roman', Times, serif;
-}
 
 .hear-from-you {
     font-size: 2rem;
@@ -266,6 +264,8 @@ hello {
 }
 
 .made-by {
+    width: 100%;
+    margin: 0;
     background: #141E30;
     /* fallback for old browsers */
     background: -webkit-linear-gradient(to right, #243B55, #141E30);
@@ -276,13 +276,13 @@ hello {
 
 .copyright-text {
     padding: 0.2rem 1rem;
-    font-size: 1rem;
+    font-size: 0.7rem;
     font-family: Georgia, 'Times New Roman', Times, serif;
     font-weight: 400;
 }
 
 .creator {
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     padding: 0.5rem 0 0.2rem;
 }
 
@@ -292,8 +292,8 @@ hello {
 
 .creator span {
     font-family: 'Kaushan Script', cursive;
-    color: rgba(243, 137, 16, 0.705);
-    font-size: 1.5rem;
+    color: rgba(243, 69, 16, 0.705);
+    font-size: 1.2rem;
     font-weight: 600;
     margin: 0 0.3rem;
     text-shadow: 1px 2px 3px black, 2px 3px 4px black, 3px 4px 5px black;
