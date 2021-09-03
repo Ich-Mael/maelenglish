@@ -518,6 +518,7 @@ nav {
 
 .made-by {
     width: 100%;
+    margin: 0;
     background: #141E30;
     /* fallback for old browsers */
     background: -webkit-linear-gradient(to right, #243B55, #141E30);
