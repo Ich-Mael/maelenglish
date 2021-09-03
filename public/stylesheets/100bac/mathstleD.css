@@ -24,7 +24,7 @@ body{
     padding: 0.5rem 2rem;
     border-radius: 5px;
     color: rgb(247, 240, 240);
-    margin: 2rem 0.3rem;
+    margin: 1rem 0.3rem;
     outline: none;
     letter-spacing: 0.2rem;
     font-weight: 600;
@@ -40,7 +40,7 @@ body{
     padding: 0.5rem 2rem;
     border-radius: 5px;
     color: #333;
-    margin: 2rem 0.3rem;
+    margin: 1rem 0.3rem;
     outline: none;
     letter-spacing: 0.2rem;
     font-weight: 600;
@@ -64,6 +64,7 @@ body{
     font-size: 1.1rem;
     width: 20rem;
     padding: 1rem 1rem;
+    margin-bottom: 1rem;
     border-radius: 2px;
     background-color: black;
     color: skyblue;
