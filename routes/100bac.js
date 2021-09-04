@@ -1,4 +1,5 @@
 const express = require('express');
+const catchAsync = require('../utilities/catchAsync');
 const router = express.Router();
 const { isLoggedIn } = require('../middlewares/userController');
 const { checkCourseOwnership } = require('../middlewares/courseController');
