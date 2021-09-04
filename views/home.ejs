@@ -152,7 +152,6 @@
         <div
           id="banner"
           style="
-            font-size: 3vw;
             color: #ffffff;
             font-weight: 100;
             text-align: center;
@@ -164,22 +163,23 @@
             Empower the young generation with <br />
             valuable skills
           </p>
+          <div class="account-wrapper">
+            <% if (!currentUser) {%>
+            <a class="get-account" href="/register"
+              >Obtenez gratuitement un compte</a
+            >
+  
+            <%} else { %>
+            <a class="get-account" href="#programs">
+              Bienvenue dans l'univers du savoir</a
+            >
+            <%}%>
+          </div>
         </div>
-        <div class="account-wrapper">
-          <% if (!currentUser) {%>
-          <a class="get-account" href="/register"
-            >Obtenez gratuitement un compte</a
-          >
-
-          <%} else { %>
-          <a class="get-account" href="#programs">
-            Bienvenue dans l'univers du savoir</a
-          >
-          <%}%>
-        </div>
+        
       </div>
     </div>
-    <main id="site-content" class="container mt-3">
+    <main id="site-content" class="container">
       <!--Programmes section-->
       <div class="program-section-wrapper">
         <h1 id="programs" class="text-center py-4">Nos Programmes Educatifs</h1>
