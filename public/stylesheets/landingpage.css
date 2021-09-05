@@ -139,6 +139,10 @@ nav {
 
 #banner {
     padding-top: 2rem;
+    color: #ffffff;
+    font-weight: 100;
+    text-align: center;
+    margin-top: 5rem;
 }
 
 .get-account {
@@ -616,9 +620,14 @@ nav {
         margin: 0;
         padding: 0;
     }
+
+#banner {
+    padding-top: 0;
+    margin-top: 3rem;
+}
     #sky-wrapper {
         position: relative;
-        height: 80vh;
+        height: 75vh;
     }
     .header-text {
         color: rgba(255, 250, 240, 0.9);
