@@ -107,10 +107,12 @@ body {
 
 .serie-link {
   padding: 0.5rem 1rem;
+  text-decoration: none;
   color:#000000;
   font-family: "Chango", cursive;
 }
 .serie-link:hover{
+  text-decoration: none;
   color: whitesmoke;
 }
 
@@ -121,6 +123,7 @@ font-size:1.2em;
 
 .serie-link:hover > .bi-box-arrow-in-right{
   font-weight: bold;
+  text-decoration: none;
   color: #56CCF2;
 }
 

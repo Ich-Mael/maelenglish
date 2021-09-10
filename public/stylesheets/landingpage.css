@@ -590,10 +590,7 @@ nav {
         font-size: 3rem;
     }
 
-    .learn-with-us > h3{
-        font-size: 3rem;
-            padding: 1rem 0;
-            }
+   
 }
 
 
@@ -643,6 +640,12 @@ nav {
     }
 }
 
+@media (max-width: 900px){
+    .learn-with-us > h3{
+        font-size: 3.5rem;
+            padding: 1rem 0;
+            }
+}
 
 /* Large devices (laptops/desktops, 992px and up) */
 
@@ -661,11 +664,7 @@ nav {
         position: relative;
         height: 95vh;
     }
-
-    .learn-with-us > h3{
-        font-size: 4rem;
-    padding: 1rem 0;
-            }
+    
 }
 
 
