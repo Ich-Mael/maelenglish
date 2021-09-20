@@ -24,12 +24,12 @@ body {
 
 /* Site Content */
 
-.container {
+/* .container {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-}
+} */
 
 .nav-link{
     letter-spacing: 0.2rem;
@@ -125,12 +125,6 @@ font-size:1.2em;
   font-weight: bold;
   text-decoration: none;
   color: #56CCF2;
-}
-
-
-
-.about-leaders-arena {
-  margin: 3rem 0 12rem;
 }
 
 /* animation */

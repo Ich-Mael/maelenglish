@@ -324,8 +324,7 @@ body {
 
 #call-manager-link-1:hover,
 #call-manager-link-2:hover,
-#call-manager-link-3:hover,
-#send-mail:hover {
+#call-manager-link-3:hover {
   text-decoration: none;
   font-size: 1.3rem;
 }
@@ -337,24 +336,20 @@ body {
 
 #send-mail {
   color: #f1e5ec;
+  font-size: 1.3rem;
+}
+
+#send-mail:hover {
+  text-decoration: none;
 }
 
 .hear-from-you {
   font-size: 2rem;
   padding-top: 2rem;
-  background-color: #000;
   border-radius: 50%;
-  width: 16rem;
-  height: 16rem;
-  border: 2px solid rgb(248, 247, 247);
-  box-shadow: rgba(210, 210, 221, 0.25) 0px 50px 100px -20px,
-    rgba(202, 197, 197, 0.3) 0px 30px 60px -30px,
-    rgba(175, 182, 189, 0.35) 0px -2px 6px 0px inset;
-  font-family: "Marck Script", cursive;
   /* text-transform: uppercase; */
   animation: anim2 2s infinite alternate;
 }
-
 .useful-links-header {
   list-style: none;
 }
@@ -366,6 +361,64 @@ body {
   font-size: 1.3rem;
   padding: 0.5rem 0;
 }
+
+/* social media */
+#facebook,
+#youtube,
+#intagram,
+#linkedIn,
+#twitter {
+  transition: all 1s;
+}
+
+#facebook:hover {
+  color: rgb(245, 239, 239);
+  background-color: rgb(9, 103, 192);
+}
+
+#linkedIn:hover {
+  color: rgb(245, 239, 239);
+  background-color: #0e76a8;
+}
+
+#youtube:hover {
+  color: rgb(245, 239, 239);
+  background-color: rgb(241, 65, 21);
+}
+#instagram:hover {
+  color: rgb(245, 239, 239);
+  background: #833ab4; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #fcb045,
+    #fd1d1d,
+    #833ab4
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #fcb045,
+    #fd1d1d,
+    #833ab4
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+#twitter:hover {
+  color: rgb(245, 239, 239);
+  background: #56ccf2; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #2f80ed,
+    #56ccf2
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #2f80ed,
+    #56ccf2
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+/* End social media */
+
 
 @keyframes anim2 {
   0% {
