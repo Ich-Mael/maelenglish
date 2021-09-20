@@ -15,6 +15,7 @@ body{
                                 rgba(40, 36, 41, 0.6)), url(https://images.pexels.com/photos/3762806/pexels-photo-3762806.jpeg?cs=srgb&dl=pexels-andrea-piacquadio-3762806.jpg&fm=jpg);
     background-size: cover;
     background-attachment: fixed;
+    background-position: top center;
     background-repeat: no-repeat;
     font-family: fondamento;
     min-height: 100%;
