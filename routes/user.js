@@ -74,7 +74,6 @@ router.get(
 router.get('/user/:id', isLoggedIn, catchAsync(async(req, res, next) => {
     const id = req.params.id;
     const user = await User.findById(id).populate('coursesTaken').populate('coursesGiven');
-    console.log(user);
     res.render('user/userprofile', { user });
 }));
 

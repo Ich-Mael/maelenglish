@@ -16,9 +16,10 @@ body{
     rgba(177, 196, 202, 0.437),
     rgba(94, 97, 99, 0.312)
   ),
-              url("https://images.pexels.com/photos/1181414/pexels-photo-1181414.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260") top center;
+              url("https://images.pexels.com/photos/1181414/pexels-photo-1181414.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
   background-size: cover;
- min-height: 90vh; 
+  background-position: top center;
+  min-height: 90vh;
   background-attachment: fixed;
   background-repeat: no-repeat;
 }

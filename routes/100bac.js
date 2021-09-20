@@ -11,19 +11,19 @@ router.get('/100bac', (req, res) => {
 });
 
 // Terminale D
-router.get('/100bac/TleD', isLoggedIn, (req, res) => {
-    res.render("programs/100bac/TerminaleD/homeTleD");
-});
+router.get('/100bac/TleD', isLoggedIn, catchAsync(async(req, res) => {
+    res.render("programs/100bac/TerminaleD/Maths/homeTleD");
+}));
 
 // cours Maths Tle D
 router.get('/100bac/TleD/maths', isLoggedIn, (req, res) => {
-    res.render("programs/100bac/TerminaleD/maths");
+    res.render("programs/100bac/TerminaleD/Maths/cours_maths");
 });
 
 
 // Cours Maths Tle D
 router.get('/100bac/TleD/exomaths', isLoggedIn, (req, res) => {
-    res.render("programs/100bac/TerminaleD/exomaths");
+    res.render("programs/100bac/TerminaleD/Maths/exo_maths");
 });
 
 
