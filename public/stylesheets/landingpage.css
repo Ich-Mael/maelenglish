@@ -196,7 +196,7 @@ nav {
   margin-top: 2rem;
 }
 
-/* Got to top link */ 
+/* Got to top link */
 .top-link {
   background-color: #000;
   color: orangered;
@@ -276,6 +276,7 @@ nav {
   background-position: top center;
   background-repeat: no-repeat;
   margin-top: 2rem;
+  margin-bottom: 0;
 }
 
 #programs {
@@ -320,18 +321,85 @@ nav {
   color: whitesmoke;
 }
 
-/* testimonial * /
+/* testimonial */
 
-/* Section 2 */
-.learn-with-us-wrapper {
+.knowledge-image{
+  position: relative;
+  margin-top: 0;
+  background: linear-gradient(
+      to bottom,
+      rgba(22, 22, 22, 0.4),
+      rgba(22, 22, 22, 0.4),
+      rgba(20, 20, 19, 0.4),
+      rgba(15, 15, 15, 0.4),
+      rgba(15, 15, 15, 0.8),
+      rgba(14, 13, 14, 0.8),
+      rgba(34, 33, 34, 0.8),
+      rgba(19, 18, 19, 0.4),
+      rgba(34, 33, 34, 0.4)
+    ),
+    url(https://st.depositphotos.com/1152339/3184/i/950/depositphotos_31840343-stock-photo-education-concept-knowledge-is-power.jpg);
+  background-size: cover;
+  height: 40rem;
+  background-attachment: fixed;
+  background-position: top center;
+  background-repeat: no-repeat; 
 }
 
-.learn-with-us > h3 {
-  font-size: 5rem;
+.knowledge-quote{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  color: rgb(230, 202, 193);
+  letter-spacing: 0.4rem;
+  transform: translate(-50%,-50%);
+  text-align: center;
+  text-shadow: 1px 4px 3px rgba(29, 27, 27, 0.815);
+  font-family: 'Nosifer', cursive;
+  font-size: 7rem;
+
+}
+
+/* Section 2 */
+
+.learn-section {
+  background: #bbd2c5; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #292e49,
+    #536976,
+    #bbd2c5,
+    #536976,
+    #292e49
+
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #292e49,
+    #536976,
+    #bbd2c5,
+    #536976,
+    #292e49
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+#learn-with-us-wrapper {
+  color: rgba(255, 250, 240, 0.9);
+  /* font-family: 'Albril Fatface', cursive; */
+  /* font-family: 'Esteban'; */
+  font-family: "Ultra", serif;
+  font-size: 4.4rem;
+  /* border-bottom: 3px solid orangered; */
+  border-radius: 5%;
+  padding: 0 0.7rem;
+  /* text-shadow: 0.2rem 0.1rem 0.2rem rgba(34, 24, 67, 0.8); */
+}
+
+.learn-with-us {
+  font-size: 4rem;
   padding: 3rem 0;
   font-family: "Ultra", serif;
-  color: rgba(39, 39, 38, 0.979);
-  text-shadow: 1px 1px 2px rgba(238, 53, 53, 0.959),
+  color: rgba(240, 240, 232, 0.979);
+  text-shadow: 1px 1px 2px rgba(128, 124, 124, 0.959),
     2px 3px 4px rgba(0, 0, 0, 0.959);
   text-align: center;
 }
@@ -416,10 +484,10 @@ nav {
 /* End Programs*/
 
 /* testimonials section */
-.client-wrapper {
-  width: auto;
-  height: 40rem;
-  background-color: #0e76a8;
+
+.testimonial-header{
+font-size: 2.5rem;
+font-family: 'Kaushan Script', cursive;
 }
 
 #carousel-img-wrapper {
@@ -443,6 +511,7 @@ nav {
   margin: 1rem 2rem 1rem 10rem;
   border: 2px solid rgb(236, 228, 225);
   width: 15rem;
+  height: 15rem;
 }
 
 .testimony-text {
