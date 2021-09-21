@@ -323,7 +323,7 @@ nav {
 
 /* testimonial */
 
-.knowledge-image{
+.knowledge-image {
   position: relative;
   margin-top: 0;
   background: linear-gradient(
@@ -343,21 +343,20 @@ nav {
   height: 40rem;
   background-attachment: fixed;
   background-position: top center;
-  background-repeat: no-repeat; 
+  background-repeat: no-repeat;
 }
 
-.knowledge-quote{
+.knowledge-quote {
   position: absolute;
   top: 50%;
   left: 50%;
   color: rgb(230, 202, 193);
   letter-spacing: 0.4rem;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   text-align: center;
   text-shadow: 1px 4px 3px rgba(29, 27, 27, 0.815);
-  font-family: 'Nosifer', cursive;
+  font-family: "Nosifer", cursive;
   font-size: 7rem;
-
 }
 
 /* Section 2 */
@@ -371,7 +370,6 @@ nav {
     #bbd2c5,
     #536976,
     #292e49
-
   ); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(
     to right,
@@ -485,43 +483,247 @@ nav {
 
 /* testimonials section */
 
-.testimonial-header{
-font-size: 2.5rem;
-font-family: 'Kaushan Script', cursive;
+.testimonial-header {
+  font-size: 2.5rem;
+  font-family: "Chango", cursive;
 }
 
 #carousel-img-wrapper {
   background: #0f2027; /* fallback for old browsers */
   background: -webkit-linear-gradient(
     to right,
+    #0f2027,
     #2c5364,
     #203a43,
+    #2c5364,
     #0f2027
   ); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(
     to right,
+    #0f2027,
     #2c5364,
     #203a43,
+    #2c5364,
     #0f2027
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  background: #ada996; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #ada996,
+    #eaeaea,
+    #dbdbdb,
+    #f2f2f2,
+    #ada996
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #ada996,
+    #eaeaea,
+    #dbdbdb,
+    #f2f2f2,
+    #ada996
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 .testimonial-img {
-  border-radius: 50%;
+  border-radius: 0.5rem;
   margin: 1rem 2rem 1rem 10rem;
-  border: 2px solid rgb(236, 228, 225);
+  /* border: 3px solid rgb(24, 23, 23); */
   width: 15rem;
   height: 15rem;
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px,
+    rgba(0, 0, 0, 0.22) 0px 15px 12px;
 }
 
 .testimony-text {
   width: 30rem;
   text-align: center;
-  color: rgb(228, 214, 208);
+  color: rgba(22, 21, 21, 0.719);
   font-family: Georgia, "Times New Roman", Times, serif;
   font-size: 1.3rem;
   margin: 2rem;
   display: inline-block;
+}
+
+/* presentation video */
+.videos-header {
+  text-align: center;
+  padding: 1rem;
+  font-size: 2rem;
+  font-family: "Chango", cursive;
+}
+.presentation-text-wrapper {
+  margin: 1rem 2rem;
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px,
+    rgba(0, 0, 0, 0.22) 0px 15px 12px;
+}
+
+.presentation-text {
+  font-size: 1.5rem;
+  text-align: center;
+  padding: 1rem;
+  background-color: #4f5457;
+  color: whitesmoke;
+  font-family: "Kaushan Script", cursive;
+}
+
+.presentation-paragraph {
+  text-align: center;
+  font-size: 1.2rem;
+  background-color: rgb(37, 30, 22);
+  padding: 1rem 1.5rem;
+  color: rgb(236, 233, 228);
+  font-family: Georgia, "Times New Roman", Times, serif;
+  line-height: 2.5rem;
+}
+
+/* TV Screen */
+
+#tv-container {
+  max-width: 1024px;
+  margin: auto;
+}
+
+#monitor {
+  background: #000;
+  position: relative;
+  border-top: 3px solid #888;
+  margin: 5%;
+  padding: 0.5% 2% 4% 2%;
+  border-radius: 10px;
+  border-bottom-left-radius: 50% 2%;
+  border-bottom-right-radius: 50% 2%;
+  transition: margin-right 1s;
+}
+
+#monitor:after {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: 3%;
+  left: 36%;
+  height: 0.5%;
+  width: 28%;
+  background: #ddd;
+  border-radius: 50%;
+  box-shadow: 0 0 3px 0 white;
+}
+
+#monitorscreen {
+  position: relative;
+  background-color: #777;
+  background-size: cover;
+  background-position: top center;
+  height: 0;
+  padding-bottom: 56.25%;
+  position: relative;
+  overflow: hidden;
+}
+
+.afrohk-text {
+  font-size: 1.2rem;
+  font-family: "Kaushan Script", cursive;
+}
+
+.afrohk {
+  letter-spacing: 0.2rem;
+  color: white;
+}
+
+.tv {
+  letter-spacing: 0.2rem;
+  color: orangered;
+}
+
+#vimeo-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  padding: 0;
+}
+
+@media all and (min-width: 560px) {
+  #monitor {
+    -webkit-animation: tvflicker 0.2s infinite alternate;
+    -moz-animation: tvflicker 0.5s infinite alternate;
+    -o-animation: tvflicker 0.5s infinite alternate;
+    animation: tvflicker 0.5s infinite alternate;
+  }
+
+  @-webkit-keyframes tvflicker {
+    0% {
+      box-shadow: 0 0 100px 0 rgba(200, 235, 255, 0.4);
+    }
+    100% {
+      box-shadow: 0 0 95px 0 rgba(200, 230, 255, 0.45);
+    }
+  }
+  @-moz-keyframes tvflicker {
+    0% {
+      box-shadow: 0 0 100px 0 rgba(225, 235, 255, 0.4);
+    }
+    100% {
+      box-shadow: 0 0 60px 0 rgba(200, 220, 255, 0.6);
+    }
+  }
+  @-o-keyframes tvflicker {
+    0% {
+      box-shadow: 0 0 100px 0 rgba(225, 235, 255, 0.4);
+    }
+    100% {
+      box-shadow: 0 0 60px 0 rgba(200, 220, 255, 0.6);
+    }
+  }
+  @keyframes tvflicker {
+    0% {
+      box-shadow: 0 0 100px 0 rgba(225, 235, 255, 0.4);
+    }
+    100% {
+      box-shadow: 0 0 60px 0 rgba(200, 220, 255, 0.6);
+    }
+  }
+}
+
+
+/* partner logo */
+.partners-header{
+  margin-top: 2rem;
+  background-color: #141e30;
+  color: whitesmoke;
+  padding: 2rem;
+  text-align: center;
+  font-size: 2.5rem;
+  font-family: "Chango", cursive;
+}
+.partner-logo{
+  width: 14rem;
+  height: 14rem;
+  margin: 0 4rem;
+}
+
+.slider {
+  margin: auto;
+  overflow: visible;
+}
+.slider ul {
+  display: flex;
+  padding: 0;
+  animation: cambio 20s infinite linear;
+}
+.slider li {
+  padding:0 10px;
+  list-style: none;
+}
+.slider img {
+  max-width: fit-content !important;
+  height: auto !important;
+}
+@keyframes cambio {
+  from {margin-left: 0%}
+  to {margin-left: -100%}
 }
 
 /* footer */
@@ -848,6 +1050,14 @@ font-family: 'Kaushan Script', cursive;
 }
 
 @media (max-width: 900px) {
+  #monitor {
+    margin: 2%;
+  }
+
+  .testimony-text {
+    font-size: 1rem;
+    margin: 2rem 2rem 4rem;
+  }
 }
 
 /* Large devices (laptops/desktops, 992px and up) */
