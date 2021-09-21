@@ -2,10 +2,12 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 const User = require("../models/user");
+// const NewsLetter = require("../models/newsletter");
 const catchAsync = require('../utilities/catchAsync');
 const Course = require("../models/courses");
 const { isLoggedIn, checkRoles } = require("../middlewares/userController");
 const { checkCourseOwnership } = require("../middlewares/courseController");
+const newsLetter = require("../models/newsletter");
 
 // register a user form
 router.get("/register", (req, res) => {
@@ -59,6 +61,15 @@ router.get("/logout", async(req, res) => {
     req.flash("success", `Goodbye ! See you nextime!!`);
     res.redirect("/");
 });
+
+// newsletter
+
+// router.post("/newsletter", async(req, res)=>{
+//     console.log(req.body);
+//     req.flash("success", `your is email succesfully saved!`);
+//     res.redirect("/");
+// });
+
 
 // Instructor route
 router.get(

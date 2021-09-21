@@ -365,10 +365,10 @@ body {
 /* social media */
 #facebook,
 #youtube,
-#intagram,
+#instagram,
 #linkedIn,
 #twitter {
-  transition: all 1s;
+  transition: all 0.5s;
 }
 
 #facebook:hover {
