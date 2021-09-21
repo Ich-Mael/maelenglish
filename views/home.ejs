@@ -36,11 +36,12 @@
   </head>
 
   <body>
+     <a class="top-link" href="#"><i class="bi bi-arrow-up-circle-fill"></i></a>
     <!--Navbar-->
     <nav
-      class="navbar navbar-expand-lg py-1 navbar-light bg-light p-0 sticky-top"
+      class="navbar navbar-expand-lg py-1 navbar-light bg-light p-0 sticky-top" 
     >
-      <div class="container-fluid">
+      <div id="top-section" class="container-fluid">
         <a class="navbar-brand" id="brand-name" href="/">
           <!-- <img src="../images/logo_Afrohk.jpeg" alt="" width="50" height="50"> -->
           <span class="afro">Afro</span><span class="hk">HK</span>
@@ -106,7 +107,7 @@
             </li>
           </div>
           <div class="navbar-nav ms-auto">
-            <% if (!currentUser) {%>
+            <% if (!currentUser || currentUser == null) {%>
             <a class="nav-link btn btn-outline-success my-2 mx-2" href="/login"
               >Connexion</a
             >
@@ -185,6 +186,7 @@
         
       </div>
     </div>
+
     <main id="site-content" class="container">
       <!--Programmes section-->
       <div class="program-section-wrapper">
@@ -427,7 +429,42 @@
         </div>
         <!-- End Programmes section-->
       </div>
+
+
       <!-- TESTIMONIALS -->
+      <section class="testimonials">
+        <h1 class="testimonial-header my-5 text-center">Que disent nos clients ? </h1>
+        <div id="carouselExampleIndicators" class="carousel slide my-5" data-bs-ride="carousel">
+          <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+          </div>
+          <div class="carousel-inner" id="carousel-img-wrapper">
+            <div class="carousel-item  active">
+              <img src="https://images.pexels.com/photos/5940856/pexels-photo-5940856.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500" class="testimonial-img" alt="...">
+              <p class="text-center testimony-text"> Hi it's very nice to study at AfroHK. I have really enjoyed the experience. I highly recommend everyone to try.</p>
+            </div>
+            <div class="carousel-item">
+              <img src="https://images.pexels.com/photos/5940856/pexels-photo-5940856.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"  class="testimonial-img" alt="...">
+              <p class="text-center testimony-text"> Hi it's very nice to study at AfroHK</p>
+            </div>
+            <div class="carousel-item">
+              <img src="https://images.pexels.com/photos/5940856/pexels-photo-5940856.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500" class="testimonial-img" alt="...">
+              <p class="text-center testimony-text"> Hi it's very nice to study at AfroHK</p>
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+       
+      </section>
     
     </main>
     <%-include('./partials/footer')%>
