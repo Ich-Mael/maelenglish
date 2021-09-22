@@ -342,7 +342,7 @@ nav {
   background-size: cover;
   height: 40rem;
   background-attachment: fixed;
-  background-position: top center;
+  background-position: center center;
   background-repeat: no-repeat;
 }
 
@@ -356,7 +356,7 @@ nav {
   text-align: center;
   text-shadow: 1px 4px 3px rgba(29, 27, 27, 0.815);
   font-family: "Nosifer", cursive;
-  font-size: 7rem;
+  font-size: 6rem;
 }
 
 /* Section 2 */
@@ -706,7 +706,7 @@ nav {
 
 .slider {
   margin: auto;
-  overflow: visible;
+  overflow: hidden;
 }
 .slider ul {
   display: flex;
@@ -1057,6 +1057,10 @@ nav {
   .testimony-text {
     font-size: 1rem;
     margin: 2rem 2rem 4rem;
+  }
+
+  .knowledge-quote{
+    font-size: 3rem;
   }
 }
 
