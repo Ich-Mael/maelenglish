@@ -3,6 +3,10 @@
   margin: 0;
 }
 
+html {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: auto;
@@ -114,6 +118,16 @@ nav {
   font-weight: 400;
 }
 
+#drop-down-contact {
+  background-color: rgb(18, 19, 19);
+  color: #f8f5f4;
+}
+
+#drop-down-contact:hover {
+  color: orangered;
+  font-size: 1.3rem;
+}
+
 .dropdown-item:hover {
   background-color: black;
   color: whitesmoke;
@@ -209,7 +223,7 @@ nav {
   position: fixed;
   text-decoration: none;
   right: 5%;
-  bottom: 5%;
+  bottom: 2%;
   z-index: 99;
 }
 .top-link:hover {
@@ -483,68 +497,112 @@ nav {
 
 /* testimonials section */
 
-.testimonial-header {
-  font-size: 2.5rem;
-  font-family: "Chango", cursive;
+/* customer section */
+.customers {
+  padding-bottom: 5rem;
+  background-color: #15141b;
 }
-
-#carousel-img-wrapper {
-  background: #0f2027; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #0f2027,
-    #2c5364,
-    #203a43,
-    #2c5364,
-    #0f2027
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #0f2027,
-    #2c5364,
-    #203a43,
-    #2c5364,
-    #0f2027
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
-  background: #ada996; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #ada996,
-    #eaeaea,
-    #dbdbdb,
-    #f2f2f2,
-    #ada996
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #ada996,
-    #eaeaea,
-    #dbdbdb,
-    #f2f2f2,
-    #ada996
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-}
-
-.testimonial-img {
-  border-radius: 0.5rem;
-  margin: 1rem 2rem 1rem 10rem;
-  /* border: 3px solid rgb(24, 23, 23); */
-  width: 15rem;
-  height: 15rem;
-  box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px,
-    rgba(0, 0, 0, 0.22) 0px 15px 12px;
-}
-
-.testimony-text {
-  width: 30rem;
+.common-header {
   text-align: center;
-  color: rgba(22, 21, 21, 0.719);
-  font-family: Georgia, "Times New Roman", Times, serif;
-  font-size: 1.3rem;
-  margin: 2rem;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
 }
+.common-heading {
+  color: #f05121;
+  margin: 5rem 0 0.8rem 0;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 4rem;
+  text-align: center;
+  letter-spacing: 0.2rem;
+}
+
+.customers-paragraph {
+  font-size: 1rem;
+  color: #ddd;
+  width: 50%;
+  margin: 2rem auto 4rem;
+  text-align: center;
+}
+
+.customer-image {
+  width: 10rem;
+  height: 12rem;
+  margin-left: -1.3rem;
+  box-shadow: 0.2rem 0.2rem 2rem 0.5rem rgba(0, 0, 0, 0.678);
+}
+
+.customers-card-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+.customer-image-wrapper {
+  margin: auto 0;
+}
+
+.customers-card {
+  display: flex;
+  background: #8e9eab; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #eef2f3,
+    #8e9eab
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #eef2f3,
+    #8e9eab
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  /* background-color:#ddd; */
+  width: 40rem;
+  min-height: 14rem;
+  margin-top: 2rem;
+}
+
+.customer-info {
+  padding: 0 2rem;
+}
+
+.customer-fullname {
+  font-size: 1.5rem;
+  padding: 1rem 0 0.4rem;
+  text-align: center;
+  font-weight: 800;
+  margin-bottom: 0;
+}
+
+.customer-paragraph-1 {
+  font-size: 1.2rem;
+  color: #f05121;
+  text-align: center;
+  padding: 0 0 0.5rem 0;
+  font-style: italic;
+}
+
+.customer-paragraph-2 {
+  font-size: 1rem;
+  font-style: italic;
+}
+
+/* end customer section */
+
+.small-underline {
+  width: 9rem;
+  height: 0.1rem;
+  margin: 0 auto 1rem;
+  background-color: #f05121;
+}
+
+.big-underline {
+  width: 20rem;
+  height: 0.1rem;
+  background-color: #f05121;
+}
+
+/*===============*/
 
 /* presentation video */
 .videos-header {
@@ -687,9 +745,8 @@ nav {
   }
 }
 
-
 /* partner logo */
-.partners-header{
+.partners-header {
   margin-top: 2rem;
   background-color: #141e30;
   color: whitesmoke;
@@ -698,7 +755,7 @@ nav {
   font-size: 2.5rem;
   font-family: "Chango", cursive;
 }
-.partner-logo{
+.partner-logo {
   width: 14rem;
   height: 14rem;
   margin: 0 4rem;
@@ -714,7 +771,7 @@ nav {
   animation: cambio 20s infinite linear;
 }
 .slider li {
-  padding:0 10px;
+  padding: 0 10px;
   list-style: none;
 }
 .slider img {
@@ -722,8 +779,12 @@ nav {
   height: auto !important;
 }
 @keyframes cambio {
-  from {margin-left: 0%}
-  to {margin-left: -100%}
+  from {
+    margin-left: 0%;
+  }
+  to {
+    margin-left: -100%;
+  }
 }
 
 /* footer */
@@ -731,21 +792,19 @@ nav {
 #footer {
   text-align: center;
   color: #b9d5e2;
-  /* background-color: #f5f7f8; */
+  background: #000000; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #000000,
+    #1a1919,
+    #000000
+  ); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(
-      to bottom,
-      #141e30e1,
-      #141e30e3,
-      #141e30b9,
-      #141e30b9,
-      #141e30f1,
-      #141e30e1,
-      #141e30e3
-    ),
-    url("https://images.pexels.com/photos/5537937/pexels-photo-5537937.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
-  background-size: cover;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
+    to right,
+    #000000,
+    #1d1d1d,
+    #000000
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   font-family: Georgia, "Times New Roman", Times, serif;
   min-height: fit-content;
 }
@@ -822,6 +881,10 @@ nav {
   font-family: "Times New Roman", Times, serif;
 }
 
+.network {
+  color: whitesmoke;
+}
+
 #send-mail {
   color: #f1e5ec;
   transition: all 0.5s;
@@ -859,8 +922,9 @@ nav {
   animation: anim2 2s infinite alternate;
 }
 
-.useful-links-header {
-  list-style: none;
+.useful-links-header,
+.send-mail-text {
+  color: orangered;
 }
 
 .useful-links {
@@ -955,13 +1019,13 @@ nav {
 
 .copyright-text {
   padding: 0.2rem 1rem;
-  font-size: 1rem;
+  font-size: 0.7rem;
   font-family: Georgia, "Times New Roman", Times, serif;
   font-weight: 400;
 }
 
 .creator {
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   padding: 0.5rem 0 0.2rem;
 }
 
@@ -971,13 +1035,12 @@ nav {
 
 .creator span {
   font-family: "Kaushan Script", cursive;
-  color: rgba(243, 137, 16, 0.705);
-  font-size: 1.5rem;
+  color: rgba(243, 69, 16, 0.705);
+  font-size: 1.2rem;
   font-weight: 600;
   margin: 0 0.3rem;
   text-shadow: 1px 2px 3px black, 2px 3px 4px black, 3px 4px 5px black;
 }
-
 /* End footer */
 
 /* animations */
@@ -1059,8 +1122,37 @@ nav {
     margin: 2rem 2rem 4rem;
   }
 
-  .knowledge-quote{
+  .knowledge-quote {
     font-size: 3rem;
+  }
+
+  .common-heading {
+    color: #f05121;
+    margin: 5rem 0 0.8rem 0;
+    font-size: 3rem;
+    text-align: center;
+    letter-spacing: 0.2rem;
+  }
+
+  .customers-paragraph {
+    font-size: 1rem;
+    color: #ddd;
+    width: 50%;
+    margin: 2rem auto 4rem;
+    text-align: center;
+  }
+
+  .customer-image {
+    width: 10rem;
+    height: 12rem;
+    margin-left: -0.6rem;
+    box-shadow: 0.2rem 0.2rem 2rem 0.5rem rgba(0, 0, 0, 0.678);
+  }
+
+  .customers-card {
+    /* background-color:#ddd; */
+    width: 30rem;
+    margin-top: 2rem;
   }
 }
 

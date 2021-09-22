@@ -93,35 +93,29 @@
                 <!-- <li>
                   <a class="dropdown-item" href="/courses">Voir nos Cours</a>
                 </li> -->
-
-                <li>
-                  <hr
-                    class="dropdown-divider"
-                    style="color: #f8f5f4; height: 3px"
-                  />
                 </li>
                 <li>
-                  <a class="dropdown-item" href="#footer">Contacts</a>
+                  <a class="dropdown-item m-0 "  id="drop-down-contact" href="#footer">Contacts</a>
                 </li>
               </ul>
             </li>
           </div>
           <div class="navbar-nav ms-auto">
             <% if (!currentUser || currentUser == null) {%>
-            <a class="nav-link btn btn-outline-success my-2 mx-2" href="/login"
+            <a class="nav-link btn btn-outline-success me-2 my-2 " href="/login"
               >Connexion</a
             >
-            <a class="nav-link btn btn-outline-info mx-2 my-2" href="/register"
+            <a class="nav-link btn btn-outline-info  my-2" href="/register"
               >Inscription</a
             >
             <%} else { %>
-            <h3 id="user" class="px-3 align-self-center">
+            <h3 id="user" class="px-2 align-self-center">
               <a class="profile-link" href="/user/<%= currentUser._id %> ">
                 <i class="bi bi-person-circle"></i> Welcome
                 <%=currentUser.username%>
               </a>
             </h3>
-            <a class="nav-link px-2 my-2 btn btn-outline-danger" href="/logout"
+            <a class="nav-link my-2 btn btn-outline-danger" href="/logout"
               >Deconnexion</a
             >
             <%}%>
@@ -444,93 +438,8 @@
         </div>
       </section>
 
-      <!-- TESTIMONIALS -->
-      <section class="testimonials">
-        <h1 class="testimonial-header my-5 text-center">
-          Que disent nos clients ?
-        </h1>
-        <div
-          id="carouselExampleIndicators"
-          class="carousel slide my-5"
-          data-bs-ride="carousel"
-        >
-          <div class="carousel-indicators">
-            <button
-              type="button"
-              data-bs-target="#carouselExampleIndicators"
-              data-bs-slide-to="0"
-              class="active"
-              aria-current="true"
-              aria-label="Slide 1"
-            ></button>
-            <button
-              type="button"
-              data-bs-target="#carouselExampleIndicators"
-              data-bs-slide-to="1"
-              aria-label="Slide 2"
-            ></button>
-            <button
-              type="button"
-              data-bs-target="#carouselExampleIndicators"
-              data-bs-slide-to="2"
-              aria-label="Slide 3"
-            ></button>
-          </div>
-          <div class="carousel-inner" id="carousel-img-wrapper">
-            <div class="carousel-item active">
-              <img
-                src="https://images.pexels.com/photos/5940856/pexels-photo-5940856.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
-                class="testimonial-img"
-                alt="..."
-              />
-              <p class="text-center testimony-text">
-                Hi it's very nice to study at AfroHK. I have really enjoyed the
-                experience. I highly recommend everyone to try.
-              </p>
-            </div>
-            <div class="carousel-item">
-              <img
-                src="https://images.pexels.com/photos/5940856/pexels-photo-5940856.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
-                class="testimonial-img"
-                alt="..."
-              />
-              <p class="text-center testimony-text">
-                Hi it's very nice to study at AfroHK
-              </p>
-            </div>
-            <div class="carousel-item">
-              <img
-                src="https://images.pexels.com/photos/5940856/pexels-photo-5940856.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
-                class="testimonial-img"
-                alt="..."
-              />
-              <p class="text-center testimony-text">
-                Hi it's very nice to study at AfroHK
-              </p>
-            </div>
-          </div>
-          <button
-            class="carousel-control-prev"
-            type="button"
-            data-bs-target="#carouselExampleIndicators"
-            data-bs-slide="prev"
-          >
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-          </button>
-          <button
-            class="carousel-control-next"
-            type="button"
-            data-bs-target="#carouselExampleIndicators"
-            data-bs-slide="next"
-          >
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-          </button>
-        </div>
-      </section>
-
-      <!-- Videos for explainer -->
+       <!-- Videos Presentation-->
+<section>
       <h3 class="videos-header">Check it yourself</h3>
       <div class="row d-flex align-items-center">
         <div class="col-lg-4">
@@ -585,7 +494,78 @@
           </div>
         </div>
       </div>
+</section>
       <!-- End Videos for explainer -->
+
+ <!-- Customers section -->
+      <section class="customers">
+        <div class="common-header">
+            <h1 class="common-heading">Avis Des Clients</h1>
+            <div class="underline">
+                <div class="small-underline"></div>
+                <div class="big-underline"></div>
+            </div>
+        </div>
+
+        <p class="customers-paragraph">
+            Mauris sit amet massa vitae tortor condimentum lacinia quis vel eros donec ac odio tempor orci dapibus ultrices in iaculis nunc sed augue. Mi eget mauris pharetra et ultrices neque ornare aenean euismod? Arcu felis, bibendum ut tristique et, egestas quis ipsum suspendisse ultrices gravida dictum fusce ut placerat orci nul wdla pellentesque dignissim enim, sit amet venenatis urna cursus?
+        </p>
+        <div class="customers-card-wrapper ">
+<!-- customer-1-->
+            <div class="customers-card">
+                <div class="customer-image-wrapper">
+                  <img src="https://i.ibb.co/s1QzbVt/customer-3.jpg" class="customer-image" alt="customer-3">
+                </div>
+                <div class="customer-info">
+                    <h3 class="customer-fullname">Sidoine</h3>
+                    <div class="customer-paragraph-1">Super efficace</div>
+                    <p class="customer-paragraph-2">"Tellus orci, ac auctor augue maurisac orci phasellus egestas tellus rutrum tellus. Quis blandit turpis cursus in hac habitasse platea dictumst quisque sagittis, purus sit amet volutpat consequat, mauris nunc congue nisi, vitae. Morbi tempus iaculis urna, id volutpat".
+                    </p>
+                </div>
+            </div>
+
+<!-- customer-2-->
+            <div class="customers-card">
+              <div class="customer-image-wrapper">
+                <img src="https://i.ibb.co/cwyNmDk/customer-5.jpg" class="customer-image" alt="customer-5">
+              </div>
+              <div class="customer-info">
+                  <h3 class="customer-fullname">Auguste KABORE</h3>
+                  <div class="customer-paragraph-1">Une expérience d’apprentissage hors du commun</div>
+                  <p class="customer-paragraph-2">"Tellus orci, ac auctor augue mauris augue neque, gravida in fer</p>
+              </div>
+            </div>
+
+<!-- customer-3-->
+            <div class="customers-card">
+                <div class="customer-image-wrapper">
+                  <img src="https://i.ibb.co/3W3wB0s/customer-2.jpg" class="customer-image" alt="customer-2">
+                </div>
+                <div class="customer-info">
+                    <h3 class="customer-fullname">Amelia BAZIE</h3>
+                    <div class="customer-paragraph-1">AfroHk c’est le meilleur</div>
+                    <p class="customer-paragraph-2">"Tellus orci, ac auctor augue mauris augue neque, gravida in fermentum et, sollicitudin ac orci phasellus egestas tellus rutrum tellus. Quis blandit turpis cursus in hac habitasse platea dictumst quisque sagittis, purus sit amet volutpat consequat, mauris nunc congue nisi, vitae .</p>
+                </div>
+            </div>
+
+<!-- customer-4-->
+            <div class="customers-card">
+              <div class="customer-image-wrapper">
+                <img src="https://i.ibb.co/5T68rnf/customer-1.jpg" class="customer-image" alt="customer-1">
+              </div>
+              <div class="customer-info">
+                  <h3 class="customer-fullname">Malika TRAORE</h3>
+                  <div class="customer-paragraph-1">C’est tout juste waouh !!!</div>
+                  <p class="customer-paragraph-2">"Tellus orci, ac auctor augue mau, sollicitudin ac orci phasellus egestas tellus rutrum tellus. Quis blandit turpis cursus in hac habitasse platea dictumst quisque sagittis, purus sit amet volutpat consequat, mauris nunc congue nisi, vitae. Morbi tempus iaculis urna, id volutpat".</p>
+                  </p>
+              </div>
+            </div>
+        </div>
+    </section>
+    <!-- end customers section -->
+
+
+
 
       <!-- Partners section-->
       <section class="our-partners">

@@ -456,6 +456,9 @@ body {
   font-size: 1.3rem;
 }
 
+.network{
+  color: whitesmoke;
+}
 #send-mail:hover {
   text-decoration: none;
 }
@@ -467,8 +470,8 @@ body {
   /* text-transform: uppercase; */
   animation: anim2 2s infinite alternate;
 }
-.useful-links-header {
-  list-style: none;
+.useful-links-header, .send-mail-text {
+  color: orangered;
 }
 
 .useful-links {
