@@ -1223,9 +1223,11 @@ nav {
   }
 
   .knowledge-quote {
-    font-size: 3rem;
+    font-size: 2rem;
   }
-
+  .gallery{
+  grid-gap: 0.2rem;
+  }
   .common-heading {
     color: #f05121;
     margin: 5rem 0 0.8rem 0;
