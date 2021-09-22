@@ -493,21 +493,25 @@ body {
 
 #facebook:hover {
   color: rgb(245, 239, 239);
+  transform: rotate(360deg);
   background-color: rgb(9, 103, 192);
 }
 
 #linkedIn:hover {
   color: rgb(245, 239, 239);
+  transform: rotate(360deg);
   background-color: #0e76a8;
 }
 
 #youtube:hover {
   color: rgb(245, 239, 239);
+  transform: rotate(360deg);
   background-color: rgb(241, 65, 21);
 }
 #instagram:hover {
   color: rgb(245, 239, 239);
   background: #833ab4; /* fallback for old browsers */
+  transform: rotate(360deg);
   background: -webkit-linear-gradient(
     to right,
     #fcb045,
@@ -524,6 +528,7 @@ body {
 
 #twitter:hover {
   color: rgb(245, 239, 239);
+  transform: rotate(360deg);
   background: #56ccf2; /* fallback for old browsers */
   background: -webkit-linear-gradient(
     to right,
