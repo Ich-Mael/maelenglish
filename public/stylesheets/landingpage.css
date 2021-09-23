@@ -139,24 +139,63 @@ nav {
 
 #sky-wrapper {
   position: relative;
-  height: 105vh;
+  background-color: black;
+  height: 100vh;
+}
+
+.knowledge{
+  position: absolute;
+  bottom: -30%;
+  left: 50%;
+  color: rgb(245, 70, 12);
+  letter-spacing: 0.4rem;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  text-shadow: 1px 4px 3px rgba(29, 27, 27, 0.815);
+  font-family: "Nosifer", cursive;
+  font-size: 5rem;
 }
 
 #banner-wrapper {
   position: absolute;
   z-index: 2;
-  top: 0;
-  left: 0;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 100%;
-  height: 100%;
 }
 
 #banner {
   padding-top: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   color: #ffffff;
   font-weight: 100;
   text-align: center;
-  margin-top: 5rem;
+  /* margin-top: 5rem; */
+}
+
+.header-text {
+  color: #f5f7f8;
+  font-family: "Kaushan Script", cursive;
+  font-size: 6rem;
+  text-shadow: 0px 4px 3px rgba(255, 54, 4, 0.849),
+    1px 2px 8px rgba(255, 54, 4, 0.5), 1px 2px 3px rgba(255, 51, 9, 0.3);
+  font-weight: 500;
+}
+
+.motto {
+  text-align: center;
+  font-size: 2rem;
+  margin-top: 3rem;
+  padding: 0 1rem;
+  font-weight: 300;
+  /* text-transform: uppercase; */
+  font-family: "Chango", cursive;
+  color: rgba(255, 255, 255, 0.822);
+  text-shadow: 0.2rem 0.1rem 0.2rem rgba(12, 248, 228, 0.63);
 }
 
 .get-account {
@@ -174,9 +213,8 @@ nav {
   border: 2px solid whitesmoke;
   margin: 3rem 4rem;
   font-size: 1rem;
-  width: 35rem;
+  /* width: 35rem; */
   padding: 1rem 1rem;
-  width: 35rem;
   border-radius: 0.2rem;
   text-transform: uppercase;
   letter-spacing: 0.2rem;
@@ -235,37 +273,6 @@ nav {
   text-shadow: 1px 1px 2px rgba(255, 255, 230, 0.8);
 }
 
-.header {
-  margin-top: 2rem;
-  padding-top: 10rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin: 0 0 1rem;
-  align-items: center;
-}
-
-.header-text {
-  color: #f5f7f8;
-  font-family: "Kaushan Script", cursive;
-  font-size: 4.5rem;
-  text-shadow: 0px 4px 3px rgba(255, 54, 4, 0.849),
-    1px 2px 8px rgba(255, 54, 4, 0.5), 1px 2px 3px rgba(255, 51, 9, 0.3);
-  font-weight: 500;
-}
-
-.motto {
-  text-align: center;
-  font-size: 2rem;
-  margin-top: 3rem;
-  padding: 0 1rem;
-  font-weight: 300;
-  /* text-transform: uppercase; */
-  font-family: "Chango", cursive;
-  color: rgba(255, 255, 255, 0.822);
-  text-shadow: 0.2rem 0.1rem 0.2rem rgba(12, 248, 228, 0.63);
-}
-
 /*  End main content */
 
 /* Programs*/
@@ -289,16 +296,18 @@ nav {
   background-attachment: fixed;
   background-position: top center;
   background-repeat: no-repeat;
-  margin-top: 2rem;
+  margin-top: 5rem;
+  padding: 2rem 0;
   margin-bottom: 0;
 }
 
 #programs {
   text-transform: uppercase;
-  font-family: "Merriweather", serif;
-  color: rgba(255, 254, 254, 0.848);
+  font-family:'Ultra', serif;;
+  color: rgba(14, 12, 12, 0.848);
   letter-spacing: 0.2rem;
   font-size: 2rem;
+  margin-top: 1rem;
 }
 
 .my-card {
@@ -1170,6 +1179,7 @@ nav {
 /* Medium devices (landscape tablets, 768px and up) */
 
 @media (max-width: 600px) {
+
   .get-account {
     display: inline;
     font-size: 0.8rem;
@@ -1188,18 +1198,8 @@ nav {
   }
   #sky-wrapper {
     position: relative;
-    height: 75vh;
   }
-  .header-text {
-    color: rgba(255, 250, 240, 0.9);
-    font-size: 2rem;
-  }
-
-  .motto {
-    text-align: center;
-    font-size: 1.2rem;
-    font-weight: 300;
-  }
+ 
 
   #programs {
     font-size: 1.2rem;
@@ -1215,7 +1215,37 @@ nav {
   }
 }
 
+@media (max-width: 700px) {
+  #sky{
+    display: none;
+  }
+
+  .knowledge-image {
+    display: none;
+  }
+  #sky-wrapper {
+    background-color: #000;
+    height: 60vh;
+  }
+
+  #banner-wrapper {
+    width: 100%;
+    height: 70%;
+  }
+  .header-text {
+    color: rgba(255, 250, 240, 0.9);
+    font-size: 2.5rem;
+  }
+
+  .motto {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 300;
+  }
+}
+
 @media (max-width: 900px) {
+
   #monitor {
     margin: 2%;
   }
@@ -1273,13 +1303,11 @@ nav {
   .account-wrapper {
     display: flex;
     justify-content: center;
-    margin: 3rem;
+    margin: 1rem;
     padding: 0;
   }
-  #sky-wrapper {
-    position: relative;
-    height: 95vh;
-  }
+
+  
 }
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */
