@@ -1,7 +1,8 @@
 <% layout('layouts/boilerplate') %>
     <link href="stylesheets/user/login.css" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Paytone+One&family=Rye&family=Titan+One&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Akronim&family=Great+Vibes&family=Kaushan+Script&family=Marck+Script&family=Markazi+Text&family=Nosifer&family=Sigmar+One&display=swap" rel="stylesheet">
-    <div id="login-wrapper" class="container">
+    <div id="login-wrapper" class="">
         <div class="join">
             <h1 class="join-text"> Rejoignez-nous et faîtes-vous former par les meilleurs 😉</h1>
         </div>
@@ -10,12 +11,12 @@
             <form class="row g-3 validated-form mx-1" action="/login" method="POST" novalidate>
                 <div class="fields">
                     <div class="col my-1">
-                        <i class="bi bi-person-circle fs-5"></i>
+                        <i class="bi ii bi-person-circle fs-5"></i>
                         <label class="form-label" for="username">Nom Utilisateur</label>
                         <input class="form-control" placeholder="" id="username" name="username" type="text" value="" required />
                     </div>
                     <div class="col my-2">
-                        <i class="bi bi-shield-lock-fill fs-5"></i>
+                        <i class="bi ii bi-shield-lock-fill fs-5"></i>
                         <label class="form-label" for="password">Mot de Passe</label>
                         <input class="form-control" id="password" name="password" type="password" value="" required />
                     </div>

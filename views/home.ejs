@@ -14,6 +14,8 @@
       integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl"
       crossorigin="anonymous"
     />
+    
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
     <link href="/stylesheets/landingpage.css" rel="stylesheet" />
@@ -26,7 +28,7 @@
       href="https://fonts.googleapis.com/css2?family=Chango&family=Fondamento&family=Kaushan+Script&family=Merriweather:wght@900&family=Ultra&display=swap"
       rel="stylesheet"
     />
-    <link rel="preconnect" href="https://fonts.gstatic.com" />
+<link href="https://fonts.googleapis.com/css2?family=Paytone+One&family=Rye&family=Titan+One&display=swap" rel="stylesheet">
     <script type="text/javascript" src="/javascripts/warpspeed.js"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Noto+Sans:wght@400;700&family=Vollkorn&display=swap"
@@ -134,18 +136,16 @@
           top: 0;
           left: 0;
           width: 100%;
-          height: 80%;
+          height: 100%;
         "
       >
-      <h3 class="knowledge">Knowledge is power</h3>
-        <canvas id="canvas" style="width: 100%; height: 80%"></canvas>
+        <canvas id="canvas" style="width: 100%; height: 100%"></canvas>
         <script>
           new WarpSpeed("canvas");
         </script>
       </div>
       <div id="banner-wrapper">
         <div class="container flash mt-2"><%-include('./partials/flash')%></div>
-
         <div
           id="banner"
           data-aos="zoom-in-down"
@@ -164,7 +164,7 @@
             data-aos="zoom-in-up"
             data-aos-offset="200"
             data-aos-delay="1000"
-            data-aos-duration="600"
+            data-aos-duration="800"
             data-aos-easing="ease-in-out"
             data-aos-mirror="true"
             class="account-wrapper"
@@ -183,12 +183,12 @@
         </div>
       </div>
     </div>
-
-        <h1 id="programs" class="text-center py-4">Nos Programmes Educatifs</h1>
+      <h3 class="motto">In Hard Work We Trust</h3>
+      <h1 id="programs" class="text-center py-4">Nos Programmes Educatifs</h1>
     <main id="site-content" class="">
       <!--Programmes section-->
       <div class="program-section-wrapper">
-        <div class="container program-section-wrapper mt-5">
+        <div class="container mt-5">
           <div class="row mt-3">
             <!-- Operation 100% BAC-->
             <div
@@ -312,7 +312,7 @@
         </div>
       </div>
       <div class="knowledge-image">
-        <h3 class="knowledge-quote">Let's be powerful</h3>
+        <h3 class="knowledge-quote">Let's be Powerful</h3>
       </div>
       <!--SECTION 2 Why learn with us-->
       <section class="learn-section">
@@ -497,70 +497,47 @@
       <!-- End Videos for explainer -->
 
  <!-- Customers section -->
-      <section class="customers">
-        <div class="common-header">
-            <h1 class="common-heading">Avis Des Clients</h1>
-            <div class="underline">
-                <div class="small-underline"></div>
-                <div class="big-underline"></div>
-            </div>
-        </div>
 
-        <p class="customers-paragraph">
-            Mauris sit amet massa vitae tortor condimentum lacinia quis vel eros donec ac odio tempor orci dapibus ultrices in iaculis nunc sed augue. Mi eget mauris pharetra et ultrices neque ornare aenean euismod? Arcu felis, bibendum ut tristique et, egestas quis ipsum suspendisse ultrices gravida dictum fusce ut placerat orci nul wdla pellentesque dignissim enim, sit amet venenatis urna cursus?
-        </p>
-        <div class="customers-card-wrapper ">
-<!-- customer-1-->
-            <div class="customers-card">
-                <div class="customer-image-wrapper">
-                  <img src="https://i.ibb.co/s1QzbVt/customer-3.jpg" class="customer-image" alt="customer-3">
-                </div>
-                <div class="customer-info">
-                    <h3 class="customer-fullname">Sidoine</h3>
-                    <div class="customer-paragraph-1">Super efficace</div>
-                    <p class="customer-paragraph-2">"Tellus orci, ac auctor augue maurisac orci phasellus egestas tellus rutrum tellus. Quis blandit turpis cursus in hac habitasse platea dictumst quisque sagittis, purus sit amet volutpat consequat, mauris nunc congue nisi, vitae. Morbi tempus iaculis urna, id volutpat".
-                    </p>
-                </div>
-            </div>
-
-<!-- customer-2-->
-            <div class="customers-card">
-              <div class="customer-image-wrapper">
-                <img src="https://i.ibb.co/cwyNmDk/customer-5.jpg" class="customer-image" alt="customer-5">
-              </div>
-              <div class="customer-info">
-                  <h3 class="customer-fullname">Auguste KABORE</h3>
-                  <div class="customer-paragraph-1">Une expérience d’apprentissage hors du commun</div>
-                  <p class="customer-paragraph-2">"Tellus orci, ac auctor augue mauris augue neque, gravida in fer</p>
-              </div>
-            </div>
-
-<!-- customer-3-->
-            <div class="customers-card">
-                <div class="customer-image-wrapper">
-                  <img src="https://i.ibb.co/3W3wB0s/customer-2.jpg" class="customer-image" alt="customer-2">
-                </div>
-                <div class="customer-info">
-                    <h3 class="customer-fullname">Amelia BAZIE</h3>
+<div class="customer-section">
+  <div class="common-header ">
+    <h1 class="common-heading">Avis Des Clients</h1>
+    <div class="underline">
+        <div class="small-underline"></div>
+        <div class="big-underline"></div>
+    </div>
+  </div>
+    <div class="container">
+      <div id="customers-cards" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
+              <div class="carousel-item active">
+                  <div class="carousel-caption">
                     <div class="customer-paragraph-1">AfroHk c’est le meilleur</div>
-                    <p class="customer-paragraph-2">"Tellus orci, ac auctor augue mauris augue neque, gravida in fermentum et, sollicitudin ac orci phasellus egestas tellus rutrum tellus. Quis blandit turpis cursus in hac habitasse platea dictumst quisque sagittis, purus sit amet volutpat consequat, mauris nunc congue nisi, vitae .</p>
-                </div>
-            </div>
-
-<!-- customer-4-->
-            <div class="customers-card">
-              <div class="customer-image-wrapper">
-                <img src="https://i.ibb.co/5T68rnf/customer-1.jpg" class="customer-image" alt="customer-1">
+                      <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, </p> 
+                      <img src="https://i.ibb.co/s1QzbVt/customer-3.jpg">
+                      <div id="image-caption" class="customer-fullname">Sidoine</div>
+                  </div>
               </div>
-              <div class="customer-info">
-                  <h3 class="customer-fullname">Malika TRAORE</h3>
+              <div class="carousel-item">
+                  <div class="carousel-caption">
+                  <div class="customer-paragraph-1">Une expérience d’apprentissage hors du commun</div>
+                      <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries,</p> 
+                      <img src="https://i.ibb.co/3W3wB0s/customer-2.jpg" class="img-fluid">
+                      <div id="image-caption" class="customer-fullname">Amelia BAZIE</div>
+                  </div>
+              </div>
+              <div class="carousel-item">
+                  <div class="carousel-caption">
                   <div class="customer-paragraph-1">C’est tout juste waouh !!!</div>
-                  <p class="customer-paragraph-2">"Tellus orci, ac auctor augue mau, sollicitudin ac orci phasellus egestas tellus rutrum tellus. Quis blandit turpis cursus in hac habitasse platea dictumst quisque sagittis, purus sit amet volutpat consequat, mauris nunc congue nisi, vitae. Morbi tempus iaculis urna, id volutpat".</p>
-                  </p>
+                      <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries,</p> 
+                      <img src="https://i.ibb.co/cwyNmDk/customer-5.jpg" class="img-fluid">
+                      <div id="image-caption" class="customer-fullname">Auguste KABORE</div>
+                  </div>
               </div>
-            </div>
-        </div>
-    </section>
+          </div> <a class="carousel-control-prev" href="#demo" data-bs-slide="prev"> <i class='fas  carousel-button fa-arrow-left'></i> </a> <a class="carousel-control-next" href="#demo" data-bs-slide="next"> <i class='fas carousel-button fa-arrow-right'></i> </a>
+      </div>
+  </div>
+</div>
+
     <!-- end customers section -->
 
       <!-- Partners section-->

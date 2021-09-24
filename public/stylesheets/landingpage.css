@@ -2,7 +2,9 @@
   padding: 0;
   margin: 0;
 }
-
+a {
+  text-decoration: none;
+}
 html {
   box-sizing: border-box;
 }
@@ -140,26 +142,29 @@ nav {
 #sky-wrapper {
   position: relative;
   background-color: black;
-  height: 100vh;
+  height: 70vh;
 }
 
-.knowledge{
-  position: absolute;
-  bottom: -30%;
-  left: 50%;
+.motto {
+  z-index: 10;
+  padding: 1rem;
+  background-color: rgb(8, 7, 7);
+  width: 100%;
   color: rgb(245, 70, 12);
   letter-spacing: 0.4rem;
-  transform: translate(-50%, -50%);
   text-align: center;
   text-shadow: 1px 4px 3px rgba(29, 27, 27, 0.815);
-  font-family: "Nosifer", cursive;
-  font-size: 5rem;
+  /* font-family: 'Paytone One', sans-serif; */
+  font-family: "Rye", cursive;
+  /* font-family: 'Titan One', cursive; */
+  /* font-family: "Nosifer", cursive; */
+  /* font-size: 5rem; */
 }
 
 #banner-wrapper {
   position: absolute;
   z-index: 2;
-  top: 30%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 100%;
@@ -181,35 +186,17 @@ nav {
   color: #f5f7f8;
   font-family: "Kaushan Script", cursive;
   font-size: 6rem;
-  text-shadow: 0px 4px 3px rgba(255, 54, 4, 0.849),
-    1px 2px 8px rgba(255, 54, 4, 0.5), 1px 2px 3px rgba(255, 51, 9, 0.3);
+  text-shadow: 0px 4px 3px rgba(247, 132, 103, 0.849),
+    1px 2px 8px rgba(255, 54, 4, 0.5), 1px 2px 3px rgba(238, 164, 149, 0.3);
   font-weight: 500;
-}
-
-.motto {
-  text-align: center;
-  font-size: 2rem;
-  margin-top: 3rem;
-  padding: 0 1rem;
-  font-weight: 300;
-  /* text-transform: uppercase; */
-  font-family: "Chango", cursive;
-  color: rgba(255, 255, 255, 0.822);
-  text-shadow: 0.2rem 0.1rem 0.2rem rgba(12, 248, 228, 0.63);
 }
 
 .get-account {
   text-align: center;
   text-decoration: none;
   color: rgb(213, 233, 241);
-  /* font-family: 'Abril Fatface', cursive; */
-  /* font-family: 'Libre Baskerville', serif; */
-  /* font-family: 'Noto Sans', sans-serif; */
   font-family: "Vollkorn", serif;
-  /* font-family: 'Akronim', cursive; */
-  /* font-family: 'Chango', cursive; */
-  /* font-family: 'Kaushan Script', cursive; */
-  background-color: #222;
+  background-color: transparent;
   border: 2px solid whitesmoke;
   margin: 3rem 4rem;
   font-size: 1rem;
@@ -224,7 +211,6 @@ nav {
 
 .get-account:hover {
   color: rgba(244, 245, 245, 0.8);
-  background-color: transparent;
   font-weight: 400;
   box-shadow: rgba(183, 232, 235, 0.25) 0px 4px 5px,
     rgba(183, 232, 235, 0.12) 0px -12px 30px,
@@ -245,7 +231,7 @@ nav {
 /*  Main content */
 
 #site-content {
-  margin-top: 2rem;
+  /* margin-top: 1rem; */
 }
 
 /* Got to top link */
@@ -296,14 +282,13 @@ nav {
   background-attachment: fixed;
   background-position: top center;
   background-repeat: no-repeat;
-  margin-top: 5rem;
   padding: 2rem 0;
   margin-bottom: 0;
 }
 
 #programs {
   text-transform: uppercase;
-  font-family:'Ultra', serif;;
+  font-family: "Ultra", serif;
   color: rgba(14, 12, 12, 0.848);
   letter-spacing: 0.2rem;
   font-size: 2rem;
@@ -347,21 +332,10 @@ nav {
 /* testimonial */
 
 .knowledge-image {
+  display: none;
   position: relative;
   margin-top: 0;
-  background: linear-gradient(
-      to bottom,
-      rgba(22, 22, 22, 0.4),
-      rgba(22, 22, 22, 0.4),
-      rgba(20, 20, 19, 0.4),
-      rgba(15, 15, 15, 0.4),
-      rgba(15, 15, 15, 0.8),
-      rgba(14, 13, 14, 0.8),
-      rgba(34, 33, 34, 0.8),
-      rgba(19, 18, 19, 0.4),
-      rgba(34, 33, 34, 0.4)
-    ),
-    url(https://st.depositphotos.com/1152339/3184/i/950/depositphotos_31840343-stock-photo-education-concept-knowledge-is-power.jpg);
+  background-image: url(https://st.depositphotos.com/1152339/3184/i/950/depositphotos_31840343-stock-photo-education-concept-knowledge-is-power.jpg);
   background-size: cover;
   height: 40rem;
   background-attachment: fixed;
@@ -378,33 +352,29 @@ nav {
   transform: translate(-50%, -50%);
   text-align: center;
   text-shadow: 1px 4px 3px rgba(29, 27, 27, 0.815);
-  font-family: "Nosifer", cursive;
+  font-family: "Titan One", cursive;
   font-size: 6rem;
 }
 
 /* Section 2 */
-
 .learn-section {
-  background: #bbd2c5; /* fallback for old browsers */
+  background: #ddebe3; /* fallback for old browsers */
   background: -webkit-linear-gradient(
     to right,
-    #292e49,
-    #536976,
-    #bbd2c5,
-    #536976,
-    #292e49
+    #304352,
+    #d7d2cc,
+    #304352
   ); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(
     to right,
-    #292e49,
-    #536976,
-    #bbd2c5,
-    #536976,
-    #292e49
+    #304352,
+    #d7d2cc,
+    #304352
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
+
 #learn-with-us-wrapper {
-  color: rgba(255, 250, 240, 0.9);
+  color: rgba(228, 226, 222, 0.9);
   /* font-family: 'Albril Fatface', cursive; */
   /* font-family: 'Esteban'; */
   font-family: "Ultra", serif;
@@ -506,73 +476,121 @@ nav {
 
 /* testimonials section */
 
-/* customer section */
-.customers {
-  padding-bottom: 5rem;
-  background-color: #15141b;
+.customer-section {
+  /* min-height: 100vh; */
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background-color: rgb(12, 12, 12);
 }
+
+#customers-cards {
+  background: #c6cfd3; /* fallback for old browsers */
+  background: linear-gradient(112deg, #f8c9a9 53%, rgb(248, 246, 244) 47%);
+  max-width: 900px;
+  margin: auto;
+}
+
+.carousel-caption {
+  position: initial;
+  z-index: 10;
+  padding: 5rem 8rem;
+  color: rgba(36, 35, 35, 0.781);
+  text-align: center;
+  font-size: 1.2rem;
+  font-style: italic;
+  font-weight: bold;
+  line-height: 2rem;
+}
+
+@media (max-width: 767px) {
+  .carousel-caption {
+    position: initial;
+    z-index: 10;
+    padding: 3rem 2rem;
+    color: rgba(78, 77, 77, 0.856);
+    text-align: center;
+    font-size: 0.7rem;
+    font-style: italic;
+    font-weight: bold;
+    line-height: 1.5rem;
+  }
+}
+
+.carousel-caption img {
+  width: 10rem;
+  height: 10rem;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  border: 2px solid rgba(15, 15, 15, 0.39);
+  border-radius: 50%;
+  margin-top: 2rem;
+}
+
+@media (max-width: 767px) {
+  .carousel-caption img {
+    width: 6rem;
+    height: 6rem;
+    margin-top: 1rem;
+  }
+}
+
+#image-caption {
+  font-style: normal;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 767px) {
+  #image-caption {
+    font-style: normal;
+    font-size: 0.6rem;
+    margin-top: 0.5rem;
+  }
+}
+
+.carousel-button {
+  background-color: rgb(20, 19, 19);
+  border-radius: 50%;
+  margin: 0 1rem;
+  padding: 1rem;
+}
+
+@media (max-width: 767px) {
+  .carousel-button {
+    padding: 0.4rem;
+    margin: 0 0.5rem;
+  }
+}
+
+.carousel-control-prev {
+  justify-content: flex-start;
+}
+
+.carousel-control-next {
+  justify-content: flex-end;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  transition: none;
+  opacity: unset;
+}
+
+/* customer section */
+
 .common-header {
   text-align: center;
   display: flex;
+  justify-content: center;
   align-items: center;
   flex-direction: column;
 }
 .common-heading {
   color: #f05121;
-  margin: 5rem 0 0.8rem 0;
   font-family: "Times New Roman", Times, serif;
   font-size: 4rem;
   text-align: center;
   letter-spacing: 0.2rem;
-}
-
-.customers-paragraph {
-  font-size: 1rem;
-  color: #ddd;
-  width: 50%;
-  margin: 2rem auto 4rem;
-  text-align: center;
-}
-
-.customer-image {
-  width: 10rem;
-  height: 12rem;
-  margin-left: -1.3rem;
-  box-shadow: 0.2rem 0.2rem 2rem 0.5rem rgba(0, 0, 0, 0.678);
-}
-
-.customers-card-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
-}
-
-.customer-image-wrapper {
-  margin: auto 0;
-}
-
-.customers-card {
-  display: flex;
-  background: #8e9eab; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #eef2f3,
-    #8e9eab
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #eef2f3,
-    #8e9eab
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
-  /* background-color:#ddd; */
-  width: 40rem;
-  min-height: 14rem;
-  margin-top: 2rem;
-}
-
-.customer-info {
-  padding: 0 2rem;
 }
 
 .customer-fullname {
@@ -580,7 +598,9 @@ nav {
   padding: 1rem 0 0.4rem;
   text-align: center;
   font-weight: 800;
-  margin-bottom: 0;
+  font-family: "Chango", cursive;
+  color: rgb(22, 21, 21);
+  margin-top: 2rem;
 }
 
 .customer-paragraph-1 {
@@ -588,11 +608,6 @@ nav {
   color: #f05121;
   text-align: center;
   padding: 0 0 0.5rem 0;
-  font-style: italic;
-}
-
-.customer-paragraph-2 {
-  font-size: 1rem;
   font-style: italic;
 }
 
@@ -1170,21 +1185,21 @@ nav {
 
 /* Small devices (portrait tablets and large phones, 600px and up) */
 
-@media only screen and (max-width: 600px) {
-  .motto {
-    font-size: 1.4rem;
-  }
+@media only screen and (min-width: 604px) {
 }
 
 /* Medium devices (landscape tablets, 768px and up) */
 
 @media (max-width: 600px) {
-
   .get-account {
     display: inline;
     font-size: 0.8rem;
-    transition: all 0.1s;
   }
+  .header-text {
+    color: rgba(255, 250, 240, 0.9);
+    font-size: 2rem;
+  }
+
   .account-wrapper {
     display: flex;
     justify-content: center;
@@ -1196,10 +1211,10 @@ nav {
     padding-top: 0;
     margin-top: 3rem;
   }
+
   #sky-wrapper {
     position: relative;
   }
- 
 
   #programs {
     font-size: 1.2rem;
@@ -1210,19 +1225,14 @@ nav {
     padding: 1rem;
   }
 
-  .card-img-top{
+  .card-img-top {
     display: none;
   }
 }
 
-@media (max-width: 700px) {
-  #sky{
-    display: none;
-  }
+@media (max-width: 800px) {
+ 
 
-  .knowledge-image {
-    display: none;
-  }
   #sky-wrapper {
     background-color: #000;
     height: 60vh;
@@ -1232,26 +1242,73 @@ nav {
     width: 100%;
     height: 70%;
   }
+
   .header-text {
     color: rgba(255, 250, 240, 0.9);
-    font-size: 2.5rem;
-  }
-
-  .motto {
-    text-align: center;
-    font-size: 1.2rem;
-    font-weight: 300;
+    font-size: 3rem;
   }
 }
 
 @media (max-width: 900px) {
+  .program-section-wrapper {
+    background: #141e30; /* fallback for old browsers */
+    background: -webkit-linear-gradient(
+      to right,
+      #243b55,
+      #141e30
+    ); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(
+      to right,
+      #243b55,
+      #141e30
+    ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  }
+
+  .knowledge-image {
+    background: linear-gradient(
+      to bottom,
+      rgba(22, 22, 22, 0.4),
+      rgba(22, 22, 22, 0.4),
+      rgba(20, 20, 19, 0.4),
+      rgba(15, 15, 15, 0.4),
+      rgba(15, 15, 15, 0.8),
+      rgba(14, 13, 14, 0.8),
+      rgba(34, 33, 34, 0.8),
+      rgba(19, 18, 19, 0.4),
+      rgba(34, 33, 34, 0.4)
+    ),
+    url(https://images.unsplash.com/photo-1549980384-d61217e50c4b?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8c2Nob29sfGVufDB8MXwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60);
+  }
 
   #monitor {
     margin: 2%;
   }
-  .anywhere{
+
+  .motto {
+    font-size: 2rem;
+  }
+
+  .header-text {
+    color: rgba(255, 250, 240, 0.9);
+    font-size: 2.6rem;
+  }
+  #sky {
+    /* display: none; */
+  }
+  .motto-wrapper {
+  }
+  .common-header {
+    margin-bottom: 2rem;
+  }
+
+  .customer-section {
+    flex-direction: column;
+    justify-content: center;
+  }
+  .anywhere {
     font-size: 1.2rem;
   }
+
   .testimony-text {
     font-size: 1rem;
     margin: 2rem 2rem 4rem;
@@ -1260,9 +1317,11 @@ nav {
   .knowledge-quote {
     font-size: 2rem;
   }
+
   .gallery {
     grid-gap: 0.2rem;
   }
+
   .common-heading {
     color: #f05121;
     margin: 5rem 0 0.8rem 0;
@@ -1286,6 +1345,10 @@ nav {
     box-shadow: 0.2rem 0.2rem 2rem 0.5rem rgba(0, 0, 0, 0.678);
   }
 
+  .get-account {
+    display: inline;
+    font-size: 0.8rem;
+  }
   .customers-card {
     /* background-color:#ddd; */
     width: 30rem;
@@ -1295,7 +1358,7 @@ nav {
 
 /* Large devices (laptops/desktops, 992px and up) */
 
-@media (min-width: 992px) {
+@media (min-width: 900px) {
   .get-account {
     display: inline;
     transition: all 0.1s;
@@ -1306,11 +1369,35 @@ nav {
     margin: 1rem;
     padding: 0;
   }
-
-  
+  .header-text {
+    color: rgba(255, 250, 240, 0.9);
+    font-size: 3.5rem;
+  }
+  .motto {
+    font-size: 2rem;
+  }
 }
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 
 @media (min-width: 1200px) {
+  .header-text {
+    color: rgba(255, 250, 240, 0.9);
+    font-size: 5rem;
+  }
+
+  .motto {
+    font-size: 6rem;
+  }
+}
+
+@media (min-width: 1800px) {
+  .header-text {
+    color: rgba(255, 250, 240, 0.9);
+    font-size: 5rem;
+  }
+
+  .motto {
+    font-size: 5rem;
+  }
 }
