@@ -1,6 +1,7 @@
 window.addEventListener('scroll', function(){
     const nav = document.querySelector('nav');
     const afro = document.querySelector('.afro');
+    const topLink = document.querySelector('.top-link');
     const hk = document.querySelector('.hk');
     const user = document.querySelector('#user');
 
@@ -12,6 +13,7 @@ window.addEventListener('scroll', function(){
 
 
     afro.classList.toggle('afro-shadow', window.scrollY > 0);
+    topLink.classList.toggle('top-btn-display', window.scrollY > 300);
     hk.classList.toggle('hk-shadow', window.scrollY > 0);
     user.classList.toggle('user-shadow', window.scrollY > 0);
 });

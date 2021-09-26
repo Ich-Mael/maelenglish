@@ -1,46 +1,60 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light p-0 sticky-top">
-    <div class="container-fluid">
-        <a class="navbar-brand" id="brand-name" href="/">
-            <span class="afro">Afro</span><span class="hk">HK</span>
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-                <!-- <a class="nav-link active" aria-current="page" href="/">Acceuil</a> -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        NOS PROGRAMMES
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="/100bac">100 % BAC</a></li>
-                        <li><a class="dropdown-item" href="/englishlang4all">English for all</a></li>
-                        <!-- <li><a class="dropdown-item" href="/xpaxetudiant">XPAX Etudiant</a></li> -->
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <!-- <li><a class="dropdown-item" href="/courses">Voir nos Cours</a></li> -->
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="#footer">Contacts</a></li>
-                    </ul>
-                </li>
-            </div>
-            <div class="navbar-nav d-flex ms-auto">
-                <% if (!currentUser || currentUser == null) {%>
-                    <a class="nav-link btn btn-outline-success mx-2 my-2" href="/login">Connexion</a>
-                    <a class="nav-link btn btn-outline-info mx-2 my-2" href="/register">Inscription</a>
-                    <%} else { %>
-                        <h3 id="user" class="px-3 align-self-center"><i class="bi  bi-person-circle"></i>
-                            <a class="profile-link" href="/user/<%= currentUser._id %> ">
-                                Welcome <%=currentUser.username%>
-                            </a>
-                        </h3>
-                        <a class="nav-link btn btn-outline-danger px-2 my-2 align-self-center" href="/logout">Deconnexion</a>
-                        <%}%>
-            </div>
+<nav class="navbar navbar-expand-lg py-1 navbar-light bg-light p-0 sticky-top">
+    <div id="top-section" class="container-fluid">
+      <a class="navbar-brand" id="brand-name" href="/">
+        <!-- <img src="../images/logo_Afrohk.jpeg" alt="" width="50" height="50"> -->
+        <span class="afro">Afro</span><span class="hk">HK</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+        aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <!-- <a class="nav-link active" aria-current="page" href="/">Acceuil</a>
+                        -->
+                        <li class="nav-item">
+                          <a class="nav-link active " aria-current="page" href="#apropos">A Propos</a>
+                        </li> 
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              Services
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="/100bac">100 % BAC</a></li>
+              <li>
+                <a class="dropdown-item" href="/englishlang4all">English for all</a>
+              </li>
+              <!-- <li>
+                  <a class="dropdown-item" href="/xpaxetudiant"
+                    >XPAX Etudiant</a
+                  >
+                </li> -->
+             
+              <!-- <li>
+                  <a class="dropdown-item" href="/courses">Voir nos Cours</a>
+                </li> -->
+          </li>
+          </ul>
+          
+          <li class="nav-item">
+            <a class="nav-link m-0 " id="drop-down-contact" href="#footer">Contacts</a>
+          </li>
+          </li>
         </div>
-    </div>
-</nav>
+        <div class="navbar-nav ms-auto">
+          <% if (!currentUser || currentUser == null) {%>
+          <a class="nav-link-connexion btn me-2 my-2 " href="/login">Connexion</a>
+          <%} else { %>
+          <h3 id="user" class="px-2 align-self-center">
+            <a class="profile-link" href="/user/<%= currentUser._id %> ">
+              <i class="bi bi-person-circle"></i> Welcome
+              <%=currentUser.username%>
+            </a>
+          </h3>
+          <a class="nav-link my-2 btn btn-outline-danger" href="/logout">Deconnexion</a>
+          <%}%>
+          </div>
+        </div>
+      </div>
+    </nav>
