@@ -153,11 +153,17 @@ nav {
   right: 1%;
   bottom: 3%;
   z-index: 99;
+  opacity: 0;
 }
 .top-link:hover {
   text-decoration: none;
   color: wheat;
 }
+
+.top-btn-display{
+  opacity: 1;
+  }
+  
 
 
 /* TV Screen */
