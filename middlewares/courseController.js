@@ -14,7 +14,7 @@ module.exports.checkCourseOwnership = catchAsync(async(req, res, next) => {
 });
 
 module.exports.checkProgramOwnership = course => (req, res, next) => {
-    if (req.user.ownedPrograms.some(arr => arr.indexOf(course) === -1) && req.user.role !== "admin") {
+    if (req.user.ownedPrograms.some(arr => arr.indexOf(course) === -1) || req.user.role !== "admin") {
         res.render('noAccess');
     } else {
         next();

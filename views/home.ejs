@@ -25,81 +25,87 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Noto+Sans:wght@400;700&family=Vollkorn&display=swap"
     rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet">
   <script type="text/javascript" src="/javascripts/warpspeed.js"></script>
   <title>Afro house of Knowledge</title>
 </head>
 
 <body>
   <a class="top-link top-btn-display" href="#"><i class="bi bi-arrow-up-circle-fill"></i></a>
-  <div class="logo-wrapper d-flex justify-content-center">
+  <!-- <div class="logo-wrapper d-flex justify-content-center">
     <img src="https://i.ibb.co/nB7zHTr/afroHK.jpg" alt="afroHK" alt="" class="logo img-fluid">
-  </div>
-  <!--Navbar-->
-  <nav class="navbar navbar-expand-lg py-1 navbar-light bg-light p-0 sticky-top">
-    <div id="top-section" class="container-fluid">
-      <a class="navbar-brand" id="brand-name" href="/">
-        <!-- <img src="../images/logo_Afrohk.jpeg" alt="" width="50" height="50"> -->
-        <span class="afro">Afro</span><span class="hk">HK</span>
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
-        aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-          <!-- <a class="nav-link active" aria-current="page" href="/">Acceuil</a>
-                        -->
-          <li class="nav-item">
-            <a class="nav-link active " aria-current="page" href="#apropos">A Propos</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-              aria-expanded="false">
-              Services
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="/100bac">100 % BAC</a></li>
-              <li>
-                <a class="dropdown-item" href="/englishlang4all">English for all</a>
-              </li>
-              <!-- <li>
-                  <a class="dropdown-item" href="/xpaxetudiant"
-                    >XPAX Etudiant</a
-                  >
-                </li> -->
-
-              <!-- <li>
-                  <a class="dropdown-item" href="/courses">Voir nos Cours</a>
-                </li> -->
-          </li>
-          </ul>
-
-          <li class="nav-item">
-            <a class="nav-link m-0 " id="drop-down-contact" href="#footer">Contacts</a>
-          </li>
-          </li>
-        </div>
-        <div class="navbar-nav ms-auto">
-          <% if (!currentUser || currentUser == null) {%>
-          <a class="nav-link-connexion btn me-2 my-2 " href="/login">Connexion</a>
-          <%} else { %>
-          <h3 id="user" class="px-2 align-self-center">
-            <a class="profile-link" href="/user/<%= currentUser._id %> ">
-              <i class="bi bi-person-circle"></i> Welcome
-              <%=currentUser.username%>
-            </a>
-          </h3>
-          <a class="nav-link my-2 btn btn-outline-danger" href="/logout">Deconnexion</a>
-          <%}%>
-          </div>
-        </div>
-      </div>
-    </nav>
-
-    <!--End Navbar-->
+  </div> -->
+ 
     <!-- Sky -->
-    <div id="sky-wrapper">
-      <div
+    <div id="header-wrapper">
+      <!-- navbar -->
+      <nav class="navbar navbar-dark navbar-expand-lg sticky-top">
+        <div id="top-section" class="container-fluid">
+          <a class="navbar-brand" id="brand-name" href="/">
+            <!-- <img src="../images/logo_Afrohk.jpeg" alt="" width="50" height="50"> -->
+            <span class="afro">Afro</span><span class="hk">HK</span>
+          </a>
+          <button class="navbar-toggler"  type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <ul class="navbar-nav">
+              <!-- <a class="nav-link active" aria-current="page" href="/">Acceuil</a>
+                            -->
+              <li class="nav-item">
+                <a class="nav-link active " aria-current="page" href="#apropos"><span class="myNav-link">A Propos</span></a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  <span class="myNav-link"> Programmes </span>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <li><a class="dropdown-item " href="/100bac">OPERATION 100 % BAC</a></li>
+                  <li>
+                    <a class="dropdown-item" href="/englishlang4all">House Of English Lovers</a>
+                  </li>
+                  </ul>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  <span class="myNav-link"> Services</span>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <li><a class="dropdown-item " href="/100bac">OPERATION 100 % BAC</a></li>
+                  <li>
+                    <a class="dropdown-item" href="/englishlang4all">House Of English Lovers</a>
+                  </li>
+                  </ul>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link m-0 " id="drop-down-contact" href="#footer"><span class="myNav-link">Contacts</span></a>
+              </li>
+            </ul>
+              <div class="navbar-nav ms-auto">
+              <% if (!currentUser || currentUser == null) {%>
+              <a class="nav-link-connexion me-2 my-2 " href="/login">Connexion</a>
+              <%} else { %>
+              <h3 id="user" class="px-2 align-self-center">
+                <a class="profile-link" href="/user/<%= currentUser._id %> ">
+                  <i class="bi bi-person-circle"></i> Welcome
+                  <%=currentUser.username%>
+                </a>
+              </h3>
+              <a class="nav-link my-2 btn btn-outline-danger" href="/logout">Deconnexion</a>
+              <%}%>
+              </div>
+          </div>
+          </div>
+      </nav>
+
+      <div class="container flash"><%-include('./partials/flash')%></div>
+  <!--flash-->
+        <!--End flash-->
+        <!--End Navbar-->
+      <!-- <div
       id="sky"
         style="
           position: absolute;
@@ -114,35 +120,31 @@
         <script>
           new WarpSpeed("canvas");
         </script>
+      </div> -->
+      <div class="bg-img-wrapper">
+        <img src="https://images.pexels.com/photos/5331211/pexels-photo-5331211.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260" src="https://images.unsplash.com/photo-1516182823370-7a5fa91445c3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80" alt="">
       </div>
       <div id="banner-wrapper">
-        <!--flash-->
-        <div class="container flash mt-2"><%-include('./partials/flash')%></div>
-        <!--End flash-->
-        <div id="banner" data-aos="zoom-in-down" data-aos-offset="200" data-aos-delay="150" data-aos-duration="1000"
-          data-aos-easing="ease-in-out" data-aos-mirror="true">
-          <h1 class="header-text">Afro <span class="hk">House of Knowledge</span></h1>
-
-          <div data-aos="zoom-in-up" data-aos-offset="200" data-aos-delay="1000" data-aos-duration="800"
-            data-aos-easing="ease-in-out" data-aos-mirror="true" class="account-wrapper">
+          <h1 class="header-text"> EDUCATION ET COURS EN LIGNE</h1>
+<p class="banner-paragraph">Offrir une éducation de qualité à moindre coût
+  et accessible à tous
+  </p>
+          <p class="account-wrapper">
             <% if (!currentUser || currentUser === undefined) {%>
-            <a class="get-account" href="/register">Get Started</a>
+            <a class="get-account" href="/register">Nous Rejoindre</a>
 
             <%} else { %>
-            <a class="get-account" href="#programs">
-              Bienvenue dans l'univers du savoir</a>
+            <a class="get-account" href="#program">
+              Voir Nos Programmes </a>
             <%}%>
-          </div>
-        </div>
+            </p>
       </div>
     </div>
-      <h3 class="motto animated fadeInUp">In Hard Work We Trust</h3>
-
-
+      <!-- <h3 class="motto animated fadeInUp">In Hard Work We Trust</h3> -->
     <!-- end Sky -->
 
        <!--  About us-->
-      <h1 class="about" id="apropos"> About <span class="afro">Afro</span><span class="hk">HK</span></h1>
+    <h1 class="about" id="apropos">  À Propos <span class="afro">Afro</span><span class="hk">HK</span></h1>
     <main id="site-content" class="">
        <section>
         <div class="row d-flex align-items-center">
@@ -152,11 +154,11 @@
               data-aos="fade-up"
               data-aos-offset="200"
               data-aos-delay="50"
-              data-aos-duration="800"
+              data-aos-duration="500"
               data-aos-easing="ease-in-out"
               data-aos-mirror="true"
             >
-              <h3 class="presentation-heading"> A Propos</h3>
+              <h3 class="presentation-heading"> À Propos </h3>
               <p class="presentation-paragraph">
                 AfroHK est une structure œuvrant dans le domaine de l’éducation.
                 <br />
@@ -169,13 +171,12 @@
             </div>
 
           </div>
-        
           <div
             class="col-lg-8"
             data-aos="zoom-in-right"
             data-aos-offset="200"
             data-aos-delay="50"
-            data-aos-duration="800"
+            data-aos-duration="500"
             data-aos-easing="ease-in-out"
             data-aos-mirror="true"
           >
@@ -207,8 +208,8 @@
         <!-- End  About us -->
   
       <!--Programmes section-->
-      <h1 class="services"> Nos Services </h1>
-      <div class="program-section-wrapper">
+      <h1 id="program" class="services"> Nos Programmes</h1>
+      <div  class="program-section-wrapper">
         <div class="container mt-5">
           <div class="row mt-3">
             <!-- Operation 100% BAC-->
@@ -230,11 +231,11 @@
                     alt="Card image cap"
                   />
                   <div class="card-body d-flex flex-column align-items-center">
-                    <p class="card-text text-center">
-                      A l'aide des videos, approfondissez votre comprehension du
+                    <!-- <p class="card-text text-center"> -->
+                      <!-- A l'aide des videos, approfondissez votre comprehension du
                       cours, exercez vous afin de bien assimiler les notions
-                      importantes.
-                    </p>
+                      importantes. -->
+                    <!-- </p> -->
                     <button
                       class="btn mt-1 course-btn btn-default btn-outline-dark"
                       data-bs-toggle="offcanvas"
@@ -242,7 +243,7 @@
                       aria-controls="offcanvas100BAC"
                     >
                       <a href="/100bac" class="course-link"
-                        >OPERATION 100% REUSSITE AU BAC</a
+                      >OPERATION 100% REUSSITE AU BAC</a
                       >
                     </button>
                   </div>
@@ -272,11 +273,11 @@
                     id="card-content"
                     class="card-body d-flex flex-column align-items-center"
                   >
-                    <p class="card-text text-center">
-                      Améliorer votre niveau d'anglais a partir d'un programme
+                    <!-- <p class="card-text text-center"> -->
+                      <!-- Améliorer votre niveau d'anglais a partir d'un programme
                       bien elaboré. Apprenez juste ce qu'il vous faut pour être
-                      operationnel dans votre domaine d'activité.
-                    </p>
+                      operationnel dans votre domaine d'activité. -->
+                    <!-- </p> -->
                     <button
                       class="btn mt-1 course-btn btn-default btn-outline-dark"
                       data-bs-toggle="offcanvas"
@@ -332,14 +333,10 @@
           </div>
         </div>
       </div>
-      <div class="knowledge-image">
-        <h3 class="knowledge-quote">Let's be Powerful</h3>
-      </div>
-
-      <!--SECTION 2 Why learn with us-->
+           <!--SECTION 2 Why learn with us-->
       <h1 class="why-afrohk"> At <span class="afro">Afro</span><span class="hk">HK</span></h1>
       <section class="learn-section">
-        <div class="hero flexbox-container-center my-2">
+        <div class="hero flexbox-container-center ">
           <article class="flexbox-item-center">
             <div class="inline-block group">
             <h1 class="hero-tagline study">Study</h1>
@@ -356,9 +353,6 @@
           <a class="start-learning-btn" href="/login"> Get Started </a>
        </div>
       </section>
-
-
-
  <!-- Customers section -->
 
       <h1 class="clients"><span class="afro">Afro</span><span class="hk">HK</span> in The Community</h1>
@@ -397,17 +391,16 @@
                       <div id="image-caption" class="customer-fullname">Auguste KABORE</div>
                   </div>
               </div>
-          </div> <a class="carousel-control-prev" href="#demo" data-bs-slide="prev"> <i class='fas  carousel-button fa-arrow-left'></i> </a> <a class="carousel-control-next" href="#demo" data-bs-slide="next"> <i class='fas carousel-button fa-arrow-right'></i> </a>
+          </div> <a class="carousel-control-prev" href="#customers-cards" data-bs-slide="prev"> <i class='fas  carousel-button fa-arrow-left'></i> </a> <a class="carousel-control-next" href="#customers-cards" data-bs-slide="next"> <i class='fas carousel-button fa-arrow-right'></i> </a>
       </div>
   </div>
 </div>
-
     <!-- end customers section -->
 
       <!-- Partners section-->
 
       <h1 class="partners"> Partners</h1>
-      <section class="our-partners">
+      <section class="partners-wrapper">
         <div class="slider my-5">
           <ul>
             <li>
@@ -445,7 +438,7 @@
 
       <!-- Photo galeries -->
        <!-- Gallery -->
-       <section class="images-gallery">
+       <!-- <section class="images-gallery">
         <div class="common-header">
           <h1 class="learn-with-us"> <span class="afro">Afro</span
             ><span class="hk">HK</span> en Image</h1>
@@ -453,9 +446,9 @@
               <div class="small-underline"></div>
               <div class="big-underline"></div>
           </div> 
-          </div>
+          </div> -->
  <!-- Gallery -->
- <div class="gallery">
+ <!-- <div class="gallery">
   <img class="gallery-img gallery-img1" src="https://i.ibb.co/qBDFrpY/kids-1.jpg" alt="kids-1">
   <img class="gallery-img gallery-img2" src="https://i.ibb.co/s1swQdH/library.jpg" alt="library">
   <img class="gallery-img gallery-img3" src="https://i.ibb.co/86tKTfQ/wmd.jpg" alt="wmd"/>
@@ -468,10 +461,10 @@
   <img class="gallery-img gallery-img10" src="https://i.ibb.co/KLQmZnx/neci-3.jpg" alt="neci-10">
   <img class="gallery-img gallery-img11" src="https://i.ibb.co/Ct2nTfD/neci-10.jpg" alt="neci-3">
   <img class="gallery-img gallery-img12" src=" https://i.ibb.co/nrh3HY1/NECI-Ibam.jpg" alt="neci-8">
-        </div>
+        </div> -->
 <!-- End of Gallery -->
 
-       </section>
+       <!-- </section> -->
     <!-- End of Gallery -->
 
 

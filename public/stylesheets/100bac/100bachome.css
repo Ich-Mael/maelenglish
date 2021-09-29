@@ -1,3 +1,9 @@
+
+*{
+  padding: 0;
+  margin: 0;
+}
+
 body {
   color: #101111;
   margin: 0;
@@ -14,6 +20,7 @@ body {
 } */
 
 .serie {
+  /* background: url("https://images.unsplash.com/photo-1516182823370-7a5fa91445c3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"); */
   background: url("https://images.unsplash.com/photo-1535982330050-f1c2fb79ff78?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1567&q=80");
   background-size: cover;
   -webkit-background-size: cover;
@@ -23,10 +30,10 @@ body {
   position: relative;
   background-attachment: fixed;
   background-repeat: no-repeat;
-  height: 100vh;
+  height: fit-content;
   margin: 0;
-  border: 0.1px solid transparent;
   padding: 0;
+  /* border: 1px solid transparent; */
 }
 
 .serie:before {
@@ -56,13 +63,22 @@ body {
   /* background: rgba(0, 0, 0, 0.253); */
   position: absolute;
   bottom: 0;
-  top: 0;
+  top: 0 ;
   left: 0;
   right: 0;
 }
 
+.title {
+  padding: 1rem 2rem;
+  margin: 0 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .title-heading {
-  padding: 1rem 2rem 1rem;
+  padding: 1rem 2rem;
   margin-top: 1.2rem;
   font-family: "Ultra", serif;
   font-size: 2.5rem;
@@ -72,13 +88,7 @@ body {
   font-weight: 500;
 }
 
-.title {
-  margin: 3rem 0 2rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
+
 
 #moto {
   font-family: "Chango", cursive;
@@ -88,11 +98,12 @@ body {
   z-index: 10;
   font-weight: 500;
   text-shadow: 1px 0px 2px rgba(16, 15, 16, 1);
-  margin: 2rem 0 0;
+  margin: 3rem 0 0;
 }
 
 .serie-cards-wrapper{
-  margin: 5rem 0;
+  margin: 3rem 0;
+  min-height: fit-content;
 }
 .card-title {
   color: #133e5a;
@@ -167,12 +178,11 @@ body {
 }
 
 
-
-
 .start-learning-btn{
   align-self: center;
   z-index: 15;
   padding: 0.5rem 2rem;
+  margin-bottom: 2rem;
   border-radius: 5px;
   background-color: black;
   border: 2px solid rgb(240, 237, 235);
@@ -264,4 +274,11 @@ body {
   -webkit-animation-fill-mode: both;
   animation-iteration-count: 2;
   animation-fill-mode: both;
+}
+
+
+@media (max-width: 600px) {
+  serie {
+    height: 50vh;
+  }
 }
