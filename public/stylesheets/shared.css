@@ -29,6 +29,12 @@ nav {
   font-family: "Roboto" serif;
 }
 
+.logo-navbar {
+  width: 100px;
+  height: 100px;
+  opacity: 1;
+}
+
 #brand-name {
   color: rgba(255, 250, 240, 0.9);
   /* font-family: 'Albril Fatface', cursive; */
@@ -699,4 +705,9 @@ nav {
   .motto-footer {
     font-size: 0.8rem;
   }
+
+  .logo-navbar{
+    display: none;
+  }
+
 }

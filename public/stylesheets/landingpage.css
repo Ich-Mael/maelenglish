@@ -42,15 +42,14 @@ body {
 }
 
 /* Navbar */
-.logo {
-  margin: 1rem;
+.logo-navbar {
   width: 100px;
   height: 100px;
   opacity: 1;
 }
 
 .logo-display {
-  opacity: 0;
+  /* opacity: 0; */
 }
 
 nav {
@@ -342,7 +341,7 @@ nav {
   border: 2px solid rgb(243, 241, 241);
   background-color: rgb(245, 77, 11);
   font-size: 1rem;
-  margin: 1rem 2rem;
+  margin: 1rem 0 ;
   /* width: 35rem; */
   text-transform: uppercase;
   letter-spacing: 0.2rem;
@@ -1699,6 +1698,10 @@ font-size: 3rem;
     font-size: 3rem;
   }
 
+  .logo-navbar{
+    display: none;
+  }
+
   #banner-wrapper {
     z-index: 2;
     top: 25%;
@@ -1837,7 +1840,7 @@ font-size: 1.4rem;
 
   #banner-wrapper {
     z-index: 2;
-    top: 15%;
+    top: 25%;
     left: 5%;
   }
 
