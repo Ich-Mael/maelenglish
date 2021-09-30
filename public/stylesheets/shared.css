@@ -35,6 +35,10 @@ nav {
   opacity: 1;
 }
 
+.logo-display{
+  display: none;
+}
+
 #brand-name {
   color: rgba(255, 250, 240, 0.9);
   /* font-family: 'Albril Fatface', cursive; */

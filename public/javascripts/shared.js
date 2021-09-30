@@ -1,12 +1,13 @@
 window.addEventListener('scroll', function(){
     const nav = document.querySelector('nav');
-    const logo = document.querySelector('.logo');
+    const logo = document.querySelector('.logo-navbar');
     const afro = document.querySelector('.afro');
     const topLink = document.querySelector('.top-link');
     const hk = document.querySelector('.hk');
     const user = document.querySelector('#user');
 
-    // logo.classList.toggle('logo-display', window.scrollY > 100);
+    logo.classList.toggle('logo-display', window.scrollY > 0);
+    nav.classList.toggle('navbar-top', window.scrollY > 0);
     nav.classList.toggle('nav-display', window.scrollY > 10);
     nav.classList.toggle('bg-dark', window.scrollY > 0);
     // nav.classList.toggle('navbar-dark', window.scrollY >= 0);
