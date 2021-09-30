@@ -32,11 +32,7 @@ body {
   background-color: #141e30;
 }
 
-.flash {
-  font-size: 1rem;
-  padding: 0 0.5rem;
-  letter-spacing: 0.1rem;
-}
+
 
 /* Navbar */
 .logo{
@@ -251,7 +247,7 @@ width: 100%;
 height: 100%;
 opacity: 0.8;
 object-fit: contain;
-animation: scale 28s;
+animation: scale 25s;
 }
 
 @keyframes scale {
@@ -263,6 +259,22 @@ animation: scale 28s;
   }
 }
 
+.flash-container{
+  width: 40%;
+    font-family: 'Roboto' serif;
+  height: 2rem;
+  padding: 1rem 0.5rem;
+  letter-spacing: 0.1rem;
+  position: absolute;
+  z-index: 2;
+  top: 15%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.flash{
+  font-size: 1rem;
+}
 
 #banner-wrapper {
   position: absolute;
@@ -283,10 +295,9 @@ animation: scale 28s;
 #banner {
 }
 
-.header-text {
+.banner-heading{
   color: #fcf9f9;
   width: 60%;
-  font-family: "Rye", cursive;
   font-family: 'Poppins', sans-serif;
   /* font-family: "Kaushan Script", cursive; */
   font-size: 3rem;
@@ -852,7 +863,7 @@ background-color: #c6d1d6b9;
   text-align: center;
   padding: 1rem;
   background-color: #18191a;
-  color: whitesmoke;
+  color: rgb(247, 101, 3);
   font-family: 'Roboto', sans-serif;
 }
 
@@ -1116,6 +1127,16 @@ background-color: #c6d1d6b9;
 /* End of gallery */
 
 /* footer */
+.header-text {
+  color: #0a0a0a;
+  font-family: "Rye", cursive;
+  /* font-family: "Kaushan Script", cursive; */
+  font-size: 4rem;
+  text-shadow: 0px 4px 3px rgba(241, 241, 240, 0.849),
+    1px 2px 8px rgba(255, 255, 255, 0.87),
+    1px 2px 3px rgba(248, 244, 244, 0.938);
+  font-weight: 500;
+}
 
 #footer {
   text-align: center;
@@ -1133,8 +1154,8 @@ background-color: #c6d1d6b9;
     #1d1d1d,
     #000000
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  font-family: Georgia, "Times New Roman", Times, serif;
   min-height: fit-content;
+  font-family: 'Poppins', sans-serif;
 
 }
 
@@ -1175,7 +1196,6 @@ padding: 0.5rem 0;
 #call-manager {
   width: 100%;
   font-size: 1.2rem;
-  font-family: "Times New Roman", Times, serif;
   background: none;
   outline: none;
   border: none;
@@ -1184,7 +1204,6 @@ padding: 0.5rem 0;
 #call-manager-2 {
   width: 100%;
   font-size: 1rem;
-  font-family: "Times New Roman", Times, serif;
   background: none;
   outline: none;
   border: none;
@@ -1202,7 +1221,6 @@ padding: 0.5rem 0;
 #call-manager-link-1 {
   text-decoration: none;
   font-size: 1rem;
-  font-family: "Times New Roman", Times, serif;
   color: #e75d0d;
   transition: all 0.5s;
 }
@@ -1212,7 +1230,6 @@ padding: 0.5rem 0;
   font-size: 1rem;
   color: #e99b0a;
   transition: all 0.5s;
-  font-family: "Times New Roman", Times, serif;
 }
 
 #call-manager-link-3 {
@@ -1220,18 +1237,16 @@ padding: 0.5rem 0;
   font-size: 1rem;
   color: #1e90eebb;
   transition: all 0.5s;
-  font-family: "Times New Roman", Times, serif;
 }
 
 .network {
-  color: whitesmoke;
+  color: #727272;
 }
 
 #send-mail {
   color: #f1e5ec;
   transition: all 0.5s;
   font-size: 1rem;
-  font-family: "Times New Roman", Times, serif;
   text-decoration: none;
 }
 
@@ -1245,7 +1260,6 @@ padding: 0.5rem 0;
 
 #cont-ns {
   font-size: 1rem;
-  font-family: "Times New Roman", Times, serif;
 }
 
 #send-mail {
@@ -1261,28 +1275,24 @@ padding: 0.5rem 0;
 
 
 .footer-links-header{
-  color: rgb(112, 111, 111);
-  font-size: 1.5rem;
+  color: rgb(255, 255, 255);
+  font-size: 1.3rem;
   font-family: serif;
-  font-family: 'Kaushan Script', cursive;
   letter-spacing: 0.13rem;
 }
 
-.send-mail-text{
-  color: #d8ecf5;
-}
+
 
 .useful-links {
   text-decoration: none;
-  color: #dad2ce;
-  font-family: "Times New Roman", Times, serif;
-  font-size: 1.3rem;
+  color: #727272;
+  font-size: 1.2rem;
   padding: 0.5rem 0;
 }
 
 .useful-links:hover {
-  font-size: 1.35rem;
-  color: #f3b239;
+  font-size: 1.25rem;
+  color: #7c6519;
 }
 
 /* social media */
@@ -1381,7 +1391,7 @@ padding: 0.5rem 0;
 
 .creator span {
   font-family: "Kaushan Script", cursive;
-  color: rgba(243, 69, 16, 0.705);
+  color:  #e2e1dec5;;
   font-size: 1.2rem;
   font-weight: 600;
   margin: 0 0.3rem;
