@@ -13,36 +13,43 @@ body {
   margin: 0;
   padding: auto;
   background-color: #d6d5d4ce;
-    font-family: 'Roboto' serif;
+  font-family: "Roboto" serif;
 }
 
-
-.learn-with-us, .why-afrohk, .partners, .clients, .about, .services{
-  font-size: 4rem;
+.learn-with-us,
+.why-afrohk,
+.partners,
+.clients,
+.about,
+.services {
+  font-size: 2.5rem;
+  text-transform: uppercase;
+  font-family:  'Chivo', sans-serif;
   margin: 0;
-  padding: 3rem 0;
-  font-family: "Ultra", serif;
-  color: rgba(240, 240, 232, 0.979);
-  text-shadow: 1px 1px 2px rgba(128, 124, 124, 0.959),
-    2px 3px 4px rgba(0, 0, 0, 0.959);
+  font-weight: 900;
+  letter-spacing: 0.1rem;
+  padding: 2rem 0;
+  color: rgba(2, 24, 51, 0.979);
+  text-shadow: 1px 2px 3px rgba(116, 114, 114, 0.712);
   text-align: center;
 }
 
-.partners, .clients, .services, .why-afrohk {
-  background-color: #141e30;
+.partners,
+.clients,
+.services,
+.why-afrohk {
+  /* background-color: rgba(247, 91, 29, 0.904); */
 }
 
-
-
 /* Navbar */
-.logo{
+.logo {
   margin: 1rem;
   width: 100px;
   height: 100px;
   opacity: 1;
 }
 
-.logo-display{
+.logo-display {
   opacity: 0;
 }
 
@@ -50,10 +57,10 @@ nav {
   z-index: 300;
   background-color: rgb(8, 8, 8);
   /* background-color: #000; */
-  font-family: 'Roboto' serif;
+  font-family: "Roboto" serif;
 }
 
-.nav-display{
+.nav-display {
   opacity: 1;
 }
 
@@ -72,7 +79,7 @@ nav {
 .myNav-link {
   font-size: 0.9rem;
   padding: 0 0 0.4rem 0;
-  font-family: 'Roboto' serif;
+  font-family: "Roboto" serif;
   letter-spacing: 0.2rem;
   text-transform: capitalize;
   color: rgba(250, 250, 250, 0.9);
@@ -91,11 +98,9 @@ nav {
   color: rgba(250, 250, 250, 0.9);
 }
 
-
-
-.nav-link-connexion{
+.nav-link-connexion {
   text-align: center;
-  font-family: 'Roboto' serif;
+  font-family: "Roboto" serif;
   padding: 0.5rem 1.3rem;
   border-radius: 5px;
   color: rgb(243, 239, 237);
@@ -104,20 +109,20 @@ nav {
   background-color: rgb(240, 60, 15);
 }
 
-.nav-link-connexion:hover{
+.nav-link-connexion:hover {
   background-color: transparent;
   text-decoration: none;
   color: rgba(241, 78, 3, 0.925);
 }
 
 .profile-link {
-  font-family: 'Roboto' serif;
+  font-family: "Roboto" serif;
   text-decoration: none;
   font-size: 1rem;
   color: rgb(206, 198, 194);
 }
 
-.profile-link:hover{
+.profile-link:hover {
   text-decoration: none;
   color: rgb(241, 239, 238);
 }
@@ -149,7 +154,7 @@ nav {
 
 #user {
   text-transform: capitalize;
-    font-family: 'Roboto' serif;
+  font-family: "Roboto" serif;
   font-size: 1.5rem;
 }
 
@@ -161,18 +166,16 @@ nav {
 .dropdown-menu {
   border: 2px solid black;
   background-color: rgb(185, 182, 182);
-  
 }
 
-.dropdown-item{
+.dropdown-item {
   font-size: 1rem;
   color: #272626;
-    font-family: 'Roboto' serif;
+  font-family: "Roboto" serif;
   text-align: center;
   font-weight: 600;
   text-transform: uppercase;
 }
-
 
 .dropdown-item:hover {
   background-color: black;
@@ -180,9 +183,6 @@ nav {
 }
 
 /* End Navbar */
-
-
-
 
 /* banner section */
 #sky-wrapper {
@@ -227,41 +227,41 @@ nav {
   right: 0;
 }
 
-.header-wrapper{
-width: 100%;
-height: 100vh;
-position: relative;
-overflow: hidden;
-perspective: 100rem;
+.header-wrapper {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  perspective: 100rem;
 }
 
-.bg-img-wrapper{
-width: 100%;
-height: 100%;
-overflow: hidden;
-background-color: rgba(0, 0, 0, 0.596);
+.bg-img-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.596);
 }
 
-.bg-img-wrapper img{
-width: 100%;
-height: 100%;
-opacity: 0.8;
-object-fit: contain;
-animation: scale 25s;
+.bg-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+  object-fit: contain;
+  animation: scale 25s;
 }
 
 @keyframes scale {
-  0%{
+  0% {
     transform: scale(1.3);
   }
-  100%{
+  100% {
     transform: scale(1);
   }
 }
 
-.flash-container{
+.flash-container {
   width: 40%;
-    font-family: 'Roboto' serif;
+  font-family: "Roboto" serif;
   height: 2rem;
   padding: 1rem 0.5rem;
   letter-spacing: 0.1rem;
@@ -272,7 +272,7 @@ animation: scale 25s;
   transform: translate(-50%, -50%);
 }
 
-.flash{
+.flash {
   font-size: 1rem;
 }
 
@@ -283,11 +283,11 @@ animation: scale 25s;
   left: 10%;
 }
 
-@keyframes moveBanner{
-  0%{
+@keyframes moveBanner {
+  0% {
     transform: translateY(30rem) rotate(-20deg);
-  } 
-  100%{
+  }
+  100% {
     transform: translateY(0) rotate(0);
     opacity: 1;
   }
@@ -295,10 +295,10 @@ animation: scale 25s;
 #banner {
 }
 
-.banner-heading{
+.banner-heading {
   color: #fcf9f9;
   width: 60%;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   /* font-family: "Kaushan Script", cursive; */
   font-size: 3rem;
   font-weight: 900;
@@ -308,16 +308,16 @@ animation: scale 25s;
   text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.89);
   animation: moveBanner 2s 1.2s forwards;
 }
-.banner-paragraph{
-font-size:  'Roboto' serif;
-font-size: 1.5rem;
-color: white;
-width: 40%;
-margin: 2rem 0;
+.banner-paragraph {
+  font-size: "Roboto" serif;
+  font-size: 1.5rem;
+  color: white;
+  width: 40%;
+  margin: 2rem 0;
   line-height: 3rem;
   letter-spacing: 0.1rem;
   text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.678);
-font-weight: 500;
+  font-weight: 500;
   opacity: 0;
   animation: moveBanner 1.5s 1.5s forwards;
 }
@@ -328,13 +328,15 @@ font-weight: 500;
   animation: moveBanner 1.5s 1.8s forwards;
 }
 
-.get-account {
+.get-account,
+.check-programs {
   text-align: center;
+  display: block;
   text-decoration: none;
   text-align: center;
-  font-family: 'Roboto' serif;
+  font-family: "Roboto" serif;
   font-weight: 500;
-  padding: 0.7rem 1.3rem;
+  padding: 0.7rem 1rem;
   border-radius: 3px;
   color: rgb(243, 239, 237);
   border: 2px solid rgb(243, 241, 241);
@@ -344,18 +346,18 @@ font-weight: 500;
   /* width: 35rem; */
   text-transform: uppercase;
   letter-spacing: 0.2rem;
-  transition: all 3s;
+  transition: all 1s;
 }
 
-.get-account:hover {
+.get-account:hover,
+.check-programs:hover {
   /* box-shadow: rgba(38, 39, 39, 0.25) 0px 4px 2px, */
-    /* rgba(42, 44, 44, 0.12) 0px 2px 10px; */
-   background-color: #000; 
+  /* rgba(42, 44, 44, 0.12) 0px 2px 10px; */
+  background-color: #000;
   color: rgb(243, 239, 237);
 }
 
-
-#sky{
+#sky {
   display: none;
 }
 
@@ -376,8 +378,6 @@ font-weight: 500;
   /* font-family: "Nosifer", cursive; */
   /* font-size: 5rem; */
 }
-
-
 
 /* end  banner */
 
@@ -407,8 +407,8 @@ font-weight: 500;
   z-index: 99;
 }
 
-.top-btn-display{
-opacity: 1;
+.top-btn-display {
+  opacity: 1;
   visibility: visible;
   display: block;
 }
@@ -426,47 +426,76 @@ opacity: 1;
 
 /* Programs*/
 .program-section-wrapper {
-  margin: 4rem auto;
+  margin: 4rem 0 0;
+  padding: 2rem 0 5rem ;
+  background-color: rgb(253, 244, 239);
 }
 
-#programs {
+.services{
   text-transform: uppercase;
-  font-family: "Ultra", serif;
-  color: rgba(14, 12, 12, 0.848);
   letter-spacing: 0.2rem;
-  font-size: 2rem;
-  margin-top: 3rem;
+}
+
+.my-card-wrapper{
+margin: 0 2rem;
 }
 
 .my-card {
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset; 
+  animation: moveProgCards 2s 1.2s forwards;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+    rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
+    rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
 }
 
-.card-body {
-  background-color: #e3e6ec;
-  color: rgb(27, 26, 26);
+
+.my-card img{
+width: 100%;
+height: 280px;
+object-fit: cover;
+overflow: hidden;
 }
 
-.card-text {
-  font-family: 'Roboto', sans-serif;
+.image-wrapper{
+overflow: hidden;
+}
+
+.program-image{
+  opacity: 0.8;
+}
+
+.program-name{
+  font-family: 'Chivo', sans-serif;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.program-description{
+  font-family: "Roboto", sans-serif;
   font-size: 1rem;
-  font-weight: 400;
-  text-align: justify;
+  text-align: center;
+  font-weight: 500;
   font-size: 1rem;
+  line-height: 4rem;
   padding: 1rem 1.5rem;
   color: rgba(32, 32, 32, 0.781);
-  font-family: "Roboto", sans-serif;
-  line-height: 2rem;
+  line-height: 1.8rem;
+  /* height: 8rem; */
 }
 
-.my-card:hover {
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px; 
+.my-card:hover .program-name{
+    color: orangered;
+}
+.my-card:hover .program-image{
+  opacity: 1;
 }
 
+.course-btn{
+  background-color: rgba(240, 60, 15, 0.938);
+}
 .course-link {
-  color: #e7422c;
+  color: #fcfbfa;
   padding: 0;
-  font-family: "Ultra", serif;
   text-decoration: none;
 }
 
@@ -476,10 +505,23 @@ opacity: 1;
 }
 
 
+/* animation */
+@keyframes moveProgCards {
+  0% {
+    transform: translateY(-30rem) rotate(20deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0);
+    opacity: 1;
+  }
+}
+
+
+
 /* Section 2 */
 .learn-section {
-  height: 35vh;
-  background: url("https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MjV8fHN0dWR5aW5nfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60");
+  height: 55vh;
+  background: url("https://images.pexels.com/photos/3059748/pexels-photo-3059748.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
   background-size: cover;
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -492,8 +534,7 @@ opacity: 1;
   padding: 0;
 }
 
-
-.learn-section:before{
+.learn-section:before {
   content: "";
   background: #000000; /* fallback for old browsers */
   background: -webkit-linear-gradient(
@@ -501,7 +542,6 @@ opacity: 1;
     rgba(252, 109, 15, 0.486),
     rgba(252, 119, 11, 0.486),
     rgba(250, 148, 52, 0.486)
-   
   ); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(
     to bottom,
@@ -531,9 +571,12 @@ opacity: 1;
 
 .study {
   font-family: "Ultra", serif;
-  font-size: 3rem;
+  color: rgba(238, 83, 27, 0.795);
+  font-size: 2.5rem;
+  text-shadow: 1px 2px 1px black;
+  position: relative;
   font-weight: 600;
-  z-index: 10;
+  z-index: 200;
   text-align: center;
 }
 .word-slider {
@@ -557,7 +600,7 @@ opacity: 1;
   animation: word-slider 8s ease-in-out infinite;
 }
 
-.start-learning-btn{
+.start-learning-btn {
   position: absolute;
   bottom: 10%;
   left: 50%;
@@ -572,7 +615,7 @@ opacity: 1;
   font-size: 1rem;
   color: rgb(235, 222, 217);
 }
-.start-btn-1{
+.start-btn-1 {
   align-self: center;
   padding: 0.5rem 2rem;
   border-radius: 5px;
@@ -585,7 +628,8 @@ opacity: 1;
   margin-bottom: 1rem;
 }
 
-.start-learning-btn:hover, .start-btn-1:hover {
+.start-learning-btn:hover,
+.start-btn-1:hover {
   background-color: transparent;
   color: #000000;
   border: 2px solid black;
@@ -684,7 +728,6 @@ opacity: 1;
 
 /* ------testimonial  close-------*/
 
-
 /* End Programs*/
 
 /* testimonials section */
@@ -709,12 +752,14 @@ opacity: 1;
   position: initial;
   z-index: 10;
   padding: 5rem 8rem;
-  color: rgba(36, 35, 35, 0.781);
+  font-family: "Roboto", sans-serif;
+  font-size: 1rem;
   text-align: center;
-  font-size: 1.2rem;
-    font-weight: bold;
-  line-height: 2rem;
-  font-style: italic;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 4rem;
+  color: rgba(32, 32, 32, 0.781);
+  line-height: 1.8rem;
 }
 
 @media (max-width: 767px) {
@@ -734,7 +779,7 @@ opacity: 1;
   width: 10rem;
   height: 10rem;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-  border: 2px solid rgba(15, 15, 15, 0.39);
+  border: 1px solid rgba(15, 15, 15, 0.39);
   border-radius: 50%;
   margin-top: 2rem;
 }
@@ -854,9 +899,9 @@ opacity: 1;
     rgba(0, 0, 0, 0.22) 0px 15px 12px;
 }
 
-.presentation-text-wrapper:hover{
-background-color: #c6d1d6b9;
-} 
+.presentation-text-wrapper:hover {
+  background-color: #c6d1d6b9;
+}
 
 .presentation-heading {
   font-size: 1.5rem;
@@ -864,16 +909,19 @@ background-color: #c6d1d6b9;
   padding: 1rem;
   background-color: #18191a;
   color: rgb(247, 101, 3);
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 .presentation-paragraph {
-  text-align: justify;
+  font-family: "Roboto", sans-serif;
   font-size: 1rem;
+  text-align: center;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 4rem;
   padding: 1rem 1.5rem;
   color: rgba(32, 32, 32, 0.781);
-  font-family: "Roboto", sans-serif;
-  line-height: 2rem;
+  line-height: 1.8rem;
 }
 
 /* TV Screen */
@@ -986,7 +1034,7 @@ background-color: #c6d1d6b9;
 }
 
 /* partner logo */
-.partners-wrapper{
+.partners-wrapper {
   display: flex;
   align-items: center;
   height: 60vh;
@@ -1155,8 +1203,7 @@ background-color: #c6d1d6b9;
     #000000
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   min-height: fit-content;
-  font-family: 'Poppins', sans-serif;
-
+  font-family: "Poppins", sans-serif;
 }
 
 .afrohk-footer {
@@ -1167,11 +1214,11 @@ background-color: #c6d1d6b9;
     1px 2px 8px rgba(245, 46, 12, 0.5), 1px 2px 3px rgba(245, 25, 9, 0.3);
   font-weight: 500;
 }
-.brand-section{
+.brand-section {
   background-color: rgb(245, 243, 243);
 }
 
-.logo-footer-wrapper{
+.logo-footer-wrapper {
   animation: anim2 2s infinite alternate;
 }
 
@@ -1181,8 +1228,8 @@ background-color: #c6d1d6b9;
   font-size: 1.5rem;
 }
 
-.footer-motto{
-padding: 0.5rem 0;
+.footer-motto {
+  padding: 0.5rem 0;
   font-family: "Kaushan Script", cursive;
   font-size: 1rem;
 }
@@ -1273,15 +1320,13 @@ padding: 0.5rem 0;
   text-decoration: none;
 }
 
-
-.footer-links-header{
+.footer-links-header {
   color: rgb(255, 255, 255);
   font-size: 1.3rem;
-  font-family: serif;
+  text-transform: uppercase;
+  font-family: 'Chivo', sans-serif;
   letter-spacing: 0.13rem;
 }
-
-
 
 .useful-links {
   text-decoration: none;
@@ -1391,7 +1436,7 @@ padding: 0.5rem 0;
 
 .creator span {
   font-family: "Kaushan Script", cursive;
-  color:  #e2e1dec5;;
+  color: #f5f2ebe1;
   font-size: 1.2rem;
   font-weight: 600;
   margin: 0 0.3rem;
@@ -1406,119 +1451,97 @@ padding: 0.5rem 0;
   Responsiveness
 
   ==================================*/
+@media (max-width: 1200px){
+  .learn-with-us,
+.why-afrohk,
+.partners,
+.clients,
+.about,
+.services {
+  font-size: 2.6rem;
+  margin: 0;
+  padding: 3rem 0;
+}
 
-/* Extra small devices (phones, 600px and down) */
-
-@media (max-width: 600px) {
-  .afrohk-footer,
-  .header-text {
-    font-size: 3rem;
-  }
+.header-text{
+font-size: 3rem;
+}
 }
 
 /* Small devices (portrait tablets and large phones, 600px and up) */
 
-@media only screen and (min-width: 604px) {
-}
-
-/* Medium devices (landscape tablets, 768px and up) */
-
-@media (max-width: 600px) {
-  #sky-wrapper {
-    /* height: 50vh; */
+@media (max-width: 992px) {
+  nav {
+    background-color: #000000;
   }
 
+  .check-programs,
   .get-account {
+    width: 25rem;
     display: inline;
     font-size: 0.8rem;
   }
-  .header-text {
+
+  .account-wrapper {
+    width: 100%;
+  }
+
+  #banner-wrapper {
+    z-index: 2;
+    top: 25%;
+    left: 10%;
+  }
+
+  .banner-heading {
     font-size: 2rem;
+    line-height: 3rem;
+  }
+
+  .banner-paragraph {
+    font-size: 1.2rem;
+    line-height: 2rem;
+  }
+
+
+    .header-text{
+      font-size: 2.5rem;
+      font-family: 'Kaushan Script', cursive;
+      }
+      .hk {
+        letter-spacing: 0.2rem;
+        color: orangered;
+      }
+  
+      .motto-footer {
+        font-size: 1rem;
+      }
+}
+ 
+@media (max-width: 900px) {
+  .check-programs,
+  .get-account {
+    width: 25rem;
+    display: inline;
+    font-size: 0.8rem;
   }
 
   .account-wrapper {
-    display: flex;
-    justify-content: center;
-    margin: 0;
-    padding: 0;
-  }
-
-  #banner {
-    padding-top: 0;
-    margin-top: 3rem;
-  }
-
-  #sky-wrapper {
-    position: relative;
-  }
-
-  #programs {
-    font-size: 1.2rem;
-  }
-
-  .learn-with-us, .why-afrohk, .partners, .clients, .about, .services {
-    font-size: 2rem;
-    padding: 1rem;
-  }
-
-  .card-img-top {
-    display: none;
-  }
-  .study {
-    font-size: 2rem;
-  }
-  .word-slider > li {
-    font-size: 1.2rem;
-  }
-
-}
-
-@media (max-width: 800px) {
-  .logo-footer{
-    width: 150px;
-    height: 200px;
-  }
-
-  #banner-wrapper {
-    /* height: 70%; */
-  }
-
-  .header-text {
-    /* font-size: 3rem; */
-  }
-
-}
-
-@media (max-width: 992px) {
-nav {
-  background-color: #000000;
-}
-}
-
-
-@media (max-width: 900px) {
-
-
-  #banner-wrapper {
-    position: absolute;
-    z-index: 2;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     width: 100%;
   }
-  
 
   #sky-wrapper {
     height: 90vh;
   }
 
-  .learn-with-us, .partners, .clients, .about, .services {
-    font-size: 2rem;
+  .learn-with-us,
+  .partners,
+  .clients,
+  .about,
+  .services {
+    font-size: 2.3rem;
     padding: 1rem;
   }
 
- 
   #monitor {
     margin: 2%;
   }
@@ -1530,7 +1553,7 @@ nav {
   .header-text {
     /* font-size: 2.6rem; */
   }
-  
+
   .common-header {
     margin-bottom: 2rem;
   }
@@ -1552,7 +1575,6 @@ nav {
   .word-slider > li {
     font-size: 1.8rem;
   }
-
 
   .testimony-text {
     font-size: 1rem;
@@ -1590,54 +1612,257 @@ nav {
     box-shadow: 0.2rem 0.2rem 2rem 0.5rem rgba(0, 0, 0, 0.678);
   }
 
-  .get-account {
-    display: inline;
-    font-size: 0.8rem;
-  }
   .customers-card {
     /* background-color:#ddd; */
     width: 30rem;
     margin-top: 2rem;
   }
-}
 
-/* Large devices (laptops/desktops, 992px and up) */
-
-@media (min-width: 900px) {
-  .get-account {
-    display: inline;
-    transition: all 0.1s;
-  }
-  .account-wrapper {
+  .slider ul {
     display: flex;
-    justify-content: center;
-    margin: 1rem;
     padding: 0;
+    animation: cambio 30s infinite linear;
   }
+
+  .header-text{
+    font-size: 2rem;
+    font-family: 'Kaushan Script', cursive;
+    }
+
+
+    .hk {
+      letter-spacing: 0.2rem;
+      color: orangered;
+    }
+
+    .motto-footer {
+      font-size: 1rem;
+    }
+    
+}
+
+
+@media (max-width: 800px) {
+  .logo-footer {
+    width: 150px;
+    height: 200px;
+  }
+
+  #banner-wrapper {
+    /* height: 70%; */
+  }
+
   .header-text {
-    /* font-size: 3.5rem; */
+    /* font-size: 3rem; */
   }
 }
 
-/* Extra large devices (large laptops and desktops, 1200px and up) */
 
-@media (min-width: 1200px) {
-  .header-text {
-    /* font-size: 5rem; */
+@media (max-width: 650px) {
+  nav {
+    background-color: #000000;
   }
 
-  .motto {
-    font-size: 4rem;
+  /* #banner-wrapper {
+    z-index: 2;
+    top: 5%;
+    left: 5%;
+  }
+
+  .banner-heading {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  .banner-paragraph {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .check-programs,
+  .get-account {
+    width: 20rem;
+    display: inline;
+    font-size: 0.7rem;
+  }
+
+  .account-wrapper {
+    width: 73%;
+  } */
+}
+
+/* Extra small devices (phones, 600px and down) */
+
+@media (max-width: 700px) {
+  .afrohk-footer,
+  .header-text {
+    font-size: 3rem;
+  }
+
+  #banner-wrapper {
+    z-index: 2;
+    top: 25%;
+    left: 15%;
+  }
+
+  .banner-heading {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  .banner-paragraph {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .check-programs,
+  .get-account {
+    width: 20rem;
+    display: inline;
+    font-size: 0.7rem;
+  }
+
+  .account-wrapper {
+    width: 100%;
+    margin-bottom: 2rem;
+  }  
+
+  .header-text {
+    font-size: 2rem;
+  }
+
+  .account-wrapper {
+  }
+
+
+  #sky-wrapper {
+    position: relative;
+  }
+
+  #programs {
+    font-size: 1.2rem;
+  }
+
+  .learn-with-us,
+  .why-afrohk,
+  .partners,
+  .clients,
+  .about,
+  .services {
+    font-size: 2rem;
+    padding: 1rem;
+  }
+  .slider ul {
+    display: flex;
+    padding: 0;
+    animation: cambio 40s infinite linear;
+  }
+  .card-img-top {
+    display: none;
+  }
+  .study {
+    font-size: 2rem;
+  }
+  .word-slider > li {
+    font-size: 1.2rem;
+  }
+
+  .motto-footer {
+    font-size: 0.8rem;
   }
 }
 
-@media (min-width: 1800px) {
+
+@media (max-width: 600px) {
+  .afrohk-footer,
   .header-text {
-    /* font-size: 2rem; */
+    font-size: 2rem;
   }
 
-  .motto {
-    font-size: 4rem;
+  #banner-wrapper {
+    z-index: 2;
+    top: 25%;
+    left: 15%;
+  }
+
+  .banner-heading {
+    font-size: 1.3rem;
+    line-height: 1.8rem;
+  }
+
+  .banner-paragraph {
+    font-size: 0.7rem;
+    line-height: 1rem;
+  }
+
+  .check-programs,
+  .get-account {
+    width: 20rem;
+    display: inline;
+    font-size: 0.5rem;
+  }
+
+  .learn-section {
+    height: 30vh;
+    padding: 1rem;
+    background-color: whitesmoke;
+    margin-bottom: 1rem;
+  }
+  .study {
+    font-size: 1.5rem;
+  }
+  .word-slider > li {
+    font-size: 1.3rem;
+  }
+
+}
+
+
+
+
+@media (max-width: 460px) {
+
+  #brand-name{
+font-size: 1.4rem;
+  }
+  .slider ul {
+    display: flex;
+    padding: 0;
+    animation: cambio 50s infinite linear;
+  }
+  .afrohk-footer,
+  .header-text {
+    font-size: 2rem;
+  }
+
+  #banner-wrapper {
+    z-index: 2;
+    top: 15%;
+    left: 5%;
+  }
+
+  .banner-heading {
+    width: 70%;
+    font-size: 1.3rem;
+    line-height: 1.8rem;
+  }
+
+  .banner-paragraph {
+    font-size: 0.7rem;
+    line-height: 1rem;
+    width: 80%;
+  }
+
+  .account-wrapper {
+    width: 100%;
+    margin-bottom: 2rem;
+  } 
+
+  .check-programs,
+  .get-account {
+    width: 15rem;
+    display: inline;
+    font-size: 0.5rem;
   }
 }
 
@@ -1685,7 +1910,6 @@ nav {
   animation-fill-mode: both;
 }
 
-
 /* --- animation 1 fade in left---- */
 @-webkit-keyframes fadeInLeft {
   from {
@@ -1700,7 +1924,6 @@ nav {
     transform: translate3d(0, 0, 0);
   }
 }
-
 
 @keyframes fadeInLeft {
   from {

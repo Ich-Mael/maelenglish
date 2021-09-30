@@ -538,7 +538,8 @@ nav {
 .footer-links-header{
   color: rgb(255, 255, 255);
   font-size: 1.3rem;
-  font-family: serif;
+  text-transform: uppercase;
+  font-family: 'Chivo', sans-serif;
   letter-spacing: 0.13rem;
 }
 
@@ -651,7 +652,7 @@ nav {
 
 .creator span {
   font-family: "Kaushan Script", cursive;
-  color: rgba(243, 69, 16, 0.705);
+  color: rgba(245, 242, 239, 0.705);
   font-size: 1.2rem;
   font-weight: 600;
   margin: 0 0.3rem;
@@ -660,9 +661,42 @@ nav {
 
 /* End footer */
 
+
+
+/* responsive */
+@media (max-width: 1200px) {
+.header-text{
+  font-size: 3rem;
+  }
+
+  .motto-footer {
+    font-size: 1.2rem;
+  }
+  }
+
+@media (max-width: 990px) {
+    .header-text{
+      font-size: 2.5rem;
+      font-family: 'Kaushan Script', cursive;
+      }
+
+      .hk {
+        letter-spacing: 0.2rem;
+        color: orangered;
+      }
+
+      .motto-footer {
+        font-size: 1rem;
+      }
+      } 
+
 @media (max-width: 800px) {
   .logo-footer {
     width: 150px;
     height: 200px;
+  }
+
+  .motto-footer {
+    font-size: 0.8rem;
   }
 }
