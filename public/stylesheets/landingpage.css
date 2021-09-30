@@ -240,11 +240,15 @@ nav {
   background-color: rgba(0, 0, 0, 0.979);
 }
 
+.img-small {
+  display: none;
+}
+
 .bg-img-wrapper img {
   width: 100%;
   height: 100%;
   opacity: 0.8;
-  object-fit: contain;
+  object-fit: cover;
   animation: scale 25s;
 }
 
@@ -424,7 +428,7 @@ nav {
 
 /* Programs*/
 .program-section-wrapper {
-  margin: 4rem 0 0;
+  margin: 0 0;
   padding: 2rem 0 5rem;
   background-color: rgb(253, 244, 239);
 }
@@ -501,18 +505,8 @@ nav {
   color: whitesmoke;
 }
 
-/* animation */
-@keyframes moveProgCards {
-  0% {
-    transform: translateY(-30rem) rotate(20deg);
-  }
-  100% {
-    transform: translateY(0) rotate(0);
-    opacity: 1;
-  }
-}
-
 /* Section 2 */
+
 .learn-section {
   height: 55vh;
   background: url("https://images.pexels.com/photos/3059748/pexels-photo-3059748.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
@@ -1456,6 +1450,11 @@ nav {
     margin: 0;
     padding: 3rem 0;
   }
+  #banner-wrapper {
+    z-index: 2;
+    top: 20%;
+    left: 10%;
+  }
 
   .header-text {
     font-size: 3rem;
@@ -1482,17 +1481,17 @@ nav {
 
   #banner-wrapper {
     z-index: 2;
-    top: 25%;
+    top: 20%;
     left: 10%;
   }
 
   .banner-heading {
-    font-size: 2rem;
+    font-size: 2.5rem;
     line-height: 3rem;
   }
 
   .banner-paragraph {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     line-height: 2rem;
   }
 
@@ -1641,9 +1640,41 @@ nav {
     width: 150px;
     height: 200px;
   }
+  .img-medium {
+    display: none;
+  }
 
+  .img-small {
+    display: block;
+  }
   #banner-wrapper {
-    /* height: 70%; */
+    z-index: 2;
+    top: 30%;
+    left: 15%;
+  }
+
+  .banner-heading {
+    font-size: 2.5rem;
+    line-height: 3rem;
+    width: 60%;
+  }
+
+  .banner-paragraph {
+    font-size: 1.5rem;
+    width: 60%;
+    line-height: 2.8rem;
+  }
+
+  .check-programs,
+  .get-account {
+    width: 20rem;
+    display: inline;
+    font-size: 1rem;
+  }
+
+  .account-wrapper {
+    width: 100%;
+    margin: 5rem 0 0;
   }
 
   .header-text {
@@ -1703,20 +1734,20 @@ nav {
   }
 
   .banner-heading {
-    font-size: 1.5rem;
-    line-height: 2rem;
+    font-size: 2rem;
+    line-height: 3rem;
   }
 
   .banner-paragraph {
-    font-size: 1rem;
-    line-height: 1.5rem;
+    font-size: 1.5rem;
+    line-height: 2rem;
   }
 
   .check-programs,
   .get-account {
     width: 20rem;
     display: inline;
-    font-size: 0.7rem;
+    font-size: 1rem;
   }
 
   .account-wrapper {
@@ -1735,14 +1766,12 @@ nav {
     position: relative;
   }
 
-  
-
   .program-name {
     text-align: center;
     font-weight: 700;
     font-size: 1.2rem;
   }
-  
+
   .program-description {
     font-family: "Roboto", sans-serif;
     font-size: 0.8rem;
@@ -1788,28 +1817,31 @@ nav {
   .header-text {
     font-size: 2rem;
   }
+  .header-wrapper {
+  }
+  .bg-img-wrapper {
+  }
 
   #banner-wrapper {
     z-index: 2;
-    top: 15%;
-    left: 15%;
+    /* top: 15%; */
   }
 
   .banner-heading {
-    font-size: 1.3rem;
-    line-height: 1.8rem;
+    /* font-size: 1.3rem;
+    line-height: 1.8rem; */
   }
 
   .banner-paragraph {
-    font-size: 0.7rem;
-    line-height: 1rem;
+    /* font-size: 0.7rem; */
+    /* line-height: 1rem; */
   }
 
   .check-programs,
   .get-account {
     width: 20rem;
     display: inline;
-    font-size: 0.5rem;
+    /* font-size: 0.5rem; */
   }
 
   .learn-section {
@@ -1826,54 +1858,17 @@ nav {
   }
 }
 
-@media (max-width: 460px) {
-  #brand-name {
-    font-size: 1.4rem;
-  }
-  .slider ul {
-    display: flex;
-    padding: 0;
-    animation: cambio 50s infinite linear;
-  }
-  .afrohk-footer,
-  .header-text {
-    font-size: 2rem;
-  }
-
-  .banner-heading {
-    width: 70%;
-    font-size: 1.3rem;
-    line-height: 1.8rem;
-  }
-
-  .banner-paragraph {
-    font-size: 0.7rem;
-    line-height: 1rem;
-    width: 80%;
-  }
-
-  .account-wrapper {
-    width: 100%;
-    margin-bottom: 2rem;
-  }
-
-  .check-programs,
-  .get-account {
-    width: 15rem;
-    display: inline;
-    font-size: 0.5rem;
-  }
-}
-
 @media (max-width: 450px) {
   #brand-name {
     font-size: 1.4rem;
   }
+
   .slider ul {
     display: flex;
     padding: 0;
     animation: cambio 50s infinite linear;
   }
+
   .afrohk-footer,
   .header-text {
     font-size: 2rem;
@@ -1881,41 +1876,33 @@ nav {
 
   #banner-wrapper {
     z-index: 2;
-    top: 10%;
-    left: 5%;
+    top: 25%;
+    width: 100%;
+    left: 10%;
   }
 
   .banner-heading {
-    width: 70%;
-    font-size: 1rem;
-    line-height: 1.2rem;
+    font-size: 2rem;
+    line-height: 3rem;
+    width: 80%;
   }
 
   .banner-paragraph {
-    font-size: 0.7rem;
-    line-height: 1rem;
+    font-size: 1.2rem;
+    line-height: 2rem;
     width: 80%;
+  }
+
+  .check-programs,
+  .get-account {
+    width: 20rem;
+    display: inline;
+    font-size: 1rem;
   }
 
   .account-wrapper {
     width: 100%;
     margin-bottom: 2rem;
-  }
-
-  .check-programs,
-  .get-account {
-    width: 15rem;
-    display: inline;
-    font-size: 0.4rem;
-  }
-
-  .learn-with-us,
-  .why-afrohk,
-  .partners,
-  .clients,
-  .about,
-  .services {
-    font-size: 1.5rem;
   }
 }
 
