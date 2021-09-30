@@ -24,11 +24,11 @@ body {
 .services {
   font-size: 2.5rem;
   text-transform: uppercase;
-  font-family:  'Chivo', sans-serif;
+  font-family: "Chivo", sans-serif;
   margin: 0;
   font-weight: 900;
   letter-spacing: 0.1rem;
-  padding: 2rem 0;
+  padding: 2rem 0 1rem;
   color: rgba(2, 24, 51, 0.979);
   text-shadow: 1px 2px 3px rgba(116, 114, 114, 0.712);
   text-align: center;
@@ -40,8 +40,6 @@ body {
 .why-afrohk {
   /* background-color: rgba(247, 91, 29, 0.904); */
 }
-
-
 
 .logo-display {
   /* opacity: 0; */
@@ -72,8 +70,7 @@ nav {
   font-family: "Roboto" serif;
 }
 
-.navbar-top{
- 
+.navbar-top {
 }
 .nav-display {
   opacity: 1;
@@ -102,10 +99,9 @@ nav {
   transition: all 2s !important;
 }
 
-.myNav-link:hover{
-  border-bottom: 3px solid white ;
+.myNav-link:hover {
+  border-bottom: 3px solid white;
 }
-
 
 .nav-link-connexion {
   text-align: center;
@@ -237,8 +233,6 @@ nav {
   right: 0;
 }
 
-
-
 .bg-img-wrapper {
   width: 100%;
   height: 100%;
@@ -346,7 +340,7 @@ nav {
   border: 2px solid rgb(243, 241, 241);
   background-color: rgb(245, 77, 11);
   font-size: 1rem;
-  margin: 1rem 0 ;
+  margin: 1rem 0;
   /* width: 35rem; */
   text-transform: uppercase;
   letter-spacing: 0.2rem;
@@ -431,17 +425,17 @@ nav {
 /* Programs*/
 .program-section-wrapper {
   margin: 4rem 0 0;
-  padding: 2rem 0 5rem ;
+  padding: 2rem 0 5rem;
   background-color: rgb(253, 244, 239);
 }
 
-.services{
+.services {
   text-transform: uppercase;
   letter-spacing: 0.2rem;
 }
 
-.my-card-wrapper{
-margin: 0 2rem;
+.my-card-wrapper {
+  margin: 0 2rem;
 }
 
 .my-card {
@@ -451,30 +445,29 @@ margin: 0 2rem;
     rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
 }
 
-
-.my-card img{
-width: 100%;
-height: 280px;
-object-fit: cover;
-overflow: hidden;
+.my-card img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  overflow: hidden;
 }
 
-.image-wrapper{
-overflow: hidden;
+.image-wrapper {
+  overflow: hidden;
 }
 
-.program-image{
+.program-image {
   opacity: 0.8;
 }
 
-.program-name{
-  font-family: 'Chivo', sans-serif;
+.program-name {
+  font-family: "Chivo", sans-serif;
   text-align: center;
   font-weight: 700;
   font-size: 1.5rem;
 }
 
-.program-description{
+.program-description {
   font-family: "Roboto", sans-serif;
   font-size: 1rem;
   text-align: center;
@@ -487,14 +480,14 @@ overflow: hidden;
   /* height: 8rem; */
 }
 
-.my-card:hover .program-name{
-    color: orangered;
+.my-card:hover .program-name {
+  color: orangered;
 }
-.my-card:hover .program-image{
+.my-card:hover .program-image {
   opacity: 1;
 }
 
-.course-btn{
+.course-btn {
   background-color: rgba(240, 60, 15, 0.938);
 }
 .course-link {
@@ -508,7 +501,6 @@ overflow: hidden;
   color: whitesmoke;
 }
 
-
 /* animation */
 @keyframes moveProgCards {
   0% {
@@ -519,8 +511,6 @@ overflow: hidden;
     opacity: 1;
   }
 }
-
-
 
 /* Section 2 */
 .learn-section {
@@ -1328,7 +1318,7 @@ overflow: hidden;
   color: rgb(255, 255, 255);
   font-size: 1.3rem;
   text-transform: uppercase;
-  font-family: 'Chivo', sans-serif;
+  font-family: "Chivo", sans-serif;
   letter-spacing: 0.13rem;
 }
 
@@ -1455,21 +1445,21 @@ overflow: hidden;
   Responsiveness
 
   ==================================*/
-@media (max-width: 1200px){
+@media (max-width: 1200px) {
   .learn-with-us,
-.why-afrohk,
-.partners,
-.clients,
-.about,
-.services {
-  font-size: 2.6rem;
-  margin: 0;
-  padding: 3rem 0;
-}
+  .why-afrohk,
+  .partners,
+  .clients,
+  .about,
+  .services {
+    font-size: 2.6rem;
+    margin: 0;
+    padding: 3rem 0;
+  }
 
-.header-text{
-font-size: 3rem;
-}
+  .header-text {
+    font-size: 3rem;
+  }
 }
 
 /* Small devices (portrait tablets and large phones, 600px and up) */
@@ -1506,27 +1496,30 @@ font-size: 3rem;
     line-height: 2rem;
   }
 
+  .header-text {
+    font-size: 2.5rem;
+    font-family: "Kaushan Script", cursive;
+  }
+  .hk {
+    letter-spacing: 0.2rem;
+    color: orangered;
+  }
 
-    .header-text{
-      font-size: 2.5rem;
-      font-family: 'Kaushan Script', cursive;
-      }
-      .hk {
-        letter-spacing: 0.2rem;
-        color: orangered;
-      }
-  
-      .motto-footer {
-        font-size: 1rem;
-      }
+  .motto-footer {
+    font-size: 1rem;
+  }
 }
- 
+
 @media (max-width: 900px) {
   .check-programs,
   .get-account {
     width: 25rem;
     display: inline;
     font-size: 0.8rem;
+  }
+
+  .my-card-wrapper {
+    margin: 0 0.2rem;
   }
 
   .account-wrapper {
@@ -1628,23 +1621,20 @@ font-size: 3rem;
     animation: cambio 30s infinite linear;
   }
 
-  .header-text{
+  .header-text {
     font-size: 2rem;
-    font-family: 'Kaushan Script', cursive;
-    }
+    font-family: "Kaushan Script", cursive;
+  }
 
+  .hk {
+    letter-spacing: 0.2rem;
+    color: orangered;
+  }
 
-    .hk {
-      letter-spacing: 0.2rem;
-      color: orangered;
-    }
-
-    .motto-footer {
-      font-size: 1rem;
-    }
-    
+  .motto-footer {
+    font-size: 1rem;
+  }
 }
-
 
 @media (max-width: 800px) {
   .logo-footer {
@@ -1660,7 +1650,6 @@ font-size: 3rem;
     /* font-size: 3rem; */
   }
 }
-
 
 @media (max-width: 650px) {
   nav {
@@ -1703,7 +1692,7 @@ font-size: 3rem;
     font-size: 3rem;
   }
 
-  .logo-navbar{
+  .logo-navbar {
     display: none;
   }
 
@@ -1733,7 +1722,7 @@ font-size: 3rem;
   .account-wrapper {
     width: 100%;
     margin-bottom: 2rem;
-  }  
+  }
 
   .header-text {
     font-size: 2rem;
@@ -1742,13 +1731,23 @@ font-size: 3rem;
   .account-wrapper {
   }
 
-
   #sky-wrapper {
     position: relative;
   }
 
-  #programs {
+  
+
+  .program-name {
+    text-align: center;
+    font-weight: 700;
     font-size: 1.2rem;
+  }
+  
+  .program-description {
+    font-family: "Roboto", sans-serif;
+    font-size: 0.8rem;
+    text-align: center;
+    font-weight: 500;
   }
 
   .learn-with-us,
@@ -1768,6 +1767,10 @@ font-size: 3rem;
   .card-img-top {
     display: none;
   }
+
+  .learn-section {
+    display: none;
+  }
   .study {
     font-size: 2rem;
   }
@@ -1780,7 +1783,6 @@ font-size: 3rem;
   }
 }
 
-
 @media (max-width: 600px) {
   .afrohk-footer,
   .header-text {
@@ -1789,7 +1791,7 @@ font-size: 3rem;
 
   #banner-wrapper {
     z-index: 2;
-    top: 25%;
+    top: 15%;
     left: 15%;
   }
 
@@ -1822,16 +1824,11 @@ font-size: 3rem;
   .word-slider > li {
     font-size: 1.3rem;
   }
-
 }
 
-
-
-
 @media (max-width: 460px) {
-
-  #brand-name{
-font-size: 1.4rem;
+  #brand-name {
+    font-size: 1.4rem;
   }
   .slider ul {
     display: flex;
@@ -1841,12 +1838,6 @@ font-size: 1.4rem;
   .afrohk-footer,
   .header-text {
     font-size: 2rem;
-  }
-
-  #banner-wrapper {
-    z-index: 2;
-    top: 25%;
-    left: 5%;
   }
 
   .banner-heading {
@@ -1864,7 +1855,7 @@ font-size: 1.4rem;
   .account-wrapper {
     width: 100%;
     margin-bottom: 2rem;
-  } 
+  }
 
   .check-programs,
   .get-account {
@@ -1874,7 +1865,59 @@ font-size: 1.4rem;
   }
 }
 
+@media (max-width: 450px) {
+  #brand-name {
+    font-size: 1.4rem;
+  }
+  .slider ul {
+    display: flex;
+    padding: 0;
+    animation: cambio 50s infinite linear;
+  }
+  .afrohk-footer,
+  .header-text {
+    font-size: 2rem;
+  }
 
+  #banner-wrapper {
+    z-index: 2;
+    top: 10%;
+    left: 5%;
+  }
+
+  .banner-heading {
+    width: 70%;
+    font-size: 1rem;
+    line-height: 1.2rem;
+  }
+
+  .banner-paragraph {
+    font-size: 0.7rem;
+    line-height: 1rem;
+    width: 80%;
+  }
+
+  .account-wrapper {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+
+  .check-programs,
+  .get-account {
+    width: 15rem;
+    display: inline;
+    font-size: 0.4rem;
+  }
+
+  .learn-with-us,
+  .why-afrohk,
+  .partners,
+  .clients,
+  .about,
+  .services {
+    font-size: 1.5rem;
+  }
+}
 
 /* --- animations---- */
 /* --- animation 1 fade in Up---- */
