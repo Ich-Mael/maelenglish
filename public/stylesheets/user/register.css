@@ -2,23 +2,23 @@
 
 body {
   font-family: "Roboto" serif;
+  background: url("https://images.pexels.com/photos/5331211/pexels-photo-5331211.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
+  background-size: cover;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-position: center center;
+  position: relative;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  margin: 0;
 }
 
 .inscription{
-    background: url("https://images.pexels.com/photos/5331211/pexels-photo-5331211.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
-    background-size: cover;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-position: center center;
-    position: relative;
-    background-attachment: fixed;
-    background-repeat: no-repeat;
-    margin: 0;
-    padding: 2rem 0 4rem ;
+  padding: 2rem 0 4rem ;
 }
 
-.inscription:before {
+inscription:before {
     content: "";
     background: #000000; /* fallback for old browsers */
     background: -webkit-linear-gradient(
@@ -105,7 +105,7 @@ body {
   background-color: #e3e7ec;
   text-indent: 24px;
   font-size: 15px;
-  color: aliceblue;
+  color: rgb(14, 18, 22);
 }
 
 .form-control:focus {

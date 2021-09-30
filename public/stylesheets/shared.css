@@ -411,6 +411,7 @@ nav {
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   min-height: fit-content;
   font-family: 'Poppins', sans-serif;
+  z-index: 200;
 }
 
 .afrohk-footer {
