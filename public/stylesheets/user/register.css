@@ -1,8 +1,13 @@
-/* *{box-sizing: border-box} */
+*{
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
 
 body {
   font-family: "Roboto" serif;
-  background: url("https://images.pexels.com/photos/5331211/pexels-photo-5331211.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
+  /* background: url("https://images.pexels.com/photos/5331211/pexels-photo-5331211.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"); */
+  background: url("https://images.unsplash.com/photo-1573164713712-03790a178651?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1769&q=80");
   background-size: cover;
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -15,7 +20,7 @@ body {
 }
 
 .inscription{
-  padding: 2rem 0 4rem ;
+  padding: 2rem 0 2rem ;
 }
 
 inscription:before {
@@ -44,13 +49,24 @@ inscription:before {
     right: 0;
   }
  .create-account-header{
-     color: #16110d;
+     color: #ffffffce;
      z-index: 99;
      font-weight: 900;
+     margin-bottom: 2rem;
  } 
  
 .join-number {
-  color: #1a1310;
+  font-size: 1.4rem;
+  text-align: center;
+  font-family: 'Kaushan Script', cursive;;
+  color:rgb(245, 190, 8);
+  text-shadow: 1px 1px 1px rgb(7, 7, 7);
+}
+
+.join-quote{
+color: #fff;
+  font-size: 1.2rem;
+  text-shadow: 1px 1px 1px rgb(34, 33, 33);
 }
 
 .knowlegeable {
@@ -69,17 +85,17 @@ inscription:before {
   box-shadow: 6px -2px 16px -1px rgba(0, 0, 0, 0.64);
   padding: 60px 35px 20px;
   border-radius: 20px;
-  border: 0.3rem solid black;
-  background-color: #f8f9fa50;
+  border: 0.3rem solid rgb(250, 246, 246);
+  background-color: #21212250;
   color: rgb(46, 45, 45);
 }
 
 .circle {
-  height: 20px;
-  width: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  height: 40px;
+  width: 40px;
+  /* display: flex; */
+  /* align-items: center; */
+  /* justify-content: center; */
   background-color: #f1550c;
   color: #fff;
   font-size: 10px;
@@ -109,7 +125,7 @@ inscription:before {
 }
 
 .form-control:focus {
-  outline: none;
+  outline: none !important;
 }
 
 .form-check-label {
@@ -143,8 +159,8 @@ inscription:before {
   text-decoration: none;
   font-size: 0.8rem;
   font-family: Ultra;
-  margin: 2rem;
-  padding: 0.6rem;
+  margin: 3rem 2rem;
+  padding:  0.6rem;
   text-transform: capitalize;
   text-align: center;
   animation: all 0.3s;
