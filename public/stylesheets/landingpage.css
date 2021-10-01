@@ -1822,7 +1822,7 @@ nav {
 
 @media (max-width: 450px) {
   #brand-name {
-    font-size: 1.4rem;
+    /* font-size: 1.4rem; */
   }
 
   .slider ul {
