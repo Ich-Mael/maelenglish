@@ -58,6 +58,7 @@ inscription:before {
 .join-number {
   font-size: 1.4rem;
   text-align: center;
+  letter-spacing: 0.1rem;
   font-family: 'Kaushan Script', cursive;;
   color:rgb(245, 190, 8);
   text-shadow: 1px 1px 1px rgb(7, 7, 7);
@@ -161,7 +162,6 @@ color: #fff;
   font-family: Ultra;
   margin: 3rem 2rem;
   padding:  0.6rem;
-  text-transform: capitalize;
   text-align: center;
   animation: all 0.3s;
   text-decoration: none;
@@ -188,6 +188,10 @@ Responsiveness
 }
 
 @media only screen and (max-width: 800px) {
+
+  body{
+  background: url("https://images.pexels.com/photos/2866911/pexels-photo-2866911.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
+  }
 }
 
 /* Small devices (portrait tablets and large phones, 600px and up) */
