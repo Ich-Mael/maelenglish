@@ -531,15 +531,15 @@ nav {
   background: #000000; /* fallback for old browsers */
   background: -webkit-linear-gradient(
     to bottom,
-    rgba(252, 109, 15, 0.486),
-    rgba(252, 119, 11, 0.486),
-    rgba(250, 148, 52, 0.486)
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to bottom,
     rgba(36, 36, 35, 0.63),
     rgba(23, 24, 24, 0.486),
     rgba(33, 34, 34, 0.486)
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to bottom,
+    rgba(36, 36, 35, 0.452),
+    rgba(23, 24, 24, 0.342),
+    rgba(33, 34, 34, 0.247)
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
   /* background: rgba(0, 0, 0, 0.253); */
@@ -563,10 +563,11 @@ nav {
 
 .study {
   font-family: "Ultra", serif;
-  color: rgba(238, 83, 27, 0.795);
+  color: rgba(252, 96, 39, 0.952);
   font-size: 2.5rem;
   text-shadow: 1px 2px 1px black;
   position: relative;
+  letter-spacing: 0.15rem;
   font-weight: 600;
   z-index: 200;
   text-align: center;
@@ -1278,7 +1279,7 @@ nav {
 }
 
 .footer-links-header {
-  color: rgb(255, 255, 255);
+  color: rgba(250, 96, 25, 0.856);
   font-size: 1.3rem;
   text-transform: uppercase;
   font-family: "Chivo", sans-serif;

@@ -1,12 +1,18 @@
+*{
+  padding: 0;
+  margin: 0;
+}
+
 body{
-    font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: 'Roboto', sans-serif;
 }
 
 .maths-title{
-    color: #333;
+    color: rgba(4, 19, 39, 0.836);
     padding:1rem;
-    text-shadow: 1px 2px 3px orangered;
-    font-family:'Kaushan Script', cursive;
+    text-shadow: 1px 1px 1px rgb(36, 35, 35);
+    font-family: 'Chivo', sans-serif;
+    font-weight: 700;
     text-transform: capitalize;
     font-size: 3rem;
 }
@@ -16,7 +22,6 @@ body{
 }
 
 .scientific-calc-btn{
-    font-family:'Kaushan Script', cursive;
     font-size: 1.2rem;
     border: 2px solid rgb(30, 31, 29);
     border-radius: 5px;
@@ -33,7 +38,6 @@ body{
 }
 
 .graph-btn{
-    font-family:'Kaushan Script', cursive;
     font-size: 1.2rem;
     border: 2px solid black;
     border-radius: 5px;
