@@ -691,6 +691,10 @@ nav {
       font-size: 2.5rem;
       }
 
+      .flash-container {
+        width: 80%;
+      }
+      
 
       .motto-footer {
         font-size: 1rem;

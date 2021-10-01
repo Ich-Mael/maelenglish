@@ -1482,6 +1482,11 @@ nav {
     font-size: 0.8rem;
   }
 
+
+.flash-container {
+  width: 80%;
+}
+
   .my-card-wrapper {
     margin: 0 0.2rem;
   }
