@@ -6,11 +6,12 @@
 }
 
 body {
-  font-family: "Noto Sans", sans-serif;
+  font-family: 'Roboto', sans-serif;
 }
 
 #login-wrapper {
-  background: url(https://images.pexels.com/photos/1181317/pexels-photo-1181317.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260)
+  /* background: url(https://images.pexels.com/photos/1181317/pexels-photo-1181317.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260) */
+  background: url(https://images.unsplash.com/photo-1525715843408-5c6ec44503b1?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1770&q=80)
     no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -60,13 +61,13 @@ body {
 
 .login-div {
   width: 330px;
-  background-color: rgba(23, 23, 24, 0.815);
+  background-color: rgba(160, 157, 156, 0.829);
   -webkit-box-shadow: 6px -2px 16px -1px rgba(0, 0, 0, 0.705);
   -moz-box-shadow: 6px -2px 16px -1px rgba(0, 0, 0, 0.726);
   box-shadow: 6px -2px 16px -1px rgba(0, 0, 0, 0.685);
   padding: 20px 35px 20px;
   border-radius: 20px;
-  border: 0.3rem solid orangered;
+  border: 0.3rem solid rgb(12, 12, 12);
   z-index: 99;
   /* box-shadow: 13px 13px 20px #cbced1, */
   /*             -13px -13px 20px #fff; */
@@ -93,11 +94,14 @@ body {
   font-size: 1.5rem;
   letter-spacing: 0.1rem;
   margin-bottom: 1rem;
-  color: #fff;
+  color: rgba(12, 10, 10, 0.89);
+  font-family: 'Chivo', sans-serif;
+  font-weight: 700;
   /* border-radius: 2rem; */
   padding: 0.4rem;
   border-radius: 5px;
 }
+
 .fields {
   display: flex;
   flex-direction: column;
@@ -105,7 +109,7 @@ body {
 }
 label,
 .ii {
-  color: rgba(240, 248, 255, 0.575);
+  color: rgba(33, 34, 34, 0.575);
 }
 
 .fields input {
@@ -133,7 +137,7 @@ label,
   color: antiquewhite;
   width: 15rem;
   border: 1px solid whitesmoke;
-  background-color: #222;
+  background-color: rgb(241, 97, 13);
 }
 
 .connexion:hover {
@@ -148,21 +152,21 @@ label,
 }
 
 .pas-compte:hover {
-  color: orangered;
+  color: rgb(43, 42, 42);
 }
 
 .form-control {
   height: 50px;
-  background-color: #1c1e21;
+  background-color: #e7eaee;
   text-indent: 24px;
   font-size: 15px;
-  color: aliceblue;
+  color: rgb(17, 17, 17);
 }
 
 .form-control:focus {
-  background-color: #25272a;
+  background-color: #dde8f8;
   box-shadow: none;
-  color: #fff;
+  color: rgb(34, 33, 33);
   border-color: #4f63e7;
 }
 
