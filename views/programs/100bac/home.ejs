@@ -87,9 +87,10 @@
     </div>
   </div>
   <div class="select-serie-wrapper d-flex justify-content-center">
-    <a class="start-learning-btn" href="/login"
-      >Connectez-vous et préparez-vous pour votre BAC</a
-    >
+    <% if (!currentUser || currentUser == null) {%>
+      <a class="start-learning-btn" href="/login">Connectez-vous et préparez-vous pour votre BAC</a>
+      <%}%>
+   
   </div>
 </section>
 <!--End Series -->

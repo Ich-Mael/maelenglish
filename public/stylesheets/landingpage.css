@@ -497,6 +497,7 @@ nav {
 
 .course-btn {
   background-color: rgba(240, 60, 15, 0.938);
+  transition: all 0.7s;
 }
 .course-link {
   color: #fcfbfa;
@@ -504,9 +505,18 @@ nav {
   text-decoration: none;
 }
 
-.course-btn:hover > .course-link {
+.course-btn:hover{
+  background-color: #000;
+  color: #fcfbfa;
+}
+
+.course-btn:hover  .cours-link{
   text-decoration: none;
   color: whitesmoke;
+}
+
+.course-link:hover{
+  color: #fcfbfa; 
 }
 
 /* Section 2 */
