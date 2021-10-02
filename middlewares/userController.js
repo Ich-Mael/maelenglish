@@ -1,7 +1,8 @@
 module.exports.isLoggedIn = (req, res, next) => {
     if (!req.isAuthenticated()) {
         req.session.returnTo = req.originalUrl;
-        req.flash('error', 'You must be signed in first!');
+        console.log(req.session.returnTo);
+        req.flash('error', 'Vous devez d\'abord vous connecter!');
         return res.redirect('/login');
     }
     next();
@@ -9,12 +10,12 @@ module.exports.isLoggedIn = (req, res, next) => {
 
 module.exports.checkRoles = roles => (req, res, next) =>
     !roles.includes(req.user.role) ?
-    res.send('Not authorized') :
+    res.send('Accès non autorisé 🚫' ) :
     next();
 
 module.exports.profileOwner = id => (req, res, next) => {
     if (!(req.user._id === id)) {
-        res.send('Access not authorized');
+        res.send('Accès non autorisé! 🚫');
     } else {
         next();
     }

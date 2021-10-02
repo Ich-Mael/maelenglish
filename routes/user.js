@@ -7,7 +7,7 @@ const catchAsync = require('../utilities/catchAsync');
 const Course = require("../models/courses");
 const { isLoggedIn, checkRoles } = require("../middlewares/userController");
 const { checkCourseOwnership } = require("../middlewares/courseController");
-const newsLetter = require("../models/newsletter");
+// const newsLetter = require("../models/newsletter");
 
 // register a user form
 router.get("/register", (req, res) => {
@@ -48,9 +48,10 @@ router.post(
         failureRedirect: "/login",
     }),
     async(req, res) => {
-        req.flash("success", "Welcome back " + req.user.username.toUpperCase());
+        req.flash("success", "Content de vous revoir " + req.user.username.toUpperCase());
         const redirectUrl = await req.session.returnTo || "/";
         delete req.session.returnTo;
+        console.log(req.session.returnTo);
         res.redirect(redirectUrl);
     }
 );
@@ -58,7 +59,7 @@ router.post(
 // logout
 router.get("/logout", async(req, res) => {
     await req.logout();
-    req.flash("success", `Goodbye ! See you nextime!!`);
+    req.flash("success", `Au revoir 👋🏽 ! À la prochaine!!`);
     res.redirect("/");
 });
 
