@@ -315,7 +315,6 @@ nav {
   animation: moveBanner 2s 1.2s forwards;
 }
 .banner-paragraph {
-  font-size: "Roboto" serif;
   font-size: 1.5rem;
   color: white;
   width: 40%;
