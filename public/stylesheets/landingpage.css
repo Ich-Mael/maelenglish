@@ -30,7 +30,7 @@ body {
   letter-spacing: 0.1rem;
   padding: 2rem 0 1rem;
   color: rgba(2, 24, 51, 0.979);
-text-shadow: 1px 2px 0px rgba(255, 255, 255, 0.712);
+  text-shadow: 1px 2px 0px rgba(255, 255, 255, 0.712);
   text-align: center;
 }
 
@@ -503,18 +503,18 @@ nav {
   text-decoration: none;
 }
 
-.course-btn:hover{
+.course-btn:hover {
   background-color: #000;
   color: #fcfbfa;
 }
 
-.course-btn:hover  .cours-link{
+.course-btn:hover .cours-link {
   text-decoration: none;
   color: whitesmoke;
 }
 
-.course-link:hover{
-  color: #fcfbfa; 
+.course-link:hover {
+  color: #fcfbfa;
 }
 
 /* Section 2 */
@@ -826,7 +826,6 @@ nav {
   }
 
   .common-heading {
-    
   }
 }
 
@@ -1490,11 +1489,13 @@ nav {
     display: inline;
     font-size: 0.8rem;
   }
+  #brand-name {
+    font-size: 2rem;
+  }
 
-
-.flash-container {
-  width: 80%;
-}
+  .flash-container {
+    width: 100%;
+  }
 
   .my-card-wrapper {
     margin: 0 0.2rem;
@@ -1788,24 +1789,8 @@ nav {
   .header-text {
     font-size: 2rem;
   }
-  .header-wrapper {
-  }
-  .bg-img-wrapper {
-  }
-
-  #banner-wrapper {
-    z-index: 2;
-    /* top: 15%; */
-  }
-
-  .banner-heading {
-    /* font-size: 1.3rem;
-    line-height: 1.8rem; */
-  }
-
-  .banner-paragraph {
-    /* font-size: 0.7rem; */
-    /* line-height: 1rem; */
+  .flash {
+    font-size: 0.6rem;
   }
 
   .check-programs,
@@ -1830,10 +1815,6 @@ nav {
 }
 
 @media (max-width: 450px) {
-  #brand-name {
-    /* font-size: 1.4rem; */
-  }
-
   .slider ul {
     display: flex;
     padding: 0;
@@ -1869,6 +1850,60 @@ nav {
     width: 20rem;
     display: inline;
     font-size: 1rem;
+  }
+
+  .account-wrapper {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+
+
+.footer-links-header {
+  font-size: 1.2rem;
+}
+
+.useful-links {
+  font-size: 1rem;
+}
+}
+
+
+@media (max-width: 350px) {
+  .slider ul {
+    display: flex;
+    padding: 0;
+    animation: cambio 50s infinite linear;
+  }
+
+  .afrohk-footer,
+  .header-text {
+    font-size: 2rem;
+  }
+
+  #banner-wrapper {
+    z-index: 2;
+    top: 25%;
+    width: 100%;
+    left: 10%;
+  }
+
+  .banner-heading {
+    font-size: 1.7rem;
+    line-height: 3rem;
+    width: 80%;
+  }
+
+  .banner-paragraph {
+    font-size: 1.2rem;
+    line-height: 2rem;
+    width: 80%;
+  }
+
+  .check-programs,
+  .get-account {
+    width: 18rem;
+    display: inline;
+    font-size: 0.8rem;
   }
 
   .account-wrapper {
