@@ -178,6 +178,7 @@ nav {
   bottom: 3%;
   z-index: 99;
   opacity: 0;
+  display: none;
 }
 .top-link:hover {
   text-decoration: none;
@@ -186,6 +187,7 @@ nav {
 
 .top-btn-display {
   opacity: 1;
+  display: block;
 }
 
 /* TV Screen */
@@ -701,6 +703,11 @@ nav {
 
   .motto-footer {
     font-size: 1rem;
+  }
+
+  .top-link {
+    right: 5%;
+    bottom: 5%;
   }
 }
 

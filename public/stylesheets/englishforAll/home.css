@@ -15,18 +15,19 @@ body {
   font-family: "Roboto" serif;
 }
 
-/* banner */
-.banner-wrapper{
-    position: absolute;
-    z-index: 2;
-    top: 20%;
-    left: 40%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    transform: translate(-40%, -20%);
+.header-wrapper {
+  overflow: hidden;
+  position: relative;
 }
-
+/* banner */
+.banner-wrapper {
+  position: absolute;
+  z-index: 10;
+  top: 20%;
+  left: 50%;
+  overflow: hidden;
+  transform: translate(-50%, -20%);
+}
 
 .bg-img-wrapper {
   width: 100%;
@@ -39,7 +40,6 @@ body {
   display: none;
 }
 
-
 .bg-img-wrapper img {
   width: 100%;
   height: 100%;
@@ -48,7 +48,7 @@ body {
   animation: scale 25s;
 }
 
-.img-medium:hover{
+.img-medium:hover {
   opacity: 0.9;
 }
 
@@ -62,7 +62,7 @@ body {
 }
 
 .banner-heading {
-  color:rgb(250, 249, 249);
+  color: rgb(250, 249, 249);
   /* width: 100%; */
   padding: 1rem;
   font-family: "Poppins", sans-serif;
@@ -77,10 +77,9 @@ body {
   animation: moveBanner 2s 1.2s forwards;
 }
 
-
 .banner-paragraph {
   font-size: 1.4rem;
-  font-family: 'Chango', cursive;
+  font-family: "Chango", cursive;
   color: rgb(245, 99, 14);
   width: 100%;
   margin: 2rem 0;
@@ -102,7 +101,6 @@ body {
     opacity: 1;
   }
 }
-
 
 .account-wrapper {
   display: flex;
@@ -143,35 +141,45 @@ body {
   color: rgb(243, 239, 237);
 }
 
-
 /* Programs */
-
-.programs {
-font-size: 2.5rem;
-text-transform: uppercase;
-font-family: "Chivo", sans-serif;
-margin: 0;
-font-weight: 900;
-letter-spacing: 0.1rem;
-padding: 2rem 0 1rem;
-color: rgba(2, 24, 51, 0.979);
-text-shadow: 1px 2px 0px rgba(255, 255, 255, 0.712);
-text-align: center;
+.program-presentation {
+  padding: 5rem 0 0;
+  background-color: #eee;
 }
-
-.main-program-description, .mission {
+.main-program-description {
   font-family: "Roboto", sans-serif;
-  font-size: 1rem;
   text-align: justify;
   font-weight: 500;
   font-size: 1.6rem;
   /* line-height: 5rem; */
-  padding: 3rem  5rem 0;
+  padding: 5rem 4rem 6rem;
+  color: rgba(32, 32, 32, 0.719);
+}
+.programs {
+  font-size: 2.5rem;
+  text-transform: uppercase;
+  font-family: "Chivo", sans-serif;
+  margin: 0;
+  font-weight: 900;
+  letter-spacing: 0.1rem;
+  padding: 2rem 0 1rem;
+  color: rgba(2, 24, 51, 0.979);
+  text-shadow: 1px 2px 0px rgba(255, 255, 255, 0.712);
+  text-align: center;
+}
+
+.mission {
+  font-family: "Roboto", sans-serif;
+  text-align: justify;
+  font-weight: 500;
+  font-size: 1.6rem;
+  /* line-height: 5rem; */
+  padding: 3rem 5rem 0;
   color: rgba(32, 32, 32, 0.781);
   /* height: 8rem; */
 }
 
-#mission-wrapper{
+#mission-wrapper {
   height: 40vh;
   background: url("https://images.unsplash.com/photo-1516182823370-7a5fa91445c3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80");
   background: url("https://images.unsplash.com/photo-1573496267526-08a69e46a409?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1769&q=80");
@@ -187,7 +195,7 @@ text-align: center;
   padding: 0;
 }
 
-#mission-wrapper::before{
+#mission-wrapper::before {
   content: "";
   background: #000000; /* fallback for old browsers */
   background: -webkit-linear-gradient(
@@ -212,22 +220,25 @@ text-align: center;
   left: 0;
   right: 0;
 }
+.mission {
+  position: relative;
+}
 
-.mission{
-  position: absolute;
+.mission-paragraph {
+  margin: 4rem 0 2rem;
   text-align: center;
   color: white;
 }
 
-#mission-wrapper button{
-  position:absolute;
-  bottom: 16%;
+#mission-wrapper button {
 }
-strong{
+strong {
   color: rgb(247, 109, 17);
 }
 
-
+.know-more-btn {
+  width: 10%;
+}
 
 /* Programs*/
 .program-section-wrapper {
@@ -236,13 +247,11 @@ strong{
   background-color: rgb(255, 255, 255);
 }
 
-
 .my-card-wrapper {
-  margin: 0 2rem;
+  margin: 0 0.5rem;
 }
 
 .my-card {
-  animation: moveProgCards 2s 1.2s forwards;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
     rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
     rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
@@ -300,27 +309,26 @@ strong{
   text-decoration: none;
 }
 
-.course-btn:hover{
+.course-btn:hover {
   background-color: #000;
   color: #fcfbfa;
 }
 
-.course-btn:hover  .cours-link{
+.course-btn:hover .cours-link {
   text-decoration: none;
   color: whitesmoke;
 }
 
-.course-link:hover{
-  color: #fcfbfa; 
+.course-link:hover {
+  color: #fcfbfa;
 }
 
-#english-program{
+#english-program {
   margin-bottom: 1rem;
 }
 
-
 /* free course  */
-.free-lesson-section{
+.free-lesson-section {
   height: 40vh;
   background: url("https://images.pexels.com/photos/6147408/pexels-photo-6147408.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
   background-size: cover;
@@ -335,7 +343,7 @@ strong{
   padding: 0;
 }
 
-.free-lesson-section::before{
+.free-lesson-section::before {
   content: "";
   background: #000000; /* fallback for old browsers */
   background: -webkit-linear-gradient(
@@ -361,13 +369,13 @@ strong{
   right: 0;
 }
 
-.free-lesson{
+.free-lesson {
   position: relative;
 }
 
-.free-lesson-paragraph{
+.free-lesson-paragraph {
   text-align: center;
-  margin: 5rem 2rem;
+  margin: 5rem 0 2rem;
   font-family: "Roboto", sans-serif;
   text-align: center;
   font-weight: 500;
@@ -385,13 +393,10 @@ strong{
   color: rgb(247, 238, 238);
 }
 
-.free-lesson-link:hover{
+.free-lesson-link:hover {
   text-decoration: none;
-  color: rgb(31, 30, 30); 
+  color: rgb(31, 30, 30);
 }
-
-
-
 
 /*===================================
 
@@ -399,52 +404,232 @@ strong{
 
   ==================================*/
 
-/* Extra small devices (phones, 600px and down) */
-@media(max-width: 600px) {
-.banner{
-    margin-top: 1rem;
-  margin-bottom: 7rem;
-}
-.banner-heading{
-  font-size: 2.8rem ;
-}
- .effect01 span {
-    font-size: 1rem;
- }
-
- .en-savoir-plus{
-    margin: 1rem 4rem;
- }
-}
-
 /* Small devices (portrait tablets and large phones, 600px and up) */
-@media(max-width: 800px) {
+@media (max-width: 1200px) {
+  .mission-paragraph,
+  .free-lesson-paragraph {
+    margin: 2rem 1rem;
+    font-size: 1.4rem;
+  }
+  .program-presentation {
+    padding: 4rem 0 0;
+  }
+  .main-program-description {
+    padding: 3rem 2rem 4rem;
+  }
+
+  .program-name {
+    font-size: 1.3rem;
+  }
+
+  .program-description {
+    font-size: 0.8rem;
+  }
+
+  .know-more-btn {
+    width: 20%;
+  }
+
+  .my-card-wrapper {
+    margin: 0;
+  }
 }
-
-
 
 /* Medium devices (landscape tablets, 768px and up) */
-@media (max-width: 1000px) {
+@media (max-width: 900px) {
+  #mission-wrapper {
+    height: 30vh;
+    padding: 1rem 2rem 0;
+  }
+
+  .account-wrapper {
+    width: 60%;
+  }
+
+  .mission-paragraph,
+  .free-lesson-paragraph {
+    margin: 2rem 1rem;
+  }
+
+  .free-lesson-section {
+    height: 30vh;
+  }
+
+  .get-account,
+  .check-programs {
+    font-size: 0.7rem;
+  }
+  .programs {
+    font-size: 2rem;
+    padding: 1rem;
+    font-weight: 700;
+  }
+
+  .program-presentation {
+    padding: 2rem 0 0;
+  }
+  .main-program-description {
+    padding: 2rem 1rem;
+  }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media (max-width: 800px) {
+  .banner-heading {
+    font-size: 3rem;
+  }
+  .banner-paragraph {
+    font-size: 1.2rem;
+    line-height: 2rem;
+  }
+
+  .main-program-description,
+  .mission {
+    font-size: 1.2rem;
+    /* line-height: 5rem; */
+    padding: 2rem 2rem;
+    color: rgba(32, 32, 32, 0.781);
+    /* height: 8rem; */
+  }
+
+  #mission-wrapper {
+    height: 40vh;
+    padding: 1rem 2rem 0;
+  }
+  .free-lesson-section {
+    height: 40vh;
+  }
+  .program-section-wrapper {
+    margin: 0 0;
+    padding: 2rem 0;
+  }
+
+  .know-more-btn {
+    width: 30%;
+  }
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media (max-width: 600px) {
+  .banner {
+    margin-top: 1rem;
+    margin-bottom: 7rem;
+  }
+  .banner-heading {
+    font-size: 2.5rem;
+  }
+  .effect01 span {
+    font-size: 1rem;
+  }
+
+  .en-savoir-plus {
+    margin: 1rem 4rem;
+  }
+
+  .banner-paragraph {
+    font-size: 1rem;
+  }
+
+  .main-program-description,
+  .mission {
+    font-size: 1rem;
+    /* line-height: 5rem; */
+    padding: 2rem 2rem;
+    color: rgba(32, 32, 32, 0.781);
+    /* height: 8rem; */
+  }
+
+  #mission-wrapper {
+    height: 40vh;
+    padding: 1rem 2rem 0;
+  }
+
+  .know-more-btn {
+    width: 40%;
+    font-size: 1rem;
+  }
+  .free-lesson-section {
+    height: 40vh;
+  }
+  .programs {
+    font-size: 1.7rem;
+  }
+
+  .free-lesson-paragraph {
+    margin: 3rem 1rem 2rem;
+    font-size: 1.2rem;
+  }
+  .mission-paragraph {
+    margin: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .get-account,
+  .check-programs {
+    font-size: 0.5rem;
+  }
 }
 
 /* Large devices (laptops/desktops, 992px and up) */
-@media (min-width: 992px) {
+@media (max-width: 450px) {
+  .banner-heading {
+    font-size: 2rem;
+  }
+  .banner-paragraph {
+    font-size: 1rem;
+  }
+  .know-more-btn {
+    width: 55%;
+    font-size: 0.8rem;
+  }
+  .program-section-wrapper {
+    margin: 0;
+    padding: 0;
+  }
 
+  .free-lesson-paragraph {
+    margin: 3rem 1rem 2rem;
+    font-size: 1.2rem;
+  }
+  .mission-paragraph {
+    margin: 1rem;
+    font-size: 1rem;
+  }
+
+  .programs {
+    margin-top: 2rem;
+    font-size: 1.2rem;
+  }
 }
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */
-@media (min-width: 1200px) {}
+@media (max-width: 350px) {
+  .know-more-btn {
+    width: 40%;
+    font-size: 0.4rem;
+  }
 
+  .free-lesson-paragraph {
+    margin: 2rem 0 0;
+    font-size: 1rem;
+  }
+  .mission-paragraph {
+    margin: 1rem 0;
+    padding: 0;
+    font-size: 1rem;
+  }
 
-
-
-
+  .programs {
+    margin-top: 2rem;
+    font-size: 1rem;
+  }
+}
 
 /*btn_background*/
 .effect01 {
-  color: #FFF;
+  color: #fff;
   border: 3px solid rgba(255, 255, 255, 0.897);
-  box-shadow:0px 0px 0px 1px #000 inset;
+  box-shadow: 0px 0px 0px 1px #000 inset;
   background-color: #000;
   overflow: hidden;
   position: relative;
@@ -452,8 +637,8 @@ strong{
 }
 .effect01:hover {
   border: 4px solid #666;
-  background-color: #FFF;
-  box-shadow:0px 0px 0px 4px #EEE inset;
+  background-color: #fff;
+  box-shadow: 0px 0px 0px 4px #eee inset;
 }
 
 /*btn_text*/
@@ -462,32 +647,32 @@ strong{
   transition: all 0.2s ease-out;
   z-index: 2;
 }
-.effect01:hover span{
+.effect01:hover span {
   letter-spacing: 0.15em;
   color: #333;
 }
 
 /*highlight*/
 .effect01:after {
-  background: #FFF;
+  background: #fff;
   border: 0px solid #000;
   content: "";
   height: 155px;
   left: -75px;
-  opacity: .8;
+  opacity: 0.8;
   position: absolute;
   top: -50px;
   -webkit-transform: rotate(35deg);
-          transform: rotate(35deg);
+  transform: rotate(35deg);
   width: 50px;
-  transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);/*easeOutCirc*/
+  transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1); /*easeOutCirc*/
   z-index: 1;
 }
 .effect01:hover:after {
-  background: #FFF;
+  background: #fff;
   border: 20px solid #000;
   opacity: 0;
   left: 120%;
   -webkit-transform: rotate(40deg);
-          transform: rotate(40deg);
+  transform: rotate(40deg);
 }

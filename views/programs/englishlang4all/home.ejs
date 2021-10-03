@@ -20,23 +20,33 @@
       alt=""
     />
   </div>
-  <div class="banner-wrapper d-flex align-items-center flex-column">
-    <h1 class="banner-heading">House Of English Lovers</h1>
-    <p class="banner-paragraph">Master English Now Than Ever Before</p>
-    <div class="account-wrapper">
-      <% if (!currentUser || currentUser === undefined) {%>
-      <a class="get-account" href="/register">Get Started Now</a>
+  <div class="banner-wrapper">
+    <div class="d-flex align-items-center flex-column" style="width: 100vw">
+      <h1 class="banner-heading">House Of English Lovers</h1>
+      <p class="banner-paragraph">Master English Now Than Ever Before</p>
+      <div class="account-wrapper">
+        <% if (!currentUser || currentUser === undefined) {%>
+        <a class="get-account" href="/register">Get Started Now</a>
 
-      <%} else { %>
-      <a class="check-programs" href="#program"> Our English Programs</a>
-      <%}%>
+        <%} else { %>
+        <a class="check-programs" href="#program"> Our English Programs</a>
+        <%}%>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- Learn more -->
 <div class="program-presentation">
-  <p class="main-program-description">
+  <p
+    class="main-program-description"
+    data-aos="zoom-in-up"
+    data-aos-offset="200"
+    data-aos-delay="150"
+    data-aos-duration="600"
+    data-aos-easing="ease-in-out"
+    data-aos-mirror="true"
+  >
     <strong> House of English Lover </strong> est un programme bien elaboré pour
     permettre aux etudiants, professionnels et particuliers d'améliorer leur
     niveau d'anglais. Apprenez, assimilez et maitrisez juste ce qu'il vous faut
@@ -44,23 +54,35 @@
   </p>
   <!-- AfroHk Tv  -->
   <!-- Button trigger modal -->
-  <div
-    id="mission-wrapper"
-    class="d-flex my-5 justify-content-center align-items-center flex-column"
-  >
-    <p class="mission">
-      <strong>Notre mission </strong>est de vous amener à parler la langue
-      anglaise mieux qu'auparavant.
-    </p>
-    <button
-      type="button"
-      class="btn btn-small ms-2 btn-outline-warning align-self-center"
-      style="width: 10%"
-      data-bs-toggle="modal"
-      data-bs-target="#learnmore"
+  <div id="mission-wrapper">
+    <div
+      class="
+        mission
+        d-flex
+        justify-content-center
+        align-items-center
+        flex-column
+      "
+      data-aos="zoom-in-down"
+      data-aos-offset="200"
+      data-aos-delay="150"
+      data-aos-duration="600"
+      data-aos-easing="ease-in-out"
+      data-aos-mirror="true"
     >
-      En savoir plus
-    </button>
+      <p class="mission-paragraph">
+        <strong>Notre mission </strong>est de vous amener à parler la langue
+        anglaise mieux qu'auparavant.
+      </p>
+      <button
+        type="button"
+        class="btn know-more-btn btn-small ms-2 btn-outline-warning"
+        data-bs-toggle="modal"
+        data-bs-target="#learnmore"
+      >
+        En savoir plus
+      </button>
+    </div>
   </div>
   <!-- Modal -->
   <div
@@ -130,7 +152,7 @@
       <div class="row">
         <!-- English clubs -->
         <div
-          class="col-lg-4 mt-5 mb-2"
+          class="col-md-6 col-lg-4 col-12 mt-5 mb-2"
           data-aos="zoom-in-right"
           data-aos-offset="200"
           data-aos-delay="150"
@@ -176,7 +198,7 @@
           data-aos-duration="800"
           data-aos-easing="ease-in-out"
           data-aos-mirror="true"
-          class="col-lg-4 mt-5 mb-2"
+          class="col-md-6 col-lg-4 col-12 mt-5 mb-2"
         >
           <div
             class="
@@ -216,7 +238,7 @@
           data-aos-duration="800"
           data-aos-easing="ease-in-out"
           data-aos-mirror="true"
-          class="col-lg-4 mt-5 mb-2"
+          class="col-md-6 col-lg-4 col-12 mt-5 mb-2"
         >
           <div
             class="
@@ -250,7 +272,7 @@
 
         <!-- English for Kids -->
         <div
-          class="col-lg-4 mt-5 mb-2"
+          class="col-md-6 col-lg-4 col-12 mt-5 mb-2"
           data-aos="fade-up-left"
           data-aos-offset="200"
           data-aos-delay="150"
@@ -296,7 +318,7 @@
           data-aos-duration="800"
           data-aos-easing="ease-in-out"
           data-aos-mirror="true"
-          class="col-lg-4 mt-5 mb-2"
+          class="col-md-6 col-lg-4 col-12 mt-5 mb-2"
         >
           <div
             class="
@@ -336,7 +358,7 @@
           data-aos-duration="800"
           data-aos-easing="ease-in-out"
           data-aos-mirror="true"
-          class="col-lg-4 mt-5 mb-2"
+          class="col-md-6 col-lg-4 col-12 mt-5 mb-2"
         >
           <div
             class="
@@ -386,7 +408,8 @@
     "
   >
     <p class="free-lesson-paragraph mb-3">
-      <strong>Vous hésitez toujours ?</strong> Essayez notre programme d’anglais gratuit
+      <strong>Vous hésitez toujours ?</strong> Essayez notre programme d’anglais
+      gratuit
     </p>
     <button class="btn my-5 px-3 py-2 effect01">
       <a
