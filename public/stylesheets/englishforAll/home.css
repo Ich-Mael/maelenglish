@@ -478,6 +478,7 @@ strong {
   .banner-heading {
     font-size: 3rem;
   }
+  
   .banner-paragraph {
     font-size: 1.2rem;
     line-height: 2rem;
@@ -496,9 +497,11 @@ strong {
     height: 40vh;
     padding: 1rem 2rem 0;
   }
+
   .free-lesson-section {
     height: 40vh;
   }
+
   .program-section-wrapper {
     margin: 0 0;
     padding: 2rem 0;
@@ -515,9 +518,11 @@ strong {
     margin-top: 1rem;
     margin-bottom: 7rem;
   }
+
   .banner-heading {
     font-size: 2.5rem;
   }
+
   .effect01 span {
     font-size: 1rem;
   }
@@ -548,9 +553,11 @@ strong {
     width: 40%;
     font-size: 1rem;
   }
+
   .free-lesson-section {
     height: 40vh;
   }
+
   .programs {
     font-size: 1.7rem;
   }
@@ -575,13 +582,16 @@ strong {
   .banner-heading {
     font-size: 2rem;
   }
+
   .banner-paragraph {
     font-size: 1rem;
   }
+
   .know-more-btn {
     width: 55%;
     font-size: 0.8rem;
   }
+
   .program-section-wrapper {
     margin: 0;
     padding: 0;
@@ -591,6 +601,7 @@ strong {
     margin: 3rem 1rem 2rem;
     font-size: 1.2rem;
   }
+
   .mission-paragraph {
     margin: 1rem;
     font-size: 1rem;
@@ -613,6 +624,7 @@ strong {
     margin: 2rem 0 0;
     font-size: 1rem;
   }
+
   .mission-paragraph {
     margin: 1rem 0;
     padding: 0;
