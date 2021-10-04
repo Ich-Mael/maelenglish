@@ -1430,13 +1430,24 @@ nav {
 
   #banner-wrapper {
     z-index: 2;
-    top: 20%;
+    top: 25%;
     left: 10%;
   }
 
   .header-text {
     font-size: 3rem;
   }
+
+
+.flash-container {
+  z-index: 2;
+  top: 17%;
+  left: 50%;
+}
+
+.flash {
+  font-size: 1rem;
+}
 }
 
 /* Small devices (portrait tablets and large phones, 600px and up) */
@@ -1461,6 +1472,12 @@ nav {
     z-index: 2;
     top: 20%;
     left: 10%;
+  }
+
+  .flash-container {
+    z-index: 2;
+    top: 15%;
+    left: 50%;
   }
 
   .banner-heading {
