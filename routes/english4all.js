@@ -21,7 +21,7 @@ router.get('/englishlang4all/free_english_lessons', (req, res) => {
 
 //english clubs 
 router.get('/englishlang4all/clubs', isLoggedIn, (req, res) => {
-    res.render("programs/englishlang4all/clubs");
+    res.render("programs/englishlang4all/englishClubs/home");
 });
 
 /* =================================================
