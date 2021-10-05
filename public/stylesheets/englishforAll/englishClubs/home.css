@@ -39,13 +39,13 @@ body {
   color: rgb(56, 55, 54);
 }
 
-.underline{
-	width: 12rem;
-	display: inline-block;
-	text-align: center;
-	height: 1rem;
-	margin: 0 1rem;
-	background-color: orangered;
+.underline {
+  width: 12rem;
+  display: inline-block;
+  text-align: center;
+  height: 1rem;
+  margin: 0 1rem;
+  background-color: orangered;
 }
 
 .eng-club-heading {
@@ -65,16 +65,15 @@ body {
   padding: 0;
   margin: 2rem 0;
 }
-.modal{
+.modal {
 }
-.eng-club-details:hover{
-background-color: rgb(255, 251, 246);
-border: 3px solid rgb(252, 107, 11);
+.eng-club-details:hover {
+  background-color: rgb(255, 251, 246);
+  border: 3px solid rgb(17, 17, 17);
 }
-
 
 .univ-eng-clubs {
-background-color: rgb(250, 239, 226);
+  background-color: rgb(255, 255, 255);
   padding: 0 1rem;
 }
 
@@ -84,7 +83,6 @@ background-color: rgb(250, 239, 226);
   font-family: "Chivo", sans-serif;
   font-weight: 700;
 }
-
 
 .eng-club-details {
   box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
@@ -104,51 +102,39 @@ background-color: rgb(250, 239, 226);
   height: 200px;
 }
 
+.eng-clubs-description {
+  padding: 1rem 0 0 0.8rem;
+}
+
 .eng-club-name {
-  text-align: center;
   font-size: 1.2rem;
-  padding: 1rem 1rem 0 1rem;
   font-family: "Chivo", sans-serif;
   font-weight: 700;
   color: rgba(12, 12, 12, 0.719);
 }
 
 .institution {
-  padding: 0.2rem 1rem;
-  background: #f7971e; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #f7971e,
-    #ffd200,
-    #f7971e
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #f7971e,
-    #ffd200,
-    #f7971e
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  margin-left: 3rem;
-  font-size: 1rem;
-  color: rgb(26, 26, 24);
-  border-radius: 3px;
+  background-color: rgba(80, 77, 75, 0.822);
+  padding: 1rem 1rem;
+  font-family: "Chivo", sans-serif;
+  font-weight: 900;
+  font-size: 2rem;
+  text-align: center;
+  color: rgb(230, 222, 207);
 }
 
 .definition {
-  margin-top: 0.5rem;
-  text-align: center;
-  font-weight: 500;
+  margin-top: 1rem;
 }
 
 .found-date {
   font-style: italic;
-  text-align: center;
   color: #646462;
 }
 
 .join {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .join-link {
@@ -168,91 +154,109 @@ background-color: rgb(250, 239, 226);
 }
 
 @media (max-width: 1024px) {
+  .underline {
+    width: 10rem;
+    display: inline-block;
+    text-align: center;
+    height: 1rem;
+    margin: 0 1rem;
+    background-color: orangered;
+  }
 
-.underline{
-	width: 10rem;
-	display: inline-block;
-	text-align: center;
-	height: 1rem;
-	margin: 0 1rem;
-	background-color: orangered;
-}
-
-
-.eng-club-details {
-	padding: 0;
-	margin: 0 0.5rem;
-      }
+  .eng-club-details {
+    padding: 0;
+    margin: 0 0.5rem;
+  }
 }
 
 @media (max-width: 800px) {
-
-	.underline{
-		width: 9rem;
-		height: 0.8rem;
-	}
-
-@media (max-width: 768px) {
-  .carousel-inner {
-    display: none;
+  .underline {
+    width: 9rem;
+    height: 0.8rem;
   }
 
-  .underline{
-	width: 5rem;
-	height: 0.8rem;
-}
+  @media (max-width: 768px) {
+    .carousel-inner {
+      display: none;
+    }
 
-}
+    .banner-wrapper{
+      height: 50vh;
+      background: url("https://i.ibb.co/1dbjT55/neci-6.jpg");
+      background-size: cover;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-position: center center;
+      position: relative;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      margin: 0;
+      padding: 0;
+    }
 
-@media (max-width: 480px) {
-  .program-title {
-    font-size: 2rem;
-  }
-  .underline{
-	width: 3rem;
-	height: 0.8rem;
-}
-  .why-heading {
-    font-size: 1.2rem;
-    margin: 0;
-    padding: 1rem 0;
-  }
+    .program-title{
+      margin-top: 0;
+      padding-top: 3rem;
+      color: #f2fcfe;
+      text-shadow: 1px 2px 1px black;
+      font-size: 2rem;
+    }
 
-  .eng-club-heading {
-    font-size: 1.5rem;
-  }
-
-  .eng-club-details{
-    width: 90%;
-  }
-  .img-wrapper img {
-	height: 250px;
-      }
-}
-
-
-@media (max-width: 430px) {
-	.why-heading {
-		font-size: 1.2rem;
-	      }
-	.underline{
-	      display: none;
-      }
-}
-
-@media (max-width: 320px) {
-  .program-title {
-    font-size: 1.7rem;
+    .underline {
+      width: 5rem;
+      height: 0.8rem;
+    }
   }
 
-  .eng-club-heading {
-    font-size: 1.2rem;
+  @media (max-width: 480px) {
+    .program-title {
+      font-size: 2rem;
+    }
+    .underline {
+      width: 3rem;
+      height: 0.8rem;
+    }
+    .why-heading {
+      font-size: 1.2rem;
+      margin: 0;
+      padding: 1rem 0;
+    }
+
+    .eng-club-heading {
+      font-size: 1.5rem;
+    }
+
+    .eng-club-details {
+      width: 90%;
+    }
+    .img-wrapper img {
+      height: 250px;
+    }
   }
-  .underline{
-	width: 2rem;
-	height: 0.5rem;
-}
-}
+
+  @media (max-width: 430px) {
+    .why-heading {
+      font-size: 1.2rem;
+    }
+    .underline {
+      display: none;
+    }
+  }
+
+  @media (max-width: 320px) {
+    .program-title {
+      font-size: 2rem;
+    }
+
+    .eng-club-heading {
+      font-size: 1.2rem;
+    }
+    .underline {
+      width: 2rem;
+      height: 0.5rem;
+    }
+  }
   .why-heading {
     font-size: 1.2rem;
   }
