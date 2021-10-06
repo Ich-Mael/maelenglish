@@ -10,6 +10,7 @@ const methodOverride = require("method-override");
 const flash = require("connect-flash");
 const User = require("./models/user");
 const catchAsync = require("./utilities/catchAsync");
+const ExpressError = require("./utilities/ExpressError")
 const userRoutes = require("./routes/user");
 const courseRoutes = require("./routes/course");
 const xpaxRoutes = require("./routes/xpaxetudiant");
@@ -121,12 +122,14 @@ app.use("/", englishRoutes);
 app.use("/", fasopreunariatRoutes);
 
 app.all("*", (req, res, next) => {
-  res.render("errorpage");
+  next(new ExpressError('Page not found', 404));
 });
 
 //error handling
 app.use((err, req, res, next) => {
-  res.render("errorpage");
+    const { statusCode = 500 } = err;
+    if (!err.message) err.message = `Quelque chose d'inattendue s'est produit 🤷🏽‍♂️!!!`; 
+    res.status(statusCode).render('error', { err });
 });
 
 const port = process.env.PORT || 3000;
