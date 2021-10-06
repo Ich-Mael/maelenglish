@@ -75,7 +75,7 @@
   </button>
 </div>
 <div class="banner-wrapper m-0">
-<h1 class="program-title text-center">Natural English clubs</h1>
+  <h1 class="program-title text-center">Natural English clubs</h1>
 </div>
 
 <!-- why english clubs  -->
@@ -120,7 +120,6 @@
 </section>
 
 <!-- ours english clubs -->
-
 <section class="our-englishclubs">
   <h2 class="eng-club-heading">Our Natural English clubs</h2>
   <div class="univ-eng-clubs">
@@ -131,6 +130,7 @@
         ></span>
       </h3>
       <div class="row pb-5">
+        <% for(let club of clubs) {%>
         <!-- english club 1 -->
         <div class="col-sm-6 col-md-4 card-wrapper col-lg-3">
           <div class="eng-club-details">
@@ -142,11 +142,11 @@
               />
             </div>
 
-            <h2 class="institution">IBAM</h2>
+            <h2 class="institution"><%=club.instituition %></h2>
             <div class="eng-clubs-description">
-              <h3 class="eng-club-name">NECI</h3>
-              <p class="definition">Natural Engligh Club of Ibam</p>
-              <p class="found-date">Founded in 2021</p>
+              <h3 class="eng-club-name"><%=club.acronym %></h3>
+              <p class="definition"><%=club.name%></p>
+              <p class="found-date">Founded in <%=club.foundDate %></p>
             </div>
             <hr />
             <div class="join py-3">
@@ -154,14 +154,18 @@
                 <!-- Button trigger modal -->
                 <button
                   type="button"
-                  class="btn mx-2 btn-info"
+                  class="btn mx-2 btn-success"
                   data-bs-toggle="modal"
                   data-bs-target="#english-club-1"
                 >
                   Learn more
                 </button>
-                <button class="btn mx-2 btn-outline-info">
-                  <a class="join-link" href="">Join us</a>
+                <button class="btn mx-2 btn-outline-success">
+                  <a
+                    class="join-link"
+                    href="/englishlang4all/Clubs/<%=club._id%>"
+                    >Join us</a
+                  >
                 </button>
               </div>
 
@@ -202,293 +206,8 @@
             </div>
           </div>
         </div>
-
+        <%}%>
         <!-- english club 2 -->
-        <div class="col-sm-6 col-md-4 card-wrapper col-lg-3">
-          <div class="eng-club-details">
-            <div class="img-wrapper">
-              <img
-                src="https://i.ibb.co/Ky8SXTm/Neci.jpg"
-                class="img-thumbnail"
-                alt=""
-              />
-            </div>
-
-            <h2 class="institution">IBAM</h2>
-            <div class="eng-clubs-description">
-              <h3 class="eng-club-name">NECI</h3>
-              <p class="definition">Natural Engligh Club of Ibam</p>
-              <p class="found-date">Founded in 2021</p>
-            </div>
-            <hr />
-            <div class="join py-3">
-              <div class="">
-                <!-- Button trigger modal -->
-                <button
-                  type="button"
-                  class="btn mx-2 btn-info"
-                  data-bs-toggle="modal"
-                  data-bs-target="#english-club-1"
-                >
-                  Learn more
-                </button>
-                <button class="btn mx-2 btn-outline-info">
-                  <a class="join-link" href="">Join us</a>
-                </button>
-              </div>
-
-              <!-- Modal -->
-              <div
-                class="modal fade"
-                id="english-club-1"
-                tabindex="-1"
-                aria-labelledby="exampleModalLabel"
-                aria-hidden="true"
-              >
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="exampleModalLabel">
-                        All about Natural English Club of Ibam
-                      </h5>
-                      <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      ></button>
-                    </div>
-                    <div class="modal-body">...</div>
-                    <div class="modal-footer">
-                      <button
-                        type="button"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal"
-                      >
-                        Close
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- english club 3 -->
-        <div class="col-sm-6 col-md-4 card-wrapper col-lg-3">
-          <div class="eng-club-details">
-            <div class="img-wrapper">
-              <img
-                src="https://i.ibb.co/Ky8SXTm/Neci.jpg"
-                class="img-thumbnail"
-                alt=""
-              />
-            </div>
-
-            <h2 class="institution">IBAM</h2>
-            <div class="eng-clubs-description">
-              <h3 class="eng-club-name">NECI</h3>
-              <p class="definition">Natural Engligh Club of Ibam</p>
-              <p class="found-date">Founded in 2021</p>
-            </div>
-            <hr />
-            <div class="join py-3">
-              <div class="">
-                <!-- Button trigger modal -->
-                <button
-                  type="button"
-                  class="btn mx-2 btn-info"
-                  data-bs-toggle="modal"
-                  data-bs-target="#english-club-1"
-                >
-                  Learn more
-                </button>
-                <button class="btn mx-2 btn-outline-info">
-                  <a class="join-link" href="">Join us</a>
-                </button>
-              </div>
-
-              <!-- Modal -->
-              <div
-                class="modal fade"
-                id="english-club-1"
-                tabindex="-1"
-                aria-labelledby="exampleModalLabel"
-                aria-hidden="true"
-              >
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="exampleModalLabel">
-                        All about Natural English Club of Ibam
-                      </h5>
-                      <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      ></button>
-                    </div>
-                    <div class="modal-body">...</div>
-                    <div class="modal-footer">
-                      <button
-                        type="button"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal"
-                      >
-                        Close
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- english club 4 -->
-        <div class="col-sm-6 col-md-4 card-wrapper col-lg-3">
-          <div class="eng-club-details">
-            <div class="img-wrapper">
-              <img
-                src="https://i.ibb.co/Ky8SXTm/Neci.jpg"
-                class="img-thumbnail"
-                alt=""
-              />
-            </div>
-
-            <h2 class="institution">IBAM</h2>
-            <div class="eng-clubs-description">
-              <h3 class="eng-club-name">NECI</h3>
-              <p class="definition">Natural Engligh Club of Ibam</p>
-              <p class="found-date">Founded in 2021</p>
-            </div>
-            <hr />
-            <div class="join py-3">
-              <div class="">
-                <!-- Button trigger modal -->
-                <button
-                  type="button"
-                  class="btn mx-2 btn-info"
-                  data-bs-toggle="modal"
-                  data-bs-target="#english-club-1"
-                >
-                  Learn more
-                </button>
-                <button class="btn mx-2 btn-outline-info">
-                  <a class="join-link" href="">Join us</a>
-                </button>
-              </div>
-
-              <!-- Modal -->
-              <div
-                class="modal fade"
-                id="english-club-1"
-                tabindex="-1"
-                aria-labelledby="exampleModalLabel"
-                aria-hidden="true"
-              >
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="exampleModalLabel">
-                        All about Natural English Club of Ibam
-                      </h5>
-                      <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      ></button>
-                    </div>
-                    <div class="modal-body">...</div>
-                    <div class="modal-footer">
-                      <button
-                        type="button"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal"
-                      >
-                        Close
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- english club 5 -->
-        <div class="col-sm-6 col-md-4 card-wrapper col-lg-3">
-          <div class="eng-club-details">
-            <div class="img-wrapper">
-              <img
-                src="https://i.ibb.co/Ky8SXTm/Neci.jpg"
-                class="img-thumbnail"
-                alt=""
-              />
-            </div>
-
-            <h2 class="institution">IBAM</h2>
-            <div class="eng-clubs-description">
-              <h3 class="eng-club-name">NECI</h3>
-              <p class="definition">Natural Engligh Club of Ibam</p>
-              <p class="found-date">Founded in 2021</p>
-            </div>
-            <hr />
-            <div class="join py-3">
-              <div class="">
-                <!-- Button trigger modal -->
-                <button
-                  type="button"
-                  class="btn mx-2 btn-info"
-                  data-bs-toggle="modal"
-                  data-bs-target="#english-club-1"
-                >
-                  Learn more
-                </button>
-                <button class="btn mx-2 btn-outline-info">
-                  <a class="join-link" href="">Join us</a>
-                </button>
-              </div>
-
-              <!-- Modal -->
-              <div
-                class="modal fade"
-                id="english-club-1"
-                tabindex="-1"
-                aria-labelledby="exampleModalLabel"
-                aria-hidden="true"
-              >
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="exampleModalLabel">
-                        All about Natural English Club of Ibam
-                      </h5>
-                      <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      ></button>
-                    </div>
-                    <div class="modal-body">...</div>
-                    <div class="modal-footer">
-                      <button
-                        type="button"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal"
-                      >
-                        Close
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- english club 6 -->
         <div class="col-sm-6 col-md-4 card-wrapper col-lg-3">
           <div class="eng-club-details">
             <div class="img-wrapper">

@@ -468,7 +468,6 @@ nav {
 
 .program-name {
   font-family: "Chivo", sans-serif;
-  text-align: center;
   font-weight: 700;
   font-size: 1.5rem;
 }
@@ -476,11 +475,9 @@ nav {
 .program-description {
   font-family: "Roboto", sans-serif;
   font-size: 1rem;
-  text-align: center;
   font-weight: 500;
   font-size: 1rem;
   line-height: 4rem;
-  padding: 1rem 1.5rem;
   color: rgba(32, 32, 32, 0.781);
   line-height: 1.8rem;
   /* height: 8rem; */
@@ -499,6 +496,7 @@ nav {
 }
 .course-link {
   color: #fcfbfa;
+  font-size: 1rem;
   padding: 0;
   text-decoration: none;
 }
@@ -1711,7 +1709,10 @@ nav {
   .header-text {
     font-size: 3rem;
   }
-
+  .course-link {
+    color: #fcfbfa;
+    font-size: 0.8rem;
+  }
   .logo-navbar {
     display: none;
   }
@@ -1756,7 +1757,6 @@ nav {
   }
 
   .program-name {
-    text-align: center;
     font-weight: 700;
     font-size: 1.2rem;
   }
@@ -1764,7 +1764,6 @@ nav {
   .program-description {
     font-family: "Roboto", sans-serif;
     font-size: 0.8rem;
-    text-align: center;
     font-weight: 500;
   }
 

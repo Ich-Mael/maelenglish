@@ -1,0 +1,111 @@
+<% layout('layouts/boilerplate') %>
+<link
+  href="/stylesheets/englishforAll/englishClubs/show.css"
+  rel="stylesheet"
+/>
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
+<!-- Banner section -->
+<div class="row">
+  <div class="col-lg-4">
+    <div class="enlish-club-info">
+      <div class="club-logos-wrapper">
+        <img
+          class="school-logo img-thumbnail"
+          src="https://i.ibb.co/4j2qhXx/Whats-App-Image-2021-02-12-at-08-00-28-1.jpg"
+          alt=""
+        />
+        <img
+          class="club-logo img-thumbnail"
+          src="https://i.ibb.co/Ky8SXTm/Neci.jpg"
+          alt=""
+        />
+      </div>
+      <div class="club-info">
+        <h1 class="club-name"><%=club.name%></h1>
+        <p class="club-motto"><%=club.motto %></p>
+      </div>
+      <div class="social-links mb-4">
+        <!-- Social media -->
+        <h3 class="footer-links-header" class="mb-2">
+          Join us on social media
+        </h3>
+        <div class="social-media-icons">
+          <!-- Facebook -->
+          <a
+            class="btn btn-outline-light btn-floating m-2"
+            href=""
+            id="facebook"
+            role="button"
+            target="_blank"
+            ><i class="engclub-sm-icon fab fa-facebook-f"></i
+          ></a>
+
+          <!-- Twitter -->
+          <a
+            class="btn btn-outline-light btn-floating m-2"
+            href="#!"
+            id="twitter"
+            target="_blank"
+            role="button"
+            ><i class="engclub-sm-icon fab fa-twitter"></i
+          ></a>
+
+          <!-- Google -->
+          <!-- <a
+			  class="btn btn-outline-light btn-floating m-2"
+			  href="#!"
+			  target="_blank"
+			  role="button"
+			  ><i class="fab fa-google"></i
+			></a> -->
+
+          <!-- Instagram -->
+          <a
+            class="btn btn-outline-light btn-floating m-2"
+            href="#!"
+            role="button"
+            id="instagram"
+            target="_blank"
+            ><i class="engclub-sm-icon fab fa-instagram"></i
+          ></a>
+
+          <!-- Linkedin -->
+          <!-- <a
+          class="btn btn-outline-light btn-floating m-2"
+          href="#!"
+          target="_blank"
+          role="button"
+          id="linkedIn"
+          ><i class="engclub-sm-icon fab fa-linkedin-in"></i
+        ></a> -->
+          <!-- Youtube -->
+          <a
+            class="btn btn-outline-light btn-floating m-2"
+            href=""
+            role="button"
+            id="youtube"
+            target="_blank"
+            ><i class="engclub-sm-icon bi bi-youtube"></i
+          ></a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div id="banner">
+      <div class="bg-img-wrapper">
+        <img
+          class="img-small"
+          src="https://images.unsplash.com/photo-1573166953836-06864dc70a21?ixid=MnwxMjA3fDB8MHxzZWFyY2h8ODV8fGFmcmljYW4lMjBnaXJsfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
+          alt=""
+        />
+        <img
+          class="img-medium"
+          src="https://images.unsplash.com/photo-1516182823370-7a5fa91445c3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
+          alt=""
+        />
+      </div>
+    </div>
+  </div>
+</div>

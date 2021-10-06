@@ -1,0 +1,33 @@
+<% layout('layouts/boilerplate') %>
+<h1>Create a new english club</h1>
+<form action="/englishlang4all/clubs" method="POST">
+  <!-- -->
+  <label for="instituition">Instituition</label>
+  <input type="text" name="englishClub[instituition]" value="" />
+  <!-- acronym-->
+  <label for="Acronym">Acronym</label>
+  <input type="text" name="englishClub[acronym]" value="" />
+
+  <!-- name -->
+  <label for="name">Name</label>
+  <input type="text" name="englishClub[name]" value="" />
+
+  <!-- motto -->
+  <label for="motto">Motto</label>
+  <input type="text" name="englishClub[motto]" value="" />
+
+  <!-- found date -->
+  <label for="foundDate">Found Date</label>
+  <input type="text" name="englishClub[foundDate]" value="" />
+
+  <!-- found date -->
+  <label for="logoImageUrl">Logo Image Url</label>
+  <input type="text" name="englishClub[logoImageUrl]" value="" />
+
+  <!-- Description -->
+  <label for="description">Description</label>
+  <textarea name="englishClub[description]" id="" cols="30" rows="10">
+  </textarea>
+
+  <button type="submit">Create an English Club</button>
+</form>
