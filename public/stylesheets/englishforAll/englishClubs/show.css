@@ -344,8 +344,8 @@ body {
   padding: 0 2rem;
 }
 
-.activity-underline{
-	border-bottom: 5px solid rebeccapurple;
+.activity-underline {
+  border-bottom: 5px solid rebeccapurple;
 }
 
 .activity-heading {
@@ -399,6 +399,129 @@ body {
 
 .news-summary {
   font-size: 1rem;
+}
+
+/*cuurent activity */
+
+.student-month {
+  font-family: "Chivo", sans-serif;
+  font-weight: 700;
+  color: rgb(11, 18, 49);
+  letter-spacing: 0.1rem;
+  background: #e65c00; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #f9d423,
+    #e65c00
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #e65c00,
+    #f9d423,
+    #e65c00
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.instructor-month {
+  background: #000000; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #434343,
+    #000000
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #434343,
+    #000000
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  color: whitesmoke;
+}
+
+.som-img-wrapper,
+.iom-img-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.som-img-wrapper img,
+.iom-img-wrapper img {
+  height: 200px;
+  width: 100%;
+}
+
+.iom-img-wrapper img {
+  object-fit: contain;
+}
+
+.word-day {
+  font-family: "Chivo", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.1rem;
+  background: #2980b9; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #2980b9,
+    #6dd5fa,
+    #90e9f0,
+    #6dd5fa,
+    #2980b9
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #2980b9,
+    #6dd5fa,
+    #90e9f0,
+    #6dd5fa,
+    #2980b9
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.word-day-title {
+  color: blue;
+}
+.idioms-title {
+  color: #0e76a8;
+}
+
+.incomming-activities {
+  font-family: "Chivo", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.1rem;
+  background: #11998e; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+	#11998e,
+	#38ef7d,
+	#38ef7d,
+	#11998e
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #11998e,
+    #38ef7d,
+    #38ef7d,
+    #11998e
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.activity-date {
+  font-size: 1rem;
+}
+
+.weekly-activity{
+	color: #0e76a8;
+	text-align: center;
+	padding: 1rem;
+}
+
+.activity-place {
+  font-size: 1rem;
+  padding: 1rem;
+}
+
+.activity-time {
+  font-size: 1rem;
+  padding: 0 1rem;
 }
 
 /* ================================= */
