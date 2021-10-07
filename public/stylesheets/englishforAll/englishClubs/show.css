@@ -16,26 +16,27 @@ body {
 }
 
 /* banner section */
-.enlish-club-info{
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: space-around;
+.enlish-club-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
 }
 
-.club-logos-wrapper{
-	padding-top: 2rem;
-	display: flex;
-	justify-content: space-around;
+.club-logos-wrapper {
+  padding-top: 2rem;
+  display: flex;
+  justify-content: space-around;
 }
 
-.school-logo, .club-logo{
-width: 150px;
-height: 150px;
-margin: 2rem;
+.school-logo,
+.club-logo {
+  width: 150px;
+  height: 150px;
+  margin: 2rem;
 }
 
-.banner{
+.banner {
   width: 100%;
   position: relative;
   overflow: hidden;
@@ -70,9 +71,8 @@ margin: 2rem;
   }
 }
 
-
-.club-info{
-	padding: 2rem 0 0 2rem;
+.club-info {
+  padding: 2rem 0 0 2rem;
 }
 
 @keyframes moveBanner {
@@ -84,7 +84,6 @@ margin: 2rem;
     opacity: 1;
   }
 }
-
 
 .club-name {
   color: #0e0c29d7;
@@ -100,12 +99,12 @@ margin: 2rem;
   animation: moveBanner 2s 1.2s forwards;
 }
 
-.club-motto{
+.club-motto {
   font-size: 1.5rem;
   text-align: center;
   color: rgb(39, 38, 38);
   margin: 2rem 0;
-  font-family: 'Noto Sans', sans-serif;
+  font-family: "Noto Sans", sans-serif;
   line-height: 3rem;
   letter-spacing: 0.1rem;
   opacity: 0;
@@ -113,15 +112,284 @@ margin: 2rem;
 }
 
 /* social media icons */
-.social-links{
-	background-color: rgb(32, 32, 31);
-	padding: 2rem;
+.social-links {
+  background-color: rgb(32, 32, 31);
+  padding: 2rem;
 }
 
-.social-media-icons{
-	display: flex;
-	justify-content: center;
+.social-media-icons {
+  display: flex;
+  justify-content: center;
 }
-.engclub-sm-icon{
-	
+.engclub-sm-icon {
+}
+
+.english-club-nav {
+  background-color: rgb(204, 204, 204);
+}
+
+.engClub-nav-link {
+  font-size: 1.2rem;
+  transition: all 0.5s;
+  font-weight: 500;
+}
+
+.engClub-nav-link:hover {
+  color: black;
+  font-size: 1.25rem;
+}
+
+/* news section */
+
+.underline {
+  width: 12rem;
+  display: inline-block;
+  text-align: center;
+  height: 1rem;
+  margin: 0 1rem;
+  background-color: orangered;
+}
+.common-heading {
+  font-size: 2rem;
+  font-family: "Chivo", sans-serif;
+  font-weight: 700;
+  text-align: center;
+  padding: 3rem 0;
+  color: rebeccapurple;
+}
+
+/* boad members section */
+#board-section {
+  display: grid;
+  height: 100%;
+  place-items: center;
+  text-align: center;
+  background: #f2f2f2;
+}
+
+.slider {
+  display: flex;
+  justify-content: center;
+  width: 90vw;
+  padding: 3rem;
+  margin: 1rem 0 3rem;
+  background-color: white;
+  border: 4px solid rebeccapurple;
+}
+
+.card {
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+    rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
+    rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+}
+
+.card:hover {
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+    rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+}
+
+.slider .card {
+  flex: 1;
+  margin: 25px 15px;
+  background: #fff;
+}
+
+.slider .card .img {
+  height: 200px;
+  width: 100%;
+}
+
+.slider .card .img img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.slider .card .content {
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.card .content .member-name {
+  font-size: 25px;
+  font-weight: 600;
+}
+
+.card .content .position {
+  font-size: 20px;
+  font-weight: 600;
+  color: #e74c3c;
+  line-height: 20px;
+}
+
+.card .content p {
+  text-align: justify;
+  margin: 10px 0;
+}
+
+.card .content .btn {
+  display: block;
+  text-align: left;
+  margin: 10px 0 0;
+}
+
+.card .content .btn button {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  outline: none;
+  font-size: 17px;
+  padding: 5px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.card .content .btn button:hover {
+  transform: scale(0.9);
+}
+
+.member-social-links-card {
+  background-color: rgb(34, 33, 33);
+}
+.board-members-heading {
+  font-size: 2rem;
+  letter-spacing: 0.2rem;
+  font-family: "Chivo", sans-serif;
+  text-align: center;
+  padding: 2rem 0;
+  font-weight: 700;
+}
+
+
+
+/* social media */
+#m-facebook,
+#m-youtube,
+#m-instagram,
+#m-linkedIn,
+#m-twitter {
+  transition: all 0.5s;
+}
+#m-facebook:hover,
+#m-youtube:hover,
+#m-instagram:hover,
+#m-linkedIn:hover,
+#m-twitter:hover{
+  transform: rotate(360deg);
+}
+
+#m-facebook {
+  color: rgb(245, 239, 239);
+  background-color: rgb(9, 103, 192);
+}
+
+#m-linkedIn{
+  color: rgb(245, 239, 239);
+  background-color: #0e76a8;
+}
+
+#m-youtube {
+  color: rgb(245, 239, 239);
+  background-color: rgb(241, 65, 21);
+}
+#m-instagram{
+  color: rgb(245, 239, 239);
+  background: #833ab4; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #fcb045,
+    #fd1d1d,
+    #833ab4
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #fcb045,
+    #fd1d1d,
+    #833ab4
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+#m-twitter{
+  color: rgb(245, 239, 239);
+  background: #56ccf2; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #2f80ed,
+    #56ccf2
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #2f80ed,
+    #56ccf2
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+/* End social media */
+
+
+
+/* ================================= */
+/* responsiveness */
+/* ================================= */
+
+@media (max-width: 1200px) {
+}
+
+@media (max-width: 1024px) {
+  .underline {
+    width: 10rem;
+    display: inline-block;
+    text-align: center;
+    height: 1rem;
+    margin: 0 1rem;
+    background-color: orangered;
+  }
+}
+
+@media (max-width: 800px) {
+  .underline {
+    width: 9rem;
+    height: 0.8rem;
+  }
+
+  @media (max-width: 768px) {
+    .underline {
+      width: 5rem;
+      height: 0.8rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .underline {
+      width: 3rem;
+      height: 0.8rem;
+    }
+    .slider {
+      width: 90vw;
+      padding: 2rem;
+      margin: 2rem;
+    }
+  }
+
+  @media (max-width: 430px) {
+    .underline {
+      display: none;
+    }
+  }
+
+  @media (max-width: 320px) {
+    .underline {
+      width: 2rem;
+      height: 0.5rem;
+    }
+
+    .slider {
+      width: 90vw;
+      padding: 1rem;
+      margin: 1rem;
+    }
+  }
 }

@@ -22,4 +22,3 @@ window.addEventListener('scroll', function(){
     user.classList.toggle('user-shadow', window.scrollY > 0);
 
 });
-
