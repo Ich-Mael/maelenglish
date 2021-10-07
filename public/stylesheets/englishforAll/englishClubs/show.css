@@ -159,6 +159,7 @@ body {
 }
 
 /* boad members section */
+
 #board-section {
   display: grid;
   height: 100%;
@@ -171,19 +172,19 @@ body {
   display: flex;
   justify-content: center;
   width: 90vw;
-  padding: 3rem;
+  padding: 2rem 3rem;
   margin: 1rem 0 3rem;
   background-color: white;
   border: 4px solid rebeccapurple;
 }
 
-.card {
+.bm-card {
   box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
     rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
     rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
 }
 
-.card:hover {
+.bm-card:hover {
   box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
     rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
 }
@@ -254,20 +255,11 @@ body {
 .member-social-links-card {
   background-color: rgb(34, 33, 33);
 }
-.board-members-heading {
-  font-size: 2rem;
-  letter-spacing: 0.2rem;
-  font-family: "Chivo", sans-serif;
-  text-align: center;
-  padding: 2rem 0;
-  font-weight: 700;
-}
-
-
 
 /* social media */
 #m-facebook,
 #m-youtube,
+#m-whatsapp,
 #m-instagram,
 #m-linkedIn,
 #m-twitter {
@@ -277,7 +269,8 @@ body {
 #m-youtube:hover,
 #m-instagram:hover,
 #m-linkedIn:hover,
-#m-twitter:hover{
+#m-whatsapp:hover,
+#m-twitter:hover {
   transform: rotate(360deg);
 }
 
@@ -286,16 +279,21 @@ body {
   background-color: rgb(9, 103, 192);
 }
 
-#m-linkedIn{
+#m-linkedIn {
   color: rgb(245, 239, 239);
   background-color: #0e76a8;
+}
+
+#m-whatsapp {
+  background-color: rgb(29, 199, 29);
+  color: rgb(245, 239, 239);
 }
 
 #m-youtube {
   color: rgb(245, 239, 239);
   background-color: rgb(241, 65, 21);
 }
-#m-instagram{
+#m-instagram {
   color: rgb(245, 239, 239);
   background: #833ab4; /* fallback for old browsers */
   background: -webkit-linear-gradient(
@@ -312,7 +310,7 @@ body {
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
-#m-twitter{
+#m-twitter {
   color: rgb(245, 239, 239);
   background: #56ccf2; /* fallback for old browsers */
   background: -webkit-linear-gradient(
@@ -328,8 +326,45 @@ body {
 }
 
 /* End social media */
+/* End members section */
 
+/* main club activities */
+.main-content-wrapper {
+  background-color: rgb(245, 245, 245);
+}
 
+.activity-heading {
+  font-size: 2rem;
+  letter-spacing: 0.2rem;
+  font-family: "Chivo", sans-serif;
+  text-align: center;
+  padding: 2rem 0 1rem;
+  color: rgba(0, 0, 0, 0.596);
+  font-weight: 900;
+}
+
+.activities-wrapper {
+}
+
+.current-activity {
+}
+
+/* news section */
+
+.news-card {
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+  margin-top: 2rem;
+}
+
+.news-title {
+  font-size: 1.8rem;
+  font-family: "Poppins", sans-serif;
+  margin-bottom: 1rem;
+}
+
+.news-summary {
+  font-size: 1rem;
+}
 
 /* ================================= */
 /* responsiveness */

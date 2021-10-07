@@ -115,12 +115,12 @@ nav {
   font-family: "Roboto" serif;
   text-decoration: none;
   font-size: 1rem;
-  color: rgb(12, 12, 12);
+  color: rgb(255, 239, 231);
 }
 
 .profile-link:hover {
   text-decoration: none;
-  color: rgb(223, 80, 9);
+  color: rgb(255, 239, 231);
 }
 
 .afro {
