@@ -2,12 +2,14 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 const User = require("../models/user");
-// const NewsLetter = require("../models/newsletter");
+const englishClubs = require("../models/englishClub");
 const catchAsync = require('../utilities/catchAsync');
 const Course = require("../models/courses");
 const { isLoggedIn, checkRoles } = require("../middlewares/userController");
-const { checkCourseOwnership } = require("../middlewares/courseController");
-// const newsLetter = require("../models/newsletter");
+const { checkCourseOwnership, checkEnglishBoardMembership} = require("../middlewares/courseController");
+
+
+
 
 // register a user form
 router.get("/register", (req, res) => {
@@ -131,5 +133,15 @@ router.get(
         res.render("instructor");
     }
 );
+
+
+//==========================//==========================
+//   English club Board members acess
+//==========================//==========================
+router.get('/englishlang4all/Clubs/:club_id/board_dashboard', isLoggedIn, checkEnglishBoardMembership, catchAsync(async(req, res) => {
+    res.send("welcome to english club admin dashboard");
+}));
+
+
 
 module.exports = router;

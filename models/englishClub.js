@@ -1,75 +1,100 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const englishClubSchema = new Schema({
+const englishClubSchema = new Schema(
+  {
     instituition: {
-        type: String,
-        required: true,
+      type: String,
+      trim: true,
+      required: true,
     },
 
     acronym: {
-        type: String,
-        required: true,
+      type: String,
+      trim: true,
+      required: true,
     },
 
     name: {
-        type: String,
-        required: true,
+      type: String,
+      trim: true,
+      required: true,
     },
 
     motto: {
-        type: String,
-        required: true,
+      type: String,
+      trim: true,
+      required: true,
     },
 
     description: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
+      trim: true,
     },
 
     foundDate: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
 
     // image
     bannerImageUrlMedium: {
-        type: String,
+      type: String,
     },
 
     bannerImageUrlSmall: {
-        type: String,
+      type: String,
     },
 
     logoImageUrl: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
+    },
+
+    instituitionLogoUrl: {
+      type: String,
+      required: true,
     },
 
     // social media links
     facebookLink: {
-        type: String,
+      type: String,
+      trim: true,
     },
 
     twitterLink: {
-        type: String,
+      type: String,
+      trim: true,
     },
 
     instagramLink: {
-        type: String,
+      type: String,
+      trim: true,
     },
 
     youtubeLink: {
-        type: String,
+      type: String,
+      trim: true,
     },
 
+    boardMembers: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+        },
+    ],
 
-    members: [{
+    members: [
+      {
         type: Schema.Types.ObjectId,
         ref: "User",
-    }],
-}, {
+      },
+    ],
+  },
+  {
     timestamps: true,
-});
+  }
+);
 
 module.exports = mongoose.model("EnglishClub", englishClubSchema);

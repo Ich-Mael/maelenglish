@@ -108,26 +108,28 @@
 	<div class="row d-flex justify-content-center" data-aos="zoom-in-up" data-aos-offset="200" data-aos-delay="150"
 		data-aos-duration="600" data-aos-easing="ease-in-out" data-aos-mirror="true">
 		<div class="slider owl-carousel">
+			<% const positions = ["President", "Vice-President", "Treasurer", "Secretary", "Communication Manager", "Cultural Affairs Officer"] %>
+			<% for(let i=0; i < club.boardMembers.length ; i++){ %>
 			<div class="bm-card card">
 				<div class="img">
-					<img src="https://images.unsplash.com/photo-1546525848-3ce03ca516f6?ixid=MnwxMjA3fDB8MHxzZWFyY2h8NDB8fGFmcmljYW4lMjBzdHVkZW50fGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
-						alt="" />
+					<img src="<%= club.boardMembers[i].imageUrl %>"
+						alt="Board Member Picture" />
 				</div>
 				<div class="content">
-					<div class="position">Chairman</div>
-					<div class="member-name">Auguste Kabore</div>
+					<div class="position"><%= positions[i] %></div>
+					<div class="member-name"><%= club.boardMembers[i].name + " " + club.boardMembers[i].surname%> </div>
 					<p>
-						Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit modi
+						<%= club.boardMembers[i].about%>	
 					</p>
 					<!-- Social media -->
 					<div class="social-media-icons align-self-center">
 						<!-- Facebook -->
-						<a class="btn btn-outline-light btn-floating" href="" id="m-facebook"
+						<a class="btn btn-outline-light btn-floating" href="<%= club.boardMembers[i].facebookLink %>" id="m-facebook"
 							role="button" target="_blank"><i
 								class="engclub-sm-icon fab fa-facebook-f"></i></a>
 
 						<!-- Twitter -->
-						<a class="btn btn-outline-light btn-floating" href="#!" id="m-twitter"
+						<a class="btn btn-outline-light btn-floating" href="<%= club.boardMembers[i].twitterLink %>" id="m-twitter"
 							target="_blank" role="button"><i
 								class="engclub-sm-icon fab fa-twitter"></i></a>
 
@@ -139,122 +141,18 @@
 					      role="button"
 					      ><i class="fab fa-google"></i
 					    ></a> -->
-
 						<!-- Linkedin -->
-						<a class="btn btn-outline-light btn-floating" href="#!" target="_blank"
+						<a class="btn btn-outline-light btn-floating" href="<%= club.boardMembers[i].linkedIn%>" target="_blank"
 							role="button" id="m-linkedIn"><i
 								class="engclub-sm-icon fab fa-linkedin-in"></i></a>
 						<!-- whatsapp -->
-						<a class="btn btn-outline-light btn-floating " href="" role="button"
+						<a class="btn btn-outline-light btn-floating" href="<%= club.boardMembers[i].whatsAppLink %>" role="button"
 							id="m-whatsapp" target="_blank"><i
 								class="engclub-sm-icon fa fa-whatsapp"></i></a>
 					</div>
 				</div>
 			</div>
-			<div class="bm-card card">
-				<div class="img">
-					<img src="https://images.unsplash.com/photo-1546525848-3ce03ca516f6?ixid=MnwxMjA3fDB8MHxzZWFyY2h8NDB8fGFmcmljYW4lMjBzdHVkZW50fGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
-						alt="" />
-				</div>
-				<div class="content">
-					<div class="position">Chairman</div>
-					<div class="member-name">Auguste Kabore</div>
-					<p>
-						Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit modi
-					</p>
-					<!-- Social media -->
-					<div class="social-media-icons align-self-center">
-						<!-- Facebook -->
-						<a class="btn btn-outline-light btn-floating" href="" id="m-facebook"
-							role="button" target="_blank"><i
-								class="engclub-sm-icon fab fa-facebook-f"></i></a>
-
-						<!-- Twitter -->
-						<a class="btn btn-outline-light btn-floating" href="#!" id="m-twitter"
-							target="_blank" role="button"><i
-								class="engclub-sm-icon fab fa-twitter"></i></a>
-
-						<!-- Google -->
-						<!-- <a
-					      class="btn btn-outline-light btn-floating m-2"
-					      href="#!"
-					      target="_blank"
-					      role="button"
-					      ><i class="fab fa-google"></i
-					    ></a> -->
-						<!-- Instagram -->
-						<a class="btn btn-outline-light btn-floating" href="#!" role="button"
-							id="m-instagram" target="_blank"><i
-								class="engclub-sm-icon fab fa-instagram"></i></a>
-
-						<!-- Linkedin -->
-						<!-- <a
-			      class="btn btn-outline-light btn-floating m-2"
-			      href="#!"
-			      target="_blank"
-			      role="button"
-			      id="m-linkedIn"
-			      ><i class="engclub-sm-icon fab fa-linkedin-in"></i
-			    ></a> -->
-						<!-- Youtube -->
-						<a class="btn btn-outline-light btn-floating" href="" role="button"
-							id="m-youtube" target="_blank"><i
-								class="engclub-sm-icon bi bi-youtube"></i></a>
-					</div>
-				</div>
-			</div>
-			<div class="bm-card card">
-				<div class="img">
-					<img src="https://images.unsplash.com/photo-1546525848-3ce03ca516f6?ixid=MnwxMjA3fDB8MHxzZWFyY2h8NDB8fGFmcmljYW4lMjBzdHVkZW50fGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
-						alt="" />
-				</div>
-				<div class="content">
-					<div class="position">Chairman</div>
-					<div class="member-name">Auguste Kabore</div>
-					<p>
-						Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit modi
-					</p>
-					<!-- Social media -->
-					<div class="social-media-icons align-self-center">
-						<!-- Facebook -->
-						<a class="btn btn-outline-light btn-floating m-2" href=""
-							id="m-facebook" role="button" target="_blank"><i
-								class="engclub-sm-icon fab fa-facebook-f"></i></a>
-
-						<!-- Twitter -->
-						<a class="btn btn-outline-light btn-floating m-2" href="#!"
-							id="m-twitter" target="_blank" role="button"><i
-								class="engclub-sm-icon fab fa-twitter"></i></a>
-
-						<!-- Google -->
-						<!-- <a
-					      class="btn btn-outline-light btn-floating m-2"
-					      href="#!"
-					      target="_blank"
-					      role="button"
-					      ><i class="fab fa-google"></i
-					    ></a> -->
-						<!-- Instagram -->
-						<a class="btn btn-outline-light btn-floating m-2" href="#!"
-							role="button" id="m-instagram" target="_blank"><i
-								class="engclub-sm-icon fab fa-instagram"></i></a>
-
-						<!-- Linkedin -->
-						<!-- <a
-			      class="btn btn-outline-light btn-floating m-2"
-			      href="#!"
-			      target="_blank"
-			      role="button"
-			      id="m-linkedIn"
-			      ><i class="engclub-sm-icon fab fa-linkedin-in"></i
-			    ></a> -->
-						<!-- Youtube -->
-						<a class="btn btn-outline-light btn-floating m-2" href="" role="button"
-							id="m-youtube" target="_blank"><i
-								class="engclub-sm-icon bi bi-youtube"></i></a>
-					</div>
-				</div>
-			</div>
+			<% } %> 
 		</div>
 	</div>
 </div>
@@ -294,7 +192,7 @@
 										aria-labelledby="exampleModalLabel"
 										aria-hidden="true">
 										<div
-											class="modal-dialog modal-lg modal-fullscreen-md-down ">
+											class="modal-dialog modal-lg modal-fullscreen-md-down">
 											<div class="modal-content">
 												<div
 													class="modal-header">
@@ -602,10 +500,10 @@
 							<div class="modal fade" id="som" tabindex="-1"
 								aria-labelledby="exampleModalLabel" aria-hidden="true">
 								<div
-									class="modal-dialog modal-lg modal-fullscreen-md-down ">
+									class="modal-dialog modal-lg modal-fullscreen-md-down">
 									<div class="modal-content">
 										<div class="modal-header">
-											<h5 class="modal-title "
+											<h5 class="modal-title"
 												id="exampleModalLabel">
 												All about the Student
 												of the Month
@@ -649,7 +547,7 @@
 				</div>
 				<div class="instructor-OM">
 					<div class="card m-2">
-						<div class="card-header  text-center instructor-month">
+						<div class="card-header text-center instructor-month">
 							Instructor of the Month
 						</div>
 						<div class="card-body">
@@ -657,7 +555,7 @@
 								<img src="https://images.unsplash.com/photo-1561677843-39dee7a319ca?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1770&q=80"
 									alt="" class="img-thumbnail img-fluid">
 							</div>
-							<h5 class="card-title ">Mr. Daniel SAWADOGO</h5>
+							<h5 class="card-title">Mr. Daniel SAWADOGO</h5>
 							<p class="card-text">With supporting text below as a natural
 								lead-in to additional content.</p>
 							<!-- Button trigger modal -->
@@ -670,10 +568,10 @@
 							<div class="modal fade" id="iom" tabindex="-1"
 								aria-labelledby="exampleModalLabel" aria-hidden="true">
 								<div
-									class="modal-dialog modal-lg modal-fullscreen-md-down ">
+									class="modal-dialog modal-lg modal-fullscreen-md-down">
 									<div class="modal-content">
 										<div class="modal-header">
-											<h5 class="modal-title "
+											<h5 class="modal-title"
 												id="exampleModalLabel">
 												All about the Instructor
 												of the Month
@@ -746,10 +644,10 @@
 							<div class="modal fade" id="wod-1" tabindex="-1"
 								aria-labelledby="exampleModalLabel" aria-hidden="true">
 								<div
-									class="modal-dialog modal-lg modal-fullscreen-md-down ">
+									class="modal-dialog modal-lg modal-fullscreen-md-down">
 									<div class="modal-content">
 										<div class="modal-header">
-											<h5 class="modal-title "
+											<h5 class="modal-title"
 												id="exampleModalLabel">
 												Amalgamate
 											</h5>
@@ -801,126 +699,189 @@
 									Club</h3>
 								<h4 class="activity-date">Saturday, 13th Novemvember
 									2021</h3>
-								<h4 class="activity-place"> <span
-										class="fw-bold text-danger"><i
-											class="fas me-2 fa-map-marker-alt"></i>Venue
-										:</span> Amphi 3</h4>
-								<h4 class="activity-time"> <span
-										class="fw-bold text-danger"><i
-											class="fas me-2 fa-clock"></i>Time: </span>14:00
-								</h4>
-								<!-- Button trigger modal -->
-							<button type="button" class="btn mt-2 btn-outline-success"
-							data-bs-toggle="modal" data-bs-target="#wec">
-							Learn more about the WEC 
-						</button>
+									<h4 class="activity-place"> <span
+											class="fw-bold text-danger"><i
+												class="fas me-2 fa-map-marker-alt"></i>Venue
+											:</span> Amphi 3</h4>
+									<h4 class="activity-time"> <span
+											class="fw-bold text-danger"><i
+												class="fas me-2 fa-clock"></i>Time:
+										</span>14:00
+									</h4>
+									<!-- Button trigger modal -->
+									<button type="button"
+										class="btn mt-2 btn-outline-success"
+										data-bs-toggle="modal"
+										data-bs-target="#wec">
+										Learn more about the WEC
+									</button>
 
-						<!-- Modal -->
-						<div class="modal fade" id="wec" tabindex="-1"
-							aria-labelledby="exampleModalLabel" aria-hidden="true">
-							<div
-								class="modal-dialog modal-lg modal-fullscreen-md-down ">
-								<div class="modal-content">
-									<div class="modal-header">
-										<h5 class="modal-title "
-											id="exampleModalLabel">
-										 Agenda Weekly English Club Meeting	
-										</h5>
-										<button type="button"
-											class="btn-close"
-											data-bs-dismiss="modal"
-											aria-label="Close"></button>
+									<!-- Modal -->
+									<div class="modal fade" id="wec" tabindex="-1"
+										aria-labelledby="exampleModalLabel"
+										aria-hidden="true">
+										<div
+											class="modal-dialog modal-lg modal-fullscreen-md-down">
+											<div class="modal-content">
+												<div
+													class="modal-header">
+													<h5 class="modal-title"
+														id="exampleModalLabel">
+														Agenda
+														Weekly
+														English
+														Club
+														Meeting
+													</h5>
+													<button type="button"
+														class="btn-close"
+														data-bs-dismiss="modal"
+														aria-label="Close"></button>
+												</div>
+												<div class="modal-body">
+													<p> Lorem ipsum
+														dolor,
+														sit amet
+														consectetur
+														adipisicing
+														elit.
+														Eaque
+														tempora
+														et
+														velit.
+														Quae,
+														odit!
+														Esse
+														doloribus
+														qui
+														accusantium,
+														nobis
+														impedit
+														repellendus
+														hic
+														praesentium
+														voluptatum.
+														Incidunt
+														dicta
+														aspernatur
+														minus
+														quaerat
+														illum
+														quod
+														vitae
+														velit
+														at eos
+														iste?
+														Voluptate
+														aspernatur
+														laudantium
+														numquam
+														sapiente
+														deserunt
+														quidem,
+														expedita
+														natus.
+														Animi
+														voluptate
+														distinctio
+														fugit
+														reprehenderit!
+													</p>
+												</div>
+												<div
+													class="modal-footer">
+													<button type="button"
+														class="btn btn-danger"
+														data-bs-dismiss="modal">Close</button>
+												</div>
+											</div>
+										</div>
 									</div>
-									<div class="modal-body">
-										<p> Lorem ipsum dolor, sit amet
-											consectetur adipisicing
-											elit. Eaque tempora et
-											velit. Quae, odit! Esse
-											doloribus qui
-											accusantium, nobis
-											impedit repellendus hic
-											praesentium voluptatum.
-											Incidunt dicta
-											aspernatur minus quaerat
-											illum quod vitae velit
-											at eos iste? Voluptate
-											aspernatur laudantium
-											numquam sapiente
-											deserunt quidem,
-											expedita natus. Animi
-											voluptate distinctio
-											fugit reprehenderit!
-										</p>
-									</div>
-									<div class="modal-footer">
-										<button type="button"
-											class="btn btn-danger"
-											data-bs-dismiss="modal">Close</button>
-									</div>
-								</div>
-							</div>
-						</div>
 							</div>
 
 							<hr>
 							<div>
-								<h3 class="card-title weekly-activity">Online Debates</h3>
+								<h3 class="card-title weekly-activity">Online Debates
+								</h3>
 								<ul class="list-group list-group-flush">
-									<li class="list-group-item"> <span class="fw-bold">Topic 1 :</span><br> Mug Justice </li>
-									<li class="list-group-item"><span  class="fw-bold">Topic 2 :</span> <br> Sexual harassement at workplace </li>
+									<li class="list-group-item"> <span
+											class="fw-bold">Topic 1
+											:</span><br>
+										Mug Justice </li>
+									<li class="list-group-item"><span
+											class="fw-bold">Topic 2 :</span>
+										<br> Sexual harassement at workplace
+									</li>
 								</ul>
 
-										<!-- Button trigger modal -->
-							<button type="button" class="btn mt-2 btn-outline-success"
-							data-bs-toggle="modal" data-bs-target="#oed">
-							Learn more 
-						</button>
+								<!-- Button trigger modal -->
+								<button type="button"
+									class="btn mt-2 btn-outline-success"
+									data-bs-toggle="modal" data-bs-target="#oed">
+									Learn more
+								</button>
 
-						<!-- Modal -->
-						<div class="modal fade" id="oed" tabindex="-1"
-							aria-labelledby="exampleModalLabel" aria-hidden="true">
-							<div
-								class="modal-dialog modal-lg modal-fullscreen-md-down ">
-								<div class="modal-content">
-									<div class="modal-header">
-										<h5 class="modal-title "
-											id="exampleModalLabel">
-										 Online English Debates	
-										</h5>
-										<button type="button"
-											class="btn-close"
-											data-bs-dismiss="modal"
-											aria-label="Close"></button>
-									</div>
-									<div class="modal-body">
-										<p> Lorem ipsum dolor, sit amet
-											consectetur adipisicing
-											elit. Eaque tempora et
-											velit. Quae, odit! Esse
-											doloribus qui
-											accusantium, nobis
-											impedit repellendus hic
-											praesentium voluptatum.
-											Incidunt dicta
-											aspernatur minus quaerat
-											illum quod vitae velit
-											at eos iste? Voluptate
-											aspernatur laudantium
-											numquam sapiente
-											deserunt quidem,
-											expedita natus. Animi
-											voluptate distinctio
-											fugit reprehenderit!
-										</p>
-									</div>
-									<div class="modal-footer">
-										<button type="button"
-											class="btn btn-danger"
-											data-bs-dismiss="modal">Close</button>
+								<!-- Modal -->
+								<div class="modal fade" id="oed" tabindex="-1"
+									aria-labelledby="exampleModalLabel"
+									aria-hidden="true">
+									<div
+										class="modal-dialog modal-lg modal-fullscreen-md-down">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title"
+													id="exampleModalLabel">
+													Online English
+													Debates
+												</h5>
+												<button type="button"
+													class="btn-close"
+													data-bs-dismiss="modal"
+													aria-label="Close"></button>
+											</div>
+											<div class="modal-body">
+												<p> Lorem ipsum dolor,
+													sit amet
+													consectetur
+													adipisicing
+													elit. Eaque
+													tempora et
+													velit. Quae,
+													odit! Esse
+													doloribus qui
+													accusantium,
+													nobis
+													impedit
+													repellendus hic
+													praesentium
+													voluptatum.
+													Incidunt dicta
+													aspernatur minus
+													quaerat
+													illum quod vitae
+													velit
+													at eos iste?
+													Voluptate
+													aspernatur
+													laudantium
+													numquam sapiente
+													deserunt quidem,
+													expedita natus.
+													Animi
+													voluptate
+													distinctio
+													fugit
+													reprehenderit!
+												</p>
+											</div>
+											<div class="modal-footer">
+												<button type="button"
+													class="btn btn-danger"
+													data-bs-dismiss="modal">Close</button>
+											</div>
+										</div>
 									</div>
 								</div>
-							</div>
-						</div>
 							</div>
 
 						</div>

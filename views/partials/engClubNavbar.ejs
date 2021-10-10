@@ -28,6 +28,11 @@
             ><span class="myNav-link">Activities</span></a
           >
         </li>
+        <% if (currentUser.isEnglishClubBoardMember) {%>
+          <li>
+          <a class="nav-link-connexion me-2 my-2" href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard">Board Member Dashboard</a>
+        </li>
+          <%}%>
       </ul>
       <div class="navbar-nav ms-auto">
         <% if (!currentUser || currentUser == null) {%>

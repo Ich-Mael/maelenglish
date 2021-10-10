@@ -1,33 +1,160 @@
 <% layout('layouts/boilerplate') %>
-<h1>Create a new english club</h1>
-<form action="/englishlang4all/clubs" method="POST">
-  <!-- -->
-  <label for="instituition">Instituition</label>
-  <input type="text" name="englishClub[instituition]" value="" />
-  <!-- acronym-->
-  <label for="Acronym">Acronym</label>
-  <input type="text" name="englishClub[acronym]" value="" />
+<h1 class="text-center my-5">Create a new english club</h1>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <form action="/englishlang4all/clubs" method="POST">
+        <h3 class="text-center">English club general information</h3>
 
-  <!-- name -->
-  <label for="name">Name</label>
-  <input type="text" name="englishClub[name]" value="" />
+        <!--Instituition -->
+        <label class="form-label" for="instituition">Instituition</label>
+        <input
+          type="text"
+          class="form-control"
+          id="instituition"
+          name="englishClub[instituition]"
+          value=""
+        />
+        <!-- acronym-->
+        <label class="form-label" for="Acronym">Acronym</label>
+        <input
+          type="text"
+          class="form-control"
+          name="englishClub[acronym]"
+          id="acronym"
+          value=""
+        />
 
-  <!-- motto -->
-  <label for="motto">Motto</label>
-  <input type="text" name="englishClub[motto]" value="" />
+        <!-- name -->
+        <label class="form-label" for="name">English club name</label>
+        <input
+          type="text"
+          class="form-control"
+          name="englishClub[name]"
+          id="name"
+          value=""
+        />
 
-  <!-- found date -->
-  <label for="foundDate">Found Date</label>
-  <input type="text" name="englishClub[foundDate]" value="" />
+        <!-- motto -->
+        <label class="form-label" for="motto">Motto</label>
+        <input
+          type="text"
+          class="form-control"
+          name="englishClub[motto]"
+          id="motto"
+          value=""
+        />
 
-  <!-- found date -->
-  <label for="logoImageUrl">Logo Image Url</label>
-  <input type="text" name="englishClub[logoImageUrl]" value="" />
+        <!-- found date -->
+        <label class="form-label" for="foundDate">Found Date</label>
+        <input
+          type="text"
+          class="form-control"
+          name="englishClub[foundDate]"
+          id="foundDate"
+          value=""
+        />
 
-  <!-- Description -->
-  <label for="description">Description</label>
-  <textarea name="englishClub[description]" id="" cols="30" rows="10">
-  </textarea>
+        <!-- club logo  -->
+        <label class="form-label" for="logoImageUrl">English club Logo Url</label>
+        <input
+          type="text"
+          class="form-control"
+          name="englishClub[logoImageUrl]"
+          value=""
+          id="logoImageUrl"
+        />
 
-  <button type="submit">Create an English Club</button>
-</form>
+        <!-- Instituition logo  -->
+        <label class="form-label" for="logoImageUrl">Instituition Logo Url</label>
+        <input
+          type="text"
+          class="form-control"
+          name="englishClub[instituitionLogoUrl]"
+          value=""
+          id="instituitionLogoUrl"
+        />
+
+        <!-- Description -->
+        <label class="form-label" for="description">Description</label>
+        <textarea
+          class="form-control"
+          name="englishClub[description]"
+          id="description"
+          cols="50"
+          rows="5"
+        >
+        </textarea>
+        <hr />
+        <h3 class="text-center">Board Members Section</h3>
+
+        <!-- President -->
+        <label class="form-label" for="president-username">President username</label>
+        <input
+          type="text"
+          class="form-control"
+          name="PresidentInfo"
+          id="PresidentInfo"
+          value=""
+        />
+
+        <!-- Vice President -->
+        <label class="form-label" for="president-username">Vice-President username</label>
+        <input
+          type="text"
+          class="form-control"
+          name="VicePresidentInfo"
+          id="VicePresidentInfo"
+          value=""
+        />
+
+
+        <!-- Treasurer -->
+        <label class="form-label" for="president-username">Treasurer username</label>
+        <input
+          type="text"
+          class="form-control"
+          name="treasurerInfo"
+          id="treasurerInfo"
+          value=""
+        />
+
+        <!-- Secretary -->
+        <label class="form-label" for="president-username">Secretary username</label>
+        <input
+          type="text"
+          class="form-control"
+          name="secretaryInfo"
+          id="secretaryInfo"
+          value=""
+        />
+
+
+        <!-- Communication Manager -->
+        <label class="form-label" for="president-username">Communication Manager username</label>
+        <input
+          type="text"
+          class="form-control"
+          name="comManagerInfo"
+          id="comManagerInfo"
+          value=""
+        />
+
+        <!-- Communication Manager -->
+        <label class="form-label" for="president-username">Cultural Activity Manager username</label>
+        <input
+          type="text"
+          class="form-control"
+          name="cultActMInfo"
+          id="cultActMInfo"
+          value=""
+        />
+       
+       
+        <button class="form-control btn-success my-3" type="submit">
+          Create an English Club
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

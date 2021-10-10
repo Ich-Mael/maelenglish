@@ -83,7 +83,8 @@
             </li>
           </ul>
           <div class="navbar-nav ms-auto">
-            <% if (!currentUser || currentUser == null) {%>
+            <% if(typeof currentUser != 'undefined'){%>
+            <% if (!currentUser) {%>
             <a class="nav-link-connexion me-2 my-2" href="/login">Connexion</a>
             <%} else { %>
             <h3 id="user" class="px-2 align-self-center">
@@ -93,6 +94,7 @@
               </a>
             </h3>
             <a class="nav-link my-2 btn  btn-danger" href="/logout">Deconnexion</a>
+            <%}%>
             <%}%>
             </div>
           </div>
