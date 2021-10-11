@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
 const catchAsync = require("../utilities/catchAsync");
-const englishClubs = require("../models/englishClub");
+const {englishClubs} = require("../models/englishClub");
 const { isLoggedIn, checkRoles } = require("../middlewares/userController");
 const {
   checkCourseOwnership,
@@ -29,6 +29,7 @@ router.get("/englishlang4all/clubs", isLoggedIn, async (req, res) => {
   const clubs = await englishClubs.find({});
   res.render("programs/englishlang4all/englishClubs/home", { clubs });
 });
+
 
 // Form for a new english club
 router.get(
@@ -90,11 +91,51 @@ router.get(
       .findById(req.params.club_id)
       .populate("boardMembers");
 
-    console.log(club);
+    const positions = [
+      "President",
+      "Vice-President",
+      "Treasurer",
+      "Secretary",
+      "Communication Manager",
+      "Cultural Affairs Officer",
+    ];
 
-    res.render("programs/englishlang4all/englishClubs/show", { club });
+    res.render("programs/englishlang4all/englishClubs/show", {
+      club,
+      positions,
+    });
   })
 );
+
+//=====================================
+//              Articles 
+//=====================================
+
+
+router.get('/englishlang4all/Clubs/:club_id/article/:article_id', isLoggedIn,  catchAsync(async(req, res) => {
+    const club_id = req.params.club_id;
+    const article_id = req.params.article_id;
+    const club = await englishClubs.findById(club_id);
+    const article = new englishClubArticles(req.body.englishClubArticle);
+
+    console.log(req.body.englishClubArticle);
+    // res.render(`programs/englishlang4all/englishClubs/show`, {club});
+    res.send("article posted");
+}));
+
+router.post('/englishlang4all/Clubs/:club_id/board_dashboard/article', isLoggedIn,  catchAsync(async(req, res) => {
+    const club_id = req.params.club_id;
+    const club = await englishClubs.findById(club_id);
+    const article = new englishClubArticles(req.body.englishClubArticle);
+
+    console.log(req.body.englishClubArticle);
+    // res.render(`programs/englishlang4all/englishClubs/show`, {club});
+    res.send("article posted");
+}));
+
+
+
+
 
 /* =================================================
  *

@@ -66,24 +66,12 @@
                 </li>
               </ul>
             </li>
-            <!-- <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-                  aria-expanded="false">
-                  <span class="myNav-link"> Services</span>
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li><a class="dropdown-item " href="/100bac">OPERATION 100 % BAC</a></li>
-                  <li>
-                    <a class="dropdown-item" href="/englishlang4all">House Of English Lovers</a>
-                  </li>
-                  </ul>
-              </li> -->
             <li class="nav-item">
               <a class="nav-link m-0" id="drop-down-contact" href="#footer"><span class="myNav-link">Contacts</span></a>
             </li>
           </ul>
           <div class="navbar-nav ms-auto">
-            <% if(typeof currentUser != 'undefined'){%>
+            <% if(typeof currentUser != undefined){%>
             <% if (!currentUser) {%>
             <a class="nav-link-connexion me-2 my-2" href="/login">Connexion</a>
             <%} else { %>
@@ -322,6 +310,8 @@
           </div>
         </div>
       </div>
+
+      
       <!-- Customers section -->
       <h1 class="clients">
         Témoignage

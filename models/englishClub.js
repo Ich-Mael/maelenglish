@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+// english club schema
 const englishClubSchema = new Schema(
   {
     instituition: {
@@ -79,10 +80,10 @@ const englishClubSchema = new Schema(
     },
 
     boardMembers: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: "User",
-        },
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
     ],
 
     members: [
@@ -97,4 +98,39 @@ const englishClubSchema = new Schema(
   }
 );
 
-module.exports = mongoose.model("EnglishClub", englishClubSchema);
+// english club article schema
+const englishClubArticleSchema = new Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    // image
+    articleImage: {
+      type: String,
+    },
+
+    articleContent: {
+      type: String,
+      required: true,
+    },
+
+    articleAuthor: {
+      type: String,
+      required: true,
+    },
+
+    articleComments: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const englishClubs = mongoose.model("EnglishClub", englishClubSchema);
+const englishClubArticles = mongoose.model("EnglishClubArticle", englishClubArticleSchema);
+
+
+module.exports = {englishClubs, englishClubArticles};

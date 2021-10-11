@@ -1,55 +1,51 @@
 <% layout('layouts/engClubBoilerplate') %>
 <script src="https://cdn.tiny.cloud/1/p06f8vxdpje8xosyvnq48z68vc7n479iauh5s2jk9zx30qg2/tinymce/5/tinymce.min.js"
-	referrerpolicy="origin"></script>
+  referrerpolicy="origin"></script>
 
 <link href="/stylesheets/englishforAll/englishClubs/show.css" rel="stylesheet" />
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
 
 <!-- Banner section -->
 <div class="row">
-	<div class="col-lg-4">
-		<div class="enlish-club-info">
-			<div class="club-logos-wrapper">
-				<img class="school-logo img-thumbnail"
-					src="https://i.ibb.co/4j2qhXx/Whats-App-Image-2021-02-12-at-08-00-28-1.jpg"
-					alt="" />
-				<img class="club-logo img-thumbnail" src="https://i.ibb.co/Ky8SXTm/Neci.jpg" alt="" />
-			</div>
-			<div class="club-info">
-				<h1 class="club-name"><%=club.name%></h1>
-				<p class="club-motto"><%=club.motto %></p>
-			</div>
-			<div class="social-links mb-4">
-				<!-- Social media -->
-				<h3 class="footer-links-header" class="mb-2">
-					Join us on social media
-				</h3>
-				<div class="social-media-icons">
-					<!-- Facebook -->
-					<a class="btn btn-outline-light btn-floating m-2" href="" id="facebook"
-						role="button" target="_blank"><i
-							class="engclub-sm-icon fab fa-facebook-f"></i></a>
+  <div class="col-lg-4">
+    <div class="enlish-club-info">
+      <div class="club-logos-wrapper">
+        <img class="school-logo img-thumbnail"
+          src="https://i.ibb.co/4j2qhXx/Whats-App-Image-2021-02-12-at-08-00-28-1.jpg" alt="" />
+        <img class="club-logo img-thumbnail" src="https://i.ibb.co/Ky8SXTm/Neci.jpg" alt="" />
+      </div>
+      <div class="club-info">
+        <h1 class="club-name"><%=club.name%></h1>
+        <p class="club-motto"><%=club.motto %></p>
+      </div>
+      <div class="social-links mb-4">
+        <!-- Social media -->
+        <h3 class="footer-links-header" class="mb-2">
+          Join us on social media
+        </h3>
+        <div class="social-media-icons">
+          <!-- Facebook -->
+          <a class="btn btn-outline-light btn-floating m-2" href="" id="facebook" role="button" target="_blank"><i
+              class="engclub-sm-icon fab fa-facebook-f"></i></a>
 
-					<!-- Twitter -->
-					<a class="btn btn-outline-light btn-floating m-2" href="#!" id="twitter"
-						target="_blank" role="button"><i
-							class="engclub-sm-icon fab fa-twitter"></i></a>
+          <!-- Twitter -->
+          <a class="btn btn-outline-light btn-floating m-2" href="#!" id="twitter" target="_blank" role="button"><i
+              class="engclub-sm-icon fab fa-twitter"></i></a>
 
-					<!-- Google -->
-					<!-- <a
+          <!-- Google -->
+          <!-- <a
 			  class="btn btn-outline-light btn-floating m-2"
 			  href="#!"
 			  target="_blank"
 			  role="button"
 			  ><i class="fab fa-google"></i
 			></a> -->
-					<!-- Instagram -->
-					<a class="btn btn-outline-light btn-floating m-2" href="#!" role="button"
-						id="instagram" target="_blank"><i
-							class="engclub-sm-icon fab fa-instagram"></i></a>
+          <!-- Instagram -->
+          <a class="btn btn-outline-light btn-floating m-2" href="#!" role="button" id="instagram" target="_blank"><i
+              class="engclub-sm-icon fab fa-instagram"></i></a>
 
-					<!-- Linkedin -->
-					<!-- <a
+          <!-- Linkedin -->
+          <!-- <a
           class="btn btn-outline-light btn-floating m-2"
           href="#!"
           target="_blank"
@@ -57,864 +53,770 @@
           id="linkedIn"
           ><i class="engclub-sm-icon fab fa-linkedin-in"></i
         ></a> -->
-					<!-- Youtube -->
-					<a class="btn btn-outline-light btn-floating m-2" href="" role="button"
-						id="youtube" target="_blank"><i
-							class="engclub-sm-icon bi bi-youtube"></i></a>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="col-lg-8">
-		<div id="banner">
-			<div class="bg-img-wrapper">
-				<img class="img-small"
-					src="https://images.unsplash.com/photo-1573166953836-06864dc70a21?ixid=MnwxMjA3fDB8MHxzZWFyY2h8ODV8fGFmcmljYW4lMjBnaXJsfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
-					alt="" />
-				<img class="img-medium"
-					src="https://images.unsplash.com/photo-1516182823370-7a5fa91445c3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
-					alt="" />
-			</div>
-		</div>
-	</div>
+          <!-- Youtube -->
+          <a class="btn btn-outline-light btn-floating m-2" href="" role="button" id="youtube" target="_blank"><i
+              class="engclub-sm-icon bi bi-youtube"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div id="banner">
+      <div class="bg-img-wrapper">
+        <img class="img-small"
+          src="https://images.unsplash.com/photo-1573166953836-06864dc70a21?ixid=MnwxMjA3fDB8MHxzZWFyY2h8ODV8fGFmcmljYW4lMjBnaXJsfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
+          alt="" />
+        <img class="img-medium"
+          src="https://images.unsplash.com/photo-1516182823370-7a5fa91445c3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
+          alt="" />
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- nav section -->
 <ul id="activities" class="english-club-nav nav py-3 justify-content-around">
-	<li class="nav-item">
-		<a class="nav-link engClub-nav-link active" aria-current="page" href="#news-wrapper">News</a>
-	</li>
-	<li class="nav-item">
-		<a class="nav-link engClub-nav-link" href="#lesson-wrapper">Lessons</a>
-	</li>
-	<li class="nav-item">
-		<a class="nav-link engClub-nav-link" href="#weekly-activities-wrapper">Weekly
-			Activities</a>
-	</li>
-	<li class="nav-item">
-		<a class="nav-link engClub-nav-link" href="#top-stories-wrapper">Top
-			Stories</a>
-	</li>
-	<li class="nav-item">
-		<a class="nav-link engClub-nav-link" href="#media-wrapper">Media</a>
-	</li>
+  <li class="nav-item">
+    <a class="nav-link engClub-nav-link active" aria-current="page" href="#news-wrapper">News</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link engClub-nav-link" href="#lesson-wrapper">Lessons</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link engClub-nav-link" href="#weekly-activities-wrapper">Weekly
+      Activities</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link engClub-nav-link" href="#top-stories-wrapper">Top
+      Stories</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link engClub-nav-link" href="#media-wrapper">Media</a>
+  </li>
 </ul>
 
 <!-- board section -->
 <h1 class="common-heading">
-	<span class="underline"></span>Board Members<span class="underline"></span>
+  <span class="underline"></span>Board Members<span class="underline"></span>
 </h1>
-<div id="board-section">
-	<div class="row d-flex justify-content-center" data-aos="zoom-in-up" data-aos-offset="200" data-aos-delay="150"
-		data-aos-duration="600" data-aos-easing="ease-in-out" data-aos-mirror="true">
-		<div class="slider owl-carousel">
-			<% const positions = ["President", "Vice-President", "Treasurer", "Secretary", "Communication Manager", "Cultural Affairs Officer"] %>
-			<% for(let i=0; i < club.boardMembers.length ; i++){ %>
-			<div class="bm-card card">
-				<div class="img">
-					<img src="<%= club.boardMembers[i].imageUrl %>"
-						alt="Board Member Picture" />
-				</div>
-				<div class="content">
-					<div class="position"><%= positions[i] %></div>
-					<div class="member-name"><%= club.boardMembers[i].name + " " + club.boardMembers[i].surname%> </div>
-					<p>
-						<%= club.boardMembers[i].about%>	
-					</p>
-					<!-- Social media -->
-					<div class="social-media-icons align-self-center">
-						<!-- Facebook -->
-						<a class="btn btn-outline-light btn-floating" href="<%= club.boardMembers[i].facebookLink %>" id="m-facebook"
-							role="button" target="_blank"><i
-								class="engclub-sm-icon fab fa-facebook-f"></i></a>
-
-						<!-- Twitter -->
-						<a class="btn btn-outline-light btn-floating" href="<%= club.boardMembers[i].twitterLink %>" id="m-twitter"
-							target="_blank" role="button"><i
-								class="engclub-sm-icon fab fa-twitter"></i></a>
-
-						<!-- Google -->
-						<!-- <a
-					      class="btn btn-outline-light btn-floating m-2"
-					      href="#!"
-					      target="_blank"
-					      role="button"
-					      ><i class="fab fa-google"></i
-					    ></a> -->
-						<!-- Linkedin -->
-						<a class="btn btn-outline-light btn-floating" href="<%= club.boardMembers[i].linkedIn%>" target="_blank"
-							role="button" id="m-linkedIn"><i
-								class="engclub-sm-icon fab fa-linkedin-in"></i></a>
-						<!-- whatsapp -->
-						<a class="btn btn-outline-light btn-floating" href="<%= club.boardMembers[i].whatsAppLink %>" role="button"
-							id="m-whatsapp" target="_blank"><i
-								class="engclub-sm-icon fa fa-whatsapp"></i></a>
-					</div>
-				</div>
-			</div>
-			<% } %> 
-		</div>
-	</div>
+<div class="customer-section">
+  <div class="container">
+    <div id="customers-cards" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-inner ">
+        <div class="carousel-item active">
+          <div class="carousel-caption">
+            <div class="d-flex flex-column justifify-content-center align-items-center">
+              <h1 class="align-self-center year"> <span style="color:rgb(22, 155, 243);"><%= club.name %></span> <br> Board Members <br> Year 2021-2022</h1>
+            </div>
+          </div>
+        </div>
+        <% for(let i=0; i < club.boardMembers.length ; i++){ %>
+        <div class="carousel-item">
+          <div class="carousel-caption">
+            <div class="d-flex justify-content-around py-3
+															align-items-center">
+              <img src="<%= club.boardMembers[i].imageUrl %>" />
+              <div id="image-caption" class="customer-fullname">
+                <h3 class="position"><%= positions[i] %> <br><span class="member-name"><%= club.boardMembers[i].name +""+
+                  club.boardMembers[i].surname%> </span></h3>
+              </div>
+            </div>
+            <p>
+              <%= club.boardMembers[i].about%>
+              Lorem Ipsum is simply dummy text of the printing and
+              typesetting industry. 
+            </p>
+            <!-- Social media -->
+            <div class="social-media-icons align-self-center">
+              <!-- Mail -->
+              <a class="btn btn-outline-light btn-floating m-2" href="mailto:<%= club.boardMembers[i].email %>"
+                target="_blank" role="button" id="user_mail"><i class="fas fa-at"></i></a>
+  
+              <!-- Facebook -->
+              <a class="btn btn-outline-light btn-floating" href="<%=
+                              club.boardMembers[i].facebookLink %>" id="m-facebook" role="button" target="_blank"><i
+                  class="engclub-sm-icon fab fa-facebook-f"></i></a>
+  
+              <!-- Twitter -->
+              <a class="btn btn-outline-light btn-floating" href="<%=
+                              club.boardMembers[i].twitterLink %>" id="m-twitter" target="_blank" role="button"><i
+                  class="engclub-sm-icon fab fa-twitter"></i></a>
+  
+  
+              <!--  Linkedin -->
+              <a class="btn btn-outline-light btn-floating" href="<%=
+                              club.boardMembers[i].linkedIn%>" target="_blank" role="button" id="m-linkedIn"><i
+                  class="engclub-sm-icon fab fa-linkedin-in"></i></a>
+              <!-- whatsapp -->
+              <a class="btn btn-outline-light btn-floating" href="<%=
+                              club.boardMembers[i].whatsAppLink %>" role="button" id="m-whatsapp" target="_blank"><i
+                  class="engclub-sm-icon fa fa-whatsapp"></i></a>
+            </div> 
+          </div>
+        </div>
+        <% } %>
+      </div>
+      <a class="carousel-control-prev" href="#customers-cards" data-bs-slide="prev">
+        <i class="fas carousel-button fa-arrow-left"></i>
+      </a>
+      <a class="carousel-control-next" href="#customers-cards" data-bs-slide="next">
+        <i class="fas carousel-button fa-arrow-right"></i>
+      </a>
+    </div>
+  </div>
 </div>
 
 <!-- Clubs Activities -->
 <h1 class="common-heading">
-	<span class="underline"></span>English Club Activities<span class="underline"></span>
+  <span class="underline"></span>English Club Activities<span class="underline"></span>
 </h1>
 <div class="main-content-wrapper">
-	<div class="row">
-		<div class="col-lg-9 p-2 activities-wrapper">
-			<section id="news-wrapper">
-				<h1 class="activity-heading"><span class="activity-underline">News</span></h1>
-				<div class="d-flex justifify-content-center">
-					<div class="row container">
-						<div class="col-md-6 col-lg-4">
-							<div class="card news-card">
-								<img src="https://images.unsplash.com/photo-1617056239820-8ce90ba48193?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1776&q=80"
-									class="card-img-top img-thumbnail" alt="">
-								<div class="card-body">
-									<h5 class="card-title news-title">All kids at
-										school for the new academic year</h5>
-									<p class="card-text news-summary">This is a
-										wider card with supporting text below as
-										a natural lead-in to additional content.
-										This content is a little bit longer.</p>
-									<!-- Button trigger modal -->
-									<button type="button" class="btn btn-primary"
-										data-bs-toggle="modal"
-										data-bs-target="#exampleModal">
-										Read more
-									</button>
+  <div class="row">
+    <div class="col-lg-9 p-2 activities-wrapper">
+      <section id="news-wrapper">
+        <h1 class="activity-heading"><span class="activity-underline">News</span></h1>
+        <div class="d-flex justifify-content-center">
+          <div class="row container">
+            <div class="col-md-6 col-lg-4">
+              <div class="card news-card">
+                <img
+                  src="https://images.unsplash.com/photo-1617056239820-8ce90ba48193?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1776&q=80"
+                  class="card-img-top img-thumbnail" alt="">
+                <div class="card-body">
+                  <h5 class="card-title news-title">All kids at
+                    school for the new academic year</h5>
+                  <p class="card-text news-summary">This is a
+                    wider card with supporting text below as
+                    a natural lead-in to additional content.
+                    This content is a little bit longer.</p>
+                  <!-- Button trigger modal -->
+                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    Read more
+                  </button>
 
-									<!-- Modal -->
-									<div class="modal fade" id="exampleModal"
-										tabindex="-1"
-										aria-labelledby="exampleModalLabel"
-										aria-hidden="true">
-										<div
-											class="modal-dialog modal-lg modal-fullscreen-md-down">
-											<div class="modal-content">
-												<div
-													class="modal-header">
-													<h5 class="modal-title"
-														id="exampleModalLabel">
-														All kids
-														at
-														school
-													</h5>
-													<button type="button"
-														class="btn-close"
-														data-bs-dismiss="modal"
-														aria-label="Close"></button>
-												</div>
-												<div class="modal-body">
-													<p> Lorem ipsum
-														dolor,
-														sit amet
-														consectetur
-														adipisicing
-														elit.
-														Eaque
-														tempora
-														et
-														velit.
-														Quae,
-														odit!
-														Esse
-														doloribus
-														qui
-														accusantium,
-														nobis
-														impedit
-														repellendus
-														hic
-														praesentium
-														voluptatum.
-														Incidunt
-														dicta
-														aspernatur
-														minus
-														quaerat
-														illum
-														quod
-														vitae
-														velit at
-														eos
-														iste?
-														Voluptate
-														aspernatur
-														laudantium
-														numquam
-														sapiente
-														deserunt
-														quidem,
-														expedita
-														natus.
-														Animi
-														voluptate
-														distinctio
-														fugit
-														reprehenderit!
-													</p>
-												</div>
-												<div
-													class="modal-footer">
-													<button type="button"
-														class="btn btn-danger"
-														data-bs-dismiss="modal">Close</button>
-												</div>
-											</div>
-										</div>
-									</div>
-									<hr>
-									<p class="card-text"><small
-											class="text-muted">October 1st
-											2021</small><em class="mx-3">By
-											Natalia</em></p>
-								</div>
-							</div>
-						</div>
+                  <!-- Modal -->
+                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-fullscreen-md-down">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">
+                            All kids
+                            at
+                            school
+                          </h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <p> Lorem ipsum
+                            dolor,
+                            sit amet
+                            consectetur
+                            adipisicing
+                            elit.
+                            Eaque
+                            tempora
+                            et
+                            velit.
+                            Quae,
+                            odit!
+                            Esse
+                            doloribus
+                            qui
+                            accusantium,
+                            nobis
+                            impedit
+                            repellendus
+                            hic
+                            praesentium
+                            voluptatum.
+                            Incidunt
+                            dicta
+                            aspernatur
+                            minus
+                            quaerat
+                            illum
+                            quod
+                            vitae
+                            velit at
+                            eos
+                            iste?
+                            Voluptate
+                            aspernatur
+                            laudantium
+                            numquam
+                            sapiente
+                            deserunt
+                            quidem,
+                            expedita
+                            natus.
+                            Animi
+                            voluptate
+                            distinctio
+                            fugit
+                            reprehenderit!
+                          </p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <hr>
+                  <p class="card-text"><small class="text-muted">October 1st
+                      2021</small><em class="mx-3">By
+                      Natalia</em></p>
+                </div>
+              </div>
+            </div>
 
-						<div class="col-md-6 col-lg-4">
-							<div class="card news-card">
-								<img src="https://images.unsplash.com/photo-1617056239820-8ce90ba48193?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1776&q=80"
-									class="card-img-top img-thumbnail" alt="...">
-								<div class="card-body">
-									<h5 class="card-title news-title">All kids at
-										school</h5>
-									<p class="card-text news-summary">This is a
-										wider card with supporting text below as
-										a natural lead-in to additional content.
-										This content is a little bit longer.</p>
-									<!-- Button trigger modal -->
-									<button type="button" class="btn btn-primary"
-										data-bs-toggle="modal"
-										data-bs-target="#exampleModal">
-										Read more
-									</button>
+            <div class="col-md-6 col-lg-4">
+              <div class="card news-card">
+                <img
+                  src="https://images.unsplash.com/photo-1617056239820-8ce90ba48193?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1776&q=80"
+                  class="card-img-top img-thumbnail" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title news-title">All kids at
+                    school</h5>
+                  <p class="card-text news-summary">This is a
+                    wider card with supporting text below as
+                    a natural lead-in to additional content.
+                    This content is a little bit longer.</p>
+                  <!-- Button trigger modal -->
+                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    Read more
+                  </button>
 
-									<!-- Modal -->
-									<div class="modal fade" id="exampleModal"
-										tabindex="-1"
-										aria-labelledby="exampleModalLabel"
-										aria-hidden="true">
-										<div class="modal-dialog">
-											<div class="modal-content">
-												<div
-													class="modal-header">
-													<h5 class="modal-title"
-														id="exampleModalLabel">
-														All kids
-														at
-														school
-													</h5>
-													<button type="button"
-														class="btn-close"
-														data-bs-dismiss="modal"
-														aria-label="Close"></button>
-												</div>
-												<div class="modal-body">
-													...
-												</div>
-												<div
-													class="modal-footer">
-													<button type="button"
-														class="btn btn-danger"
-														data-bs-dismiss="modal">Close</button>
-												</div>
-											</div>
-										</div>
-									</div>
-									<hr>
-									<p class="card-text"><small
-											class="text-muted">October 1st
-											2021</small><em class="mx-3">By
-											Natalia</em></p>
-								</div>
-							</div>
-						</div>
+                  <!-- Modal -->
+                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">
+                            All kids
+                            at
+                            school
+                          </h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          ...
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <hr>
+                  <p class="card-text"><small class="text-muted">October 1st
+                      2021</small><em class="mx-3">By
+                      Natalia</em></p>
+                </div>
+              </div>
+            </div>
 
-						<div class="col-md-6 col-lg-4">
-							<div class="card news-card">
-								<img src="https://images.unsplash.com/photo-1617056239820-8ce90ba48193?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1776&q=80"
-									class="card-img-top img-thumbnail" alt="...">
-								<div class="card-body">
-									<h5 class="card-title news-title">All kids at
-										school</h5>
-									<p class="card-text news-summary">This is a
-										wider card with supporting text below as
-										a natural lead-in to additional content.
-										This content is a little bit longer.</p>
-									<!-- Button trigger modal -->
-									<button type="button" class="btn btn-primary"
-										data-bs-toggle="modal"
-										data-bs-target="#exampleModal">
-										Read more
-									</button>
+            <div class="col-md-6 col-lg-4">
+              <div class="card news-card">
+                <img
+                  src="https://images.unsplash.com/photo-1617056239820-8ce90ba48193?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1776&q=80"
+                  class="card-img-top img-thumbnail" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title news-title">All kids at
+                    school</h5>
+                  <p class="card-text news-summary">This is a
+                    wider card with supporting text below as
+                    a natural lead-in to additional content.
+                    This content is a little bit longer.</p>
+                  <!-- Button trigger modal -->
+                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    Read more
+                  </button>
 
-									<!-- Modal -->
-									<div class="modal fade" id="exampleModal"
-										tabindex="-1"
-										aria-labelledby="exampleModalLabel"
-										aria-hidden="true">
-										<div class="modal-dialog">
-											<div class="modal-content">
-												<div
-													class="modal-header">
-													<h5 class="modal-title"
-														id="exampleModalLabel">
-														All kids
-														at
-														school
-													</h5>
-													<button type="button"
-														class="btn-close"
-														data-bs-dismiss="modal"
-														aria-label="Close"></button>
-												</div>
-												<div class="modal-body">
-												</div>
-												<div
-													class="modal-footer">
-													<button type="button"
-														class="btn btn-danger"
-														data-bs-dismiss="modal">Close</button>
-												</div>
-											</div>
-										</div>
-									</div>
-									<hr>
-									<p class="card-text"><small
-											class="text-muted">October 1st
-											2021</small><em class="mx-3">By
-											Natalia</em></p>
-								</div>
-							</div>
-						</div>
+                  <!-- Modal -->
+                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">
+                            All kids
+                            at
+                            school
+                          </h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <hr>
+                  <p class="card-text"><small class="text-muted">October 1st
+                      2021</small><em class="mx-3">By
+                      Natalia</em></p>
+                </div>
+              </div>
+            </div>
 
-						<div class="col-md-6 col-lg-4">
-							<div class="card news-card">
-								<img src="https://images.unsplash.com/photo-1617056239820-8ce90ba48193?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1776&q=80"
-									class="card-img-top img-thumbnail" alt="...">
-								<div class="card-body">
-									<h5 class="card-title news-title">All kids at
-										school</h5>
-									<p class="card-text news-summary">This is a
-										wider card with supporting text below as
-										a natural lead-in to additional content.
-										This content is a little bit longer.</p>
-									<!-- Button trigger modal -->
-									<button type="button" class="btn btn-primary"
-										data-bs-toggle="modal"
-										data-bs-target="#exampleModal">
-										Read more
-									</button>
+            <div class="col-md-6 col-lg-4">
+              <div class="card news-card">
+                <img
+                  src="https://images.unsplash.com/photo-1617056239820-8ce90ba48193?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1776&q=80"
+                  class="card-img-top img-thumbnail" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title news-title">All kids at
+                    school</h5>
+                  <p class="card-text news-summary">This is a
+                    wider card with supporting text below as
+                    a natural lead-in to additional content.
+                    This content is a little bit longer.</p>
+                  <!-- Button trigger modal -->
+                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    Read more
+                  </button>
 
-									<!-- Modal -->
-									<div class="modal fade" id="exampleModal"
-										tabindex="-1"
-										aria-labelledby="exampleModalLabel"
-										aria-hidden="true">
-										<div class="modal-dialog">
-											<div class="modal-content">
-												<div
-													class="modal-header">
-													<h5 class="modal-title"
-														id="exampleModalLabel">
-														All kids
-														at
-														school
-													</h5>
-													<button type="button"
-														class="btn-close"
-														data-bs-dismiss="modal"
-														aria-label="Close"></button>
-												</div>
-												<div class="modal-body">
-												</div>
-												<div
-													class="modal-footer">
-													<button type="button"
-														class="btn btn-danger"
-														data-bs-dismiss="modal">Close</button>
-												</div>
-											</div>
-										</div>
-									</div>
-									<hr>
-									<p class="card-text"><small
-											class="text-muted">October 1st
-											2021</small><em class="mx-3">By
-											Natalia</em></p>
-								</div>
-							</div>
-						</div>
+                  <!-- Modal -->
+                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">
+                            All kids
+                            at
+                            school
+                          </h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <hr>
+                  <p class="card-text"><small class="text-muted">October 1st
+                      2021</small><em class="mx-3">By
+                      Natalia</em></p>
+                </div>
+              </div>
+            </div>
 
-					</div>
-			</section>
+          </div>
+      </section>
 
-			<!-- Lessons section -->
-			<section id="lesson-wrapper">
-				<h1 class="activity-heading">Lessons</h1>
-			</section>
+      <!-- Lessons section -->
+      <section id="lesson-wrapper">
+        <h1 class="activity-heading">Lessons</h1>
+      </section>
 
-			<!-- Weekly activities section -->
-			<section id="weekly-activities-wrapper">
-				<h1 class="activity-heading">Weekly Activities</h1>
-			</section>
+      <!-- Weekly activities section -->
+      <section id="weekly-activities-wrapper">
+        <h1 class="activity-heading">Weekly Activities</h1>
+      </section>
 
-			<!-- Top stories section -->
-			<section id="top-stories-wrapper">
-				<h1 class="activity-heading">Top Stories</h1>
-			</section>
+      <!-- Top stories section -->
+      <section id="top-stories-wrapper">
+        <h1 class="activity-heading">Top Stories</h1>
+      </section>
 
-			<!-- Media section -->
-			<section id="top-stories-wrapper">
-				<h1 class="activity-heading">Media</h1>
-			</section>
-		</div>
-		<div class="col-lg-3 p-2 current-activity">
-			<h1 class="current-activity-heading"><span>Top Events</span></h1>
-			<div class="d-flex flex-column align-items-center
-								justify-content-center">
-				<div class="student-OM">
-					<div class="card m-2">
-						<div class="card-header text-center student-month">
-							Student of the Month
-						</div>
-						<div class="card-body">
-							<div class="som-img-wrapper">
-								<img src="https://images.pexels.com/photos/1996008/pexels-photo-1996008.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
-									alt="" class="img-thumbnail img-fluid">
-							</div>
-							<h5 class="card-title">Ms. Rachida TRAORE</h5>
-							<p class="card-text">With supporting text below as a natural
-								lead-in to additional content.</p>
-							<!-- Button trigger modal -->
-							<button type="button" class="btn btn-warning"
-								data-bs-toggle="modal" data-bs-target="#som">
-								Learn more about the SOM
-							</button>
+      <!-- Media section -->
+      <section id="top-stories-wrapper">
+        <h1 class="activity-heading">Media</h1>
+      </section>
+    </div>
+    <div class="col-lg-3 p-2 current-activity">
+      <h1 class="current-activity-heading"><span>Top Events</span></h1>
+      <div class="d-flex flex-column align-items-center
+													justify-content-center">
+        <div class="student-OM">
+          <div class="card m-2">
+            <div class="card-header text-center student-month">
+              Student of the Month
+            </div>
+            <div class="card-body">
+              <div class="som-img-wrapper">
+                <img
+                  src="https://images.pexels.com/photos/1996008/pexels-photo-1996008.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
+                  alt="" class="img-thumbnail img-fluid">
+              </div>
+              <h5 class="card-title">Ms. Rachida TRAORE</h5>
+              <p class="card-text">With supporting text below as a natural
+                lead-in to additional content.</p>
+              <!-- Button trigger modal -->
+              <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#som">
+                Learn more about the SOM
+              </button>
 
-							<!-- Modal -->
-							<div class="modal fade" id="som" tabindex="-1"
-								aria-labelledby="exampleModalLabel" aria-hidden="true">
-								<div
-									class="modal-dialog modal-lg modal-fullscreen-md-down">
-									<div class="modal-content">
-										<div class="modal-header">
-											<h5 class="modal-title"
-												id="exampleModalLabel">
-												All about the Student
-												of the Month
-											</h5>
-											<button type="button"
-												class="btn-close"
-												data-bs-dismiss="modal"
-												aria-label="Close"></button>
-										</div>
-										<div class="modal-body">
-											<p> Lorem ipsum dolor, sit amet
-												consectetur adipisicing
-												elit. Eaque tempora et
-												velit. Quae, odit! Esse
-												doloribus qui
-												accusantium, nobis
-												impedit repellendus hic
-												praesentium voluptatum.
-												Incidunt dicta
-												aspernatur minus quaerat
-												illum quod vitae velit
-												at eos iste? Voluptate
-												aspernatur laudantium
-												numquam sapiente
-												deserunt quidem,
-												expedita natus. Animi
-												voluptate distinctio
-												fugit reprehenderit!
-											</p>
-										</div>
-										<div class="modal-footer">
-											<button type="button"
-												class="btn btn-danger"
-												data-bs-dismiss="modal">Close</button>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="instructor-OM">
-					<div class="card m-2">
-						<div class="card-header text-center instructor-month">
-							Instructor of the Month
-						</div>
-						<div class="card-body">
-							<div class="som-img-wrapper">
-								<img src="https://images.unsplash.com/photo-1561677843-39dee7a319ca?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1770&q=80"
-									alt="" class="img-thumbnail img-fluid">
-							</div>
-							<h5 class="card-title">Mr. Daniel SAWADOGO</h5>
-							<p class="card-text">With supporting text below as a natural
-								lead-in to additional content.</p>
-							<!-- Button trigger modal -->
-							<button type="button" class="btn btn-secondary"
-								data-bs-toggle="modal" data-bs-target="#iom">
-								Learn more about the IOM
-							</button>
+              <!-- Modal -->
+              <div class="modal fade" id="som" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-fullscreen-md-down">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">
+                        All about the Student
+                        of the Month
+                      </h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <p> Lorem ipsum dolor, sit amet
+                        consectetur adipisicing
+                        elit. Eaque tempora et
+                        velit. Quae, odit! Esse
+                        doloribus qui
+                        accusantium, nobis
+                        impedit repellendus hic
+                        praesentium voluptatum.
+                        Incidunt dicta
+                        aspernatur minus quaerat
+                        illum quod vitae velit
+                        at eos iste? Voluptate
+                        aspernatur laudantium
+                        numquam sapiente
+                        deserunt quidem,
+                        expedita natus. Animi
+                        voluptate distinctio
+                        fugit reprehenderit!
+                      </p>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="instructor-OM">
+          <div class="card m-2">
+            <div class="card-header text-center instructor-month">
+              Instructor of the Month
+            </div>
+            <div class="card-body">
+              <div class="som-img-wrapper">
+                <img
+                  src="https://images.unsplash.com/photo-1561677843-39dee7a319ca?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1770&q=80"
+                  alt="" class="img-thumbnail img-fluid">
+              </div>
+              <h5 class="card-title">Mr. Daniel SAWADOGO</h5>
+              <p class="card-text">With supporting text below as a natural
+                lead-in to additional content.</p>
+              <!-- Button trigger modal -->
+              <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#iom">
+                Learn more about the IOM
+              </button>
 
-							<!-- Modal -->
-							<div class="modal fade" id="iom" tabindex="-1"
-								aria-labelledby="exampleModalLabel" aria-hidden="true">
-								<div
-									class="modal-dialog modal-lg modal-fullscreen-md-down">
-									<div class="modal-content">
-										<div class="modal-header">
-											<h5 class="modal-title"
-												id="exampleModalLabel">
-												All about the Instructor
-												of the Month
-											</h5>
-											<button type="button"
-												class="btn-close"
-												data-bs-dismiss="modal"
-												aria-label="Close"></button>
-										</div>
-										<div class="modal-body">
-											<p> Lorem ipsum dolor, sit amet
-												consectetur adipisicing
-												elit. Eaque tempora et
-												velit. Quae, odit! Esse
-												doloribus qui
-												accusantium, nobis
-												impedit repellendus hic
-												praesentium voluptatum.
-												Incidunt dicta
-												aspernatur minus quaerat
-												illum quod vitae velit
-												at eos iste? Voluptate
-												aspernatur laudantium
-												numquam sapiente
-												deserunt quidem,
-												expedita natus. Animi
-												voluptate distinctio
-												fugit reprehenderit!
-											</p>
-										</div>
-										<div class="modal-footer">
-											<button type="button"
-												class="btn btn-danger"
-												data-bs-dismiss="modal">Close</button>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
+              <!-- Modal -->
+              <div class="modal fade" id="iom" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-fullscreen-md-down">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">
+                        All about the Instructor
+                        of the Month
+                      </h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <p> Lorem ipsum dolor, sit amet
+                        consectetur adipisicing
+                        elit. Eaque tempora et
+                        velit. Quae, odit! Esse
+                        doloribus qui
+                        accusantium, nobis
+                        impedit repellendus hic
+                        praesentium voluptatum.
+                        Incidunt dicta
+                        aspernatur minus quaerat
+                        illum quod vitae velit
+                        at eos iste? Voluptate
+                        aspernatur laudantium
+                        numquam sapiente
+                        deserunt quidem,
+                        expedita natus. Animi
+                        voluptate distinctio
+                        fugit reprehenderit!
+                      </p>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-					</div>
-				</div>
-				<div class="daily-content">
-					<div class="card m-2">
-						<div class="card-header text-center word-day">
-							Vocabulary Cookies
-						</div>
-						<div class="card-body">
-							<h5 class="card-title word-day-title py-2"><span
-									class="fw-bold">Word :</span> Amalgamate</h5>
-							<p class="card-text word-day-meaning"><span
-									class="fw-bold">Meaning : </span> Combine or
-								unite to form one organization or structure.
-							</p>
-							<hr>
-							<h5 class="card-title idioms-title py-2"><span
-									class="fw-bold">Idioms :</span>
-								Better late than never</h5>
-							<p class="card-text word-day-meaning"><span
-									class="fw-bold">Meaning : </span> Better to
-								arrive late than not to come at all.
-							</p>
-							<!-- Button trigger modal -->
-							<button type="button" class="btn btn-info"
-								data-bs-toggle="modal" data-bs-target="#wod-1">
-								Practice with examples
-							</button>
+          </div>
+        </div>
+        <div class="daily-content">
+          <div class="card m-2">
+            <div class="card-header text-center word-day">
+              Vocabulary Cookies
+            </div>
+            <div class="card-body">
+              <h5 class="card-title word-day-title py-2"><span class="fw-bold">Word :</span> Amalgamate</h5>
+              <p class="card-text word-day-meaning"><span class="fw-bold">Meaning : </span> Combine or
+                unite to form one organization or structure.
+              </p>
+              <hr>
+              <h5 class="card-title idioms-title py-2"><span class="fw-bold">Idioms :</span>
+                Better late than never</h5>
+              <p class="card-text word-day-meaning"><span class="fw-bold">Meaning : </span> Better to
+                arrive late than not to come at all.
+              </p>
+              <!-- Button trigger modal -->
+              <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#wod-1">
+                Practice with examples
+              </button>
 
-							<!-- Modal -->
-							<div class="modal fade" id="wod-1" tabindex="-1"
-								aria-labelledby="exampleModalLabel" aria-hidden="true">
-								<div
-									class="modal-dialog modal-lg modal-fullscreen-md-down">
-									<div class="modal-content">
-										<div class="modal-header">
-											<h5 class="modal-title"
-												id="exampleModalLabel">
-												Amalgamate
-											</h5>
-											<button type="button"
-												class="btn-close"
-												data-bs-dismiss="modal"
-												aria-label="Close"></button>
-										</div>
-										<div class="modal-body">
-											<p> Lorem ipsum dolor, sit amet
-												consectetur adipisicing
-												elit. Eaque tempora et
-												velit. Quae, odit! Esse
-												doloribus qui
-												accusantium, nobis
-												impedit repellendus hic
-												praesentium voluptatum.
-												Incidunt dicta
-												aspernatur minus quaerat
-												illum quod vitae velit
-												at eos iste? Voluptate
-												aspernatur laudantium
-												numquam sapiente
-												deserunt quidem,
-												expedita natus. Animi
-												voluptate distinctio
-												fugit reprehenderit!
-											</p>
-										</div>
-										<div class="modal-footer">
-											<button type="button"
-												class="btn btn-danger"
-												data-bs-dismiss="modal">Close</button>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="coming-activity">
-					<div class="card m-2">
-						<div class="card-header text-center incomming-activities">
-							Incomming Activities
-						</div>
-						<div class="card-body">
-							<div>
-								<h3 class="card-title weekly-activity">Weekly English
-									Club</h3>
-								<h4 class="activity-date">Saturday, 13th Novemvember
-									2021</h3>
-									<h4 class="activity-place"> <span
-											class="fw-bold text-danger"><i
-												class="fas me-2 fa-map-marker-alt"></i>Venue
-											:</span> Amphi 3</h4>
-									<h4 class="activity-time"> <span
-											class="fw-bold text-danger"><i
-												class="fas me-2 fa-clock"></i>Time:
-										</span>14:00
-									</h4>
-									<!-- Button trigger modal -->
-									<button type="button"
-										class="btn mt-2 btn-outline-success"
-										data-bs-toggle="modal"
-										data-bs-target="#wec">
-										Learn more about the WEC
-									</button>
+              <!-- Modal -->
+              <div class="modal fade" id="wod-1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-fullscreen-md-down">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">
+                        Amalgamate
+                      </h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <p> Lorem ipsum dolor, sit amet
+                        consectetur adipisicing
+                        elit. Eaque tempora et
+                        velit. Quae, odit! Esse
+                        doloribus qui
+                        accusantium, nobis
+                        impedit repellendus hic
+                        praesentium voluptatum.
+                        Incidunt dicta
+                        aspernatur minus quaerat
+                        illum quod vitae velit
+                        at eos iste? Voluptate
+                        aspernatur laudantium
+                        numquam sapiente
+                        deserunt quidem,
+                        expedita natus. Animi
+                        voluptate distinctio
+                        fugit reprehenderit!
+                      </p>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="coming-activity">
+          <div class="card m-2">
+            <div class="card-header text-center incomming-activities">
+              Incomming Activities
+            </div>
+            <div class="card-body">
+              <div>
+                <h3 class="card-title weekly-activity">Weekly English
+                  Club</h3>
+                <h4 class="activity-date">Saturday, 13th Novemvember
+                  2021</h3>
+                  <h4 class="activity-place"> <span class="fw-bold text-danger"><i
+                        class="fas me-2 fa-map-marker-alt"></i>Venue
+                      :</span> Amphi 3</h4>
+                  <h4 class="activity-time"> <span class="fw-bold text-danger"><i class="fas me-2 fa-clock"></i>Time:
+                    </span>14:00
+                  </h4>
+                  <!-- Button trigger modal -->
+                  <button type="button" class="btn mt-2 btn-outline-success" data-bs-toggle="modal"
+                    data-bs-target="#wec">
+                    Learn more about the WEC
+                  </button>
 
-									<!-- Modal -->
-									<div class="modal fade" id="wec" tabindex="-1"
-										aria-labelledby="exampleModalLabel"
-										aria-hidden="true">
-										<div
-											class="modal-dialog modal-lg modal-fullscreen-md-down">
-											<div class="modal-content">
-												<div
-													class="modal-header">
-													<h5 class="modal-title"
-														id="exampleModalLabel">
-														Agenda
-														Weekly
-														English
-														Club
-														Meeting
-													</h5>
-													<button type="button"
-														class="btn-close"
-														data-bs-dismiss="modal"
-														aria-label="Close"></button>
-												</div>
-												<div class="modal-body">
-													<p> Lorem ipsum
-														dolor,
-														sit amet
-														consectetur
-														adipisicing
-														elit.
-														Eaque
-														tempora
-														et
-														velit.
-														Quae,
-														odit!
-														Esse
-														doloribus
-														qui
-														accusantium,
-														nobis
-														impedit
-														repellendus
-														hic
-														praesentium
-														voluptatum.
-														Incidunt
-														dicta
-														aspernatur
-														minus
-														quaerat
-														illum
-														quod
-														vitae
-														velit
-														at eos
-														iste?
-														Voluptate
-														aspernatur
-														laudantium
-														numquam
-														sapiente
-														deserunt
-														quidem,
-														expedita
-														natus.
-														Animi
-														voluptate
-														distinctio
-														fugit
-														reprehenderit!
-													</p>
-												</div>
-												<div
-													class="modal-footer">
-													<button type="button"
-														class="btn btn-danger"
-														data-bs-dismiss="modal">Close</button>
-												</div>
-											</div>
-										</div>
-									</div>
-							</div>
+                  <!-- Modal -->
+                  <div class="modal fade" id="wec" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-fullscreen-md-down">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">
+                            Agenda
+                            Weekly
+                            English
+                            Club
+                            Meeting
+                          </h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <p> Lorem ipsum
+                            dolor,
+                            sit amet
+                            consectetur
+                            adipisicing
+                            elit.
+                            Eaque
+                            tempora
+                            et
+                            velit.
+                            Quae,
+                            odit!
+                            Esse
+                            doloribus
+                            qui
+                            accusantium,
+                            nobis
+                            impedit
+                            repellendus
+                            hic
+                            praesentium
+                            voluptatum.
+                            Incidunt
+                            dicta
+                            aspernatur
+                            minus
+                            quaerat
+                            illum
+                            quod
+                            vitae
+                            velit
+                            at eos
+                            iste?
+                            Voluptate
+                            aspernatur
+                            laudantium
+                            numquam
+                            sapiente
+                            deserunt
+                            quidem,
+                            expedita
+                            natus.
+                            Animi
+                            voluptate
+                            distinctio
+                            fugit
+                            reprehenderit!
+                          </p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              </div>
 
-							<hr>
-							<div>
-								<h3 class="card-title weekly-activity">Online Debates
-								</h3>
-								<ul class="list-group list-group-flush">
-									<li class="list-group-item"> <span
-											class="fw-bold">Topic 1
-											:</span><br>
-										Mug Justice </li>
-									<li class="list-group-item"><span
-											class="fw-bold">Topic 2 :</span>
-										<br> Sexual harassement at workplace
-									</li>
-								</ul>
+              <hr>
+              <div>
+                <h3 class="card-title weekly-activity">Online Debates
+                </h3>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item"> <span class="fw-bold">Topic 1
+                      :</span><br>
+                    Mug Justice </li>
+                  <li class="list-group-item"><span class="fw-bold">Topic 2 :</span>
+                    <br> Sexual harassement at workplace
+                  </li>
+                </ul>
 
-								<!-- Button trigger modal -->
-								<button type="button"
-									class="btn mt-2 btn-outline-success"
-									data-bs-toggle="modal" data-bs-target="#oed">
-									Learn more
-								</button>
+                <!-- Button trigger modal -->
+                <button type="button" class="btn mt-2 btn-outline-success" data-bs-toggle="modal" data-bs-target="#oed">
+                  Learn more
+                </button>
 
-								<!-- Modal -->
-								<div class="modal fade" id="oed" tabindex="-1"
-									aria-labelledby="exampleModalLabel"
-									aria-hidden="true">
-									<div
-										class="modal-dialog modal-lg modal-fullscreen-md-down">
-										<div class="modal-content">
-											<div class="modal-header">
-												<h5 class="modal-title"
-													id="exampleModalLabel">
-													Online English
-													Debates
-												</h5>
-												<button type="button"
-													class="btn-close"
-													data-bs-dismiss="modal"
-													aria-label="Close"></button>
-											</div>
-											<div class="modal-body">
-												<p> Lorem ipsum dolor,
-													sit amet
-													consectetur
-													adipisicing
-													elit. Eaque
-													tempora et
-													velit. Quae,
-													odit! Esse
-													doloribus qui
-													accusantium,
-													nobis
-													impedit
-													repellendus hic
-													praesentium
-													voluptatum.
-													Incidunt dicta
-													aspernatur minus
-													quaerat
-													illum quod vitae
-													velit
-													at eos iste?
-													Voluptate
-													aspernatur
-													laudantium
-													numquam sapiente
-													deserunt quidem,
-													expedita natus.
-													Animi
-													voluptate
-													distinctio
-													fugit
-													reprehenderit!
-												</p>
-											</div>
-											<div class="modal-footer">
-												<button type="button"
-													class="btn btn-danger"
-													data-bs-dismiss="modal">Close</button>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
+                <!-- Modal -->
+                <div class="modal fade" id="oed" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg modal-fullscreen-md-down">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">
+                          Online English
+                          Debates
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <p> Lorem ipsum dolor,
+                          sit amet
+                          consectetur
+                          adipisicing
+                          elit. Eaque
+                          tempora et
+                          velit. Quae,
+                          odit! Esse
+                          doloribus qui
+                          accusantium,
+                          nobis
+                          impedit
+                          repellendus hic
+                          praesentium
+                          voluptatum.
+                          Incidunt dicta
+                          aspernatur minus
+                          quaerat
+                          illum quod vitae
+                          velit
+                          at eos iste?
+                          Voluptate
+                          aspernatur
+                          laudantium
+                          numquam sapiente
+                          deserunt quidem,
+                          expedita natus.
+                          Animi
+                          voluptate
+                          distinctio
+                          fugit
+                          reprehenderit!
+                        </p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-						</div>
-					</div>
-				</div>
+            </div>
+          </div>
+        </div>
 
-			</div>
-		</div>
-	</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-	$(".slider").owlCarousel({
-		loop: true,
-		autoplay: true,
-		margin: 10,
-		nav: true,
-		autoplayTimeout: 4000,
-		autoplayHoverPause: true,
-		responsiveClass: true,
-		responsive: {
-			0: {
-				items: 1,
-				nav: true,
-			},
-			600: {
-				items: 2,
-			},
-			1200: {
-				items: 3,
-				nav: true,
-				loop: true,
-			},
-		},
-	});
+  $(".slider").owlCarousel({
+    loop: true,
+    autoplay: true,
+    margin: 10,
+    nav: true,
+    autoplayTimeout: 4000,
+    autoplayHoverPause: true,
+    responsiveClass: true,
+    responsive: {
+      0: {
+        items: 1,
+        nav: true,
+      },
+      600: {
+        items: 2,
+      },
+      1200: {
+        items: 3,
+        nav: true,
+        loop: true,
+      },
+    },
+  });
 </script>

@@ -2,9 +2,10 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 const User = require("../models/user");
-const englishClubs = require("../models/englishClub");
+const {englishClubs} = require("../models/englishClub");
 const catchAsync = require('../utilities/catchAsync');
 const Course = require("../models/courses");
+const {englishClubArticles} = require("../models/englishClub");
 const { isLoggedIn, checkRoles } = require("../middlewares/userController");
 const { checkCourseOwnership, checkEnglishBoardMembership} = require("../middlewares/courseController");
 
@@ -136,12 +137,15 @@ router.get(
 
 
 //==========================//==========================
-//   English club Board members acess
+//   English club Board members privileges
 //==========================//==========================
-router.get('/englishlang4all/Clubs/:club_id/board_dashboard', isLoggedIn, checkEnglishBoardMembership, catchAsync(async(req, res) => {
-    res.send("welcome to english club admin dashboard");
-}));
 
+// Accessing dashboard
+
+router.get('/englishlang4all/Clubs/:club_id/board_dashboard', isLoggedIn,  catchAsync(async(req, res) => {
+    const club = await englishClubs.findById(req.params.club_id);
+    res.render('programs/englishlang4all/englishClubs/board_members_dashboard', {club});
+}));
 
 
 module.exports = router;
