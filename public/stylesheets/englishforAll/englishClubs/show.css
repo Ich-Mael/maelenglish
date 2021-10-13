@@ -575,6 +575,9 @@ customers-cards:before {
   color: #0e76a8;
 }
 
+.coming-activity, .student-OM, .instructor-OM, .daily-content{
+  width: 100%;
+}
 .incomming-activities {
   font-family: "Chivo", sans-serif;
   font-weight: 700;
@@ -643,6 +646,10 @@ customers-cards:before {
     .underline {
       width: 5rem;
       height: 0.8rem;
+    }
+
+    html{
+      font-size: 62.5%;
     }
   }
 

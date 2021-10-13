@@ -1,70 +1,51 @@
 <% layout('layouts/engClubBoilerplate') %>
-<script
-  src="https://cdn.tiny.cloud/1/p06f8vxdpje8xosyvnq48z68vc7n479iauh5s2jk9zx30qg2/tinymce/5/tinymce.min.js"
-  referrerpolicy="origin"
-></script>
+<!-- WORD Processor-->
+<script src="https://cdn.tiny.cloud/1/p06f8vxdpje8xosyvnq48z68vc7n479iauh5s2jk9zx30qg2/tinymce/5/tinymce.min.js"
+  referrerpolicy="origin"></script>
+</script>
+<script>
+  tinymce.init({
+    selector: '#mytextarea',
+    height: 500,
+    max_width: 500,
+    min_height: 300,
+    min_width: 400
+  });
+</script>
 
 <div class="container col-md-8">
-<h1 class="text-center my-5"><%= club.acronym %> Board Members Dashboard</h1>
+  <h1 class="text-center my-5"><%= club.acronym %> Board Members Dashboard</h1>
 
-<p>
-  <button
-    class="btn btn-primary"
-    type="button"
-    data-bs-toggle="collapse"
-    data-bs-target="#article"
-    aria-expanded="false"
-    aria-controls="collapseExample"
-  >
-    Post an article
-  </button>
-</p>
-<div class="collapse" id="article">
- <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/article" method="POST">
+  <p>
+    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#article"
+      aria-expanded="false" aria-controls="collapseExample">
+      Post an article
+    </button>
+  </p>
+  <div class="collapse" id="article">
+    <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/article" method="POST">
 
-  <!-- Article image url -->
-  <label class="form-label" for="articleImage">Image Link</label>
-  <input
-    type="text"
-    class="form-control"
-    name="englishClubArticle[articleImage]"
-    id="articleImage"
-    value=""
-  />
+      <!-- Article image url -->
+      <label class="form-label my-3" for="articleImage">Image Link</label>
+      <input type="text" class="form-control" name="englishClubArticle[articleImage]" id="articleImage" value="" />
 
-  <!-- Title  -->
-  <label class="form-label" for="title">Title</label>
-  <input
-    type="text"
-    class="form-control"
-    name="englishClubArticle[title]"
-    value=""
-    id="title"
-  />
+      <!-- Title  -->
+      <label class="form-label my-3" for="title">Title</label>
+      <input type="text" class="form-control" name="englishClubArticle[title]" value="" id="title" />
 
-  <!-- Article Content -->
-  <label class="form-label" for="articleContent">Article content</label>
-  <textarea
-    type="text"
-    class="form-control"
-    name="englishClubArticle[articleContent]"
-    value=""
-    id="articleContent"
-    cols="50"
-    rows="5"
-  ></textarea>
+      <!-- Article Summary  -->
+      <label class="form-label my-3" for="articleSummary">Article Summary</label>
+      <input type="text" class="form-control" name="englishClubArticle[articleSummary]" value="" id="title" />
 
-  <!-- Author -->
-  <label class="form-label" for="title">Author</label>
-  <input
-    type="text"
-    class="form-control"
-    name="englishClubArticle[articleAuthor]"
-    value=""
-    id="articleAuthor"
-  /> 
-  <hr />
-<button class="btn btn-outline-success" type="submit">Post article</button>
-</form> 
-</div>
+      <!-- Author -->
+      <label class="form-label my-3" for="author">Author</label>
+      <input type="text" class="form-control" name="englishClubArticle[articleAuthor]" value="" id="articleAuthor" />
+
+      <!-- Article Content -->
+      <label class="form-label my-3" for="articleContent">Article content</label>
+      <textarea type="text" class="form-control" name="englishClubArticle[articleContent]" value="" id="mytextarea"></textarea>
+      <hr />
+      <button class="btn btn-outline-success" type="submit">Post article</button>
+    </form>
+  </div>
 </div>

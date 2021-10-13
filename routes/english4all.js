@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
 const catchAsync = require("../utilities/catchAsync");
-const {englishClubs} = require("../models/englishClub");
+const { englishClubs, englishClubArticles } = require("../models/englishClub");
 const { isLoggedIn, checkRoles } = require("../middlewares/userController");
 const {
   checkCourseOwnership,
@@ -29,7 +29,6 @@ router.get("/englishlang4all/clubs", isLoggedIn, async (req, res) => {
   const clubs = await englishClubs.find({});
   res.render("programs/englishlang4all/englishClubs/home", { clubs });
 });
-
 
 // Form for a new english club
 router.get(
@@ -89,7 +88,8 @@ router.get(
   catchAsync(async (req, res) => {
     const club = await englishClubs
       .findById(req.params.club_id)
-      .populate("boardMembers");
+      .populate("boardMembers")
+      .populate("articles");
 
     const positions = [
       "President",
@@ -99,6 +99,8 @@ router.get(
       "Communication Manager",
       "Cultural Affairs Officer",
     ];
+    
+    // const parser = new DOMParser();
 
     res.render("programs/englishlang4all/englishClubs/show", {
       club,
@@ -108,34 +110,27 @@ router.get(
 );
 
 //=====================================
-//              Articles 
+//              Articles
 //=====================================
 
-
-router.get('/englishlang4all/Clubs/:club_id/article/:article_id', isLoggedIn,  catchAsync(async(req, res) => {
+router.post(
+  "/englishlang4all/Clubs/:club_id/board_dashboard/article",
+  isLoggedIn,
+  catchAsync(async (req, res) => {
     const club_id = req.params.club_id;
-    const article_id = req.params.article_id;
-    const club = await englishClubs.findById(club_id);
+    const englishClub = await englishClubs.findById(club_id);
     const article = new englishClubArticles(req.body.englishClubArticle);
 
-    console.log(req.body.englishClubArticle);
-    // res.render(`programs/englishlang4all/englishClubs/show`, {club});
-    res.send("article posted");
-}));
+    await article.save();
 
-router.post('/englishlang4all/Clubs/:club_id/board_dashboard/article', isLoggedIn,  catchAsync(async(req, res) => {
-    const club_id = req.params.club_id;
-    const club = await englishClubs.findById(club_id);
-    const article = new englishClubArticles(req.body.englishClubArticle);
+    englishClub.articles.push(article);
 
-    console.log(req.body.englishClubArticle);
-    // res.render(`programs/englishlang4all/englishClubs/show`, {club});
-    res.send("article posted");
-}));
+    await englishClub.save();
 
-
-
-
+    console.log(article);
+    res.redirect(`/englishlang4all/Clubs/${club_id}`);
+  })
+);
 
 /* =================================================
  *

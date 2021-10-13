@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const { format, formatDistance, formatRelative, subDays } = require('date-fns');            
 
 // english club schema
 const englishClubSchema = new Schema(
@@ -85,11 +86,38 @@ const englishClubSchema = new Schema(
         ref: "User",
       },
     ],
-
     members: [
       {
         type: Schema.Types.ObjectId,
         ref: "User",
+      },
+    ],
+
+    studentOfMonth: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    InstructorOfMonth: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    articles: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "EnglishClubArticle",
+      },
+    ], 
+
+    weeklyActivity: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "EnglishWeeklyActivity",
       },
     ],
   },
@@ -108,6 +136,12 @@ const englishClubArticleSchema = new Schema(
     // image
     articleImage: {
       type: String,
+      required: true,
+    },
+
+    articleSummary: {
+      type: String,
+      required: true,
     },
 
     articleContent: {
@@ -120,6 +154,11 @@ const englishClubArticleSchema = new Schema(
       required: true,
     },
 
+    postedAT: {
+      type: Date,
+      default: format(Date.now(), 'MM/dd/yyyy')
+    },
+
     articleComments: {
       type: String,
     },
@@ -129,8 +168,50 @@ const englishClubArticleSchema = new Schema(
   }
 );
 
+//Daily vocabulary schema
+const weeklyActivitySchema = new Schema({
+  wordOfDay: {
+    word: String,
+    meaning: String,
+    fulldefintionLink: [String],
+    examples: [String],
+  },
+
+  IdiomDay: {
+    word: String,
+    meaning: String,
+    fulldefintionLink: [String],
+    examples: [String],
+  },
+
+  englishClubMeeting: {
+    meetingDate: {
+      type: Date,
+    },
+    venue: String,
+    meetingTime: String,
+    about: String,
+  },
+
+  OnlineDebate: [
+    {
+      debateTime: {
+        type: Date,
+      },
+      topic: String,
+      about: String,
+    },
+  ],
+});
+
 const englishClubs = mongoose.model("EnglishClub", englishClubSchema);
-const englishClubArticles = mongoose.model("EnglishClubArticle", englishClubArticleSchema);
+const englishClubArticles = mongoose.model(
+  "EnglishClubArticle",
+  englishClubArticleSchema
+);
+const englishWeeklyActivities = mongoose.model(
+  "EnglishWeeklyActivity",
+  weeklyActivitySchema
+);
 
-
-module.exports = {englishClubs, englishClubArticles};
+module.exports = { englishClubs, englishClubArticles, englishWeeklyActivities };
