@@ -113,7 +113,7 @@ body {
 
 /* social media icons */
 .social-links {
-  background-color: rgb(32, 32, 31);
+  background-color: rgba(26, 24, 24, 0.836);
   padding: 2rem;
 }
 
@@ -641,6 +641,14 @@ customers-cards:before {
     width: 9rem;
     height: 0.8rem;
   }
+
+  .school-logo,
+.club-logo {
+  width: 100px;
+  height: 100px;
+  margin: 1rem;
+}
+}
 
   @media (max-width: 768px) {
     .underline {

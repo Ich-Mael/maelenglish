@@ -132,6 +132,20 @@ router.post(
   })
 );
 
+// for board members
+
+//View all articles
+router.get("/englishlang4all/Clubs/:club_id/board_dashboard/articles", isLoggedIn, catchAsync(async(req, res)=>{
+const articles = await englishClubArticles.find({});
+const club = await englishClubs.findById(req.params.club_id);
+
+res.render("programs/englishlang4all/englishClubs/articlesShow", {articles, club});
+}));
+
+//Edit article
+router.put("/englishlang4all/Clubs/:club_id/board_dashboard/:article_id", isLoggedIn, catchAsync(async(req, res)=>{
+
+}));
 /* =================================================
  *
  * Route for General English
