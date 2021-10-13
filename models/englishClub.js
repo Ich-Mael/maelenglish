@@ -171,16 +171,30 @@ const englishClubArticleSchema = new Schema(
 //Daily vocabulary schema
 const weeklyActivitySchema = new Schema({
   wordOfDay: {
-    word: String,
-    meaning: String,
-    fulldefintionLink: [String],
+    word: {
+      type: String,
+      default: "Knowledge",
+    },
+
+    meaning: {
+      type: String,
+      default:""
+        },
+    learnMore: String,
     examples: [String],
   },
 
   IdiomDay: {
-    word: String,
-    meaning: String,
-    fulldefintionLink: [String],
+    idiom: {
+      type: String,
+      default: "Knowledge",
+    },
+
+    meaning: {
+      type: String,
+      default:""
+        },
+    learnMore: String,
     examples: [String],
   },
 

@@ -57,33 +57,26 @@
   <p>
     <button class="btn btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#wod" aria-expanded="false"
       aria-controls="collapseExample">
-      Word of the Day
+      Weekly Activities
     </button>
   </p>
   <div class="collapse" id="wod">
-    <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/wod" method="P">
+    <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/weeklyactivity" method="POST">
 
-      <!-- Article image url -->
-      <label class="form-label my-3" for="articleImage">Image Link</label>
-      <input type="text" class="form-control" name="englishClubArticle[articleImage]" id="articleImage" value="" />
+      <!-- Word of the day -->
+      <label class="form-label fw-bold my-3" for="Word of the day">Word of the day</label>
+      <input type="text" class="form-control" name="wordOfDay[word]" id="word" value="" />
 
-      <!-- Title  -->
-      <label class="form-label my-3" for="title">Title</label>
-      <input type="text" class="form-control" name="englishClubArticle[title]" value="" id="title" />
+      <!-- meaning  -->
+      <label class="form-label fw-bold my-3" for="title">Meaning</label>
+      <input type="text" class="form-control" name="wordOfDay[meaning]" value="" id="title" />
 
-      <!-- Article Summary  -->
-      <label class="form-label my-3" for="articleSummary">Article Summary</label>
-      <input type="text" class="form-control" name="englishClubArticle[articleSummary]" value="" id="title" />
-
-      <!-- Author -->
-      <label class="form-label my-3" for="author">Author</label>
-      <input type="text" class="form-control" name="englishClubArticle[articleAuthor]" value="" id="articleAuthor" />
-
-      <!-- Article Content -->
-      <label class="form-label my-3" for="articleContent">Article content</label>
-      <textarea type="text" class="form-control" name="englishClubArticle[articleContent]" value=""
+      <!-- Learn more  -->
+      <label class="form-label fw-bold my-3" for="learnMoreWord">Learn more</label>
+      <textarea type="text" class="form-control" name="wordOfDay[learnMoreWord]" value=""
         id="mytextarea"></textarea>
-      <hr />
+      <hr/>
+
       <button class="btn btn-outline-success" type="submit">Post article</button>
     </form>
   </div>

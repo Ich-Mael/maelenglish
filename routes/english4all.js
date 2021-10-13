@@ -99,7 +99,7 @@ router.get(
       "Communication Manager",
       "Cultural Affairs Officer",
     ];
-    
+
     // const parser = new DOMParser();
 
     res.render("programs/englishlang4all/englishClubs/show", {
@@ -110,7 +110,9 @@ router.get(
 );
 
 //=====================================
+//
 //              Articles
+//
 //=====================================
 
 router.post(
@@ -132,20 +134,83 @@ router.post(
   })
 );
 
-// for board members
+
+
+// =============================
+//
+//   Board members privileges
+//
+//===============================
+
+// **************************** ARTICLES *****************************************
 
 //View all articles
-router.get("/englishlang4all/Clubs/:club_id/board_dashboard/articles", isLoggedIn, catchAsync(async(req, res)=>{
-const articles = await englishClubArticles.find({});
-const club = await englishClubs.findById(req.params.club_id);
+router.get(
+  "/englishlang4all/Clubs/:club_id/board_dashboard/articles",
+  isLoggedIn,
+  catchAsync(async (req, res) => {
+    const articles = await englishClubArticles.find({});
+    const club = await englishClubs.findById(req.params.club_id);
 
-res.render("programs/englishlang4all/englishClubs/articlesShow", {articles, club});
-}));
+    res.render("programs/englishlang4all/englishClubs/articlesShow", {
+      articles,
+      club,
+    });
+  })
+);
 
 //Edit article
-router.put("/englishlang4all/Clubs/:club_id/board_dashboard/:article_id", isLoggedIn, catchAsync(async(req, res)=>{
 
-}));
+//form
+router.get(
+  "/english/clubs/:club_id/board_dashboard/:article_id/edit",
+  isLoggedIn,
+  catchAsync(async (req, res) => {
+    const article = await englishClubArticles.findById(req.params.article_id);
+    const club = await englishClubs.findById(req.params.club_id);
+
+    res.render("programs/englishlang4all/englishClubs/articleEdit", {
+      article,
+      club,
+    });
+  })
+);
+
+//Updating article data
+router.put(
+  "/englishlang4all/Clubs/:club_id/board_dashboard/:article_id",
+  isLoggedIn,
+  catchAsync(async (req, res) => {
+    const article = await englishClubArticles.findByIdAndUpdate(
+      req.params.article_id,
+      { ...req.body.englishClubArticle }
+    );
+    article.save();
+
+    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+  })
+);
+
+//Deleting an article
+router.delete(
+  "/englishlang4all/Clubs/:club_id/board_dashboard/:article_id",
+  isLoggedIn,
+  catchAsync(async (req, res) => {
+    const article = await englishClubArticles.findByIdAndDelete(
+      req.params.article_id
+    );
+    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+  })
+);
+
+
+// **************************** Weekly activities *****************************************
+
+
+
+
+
+
 /* =================================================
  *
  * Route for General English
