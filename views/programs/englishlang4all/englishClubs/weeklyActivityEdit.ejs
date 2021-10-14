@@ -83,7 +83,7 @@
       <section class="word-day-wrapper my-4" style="background-color: rgb(214, 232, 248); padding: 2rem;">
         <!-- meeting date -->
         <label class="form-label fw-bold my-3" for="Word of the day">Meeting Date</label>
-        <input type="date" class="form-control" name="englishClubMeeting[meetingDate]" id="meetingDate" value="" />
+        <input type="date" class="form-control" name="englishClubMeeting[meetingDate]" id="meetingDate" value="" required/>
 
         <!-- Venue  -->
         <label class="form-label fw-bold my-3" for="title"> Venue </label>
@@ -91,7 +91,7 @@
 
         <!-- Time  -->
         <label class="form-label fw-bold my-3" for="title"> Time </label>
-        <input type="time" class="form-control" name="englishClubMeeting[meetingTime]" value="" id="time" />
+        <input type="time" class="form-control" name="englishClubMeeting[meetingTime]" value="" id="time" required />
 
         <!-- About the meeting  -->
         <label class="form-label fw-bold my-3" for="learnMoreIdiom">More about the weekly
@@ -110,11 +110,11 @@
 
         <!-- debate date one -->
         <label class="form-label fw-bold my-3" for="Word of the day">Date for 1st Debate</label>
-        <input type="date" class="form-control" name="OnlineDebate[debateDateOne]" id="debateDateOne" value="" />
+        <input type="date" class="form-control" name="OnlineDebate[debateDateOne]" id="debateDateOne" value="" required />
 
         <!-- Time one -->
         <label class="form-label fw-bold my-3" for="time"> Time </label>
-        <input type="time" class="form-control" name="OnlineDebate[debateTimeOne]" value="" id="time" />
+        <input type="time" class="form-control" name="OnlineDebate[debateTimeOne]" value="" id="time" required/>
 
 
         <!-- topic two-->
@@ -122,11 +122,11 @@
         <input type="text" class="form-control" name="OnlineDebate[topicTwo]" value="<%=weeklyActivity.OnlineDebate.topicTwo %>" id="topicTwo" />
         <!-- debate date two -->
         <label class="form-label fw-bold my-3" for="Word of the day">Date for 2nd Debate</label>
-        <input type="date" class="form-control" name="OnlineDebate[debateDateTwo]" id="debateDateTwo" value="" />
+        <input type="date" class="form-control" name="OnlineDebate[debateDateTwo]" id="debateDateTwo" value="" required/>
 
         <!-- Time  -->
         <label class="form-label fw-bold my-3" for="time"> Time </label>
-        <input type="time" class="form-control" name="OnlineDebate[debateTimeTwo]" value="" id="time" />
+        <input type="time" class="form-control" name="OnlineDebate[debateTimeTwo]" value="" id="time" required/>
 
         <!-- About debate topics  topic  -->
         <label class="form-label fw-bold my-3" for="learnMoreIdiom">More about the online debates</label>

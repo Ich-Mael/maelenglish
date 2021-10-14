@@ -20,7 +20,7 @@
 			<!-- Article image url -->
 			<label class="form-label fw-bold my-3" for="articleImage">Article image</label>
 			<input type="text" class="form-control" name="englishClubArticle[articleImage]"
-				id="articleImage" value="<%= article.articleImage %>" />
+				id="articleImage" value="<%= article.articleImage %>" required/>
 
 			<!-- Title  -->
 			<label class="form-label fw-bold my-3" for="title">Title</label>
@@ -30,12 +30,12 @@
 			<!-- Article Summary  -->
 			<label class="form-label fw-bold my-3" for="articleSummary">Article Summary</label>
 			<input type="text" class="form-control" name="englishClubArticle[articleSummary]"
-				value="<%= article.articleSummary %>" id="title" />
+				value="<%= article.articleSummary %>" id="title" required/>
 
 			<!-- Author -->
 			<label class="form-label fw-bold my-3" for="author">Author</label>
 			<input type="text" class="form-control" name="englishClubArticle[articleAuthor]"
-				value="<%= article.articleAuthor %>" id="articleAuthor" />
+				value="<%= article.articleAuthor %>" id="articleAuthor" required/>
 
 			<!-- Article Content -->
 			<label class="form-label fw-bold my-3" for="articleContent">Article content</label>

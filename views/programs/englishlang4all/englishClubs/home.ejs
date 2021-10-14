@@ -129,14 +129,15 @@
           class="underline"
         ></span>
       </h3>
+      <div class="container">
       <div class="row pb-5">
         <% for(let club of clubs) {%>
         <!-- english club 1 -->
-        <div class="col-sm-6 col-md-4 card-wrapper col-lg-3">
+        <div class="col-sm-6 col-md-4 card-wrapper">
           <div class="eng-club-details">
             <div class="img-wrapper">
               <img
-                src="https://i.ibb.co/Ky8SXTm/Neci.jpg"
+                src="<%= club.logoImageUrl %>"
                 class="img-thumbnail"
                 alt=""
               />
@@ -154,13 +155,13 @@
                 <!-- Button trigger modal -->
                 <button
                   type="button"
-                  class="btn mx-2 btn-success"
+                  class="btn mx-2 btn-primary"
                   data-bs-toggle="modal"
                   data-bs-target="#english-club-1"
                 >
                   Learn more
                 </button>
-                <button class="btn mx-2 btn-outline-success">
+                <button class="btn mx-2 btn-outline-primary">
                   <a
                     class="join-link"
                     href="/englishlang4all/Clubs/<%=club._id%>"
@@ -208,6 +209,7 @@
         </div>
         <%}%>
       </div>
+    </div>
     </div>
   </div>
 </section>

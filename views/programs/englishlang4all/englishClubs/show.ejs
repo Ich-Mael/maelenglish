@@ -127,7 +127,7 @@
               <img src="<%= club.boardMembers[i].imageUrl %>" />
               <div id="image-caption" class="">
                 <h3 class="position"><%= positions[i] %> <br><span class="member-name"><%=
-                                  club.boardMembers[i].name +""+
+                                  club.boardMembers[i].name +" "+
                                   club.boardMembers[i].surname%> </span></h3>
               </div>
             </div>
@@ -182,7 +182,7 @@
   <div class="row">
     <div class="col-lg-9 activities-wrapper">
       <section id="news-wrapper">
-        <h1 class="activity-heading"><span class="activity-underline">News</span></h1>
+        <h1 class="activity-heading">News</h1>
         <div class="d-flex justifify-content-center">
           <div class="row">
             <% for(let article of club.articles ){ %>
@@ -240,22 +240,238 @@
 
       <!-- Lessons section -->
       <section id="lesson-wrapper">
-        <h1 class="activity-heading">Lessons</h1>
+        <h1 class="activity-heading">Weekly Lessons</h1>
+        <div class="container">
+          <div class="lesson-links">
+            <div>
+              <div class="lesson-wrapper my-3">
+                <h4 class="week-lesson-title">How to talk about the future</h4>
+                <p>
+                  But how do you know when to use which one? I mean, we have three different ways to talk about future
+                  plans! So it makes sense if you mix them up sometimes!
+
+                  That’s why we’re going to break down all the future tenses today, and talk about the differences
+                  between all of them.
+                </p>
+                <button type="button" class="btn ms-2 video-btn btn-outline-primary" data-bs-toggle="modal"
+                  data-bs-target="#lesson-1-vid-1">
+                  Click to watch the video lesson
+                </button>
+                <hr>
+              </div>
+              <div class="lesson-wrapper my-3">
+                <h4 class="week-lesson-title">How to talk about the future</h4>
+                <p>
+                  But how do you know when to use which one? I mean, we have three different ways to talk about future
+                  plans! So it makes sense if you mix them up sometimes!
+
+                  That’s why we’re going to break down all the future tenses today, and talk about the differences
+                  between all of them.
+                </p>`
+                <button type="button" class="btn video-btn ms-2 btn-outline-primary" data-bs-toggle="modal"
+                  data-bs-target="#lesson-1-vid-2">
+                  Click to watch the video lesson
+                </button>
+              </div>
+            </div>
+            <!-- Modal  for video 1-->
+            <div class="modal fade" id="lesson-1-vid-1" tabindex="-1" aria-labelledby="exampleModalLabel"
+              aria-hidden="true">
+              <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                      Video-1
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div id="tv-container">
+                      <div id="monitor">
+                        <div class="afrohk-TV">
+                          <h3 class="text-center afrohk-text mb-2 py-0"><span class="afrohk">AfroHK</span><span
+                              class="tv">Radar</span>
+                          </h3>
+                        </div>
+                        <div id="monitorscreen">
+                          <iframe id="vimeo-content"
+                            src="https://player.vimeo.com/video/536620704?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+                            frameborder="0" height="500px" width="1000px"
+                            allow="autoplay; fullscreen; picture-in-picture" allow="fullscreen"
+                            title="High-intensity Classes"></iframe>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal  for video 2-->
+            <div class="modal fade" id="lesson-1-vid-2" tabindex="-1" aria-labelledby="exampleModalLabel"
+              aria-hidden="true">
+              <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                      Video-2
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div id="tv-container">
+                      <div id="monitor">
+                        <div class="afrohk-TV">
+                          <h3 class="text-center afrohk-text mb-2 py-0"><span class="afrohk">AfroHK</span><span
+                              class="tv">Radar</span>
+                          </h3>
+                        </div>
+                        <div id="monitorscreen">
+                          <iframe id="vimeo-content"
+                            src="https://player.vimeo.com/video/536620704?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+                            frameborder="0" height="500px" width="1000px"
+                            allow="autoplay; fullscreen; picture-in-picture" allow="fullscreen"
+                            title="High-intensity Classes"></iframe>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- Weekly activities section -->
       <section id="weekly-activities-wrapper">
         <h1 class="activity-heading">Weekly Activities</h1>
+        <div class="accordion my-5" id="accordionExample">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                aria-expanded="true" aria-controls="collapseOne">
+               Grammar Check Point 
+              </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+              data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+                <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse
+                plugin adds the appropriate classes that we use to style each element. These classes control the overall
+                appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with
+                custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go
+                within the <code>.accordion-body</code>, though the transition does limit overflow.
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+               Vocabulary Builder 
+              </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+              data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+                <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse
+                plugin adds the appropriate classes that we use to style each element. These classes control the overall
+                appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with
+                custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go
+                within the <code>.accordion-body</code>, though the transition does limit overflow.
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingThree">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+               Listening Challenge 
+              </button>
+            </h2>
+            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+              data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+                <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse
+                plugin adds the appropriate classes that we use to style each element. These classes control the overall
+                appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with
+                custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go
+                within the <code>.accordion-body</code>, though the transition does limit overflow.
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingFour">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+             Reading Practice 
+              </button>
+            </h2>
+            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
+              data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+                <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse
+                plugin adds the appropriate classes that we use to style each element. These classes control the overall
+                appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with
+                custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go
+                within the <code>.accordion-body</code>, though the transition does limit overflow.
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- Top stories section -->
-      <section id="top-stories-wrapper">
+      <!-- <section id="top-stories-wrapper">
         <h1 class="activity-heading">Top Stories</h1>
-      </section>
+      </section> -->
 
       <!-- Media section -->
       <section id="top-stories-wrapper">
         <h1 class="activity-heading">Media</h1>
+        <div class="row mt-4">
+          <div class="col-md-6">
+          <div class="media-card py-1">
+               <!--  <div class="card-body"> -->
+
+            <div id="tv-container">
+              <div id="monitor">
+                <div class="afrohk-TV">
+                  <h3 class="text-center afrohk-text mb-2 py-0"><span class="afrohk">AfroHK</span><span
+                      class="tv">Radar</span>
+                  </h3>
+                </div>
+                <div id="monitorscreen">
+                  <!-- <iframe id="vimeo-content" 
+                        src="https://player.vimeo.com/video/536620704?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+                        frameborder="0" height="500px" width="1000px"
+                        allow="autoplay; fullscreen; picture-in-picture" allow="fullscreen"
+                        title="High-intensity Classes"></iframe> -->
+                  <iframe id="vimeo-content" width="100%" height="100%"
+                    src="https://www.youtube.com/embed/j8fHNdrZTSI" title="YouTube video player" controls="1" frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; fullscreen; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
+                </div>
+              </div>
+            </div>
+            <div class="video-details-wrapper m-0">
+              <h5 class="text-center">Public Interview Valentine Day</h5>
+            </div>
+          </div>
+         </div>
+          <!--  </div> -->
+        </div>
       </section>
     </div>
     <div class="col-lg-3 p-2 current-activity">
