@@ -5,7 +5,7 @@
 </script>
 <script>
   tinymce.init({
-    selector: '#mytextarea',
+    selector: '.mytextarea',
     height: 500,
     max_width: 500,
     min_height: 300,
@@ -13,20 +13,21 @@
   });
 </script>
 
-<div class="container col-md-8">
+<!-- Article -->
+<div class="container my-5 col-md-8">
   <h1 class="text-center my-5"><%= club.acronym %> Board Members Dashboard</h1>
 
   <p>
-    <button class="btn btn-primary me-5" type="button" data-bs-toggle="collapse" data-bs-target="#article"
+    <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#article"
       aria-expanded="false" aria-controls="collapseExample">
-      Post an article
+      Edit an article
     </button>
-    <a href="/englishlang4all/Clubs/:club_id/board_dashboard/articles" type="button"
-      class="btn btn-outline-primary"> View all articles </a>
+    <a href="/englishlang4all/Clubs/:club_id/board_dashboard/articles" type="button" class="btn btn-outline-primary">
+      View all articles </a>
   </p>
-  <div class="collapse" id="article">
-    <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/article" method="POST">
 
+  <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/article" method="POST">
+    <div class="collapse" id="article">
       <!-- Article image url -->
       <label class="form-label my-3" for="articleImage">Image Link</label>
       <input type="text" class="form-control" name="englishClubArticle[articleImage]" id="articleImage" value="" />
@@ -45,39 +46,135 @@
 
       <!-- Article Content -->
       <label class="form-label my-3" for="articleContent">Article content</label>
-      <textarea type="text" class="form-control" name="englishClubArticle[articleContent]" value=""
-        id="mytextarea"></textarea>
+      <textarea type="text" class="form-control mytextarea" name="englishClubArticle[articleContent]" value=""
+        id="articleContent"></textarea>
       <hr />
-      <button class="btn btn-outline-success" type="submit">Post article</button>
-    </form>
-  </div>
-
+    </div>
+    <button class="btn my-3  mx-2 btn-outline-success" type="submit">Post article</button>
+  </form>
   <hr>
+</div>
 
+
+<!-- Weekly activity-->
+<div class="container  my-5  col-md-8">
   <p>
-    <button class="btn btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#wod" aria-expanded="false"
-      aria-controls="collapseExample">
-      Weekly Activities
+    <button class="btn m-2 btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#wod"
+      aria-expanded="false" aria-controls="collapseExample">
+      Word of the day
+    </button>
+
+    <button class="btn m-2 btn-success" type="button" data-bs-toggle="collapse" data-bs-target="#iod"
+      aria-expanded="false" aria-controls="collapseExample">
+      Idiom or Expression of the day
+    </button>
+
+    <button class="btn m-2 btn-warning" type="button" data-bs-toggle="collapse" data-bs-target="#wec"
+      aria-expanded="false" aria-controls="collapseExample">
+      Weekly English Club Meeting
+    </button>
+
+    <button class="btn m-2 btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#eod"
+      aria-expanded="false" aria-controls="collapseExample">
+      Online Debate
     </button>
   </p>
-  <div class="collapse" id="wod">
-    <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/weeklyactivity" method="POST">
 
-      <!-- Word of the day -->
-      <label class="form-label fw-bold my-3" for="Word of the day">Word of the day</label>
-      <input type="text" class="form-control" name="wordOfDay[word]" id="word" value="" />
+  <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/weeklyactivity" method="POST">
+    <div class="collapse mb-3" id="wod">
+      <!-- Word of the Day Section-->
+      <section class="word-day-wrapper my-4" style="background-color: rgb(197, 240, 248); padding: 2rem;">
+        <!-- Word Of The day -->
+        <label class="form-label fw-bold my-3" for="Word of the day">Word of the day</label>
+        <input type="text" class="form-control" name="wordOfDay[word]" id="word" value="" />
 
-      <!-- meaning  -->
-      <label class="form-label fw-bold my-3" for="title">Meaning</label>
-      <input type="text" class="form-control" name="wordOfDay[meaning]" value="" id="title" />
+        <!-- meaning  -->
+        <label class="form-label fw-bold my-3" for="title">Meaning</label>
+        <input type="text" class="form-control" name="wordOfDay[wordMeaning]" value="" id="wordMeaning" />
 
-      <!-- Learn more  -->
-      <label class="form-label fw-bold my-3" for="learnMoreWord">Learn more</label>
-      <textarea type="text" class="form-control" name="wordOfDay[learnMoreWord]" value=""
-        id="mytextarea"></textarea>
-      <hr/>
+        <!-- Learn more  -->
+        <label class="form-label fw-bold my-3" for="learnMoreWord">Learn more</label>
+        <textarea type="text" class="form-control mytextarea" name="wordOfDay[learnMoreWord]" value=""
+          id="learnMoreWord"></textarea>
+      </section>
+    </div>
 
-      <button class="btn btn-outline-success" type="submit">Post article</button>
-    </form>
-  </div>
+    <div class="collapse mb-3" id="iod">
+      <!-- Idiom Of The Day Section-->
+      <section class="word-day-wrapper my-4" style="background-color: rgb(214, 248, 217); padding: 2rem;">
+        <!-- idiom of the day -->
+        <label class="form-label fw-bold my-3" for="Word of the day">Idiom or Useful Expression</label>
+        <input type="text" class="form-control" name="IdiomDay[idiom]" id="idiom" value="" />
+
+        <!-- meaning  -->
+        <label class="form-label fw-bold my-3" for="title">Meaning</label>
+        <input type="text" class="form-control" name="IdiomDay[idiomMeaning]" value="" id="idiomMeaning" />
+
+        <!-- Learn more  -->
+        <label class="form-label fw-bold my-3" for="learnMoreIdiom">Learn more</label>
+        <textarea type="text" class="form-control mytextarea" name="IdiomDay[learnMoreIdiom]" value=""
+          id="learnMoreIdiom"></textarea>
+      </section>
+    </div>
+
+    <!-- English Club Meeting Section-->
+    <div class="collapse mb-3" id="wec">
+      <section class="word-day-wrapper my-4" style="background-color: rgb(214, 232, 248); padding: 2rem;">
+        <!-- meeting date -->
+        <label class="form-label fw-bold my-3" for="Word of the day">Meeting Date</label>
+        <input type="date" class="form-control" name="englishClubMeeting[meetingDate]" id="meetingDate" value="" />
+
+        <!-- Venue  -->
+        <label class="form-label fw-bold my-3" for="title"> Venue </label>
+        <input type="text" class="form-control" name="englishClubMeeting[venue]" value="" id="venue" />
+
+        <!-- Time  -->
+        <label class="form-label fw-bold my-3" for="title"> Time </label>
+        <input type="time" class="form-control" name="englishClubMeeting[meetingTime]" value="" id="time" />
+
+        <!-- About the meeting  -->
+        <label class="form-label fw-bold my-3" for="learnMoreIdiom">More about the weekly meeting</label>
+        <textarea type="text" class="form-control mytextarea" name="englishClubMeeting[about]" value=""
+          id="learnMoreIdiom"></textarea>
+      </section>
+    </div>
+
+    <!-- Online debate Section-->
+    <div class="collapse mb-3" id="eod">
+      <section class="word-day-wrapper my-4" style="background-color: rgb(248, 240, 214); padding: 2rem;">
+        <!-- topic one-->
+        <label class="form-label fw-bold my-3" for="topicOne"> Topic One</label>
+        <input type="text" class="form-control" name="OnlineDebate[topicOne]" value="" id="topicOne" />
+
+        <!-- debate date one -->
+        <label class="form-label fw-bold my-3" for="Word of the day">Date for 1st Debate</label>
+        <input type="date" class="form-control" name="OnlineDebate[debateDateOne]" id="debateDateOne" value="" />
+
+        <!-- Time one -->
+        <label class="form-label fw-bold my-3" for="time"> Time </label>
+        <input type="time" class="form-control" name="OnlineDebate[debateTimeOne]" value="" id="time" />
+
+
+        <!-- topic two-->
+        <label class="form-label fw-bold my-3" for="topicTwo"> Topic Two</label>
+        <input type="text" class="form-control" name="OnlineDebate[topicTwo]" value="" id="topicTwo" />
+        <!-- debate date two -->
+        <label class="form-label fw-bold my-3" for="Word of the day">Date for 2nd Debate</label>
+        <input type="date" class="form-control" name="OnlineDebate[debateDateTwo]" id="debateDateTwo" value="" />
+
+        <!-- Time  -->
+        <label class="form-label fw-bold my-3" for="time"> Time </label>
+        <input type="time" class="form-control" name="OnlineDebate[debateTimeTwo]" value="" id="time" />
+
+        <!-- About debate topics  topic  -->
+        <label class="form-label fw-bold my-3" for="learnMoreIdiom">More about the online debates</label>
+        <textarea type="text" class="form-control mytextarea" name="OnlineDebate[aboutTopic]" value=""
+          placeholder="Please don't forget to include debate room details for connexion" id="learnMoreIdiom"></textarea>
+      </section>
+    </div>
+    <button class="btn my-3 mx-2 btn-outline-success" type="submit">Post Weekly Activity</button>
+    <hr>
+  </form>
+
+    <a href="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/weeklyActivities">View all weekly activities of the year</a>
 </div>

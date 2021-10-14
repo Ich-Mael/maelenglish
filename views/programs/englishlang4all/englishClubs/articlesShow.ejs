@@ -15,8 +15,8 @@
 				  btn-primary" data-bs-toggle="modal" data-bs-target="#N<%= article._id %>">
 		Read more
 	      </button>
-               <a href="/english/clubs/<%=club._id%>/board_dashboard/<%=article._id%>/edit" class="btn btn-outline-success"> Edit </a>
-	       <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/<%= article._id %>?_method=DELETE" class="d-inline" method="POST"><button class="btn btn-outline-danger">Delete</button></form>
+               <a href="/english/clubs/<%=club._id%>/board_dashboard/articles/<%=article._id%>/edit" class="btn btn-outline-success"> Edit </a>
+	       <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/articles/<%= article._id %>?_method=DELETE" class="d-inline" method="POST"><button class="btn btn-outline-danger">Delete</button></form>
 	      <!-- Modal -->
 	      <div class="modal fade" id="N<%= article._id %>" tabindex="-1" aria-labelledby="exampleModalLabel"
 		aria-hidden="true">
@@ -52,4 +52,5 @@
 	  </div>
 	</div>
 	<% } %>
+</div>
 </div>

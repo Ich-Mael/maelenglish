@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const { format, formatDistance, formatRelative, subDays } = require('date-fns');            
+const { format, formatDistance, formatRelative, subDays } = require("date-fns");
 
 // english club schema
 const englishClubSchema = new Schema(
@@ -112,7 +112,7 @@ const englishClubSchema = new Schema(
         type: Schema.Types.ObjectId,
         ref: "EnglishClubArticle",
       },
-    ], 
+    ],
 
     weeklyActivity: [
       {
@@ -156,7 +156,7 @@ const englishClubArticleSchema = new Schema(
 
     postedAT: {
       type: Date,
-      default: format(Date.now(), 'MM/dd/yyyy')
+      default: format(Date.now(), "MM/dd/yyyy"),
     },
 
     articleComments: {
@@ -176,46 +176,85 @@ const weeklyActivitySchema = new Schema({
       default: "Knowledge",
     },
 
-    meaning: {
+    wordMeaning: {
       type: String,
-      default:""
-        },
-    learnMore: String,
+      default: "",
+    },
+    learnMoreWord: {
+      type: String,
+    },
     examples: [String],
   },
 
   IdiomDay: {
     idiom: {
       type: String,
-      default: "Knowledge",
+      default: "Afro House of Knowledge",
     },
 
-    meaning: {
+    idiomMeaning: {
       type: String,
-      default:""
-        },
-    learnMore: String,
+      default: "",
+    },
+
+    learnMoreIdiom: {
+      type: String,
+      default: "Afro House of Knowledge",
+    },
+
     examples: [String],
   },
 
   englishClubMeeting: {
     meetingDate: {
       type: Date,
+      default: Date.now(),
     },
-    venue: String,
-    meetingTime: String,
-    about: String,
+    venue: {
+      type: String,
+      default: "Afro House of Knowledge",
+    },
+    meetingTime: {
+      type: String,
+    },
+    about: {
+      type: String,
+      default: "Afro House of Knowledge",
+    },
   },
 
-  OnlineDebate: [
-    {
-      debateTime: {
-        type: Date,
-      },
-      topic: String,
-      about: String,
+  OnlineDebate: {
+    topicOne: {
+      type: String,
+      default: "No debate yet",
     },
-  ],
+
+    debateDateOne: {
+      type: Date,
+      default: Date.now(),
+    },
+
+    debateTimeOne: {
+      type: String,
+    },
+
+    topicTwo: {
+      type: String,
+      default: "No debate yet",
+    },
+
+    debateDateTwo: {
+      type: Date,
+      default: Date.now(),
+    },
+
+    debateTimeTwo: {
+      type: String,
+    },
+    aboutTopic: { 
+      type: String 
+    },
+  },
 });
 
 const englishClubs = mongoose.model("EnglishClub", englishClubSchema);

@@ -2,12 +2,16 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
 const catchAsync = require("../utilities/catchAsync");
-const { englishClubs, englishClubArticles } = require("../models/englishClub");
+const { englishClubs, englishClubArticles, englishWeeklyActivities } = require("../models/englishClub");
 const { isLoggedIn, checkRoles } = require("../middlewares/userController");
 const {
   checkCourseOwnership,
   checkProgramOwnership,
 } = require("../middlewares/courseController");
+
+
+const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 //english for everybody
 router.get("/englishlang4all", (req, res) => {
@@ -89,7 +93,8 @@ router.get(
     const club = await englishClubs
       .findById(req.params.club_id)
       .populate("boardMembers")
-      .populate("articles");
+      .populate("articles")
+      .populate("weeklyActivity");
 
     const positions = [
       "President",
@@ -100,11 +105,14 @@ router.get(
       "Cultural Affairs Officer",
     ];
 
-    // const parser = new DOMParser();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
     res.render("programs/englishlang4all/englishClubs/show", {
       club,
       positions,
+      days,
+      months
     });
   })
 );
@@ -131,6 +139,36 @@ router.post(
 
     console.log(article);
     res.redirect(`/englishlang4all/Clubs/${club_id}`);
+  })
+);
+//=====================================
+//
+//              Articles
+//
+//=====================================
+
+
+router.post(
+  "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyactivity",
+  isLoggedIn,
+  catchAsync(async (req, res) => {
+    const englishClub = await englishClubs.findById(req.params.club_id);
+    const newWeeklyActivity = new englishWeeklyActivities(
+      {
+        wordOfDay:{...req.body.wordOfDay},
+        IdiomDay:{...req.body.IdiomDay},
+        englishClubMeeting:{...req.body.englishClubMeeting},
+        OnlineDebate:{...req.body.OnlineDebate}
+
+      });
+
+    await newWeeklyActivity.save();
+
+    englishClub.weeklyActivity.push(newWeeklyActivity);
+
+    await englishClub.save();
+
+    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
   })
 );
 
@@ -163,7 +201,7 @@ router.get(
 
 //form
 router.get(
-  "/english/clubs/:club_id/board_dashboard/:article_id/edit",
+  "/english/clubs/:club_id/board_dashboard/articles/:article_id/edit",
   isLoggedIn,
   catchAsync(async (req, res) => {
     const article = await englishClubArticles.findById(req.params.article_id);
@@ -178,7 +216,7 @@ router.get(
 
 //Updating article data
 router.put(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/:article_id",
+  "/englishlang4all/Clubs/:club_id/board_dashboard/articles/:article_id",
   isLoggedIn,
   catchAsync(async (req, res) => {
     const article = await englishClubArticles.findByIdAndUpdate(
@@ -193,7 +231,7 @@ router.put(
 
 //Deleting an article
 router.delete(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/:article_id",
+  "/englishlang4all/Clubs/:club_id/board_dashboard/articles/:article_id",
   isLoggedIn,
   catchAsync(async (req, res) => {
     const article = await englishClubArticles.findByIdAndDelete(
@@ -205,6 +243,42 @@ router.delete(
 
 
 // **************************** Weekly activities *****************************************
+
+//View all weekly activity
+router.get(
+  "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyActivities",
+  isLoggedIn,
+  catchAsync(async (req, res) => {
+    const weeklyActivities = await englishWeeklyActivities.find({});
+    const club = await englishClubs.findById(req.params.club_id);
+
+    // console.log(weeklyActivities);
+    res.render("programs/englishlang4all/englishClubs/weeklyActivitiesShow", {
+      weeklyActivities,
+      club,
+      days,
+      months
+    });
+  })
+);
+
+
+//Edit weekly activity
+
+// Form
+router.get(
+  "/english/clubs/:club_id/board_dashboard/weeklActivities/:weeklyActivity_id/edit",
+  isLoggedIn,
+  catchAsync(async (req, res) => {
+    const weeklyActivity = await englishWeeklyActivities.findById(req.params.weeklyActivity_id);
+    const club = await englishClubs.findById(req.params.club_id);
+
+    res.render("programs/englishlang4all/englishClubs/weeklyActivityEdit", {
+      weeklyActivity,
+      club,
+    });
+  })
+);
 
 
 

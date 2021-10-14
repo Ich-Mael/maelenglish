@@ -17,8 +17,7 @@
   <div class="col-lg-4">
     <div class="enlish-club-info">
       <div class="club-logos-wrapper">
-        <img class="school-logo img-thumbnail"
-          src="<%= club.instituitionLogoUrl %> " alt="" />
+        <img class="school-logo img-thumbnail" src="<%= club.instituitionLogoUrl %> " alt="" />
         <img class="club-logo img-thumbnail" src="<%=club.logoImageUrl%>" alt="" />
       </div>
       <div class="club-info">
@@ -212,11 +211,11 @@
                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                          <div> 
-                           
-                          <%- article.articleContent%>
-                         
-                            
+                          <div>
+
+                            <%- article.articleContent%>
+
+
                           </div>
                         </div>
                         <div class="modal-footer">
@@ -227,8 +226,10 @@
                     </div>
                   </div>
                   <hr>
-                  <p class="card-text"><small
-                      class="text-muted"><%= article.postedAT.toISOString().split('T')[0] %></small><em class="mx-3">By
+                  <p class="card-text"><small class="text-muted"><%= days[article.postedAT.getDay()] %>,
+                      <%=article.postedAT.getDate()%>
+                      <%= months[article.postedAT.getMonth()] %>
+                      <%=article.postedAT.getFullYear()%></small><em class="mx-3"> <br> By
                       <%= article.articleAuthor %></em></p>
                 </div>
               </div>
@@ -397,17 +398,17 @@
               Vocabulary Cookies
             </div>
             <div class="card-body">
-              <h5 class="card-title word-day-title py-2"><span class="fw-bold">Word :</span> Amalgamate</h5>
-              <p class="card-text word-day-meaning"><span class="fw-bold">Meaning : </span> Combine
-                or
-                unite to form one organization or structure.
+              <h5 class="card-title word-day-title py-2"><span class="fw-bold">Word :</span>
+                <%= club.weeklyActivity[0].wordOfDay.word %> </h5>
+              <p class="card-text word-day-meaning"><span class="fw-bold">Meaning : </span>
+                <%= club.weeklyActivity[0].wordOfDay.wordMeaning %>
               </p>
               <hr>
-              <h5 class="card-title idioms-title py-2"><span class="fw-bold">Idioms :</span>
-                Better late than never</h5>
-              <p class="card-text word-day-meaning"><span class="fw-bold">Meaning : </span> Better
-                to
-                arrive late than not to come at all.
+              <h5 class="card-title idioms-title py-2"><span class="fw-bold">Idioms :
+                  <%= club.weeklyActivity[0].IdiomDay.idiom %> </span>
+              </h5>
+              <p class="card-text word-day-meaning"><span class="fw-bold">Meaning : </span>
+                <%= club.weeklyActivity[0].IdiomDay.idiomMeaning %>
               </p>
               <!-- Button trigger modal -->
               <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#wod-1">
@@ -421,30 +422,15 @@
                   <div class="modal-content">
                     <div class="modal-header">
                       <h5 class="modal-title" id="exampleModalLabel">
-                        Amalgamate
+                        Practice with examples
                       </h5>
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                      <p> Lorem ipsum dolor, sit amet
-                        consectetur adipisicing
-                        elit. Eaque tempora et
-                        velit. Quae, odit! Esse
-                        doloribus qui
-                        accusantium, nobis
-                        impedit repellendus hic
-                        praesentium voluptatum.
-                        Incidunt dicta
-                        aspernatur minus quaerat
-                        illum quod vitae velit
-                        at eos iste? Voluptate
-                        aspernatur laudantium
-                        numquam sapiente
-                        deserunt quidem,
-                        expedita natus. Animi
-                        voluptate distinctio
-                        fugit reprehenderit!
+                      <p> <%- club.weeklyActivity[0].wordOfDay.learnMoreWord %>
                       </p>
+                      <hr>
+                      <p> <%- club.weeklyActivity[0].IdiomDay.learnMoreIdiom %> </p>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn
@@ -458,115 +444,80 @@
         </div>
         <div class="coming-activity">
           <div class="card m-2">
-            <div class="card-header text-center
-                                  incomming-activities">
+            <div class="card-header text-center incomming-activities">
               Incomming Activities
             </div>
             <div class="card-body">
               <div>
-                <h3 class="card-title weekly-activity">Weekly
-                  English
-                  Club</h3>
-                <h4 class="activity-date">Saturday, 13th
-                  Novemvember
-                  2021</h3>
-                  <h4 class="activity-place"> <span class="fw-bold text-danger"><i
-                        class="fas me-2 fa-map-marker-alt"></i>Venue
-                      :</span> Amphi 3</h4>
-                  <h4 class="activity-time"> <span class="fw-bold text-danger"><i class="fas me-2 fa-clock"></i>Time:
-                    </span>14:00
-                  </h4>
-                  <!-- Button trigger modal -->
-                  <button type="button" class="btn mt-2
+                <h3 class="card-title weekly-activity">Weekly English Club Meeting</h3>
+                <h4 class="activity-date">
+                  <%= days[club.weeklyActivity[0].englishClubMeeting.meetingDate.getDay()] %>,
+                  <%=club.weeklyActivity[0].englishClubMeeting.meetingDate.getDate()%>
+                  <%= months[club.weeklyActivity[0].englishClubMeeting.meetingDate.getMonth()] %>
+                  <%=club.weeklyActivity[0].englishClubMeeting.meetingDate.getFullYear()%>
+                </h4>
+                <h4 class="activity-place"> <span class="fw-bold text-danger"><i
+                      class="fas me-2 fa-map-marker-alt"></i>Venue:</span>
+                  <%=club.weeklyActivity[0].englishClubMeeting.venue %> </h4>
+                <h4 class="activity-time"> <span class="fw-bold text-danger"><i class="fas me-2 fa-clock"></i>Time:
+                  </span> <%=club.weeklyActivity[0].englishClubMeeting.meetingTime %>
+                </h4>
+                <!-- Button trigger modal -->
+                <button type="button" class="btn mt-2
                                       btn-outline-success" data-bs-toggle="modal" data-bs-target="#wec">
-                    Learn more about the WEC
-                  </button>
+                  Learn more about the WEC
+                </button>
 
-                  <!-- Modal -->
-                  <div class="modal fade" id="wec" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg
+                <!-- Modal -->
+                <div class="modal fade" id="wec" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg
                                         modal-fullscreen-md-down">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title" id="exampleModalLabel">
-                            Agenda
-                            Weekly
-                            English
-                            Club
-                            Meeting
-                          </h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                          <p> Lorem ipsum
-                            dolor,
-                            sit amet
-                            consectetur
-                            adipisicing
-                            elit.
-                            Eaque
-                            tempora
-                            et
-                            velit.
-                            Quae,
-                            odit!
-                            Esse
-                            doloribus
-                            qui
-                            accusantium,
-                            nobis
-                            impedit
-                            repellendus
-                            hic
-                            praesentium
-                            voluptatum.
-                            Incidunt
-                            dicta
-                            aspernatur
-                            minus
-                            quaerat
-                            illum
-                            quod
-                            vitae
-                            velit
-                            at eos
-                            iste?
-                            Voluptate
-                            aspernatur
-                            laudantium
-                            numquam
-                            sapiente
-                            deserunt
-                            quidem,
-                            expedita
-                            natus.
-                            Animi
-                            voluptate
-                            distinctio
-                            fugit
-                            reprehenderit!
-                          </p>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">
+                          Weekly English Club Meeting Agenda
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <p> <%- club.weeklyActivity[0].englishClubMeeting.about %>
+                        </p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn
                                               btn-danger" data-bs-dismiss="modal">Close</button>
-                        </div>
                       </div>
                     </div>
                   </div>
+                </div>
               </div>
 
               <hr>
               <div>
-                <h3 class="card-title weekly-activity">Online
-                  Debates
-                </h3>
+                <h3 class="card-title weekly-activity text-primary">Online Debates</h3>
                 <ul class="list-group list-group-flush">
-                  <li class="list-group-item"> <span class="fw-bold">Topic 1
+                  <li class="list-group-item"> <span class="">Topic 1
                       :</span><br>
-                    Mug Justice </li>
-                  <li class="list-group-item"><span class="fw-bold">Topic 2 :</span>
-                    <br> Sexual harassement at workplace
+                    <span class="text-success fw-bold"><%=club.weeklyActivity[0].OnlineDebate.topicOne %></span> <br>
+                    <span class="">
+                      <%= days[club.weeklyActivity[0].OnlineDebate.debateDateOne.getDay()]%>,
+                      <%=club.weeklyActivity[0].OnlineDebate.debateDateOne.getDate()%>
+                      <%= months[club.weeklyActivity[0].OnlineDebate.debateDateOne.getMonth()]%>
+                      <%=club.weeklyActivity[0].OnlineDebate.debateDateOne.getFullYear()%></span>
+                    <br>
+                    <span class="fw-bold"><%=club.weeklyActivity[0].OnlineDebate.debateTimeOne%></span>
+                  </li>
+                  <li class="list-group-item"><span class="">Topic 2 :</span>
+                    <br>
+                    <span class="text-success fw-bold"><%=club.weeklyActivity[0].OnlineDebate.topicTwo%></span>
+                    <br>
+                    <span class=""> <%= days[club.weeklyActivity[0].OnlineDebate.debateDateTwo.getDay()]%>,
+                      <%=club.weeklyActivity[0].OnlineDebate.debateDateTwo.getDate()%>
+                      <%= months[club.weeklyActivity[0].OnlineDebate.debateDateTwo.getMonth()]%>
+                      <%=club.weeklyActivity[0].OnlineDebate.debateDateTwo.getFullYear()%>
+                    </span>
+                    <br>
+                    <span class=""> <%=club.weeklyActivity[0].OnlineDebate.debateTimeTwo%></span>
                   </li>
                 </ul>
 
@@ -583,49 +534,17 @@
                     <div class="modal-content">
                       <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">
-                          Online English
-                          Debates
+                          Online English Debates
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
                       <div class="modal-body">
-                        <p> Lorem ipsum dolor,
-                          sit amet
-                          consectetur
-                          adipisicing
-                          elit. Eaque
-                          tempora et
-                          velit. Quae,
-                          odit! Esse
-                          doloribus qui
-                          accusantium,
-                          nobis
-                          impedit
-                          repellendus hic
-                          praesentium
-                          voluptatum.
-                          Incidunt dicta
-                          aspernatur minus
-                          quaerat
-                          illum quod vitae
-                          velit
-                          at eos iste?
-                          Voluptate
-                          aspernatur
-                          laudantium
-                          numquam sapiente
-                          deserunt quidem,
-                          expedita natus.
-                          Animi
-                          voluptate
-                          distinctio
-                          fugit
-                          reprehenderit!
+                        <p>
+                          <%- club.weeklyActivity[0].OnlineDebate.aboutTopic %>
                         </p>
                       </div>
                       <div class="modal-footer">
-                        <button type="button" class="btn
-                                              btn-danger" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                       </div>
                     </div>
                   </div>
@@ -640,4 +559,3 @@
     </div>
   </div>
 </div>
-
