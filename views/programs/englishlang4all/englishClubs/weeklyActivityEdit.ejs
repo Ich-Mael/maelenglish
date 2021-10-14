@@ -40,8 +40,7 @@
     </button>
   </p>
 
-  <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/<%= weeklyActivity._id%>?_method=PUT"
-    method="POST">
+  <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/weeklyActivities/<%= weeklyActivity._id%>?_method=PUT" method="POST">
     <div class="collapse mb-3" id="wod">
       <!-- Word of the Day Section-->
       <section class="word-day-wrapper my-4" style="background-color: rgb(197, 240, 248); padding: 2rem;">
@@ -130,8 +129,7 @@
         <input type="time" class="form-control" name="OnlineDebate[debateTimeTwo]" value="" id="time" />
 
         <!-- About debate topics  topic  -->
-        <label class="form-label fw-bold my-3" for="learnMoreIdiom">More about the online
-          debates</label>
+        <label class="form-label fw-bold my-3" for="learnMoreIdiom">More about the online debates</label>
         <textarea type="text" class="form-control mytextarea" name="OnlineDebate[aboutTopic]" value=""
           placeholder="Please don't forget to include debate room details for connexion" id="learnMoreIdiom"><%= weeklyActivity.OnlineDebate.aboutTopic %></textarea>
       </section>

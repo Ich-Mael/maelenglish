@@ -2,16 +2,40 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
 const catchAsync = require("../utilities/catchAsync");
-const { englishClubs, englishClubArticles, englishWeeklyActivities } = require("../models/englishClub");
+const {
+  englishClubs,
+  englishClubArticles,
+  englishWeeklyActivities,
+} = require("../models/englishClub");
 const { isLoggedIn, checkRoles } = require("../middlewares/userController");
 const {
   checkCourseOwnership,
   checkProgramOwnership,
 } = require("../middlewares/courseController");
 
-
-const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const days = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 //english for everybody
 router.get("/englishlang4all", (req, res) => {
@@ -105,14 +129,35 @@ router.get(
       "Cultural Affairs Officer",
     ];
 
-  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
 
     res.render("programs/englishlang4all/englishClubs/show", {
       club,
       positions,
       days,
-      months
+      months,
     });
   })
 );
@@ -137,7 +182,6 @@ router.post(
 
     await englishClub.save();
 
-    console.log(article);
     res.redirect(`/englishlang4all/Clubs/${club_id}`);
   })
 );
@@ -147,20 +191,17 @@ router.post(
 //
 //=====================================
 
-
 router.post(
   "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyactivity",
   isLoggedIn,
   catchAsync(async (req, res) => {
     const englishClub = await englishClubs.findById(req.params.club_id);
-    const newWeeklyActivity = new englishWeeklyActivities(
-      {
-        wordOfDay:{...req.body.wordOfDay},
-        IdiomDay:{...req.body.IdiomDay},
-        englishClubMeeting:{...req.body.englishClubMeeting},
-        OnlineDebate:{...req.body.OnlineDebate}
-
-      });
+    const newWeeklyActivity = new englishWeeklyActivities({
+      wordOfDay: { ...req.body.wordOfDay },
+      IdiomDay: { ...req.body.IdiomDay },
+      englishClubMeeting: { ...req.body.englishClubMeeting },
+      OnlineDebate: { ...req.body.OnlineDebate },
+    });
 
     await newWeeklyActivity.save();
 
@@ -171,8 +212,6 @@ router.post(
     res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
   })
 );
-
-
 
 // =============================
 //
@@ -207,6 +246,7 @@ router.get(
     const article = await englishClubArticles.findById(req.params.article_id);
     const club = await englishClubs.findById(req.params.club_id);
 
+
     res.render("programs/englishlang4all/englishClubs/articleEdit", {
       article,
       club,
@@ -223,9 +263,11 @@ router.put(
       req.params.article_id,
       { ...req.body.englishClubArticle }
     );
-    article.save();
+
+    await article.save();
 
     res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+
   })
 );
 
@@ -240,7 +282,6 @@ router.delete(
     res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
   })
 );
-
 
 // **************************** Weekly activities *****************************************
 
@@ -257,11 +298,10 @@ router.get(
       weeklyActivities,
       club,
       days,
-      months
+      months,
     });
   })
 );
-
 
 //Edit weekly activity
 
@@ -270,7 +310,9 @@ router.get(
   "/english/clubs/:club_id/board_dashboard/weeklActivities/:weeklyActivity_id/edit",
   isLoggedIn,
   catchAsync(async (req, res) => {
-    const weeklyActivity = await englishWeeklyActivities.findById(req.params.weeklyActivity_id);
+    const weeklyActivity = await englishWeeklyActivities.findById(
+      req.params.weeklyActivity_id
+    );
     const club = await englishClubs.findById(req.params.club_id);
 
     res.render("programs/englishlang4all/englishClubs/weeklyActivityEdit", {
@@ -280,10 +322,25 @@ router.get(
   })
 );
 
+//Updating weekly activity data
+router.put(
+  "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyActivities/:weeklyActivity_id",
+  isLoggedIn,
+  catchAsync(async (req, res) => {
+    const weeklActivity = await englishWeeklyActivities.findByIdAndUpdate(
+      req.params.weeklyActivity_id,
+      {
+        wordOfDay: { ...req.body.wordOfDay },
+        IdiomDay: { ...req.body.IdiomDay },
+        englishClubMeeting: { ...req.body.englishClubMeeting },
+        OnlineDebate: { ...req.body.OnlineDebate },
+      }
+    );
+    weeklActivity.save();
 
-
-
-
+    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+  })
+);
 
 /* =================================================
  *
