@@ -120,6 +120,13 @@ const englishClubSchema = new Schema(
         ref: "EnglishWeeklyActivity",
       },
     ],
+
+    weeklyVideoLesson: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "EnglishWeeklyLessons",
+      },
+    ],
   },
   {
     timestamps: true,
@@ -251,20 +258,61 @@ const weeklyActivitySchema = new Schema({
     debateTimeTwo: {
       type: String,
     },
-    aboutTopic: { 
-      type: String 
+    aboutTopic: {
+      type: String,
     },
   },
 });
 
+// weekly lesson schema
+// english club article schema
+const weeklyLessonSchema = new Schema(
+  {
+    lessonTitle: {
+      type: String,
+      required: true,
+    },
+    // image
+    videoLink: {
+      type: String,
+      required: true,
+    },
+
+    lessonSummary: {
+      type: String,
+      required: true,
+    },
+
+    lessonAuthor: {
+      type: String,
+      required: true,
+    },
+
+    postedAT: {
+      type: Date,
+      default: format(Date.now(), "MM/dd/yyyy"),
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
 const englishClubs = mongoose.model("EnglishClub", englishClubSchema);
+
 const englishClubArticles = mongoose.model(
   "EnglishClubArticle",
   englishClubArticleSchema
 );
+
 const englishWeeklyActivities = mongoose.model(
   "EnglishWeeklyActivity",
   weeklyActivitySchema
 );
 
-module.exports = { englishClubs, englishClubArticles, englishWeeklyActivities };
+const englishWeeklyLessons = mongoose.model(
+  "EnglishWeeklyLessons",
+  weeklyLessonSchema
+);
+
+module.exports = { englishClubs, englishClubArticles, englishWeeklyActivities, englishWeeklyLessons };

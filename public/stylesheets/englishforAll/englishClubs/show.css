@@ -657,6 +657,15 @@ color: white;
 .media-card:hover{
   box-shadow: rgba(8, 31, 163, 0.16) 3px 3px 3px, rgba(3, 12, 95, 0.23) 2px 2px 2px;
 }
+
+.week-lesson-title{
+font-size: 2rem;
+color: rgb(61, 16, 82);
+text-align: center;
+padding: 0.5rem;
+}
+
+
 /* ================================= */
 /* responsiveness */
 /* ================================= */

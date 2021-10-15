@@ -180,7 +180,7 @@
 </h1>
 <div class="main-content-wrapper">
   <div class="row">
-    <div class="col-lg-9 activities-wrapper">
+    <div class="col-lg-9 activities-wrapper py-3">
       <section id="news-wrapper">
         <h1 class="activity-heading">News</h1>
         <div class="d-flex justifify-content-center">
@@ -245,13 +245,9 @@
           <div class="lesson-links">
             <div>
               <div class="lesson-wrapper my-3">
-                <h4 class="week-lesson-title">How to talk about the future</h4>
+                <h4 class="week-lesson-title"><%= club.weeklyVideoLesson[0].lessonTitle %> </h4>
                 <p>
-                  But how do you know when to use which one? I mean, we have three different ways to talk about future
-                  plans! So it makes sense if you mix them up sometimes!
-
-                  That’s why we’re going to break down all the future tenses today, and talk about the differences
-                  between all of them.
+                  <%- club.weeklyVideoLesson[0].lessonSummary%>
                 </p>
                 <button type="button" class="btn ms-2 video-btn btn-outline-primary" data-bs-toggle="modal"
                   data-bs-target="#lesson-1-vid-1">
@@ -260,13 +256,9 @@
                 <hr>
               </div>
               <div class="lesson-wrapper my-3">
-                <h4 class="week-lesson-title">How to talk about the future</h4>
+                <h4 class="week-lesson-title"><%= club.weeklyVideoLesson[1].lessonTitle %></h4>
                 <p>
-                  But how do you know when to use which one? I mean, we have three different ways to talk about future
-                  plans! So it makes sense if you mix them up sometimes!
-
-                  That’s why we’re going to break down all the future tenses today, and talk about the differences
-                  between all of them.
+                  <%- club.weeklyVideoLesson[1].lessonSummary%>
                 </p>`
                 <button type="button" class="btn video-btn ms-2 btn-outline-primary" data-bs-toggle="modal"
                   data-bs-target="#lesson-1-vid-2">
@@ -280,8 +272,8 @@
               <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">
-                      Video-1
+                    <h5 class="modal-title text-primary" id="exampleModalLabel">
+                      <%= club.weeklyVideoLesson[0].lessonTitle %>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
@@ -295,7 +287,7 @@
                         </div>
                         <div id="monitorscreen">
                           <iframe id="vimeo-content"
-                            src="https://player.vimeo.com/video/536620704?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+                            src="<%= club.weeklyVideoLesson[0].videoLink %>"
                             frameborder="0" height="500px" width="1000px"
                             allow="autoplay; fullscreen; picture-in-picture" allow="fullscreen"
                             title="High-intensity Classes"></iframe>
@@ -318,8 +310,8 @@
               <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">
-                      Video-2
+                    <h5 class="modal-title text-primary" id="exampleModalLabel">
+                      <%= club.weeklyVideoLesson[1].lessonTitle %>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
@@ -333,7 +325,7 @@
                         </div>
                         <div id="monitorscreen">
                           <iframe id="vimeo-content"
-                            src="https://player.vimeo.com/video/536620704?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+                            src="<%= club.weeklyVideoLesson[1].videoLink %>"
                             frameborder="0" height="500px" width="1000px"
                             allow="autoplay; fullscreen; picture-in-picture" allow="fullscreen"
                             title="High-intensity Classes"></iframe>

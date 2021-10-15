@@ -22,8 +22,7 @@
       aria-expanded="false" aria-controls="collapseExample">
       Edit an article
     </button>
-    <a href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard/articles" type="button" class="btn btn-outline-primary">
-      View all articles </a>
+
   </p>
 
   <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/article" method="POST">
@@ -52,6 +51,8 @@
     </div>
     <button class="btn my-3  mx-2 btn-outline-success" type="submit">Post article</button>
   </form>
+  <a href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard/articles" type="button" class="btn  mx-2 btn-outline-primary">
+    View all articles of the year </a>
   <hr>
 </div>
 
@@ -173,8 +174,46 @@
       </section>
     </div>
     <button class="btn my-3 mx-2 btn-outline-success" type="submit">Post Weekly Activity</button>
-    <hr>
   </form>
+    <a href="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/weeklyActivities" class="btn btn-outline-primary mx-2">View all weekly activities of the year</a>
+</div>
 
-    <a href="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/weeklyActivities">View all weekly activities of the year</a>
+
+<!-- Weekly video lesson -->
+<div class="container my-5 col-md-8">
+    <hr>
+  <p>
+    <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#videoLesson"
+      aria-expanded="false" aria-controls="collapseExample">
+      Edit a video lesson
+    </button>
+   
+
+  <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/videoLesson" method="POST">
+    <div class="collapse" id="videoLesson">
+      <!-- Lesson title -->
+      <label class="form-label my-3" for="lessonTitle">Lesson title</label>
+      <input type="text" class="form-control" name="weeklyLesson[lessonTitle]" id="articleImage" value="" />
+
+      <!-- Video Link  -->
+      <label class="form-label my-3" for="videoLink">Video Link</label>
+      <input type="text" class="form-control" name="weeklyLesson[videoLink]" value="" id="title" />
+
+      
+      <!-- Author -->
+      <label class="form-label my-3" for="author">Author</label>
+      <input type="text" class="form-control" name="weeklyLesson[lessonAuthor]" value="" id="articleAuthor" />
+
+      <!-- Lesson Summary -->
+      <label class="form-label my-3" for="lessonSummary">Lesson Summary</label>
+      <textarea type="text" class="form-control mytextarea" name="weeklyLesson[lessonSummary]" value=""
+        id="articleContent"></textarea>
+      <hr />
+    </div>
+    <button class="btn my-3  mx-2 btn-outline-success" type="submit">Post video lesson</button>
+  </form>
+  <a href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard/videoLessons" type="button" class="btn mx-2 btn-outline-primary">
+    View all video lessons of the year</a>
+</p>
+  <hr>
 </div>
