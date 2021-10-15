@@ -345,6 +345,20 @@ router.post("/englishlang4all/Clubs/:club_id/board_dashboard/videoLesson", isLog
   res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
 }));
 
+//View all lessons
+router.get(
+  "/englishlang4all/Clubs/:club_id/board_dashboard/videoLessons",
+  isLoggedIn,
+  catchAsync(async (req, res) => {
+    const videoLessons = await englishWeeklyLessons.find({});
+    const club = await englishClubs.findById(req.params.club_id);
+
+    res.render("programs/englishlang4all/englishClubs/videoLessonsShow", {
+      videoLessons,
+      club,
+    });
+  })
+);
 
 
 

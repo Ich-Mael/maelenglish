@@ -1,6 +1,11 @@
 <% layout('layouts/engClubBoilerplate') %>
+<style>
+	html {
+		font-size: 80%;
+	}
+</style>
 <div class="container col-md-8">
-  <h1 class="text-center my-5"><%= club.acronym %> Board Members Dashboard</h1>
+  <h1 class="text-center my-5" style="color: blueviolet;"><%= club.acronym %> Board Members Dashboard</h1>
   <h3 class="text-center">All Articles</h3>
   <div class="row">
 	<% for(let article of articles ){ %>

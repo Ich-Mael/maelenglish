@@ -493,6 +493,7 @@ customers-cards:before {
 
 .news-title {
   font-size: 1.3rem;
+color: rgb(61, 16, 82);
   min-height: 3rem;
   font-family: "Poppins", sans-serif;
   margin-bottom: 1rem;
@@ -703,6 +704,10 @@ padding: 0.5rem;
     height: 0.8rem;
   }
 
+  .main-content-wrapper {
+    padding: 0 0.2rem;
+  }
+  
   html {
     font-size: 72.5%;
   }
