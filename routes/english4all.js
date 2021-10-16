@@ -8,6 +8,7 @@ const {
   months,
   defaultWeeklyActivityData,
   defaultArticleData,
+  weeklyLessonsData,
 } = require("../utilities/defaultData");
 
 const {
@@ -18,6 +19,7 @@ const {
 } = require("../models/englishClub");
 const { isLoggedIn, checkRoles } = require("../middlewares/userController");
 const {
+  checkEnglishClubMembership,
   checkCourseOwnership,
   checkProgramOwnership,
 } = require("../middlewares/courseController");
@@ -57,7 +59,7 @@ router.get(
 
 //english clubs
 router.post(
-  "/englishlang4all/clubs",
+  "/englishlang4all/clubs/create",
   isLoggedIn,
   checkRoles("admin"),
   catchAsync(async (req, res) => {
@@ -72,35 +74,71 @@ router.post(
       cultActMInfo,
     } = req.body;
 
+    // adding boad members
     const president = await User.findOne({
       username: PresidentInfo,
     });
-    englishClub.boardMembers.push(president);
+
+    englishClub.boardMembers.push(president._id);
+    englishClub.members.push(president._id);
 
     const vicePresident = await User.findOne({
       username: VicePresidentInfo,
     });
-    englishClub.boardMembers.push(vicePresident);
+
+    englishClub.boardMembers.push(vicePresident._id);
+    englishClub.members.push(vicePresident._id);
 
     const treasurer = await User.findOne({
       username: treasurerInfo,
     });
-    englishClub.boardMembers.push(treasurer);
+
+    englishClub.boardMembers.push(treasurer._id);
+    englishClub.members.push(treasurer._id);
 
     const secretary = await User.findOne({
       username: secretaryInfo,
     });
-    englishClub.boardMembers.push(secretary);
+
+    englishClub.boardMembers.push(secretary._id);
+    englishClub.members.push(secretary._id);
 
     const comManager = await User.findOne({
       username: comManagerInfo,
     });
-    englishClub.boardMembers.push(comManager);
+
+    englishClub.boardMembers.push(comManager._id);
+    englishClub.members.push(comManager._id);
 
     const cultManager = await User.findOne({
       username: cultActMInfo,
     });
-    englishClub.boardMembers.push(cultManager);
+
+    englishClub.boardMembers.push(cultManager._id);
+    englishClub.members.push(cultManager._id);
+
+    // adding default article
+    for (let i = 0; i < 3; i++) {
+      const firstArticle = new englishClubArticles(defaultArticleData);
+      firstArticle.save();
+
+      englishClub.articles.push(firstArticle._id);
+    }
+    // adding default weekly activities
+    const firstWeeklyActivity = new englishWeeklyActivities(
+      defaultWeeklyActivityData
+    );
+    firstWeeklyActivity.save();
+
+    englishClub.weeklyActivity.push(firstWeeklyActivity._id);
+
+    // adding weekly lesson
+    for (let weekLessonData of weeklyLessonsData) {
+      const weeklyLesson = new englishWeeklyLessons(weekLessonData);
+      weeklyLesson.save();
+
+      englishClub.weeklyVideoLesson.push(weeklyLesson._id);
+    }
 
     await englishClub.save();
 
@@ -137,10 +175,6 @@ router.get(
 
 // Adding a member to an English Club
 
-
-
-
-
 //=====================================
 //
 //              Articles
@@ -164,7 +198,6 @@ router.post(
     res.redirect(`/englishlang4all/Clubs/${club_id}`);
   })
 );
-
 
 //View all articles
 router.get(
@@ -337,18 +370,22 @@ router.put(
 //
 //=====================================
 
-router.post("/englishlang4all/Clubs/:club_id/board_dashboard/videoLesson", isLoggedIn, catchAsync(async(req, res)=>{
-  const englishClub = await englishClubs.findById(req.params.club_id);
-  
-  const newVideoLesson = new englishWeeklyLessons(req.body.weeklyLesson);
-  await newVideoLesson.save();
+router.post(
+  "/englishlang4all/Clubs/:club_id/board_dashboard/videoLesson",
+  isLoggedIn,
+  catchAsync(async (req, res) => {
+    const englishClub = await englishClubs.findById(req.params.club_id);
 
-  englishClub.weeklyVideoLesson.unshift(newVideoLesson);
-  
-  await englishClub.save();
+    const newVideoLesson = new englishWeeklyLessons(req.body.weeklyLesson);
+    await newVideoLesson.save();
 
-  res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
-}));
+    englishClub.weeklyVideoLesson.unshift(newVideoLesson);
+
+    await englishClub.save();
+
+    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+  })
+);
 
 //View all lessons
 router.get(
@@ -400,7 +437,6 @@ router.put(
     res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
   })
 );
-
 
 /* =================================================
  *

@@ -99,10 +99,40 @@ const defaultWeeklyActivityData = {
   },
 };
 
+
+// weekly lesson
+const weeklyLessonsData = [{
+    lessonTitle: "Afro House of knowledge 1",
+
+    // image
+    videoLink:"https://youtu.be/vv7cBMCBUdk" ,
+
+    lessonSummary: "Afro House of knowledge" ,
+
+    lessonAuthor: "House Of English Lovers",
+
+    postedAT: Date.now() 
+  },
+  
+  {
+  lessonTitle: "Afro House of knowledge 2",
+
+  // image
+  videoLink:"https://youtu.be/vv7cBMCBUdk" ,
+
+  lessonSummary: "Afro House of knowledge" ,
+
+  lessonAuthor: "House Of English Lovers",
+
+  postedAT: Date.now() 
+}];
+
+
 module.exports = {
   positions,
   days,
   months,
   defaultWeeklyActivityData,
   defaultArticleData,
+  weeklyLessonsData
 };

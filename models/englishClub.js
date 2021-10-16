@@ -20,6 +20,7 @@ const englishClubSchema = new Schema(
     name: {
       type: String,
       trim: true,
+      unique: true,
       required: true,
     },
 
@@ -138,27 +139,22 @@ const englishClubArticleSchema = new Schema(
   {
     title: {
       type: String,
-      required: true,
     },
     // image
     articleImage: {
       type: String,
-      required: true,
     },
 
     articleSummary: {
       type: String,
-      required: true,
     },
 
     articleContent: {
       type: String,
-      required: true,
     },
 
     articleAuthor: {
       type: String,
-      required: true,
     },
 
     postedAT: {
@@ -270,22 +266,19 @@ const weeklyLessonSchema = new Schema(
   {
     lessonTitle: {
       type: String,
-      required: true,
     },
     // image
     videoLink: {
       type: String,
-      required: true,
+      trim: true
     },
 
     lessonSummary: {
       type: String,
-      required: true,
     },
 
     lessonAuthor: {
       type: String,
-      required: true,
     },
 
     postedAT: {
