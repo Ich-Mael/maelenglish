@@ -1,8 +1,40 @@
 <% layout('layouts/boilerplate') %>
-    <h1>Welcome to admin Dashboard</h1>
-    <div>
-        <a href="/courses/new">Create a new course</a>
-    </div>
-    <div>
-        <a href="/addstudent/new">Enroll student to a course</a>
-    </div>
+<style>
+  html {
+    font-size: 90%;
+  }
+</style>
+<h1 class="text-center my-5" style="color: rgb(243, 99, 16)">
+  Welcome to admin Dashboard
+</h1>
+
+<div class="container">
+  <div>
+    <a href="/courses/new">Create a new course</a>
+  </div>
+  <div>
+    <a href="/addstudent/new">Enroll student to a course</a>
+  </div>
+</div>
+<!-- Managing English Club -->
+<div class="container col-md-6 my-5">
+  <h1>Adding a new member to an English Club</h1>
+  <form action="/admindashboard/newEnglishClubMember" method="POST">
+    <label class="form-label my-3" for="course">English club name</label>
+    <input
+      class="form-control"
+      type="text"
+      name="englishClub_name"
+      placeholder=""
+    />
+    <label class="form-label my-3" for="student">New member name</label>
+    <input
+      class="form-control"
+      type="text"
+      name="memberUsername"
+      placeholder=""
+    />
+    <button type="submit" class="btn btn-primary my-3">Add new member</button>
+  </form>
+<hr>
+</div>

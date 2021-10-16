@@ -22,6 +22,17 @@ module.exports.checkProgramOwnership = course => (req, res, next) => {
     }
 };
 
+module.exports.checkEnglishClubMembership = async(req, res, next) => {
+    const {club_id} = req.params;
+    const englishClub = await englishClubs.findById(club_id);
+    if (englishClub.members.includes(req.user._id) || req.user.role == "admin") {
+        next();
+    } else {
+        res.render('noAccess');
+    }
+};
+
+
 module.exports.checkEnglishBoardMembership = async(req, res, next) => {
     const {club_id} = req.params;
     const englishClub = await englishClubs.findById(club_id);

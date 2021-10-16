@@ -135,6 +135,11 @@ router.get(
 //
 //===============================
 
+// Adding a member to an English Club
+
+
+
+
 
 //=====================================
 //
@@ -283,7 +288,7 @@ router.get(
 
 // Form
 router.get(
-  "/english/clubs/:club_id/board_dashboard/weeklActivities/:weeklyActivity_id/edit",
+  "/english/clubs/:club_id/board_dashboard/weeklyActivities/:weeklyActivity_id/edit",
   isLoggedIn,
   catchAsync(async (req, res) => {
     const weeklyActivity = await englishWeeklyActivities.findById(
@@ -360,6 +365,41 @@ router.get(
   })
 );
 
+//edit video lesson form
+
+router.get(
+  "/english/clubs/:club_id/board_dashboard/weeklyVideoLessons/:videoLesson_id/edit",
+  isLoggedIn,
+  catchAsync(async (req, res) => {
+    const videoLesson = await englishWeeklyLessons.findById(
+      req.params.videoLesson_id
+    );
+    const club = await englishClubs.findById(req.params.club_id);
+
+    res.render("programs/englishlang4all/englishClubs/weeklyLessonEdit", {
+      videoLesson,
+      club,
+    });
+  })
+);
+
+//Updating video lesson data
+router.put(
+  "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyVideoLessons/:videoLesson_id",
+  isLoggedIn,
+  catchAsync(async (req, res) => {
+    const videoLesson = await englishWeeklyLessons.findByIdAndUpdate(
+      req.params.videoLesson_id,
+      {
+        ...req.body.weeklyLesson,
+      }
+    );
+
+    await videoLesson.save();
+
+    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+  })
+);
 
 
 /* =================================================
