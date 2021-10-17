@@ -546,13 +546,11 @@ color: rgb(61, 16, 82);
 
 .som-img-wrapper img,
 .iom-img-wrapper img {
-  height: 200px;
+  height: 300px;
   width: 100%;
+  object-fit: cover;
 }
 
-.iom-img-wrapper img {
-  object-fit: contain;
-}
 
 .word-day {
   font-family: "Chivo", sans-serif;

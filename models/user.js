@@ -42,6 +42,7 @@ const userSchema = new Schema(
         "instructor",
         "english-coach",
         "student_manager",
+        "englishClub-boardMember"
       ],
     },
 

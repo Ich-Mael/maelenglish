@@ -127,6 +127,30 @@ const weeklyLessonsData = [{
   postedAT: Date.now() 
 }];
 
+// workersOfMonth
+// english club article schema
+const workersOfMonthData = [
+  {
+    studentOfMonth: {
+      fullname: "AfroHk",
+
+      imageUrl: "https://i.ibb.co/nB7zHTr/afroHK.jpg",
+
+      reasons: "AfroHk",
+
+      about: "AfroHk",
+    },
+
+    instructorOfMonth: {
+      fullname: "AfroHk",
+
+      imageUrl: "https://i.ibb.co/nB7zHTr/afroHK.jpg",
+
+      reasons: "AfroHk",
+
+      about: "AfroHk",
+    }
+  }];
 
 module.exports = {
   positions,
@@ -134,5 +158,6 @@ module.exports = {
   months,
   defaultWeeklyActivityData,
   defaultArticleData,
-  weeklyLessonsData
+  weeklyLessonsData,
+  workersOfMonthData 
 };

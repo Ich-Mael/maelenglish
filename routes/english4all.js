@@ -9,12 +9,14 @@ const {
   defaultWeeklyActivityData,
   defaultArticleData,
   weeklyLessonsData,
+  workersOfMonthData
 } = require("../utilities/defaultData");
 
 const {
   englishClubs,
   englishClubArticles,
   englishWeeklyActivities,
+  englishClubWorkersOfMonth,
   englishWeeklyLessons,
 } = require("../models/englishClub");
 const { isLoggedIn, checkRoles } = require("../middlewares/userController");
@@ -124,6 +126,14 @@ router.post(
 
       englishClub.articles.push(firstArticle._id);
     }
+
+    //Default workers of the Month
+    const firstWorkersOfMonth = new englishClubWorkersOfMonth(workersOfMonthData[0]);
+
+    firstWorkersOfMonth.save();
+
+    englishClub.workersOfMonth.push(firstWorkersOfMonth._id); 
+
     // adding default weekly activities
     const firstWeeklyActivity = new englishWeeklyActivities(
       defaultWeeklyActivityData
@@ -156,6 +166,7 @@ router.get(
       .populate("boardMembers")
       .populate("articles")
       .populate("weeklyVideoLesson")
+      .populate("workersOfMonth")
       .populate("weeklyActivity");
 
     res.render("programs/englishlang4all/englishClubs/show", {
@@ -437,6 +448,105 @@ router.put(
     res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
   })
 );
+
+//=====================================
+//
+//             Workers of the Months
+//
+//=====================================
+
+router.post(
+  "/englishlang4all/Clubs/:club_id/board_dashboard/workersOfMonth",
+  isLoggedIn,
+  catchAsync(async (req, res) => {
+    const englishClub = await englishClubs.findById(req.params.club_id);
+
+    const newWorkersOfMonth = new englishClubWorkersOfMonth({
+      studentOfMonth: {
+        ...req.body.studentOfMonth,
+      },
+      instructorOfMonth: {
+        ...req.body.instructorOfMonth,
+      },
+    });
+    console.log(newWorkersOfMonth);
+    console.log("==============");
+    console.log(req.body.instructorOfMonth);
+
+    await newWorkersOfMonth.save();
+
+    englishClub.workersOfMonth.unshift(newWorkersOfMonth);
+
+    await englishClub.save();
+
+    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+  })
+);
+
+//View all weekly activity
+// router.get(
+//   "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyActivities",
+//   isLoggedIn,
+//   catchAsync(async (req, res) => {
+//     const weeklyActivities = await englishWeeklyActivities.find({});
+//     const club = await englishClubs.findById(req.params.club_id);
+
+//     // console.log(weeklyActivities);
+//     res.render("programs/englishlang4all/englishClubs/weeklyActivitiesShow", {
+//       weeklyActivities,
+//       club,
+//       days,
+//       months,
+//     });
+//   })
+// );
+
+//Edit weekly activity
+
+// Form
+// router.get(
+//   "/english/clubs/:club_id/board_dashboard/weeklyActivities/:weeklyActivity_id/edit",
+//   isLoggedIn,
+//   catchAsync(async (req, res) => {
+//     const weeklyActivity = await englishWeeklyActivities.findById(
+//       req.params.weeklyActivity_id
+//     );
+//     const club = await englishClubs.findById(req.params.club_id);
+
+//     res.render("programs/englishlang4all/englishClubs/weeklyActivityEdit", {
+//       weeklyActivity,
+//       club,
+//     });
+//   })
+// );
+
+//Updating weekly activity data
+// router.put(
+//   "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyActivities/:weeklyActivity_id",
+//   isLoggedIn,
+//   catchAsync(async (req, res) => {
+//     const weeklActivity = await englishWeeklyActivities.findByIdAndUpdate(
+//       req.params.weeklyActivity_id,
+//       {
+//         wordOfDay: {
+//           ...req.body.wordOfDay,
+//         },
+//         IdiomDay: {
+//           ...req.body.IdiomDay,
+//         },
+//         englishClubMeeting: {
+//           ...req.body.englishClubMeeting,
+//         },
+//         OnlineDebate: {
+//           ...req.body.OnlineDebate,
+//         },
+//       }
+//     );
+//     weeklActivity.save();
+
+// res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+// })
+// );
 
 /* =================================================
  *

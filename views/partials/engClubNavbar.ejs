@@ -18,22 +18,21 @@
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <ul class="navbar-nav">
         <a class="nav-link active" aria-current="page" href="#"> <span class="myNav-link"><%= club.acronym%></span></a>
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#board-section"
-            ><span class="myNav-link">Board</span></a
-          >
-        </li>
-        <li class="nav-item">
+
+        <li class="nav-item active">
           <a class="nav-link m-0" id="drop-down-contact" href="#activities"
             ><span class="myNav-link">Activities</span></a
           >
         </li>
-        <% if (currentUser.isEnglishClubBoardMember) {%>
-          <li>
-          <a class="nav-link-connexion me-2 my-2" href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard">Board Member Dashboard</a>
+        <% if (currentUser.role === "admin" || currentUser.role === "englishClub-boardMember") {%>
+          <li class="nav-item">
+          <a class="nav-link me-2" href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard"><span class="myNav-link ">Board Dashboard</span></a>
         </li>
           <%}%>
       </ul>
+      <div class="nav-item ms-auto">
+        <span id='ct' ></span>
+      </div>
       <div class="navbar-nav ms-auto">
         <% if (!currentUser || currentUser == null) {%>
         <a class="nav-link-connexion me-2 my-2" href="/login">Connexion</a>

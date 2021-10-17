@@ -94,17 +94,10 @@ const englishClubSchema = new Schema(
       },
     ],
 
-    studentOfMonth: [
+    workersOfMonth: [
       {
         type: Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-
-    InstructorOfMonth: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "User",
+        ref: "EnglishClubWorkersOfMonth",
       },
     ],
 
@@ -261,7 +254,6 @@ const weeklyActivitySchema = new Schema({
 });
 
 // weekly lesson schema
-// english club article schema
 const weeklyLessonSchema = new Schema(
   {
     lessonTitle: {
@@ -270,7 +262,7 @@ const weeklyLessonSchema = new Schema(
     // image
     videoLink: {
       type: String,
-      trim: true
+      trim: true,
     },
 
     lessonSummary: {
@@ -284,6 +276,49 @@ const weeklyLessonSchema = new Schema(
     postedAT: {
       type: Date,
       default: format(Date.now(), "MM/dd/yyyy"),
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+// english club article schema
+const workersOfMonthSchema = new Schema(
+  {
+    studentOfMonth: {
+      fullname: {
+        type: String,
+      },
+      imageUrl: {
+        type: String,
+      },
+
+      reasons: {
+        type: String,
+      },
+
+      about: {
+        type: String,
+      },
+    },
+
+    instructorOfMonth: {
+      fullname: {
+        type: String,
+      },
+
+      imageUrl: {
+        type: String,
+      },
+
+      reasons: {
+        type: String,
+      },
+
+      about: {
+        type: String,
+      },
     },
   },
   {
@@ -308,4 +343,15 @@ const englishWeeklyLessons = mongoose.model(
   weeklyLessonSchema
 );
 
-module.exports = { englishClubs, englishClubArticles, englishWeeklyActivities, englishWeeklyLessons };
+const englishClubWorkersOfMonth = mongoose.model(
+  "EnglishClubWorkersOfMonth",
+  workersOfMonthSchema
+);
+
+module.exports = {
+  englishClubs,
+  englishClubArticles,
+  englishWeeklyActivities,
+  englishWeeklyLessons,
+  englishClubWorkersOfMonth,
+};

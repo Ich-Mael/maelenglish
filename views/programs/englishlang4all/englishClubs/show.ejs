@@ -479,13 +479,11 @@
             <div class="card-body">
               <div class="som-img-wrapper">
                 <img
-                  src="https://images.pexels.com/photos/1996008/pexels-photo-1996008.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
+                  src="<%= club.workersOfMonth[0].studentOfMonth.imageUrl %>"
                   alt="" class="img-thumbnail img-fluid">
               </div>
-              <h5 class="card-title">Ms. Rachida TRAORE</h5>
-              <p class="card-text">With supporting text
-                below as a natural
-                lead-in to additional content.</p>
+              <h5 class="card-title"><%= club.workersOfMonth[0].studentOfMonth.fullname %></h5>
+              <p class="card-text"><%= club.workersOfMonth[0].studentOfMonth.reasons %></p>
               <!-- Button trigger modal -->
               <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#som">
                 Learn more about the SOM
@@ -504,25 +502,8 @@
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                      <p> Lorem ipsum dolor, sit amet
-                        consectetur adipisicing
-                        elit. Eaque tempora et
-                        velit. Quae, odit! Esse
-                        doloribus qui
-                        accusantium, nobis
-                        impedit repellendus hic
-                        praesentium voluptatum.
-                        Incidunt dicta
-                        aspernatur minus quaerat
-                        illum quod vitae velit
-                        at eos iste? Voluptate
-                        aspernatur laudantium
-                        numquam sapiente
-                        deserunt quidem,
-                        expedita natus. Animi
-                        voluptate distinctio
-                        fugit reprehenderit!
-                      </p>
+                       <%- club.workersOfMonth[0].studentOfMonth.about %>
+                      
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn
@@ -543,13 +524,11 @@
             <div class="card-body">
               <div class="som-img-wrapper">
                 <img
-                  src="https://images.unsplash.com/photo-1561677843-39dee7a319ca?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1770&q=80"
+                  src="<%= club.workersOfMonth[0].instructorOfMonth.imageUrl %>"
                   alt="" class="img-thumbnail img-fluid">
               </div>
-              <h5 class="card-title">Mr. Daniel SAWADOGO</h5>
-              <p class="card-text">With supporting text
-                below as a natural
-                lead-in to additional content.</p>
+              <h5 class="card-title"><%= club.workersOfMonth[0].instructorOfMonth.fullname%></h5>
+              <p class="card-text"><%= club.workersOfMonth[0].instructorOfMonth.reasons %></p>
               <!-- Button trigger modal -->
               <button type="button" class="btn
                                     btn-secondary" data-bs-toggle="modal" data-bs-target="#iom">
@@ -569,25 +548,7 @@
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                      <p> Lorem ipsum dolor, sit amet
-                        consectetur adipisicing
-                        elit. Eaque tempora et
-                        velit. Quae, odit! Esse
-                        doloribus qui
-                        accusantium, nobis
-                        impedit repellendus hic
-                        praesentium voluptatum.
-                        Incidunt dicta
-                        aspernatur minus quaerat
-                        illum quod vitae velit
-                        at eos iste? Voluptate
-                        aspernatur laudantium
-                        numquam sapiente
-                        deserunt quidem,
-                        expedita natus. Animi
-                        voluptate distinctio
-                        fugit reprehenderit!
-                      </p>
+                      <%- club.workersOfMonth[0].instructorOfMonth.about %>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn

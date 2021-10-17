@@ -13,7 +13,7 @@
   });
 </script>
 
-  <h1 class="text-center my-5" style="color: blueviolet;"><%= club.acronym %> Board Members Dashboard</h1>
+<h1 class="text-center my-5" style="color: blueviolet;"><%= club.acronym %> Board Members Dashboard</h1>
 <!-- Article -->
 <div class="container my-5 col-md-8">
   <p>
@@ -50,7 +50,8 @@
     </div>
     <button class="btn my-3  mx-2 btn-outline-success" type="submit">Post article</button>
   </form>
-  <a href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard/articles" type="button" class="btn  mx-2 btn-outline-primary">
+  <a href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard/articles" type="button"
+    class="btn  mx-2 btn-outline-primary">
     View all articles of the year </a>
   <hr>
 </div>
@@ -59,8 +60,8 @@
 <!-- Weekly activity-->
 <div class="container  my-5  col-md-8">
   <p>
-    <button class="btn m-2 btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#wod"
-      aria-expanded="false" aria-controls="collapseExample">
+    <button class="btn m-2 btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#wod" aria-expanded="false"
+      aria-controls="collapseExample">
       Word of the day
     </button>
 
@@ -174,45 +175,120 @@
     </div>
     <button class="btn my-3 mx-2 btn-outline-success" type="submit">Post Weekly Activity</button>
   </form>
-    <a href="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/weeklyActivities" class="btn btn-outline-primary mx-2">View all weekly activities of the year</a>
+  <a href="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/weeklyActivities"
+    class="btn btn-outline-primary mx-2">View all weekly activities of the year</a>
 </div>
 
 
 <!-- Weekly video lesson -->
 <div class="container my-5 col-md-8">
-    <hr>
+  <hr>
   <p>
     <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#videoLesson"
       aria-expanded="false" aria-controls="collapseExample">
       Edit a video lesson
     </button>
-   
 
-  <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/videoLesson" method="POST">
-    <div class="collapse" id="videoLesson">
-      <!-- Lesson title -->
-      <label class="form-label my-3" for="lessonTitle">Lesson title</label>
-      <input type="text" class="form-control" name="weeklyLesson[lessonTitle]" id="articleImage" value="" />
 
-      <!-- Video Link  -->
-      <label class="form-label my-3" for="videoLink">Video Link</label>
-      <input type="text" class="form-control" name="weeklyLesson[videoLink]" value="" id="title" />
+    <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/videoLesson" method="POST">
+      <div class="collapse" id="videoLesson">
+        <!-- Lesson title -->
+        <label class="form-label my-3" for="lessonTitle">Lesson title</label>
+        <input type="text" class="form-control" name="weeklyLesson[lessonTitle]" id="articleImage" value="" />
 
-      
-      <!-- Author -->
-      <label class="form-label my-3" for="author">Author</label>
-      <input type="text" class="form-control" name="weeklyLesson[lessonAuthor]" value="" id="articleAuthor" />
+        <!-- Video Link  -->
+        <label class="form-label my-3" for="videoLink">Video Link</label>
+        <input type="text" class="form-control" name="weeklyLesson[videoLink]" value="" id="title" />
 
-      <!-- Lesson Summary -->
-      <label class="form-label my-3" for="lessonSummary">Lesson Summary</label>
-      <textarea type="text" class="form-control mytextarea" name="weeklyLesson[lessonSummary]" value=""
-        id="articleContent"></textarea>
-      <hr />
-    </div>
-    <button class="btn my-3  mx-2 btn-outline-success" type="submit">Post video lesson</button>
-  </form>
-  <a href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard/videoLessons" type="button" class="btn mx-2 btn-outline-primary">
-    View all video lessons of the year</a>
-</p>
+
+        <!-- Author -->
+        <label class="form-label my-3" for="author">Author</label>
+        <input type="text" class="form-control" name="weeklyLesson[lessonAuthor]" value="" id="articleAuthor" />
+
+        <!-- Lesson Summary -->
+        <label class="form-label my-3" for="lessonSummary">Lesson Summary</label>
+        <textarea type="text" class="form-control mytextarea" name="weeklyLesson[lessonSummary]" value=""
+          id="articleContent"></textarea>
+        <hr />
+      </div>
+      <button class="btn my-3  mx-2 btn-outline-success" type="submit">Post video lesson</button>
+    </form>
+    <a href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard/videoLessons" type="button"
+      class="btn mx-2 btn-outline-primary">
+      View all video lessons of the year</a>
+  </p>
+  <hr>
+</div>
+
+
+<!-- Workers of the months -->
+<div class="container my-5 col-md-8">
+  <hr>
+  <p>
+    <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#student"
+      aria-expanded="false" aria-controls="collapseExample">
+      Student of the Month
+    </button>
+
+    <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#instructor"
+      aria-expanded="false" aria-controls="collapseExample">
+      Instructor of the Month
+    </button>
+
+
+    <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/workersOfMonth" method="POST">
+      <div class="collapse" id="student">
+
+        <section class="word-day-wrapper my-4" style="background-color: rgb(221, 241, 195); padding: 2rem;">
+          <h4>Student of the month</h4>
+          <!-- full name -->
+          <label class="form-label my-3" for="fullname">Student's fullname </label>
+          <input type="text" class="form-control" name="studentOfMonth[fullname]" id="studentFullname" value="" />
+
+          <!-- Image Link -->
+          <label class="form-label my-3" for="imageUrl">Image Link</label>
+          <input type="text" class="form-control" name="studentOfMonth[imageUrl]" value="" id="StudentImage" />
+
+
+          <!-- Reasons -->
+          <label class="form-label my-3" for="author">Reasons</label>
+          <input type="text" class="form-control" name="studentOfMonth[reasons]" value="" id="reasons" />
+
+          <!-- About -->
+          <label class="form-label my-3" for="about">About the Instructor</label>
+          <textarea type="text" class="form-control mytextarea" name="studentOfMonth[about]" value=""
+            id="articleContent"></textarea>
+          <hr />
+        </section>
+      </div>
+      <div class="collapse" id="instructor">
+        <h4>Instructor of the month</h4>
+        <section class="word-day-wrapper my-4" style="background-color: rgb(197, 206, 248); padding: 2rem;">
+          <!-- full name -->
+          <label class="form-label my-3" for="fullname">Instructor's fullname </label>
+          <input type="text" class="form-control" name="instructorOfMonth[fullname]" id="intructorFullname" value="" />
+
+          <!-- Image Link -->
+          <label class="form-label my-3" for="imageUrl">Image Link</label>
+          <input type="text" class="form-control" name="instructorOfMonth[imageUrl]" value="" id="instructorImage"/>
+
+
+          <!-- Reasons -->
+          <label class="form-label my-3" for="author">Reasons</label>
+          <input type="text" class="form-control" name="instructorOfMonth[reasons]" value="" id="reasons" />
+
+          <!-- About -->
+          <label class="form-label my-3" for="about">About the Instructor</label>
+          <textarea type="text" class="form-control mytextarea" name="instructorOfMonth[about]" value=""
+            id="articleContent"></textarea>
+          <hr />
+        </section>
+      </div>
+      <button class="btn my-3  mx-2 btn-outline-success" type="submit">Post VIP's of the Month</button>
+    </form>
+    <a href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard/vipsOfMonth" type="button"
+      class="btn mx-2 btn-outline-primary">
+      View all Vip's of the Year</a>
+  </p>
   <hr>
 </div>
