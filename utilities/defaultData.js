@@ -152,6 +152,14 @@ const workersOfMonthData = [
     }
   }];
 
+
+  // media schema
+const mediaData = 
+  {
+    mediaTitle: "Describing my best friend",
+    videoLink: "https://www.youtube.com/embed/4nh79-Cbvf0"
+  };
+
 module.exports = {
   positions,
   days,
@@ -159,5 +167,6 @@ module.exports = {
   defaultWeeklyActivityData,
   defaultArticleData,
   weeklyLessonsData,
-  workersOfMonthData 
+  workersOfMonthData,
+  mediaData 
 };

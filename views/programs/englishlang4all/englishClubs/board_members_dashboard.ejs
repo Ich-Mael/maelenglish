@@ -292,3 +292,33 @@
   </p>
   <hr>
 </div>
+
+
+<!-- Media of the english club -->
+<div class="container my-5 col-md-8">
+  <hr>
+  <p>
+    <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#videoLesson"
+      aria-expanded="false" aria-controls="collapseExample">
+      English Club activity Video Clip
+    </button>
+  </p>
+
+    <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/clubMedia" method="POST">
+      <div class="collapse" id="videoLesson">
+        <!-- Lesson title -->
+        <label class="form-label my-3" for="mediaTitle">Video Title</label>
+        <input type="text" class="form-control" name="mediaTitle" id="mediaTitle" value="" />
+
+        <!-- Video Link  -->
+        <label class="form-label my-3" for="videoLink">Video Link</label>
+        <input type="text" class="form-control" name="videoLink" value="" id="videoLink" />
+
+        
+      <button class="btn my-3  mx-2 btn-outline-success" type="submit">Post Club Media</button>
+    </form>
+    <a href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard/allClubMedia" type="button"
+      class="btn mx-2 btn-outline-primary">
+      View all the video of the English Club </a>
+  <hr>
+</div>

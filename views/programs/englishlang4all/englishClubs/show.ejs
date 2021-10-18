@@ -286,11 +286,9 @@
                           </h3>
                         </div>
                         <div id="monitorscreen">
-                          <iframe id="vimeo-content"
-                            src="<%= club.weeklyVideoLesson[0].videoLink %>"
-                            frameborder="0" height="500px" width="1000px"
-                            allow="autoplay; fullscreen; picture-in-picture" allow="fullscreen"
-                            title="High-intensity Classes"></iframe>
+                          <iframe id="vimeo-content" src="<%= club.weeklyVideoLesson[0].videoLink %>" frameborder="0"
+                            height="500px" width="1000px" allow="autoplay; fullscreen; picture-in-picture"
+                            allow="fullscreen" title="High-intensity Classes"></iframe>
                         </div>
                       </div>
                     </div>
@@ -324,11 +322,9 @@
                           </h3>
                         </div>
                         <div id="monitorscreen">
-                          <iframe id="vimeo-content"
-                            src="<%= club.weeklyVideoLesson[1].videoLink %>"
-                            frameborder="0" height="500px" width="1000px"
-                            allow="autoplay; fullscreen; picture-in-picture" allow="fullscreen"
-                            title="High-intensity Classes"></iframe>
+                          <iframe id="vimeo-content" src="<%= club.weeklyVideoLesson[1].videoLink %>" frameborder="0"
+                            height="500px" width="1000px" allow="autoplay; fullscreen; picture-in-picture"
+                            allow="fullscreen" title="High-intensity Classes"></iframe>
                         </div>
                       </div>
                     </div>
@@ -353,7 +349,7 @@
             <h2 class="accordion-header" id="headingOne">
               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
                 aria-expanded="true" aria-controls="collapseOne">
-               Grammar Check Point 
+                Grammar Check Point
               </button>
             </h2>
             <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
@@ -371,7 +367,7 @@
             <h2 class="accordion-header" id="headingTwo">
               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                 data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-               Vocabulary Builder 
+                Vocabulary Builder
               </button>
             </h2>
             <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
@@ -389,7 +385,7 @@
             <h2 class="accordion-header" id="headingThree">
               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                 data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-               Listening Challenge 
+                Listening Challenge
               </button>
             </h2>
             <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
@@ -407,7 +403,7 @@
             <h2 class="accordion-header" id="headingFour">
               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                 data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-             Reading Practice 
+                Reading Practice
               </button>
             </h2>
             <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
@@ -433,39 +429,59 @@
       <section id="top-stories-wrapper">
         <h1 class="activity-heading">Media</h1>
         <div class="row mt-4">
-          <div class="col-md-6">
-          <div class="media-card py-1">
-               <!--  <div class="card-body"> -->
-
-            <div id="tv-container">
-              <div id="monitor">
-                <div class="afrohk-TV">
-                  <h3 class="text-center afrohk-text mb-2 py-0"><span class="afrohk">AfroHK</span><span
-                      class="tv">Radar</span>
-                  </h3>
+          <% for(let i = 0 ; i < 2 ; i++){ %> 
+          <div class="col-md-6 my-3">
+            <div class="media-card py-1">
+              <!--  <div class="card-body"> -->
+              <div id="tv-container">
+                <div id="monitor">
+                  <div class="afrohk-TV">
+                    <h3 class="text-center afrohk-text mb-2 py-0"><span class="afrohk">AfroHK</span><span
+                        class="tv">Radar</span>
+                    </h3>
+                  </div>
+                  <div id="monitorscreen">
+                    <iframe id="vimeo-content" width="100%" height="100%" src="<%= club.media[i].videoLink %>"
+                      title="YouTube video player" frameborder="0"
+                      allow="accelerometer; autoplay; clipboard-write; fullscreen; encrypted-media; gyroscope; picture-in-picture"
+                      allowfullscreen>
+                    </iframe>
+                  </div>
                 </div>
-                <div id="monitorscreen">
-                  <!-- <iframe id="vimeo-content" 
-                        src="https://player.vimeo.com/video/536620704?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
-                        frameborder="0" height="500px" width="1000px"
-                        allow="autoplay; fullscreen; picture-in-picture" allow="fullscreen"
-                        title="High-intensity Classes"></iframe> -->
-                  <iframe id="vimeo-content" width="100%" height="100%"
-                    src="https://www.youtube.com/embed/j8fHNdrZTSI" title="YouTube video player" controls="1" frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; fullscreen; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen></iframe>
+              </div>
+              <div class="video-details-wrapper m-0">
+                <h5 class="text-center"><%= club.media[i].mediaTitle %></h5>
+              </div>
+              <!-- Button trigger modal -->
+              <button type="button" class="btn mx-2 my-2 btn-outline-primary" data-bs-toggle="modal"
+                data-bs-target="#mediaComment">Leave your feeling 🙃 </button>
+              <!-- Modal -->
+              <div class="modal fade" id="mediaComment" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Club members' feeling</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      ...
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="video-details-wrapper m-0">
-              <h5 class="text-center">Public Interview Valentine Day</h5>
-            </div>
           </div>
-         </div>
+          <% } %>
           <!--  </div> -->
         </div>
       </section>
     </div>
+
+    <!-- Top events section -->
     <div class="col-lg-3 p-2 current-activity">
       <h1 class="current-activity-heading"><span>Top Events</span></h1>
       <div class="d-flex flex-column align-items-center
@@ -478,9 +494,7 @@
             </div>
             <div class="card-body">
               <div class="som-img-wrapper">
-                <img
-                  src="<%= club.workersOfMonth[0].studentOfMonth.imageUrl %>"
-                  alt="" class="img-thumbnail img-fluid">
+                <img src="<%= club.workersOfMonth[0].studentOfMonth.imageUrl %>" alt="" class="img-thumbnail img-fluid">
               </div>
               <h5 class="card-title"><%= club.workersOfMonth[0].studentOfMonth.fullname %></h5>
               <p class="card-text"><%= club.workersOfMonth[0].studentOfMonth.reasons %></p>
@@ -502,8 +516,8 @@
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                       <%- club.workersOfMonth[0].studentOfMonth.about %>
-                      
+                      <%- club.workersOfMonth[0].studentOfMonth.about %>
+
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn
@@ -523,9 +537,8 @@
             </div>
             <div class="card-body">
               <div class="som-img-wrapper">
-                <img
-                  src="<%= club.workersOfMonth[0].instructorOfMonth.imageUrl %>"
-                  alt="" class="img-thumbnail img-fluid">
+                <img src="<%= club.workersOfMonth[0].instructorOfMonth.imageUrl %>" alt=""
+                  class="img-thumbnail img-fluid">
               </div>
               <h5 class="card-title"><%= club.workersOfMonth[0].instructorOfMonth.fullname%></h5>
               <p class="card-text"><%= club.workersOfMonth[0].instructorOfMonth.reasons %></p>

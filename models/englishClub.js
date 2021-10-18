@@ -121,6 +121,12 @@ const englishClubSchema = new Schema(
         ref: "EnglishWeeklyLessons",
       },
     ],
+    media: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "EnglishClubMedia",
+      },
+    ],
   },
   {
     timestamps: true,
@@ -283,7 +289,7 @@ const weeklyLessonSchema = new Schema(
   }
 );
 
-// english club article schema
+// english club leaders schema
 const workersOfMonthSchema = new Schema(
   {
     studentOfMonth: {
@@ -326,7 +332,67 @@ const workersOfMonthSchema = new Schema(
   }
 );
 
+// media schema
+const englishClubMediaSchema = new Schema(
+  {
+    mediaTitle: {
+      type: String,
+      trim: true,
+    },
+
+    videoLink: {
+      type: String,
+      trim: true,
+    },
+
+    mediaComments: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "englishClubComment",
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  }
+);
+
+// english club comment schema
+const mediaCommentSchema = new Schema(
+  {
+    author: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+
+    commentContent: {
+      type: String,
+      trim: true,
+    },
+
+    media: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "EnglishClubMedia",
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  }
+);
+
 const englishClubs = mongoose.model("EnglishClub", englishClubSchema);
+
+const englishClubMedia = mongoose.model(
+  "EnglishClubMedia",
+  englishClubMediaSchema
+);
+
+const englishClubComment = mongoose.model(
+  "EnglishClubComment",
+  mediaCommentSchema
+);
 
 const englishClubArticles = mongoose.model(
   "EnglishClubArticle",
@@ -354,4 +420,6 @@ module.exports = {
   englishWeeklyActivities,
   englishWeeklyLessons,
   englishClubWorkersOfMonth,
+  englishClubMedia,
+  englishClubComment,
 };

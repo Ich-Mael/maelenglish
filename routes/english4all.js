@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
+const createClubDefaultContent = require("../utilities/createClubDefaultContent");
 const catchAsync = require("../utilities/catchAsync");
 const {
   positions,
@@ -9,7 +10,7 @@ const {
   defaultWeeklyActivityData,
   defaultArticleData,
   weeklyLessonsData,
-  workersOfMonthData
+  workersOfMonthData,
 } = require("../utilities/defaultData");
 
 const {
@@ -18,6 +19,8 @@ const {
   englishWeeklyActivities,
   englishClubWorkersOfMonth,
   englishWeeklyLessons,
+  englishClubMedia,
+  englishClubComment,
 } = require("../models/englishClub");
 const { isLoggedIn, checkRoles } = require("../middlewares/userController");
 const {
@@ -119,38 +122,15 @@ router.post(
     englishClub.boardMembers.push(cultManager._id);
     englishClub.members.push(cultManager._id);
 
-    // adding default article
-    for (let i = 0; i < 3; i++) {
-      const firstArticle = new englishClubArticles(defaultArticleData);
-      firstArticle.save();
-
-      englishClub.articles.push(firstArticle._id);
-    }
-
-    //Default workers of the Month
-    const firstWorkersOfMonth = new englishClubWorkersOfMonth(workersOfMonthData[0]);
-
-    firstWorkersOfMonth.save();
-
-    englishClub.workersOfMonth.push(firstWorkersOfMonth._id); 
-
-    // adding default weekly activities
-    const firstWeeklyActivity = new englishWeeklyActivities(
-      defaultWeeklyActivityData
-    );
-    firstWeeklyActivity.save();
-
-    englishClub.weeklyActivity.push(firstWeeklyActivity._id);
-
-    // adding weekly lesson
-    for (let weekLessonData of weeklyLessonsData) {
-      const weeklyLesson = new englishWeeklyLessons(weekLessonData);
-      weeklyLesson.save();
-
-      englishClub.weeklyVideoLesson.push(weeklyLesson._id);
-    }
-
     await englishClub.save();
+
+    // Creating default content
+    await createClubDefaultContent(englishClub._id);
+
+    
+    await englishClub.save();
+
+    // res.send("english club created!!!");
 
     res.redirect("/englishlang4all/clubs");
   })
@@ -167,6 +147,7 @@ router.get(
       .populate("articles")
       .populate("weeklyVideoLesson")
       .populate("workersOfMonth")
+      .populate("media")
       .populate("weeklyActivity");
 
     res.render("programs/englishlang4all/englishClubs/show", {
@@ -319,15 +300,17 @@ router.get(
     const club = await englishClubs.findById(req.params.club_id);
 
     // console.log(weeklyActivities);
-    res.render("programs/englishlang4all/englishClubs/activities/weeklyActivitiesShow", {
-      weeklyActivities,
-      club,
-      days,
-      months,
-    });
+    res.render(
+      "programs/englishlang4all/englishClubs/activities/weeklyActivitiesShow",
+      {
+        weeklyActivities,
+        club,
+        days,
+        months,
+      }
+    );
   })
 );
-
 
 // Form
 router.get(
@@ -339,10 +322,13 @@ router.get(
     );
     const club = await englishClubs.findById(req.params.club_id);
 
-    res.render("programs/englishlang4all/englishClubs/activities/weeklyActivityEdit", {
-      weeklyActivity,
-      club,
-    });
+    res.render(
+      "programs/englishlang4all/englishClubs/activities/weeklyActivityEdit",
+      {
+        weeklyActivity,
+        club,
+      }
+    );
   })
 );
 
@@ -405,10 +391,13 @@ router.get(
     const videoLessons = await englishWeeklyLessons.find({});
     const club = await englishClubs.findById(req.params.club_id);
 
-    res.render("programs/englishlang4all/englishClubs/videoLessons/videoLessonsShow", {
-      videoLessons,
-      club,
-    });
+    res.render(
+      "programs/englishlang4all/englishClubs/videoLessons/videoLessonsShow",
+      {
+        videoLessons,
+        club,
+      }
+    );
   })
 );
 
@@ -423,10 +412,13 @@ router.get(
     );
     const club = await englishClubs.findById(req.params.club_id);
 
-    res.render("programs/englishlang4all/englishClubs/videoLessons/weeklyLessonEdit", {
-      videoLesson,
-      club,
-    });
+    res.render(
+      "programs/englishlang4all/englishClubs/videoLessons/weeklyLessonEdit",
+      {
+        videoLesson,
+        club,
+      }
+    );
   })
 );
 
@@ -468,9 +460,6 @@ router.post(
         ...req.body.instructorOfMonth,
       },
     });
-    console.log(newWorkersOfMonth);
-    console.log("==============");
-    console.log(req.body.instructorOfMonth);
 
     await newWorkersOfMonth.save();
 
@@ -500,7 +489,7 @@ router.get(
   })
 );
 
-//Edit all vips of the month
+//Edit vips of the month
 
 router.get(
   "/english/clubs/:club_id/board_dashboard/leaders/:leader_id/vipsEdit",
@@ -531,10 +520,80 @@ router.put(
         },
         instructorOfMonth: {
           ...req.body.instructorOfMonth,
-        }
+        },
       }
     );
     leader.save();
+
+    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+  })
+);
+
+//===========================================================
+//
+//             media of the english club
+//
+//===========================================================
+
+router.post(
+  "/englishlang4all/Clubs/:club_id/board_dashboard/clubMedia",
+  isLoggedIn,
+  catchAsync(async (req, res) => {
+    const englishClub = await englishClubs.findById(req.params.club_id);
+
+    const newMedia = new englishClubMedia(req.body);
+
+    await newMedia.save();
+
+    englishClub.media.unshift(newMedia);
+
+    await englishClub.save();
+
+    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+  })
+);
+
+//View all media of the year
+router.get(
+  "/englishlang4all/Clubs/:club_id/board_dashboard/allClubMedia",
+  isLoggedIn,
+  catchAsync(async (req, res) => {
+    const medias = await englishClubMedia.find({});
+    const club = await englishClubs.findById(req.params.club_id);
+
+    res.render("programs/englishlang4all/englishClubs/clubMedia/mediaShow", {
+      medias,
+      club,
+      days,
+      months,
+    });
+  })
+);
+
+//Edit all vips of the month
+router.get(
+  "/englishlang4all/clubs/:club_id/board_dashboard/clubMedia/:media_id/mediaEdit",
+  isLoggedIn,
+  catchAsync(async (req, res) => {
+    const media = await englishClubMedia.findById(
+      req.params.media_id
+    );
+    const club = await englishClubs.findById(req.params.club_id);
+
+    res.render("programs/englishlang4all/englishClubs/clubMedia/mediaEdit", {
+      media,
+      club,
+    });
+  })
+);
+
+//Updating leaders of the month
+router.put(
+  "/englishlang4all/Clubs/:club_id/board_dashboard/clubMedia/:media_id",
+  isLoggedIn,
+  catchAsync(async (req, res) => {
+    const media = await englishClubMedia.findByIdAndUpdate(req.params.media_id, req.body);
+    media.save();
 
 res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
 })
