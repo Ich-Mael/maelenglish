@@ -218,7 +218,7 @@ router.get(
     const articles = await englishClubArticles.find({});
     const club = await englishClubs.findById(req.params.club_id);
 
-    res.render("programs/englishlang4all/englishClubs/articlesShow", {
+    res.render("programs/englishlang4all/englishClubs/articles/articlesShow", {
       articles,
       club,
     });
@@ -235,7 +235,7 @@ router.get(
     const article = await englishClubArticles.findById(req.params.article_id);
     const club = await englishClubs.findById(req.params.club_id);
 
-    res.render("programs/englishlang4all/englishClubs/articleEdit", {
+    res.render("programs/englishlang4all/englishClubs/articles/articleEdit", {
       article,
       club,
     });
@@ -319,7 +319,7 @@ router.get(
     const club = await englishClubs.findById(req.params.club_id);
 
     // console.log(weeklyActivities);
-    res.render("programs/englishlang4all/englishClubs/weeklyActivitiesShow", {
+    res.render("programs/englishlang4all/englishClubs/activities/weeklyActivitiesShow", {
       weeklyActivities,
       club,
       days,
@@ -328,7 +328,6 @@ router.get(
   })
 );
 
-//Edit weekly activity
 
 // Form
 router.get(
@@ -340,7 +339,7 @@ router.get(
     );
     const club = await englishClubs.findById(req.params.club_id);
 
-    res.render("programs/englishlang4all/englishClubs/weeklyActivityEdit", {
+    res.render("programs/englishlang4all/englishClubs/activities/weeklyActivityEdit", {
       weeklyActivity,
       club,
     });
@@ -406,7 +405,7 @@ router.get(
     const videoLessons = await englishWeeklyLessons.find({});
     const club = await englishClubs.findById(req.params.club_id);
 
-    res.render("programs/englishlang4all/englishClubs/videoLessonsShow", {
+    res.render("programs/englishlang4all/englishClubs/videoLessons/videoLessonsShow", {
       videoLessons,
       club,
     });
@@ -424,7 +423,7 @@ router.get(
     );
     const club = await englishClubs.findById(req.params.club_id);
 
-    res.render("programs/englishlang4all/englishClubs/weeklyLessonEdit", {
+    res.render("programs/englishlang4all/englishClubs/videoLessons/weeklyLessonEdit", {
       videoLesson,
       club,
     });
@@ -456,7 +455,7 @@ router.put(
 //=====================================
 
 router.post(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/workersOfMonth",
+  "/englishlang4all/Clubs/:club_id/board_dashboard/workerOfMonth",
   isLoggedIn,
   catchAsync(async (req, res) => {
     const englishClub = await englishClubs.findById(req.params.club_id);
@@ -483,70 +482,63 @@ router.post(
   })
 );
 
-//View all weekly activity
-// router.get(
-//   "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyActivities",
-//   isLoggedIn,
-//   catchAsync(async (req, res) => {
-//     const weeklyActivities = await englishWeeklyActivities.find({});
-//     const club = await englishClubs.findById(req.params.club_id);
+//View all vips of the year
+router.get(
+  "/englishlang4all/Clubs/:club_id/board_dashboard/workersOfMonth",
+  isLoggedIn,
+  catchAsync(async (req, res) => {
+    const leaders = await englishClubWorkersOfMonth.find({});
+    const club = await englishClubs.findById(req.params.club_id);
 
-//     // console.log(weeklyActivities);
-//     res.render("programs/englishlang4all/englishClubs/weeklyActivitiesShow", {
-//       weeklyActivities,
-//       club,
-//       days,
-//       months,
-//     });
-//   })
-// );
+    console.log(leaders);
+    res.render("programs/englishlang4all/englishClubs/vips/vipsShow", {
+      leaders,
+      club,
+      days,
+      months,
+    });
+  })
+);
 
-//Edit weekly activity
+//Edit all vips of the month
 
-// Form
-// router.get(
-//   "/english/clubs/:club_id/board_dashboard/weeklyActivities/:weeklyActivity_id/edit",
-//   isLoggedIn,
-//   catchAsync(async (req, res) => {
-//     const weeklyActivity = await englishWeeklyActivities.findById(
-//       req.params.weeklyActivity_id
-//     );
-//     const club = await englishClubs.findById(req.params.club_id);
+router.get(
+  "/english/clubs/:club_id/board_dashboard/leaders/:leader_id/vipsEdit",
+  isLoggedIn,
+  catchAsync(async (req, res) => {
+    const leader = await englishClubWorkersOfMonth.findById(
+      req.params.leader_id
+    );
+    const club = await englishClubs.findById(req.params.club_id);
 
-//     res.render("programs/englishlang4all/englishClubs/weeklyActivityEdit", {
-//       weeklyActivity,
-//       club,
-//     });
-//   })
-// );
+    res.render("programs/englishlang4all/englishClubs/vips/vipsEdit", {
+      leader,
+      club,
+    });
+  })
+);
 
-//Updating weekly activity data
-// router.put(
-//   "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyActivities/:weeklyActivity_id",
-//   isLoggedIn,
-//   catchAsync(async (req, res) => {
-//     const weeklActivity = await englishWeeklyActivities.findByIdAndUpdate(
-//       req.params.weeklyActivity_id,
-//       {
-//         wordOfDay: {
-//           ...req.body.wordOfDay,
-//         },
-//         IdiomDay: {
-//           ...req.body.IdiomDay,
-//         },
-//         englishClubMeeting: {
-//           ...req.body.englishClubMeeting,
-//         },
-//         OnlineDebate: {
-//           ...req.body.OnlineDebate,
-//         },
-//       }
-//     );
-//     weeklActivity.save();
+//Updating leaders of the month
+router.put(
+  "/englishlang4all/Clubs/:club_id/board_dashboard/leaders/:leader_id",
+  isLoggedIn,
+  catchAsync(async (req, res) => {
+    const leader = await englishClubWorkersOfMonth.findByIdAndUpdate(
+      req.params.leader_id,
+      {
+        studentOfMonth: {
+          ...req.body.studentOfMonth,
+        },
+        instructorOfMonth: {
+          ...req.body.instructorOfMonth,
+        }
+      }
+    );
+    leader.save();
 
-// res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
-// })
-// );
+res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+})
+);
 
 /* =================================================
  *
