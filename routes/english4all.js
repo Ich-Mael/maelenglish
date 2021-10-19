@@ -25,7 +25,7 @@ const {
 const { isLoggedIn, checkRoles } = require("../middlewares/userController");
 const {
   checkEnglishClubMembership,
-  checkCourseOwnership,
+  checkEnglishBoardMembership,
   checkProgramOwnership,
 } = require("../middlewares/courseController");
 
@@ -140,6 +140,7 @@ router.post(
 router.get(
   "/englishlang4all/Clubs/:club_id",
   isLoggedIn,
+  checkEnglishClubMembership,
   catchAsync(async (req, res) => {
     const club = await englishClubs
       .findById(req.params.club_id)
@@ -176,6 +177,7 @@ router.get(
 router.post(
   "/englishlang4all/Clubs/:club_id/board_dashboard/article",
   isLoggedIn,
+  checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const club_id = req.params.club_id;
     const englishClub = await englishClubs.findById(club_id);
@@ -195,6 +197,7 @@ router.post(
 router.get(
   "/englishlang4all/Clubs/:club_id/board_dashboard/articles",
   isLoggedIn,
+  checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const articles = await englishClubArticles.find({});
     const club = await englishClubs.findById(req.params.club_id);
@@ -212,6 +215,7 @@ router.get(
 router.get(
   "/english/clubs/:club_id/board_dashboard/articles/:article_id/edit",
   isLoggedIn,
+  checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const article = await englishClubArticles.findById(req.params.article_id);
     const club = await englishClubs.findById(req.params.club_id);
@@ -227,6 +231,7 @@ router.get(
 router.put(
   "/englishlang4all/Clubs/:club_id/board_dashboard/articles/:article_id",
   isLoggedIn,
+  checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const article = await englishClubArticles.findByIdAndUpdate(
       req.params.article_id,
@@ -245,6 +250,7 @@ router.put(
 router.delete(
   "/englishlang4all/Clubs/:club_id/board_dashboard/articles/:article_id",
   isLoggedIn,
+  checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const article = await englishClubArticles.findByIdAndDelete(
       req.params.article_id
@@ -264,6 +270,7 @@ router.delete(
 router.post(
   "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyactivity",
   isLoggedIn,
+  checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const englishClub = await englishClubs.findById(req.params.club_id);
     const newWeeklyActivity = new englishWeeklyActivities({
@@ -295,6 +302,7 @@ router.post(
 router.get(
   "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyActivities",
   isLoggedIn,
+  checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const weeklyActivities = await englishWeeklyActivities.find({});
     const club = await englishClubs.findById(req.params.club_id);
@@ -316,6 +324,7 @@ router.get(
 router.get(
   "/english/clubs/:club_id/board_dashboard/weeklyActivities/:weeklyActivity_id/edit",
   isLoggedIn,
+  checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const weeklyActivity = await englishWeeklyActivities.findById(
       req.params.weeklyActivity_id
@@ -336,6 +345,7 @@ router.get(
 router.put(
   "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyActivities/:weeklyActivity_id",
   isLoggedIn,
+  checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const weeklActivity = await englishWeeklyActivities.findByIdAndUpdate(
       req.params.weeklyActivity_id,
@@ -369,6 +379,7 @@ router.put(
 router.post(
   "/englishlang4all/Clubs/:club_id/board_dashboard/videoLesson",
   isLoggedIn,
+  checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const englishClub = await englishClubs.findById(req.params.club_id);
 
@@ -387,6 +398,7 @@ router.post(
 router.get(
   "/englishlang4all/Clubs/:club_id/board_dashboard/videoLessons",
   isLoggedIn,
+  checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const videoLessons = await englishWeeklyLessons.find({});
     const club = await englishClubs.findById(req.params.club_id);
@@ -406,6 +418,7 @@ router.get(
 router.get(
   "/english/clubs/:club_id/board_dashboard/weeklyVideoLessons/:videoLesson_id/edit",
   isLoggedIn,
+  checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const videoLesson = await englishWeeklyLessons.findById(
       req.params.videoLesson_id
@@ -426,6 +439,7 @@ router.get(
 router.put(
   "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyVideoLessons/:videoLesson_id",
   isLoggedIn,
+  checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const videoLesson = await englishWeeklyLessons.findByIdAndUpdate(
       req.params.videoLesson_id,
@@ -449,6 +463,7 @@ router.put(
 router.post(
   "/englishlang4all/Clubs/:club_id/board_dashboard/workerOfMonth",
   isLoggedIn,
+  checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const englishClub = await englishClubs.findById(req.params.club_id);
 
@@ -475,6 +490,7 @@ router.post(
 router.get(
   "/englishlang4all/Clubs/:club_id/board_dashboard/workersOfMonth",
   isLoggedIn,
+  checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const leaders = await englishClubWorkersOfMonth.find({});
     const club = await englishClubs.findById(req.params.club_id);
@@ -494,6 +510,7 @@ router.get(
 router.get(
   "/english/clubs/:club_id/board_dashboard/leaders/:leader_id/vipsEdit",
   isLoggedIn,
+  checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const leader = await englishClubWorkersOfMonth.findById(
       req.params.leader_id
@@ -511,6 +528,7 @@ router.get(
 router.put(
   "/englishlang4all/Clubs/:club_id/board_dashboard/leaders/:leader_id",
   isLoggedIn,
+  checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const leader = await englishClubWorkersOfMonth.findByIdAndUpdate(
       req.params.leader_id,
@@ -538,6 +556,7 @@ router.put(
 router.post(
   "/englishlang4all/Clubs/:club_id/board_dashboard/clubMedia",
   isLoggedIn,
+  checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const englishClub = await englishClubs.findById(req.params.club_id);
 
@@ -557,6 +576,7 @@ router.post(
 router.get(
   "/englishlang4all/Clubs/:club_id/board_dashboard/allClubMedia",
   isLoggedIn,
+  checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const medias = await englishClubMedia.find({});
     const club = await englishClubs.findById(req.params.club_id);
@@ -574,6 +594,7 @@ router.get(
 router.get(
   "/englishlang4all/clubs/:club_id/board_dashboard/clubMedia/:media_id/mediaEdit",
   isLoggedIn,
+  checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const media = await englishClubMedia.findById(
       req.params.media_id
@@ -591,6 +612,7 @@ router.get(
 router.put(
   "/englishlang4all/Clubs/:club_id/board_dashboard/clubMedia/:media_id",
   isLoggedIn,
+  checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const media = await englishClubMedia.findByIdAndUpdate(req.params.media_id, req.body);
     media.save();

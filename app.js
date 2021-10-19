@@ -7,10 +7,12 @@ const mongoose = require("mongoose");
 const ejsMate = require("ejs-mate");
 const session = require("express-session");
 const methodOverride = require("method-override");
-const flash = require("connect-flash");
+const flash = require("connect-flash-plus");
 const User = require("./models/user");
+
 const catchAsync = require("./utilities/catchAsync");
-const ExpressError = require("./utilities/ExpressError")
+const ExpressError = require("./utilities/ExpressError");
+
 const userRoutes = require("./routes/user");
 const courseRoutes = require("./routes/course");
 const xpaxRoutes = require("./routes/xpaxetudiant");
