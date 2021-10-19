@@ -2,15 +2,22 @@
   padding: 0;
   margin: 0;
 }
+
 a {
   text-decoration: none;
 }
+
 html {
   box-sizing: border-box;
 }
 
+html,body{
+  /* overflow-x: hidden; */
+}
+
 body {
   margin: 0;
+  overflow-x: hidden;
   padding: auto;
   background-color: #d6d5d4ce;
   font-family: "Roboto" serif;
@@ -416,7 +423,7 @@ nav {
   font-size: 2rem;
   position: fixed;
   text-decoration: none;
-  right: 5%;
+  right: 3%;
   bottom: 2%;
   visibility: hidden;
   display: none;

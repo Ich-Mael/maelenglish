@@ -68,6 +68,5 @@ module.exports = async function createDefaultContent(club_id) {
      
  await englishClub.save();
 
- console.log(englishClub);
 
 };

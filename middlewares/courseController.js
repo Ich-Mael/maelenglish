@@ -36,7 +36,7 @@ module.exports.checkEnglishClubMembership = async(req, res, next) => {
 module.exports.checkEnglishBoardMembership = async(req, res, next) => {
     const {club_id} = req.params;
     const englishClub = await englishClubs.findById(club_id);
-    if (req.user.ownedPrograms.some(arr => arr.indexOf(club_id) === -1) || req.user.role !== "admin") {
+    if (englishClub.boardMembers.indexOf(club_id) === -1 || req.user.role !== "admin") {
         res.render('noAccess');
     } else {
         next();

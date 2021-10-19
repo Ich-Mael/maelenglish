@@ -11,6 +11,10 @@ html {
   box-sizing: border-box;
 }
 
+html,body{
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   padding: auto;
@@ -116,8 +120,16 @@ body {
 
 /* social media icons */
 .social-links {
-  background-color: rgba(26, 24, 24, 0.836);
+  background-color: rgba(134, 125, 125, 0.836);
+  background: #232526;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #414345, #232526);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #414345, #232526); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
   padding: 2rem;
+}
+
+.social-links-header{
+color: #f16c1f;
 }
 
 .social-media-icons {
