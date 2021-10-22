@@ -351,7 +351,7 @@
             <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
               data-bs-parent="#accordionExample">
               <div class="accordion-body">
-                <strong>Work in progress.</strong> 
+                <strong>Work in progress.</strong>
               </div>
             </div>
           </div>
@@ -365,7 +365,7 @@
             <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
               data-bs-parent="#accordionExample">
               <div class="accordion-body">
-                <strong>Work in progress.</strong> 
+                <strong>Work in progress.</strong>
               </div>
             </div>
           </div>
@@ -379,7 +379,7 @@
             <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
               data-bs-parent="#accordionExample">
               <div class="accordion-body">
-                <strong>Work in progress.</strong> 
+                <strong>Work in progress.</strong>
               </div>
             </div>
           </div>
@@ -393,7 +393,7 @@
             <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
               data-bs-parent="#accordionExample">
               <div class="accordion-body">
-                <strong>Work in progress.</strong> 
+                <strong>Work in progress.</strong>
               </div>
             </div>
           </div>
@@ -409,7 +409,7 @@
       <section id="top-stories-wrapper">
         <h1 class="activity-heading">Media</h1>
         <div class="row mt-4">
-          <% for(let i = 0 ; i < 2 ; i++){ %> 
+          <% for(let i = 0 ; i < 2 ; i++){ %>
           <div class="col-md-6 my-3">
             <div class="media-card py-1">
               <!--  <div class="card-body"> -->
@@ -434,10 +434,11 @@
               </div>
               <!-- Button trigger modal -->
               <button type="button" class="btn mx-2 my-2 btn-outline-primary" data-bs-toggle="modal"
-                data-bs-target="#mediaComment">Leave your feeling 🙃 </button>
+                data-bs-target='#mediaComment<%= club.media[i]._id%>'>Leave your feeling 🙃
+              </button>
               <!-- Modal -->
-              <div class="modal fade" id="mediaComment" tabindex="-1" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
+              <div class="modal fade" id='mediaComment<%= club.media[i]._id%>' tabindex="-1"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                   <div class="modal-content">
                     <div class="modal-header">
@@ -445,10 +446,66 @@
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                      ...
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                      <form action="/englishlang4all/clubs/<%= club._id %>/clubMedia/<%= club.media[i]._id %>/comment"
+                        method="POST">
+                        <fieldset class="starability-heart mb-1">
+                          <!-- <legend>Rating</legend> -->
+                          <input type="radio" id="no-rate<%= club.media[i]._id %>" class="input-no-rate"
+                            name="review[rating]" value="0" checked aria-label="No rating." />
+                          <input type="radio" id="first-of-rate1<%= club.media[i]._id %>" name="review[rating]"
+                            value="1" />
+                          <label for="first-rate1<%= club.media[i]._id %>" title="Terrible">1 star</label>
+                          <input type="radio" id="first-rate2<%= club.media[i]._id %>" name="review[rating]"
+                            value="2" />
+                          <label for="first-rate2<%= club.media[i]._id %>" title="Not good">2 stars</label>
+                          <input type="radio" id="first-rate3<%= club.media[i]._id %>" name="review[rating]"
+                            value="3" />
+                          <label for="first-rate3<%= club.media[i]._id %>" title="Average">3 stars</label>
+                          <input type="radio" id="first-rate4<%= club.media[i]._id %>" name="review[rating]"
+                            value="4" />
+                          <label for="first-rate4<%= club.media[i]._id %>" title="Very good">4 stars</label>
+                          <input type="radio" id="first-rate5<%= club.media[i]._id %>" name="review[rating]"
+                            value="5" />
+                          <label for="first-rate5<%= club.media[i]._id %>" title="Amazing">5 stars</label>
+                        </fieldset>
+                        <div class="form-floating">
+                          <textarea class="form-control" name="review[text]" placeholder="Leave a comment here"
+                            id="floatingTextarea" style="height: 100px" required></textarea>
+                          <label for="floatingTextarea">Leave a comment</label>
+                        </div>
+                        <button class="btn btn-outline-primary my-3">Post Comment</button>
+                      </form>
+                      <!-- all comments -->
+                      <hr>
+
+                      <h5 class="text-center py-3 mb-3" style="background: #34e89e;  
+                      background: -webkit-linear-gradient(to right, #0f3443, #34e89e, #0f3443);  
+                      background: linear-gradient(to right, #0f3443, #34e89e, #0f3443); color: rgb(43, 42, 41);
+                      ">Previous Comments</h5>
+                      <% for (let review of club.media[i].mediaComments){%>
+                      <div class="card comment-card mb-3 ">
+                        <div class="p-2 d-flex justifify-content-center">
+                          <div class="p-2"><span class="rounded"><img class="img-thumbnail"
+                                src="<%= review.author.imageUrl %>" alt="user" width="80"></span>
+                          </div>
+                          <div class="w-100 align-self-center">
+                            <h5><%= review.author.username %> <span class="card-text mx-2"><small
+                                  class="text-muted fst-italic"><%= days[review.createdAt.getDay()] %>,
+                                  <%=review.createdAt.getDate()%>
+                                  <%= months[review.createdAt.getMonth()] %>
+                                  <%=review.createdAt.getFullYear()%></small> </span>
+                            </h5>
+                            <p class="starability-result" data-rating="<%=review.rating%>">
+                              Rated: <%= review.rating %> stars
+                            </p>
+                          </div>
+                        </div>
+                        <p class="mx-3"><%= review.text %></p>
+                      </div>
+                      <% } %>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -456,8 +513,6 @@
             </div>
           </div>
           <% } %>
-          <!--  </div> -->
-        </div>
       </section>
     </div>
 
@@ -721,4 +776,3 @@
     </div>
   </div>
 </div>
-

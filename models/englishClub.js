@@ -348,32 +348,7 @@ const englishClubMediaSchema = new Schema(
     mediaComments: [
       {
         type: Schema.Types.ObjectId,
-        ref: "englishClubComment",
-      },
-    ],
-  },
-  {
-    timestamps: true,
-  }
-);
-
-// english club comment schema
-const mediaCommentSchema = new Schema(
-  {
-    author: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
-
-    commentContent: {
-      type: String,
-      trim: true,
-    },
-
-    media: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "EnglishClubMedia",
+        ref: "Comment",
       },
     ],
   },
@@ -387,11 +362,6 @@ const englishClubs = mongoose.model("EnglishClub", englishClubSchema);
 const englishClubMedia = mongoose.model(
   "EnglishClubMedia",
   englishClubMediaSchema
-);
-
-const englishClubComment = mongoose.model(
-  "EnglishClubComment",
-  mediaCommentSchema
 );
 
 const englishClubArticles = mongoose.model(
@@ -421,5 +391,4 @@ module.exports = {
   englishWeeklyLessons,
   englishClubWorkersOfMonth,
   englishClubMedia,
-  englishClubComment,
 };

@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
+const Review = require("../models/comments");
 const createClubDefaultContent = require("../utilities/createClubDefaultContent");
 const catchAsync = require("../utilities/catchAsync");
 const {
@@ -20,7 +21,6 @@ const {
   englishClubWorkersOfMonth,
   englishWeeklyLessons,
   englishClubMedia,
-  englishClubComment,
 } = require("../models/englishClub");
 const { isLoggedIn, checkRoles } = require("../middlewares/userController");
 const {
@@ -127,11 +127,9 @@ router.post(
     // Creating default content
     await createClubDefaultContent(englishClub._id);
 
-    
     await englishClub.save();
 
     // res.send("english club created!!!");
-
     res.redirect("/englishlang4all/clubs");
   })
 );
@@ -148,8 +146,9 @@ router.get(
       .populate("articles")
       .populate("weeklyVideoLesson")
       .populate("workersOfMonth")
-      .populate("media")
+      .populate({ path: "media", populate: { path: "mediaComments", populate: {path: "author"} }})
       .populate("weeklyActivity");
+
 
     res.render("programs/englishlang4all/englishClubs/show", {
       club,
@@ -596,9 +595,7 @@ router.get(
   isLoggedIn,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
-    const media = await englishClubMedia.findById(
-      req.params.media_id
-    );
+    const media = await englishClubMedia.findById(req.params.media_id);
     const club = await englishClubs.findById(req.params.club_id);
 
     res.render("programs/englishlang4all/englishClubs/clubMedia/mediaEdit", {
@@ -614,11 +611,14 @@ router.put(
   isLoggedIn,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
-    const media = await englishClubMedia.findByIdAndUpdate(req.params.media_id, req.body);
+    const media = await englishClubMedia.findByIdAndUpdate(
+      req.params.media_id,
+      req.body
+    );
     media.save();
 
-res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
-})
+    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+  })
 );
 
 /* =================================================

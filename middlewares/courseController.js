@@ -39,12 +39,12 @@ module.exports.checkEnglishBoardMembership = catchAsync(async (req, res, next) =
   const englishClub = await englishClubs.findById(club_id);
   console.log(englishClub.boardMembers.indexOf(club_id));
   if (
-    englishClub.boardMembers.indexOf(club_id) === -1 ||
-    req.user.role !== "admin"
+    englishClub.boardMembers.indexOf(club_id) > -1 ||
+    req.user.role == "admin"
   ) {
+    next();
+  } else {
     req.flash("error", "You are not a board member.");
     res.redirect(`/englishlang4all/Clubs`);
-  } else {
-    next();
   }
 });

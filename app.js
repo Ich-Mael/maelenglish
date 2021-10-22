@@ -14,11 +14,14 @@ const catchAsync = require("./utilities/catchAsync");
 const ExpressError = require("./utilities/ExpressError");
 
 const userRoutes = require("./routes/user");
+const commentRoutes = require("./routes/comment");
 const courseRoutes = require("./routes/course");
 const xpaxRoutes = require("./routes/xpaxetudiant");
 const bacRoutes = require("./routes/100bac");
 const englishRoutes = require("./routes/english4all");
 const fasopreunariatRoutes = require("./routes/fasopreunariat");
+
+
 const path = require("path");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -113,6 +116,9 @@ app.use("/", courseRoutes);
 
 //courses routes
 app.use("/", bacRoutes);
+
+//comments routes
+app.use("/", commentRoutes);
 
 //xpax routes
 app.use("/", xpaxRoutes);
