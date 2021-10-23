@@ -1,4 +1,8 @@
 <% layout('layouts/engClubBoilerplate') %>
+<script type="text/javascript" src="/javascripts/quiz_scripts/quizlib.1.0.1.min.js"></script>
+<script type="text/javascript" src="/javascripts/quiz_scripts/main.js"></script>
+<link rel="stylesheet" type="text/css" href="/stylesheets/quiz_stylesheet/quizlib.min.css" media="screen">
+<link rel="stylesheet" type="text/css" href="/stylesheets/quiz_stylesheet/stylesheet.css" media="screen">
 <!-- WORD Processor-->
 <script src="https://cdn.tiny.cloud/1/p06f8vxdpje8xosyvnq48z68vc7n479iauh5s2jk9zx30qg2/tinymce/5/tinymce.min.js"
   referrerpolicy="origin"></script>
@@ -46,6 +50,7 @@
 			  role="button"
 			  ><i class="fab fa-google"></i
 			></a> -->
+
           <!-- Instagram -->
           <a class="btn btn-outline-light btn-floating m-2" href="#!" role="button" id="instagram" target="_blank"><i
               class="engclub-sm-icon fab fa-instagram"></i></a>
@@ -351,7 +356,33 @@
             <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
               data-bs-parent="#accordionExample">
               <div class="accordion-body">
-                <strong>Work in progress.</strong>
+                <div id="quiz-result" class="card">
+                  You Scored <span id="quiz-percent"></span>% - <span id="quiz-score"></span>/<span id="quiz-max-score"></span><br/>
+              </div>
+      
+              <!-- Quiz 1 -->
+              <div id="quiz-1">
+                  <h3 class="pb-2 text-center">Quiz 1: Simple Past Vs Present Perfect</h3>
+                  <!-- Question 1 -->
+                  <div class="card quizlib-question">
+                      <div class="quizlib-question-title">1. Yesterday, I __(to go)___ to my aunt's.</div>
+                      <div class="quizlib-question-answers">
+                          <input type="text" name="q1">
+                      </div>
+                  </div>
+                  <!-- Question 2 -->
+                  <div class="card quizlib-question">
+                      <div class="quizlib-question-title">2. I __(not see)__ Michael yet, I hope he will be on time.</div>
+                      <div class="quizlib-question-answers">
+                          <ul>
+                              <li><label><input type="radio" name="q2" value="a"> didn't</label></li>
+                              <li><label><input type="radio" name="q2" value="b"> haven't seen</label></li>
+                          </ul>
+                      </div>
+                  </div>
+                  <!-- Answer Button. Here, we pass the ID of the quiz element (the parent of this button) to the showResults function.  -->
+                  <button type="button" onclick="showResults(this.parentNode.id);">Check Answers</button>
+              </div>
               </div>
             </div>
           </div>

@@ -12,7 +12,6 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Roboto", sans-serif;
-  overflow-x: hidden;
 }
 
 a:focus,
@@ -417,6 +416,7 @@ nav {
     #000000
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   min-height: fit-content;
+  overflow-x: hidden;
   font-family: "Poppins", sans-serif;
   z-index: 200;
 }

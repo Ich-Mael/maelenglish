@@ -1,6 +1,7 @@
 * {
   padding: 0;
   margin: 0;
+  
 }
 
 a {
@@ -13,12 +14,12 @@ html {
 
 html,
 body {
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
 }
 
 body {
   margin: 0;
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
   padding: auto;
   background-color: #d6d5d4ce;
   font-family: "Roboto" serif;
@@ -341,7 +342,7 @@ nav {
   margin: 2rem 0;
   line-height: 3rem;
   letter-spacing: 0.1rem;
-  text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.678);
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.678);
   font-weight: 500;
   opacity: 0;
   animation: moveBanner 1.5s 1.5s forwards;
@@ -1311,6 +1312,7 @@ nav {
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   min-height: fit-content;
   font-family: "Poppins", sans-serif;
+  overflow-x: hidden;
 }
 
 .afrohk-footer {
@@ -1983,15 +1985,11 @@ html{
   font-size: 80%;
 }
 
-  .afrohk-footer,
-  .header-text {
-    /* font-size: 2rem; */
-  }
-
+  
   #banner-wrapper {
     z-index: 2;
     top: 25%;
-    width: 100%;
+    /* width: 100%; */
     left: 10%;
   }
 
@@ -2041,12 +2039,14 @@ html{
   .header-text {
     /* font-size: 2rem; */
   }
-
+  .account-wrapper {
+    width: 80%;
+  }
   #banner-wrapper {
     z-index: 2;
     top: 25%;
-    width: 100%;
-    left: 10%;
+    /* width: 100%; */
+    /* left: 10%; */
   }
 
   .banner-heading {
@@ -2063,13 +2063,18 @@ html{
 
   .check-programs,
   .get-account {
-    width: 18rem;
+    width: 10rem;
     display: inline;
     font-size: 0.8rem;
   }
+  .presentation-text-wrapper {
+    background-color: #000000;
+    border-radius: 5px;
+    margin: 1rem ;
+  }
 
   .account-wrapper {
-    width: 100%;
+    /* width: 100%; */
     /* margin-bottom: 2rem; */
   }
 }
