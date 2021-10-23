@@ -44,7 +44,7 @@ router.get("/englishlang4all/free_english_lessons", (req, res) => {
  *
  * ================================================ */
 
-//english clubs
+//English clubs
 router.get("/englishlang4all/clubs", isLoggedIn, async (req, res) => {
   const clubs = await englishClubs.find({});
   res.render("programs/englishlang4all/englishClubs/home", {
@@ -62,7 +62,7 @@ router.get(
   }
 );
 
-//english clubs
+// English clubs
 router.post(
   "/englishlang4all/clubs/create",
   isLoggedIn,

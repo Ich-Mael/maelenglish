@@ -25,7 +25,6 @@ router.post(
   checkEnglishClubMembership,
   catchAsync(async (req, res) => {
     const media = await englishClubMedia.findById(req.params.media_id);
-//     const club = await englishClubs.findById(req.params.club_id);
 
     const newReview = new Review(req.body.review);
     newReview.author = req.user._id;

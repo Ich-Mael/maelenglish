@@ -105,7 +105,6 @@ app.use((req, res, next) => {
 
 // Landing page route
 app.get("/", (req, res) => {
-    console.log(req.user);
     res.render("home");
 });
 
