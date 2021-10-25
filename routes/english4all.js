@@ -8,10 +8,6 @@ const {
   positions,
   days,
   months,
-  defaultWeeklyActivityData,
-  defaultArticleData,
-  weeklyLessonsData,
-  workersOfMonthData,
 } = require("../utilities/defaultData");
 
 const {
@@ -618,6 +614,23 @@ router.put(
     media.save();
 
     res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+  })
+);
+
+/* =================================================
+ *
+ *                Global Challenges 
+ *
+ * ================================================ */
+router.get(
+  "/englishlang4all/Clubs/:club_id/grammar",
+  isLoggedIn,
+  checkEnglishClubMembership,
+  catchAsync(async (req, res) => {
+    const club = await englishClubs.findById(req.params.club_id);
+
+    res.render("programs/englishlang4all/englishClubs/clubQuiz/grammarQuiz.ejs",{club}
+     );
   })
 );
 
