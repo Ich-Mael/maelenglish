@@ -1,7 +1,13 @@
 const express = require("express");
 const passport = require("passport");
+const Emailer = require("../utilities/sendEmail");
+
+
+const crypto = require('crypto');
+
 const router = express.Router();
 const User = require("../models/user");
+const accountToken = require("../models/accountTokens");
 const { englishClubs } = require("../models/englishClub");
 const catchAsync = require("../utilities/catchAsync");
 const Course = require("../models/courses");
@@ -29,7 +35,7 @@ router.post("/register", async (req, res) => {
         const redirectUrl = (await req.session.returnTo) || "/";
         delete req.session.returnTo;
         req.flash("success", "Votre compte a été créé avec success");
-        res.redirect(redirectUrl);
+        res.redirect('/user/send-verification-email');
       }
     });
   } catch (e) {
@@ -37,6 +43,58 @@ router.post("/register", async (req, res) => {
     res.redirect("/register");
   }
 });
+
+
+//sending activation mail
+router.get('/user/send-verification-email', catchAsync(async (req, res) => {
+      // generate a token 
+      const token = crypto.randomBytes(32).toString('hex');
+
+      // add that to database
+      await accountToken({ token: token, email: req.user.email }).save();
+
+      let url;
+      if(process.env.NODE_ENV == "production") {
+      url = "https://www.afrohk.com/user/verifyemail?token=" + token;
+        }else{
+      url = "http://localhost:3000/user/verifyemail?token=" + token;
+        }
+      // send an email for verification
+      await new Emailer(req.user, url).sendVerifyEmail();
+
+      res.render('user/account_handler', { username: req.user.username, verified: req.user.isVerified, emailsent: true });  
+}));
+
+
+router.get('/user/verifyemail', async (req, res) => {
+  // grab the token
+  const token = req.query.token;
+  // check if token exists 
+  // or just send an error
+  if (token) {
+      const check = await accountToken.findOne({ token: token });
+      if (check) {
+          // token verified
+          // set the property of verified to true for the user
+          const userData = await User.findOne({ email: check.email });
+          userData.isVerified = true;
+          await userData.save();
+          // delete the token now itself
+          await accountToken.findOneAndDelete({ token: token });
+      res.render('user/account_handler', { username: req.user.username, verified: req.user.isVerified, emailsent: true });  
+      } else {
+          res.render('user/account_handler', { username: req.user.username, verified: req.user.isVerified, err: "Le lien d’activation de compte est expiré" });
+      }
+  } else {
+      // doesnt have a token
+      // I will simply redirect to profile 
+      res.redirect('/profile');
+  }
+});
+
+
+
+
 
 // login user form
 router.get("/login", (req, res) => {

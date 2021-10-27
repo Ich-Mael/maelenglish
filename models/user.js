@@ -25,7 +25,7 @@ const userSchema = new Schema(
 
     email: {
       type: String,
-      required: true,
+      required: [true,"email already exist"],
       trim: true,
       unique: true,
     },
@@ -42,8 +42,12 @@ const userSchema = new Schema(
         "instructor",
         "english-coach",
         "student_manager",
-        "englishClub-boardMember"
+        "englishClub-boardMember",
       ],
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
     },
 
     phoneNumber: {
@@ -51,11 +55,11 @@ const userSchema = new Schema(
       trim: true,
     },
 
-    
     imageUrl: {
       type: String,
       trim: true,
-      default: "https://www.kindpng.com/picc/m/105-1055656_account-user-profile-avatar-avatar-user-profile-icon.png",
+      default:
+        "https://www.kindpng.com/picc/m/105-1055656_account-user-profile-avatar-avatar-user-profile-icon.png",
     },
 
     about: {
@@ -67,19 +71,20 @@ const userSchema = new Schema(
     facebookLink: {
       type: String,
       trim: true,
-      default:"https://web.facebook.com/Afro-House-Of-Knowledge-104795908266730",
+      default:
+        "https://web.facebook.com/Afro-House-Of-Knowledge-104795908266730",
     },
 
     twitterLink: {
       type: String,
       trim: true,
-      default:"https://twitter.com/afro_of"
+      default: "https://twitter.com/afro_of",
     },
 
     linkedIn: {
       type: String,
       trim: true,
-      default:"https://www.linkedin.com/in/ismael-zerbo-443b73220/"
+      default: "https://www.linkedin.com/in/ismael-zerbo-443b73220/",
     },
 
     whatsAppLink: {
@@ -95,7 +100,6 @@ const userSchema = new Schema(
 
     // programs
     ownedPrograms: [],
-
 
     // courses
     coursesGiven: [
@@ -124,6 +128,15 @@ const userSchema = new Schema(
   },
   { timestamps: true }
 );
+
+userSchema.post('save', function(error, doc, next) {
+  if (error.email === 'MongoServerError' && error.code === 11000) {
+    next(new Error('Account with this email already exists!!!'));
+  } else {
+    next();
+  }
+});
+
 
 userSchema.plugin(passportLocalMongoose);
 
