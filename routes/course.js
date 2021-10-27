@@ -3,18 +3,18 @@ const router = express.Router();
 const User = require("../models/user");
 const catchAsync = require('../utilities/catchAsync');
 const Course = require("../models/courses");
-const { isLoggedIn, checkRoles } = require("../middlewares/userController");
+const { isLoggedIn, checkRoles, isVerified} = require("../middlewares/userController");
 const { checkCourseOwnership } = require("../middlewares/courseController");
 
 // All Courses route
-router.get('/courses', async(req, res) => {
+router.get('/courses', isVerified, async(req, res) => {
     const courses = await
     Course.find({}).populate('instructors');
     res.render('courses/index', { courses });
 });
 
 // creating a new course
-router.post('/courses', isLoggedIn, checkRoles("admin"), catchAsync(async(req, res) => {
+router.post('/courses', isVerified, isLoggedIn, checkRoles("admin"), catchAsync(async(req, res) => {
     const course = new Course(req.body.course);
     const instructorsList = req.body.instructors;
 
@@ -33,18 +33,18 @@ router.post('/courses', isLoggedIn, checkRoles("admin"), catchAsync(async(req, r
 }));
 
 // Form for a new course
-router.get('/courses/new', isLoggedIn, checkRoles("admin"), (req, res) => {
+router.get('/courses/new', isVerified, isLoggedIn, checkRoles("admin"), (req, res) => {
     res.render('courses/new');
 });
 
 //show course content
-router.get('/courses/:course_id', isLoggedIn, checkCourseOwnership, catchAsync(async(req, res) => {
+router.get('/courses/:course_id', isVerified, isLoggedIn, checkCourseOwnership, catchAsync(async(req, res) => {
     const course = await Course.findById(req.params.course_id);
     res.render('courses/show', { course });
 }));
 
 // Evalution routes
-router.get('/courses/:course_id/:evaluation', isLoggedIn, checkCourseOwnership, catchAsync(async(req, res) => {
+router.get('/courses/:course_id/:evaluation', isVerified, isLoggedIn, checkCourseOwnership, catchAsync(async(req, res) => {
     const course = await Course.findById(req.params.course_id);
     const user = await User.findById(req.user._id);
     const evaluation = req.params.evaluation;

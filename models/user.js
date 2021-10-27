@@ -23,12 +23,28 @@ const userSchema = new Schema(
       unique: true,
     },
 
+    gender: {
+      type: String,
+      required: true,
+      enum: [
+        "male",
+        "female",
+        "other"] 
+    },
+
     email: {
       type: String,
-      required: [true,"email already exist"],
       trim: true,
+      lowercase: true,
       unique: true,
-    },
+      validate: {
+          validator: function(v) {
+              return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v);
+          },
+          message: "Saisissez une adresse mail valide"
+      },
+      required: [true, "Email required"]
+  },
 
     role: {
       type: String,
@@ -45,6 +61,7 @@ const userSchema = new Schema(
         "englishClub-boardMember",
       ],
     },
+
     isVerified: {
       type: Boolean,
       default: false,
@@ -128,14 +145,6 @@ const userSchema = new Schema(
   },
   { timestamps: true }
 );
-
-userSchema.post('save', function(error, doc, next) {
-  if (error.email === 'MongoServerError' && error.code === 11000) {
-    next(new Error('Account with this email already exists!!!'));
-  } else {
-    next();
-  }
-});
 
 
 userSchema.plugin(passportLocalMongoose);

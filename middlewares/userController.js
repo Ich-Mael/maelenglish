@@ -8,6 +8,14 @@ module.exports.isLoggedIn = (req, res, next) => {
     next();
 };
 
+module.exports.isVerified = (req, res, next)=>{
+    if(req.user.isVerified){
+        next();
+    }else{
+        return res.redirect('/user/send-verification-email');
+    }
+};
+
 module.exports.checkRoles = roles => (req, res, next) =>
     !roles.includes(req.user.role) ?
     res.render('noAccess') :

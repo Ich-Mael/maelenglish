@@ -8,7 +8,7 @@ module.exports = class Emailer {
     this.to = user.email;
     this.firstName = user.name.split(" ")[0];
     this.url = url;
-    this.from = `Ismael ZERBO <${process.env.EMAIL_FROM}>`;
+    this.from = `AfroHK <${process.env.EMAIL_FROM}>`;
   }
 
   newTransport() {

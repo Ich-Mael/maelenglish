@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { isLoggedIn, checkRoles } = require('../middlewares/userController');
+const { isLoggedIn, checkRoles, isVerified } = require('../middlewares/userController');
 const { checkCourseOwnership } = require('../middlewares/courseController');
 
 

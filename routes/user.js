@@ -11,7 +11,7 @@ const accountToken = require("../models/accountTokens");
 const { englishClubs } = require("../models/englishClub");
 const catchAsync = require("../utilities/catchAsync");
 const Course = require("../models/courses");
-const { isLoggedIn, checkRoles } = require("../middlewares/userController");
+const { isLoggedIn, checkRoles, isVerified } = require("../middlewares/userController");
 const {
   checkCourseOwnership,
   checkEnglishBoardMembership,
@@ -25,9 +25,10 @@ router.get("/register", (req, res) => {
 // register user to DB
 router.post("/register", async (req, res) => {
   try {
-    const { name, surname, email, username, password } = req.body;
-    const user = new User({ name, surname, email, username });
+    const { name, surname, email, username, phoneNumber, gender, password } = req.body;
+    const user = new User({ name, surname, email, phoneNumber, gender, username });
     const registeredUser = await User.register(user, password);
+
     req.login(registeredUser, async (err) => {
       if (err) {
         res.send("Something Went Wrong");
@@ -148,6 +149,7 @@ router.get(
 router.get(
   "/user/:id",
   isLoggedIn,
+  isVerified,
   catchAsync(async (req, res, next) => {
     const id = req.params.id;
     const user = await User.findById(id)
@@ -162,12 +164,12 @@ router.get(
 //==========================//==========================
 
 // Admin route
-router.get("/admindashboard", isLoggedIn, checkRoles("admin"), (req, res) => {
+router.get("/admindashboard", isLoggedIn, isVerified, checkRoles("admin"), (req, res) => {
   res.render("admindashboard");
 });
 
 // adding a student to a course form
-router.get("/addstudent/new", isLoggedIn, checkRoles("admin"), (req, res) => {
+router.get("/addstudent/new", isLoggedIn, isVerified, checkRoles("admin"), (req, res) => {
   res.render("courses/addNewStudent");
 });
 
@@ -175,6 +177,7 @@ router.get("/addstudent/new", isLoggedIn, checkRoles("admin"), (req, res) => {
 router.post(
   "/addstudent",
   isLoggedIn,
+  isVerified,
   checkRoles(["admin", "student_manager"]),
   catchAsync(async (req, res) => {
     const { courseTitle, student } = req.body;
@@ -192,6 +195,7 @@ router.post(
 router.post(
   "/admindashboard/newEnglishClubMember",
   isLoggedIn,
+  isVerified,
   checkRoles("admin"),
   catchAsync(async (req, res) => {
     const { englishClub_name, memberUsername } = req.body;

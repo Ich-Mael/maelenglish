@@ -1,6 +1,6 @@
 const express = require("express");
 const catchAsync = require("../utilities/catchAsync");
-const { isLoggedIn, checkRoles } = require("../middlewares/userController");
+const { isLoggedIn, checkRoles, isVerified } = require("../middlewares/userController");
 const router = express.Router();
 const User = require("../models/user");
 const {
@@ -21,7 +21,7 @@ const {
 // Post english comment route
 router.post(
   "/englishlang4all/clubs/:club_id/clubMedia/:media_id/comment",
-  isLoggedIn,
+  isLoggedIn, isVerified,
   checkEnglishClubMembership,
   catchAsync(async (req, res) => {
     const media = await englishClubMedia.findById(req.params.media_id);
