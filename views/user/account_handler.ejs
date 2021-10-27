@@ -11,37 +11,6 @@
   class="container d-flex justify-content-center align-items-center"
   style="height: "
 >
-  <!-- If user i verified -->
-  <% if(verified){ %>
-  <div class="jumbotron">
-    <h1 class="display-4 py-3">
-      Bienvenue
-      <span style="font-family: Georgia, 'Times New Roman', Times, serif"
-        ><%= username %></span
-      >
-    </h1>
-    <p class="lead text-success">
-      <strong>Félicitations 🥳🎊 ! </strong> votre compte a été activé avec
-      succès.
-    </p>
-    <hr class="my-4" />
-    <figure class="text-center">
-      <blockquote class="blockquote py-2">
-        <p style="font-family: Georgia, 'Times New Roman', Times, serif">
-          L'éducation est l'arme la plus puissante qu'on puisse utiliser pour
-          changer le monde.
-        </p>
-      </blockquote>
-      <figcaption class="blockquote-footer">
-        Nelson Mandela <cite title="Source Title"></cite>
-      </figcaption>
-    </figure>
-    <a class="btn btn-outline-primary btn-small mt-2" href="/" role="button"
-      >Explorer la maison du savoir</a
-    >
-  </div>
-  <% } %>
-
   <!-- show a dialog if user is not verified  -->
   <% if(!verified && !emailsent){ %>
   <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
@@ -59,8 +28,7 @@
   </div>
   <% } %>
   
-  <% if(typeof emailsent !='undefined' ){ %> <% if(emailsent &&
-  !verified){ %>
+  <% if(typeof emailsent !='undefined' ){ %> <% if(emailsent && !verified){ %>
     <div class="jumbotron">
       <h1 class="display-4 py-3">
         Bienvenue
@@ -69,8 +37,9 @@
         >
       </h1>
       <hr class="my-4" />
+      <p><strong>Etape suivante : Activation de compte </strong></p>
       <p>
-        <strong>Encore une étape: </strong> Consultez votre boîte mail pour activer votre compte. <br><span class="text-danger">Le lien d'activation de compte est valide pour 20 minutes</span> 
+        Consultez votre boîte mail pour activer votre compte. <br><span class="text-danger">Le lien d'activation de compte est valide pour 20 minutes</span> 
       </p>
       <br>
       <p>Vous n'avez pas reçu le mail d'activation de compte ?</p>
