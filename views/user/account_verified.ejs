@@ -6,6 +6,25 @@
     background-color: rgba(231, 239, 241, 0.733);
     border-radius: 0.3rem;
   }
+  .afro {
+  -webkit-text-stroke: 1px black;
+  font-family: "Ultra", serif;
+  letter-spacing: 0.2rem;
+  color: rgb(97, 95, 95);
+  text-shadow: 2px 2px 0 rgb(248, 243, 243), -1px -1px 0 rgb(248, 243, 243),
+    1px -1px 0 rgb(248, 243, 243), -1px 1px 0 rgb(248, 243, 243),
+    1px 1px 0 rgb(248, 243, 243);
+}
+
+.hk {
+  -webkit-text-stroke: 1px black;
+  font-family: "Ultra", serif;
+  letter-spacing: 0.2rem;
+  color: orangered;
+  text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000,
+    -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
 </style>
 <div
   class="container d-flex justify-content-center align-items-center"
@@ -13,11 +32,9 @@
 >
   <!-- If user i verified -->
   <div class="jumbotron">
-    <h1 class="display-4 py-3">
-      Bienvenue
-      <span style="font-family: Georgia, 'Times New Roman', Times, serif"
-        ><%= username %></span
-      >
+    <h1 class="py-3">
+      Bienvenue à 
+      <span class="afro ms-2">Afro</span><span class="hk">HK</span>
     </h1>
     <p class="lead text-success">
       <strong>Félicitations 🥳🎊 ! </strong> votre compte a été activé avec

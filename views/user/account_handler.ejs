@@ -52,7 +52,8 @@
     </div>
   <% } %>
 
-  <% } %> <% if(typeof err !='undefined' ){ %> <% if(err){ %>
+  <% } %> <% if(typeof err !='undefined' ){ %> <% if(err  && !emailsent && !verified){ %>
+    <div class="jumbotron">
   <div class="alert alert-success alert-dismissible fade show" role="alert">
     <strong>ERREUR </strong>
     <%= err %>.
@@ -66,6 +67,7 @@
   <a href="/user/send-verification-email"
     >Recevoir un nouveau lien d'activation de compte par mail</a
   >
+  </div>
 
   <% } %> <% } %>
 </div>

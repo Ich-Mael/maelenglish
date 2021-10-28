@@ -82,9 +82,9 @@ router.get('/user/verifyemail', async (req, res) => {
           await userData.save();
           // delete the token now itself
           await accountToken.findOneAndDelete({ token: token });
-      res.render('user/account_verified', { username: req.user.username});  
+      res.render('user/account_verified');  
       } else {
-          res.render('user/account_handler', { username: req.user.username, verified: req.user.isVerified, err: "Le lien d’activation de compte est expiré" });
+          res.render('user/account_handler', { username: req.user.username, verified: req.user.isVerified, err: "Le lien d’activation de compte est expiré", emailsent: true});
       }
   } else {
       // doesnt have a token
