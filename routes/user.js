@@ -55,6 +55,7 @@ router.get('/user/send-verification-email', catchAsync(async (req, res) => {
       await accountToken({ token: token, email: req.user.email }).save();
 
       let url;
+      let firstName = req.user.surname.split(" ")[0];
       if(process.env.NODE_ENV == "production") {
       url = "https://www.afrohk.com/user/verifyemail?token=" + token;
         }else{
@@ -63,7 +64,7 @@ router.get('/user/send-verification-email', catchAsync(async (req, res) => {
       // send an email for verification
       await new Emailer(req.user, url).sendVerifyEmail();
 
-      res.render('user/account_handler', { username: req.user.username, verified: req.user.isVerified, emailsent: true });  
+      res.render('user/account_handler', { username: firstName, verified: req.user.isVerified, emailsent: true });  
 }));
 
 
