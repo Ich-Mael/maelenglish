@@ -2,8 +2,7 @@ const express = require("express");
 const passport = require("passport");
 const Emailer = require("../utilities/sendEmail");
 
-
-const crypto = require('crypto');
+const crypto = require("crypto");
 
 const router = express.Router();
 const User = require("../models/user");
@@ -11,7 +10,11 @@ const accountToken = require("../models/accountTokens");
 const { englishClubs } = require("../models/englishClub");
 const catchAsync = require("../utilities/catchAsync");
 const Course = require("../models/courses");
-const { isLoggedIn, checkRoles, isVerified } = require("../middlewares/userController");
+const {
+  isLoggedIn,
+  checkRoles,
+  isVerified,
+} = require("../middlewares/userController");
 const {
   checkCourseOwnership,
   checkEnglishBoardMembership,
@@ -25,8 +28,16 @@ router.get("/register", (req, res) => {
 // register user to DB
 router.post("/register", async (req, res) => {
   try {
-    const { name, surname, email, username, phoneNumber, gender, password } = req.body;
-    const user = new User({ name, surname, email, phoneNumber, gender, username });
+    const { name, surname, email, username, phoneNumber, gender, password } =
+      req.body;
+    const user = new User({
+      name,
+      surname,
+      email,
+      phoneNumber,
+      gender,
+      username,
+    });
     const registeredUser = await User.register(user, password);
 
     req.login(registeredUser, async (err) => {
@@ -36,7 +47,7 @@ router.post("/register", async (req, res) => {
         const redirectUrl = (await req.session.returnTo) || "/";
         delete req.session.returnTo;
         req.flash("success", "Votre compte a été créé avec success");
-        res.redirect('/user/send-verification-email');
+        res.redirect("/user/send-verification-email");
       }
     });
   } catch (e) {
@@ -45,58 +56,73 @@ router.post("/register", async (req, res) => {
   }
 });
 
-
 //sending activation mail
-router.get('/user/send-verification-email', catchAsync(async (req, res) => {
-      // generate a token 
-      const token = crypto.randomBytes(32).toString('hex');
+router.get(
+  "/user/send-verification-email",
+  catchAsync(async (req, res) => {
+    // generate a token
+    const token = crypto.randomBytes(32).toString("hex");
 
-      // add that to database
-      await accountToken({ token: token, email: req.user.email }).save();
+    // add that to database
+    await accountToken({ token: token, email: req.user.email }).save();
 
-      let url;
-      let firstName = req.user.surname.split(" ")[0];
-      if(process.env.NODE_ENV == "production") {
+    let url;
+    let firstName = req.user.surname.split(" ")[0];
+    if (process.env.NODE_ENV == "production") {
       url = "https://www.afrohk.com/user/verifyemail?token=" + token;
-        }else{
+    } else {
       url = "http://localhost:3000/user/verifyemail?token=" + token;
-        }
-      // send an email for verification
-      await new Emailer(req.user, url).sendVerifyEmail();
+    }
+    // send an email for verification
+    await new Emailer(req.user, url).sendVerifyEmail();
 
-      res.render('user/account_handler', { username: firstName, verified: req.user.isVerified, emailsent: true });  
-}));
+    res.render("user/account_handler", {
+      username: firstName,
+      verified: req.user.isVerified,
+      emailsent: true,
+    });
+  })
+);
 
-
-router.get('/user/verifyemail', async (req, res) => {
+router.get("/user/verifyemail", async (req, res) => {
   // grab the token
   const token = req.query.token;
-  // check if token exists 
+  // check if token exists
   // or just send an error
   if (token) {
-      const check = await accountToken.findOne({ token: token });
-      if (check) {
-          // token verified
-          // set the property of verified to true for the user
-          const userData = await User.findOne({ email: check.email });
-          userData.isVerified = true;
-          await userData.save();
-          // delete the token now itself
-          await accountToken.findOneAndDelete({ token: token });
-      res.render('user/account_verified');  
-      } else {
-          res.render('user/account_handler', { username: req.user.username, verified: req.user.isVerified, err: "Le lien d’activation de compte est expiré", emailsent: true});
-      }
+    const check = await accountToken.findOne({ token: token });
+    if (check) {
+      // token verified
+      // set the property of verified to true for the user
+      const userData = await User.findOne({ email: check.email });
+      userData.isVerified = true;
+      await userData.save();
+      // delete the token now itself
+      await accountToken.findOneAndDelete({ token: token });
+
+      await req.login(userData, (err) => {
+        if (err) {
+          res.render("errorpage");
+        } else {
+          // const redirectUrl = (await req.session.returnTo) || "/";
+          // delete req.session.returnTo;
+          res.render("user/account_verified");
+        }
+      });
+    } else {
+      res.render("user/account_handler", {
+        username: req.user.username,
+        verified: req.user.isVerified,
+        err: "Le lien d’activation de compte est expiré",
+        emailsent: true,
+      });
+    }
   } else {
-      // doesnt have a token
-      // I will simply redirect to profile 
-      res.redirect('/register');
+    // doesnt have a token
+    // I will simply redirect to profile
+    res.redirect("/register");
   }
 });
-
-
-
-
 
 // login user form
 router.get("/login", (req, res) => {
@@ -165,14 +191,26 @@ router.get(
 //==========================//==========================
 
 // Admin route
-router.get("/admindashboard", isLoggedIn, isVerified, checkRoles("admin"), (req, res) => {
-  res.render("admindashboard");
-});
+router.get(
+  "/admindashboard",
+  isLoggedIn,
+  isVerified,
+  checkRoles("admin"),
+  (req, res) => {
+    res.render("admindashboard");
+  }
+);
 
 // adding a student to a course form
-router.get("/addstudent/new", isLoggedIn, isVerified, checkRoles("admin"), (req, res) => {
-  res.render("courses/addNewStudent");
-});
+router.get(
+  "/addstudent/new",
+  isLoggedIn,
+  isVerified,
+  checkRoles("admin"),
+  (req, res) => {
+    res.render("courses/addNewStudent");
+  }
+);
 
 // adding a student to a course
 router.post(
