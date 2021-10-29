@@ -1593,7 +1593,6 @@ customers-cards:before {
 
 @media (max-width: 992px) {
   nav {
-    background-color: #000000;
   }
 
   .check-programs,
@@ -1811,9 +1810,7 @@ customers-cards:before {
 }
 
 @media (max-width: 650px) {
-  nav {
-    background-color: #000000;
-  }
+ 
 
   /* #banner-wrapper {
     z-index: 2;

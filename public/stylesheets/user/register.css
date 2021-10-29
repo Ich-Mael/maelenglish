@@ -8,6 +8,8 @@
   font-family: "Roboto" serif;
   /* background: url("https://images.pexels.com/photos/5331211/pexels-photo-5331211.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"); */
   background: url("https://images.pexels.com/photos/5054213/pexels-photo-5054213.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
+  background: url("https://images.pexels.com/photos/5076531/pexels-photo-5076531.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260");
+  background: url("https://images.pexels.com/photos/5077047/pexels-photo-5077047.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
   background-size: cover;
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -18,16 +20,15 @@
   background-repeat: no-repeat;
   margin: 0;
   height: 45vh;
-  background-color: #8fdbe9;
   display: flex;
-  
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
 .header::after{
-  opacity: 0.7;
+  opacity: 0.4;
+  background-color: #101111;
 }
 
 .header-content{
@@ -59,7 +60,8 @@
   letter-spacing: 0.1rem;
   font-family: "chango", cursive;
   font-family: "Chivo", sans-serif;
-  color: rgb(245, 190, 8);
+  font-weight: 900;
+  color: rgb(231, 160, 7);
   text-shadow: 1px 1px 1px rgb(7, 7, 7);
 }
 
