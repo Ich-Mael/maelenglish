@@ -9,7 +9,7 @@ window.addEventListener("scroll", function () {
   logo.classList.toggle("logo-display", window.scrollY > 0);
   nav.classList.toggle("navbar-top", window.scrollY > 0);
   nav.classList.toggle("nav-display", window.scrollY > 10);
-  nav.classList.toggle("bg-dark", window.scrollY > 0);
+  nav.classList.toggle("bg-light", window.scrollY > 0);
   // nav.classList.toggle('navbar-dark', window.scrollY >= 0);
   // nav.classList.toggle('navbar-light', window.scrollY === 0);
   // nav.classList.toggle('bg-light', window.scrollY === 0);

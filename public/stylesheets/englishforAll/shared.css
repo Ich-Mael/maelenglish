@@ -52,13 +52,12 @@ nav {
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
   position: fixed;
+  padding: 0.3rem 0 !important;
   font-family: "Roboto" serif;
 }
 
 .logo-navbar {
-  width: 100px;
-  height: 100px;
-  opacity: 1;
+  display: none;
 }
 
 .logo-display {
@@ -88,7 +87,7 @@ nav {
   transition: all 1s;
   font-weight: 500;
   text-overflow: 1px 1px 0 solid black;
-  transition: all 0.3s;
+  transition: all 0.4s;
 }
 
 #ct{
@@ -111,7 +110,7 @@ nav {
 .nav-link-connexion {
   text-align: center;
   font-family: "Roboto" serif;
-  padding: 0.3rem 1.3rem;
+  padding: 0.3rem 1rem;
   border-radius: 5px;
   text-decoration: none;
   color: rgb(22, 22, 21);
@@ -129,10 +128,10 @@ nav {
   font-family: "Roboto" serif;
   text-decoration: none;
   font-size: 1rem;
-  color: rgb(255, 239, 231);
+  color: rgb(12, 12, 11);
 }
 
-.profile-link:hover {
+profile-link:hover {
   text-decoration: none;
   color: rgb(255, 239, 231);
 }
