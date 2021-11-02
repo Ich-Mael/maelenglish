@@ -62,7 +62,7 @@
 
 <h1 class="text-center my-5" style="color: blueviolet;"><%= club.acronym %> Board Members Dashboard</h1>
 <div class="col-md-8 container">
-  <% for(let leader of leaders) {%>
+  <% for(let leader of   club.workersOfMonth) {%>
   <h4 class="text-secondary"> <%= months[leader.createdAt.getMonth()]%> <%= leader.createdAt.getFullYear() %></h4>
   <div class="d-flex justify-content-around border border-secondary border-3 rounded py-3 my-5" style="width: 100%;">
     <div class="student-OM">

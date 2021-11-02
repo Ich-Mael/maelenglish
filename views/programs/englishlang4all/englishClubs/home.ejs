@@ -31,15 +31,43 @@
       data-bs-slide-to="2"
       aria-label="Slide 3"
     ></button>
+    <button
+      type="button"
+      data-bs-target="#carouselExampleIndicators"
+      data-bs-slide-to="3"
+      aria-label="Slide 4"
+    ></button>
+    <button
+      type="button"
+      data-bs-target="#carouselExampleIndicators"
+      data-bs-slide-to="4"
+      aria-label="Slide 5"
+    ></button>
   </div>
   <div class="carousel-inner">
     <div class="carousel-item active">
       <img
-        src="https://res.cloudinary.com/afro-house-of-knowledge/image/upload/v1633194503/Afrohk/neci-8-rs_dd8xmz.jpg"
+        src="https://i.ibb.co/PxNvNrv/neci-family.jpg"
+        alt="Neci-family"
         class="d-block w-100"
-        alt="..."
       />
     </div>
+    <div class="carousel-item">
+      <img
+        src="https://i.ibb.co/4mbxWfX/neci-theater-1.jpg"
+        class="d-block w-100"
+        alt="neci-theater"
+      />
+    </div>
+
+    <div class="carousel-item">
+      <img
+        src="https://i.ibb.co/pJnR6bR/Neci-dance.jpg"
+        alt="Neci-dance"
+        class="d-block w-100"
+      />
+    </div>
+
     <div class="carousel-item">
       <img
         src="https://i.ibb.co/Ct2nTfD/neci-10.jpg.jpg"
@@ -130,86 +158,86 @@
         ></span>
       </h3>
       <div class="container">
-      <div class="row pb-5">
-        <% for(let club of clubs) {%>
-        <!-- english club 1 -->
-        <div class="col-sm-6 col-md-4 card-wrapper">
-          <div class="eng-club-details">
-            <div class="img-wrapper">
-              <img
-                src="<%= club.logoImageUrl %>"
-                class="img-thumbnail"
-                alt=""
-              />
-            </div>
-
-            <h2 class="institution"><%=club.instituition %></h2>
-            <div class="eng-clubs-description">
-              <h3 class="eng-club-name"><%=club.acronym %></h3>
-              <p class="definition"><%=club.name%></p>
-              <p class="found-date">Founded in <%=club.foundDate %></p>
-            </div>
-            <hr />
-            <div class="join py-2">
-              <div class="m-0">
-                <!-- Button trigger modal -->
-                <button
-                  type="button"
-                  class="btn mx-2 btn-primary"
-                  data-bs-toggle="modal"
-                  data-bs-target="#english-club-1"
-                >
-                  Learn more
-                </button>
-                <button class="btn mx-2 btn-outline-primary">
-                  <a
-                    class="join-link"
-                    href="/englishlang4all/Clubs/<%=club._id%>"
-                    >Join us</a
-                  >
-                </button>
+        <div class="row pb-5">
+          <% for(let club of clubs) {%>
+          <!-- english club 1 -->
+          <div class="col-sm-6 col-md-4 card-wrapper">
+            <div class="eng-club-details">
+              <div class="img-wrapper">
+                <img
+                  src="<%= club.logoImageUrl %>"
+                  class="img-thumbnail"
+                  alt=""
+                />
               </div>
 
-              <!-- Modal -->
-              <div
-                class="modal fade"
-                id="english-club-1"
-                tabindex="-1"
-                aria-labelledby="exampleModalLabel"
-                aria-hidden="true"
-              >
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="exampleModalLabel">
-                        All about Natural English Club of Ibam
-                      </h5>
-                      <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      ></button>
-                    </div>
-                    <div class="modal-body">...</div>
-                    <div class="modal-footer">
-                      <button
-                        type="button"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal"
-                      >
-                        Close
-                      </button>
+              <h2 class="institution"><%=club.instituition %></h2>
+              <div class="eng-clubs-description">
+                <h3 class="eng-club-name"><%=club.acronym %></h3>
+                <p class="definition"><%=club.name%></p>
+                <p class="found-date">Founded in <%=club.foundDate %></p>
+              </div>
+              <hr />
+              <div class="join py-2">
+                <div class="m-0">
+                  <!-- Button trigger modal -->
+                  <button
+                    type="button"
+                    class="btn mx-2 btn-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#english-club-1"
+                  >
+                    Learn more
+                  </button>
+                  <button class="btn mx-2 btn-outline-primary">
+                    <a
+                      class="join-link"
+                      href="/englishlang4all/Clubs/<%=club._id%>"
+                      >Join us</a
+                    >
+                  </button>
+                </div>
+
+                <!-- Modal -->
+                <div
+                  class="modal fade"
+                  id="english-club-1"
+                  tabindex="-1"
+                  aria-labelledby="exampleModalLabel"
+                  aria-hidden="true"
+                >
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">
+                          All about Natural English Club of Ibam
+                        </h5>
+                        <button
+                          type="button"
+                          class="btn-close"
+                          data-bs-dismiss="modal"
+                          aria-label="Close"
+                        ></button>
+                      </div>
+                      <div class="modal-body">...</div>
+                      <div class="modal-footer">
+                        <button
+                          type="button"
+                          class="btn btn-secondary"
+                          data-bs-dismiss="modal"
+                        >
+                          Close
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          <%}%>
         </div>
-        <%}%>
       </div>
-    </div>
     </div>
   </div>
 </section>

@@ -15,23 +15,32 @@ const courseSchema = new Schema(
 
     willLearn: {
       type: String,
+      default: "New Skills"
     },
 
     category: {
       type: String,
+      default: "Education"
     },
 
     description: {
       type: String,
+      default: "New Course"
     },
 
     courseImageUrl: {
       type: String,
+      default:"",
     },
 
     price: {
       type: Number,
       required: true,
+    },
+   
+    requirements: {
+      type: String,
+      default: "No requirement for this course"
     },
 
     reviews: [
@@ -40,10 +49,6 @@ const courseSchema = new Schema(
         ref: "Comment",
       },
     ],
-
-    requirements: {
-      type: String,
-    },
 
     modules: [
       {
@@ -86,14 +91,22 @@ const moduleSchema = new Schema({
     required: true,
   },
 
+  explanationText: {
+    type: String,
+  },
+
+  moreDetails: {
+    type: String, 
+  },
+
   evaluation: {
     type: Schema.Types.ObjectId,
     ref: "Evaluation",
   },
+
   videoLinks: [
     {
       type: String,
-      required: true,
     },
   ],
 });

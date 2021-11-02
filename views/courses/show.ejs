@@ -1,22 +1,49 @@
 <% layout('layouts/boilerplate') %>
-    <link href="/stylesheets/course.css" rel="stylesheet" />
+    <link href="/stylesheets/courses/showCourse.css" rel="stylesheet" />
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet" />
 
-    <h1>Title</h1>
-    <h2>
-        <%=course.title %>
-    </h2>
-    <h2>Description</h2>
-    <p>
-        <%=course.description %>
-    </p>
-    <div class="container">
-        <div class="eval-link">
-            <a href="/courses/<%=course._id %>/evaluation_1"> Evaluation 1</a>
-        </div>
-        <div class="eval-link">
-            <a href="/courses/<%=course._id %>/evaluation_1"> Evaluation 2</a>
-        </div>
+    <div
+  data-aos="zoom-out"
+  data-aos-delay="100"
+  data-aos-duration="1800"
+  class="header-wrapper"
+>
+  <div class="bg-img-wrapper">
+    <img
+      class="img-medium"
+      src="<%= course.courseImageUrl %> "
+      alt=""
+    />
+  </div>
+  <div class="banner-wrapper">
+    <div class="d-flex align-items-center flex-column" style="width:100vw">
+      <h1 class="banner-heading"><%= course.title %></h1>
+      <p class="banner-paragraph"></p>
     </div>
+  </div>
+</div>
+
+<div class="intrustors-wrapper">
+    <h2 class="pt-3 text-center"> Instructeurs </h2>
+    <div class="d-flex justify-content-center py-1" ><div class="underline-1"></div></div>
+    <div class="row mt-5">
+        <% for (let instructor of course.instructors){%>
+            <div class="col">
+                <div class="instructor-card">
+                <div class="row">
+                    <div class="col-md-4">
+                    <img src="<%= instructor.imageUrl %>" alt="instructor-img" class="img-fluid img-thumbnail instructor-img" >
+                    </div>
+                    <div class="col-md-8">
+                        <h3> <%= instructor.surname %> <%= instructor.name %></h3>
+                    </div>
+            </div>
+            </div>
+            </div>
+        <%}%>
+    </div>
+
+</div> 
+   

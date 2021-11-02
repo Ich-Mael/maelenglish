@@ -1,28 +1,63 @@
 <% layout('layouts/boilerplate') %>
-<link href="/stylesheets/course.css" rel="stylesheet" />
-<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
-<!-- Google Fonts -->
-<link
-  href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
-  rel="stylesheet"
-/>
-<div class="container my-5 d-flex flex-column justify-content-center">
-<h1>Create a new course</h1>
-<form action="/courses" method="POST">
-  <label for="title">Course title</label>
-  <input type="text" name="course[title]" value="" />
-  <fieldset>
-    <label for="main-instructor">Main Instructor</label>
-    <input type="text" name="instructors[main]" value="" /> 
-    <label for="second-instructor">Second Instructor</label>
-    <input type="text" name="instructors[assistant]" value="" />
-  </fieldset>
-  <label for="description">Description</label>
-  <textarea name="course[description]" id="" cols="30" rows="10">
-  </textarea>
-  <label for="price">Price</label>
-  <input type="text" name="course[price]" value="" />
-  <button type="submit">Create a Course</button>
-</form>
+<!-- WORD Processor-->
+<script src="https://cdn.tiny.cloud/1/p06f8vxdpje8xosyvnq48z68vc7n479iauh5s2jk9zx30qg2/tinymce/5/tinymce.min.js"
+  referrerpolicy="origin"></script>
+</script>
+<script>
+  tinymce.init({
+    selector: '.mytextarea',
+    height: 300,
+    max_width: 500,
+    min_height: 200,
+    min_width: 400
+  });
+</script>
+<style>
+  html {
+    font-size: 85%;
+  }
 
+  label {
+    font-weight: bold;
+    color: rgb(75, 42, 165);
+    font-size: 1.2rem;
+  }
+</style>
+
+<div class="container my-5 d-flex justify-content-center">
+  <div class="col-md-10">
+    <h1 class="text-center">Create a new course</h1>
+    <form action="/admindashboard/courses" method="POST">
+      <div class="row mt-4">
+        <div class="col">
+          <label class="form-label  my-2" for="main-instructor">Main Instructor</label>
+          <input class="form-control my-2" type="text" name="instructors[main]"
+            value="" />
+        </div>
+        <div class="col">
+          <label class="form-label  my-2" for="second-instructor">Second Instructor</label>
+          <input class="form-control my-2" type="text" name="instructors[assistant]" value="" />
+        </div>
+      </div>
+
+      <div class="row mt-4 mb-3">
+        <div class="col">
+        <label for="title" class="form-label">Course title</label>
+        <input class="form-control" type="text" name="course[title]" value=""/>
+      </div>
+      <div class="col">
+        <label class="form-label" for="title">Category</label>
+        <input class="form-control" type="text" name="course[category]" value="" />
+      </div>
+        <div class="col">
+          <label class="form-label" for="price">Price</label>
+          <input class="form-control" type="text" name="course[price]" value=""/>
+        </div>
+      </div>
+      <label class="form-label" for="description">Description</label>
+      <textarea name="course[description]" class="mytextarea form-control" id="">
+      </textarea>
+      <button type="submit" class="btn btn-success mt-3">Create Course</button>
+    </form>
+  </div>
 </div>

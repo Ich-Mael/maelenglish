@@ -72,7 +72,8 @@
               <div class="form-input">
                 <i class="fa fa-lock"></i>
                 <input class="form-control" placeholder="Saisissez votre mot de passe" id="password" name="password"
-                  type="password" value="" required />
+                  type="password" value="" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}" />
+                  <label for="password" style="font-size: 10px; color: red;">Au moins six caractères, un chiffre, une lettre minuscule et une majuscule</label>
               </div>
               <div class="form-input">
                 <i class="bi bi-shield-lock-fill fs-5"></i>

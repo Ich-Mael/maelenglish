@@ -10,12 +10,10 @@ a {
 
 html {
   box-sizing: border-box;
+  font-size: 90%;
 }
 
-html,
-body {
-  /* overflow-x: hidden; */
-}
+
 
 body {
   margin: 0;
@@ -1186,6 +1184,7 @@ customers-cards:before {
 --------------------------------------------------------------*/
 .counts {
   padding: 80px 0;
+  background-color: white;
 }
 
 .counts .count-box {

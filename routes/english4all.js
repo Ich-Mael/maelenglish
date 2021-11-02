@@ -4,11 +4,7 @@ const User = require("../models/user");
 const Review = require("../models/comments");
 const createClubDefaultContent = require("../utilities/createClubDefaultContent");
 const catchAsync = require("../utilities/catchAsync");
-const {
-  positions,
-  days,
-  months,
-} = require("../utilities/defaultData");
+const { positions, days, months } = require("../utilities/defaultData");
 
 const {
   englishClubs,
@@ -18,7 +14,11 @@ const {
   englishWeeklyLessons,
   englishClubMedia,
 } = require("../models/englishClub");
-const { isLoggedIn, isVerified, checkRoles } = require("../middlewares/userController");
+const {
+  isLoggedIn,
+  isVerified,
+  checkRoles,
+} = require("../middlewares/userController");
 const {
   checkEnglishClubMembership,
   checkEnglishBoardMembership,
@@ -26,7 +26,7 @@ const {
 } = require("../middlewares/courseController");
 
 //english for everybody
-router.get("/englishlang4all",isLoggedIn,  isVerified, (req, res) => {
+router.get("/englishlang4all", isLoggedIn, isVerified, (req, res) => {
   res.render("programs/englishlang4all/home");
 });
 
@@ -41,12 +41,17 @@ router.get("/englishlang4all/free_english_lessons", (req, res) => {
  * ================================================ */
 
 //English clubs
-router.get("/englishlang4all/clubs", isLoggedIn,  isVerified, async (req, res) => {
-  const clubs = await englishClubs.find({});
-  res.render("programs/englishlang4all/englishClubs/home", {
-    clubs,
-  });
-});
+router.get(
+  "/englishlang4all/clubs",
+  isLoggedIn,
+  isVerified,
+  async (req, res) => {
+    const clubs = await englishClubs.find({});
+    res.render("programs/englishlang4all/englishClubs/home", {
+      clubs,
+    });
+  }
+);
 
 // Form for a new english club
 router.get(
@@ -135,7 +140,8 @@ router.post(
 //show english club content
 router.get(
   "/englishlang4all/Clubs/:club_id",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishClubMembership,
   catchAsync(async (req, res) => {
     const club = await englishClubs
@@ -144,9 +150,11 @@ router.get(
       .populate("articles")
       .populate("weeklyVideoLesson")
       .populate("workersOfMonth")
-      .populate({ path: "media", populate: { path: "mediaComments", populate: {path: "author"} }})
+      .populate({
+        path: "media",
+        populate: { path: "mediaComments", populate: { path: "author" } },
+      })
       .populate("weeklyActivity");
-
 
     res.render("programs/englishlang4all/englishClubs/show", {
       club,
@@ -173,7 +181,8 @@ router.get(
 
 router.post(
   "/englishlang4all/Clubs/:club_id/board_dashboard/article",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const club_id = req.params.club_id;
@@ -193,14 +202,14 @@ router.post(
 //View all articles
 router.get(
   "/englishlang4all/Clubs/:club_id/board_dashboard/articles",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
-    const articles = await englishClubArticles.find({});
-    const club = await englishClubs.findById(req.params.club_id);
-
+    const club = await englishClubs
+      .findById(req.params.club_id)
+      .populate("articles");
     res.render("programs/englishlang4all/englishClubs/articles/articlesShow", {
-      articles,
       club,
     });
   })
@@ -211,7 +220,8 @@ router.get(
 //form
 router.get(
   "/english/clubs/:club_id/board_dashboard/articles/:article_id/edit",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const article = await englishClubArticles.findById(req.params.article_id);
@@ -227,7 +237,8 @@ router.get(
 //Updating article data
 router.put(
   "/englishlang4all/Clubs/:club_id/board_dashboard/articles/:article_id",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const article = await englishClubArticles.findByIdAndUpdate(
@@ -246,7 +257,8 @@ router.put(
 //Deleting an article
 router.delete(
   "/englishlang4all/Clubs/:club_id/board_dashboard/articles/:article_id",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const article = await englishClubArticles.findByIdAndDelete(
@@ -266,7 +278,8 @@ router.delete(
 
 router.post(
   "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyactivity",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const englishClub = await englishClubs.findById(req.params.club_id);
@@ -298,17 +311,18 @@ router.post(
 //View all weekly activity
 router.get(
   "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyActivities",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
-    const weeklyActivities = await englishWeeklyActivities.find({});
-    const club = await englishClubs.findById(req.params.club_id);
+    const club = await englishClubs
+      .findById(req.params.club_id)
+      .populate("weeklyActivity");
 
     // console.log(weeklyActivities);
     res.render(
       "programs/englishlang4all/englishClubs/activities/weeklyActivitiesShow",
       {
-        weeklyActivities,
         club,
         days,
         months,
@@ -320,7 +334,8 @@ router.get(
 // Form
 router.get(
   "/english/clubs/:club_id/board_dashboard/weeklyActivities/:weeklyActivity_id/edit",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const weeklyActivity = await englishWeeklyActivities.findById(
@@ -341,7 +356,8 @@ router.get(
 //Updating weekly activity data
 router.put(
   "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyActivities/:weeklyActivity_id",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const weeklActivity = await englishWeeklyActivities.findByIdAndUpdate(
@@ -375,7 +391,8 @@ router.put(
 
 router.post(
   "/englishlang4all/Clubs/:club_id/board_dashboard/videoLesson",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const englishClub = await englishClubs.findById(req.params.club_id);
@@ -394,16 +411,16 @@ router.post(
 //View all lessons
 router.get(
   "/englishlang4all/Clubs/:club_id/board_dashboard/videoLessons",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
-    const videoLessons = await englishWeeklyLessons.find({});
-    const club = await englishClubs.findById(req.params.club_id);
-
+    const club = await englishClubs
+      .findById(req.params.club_id)
+      .populate("weeklyVideoLesson");
     res.render(
       "programs/englishlang4all/englishClubs/videoLessons/videoLessonsShow",
       {
-        videoLessons,
         club,
       }
     );
@@ -414,7 +431,8 @@ router.get(
 
 router.get(
   "/english/clubs/:club_id/board_dashboard/weeklyVideoLessons/:videoLesson_id/edit",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const videoLesson = await englishWeeklyLessons.findById(
@@ -435,7 +453,8 @@ router.get(
 //Updating video lesson data
 router.put(
   "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyVideoLessons/:videoLesson_id",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const videoLesson = await englishWeeklyLessons.findByIdAndUpdate(
@@ -459,7 +478,8 @@ router.put(
 
 router.post(
   "/englishlang4all/Clubs/:club_id/board_dashboard/workerOfMonth",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const englishClub = await englishClubs.findById(req.params.club_id);
@@ -486,15 +506,14 @@ router.post(
 //View all vips of the year
 router.get(
   "/englishlang4all/Clubs/:club_id/board_dashboard/workersOfMonth",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
-    const leaders = await englishClubWorkersOfMonth.find({});
-    const club = await englishClubs.findById(req.params.club_id);
-
-    console.log(leaders);
+    const club = await englishClubs
+      .findById(req.params.club_id)
+      .populate("workersOfMonth");
     res.render("programs/englishlang4all/englishClubs/vips/vipsShow", {
-      leaders,
       club,
       days,
       months,
@@ -506,7 +525,8 @@ router.get(
 
 router.get(
   "/english/clubs/:club_id/board_dashboard/leaders/:leader_id/vipsEdit",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const leader = await englishClubWorkersOfMonth.findById(
@@ -524,7 +544,8 @@ router.get(
 //Updating leaders of the month
 router.put(
   "/englishlang4all/Clubs/:club_id/board_dashboard/leaders/:leader_id",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const leader = await englishClubWorkersOfMonth.findByIdAndUpdate(
@@ -552,7 +573,8 @@ router.put(
 
 router.post(
   "/englishlang4all/Clubs/:club_id/board_dashboard/clubMedia",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const englishClub = await englishClubs.findById(req.params.club_id);
@@ -572,14 +594,14 @@ router.post(
 //View all media of the year
 router.get(
   "/englishlang4all/Clubs/:club_id/board_dashboard/allClubMedia",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
-    const medias = await englishClubMedia.find({});
-    const club = await englishClubs.findById(req.params.club_id);
-
+    const club = await englishClubs
+      .findById(req.params.club_id)
+      .populate("media");
     res.render("programs/englishlang4all/englishClubs/clubMedia/mediaShow", {
-      medias,
       club,
       days,
       months,
@@ -590,7 +612,8 @@ router.get(
 //Edit all vips of the month
 router.get(
   "/englishlang4all/clubs/:club_id/board_dashboard/clubMedia/:media_id/mediaEdit",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const media = await englishClubMedia.findById(req.params.media_id);
@@ -606,7 +629,8 @@ router.get(
 //Updating leaders of the month
 router.put(
   "/englishlang4all/Clubs/:club_id/board_dashboard/clubMedia/:media_id",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const media = await englishClubMedia.findByIdAndUpdate(
@@ -621,18 +645,21 @@ router.put(
 
 /* =================================================
  *
- *                Global Challenges 
+ *                Global Challenges
  *
  * ================================================ */
 router.get(
   "/englishlang4all/Clubs/:club_id/grammar",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkEnglishClubMembership,
   catchAsync(async (req, res) => {
     const club = await englishClubs.findById(req.params.club_id);
 
-    res.render("programs/englishlang4all/englishClubs/clubQuiz/grammarQuiz.ejs",{club}
-     );
+    res.render(
+      "programs/englishlang4all/englishClubs/clubQuiz/grammarQuiz.ejs",
+      { club }
+    );
   })
 );
 
@@ -645,7 +672,8 @@ router.get(
 //english for Everyone beginner
 router.get(
   "/englishlang4all/general_english_beginner",
-  isLoggedIn, isVerified,
+  isLoggedIn,
+  isVerified,
   checkProgramOwnership("beginner_Eng"),
   (req, res) => {
     res.render("programs/englishlang4all/general_english_beginner");

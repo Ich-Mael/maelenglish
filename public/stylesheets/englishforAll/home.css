@@ -292,8 +292,8 @@ strong {
   font-size: 1rem;
   text-align: center;
   font-weight: 500;
+  min-height: 5.5rem;
   font-size: 1rem;
-  line-height: 4rem;
   padding: 1rem 1.5rem;
   color: rgba(32, 32, 32, 0.781);
   line-height: 1.8rem;
