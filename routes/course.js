@@ -54,6 +54,9 @@ router.delete("/admindashboard/courses/:course_id",isVerified, isLoggedIn, check
 //     res.render('courses/modules/new');
 // });
 
+// show all modules of a course
+router.get('/admindashboard/courses/:course_id/modules', isVerified, isLoggedIn, checkRoles('admin'), catchAsync(CourseModules.showCourseModules));
+
 // Creating a new module
 router.post('/admindashboard/courses/:course_id/module', isVerified, isLoggedIn, checkRoles("admin"), catchAsync(CourseModules.createModule));
 
@@ -62,7 +65,7 @@ router.get('/courses/:course_id/modules/:module_id', isVerified, isLoggedIn, che
 ));
 
 // Edit new module
-router.get("/admindashboard/courses/:course_id/edit",isVerified, isLoggedIn, checkRoles("admin"), catchAsync(CourseModules.editModule));
+router.get("/admindashboard/courses/:course_id/modules/:module_id/edit",isVerified, isLoggedIn, checkRoles("admin"), catchAsync(CourseModules.editModule));
 
 router.put("/admindashboard/courses/:course_id",isVerified, isLoggedIn, checkRoles("admin"), catchAsync(CourseModules.updateModule));
 

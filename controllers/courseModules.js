@@ -47,6 +47,27 @@ module.exports.showModule = async (req, res) => {
     courseModule,
     course,
     moduleReveal,
-    displayRevealDate
+    displayRevealDate,
   });
 };
+
+module.exports.showCourseModules = async (req, res) => {
+  const course = await Course.findById(req.params.course_id).populate(
+    "modules"
+  );
+  res.render("courses/course_modules/showCourseModules", {
+    course
+  });
+};
+
+module.exports.editModule = async (req, res) => {
+  const courseModule = await Module.findById(req.params.module_id);
+  const course = await Course.findById(req.params.course_id).populate(
+    "modules"
+  );
+  res.render("courses/course_modules/editModule", {
+    courseModule,
+    course,
+  });
+
+  };
