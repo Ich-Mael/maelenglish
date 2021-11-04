@@ -159,12 +159,25 @@ body {
   padding-bottom: 0.2rem;
 }
 
+.session-wrapper{
+  text-align: center;
+  font-family:Georgia, 'Times New Roman', Times, serif;
+  background-color: #272626;
+  font-size: 2rem;
+}
+.courseSession{
+  padding: 1rem 1.5rem 0;
+  text-transform: capitalize;
+  color: wheat;
+}
+
 .start-date, .end-date{
   font-size: 1.5rem;
   color: #fcb045;
   padding: 0 1rem;
   display: inline-block;
 }
+
 
 /* module */
 .module-link {

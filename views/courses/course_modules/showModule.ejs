@@ -54,9 +54,13 @@
       </div>
       <div class="modal-body">
         <ol>
-        <% for(let chapter of course.modules){ %>
-         <li class="module"><a href="/courses/<%= course._id %>/modules/<%=chapter._id%>"> <%= chapter.title %></a></li> 
-        <% } %>
+          <% for(let chapter of course.modules){ %>
+          <li class="module">
+            <a href="/courses/<%= course._id %>/modules/<%=chapter._id%>">
+              <%= chapter.title %></a
+            >
+          </li>
+          <% } %>
         </ol>
       </div>
       <div class="modal-footer">
@@ -71,7 +75,7 @@
   Module <%=course.modules.indexOf(courseModule._id) + 1 %> : <%=
   courseModule.title %>
 </p>
-<% if(revealDate) {%>
+<% if(moduleReveal) { %>
 <!-- Module content -->
 <section class="container col-md-8">
   <div class="mb-3 mt-5">
@@ -172,8 +176,9 @@
     <p><%- courseModule.moreDetails %></p>
   </div>
 </section>
-<% } else { %> 
-<section>
-  <p> Ce module sera disponible <br> <span class="module-date"><%= displayRevealDate %></span></p>
+<% } else { %>
+<section class="not-available container col-10 col-md-6">
+  <p>Ce module sera disponible</p>
+  <p class="module-date"><%= displayRevealDate %></p>
 </section>
-  <% } %> 
+<% } %>
