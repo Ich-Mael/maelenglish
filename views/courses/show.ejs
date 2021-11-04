@@ -1,49 +1,110 @@
-<% layout('layouts/boilerplate') %>
-    <link href="/stylesheets/courses/showCourse.css" rel="stylesheet" />
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet" />
+<% layout('layouts/courseBoilerplate') %>
+<link href="/stylesheets/courses/showCourse.css" rel="stylesheet" />
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+<!-- Google Fonts -->
+<link
+  href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+  rel="stylesheet"
+/>
 
-    <div
+<div
   data-aos="zoom-out"
   data-aos-delay="100"
   data-aos-duration="1800"
   class="header-wrapper"
 >
   <div class="bg-img-wrapper">
-    <img
-      class="img-medium"
-      src="<%= course.courseImageUrl %> "
-      alt=""
-    />
+    <img class="img-medium" src="<%= course.courseImageUrl %> " alt="" />
   </div>
   <div class="banner-wrapper">
-    <div class="d-flex align-items-center flex-column" style="width:100vw">
+    <div class="d-flex align-items-center flex-column" style="width: 100vw">
       <h1 class="banner-heading"><%= course.title %></h1>
       <p class="banner-paragraph"></p>
     </div>
   </div>
 </div>
-
+<!-- Current time-->
+<div class="currentTime">
+  <p><span class="time-underline pt-1 mb-3"><%= currentTime %></span></p>
+  <p class="start-date">Debut: <%= start %></p> 
+  <p class="end-date" >Fin: <%= end %></p>
+  <p class="inline-block"><a href="/courses/<%= course._id %>/modules/<%=course.modules[0]._id%>">Commencez</a></p>
+</div>
 <div class="intrustors-wrapper">
-    <h2 class="pt-3 text-center"> Instructeurs </h2>
-    <div class="d-flex justify-content-center py-1" ><div class="underline-1"></div></div>
-    <div class="row mt-5">
-        <% for (let instructor of course.instructors){%>
-            <div class="col">
-                <div class="instructor-card">
-                <div class="row">
-                    <div class="col-md-4">
-                    <img src="<%= instructor.imageUrl %>" alt="instructor-img" class="img-fluid img-thumbnail instructor-img" >
-                    </div>
-                    <div class="col-md-8">
-                        <h3> <%= instructor.surname %> <%= instructor.name %></h3>
-                    </div>
-            </div>
-            </div>
-            </div>
-        <%}%>
+  <h2 class="pt-3 text-center instructor-title">Instructeurs</h2>
+  <div class="d-flex justify-content-center py-1">
+    <div class="underline-1"></div>
+  </div>
+  <div class="row mt-5">
+    <% for (let instructor of course.instructors){%>
+    <div class="col-md">
+      <div class="instructor-card">
+        <div class="row">
+          <div class="col-md-4">
+            <img
+              src="<%= instructor.imageUrl %>"
+              alt="instructor-img"
+              class="img-fluid img-thumbnail instructor-img"
+            />
+          </div>
+          <div class="col-md-8">
+            <h3 class="instructor-name">
+              <%= instructor.surname %> <%= instructor.name %>
+            </h3>
+          </div>
+        </div>
+      </div>
     </div>
+    <%}%>
+  </div>
+</div>
 
-</div> 
-   
+<div class="about-course-wrapper container">
+  <h3 class="about-course-heading">
+    <span class="underline-section"> A propos de ce cours</span>
+  </h3>
+  <%- course.description %>
+  <hr />
+
+  <!-- Learning Objectives -->
+  <h3 class="about-course-heading">
+    <span class="underline-section"> Objectifs d'apprentissage</span>
+  </h3>
+  <%- course.willLearn %>
+  <hr />
+
+  <!-- Requirements -->
+  <h3 class="about-course-heading">
+    <span class="underline-section"> Prérequis</span>
+  </h3>
+  <%- course.requirements %>
+  <hr />
+  <!-- Syllabus -->
+  <h3 class="about-course-heading">
+    <span class="underline-section"> Syllabus </span>
+  </h3>
+  <%- course.syllabusSummary %>
+  <p class="requirement text-primary">
+    Cliquez sur le module pour en savoir plus
+  </p>
+  <div class="mb-5">
+    <% for(let chapter of course.modules){%>
+    <p>
+      <a
+        class="d-block my-4 module-link"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#module-<%=course.modules.indexOf(chapter)%>"
+        aria-expanded="false"
+        aria-controls="collapseExample"
+      >
+        <i class="bi bi-vector-pen mx-3"></i> Module <%=
+        course.modules.indexOf(chapter) + 1 %> : <%= chapter.title %>
+      </a>
+    </p>
+    <div class="collapse" id="module-<%=course.modules.indexOf(chapter)%>">
+      <div class="card card-body"><%- chapter.willLearnModule %></div>
+    </div>
+    <% } %>
+  </div>
+</div>

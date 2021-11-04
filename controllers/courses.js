@@ -1,5 +1,6 @@
 const { Course, Module, Evaluation, Grade } = require("../models/courses");
 const User = require("../models/user");
+const DateUtil = require('../utilities/date');
 
 module.exports.allCourses = async (req, res) => {
   const courses = await Course.find({ isActive: true }).populate("instructors");
@@ -38,14 +39,25 @@ module.exports.showCourse = async (req, res) => {
   const course = await Course.findById(req.params.course_id)
     .populate("instructors")
     .populate("modules");
-  res.render("courses/show", { course });
+
+    let start = DateUtil.localTime(course.session.startDate);
+    let end = DateUtil.localTime(course.session.endDate);
+    // let moduleReveal = DateUtil.revealTime(course.modules[0].revealDate);
+  res.render("courses/show", { course, start, end  });
 };
 
 module.exports.editCourse = async (req, res) => {
   const course = await Course.findById(req.params.course_id).populate(
     "instructors"
   );
-  res.render("courses/edit", { course });
+  res.render("courses/edit", { course});
+};
+
+module.exports.updateCourse = async(req, res)=>{
+  const course = await Course.findByIdAndUpdate(req.params.course_id, {...req.body.course, session: {...req.body.session}});
+  await course.save();
+
+  res.redirect(`/courses/${course._id}`);
 };
 
 module.exports.deleteCourse = async (req, res) => {

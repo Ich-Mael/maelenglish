@@ -27,7 +27,7 @@
 
 <div class="container col-md-8 my-5 d-flex flex-column justify-content-center">
   <h2 class="my-2 mb-3 text-primary">Edit course : <%= course.title %></h2>
-  <form action="/courses" method="POST">
+  <form action="/admindashboard/courses/<%= course._id %>?_method=PUT" method="POST">
     <!-- Course initial details-->
     <p>
       <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse"
@@ -37,6 +37,7 @@
     </p>
     <div class="collapse" id="course-initial-details">
       <div class="card card-body">
+        <!-- Instructors -->
         <div class="row mt-2">
           <div class="col">
             <label class="form-label  my-2" for="main-instructor">Main Instructor</label>
@@ -48,6 +49,22 @@
             <input class="form-control my-2" type="text" name="instructors[assistant]" value="" />
           </div>
         </div>
+         <!-- Session -->
+         <div class="row mt-2">
+          <div class="col">
+            <label class="form-label" for="session-start">Start Date</label>
+            <input class="form-control" type="date" name="session[startDate]" value="" required/>
+          </div>
+          <div class="col">
+            <label class="form-label" for="title">End Date</label>
+            <input class="form-control" type="date" name="session[endDate]" value="" required/>
+          </div>
+          <div class="col">
+            <label class="form-label" for="price">Price</label>
+            <input class="form-control" type="text" name="course[price]" value="<%= course.price %>" required />
+          </div>
+        </div>
+        <!-- Title Category Price-->
         <div class="row mt-2">
           <div class="col">
             <label class="form-label" for="title">Course Title</label>
@@ -58,23 +75,31 @@
             <input class="form-control" type="text" name="course[category]" value="<%= course.category %>" />
           </div>
           <div class="col">
-            <label class="form-label" for="price">Price</label>
-            <input class="form-control" type="text" name="course[price]" value="<%= course.price %>" required />
+            <label class="form-label" for="course-image">Course Image</label>
+            <input class="form-control" type="text" name="course[courseImageUrl]" value="<%= course.courseImageUrl %>" required />
           </div>
         </div>
+       
+
         <label class="form-label " for="description">Description</label>
         <textarea class="form-control my-2  mytextarea" name="course[description]" id="description">
           <%= course.description %>
         </textarea>
+
+        <label class="form-label " for="description">Syllabus Summary</label>
+        <textarea class="form-control my-2  mytextarea" name="course[syllabusSummary]" id="syllabusSummary">
+          <%= course.syllabusSummary %>
+        </textarea>
+
         <label class="form-label" for="description">Course Requirement</label>
-        <textarea class="form-control my-2  mytextarea" name="course[requirement]" id="requirement" required></textarea>
+        <textarea class="form-control my-2  mytextarea" name="course[requirements]" id="requirement" required><%= course.requirements %></textarea>
 
         <label class="form-label" for="willLearn">What will you learn ?</label>
-        <textarea class="form-control my-2  mytextarea" name="course[willLearn]" id="willLearn" required></textarea>
+        <textarea class="form-control my-2  mytextarea" name="course[willLearn]" id="willLearn" required><%= course.willLearn %></textarea>
 
       </div>
-      <button type="submit" class="btn my-3 btn-warning">Update course basic info</button>
     </div>
+      <button type="submit" class="btn my-3 btn-warning">Update course basic info</button>
   </form>
 
   <section class="my-3 p-2" style="background-color: aliceblue;">
@@ -89,9 +114,17 @@
       </p>
       <div class="collapse" id="new-module">
         <div class="card card-body">
-          <label class="form-label my-2" for="title">Module title</label>
+        <div class="row mt-2">
+          <div class="col">
+          <label class="form-label" for="title">Module title</label>
           <input class="form-control" type="text" name="module[title]" value="" required />
-
+        </div>
+      
+          <div class="col">
+          <label class="form-label" for="title">Module date</label>
+          <input class="form-control" type="date" name="module[revealDate]" value="" required/>
+        </div>
+        </div>
           <label class="form-label " for="willLearnModule">What will we learn</label>
           <textarea class="form-control my-2  mytextarea" name="module[willLearnModule]" id="willLearnModule" required>
         </textarea>
@@ -112,5 +145,4 @@
         <button type="submit" class="btn my-3 btn-warning">create Module</button>
       </div>
     </form>
-</div>
 </section>

@@ -19,6 +19,18 @@ a.active:focus {
   outline: none !important;
   outline-style: none;
 }
+.currentTime{
+  font-family:Georgia, 'Times New Roman', Times, serif;
+  font-size: 2rem;
+  padding: 1rem 1.5rem;
+  text-transform: capitalize;
+  color: wheat;
+  background-color: #272626;
+  text-align: center;
+}
+.time-underline{
+  border-bottom: 4px solid rgb(241, 238, 238);
+}
 
 .flash-container {
   width: 40%;

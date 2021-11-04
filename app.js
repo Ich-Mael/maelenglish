@@ -2,6 +2,7 @@ if(process.env.NODE_ENV !== "production") {
     require("dotenv").config();
 }
 
+const moment = require('moment'); 
 const express = require("express");
 const mongoose = require("mongoose");
 const ejsMate = require("ejs-mate");
@@ -9,10 +10,11 @@ const session = require("express-session");
 const methodOverride = require("method-override");
 const flash = require("connect-flash-plus");
 const User = require("./models/user");
-
+const DateUtil = require('./utilities/date');
 const catchAsync = require("./utilities/catchAsync");
 const ExpressError = require("./utilities/ExpressError");
 
+// Routes requirements
 const userRoutes = require("./routes/user");
 const commentRoutes = require("./routes/comment");
 const courseRoutes = require("./routes/course");
@@ -21,11 +23,11 @@ const bacRoutes = require("./routes/100bac");
 const englishRoutes = require("./routes/english4all");
 const fasopreunariatRoutes = require("./routes/fasopreunariat");
 
-
 const path = require("path");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const MongoDBStore = require("connect-mongo");
+
 // bring in the app constants
 const { DB, PORT, SECRET } = require("./config");
 
@@ -95,8 +97,12 @@ passport.deserializeUser(
     })
 );
 
+
+
 // setting up local variables
 app.use((req, res, next) => {
+    res.locals.currentTime = DateUtil.localTime(Date.now(), "Date du Jour :");
+    res.locals.currentTimeEng = moment().format("dddd, Do MMMM  YYYY"); 
     res.locals.currentUser = req.user;
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
@@ -106,6 +112,13 @@ app.use((req, res, next) => {
 // Landing page route
 app.get("/", (req, res) => {
     res.render("home");
+});
+
+
+// Landing page route
+app.get("/date", (req, res) => {
+console.log(moment().format("dddd, MMMM Do YYYY, h:mm:ss a"));
+    res.send(" Date test");
 });
 
 //user routes

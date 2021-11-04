@@ -1,0 +1,52 @@
+
+    <!-- navbar -->
+    <nav class="navbar navbar-light navbar-expand-lg sticky-top">
+	<div id="top-section" class="container-fluid">
+	  <a class="navbar-brand" id="brand-name" href="/">
+	    <!-- <img src="../images/logo_Afrohk.jpeg" alt="" width="50" height="50"> -->
+	    <img src="https://i.ibb.co/nB7zHTr/afroHK.jpg" alt="afroHK" alt=""
+	    class="logo-navbar img-fluid">
+	    <span class="afro ms-2">Afro</span><span class="hk">HK</span>
+	  </a>
+	  
+	  <button class="navbar-toggler"  type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+	    aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+	    <span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+	    <ul class="navbar-nav">
+	    
+	      <li class="nav-item dropdown">
+		<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+		  aria-expanded="false">
+		  <span class="myNav-link"> Programmes </span>
+		</a>
+		<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+		  <li><a class="dropdown-item " href="/100bac">OPERATION 100 % BAC</a></li>
+		  <li>
+		    <a class="dropdown-item" href="/englishlang4all">House Of English Lovers</a>
+		  </li>
+		  </ul>
+	      </li>
+	     
+	      <li class="nav-item">
+		<a class="nav-link m-0 " id="drop-down-contact" href="#footer"><span class="myNav-link">Contacts</span></a>
+	      </li>
+	    </ul>
+	      <div class="navbar-nav ms-auto">
+	      <% if (!currentUser || currentUser == null) {%>
+	      <a class="nav-link-connexion me-2 my-2 " href="/login">Connexion</a>
+	      <%} else { %>
+	      <h3 id="user" class="px-2 align-self-center">
+		<a class="profile-link" href="/">
+		  <i class="bi bi-person-circle"></i> 
+		  <%=currentUser.username%>
+		</a>
+	      </h3>
+	      <a class="nav-link my-1 btn btn-outline-danger" href="/logout">Deconnexion</a>
+	      <%}%>
+	      </div>
+	  </div>
+	  </div>
+      </nav>
+<!--End Navbar-->

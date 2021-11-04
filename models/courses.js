@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const moment = require('moment'); // require
 
 const courseSchema = new Schema(
   {
@@ -21,6 +22,23 @@ const courseSchema = new Schema(
     category: {
       type: String,
       default: "Education"
+    },
+
+    syllabusSummary: {
+      type: String,
+      default: "Cours de 3 modules et 2 evalutions"
+    },
+    session:{
+      startDate: {
+        type: Date,
+        default: Date.now()
+      },
+
+      endDate:{
+        type: Date,
+        default: moment().add(1, 'M')
+      }
+
     },
 
     description: {
@@ -102,6 +120,11 @@ const moduleSchema = new Schema({
   evaluation: {
     type: Schema.Types.ObjectId,
     ref: "Evaluation",
+  },
+
+  revealDate: {
+    type: String,
+    default: Date.now()
   },
 
   videoLinks: [
