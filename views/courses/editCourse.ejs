@@ -102,7 +102,8 @@
       <button type="submit" class="btn my-3 btn-warning">Update course basic info</button>
   </form>
 
-  <section class="my-3 p-2" style="background-color: aliceblue;">
+  <a class="btn my-4 btn-primary" href="/admindashboard/courses/<%= course._id %>/modules">View all modules</a>
+<section class="my-3 p-2" style="background-color: aliceblue;">
     <h3>Add a module to the course</h3>
     <form action="/admindashboard/courses/<%= course._id %>/module" method="POST">
       <!-- Course initial details-->
@@ -111,7 +112,6 @@
           aria-expanded="false" aria-controls="collapseExample">
           Create a module or chapter
         </button>
-        <a href="/admindashboard/courses/<%= course._id %>/modules" class="btn mx-2 btn-outline-secondary">View all modules of this course</a>
       </p>
       <div class="collapse" id="new-module">
         <div class="card card-body">

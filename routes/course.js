@@ -67,10 +67,10 @@ router.get('/courses/:course_id/modules/:module_id', isVerified, isLoggedIn, che
 // Edit new module
 router.get("/admindashboard/courses/:course_id/modules/:module_id/edit",isVerified, isLoggedIn, checkRoles("admin"), catchAsync(CourseModules.editModule));
 
-router.put("/admindashboard/courses/:course_id",isVerified, isLoggedIn, checkRoles("admin"), catchAsync(CourseModules.updateModule));
+router.put("/admindashboard/courses/:course_id/modules/:module_id",isVerified, isLoggedIn, checkRoles("admin"), catchAsync(CourseModules.updateModule));
 
 // Delete new module
-router.delete("/admindashboard/courses/:course_id",isVerified, isLoggedIn, checkRoles("admin"), catchAsync(CourseModules.deleteModule));
+router.delete("/admindashboard/courses/:course_id/modules/:module_id",isVerified, isLoggedIn, checkRoles("admin"), catchAsync(CourseModules.deleteModule));
 
 
 

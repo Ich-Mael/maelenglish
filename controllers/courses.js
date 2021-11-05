@@ -50,7 +50,7 @@ module.exports.editCourse = async (req, res) => {
   const course = await Course.findById(req.params.course_id).populate(
     "instructors"
   );
-  res.render("courses/edit", { course});
+  res.render("courses/editCourse", { course});
 };
 
 module.exports.updateCourse = async(req, res)=>{

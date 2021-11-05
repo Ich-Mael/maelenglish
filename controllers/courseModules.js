@@ -37,15 +37,18 @@ module.exports.createModule = async (req, res) => {
 
 module.exports.showModule = async (req, res) => {
   const courseModule = await Module.findById(req.params.module_id);
-  const course = await Course.findById(req.params.course_id).populate(
-    "modules"
-  );
+  let course = await Course.findById(req.params.course_id);
+
+  const module_number = course.modules.indexOf(req.params.module_id) + 1;
+
+   course = await Course.findById(req.params.course_id).populate("modules", "title");
 
   let moduleReveal = DateUtil.revealTime(courseModule.revealDate);
   displayRevealDate = DateUtil.localTime(courseModule.revealDate);
   res.render("courses/course_modules/showModule", {
     courseModule,
     course,
+    module_number,
     moduleReveal,
     displayRevealDate,
   });
@@ -56,18 +59,42 @@ module.exports.showCourseModules = async (req, res) => {
     "modules"
   );
   res.render("courses/course_modules/showCourseModules", {
-    course
+    course,
   });
 };
 
 module.exports.editModule = async (req, res) => {
   const courseModule = await Module.findById(req.params.module_id);
-  const course = await Course.findById(req.params.course_id).populate(
-    "modules"
-  );
+  const course = await Course.findById(req.params.course_id);
+
   res.render("courses/course_modules/editModule", {
     courseModule,
     course,
   });
+};
 
-  };
+module.exports.updateModule = async (req, res) => {
+  const course = await Course.findById(req.params.course_id);
+  const {
+    title,
+    willLearnModule,
+    explanationText,
+    moreDetails,
+    videos,
+    revealDate,
+  } = req.body.module;
+
+  const videoLinks = videos.split(",");
+
+  const courseModule = await Module.findByIdAndUpdate(req.params.module_id, {
+    title,
+    willLearnModule,
+    explanationText,
+    moreDetails,
+    videoLinks,
+    revealDate,
+  });
+  await courseModule.save();
+
+  res.redirect(`/admindashboard/courses/${req.params.course_id}/modules`);
+};

@@ -1,48 +1,104 @@
 <% layout('layouts/courseBoilerplate') %>
+<!-- WORD Processor-->
+<script src="https://cdn.tiny.cloud/1/p06f8vxdpje8xosyvnq48z68vc7n479iauh5s2jk9zx30qg2/tinymce/5/tinymce.min.js"
+  referrerpolicy="origin"></script>
+</script>
+<script>
+  tinymce.init({
+    selector: '.mytextarea',
+    height: 200,
+    max_width: 500,
+    min_height: 300,
+    min_width: 400
+  });
+</script>
+<style>
+  html {
+    font-size: 85%;
+  }
 
-<h2 class="text-center my-3">Edit a Module</h2>
-  <section class="container col-md-8 my-3 p-2" style="background-color: aliceblue;">
-	<h3>Add a module to the course</h3>
-	<form action="/admindashboard/courses/<%= course._id %>/module" method="POST">
-	  <!-- Course initial details-->
-	  <p>
-	    <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#new-module"
-	      aria-expanded="false" aria-controls="collapseExample">
-	      Create a module or chapter
-	    </button>
-	    <a href="/admindashboard/courses/<%= course._id %>/modules" class="btn mx-2 btn-outline-secondary">View all modules of this course</a>
-	  </p>
-	  <div class="collapse" id="new-module">
-	    <div class="card card-body">
-	    <div class="row mt-2">
-	      <div class="col">
-	      <label class="form-label" for="title">Module title</label>
-	      <input class="form-control" type="text" name="module[title]" value="" required />
-	    </div>
-	  
-	      <div class="col">
-	      <label class="form-label" for="title">Module date</label>
-	      <input class="form-control" type="date" name="module[revealDate]" value="" required/>
-	    </div>
-	    </div>
-	      <label class="form-label " for="willLearnModule">What will we learn</label>
-	      <textarea class="form-control my-2  mytextarea" name="module[willLearnModule]" id="willLearnModule" required>
-	    </textarea>
-    
-	      <label class="form-label " for="explanationText">Explanation Text</label>
-	      <textarea class="form-control my-2  mytextarea" name="module[explanationText]" id="explanationText" required>
-	    </textarea>
-    
-    
-	      <label class="form-label " for="moreDetails">More Details</label>
-	      <textarea class="form-control my-2  mytextarea" name="module[moreDetails]" id="moreDetails" required>
-	    </textarea>
-    
-	      <label class="form-label " for="videos">Video Links</label>
-	      <input class="form-control my-2" type="text" name="module[videos]" value=""
-		placeholder="Enter video links separated by ," required />
-	    </div>
-	    <button type="submit" class="btn my-3 btn-warning">create Module</button>
-	  </div>
-	</form>
-    </section>
+  label {
+    font-weight: bold;
+    margin-top: 2rem;
+    color: rgb(75, 42, 165);
+    font-size: 1.2rem;
+  }
+</style>
+
+<h2 class="text-center py-4" style="color: rgb(150, 77, 199);"><%= course.title %></h2>
+<hr>
+<h3 class="text-center my-3">Update Module : <%= courseModule.title %></h3>
+<section
+  class="container col-md-8 my-3 p-2"
+  style="background-color: rgb(136, 175, 190)"
+>
+  <form action="/admindashboard/courses/<%= course._id %>/modules/<%= courseModule._id %>?_method=PUT" method="POST">
+    <div class="">
+      <div class="card card-body">
+        <div class="row mt-2">
+          <div class="col">
+            <label class="form-label" for="title">Module title</label>
+            <input
+              class="form-control"
+              type="text"
+              name="module[title]"
+              value=" <%= courseModule.title %>"
+              required
+            />
+          </div>
+
+          <div class="col">
+            <label class="form-label" for="title">Module date</label>
+            <input
+              class="form-control"
+              type="date"
+              name="module[revealDate]"
+              value=" <%= courseModule.revealDate %>"
+              required
+            />
+          </div>
+        </div>
+        <label class="form-label" for="willLearnModule"
+          >What will we learn</label
+        >
+        <textarea
+          class="form-control my-2 mytextarea"
+          name="module[willLearnModule]"
+          id="willLearnModule"
+          required
+        >  <%= courseModule.willLearnModule %>
+        </textarea>
+
+        <label class="form-label" for="explanationText">Explanation Text</label>
+        <textarea
+          class="form-control my-2 mytextarea"
+          name="module[explanationText]"
+          id="explanationText"
+          required
+        ><%= courseModule.explanationText%>
+        </textarea>
+
+        <label class="form-label" for="moreDetails">More Details</label>
+        <textarea
+          class="form-control my-2 mytextarea"
+          name="module[moreDetails]"
+          id="moreDetails"
+          required
+        >
+	<%= courseModule.moreDetails %>
+        </textarea>
+
+        <label class="form-label" for="videos">Video Links</label>
+        <input
+          class="form-control my-2"
+          type="text"
+          name="module[videos]"
+          value="<%= courseModule.videoLinks.join(",") %>"
+          placeholder="Enter video links separated by ,"
+          required
+        />
+      </div>
+      <button type="submit" class="btn my-3 btn-warning">update Module</button>
+    </div>
+  </form>
+</section>
