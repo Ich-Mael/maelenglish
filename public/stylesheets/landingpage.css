@@ -17,10 +17,18 @@ body {
   /* overflow-x: hidden; */
   padding: auto;
   background-color: #dbd9d6d3;
-  background: #E0EAFC;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #CFDEF3, #E0EAFC);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #CFDEF3, #E0EAFC); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  
+  background: #e0eafc; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #cfdef3,
+    #e0eafc
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #cfdef3,
+    #e0eafc
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
   font-family: "Roboto" serif;
 }
 
@@ -58,13 +66,12 @@ body {
   overflow: hidden;
   perspective: 100rem;
 }
+
 /* Navbar */
 .logo-navbar {
-  width: 50px;
-  height: 50px;
-  border: 1.5px solid white;
-  border-radius: 2px;
   opacity: 1;
+  margin: 0;
+  padding: 0;
 }
 
 .logo-display {
@@ -74,7 +81,7 @@ body {
 nav {
   z-index: 300;
   padding: 0.3rem 0 !important;
-  background-color: rgb(243, 237, 237);
+  background-color: #e1dde4;
   /* background-color: transparent; */
   /* background-color: #000; */
   /* position: absolute !important; */
@@ -97,12 +104,10 @@ nav {
   font-family: "Titan One", cursive;
   /* font-family: 'Chivo', sans-serif; */
   /* font-family: 'Poppins', sans-serif; */
-  font-weight: 700;
   /* font-family: "Ultra", serif; */
-  font-size: 1.5rem;
-  /* border-bottom: 3px solid orangered; */
-  border-radius: 5%;
-  padding: 0 0.7rem;
+  width: 5rem;
+  height: 5rem;
+  margin: 0 0.7rem;
   /* text-shadow: 0.2rem 0.1rem 0.2rem rgba(34, 24, 67, 0.8); */
 }
 
@@ -1242,7 +1247,7 @@ customers-cards:before {
   padding: 0;
   margin: 0;
   font-family: "Raleway", sans-serif;
-  font-weight: 500 ;
+  font-weight: 500;
   font-size: 14px;
 }
 
@@ -1303,20 +1308,22 @@ customers-cards:before {
 #footer {
   text-align: center;
   color: #b9d5e2;
-  background: #000000; /* fallback for old browsers */
+  background: #e6dada; /* fallback for old browsers */
   background: -webkit-linear-gradient(
     to right,
-    #000000,
-    #1a1919,
-    #000000
+    #274046,
+    #e6dada
   ); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(
-    to right,
-    #000000,
-    #1d1d1d,
-    #000000
+    to left,
+    #412388,
+    #556497,
+    #ffffff
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
   min-height: fit-content;
+  /* background-color: #E1DDE4; */
+  background-color: #3a3838;
   font-family: "Poppins", sans-serif;
   overflow-x: hidden;
 }
@@ -1330,7 +1337,7 @@ customers-cards:before {
   font-weight: 500;
 }
 .brand-section {
-  background-color: rgb(245, 243, 243);
+  background-color: rgb(244, 247, 248);
 }
 
 .logo-footer-wrapper {
@@ -1341,12 +1348,6 @@ customers-cards:before {
   font-family: "Chango", cursive;
   color: #282929c2;
   font-size: 1.5rem;
-}
-
-.footer-motto {
-  padding: 0.5rem 0;
-  font-family: "Kaushan Script", cursive;
-  font-size: 1rem;
 }
 
 #first-name-input,
@@ -1375,7 +1376,6 @@ customers-cards:before {
   width: 100%;
   font-size: 1rem;
   background: none;
-  color: rgb(248, 244, 238);
   outline: none;
   border: none;
 }
@@ -1383,14 +1383,12 @@ customers-cards:before {
 #call-manager-link-1 {
   text-decoration: none;
   font-size: 1rem;
-  color: #e75d0d;
   transition: all 0.5s;
 }
 
 #call-manager-link-2 {
   text-decoration: none;
   font-size: 1rem;
-  color: #e99b0a;
   transition: all 0.5s;
 }
 
@@ -1402,7 +1400,7 @@ customers-cards:before {
 }
 
 .network {
-  color: #727272;
+  color: #ffffff;
 }
 
 #send-mail {
@@ -1412,42 +1410,45 @@ customers-cards:before {
   text-decoration: none;
 }
 
-#call-manager-link-1:hover,
-#call-manager-link-2:hover,
-#call-manager-link-3:hover {
+#send-mail:hover {
+  color: #e9c707;
   text-decoration: none;
-  font-size: 1.3rem;
-  color: #c4c6c7;
+}
+
+.call:hover,
+.call:hover,
+.call:hover {
+  text-decoration: none;
+  background-color: #000;
+  font-size: 1.1rem;
+}
+
+.contact-us {
+  border: 0.5px solid rgba(54, 4, 95, 0.233);
+  box-shadow: rgba(77, 50, 93, 0.25) 0px 50px 100px -20px,
+    rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
+    rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
 }
 
 #cont-ns {
   font-size: 1rem;
 }
 
-#send-mail {
-  text-align: center;
-  color: #f1e5ec;
-  font-size: 1.3rem;
-}
-
-#send-mail:hover {
-  color: #f73a0b;
-  text-decoration: none;
-}
-
 .footer-links-header {
-  color: rgba(250, 96, 25, 0.856);
+  color: rgba(224, 224, 213, 0.925);
+  text-shadow: 1px 2px 0px rgb(58, 6, 100);
   font-size: 1.3rem;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   font-family: "Chivo", sans-serif;
+  font-weight: 700;
   letter-spacing: 0.13rem;
 }
 
 .useful-links {
   text-decoration: none;
-  color: #727272;
+  color: #ffffffb0;
   font-size: 1.2rem;
-  padding: 0.5rem 0;
+  padding: 1rem 0;
 }
 
 .useful-links:hover {
@@ -1463,6 +1464,57 @@ customers-cards:before {
 #twitter {
   transition: all 1s;
 }
+
+
+#facebook {
+  color: rgb(245, 239, 239);
+  background-color: rgb(9, 103, 192);
+}
+
+#linkedIn {
+  color: rgb(245, 239, 239);
+  background-color: #0e76a8;
+}
+
+#youtube {
+  color: rgb(245, 239, 239);
+  background-color: rgb(241, 65, 21);
+}
+#instagram {
+  color: rgb(245, 239, 239);
+  background: #833ab4; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #fcb045,
+    #fd1d1d,
+    #833ab4
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #fcb045,
+    #fd1d1d,
+    #833ab4
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+#twitter {
+  color: rgb(245, 239, 239);
+  background: #56ccf2; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #2f80ed,
+    #56ccf2
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #2f80ed,
+    #56ccf2
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+
+
+/*hover links */ 
 
 #facebook:hover {
   color: rgb(245, 239, 239);
@@ -1529,7 +1581,20 @@ customers-cards:before {
 .made-by {
   width: 100%;
   margin: 0;
-  background-color: #000000;
+  background-color: #bb97e4;
+  background: #e6dada; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #274046,
+    #e6dada
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #412388,
+    #556497,
+    #ffffff
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
   color: rgba(100, 100, 100, 0.815);
 }
 
@@ -1848,6 +1913,22 @@ customers-cards:before {
   } */
 }
 
+@media (max-width: 768px) {
+  #footer {
+    background: -webkit-linear-gradient(
+      to top,
+      #412388,
+      #556497,
+      #ffffff
+    ); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(
+      to top,
+      #412388,
+      #556497,
+      #ffffff
+    ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  }
+}
 /* Extra small devices (phones, 600px and down) */
 
 @media (max-width: 700px) {
@@ -1860,7 +1941,6 @@ customers-cards:before {
     font-size: 0.8rem;
   }
   .logo-navbar {
-    display: none;
   }
 
   #banner-wrapper {
