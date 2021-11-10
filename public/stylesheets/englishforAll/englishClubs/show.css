@@ -12,7 +12,6 @@ html {
 }
 
 html,body{
-  overflow-x: hidden;
 }
 
 body {
@@ -434,11 +433,6 @@ customers-cards:before {
   transition: none;
   opacity: unset;
 }
-
-
-
-
-
 /* End members section */
 
 /* main club activities */
