@@ -10,6 +10,7 @@
   <div class="bg-img-wrapper">
     <img
       class="img-medium"
+      src="https://images.pexels.com/photos/6146973/pexels-photo-6146973.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
       src="https://images.pexels.com/photos/3894383/pexels-photo-3894383.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
       alt=""
     />
@@ -17,7 +18,7 @@
   <div class="banner-wrapper">
     <div class="d-flex align-items-center flex-column" style="width:100vw">
       <h1 class="banner-heading">House Of English Lovers</h1>
-      <p class="banner-paragraph">Master English Now Than Ever Before</p>
+      <p class="banner-paragraph"><span class="p-2" style="background-color: rgba(0, 0, 0, 0.349);">Everybody can speak English</span></p>
       <div class="account-wrapper">
         <% if (!currentUser || currentUser === undefined) {%>
         <a class="get-account" href="/register">Get Started Now</a>
@@ -66,11 +67,11 @@
     >
       <p class="mission-paragraph">
         <strong>Notre mission </strong>est de vous amener à parler la langue
-        anglaise mieux qu'auparavant.
+        anglaise en toute confiance.
       </p>
       <button
         type="button"
-        class="btn know-more-btn btn-small ms-2 btn-outline-warning"
+        class="btn know-more-btn btn-small ms-2 btn-outline-dark"
         data-bs-toggle="modal"
         data-bs-target="#learnmore"
       >
@@ -402,7 +403,7 @@
     "
   >
     <p class="free-lesson-paragraph mb-3">
-      <strong>Vous hésitez toujours ?</strong> Essayez notre programme d’anglais
+      <span class="text-warning">Vous êtes dans l'hésitation ?</span> Essayez notre programme d’anglais
       gratuit
     </p>
     <button class="btn my-5 px-3 py-2 effect01">

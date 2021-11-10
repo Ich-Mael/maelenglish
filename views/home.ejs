@@ -126,7 +126,7 @@
               <%=currentUser.username%>
             </a>
           </h3>
-          <a class="nav-link my-1 btn btn-outline-danger" href="/logout">Deconnexion</a>
+          <a class="nav-link my-1 mx-2 btn btn-outline-danger" href="/logout">Deconnexion</a>
           <%}%> <%}%>
         </div>
       </div>
@@ -172,11 +172,14 @@
         Offrir une éducation de qualité accessible à tous
       </p>
       <p class="account-wrapper">
-        <% if (!currentUser || currentUser === undefined) {%>
-        <a class="get-account" href="/register">Nous Rejoindre</a>
-
+        <% if (!currentUser || currentUser === undefined) {%> 
+          <button class="effect01">
+        <a  href="/register"><span>Nous Rejoindre</span></a>
+      </button>
         <%} else { %>
-        <a class="check-programs" href="#program"> Voir Nos Programmes </a>
+          <button class="effect01">
+        <a  href="#program"><span>Voir Nos Programmes</span> </a>
+      </button>
         <%}%>
         </p>
       </div>

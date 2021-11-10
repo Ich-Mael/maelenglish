@@ -7,6 +7,7 @@
 html {
   box-sizing: border-box;
   overflow-x: hidden;
+  font-size: 80%;
 }
 
 body {
@@ -32,7 +33,7 @@ body {
 
 .bg-img-wrapper {
   width: 100%;
-  height: 75vh;
+  height: 85vh;
   overflow: hidden;
   background-color: rgba(0, 0, 0, 0.979);
 }
@@ -44,13 +45,13 @@ body {
 .bg-img-wrapper img {
   width: 100%;
   height: 100%;
-  opacity: 0.5;
+  opacity: 1;
   object-fit: cover;
   animation: scale 20s;
 }
 
 .img-medium:hover {
-  opacity: 0.6;
+  opacity: 0.8;
 }
 
 @keyframes scale {
@@ -63,7 +64,7 @@ body {
 }
 
 .banner-heading {
-  color: rgb(243, 107, 17);
+  color: rgb(171, 9, 185);
   /* width: 100%; */
   padding: 1rem;
   font-family: "Poppins", sans-serif;
@@ -83,9 +84,9 @@ body {
   font-family: "Chango", cursive;
   color: rgb(250, 248, 246);
   width: 100%;
-  margin: 2rem 0;
+  margin: 1rem 0;
   text-align: center;
-  line-height: 3rem;
+  /* line-height: 3rem; */
   letter-spacing: 0.1rem;
   text-shadow: 1px 2px 0px rgba(240, 170, 21, 0.678);
   font-weight: 400;
@@ -138,7 +139,7 @@ body {
 .check-programs:hover {
   /* box-shadow: rgba(38, 39, 39, 0.25) 0px 4px 2px, */
   /* rgba(42, 44, 44, 0.12) 0px 2px 10px; */
-  background-color: rgb(248, 96, 25);
+  background-color: rgba(153, 6, 141, 0.808);
   color: rgb(243, 239, 237);
 }
 
@@ -162,15 +163,33 @@ body {
   font-size: 2.5rem;
   text-transform: uppercase;
   font-family: "Chivo", sans-serif;
+  background: #4568dc; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #b06ab3,
+    #4568dc
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #b06ab3,
+    #4568dc
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
   margin: 0;
   font-weight: 900;
   letter-spacing: 0.1rem;
   padding: 2rem 0 1rem;
-  color: rgba(2, 24, 51, 0.979);
-  text-shadow: 1px 2px 0px rgba(255, 255, 255, 0.712);
+  color: rgba(255, 255, 255, 0.979);
+  text-shadow: 1px 2px 0px rgba(12, 12, 12, 0.712);
   text-align: center;
 }
+/* 
+==========================================
 
+================MISSION===================
+
+==========================================
+*/
 .mission {
   font-family: "Roboto", sans-serif;
   text-align: justify;
@@ -183,45 +202,23 @@ body {
 }
 
 #mission-wrapper {
-  height: 40vh;
-  background: url("https://images.unsplash.com/photo-1516182823370-7a5fa91445c3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80");
-  background: url("https://images.unsplash.com/photo-1573496267526-08a69e46a409?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1769&q=80");
-  background-size: cover;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-position: center center;
-  position: relative;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  margin: 0;
-  padding: 0;
-}
-
-#mission-wrapper::before {
-  content: "";
-  background: #000000; /* fallback for old browsers */
+  height: 30vh;
+  background-color: #0000009c;
+  /* background: url("https://images.unsplash.com/photo-1516182823370-7a5fa91445c3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"); */
+  /* background: url("https://images.unsplash.com/photo-1573496267526-08a69e46a409?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1769&q=80"); */
+  background: #2980b9; /* fallback for old browsers */
   background: -webkit-linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.596),
-    #00000067,
-    #00000056,
-    #00000028
+    to right,
+    #ffffff,
+    #6dd5fa,
+    #2980b9
   ); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(
-    to bottom,
-    rgba(9, 9, 14, 0.747),
-    #0d0d13c2,
-    #10111ac7,
-    #0000009f
+    to right,
+    #ffffff,
+    #6dd5fa,
+    #2980b9
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
-  /* background: rgba(0, 0, 0, 0.253); */
-  position: absolute;
-  bottom: 0;
-  top: 0;
-  left: 0;
-  right: 0;
 }
 
 .mission {
@@ -229,14 +226,13 @@ body {
 }
 
 .mission-paragraph {
-  margin: 4rem 0 2rem;
+  margin: 2rem 0 2rem;
   text-align: center;
-  color: white;
+  color: rgba(36, 3, 51, 0.651);
 }
 
-
 strong {
-  color: rgb(247, 109, 17);
+  color: rgb(155, 10, 168);
 }
 
 .know-more-btn {
@@ -254,10 +250,9 @@ strong {
   margin: 0 0.5rem;
 }
 
-.row div{
+.row div {
   overflow: hidden;
 }
-
 
 .my-card {
   box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
@@ -265,29 +260,29 @@ strong {
     rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
 }
 
-.my-card img{
+.my-card img {
   width: 100%;
   height: 200px;
   object-fit: cover;
   overflow: hidden;
 }
 
-.image-wrapper{
+.image-wrapper {
   overflow: hidden;
 }
 
-.program-image{
+.program-image {
   opacity: 0.8;
 }
 
-.program-name{
+.program-name {
   font-family: "Chivo", sans-serif;
   text-align: center;
   font-weight: 700;
   font-size: 1.5rem;
 }
 
-.program-description{
+.program-description {
   font-family: "Roboto", sans-serif;
   font-size: 1rem;
   text-align: center;
@@ -301,14 +296,14 @@ strong {
 }
 
 .my-card:hover .program-name {
-  color: orangered;
+  color: rgb(110, 6, 136);
 }
 .my-card:hover .program-image {
   opacity: 1;
 }
 
 .course-btn {
-  background-color: rgba(240, 60, 15, 0.938);
+  background-color: rgba(103, 5, 122, 0.938);
   transition: all 0.7s;
 }
 .course-link {
@@ -337,8 +332,9 @@ strong {
 
 /* free course  */
 .free-lesson-section {
-  height: 40vh;
+  height: 30vh;
   background: url("https://images.pexels.com/photos/6147408/pexels-photo-6147408.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
+  background: url("https://images.pexels.com/photos/7114755/pexels-photo-7114755.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500");
   background-size: cover;
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -358,14 +354,10 @@ strong {
     to bottom,
     rgba(0, 0, 0, 0.596),
     #00000067,
-    #00000056,
-    #00000028
   ); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(
     to bottom,
     rgba(9, 9, 14, 0.747),
-    #0d0d13c2,
-    #10111ac7,
     #0000009f
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
@@ -383,7 +375,7 @@ strong {
 
 .free-lesson-paragraph {
   text-align: center;
-  margin: 5rem 0 2rem;
+  margin: 3rem 0 2rem;
   font-family: "Roboto", sans-serif;
   text-align: center;
   font-weight: 500;
@@ -486,7 +478,7 @@ strong {
   .banner-heading {
     font-size: 3rem;
   }
-  
+
   .banner-paragraph {
     font-size: 1.2rem;
     line-height: 2rem;
@@ -644,7 +636,6 @@ strong {
     margin-top: 2rem;
     font-size: 1rem;
   }
-
 }
 
 /*btn_background*/
@@ -652,7 +643,7 @@ strong {
   color: #fff;
   border: 3px solid rgba(255, 255, 255, 0.897);
   box-shadow: 0px 0px 0px 1px #000 inset;
-  background-color: #000;
+  background-color: rgb(136, 12, 161);
   overflow: hidden;
   position: relative;
   transition: all 0.3s ease-in-out;

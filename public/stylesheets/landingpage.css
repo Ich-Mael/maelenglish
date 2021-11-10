@@ -50,16 +50,6 @@ body {
   text-align: center;
 }
 
-.partners,
-.clients,
-.services,
-.why-afrohk {
-  /* background-color: rgba(247, 91, 29, 0.904); */
-}
-
-.logo-display {
-  /* opacity: 0; */
-}
 .header-wrapper {
   width: 100%;
   position: relative;
@@ -91,8 +81,7 @@ nav {
   font-family: "Roboto" serif;
 }
 
-.navbar-top {
-}
+
 .nav-display {
   opacity: 1;
 }
@@ -349,19 +338,12 @@ hk-shadow {
   animation: moveBanner 1.5s 1.8s forwards;
 }
 
-.get-account,
-.check-programs {
-  text-align: center;
-  display: block;
-  text-decoration: none;
-  text-align: center;
-  font-family: "Roboto" serif;
-  font-weight: 500;
-  padding: 0.7rem 1rem;
-  border-radius: 3px;
-  color: rgb(255, 255, 255);
-  border: 2px solid rgb(255, 255, 255);
-  background-color: rgb(21, 148, 199);
+
+/*btn_background*/
+.effect01 {
+  color: #fff;
+  border: 3px solid rgba(255, 255, 255, 0.897);
+  box-shadow: 0px 0px 0px 1px #000 inset;
   background: #ad5389; /* fallback for old browsers */
   background: -webkit-linear-gradient(
     to right,
@@ -374,21 +356,63 @@ hk-shadow {
     #ad5389
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
-  font-size: 1rem;
-  margin: 1rem 0;
-  /* width: 35rem; */
-  text-transform: uppercase;
-  letter-spacing: 0.2rem;
-  transition: all 1s;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease-in-out;
+}
+.effect01:hover {
+  border: 2px solid rgb(153, 62, 156);
+  background-color: rgb(184, 113, 187);
+  box-shadow: 0px 0px 0px 4px #eee inset;
 }
 
-.get-account:hover,
-.check-programs:hover {
-  /* box-shadow: rgba(38, 39, 39, 0.25) 0px 4px 2px, */
-  /* rgba(42, 44, 44, 0.12) 0px 2px 10px; */
-  background-color: #000;
-  color: rgb(243, 239, 237);
+/*btn_text*/
+.effect01 span {
+  font-size: 1.2rem;
+  color: rgb(255, 255, 255);
+  letter-spacing: 0.2rem;
+  font-family: "Roboto" serif;
+  text-align: center;
+  display: block;
+  text-decoration: none;
+  text-align: center;
+  font-weight: 500;
+  padding: 0.7rem 1rem;
+  transition: all 0.2s ease-out;
+  z-index: 2;
 }
+
+.effect01:hover span {
+  letter-spacing: 0.15em;
+  color: rgb(255, 255, 255);
+  
+}
+
+/*highlight*/
+.effect01:after {
+  background: #fff;
+  border: 0px solid #000;
+  content: "";
+  height: 155px;
+  left: -75px;
+  opacity: 0.8;
+  position: absolute;
+  top: -50px;
+  -webkit-transform: rotate(35deg);
+  transform: rotate(35deg);
+  width: 50px;
+  transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1); /*easeOutCirc*/
+  z-index: 1;
+}
+.effect01:hover:after {
+  background: #fff;
+  border: 10px solid #000;
+  opacity: 0;
+  left: 120%;
+  -webkit-transform: rotate(40deg);
+  transform: rotate(40deg);
+}
+
 
 #sky {
   display: none;
@@ -422,10 +446,11 @@ hk-shadow {
 
 /* Got to top link */
 .top-link {
-  background-color: #000;
+  background-color: rgb(252, 252, 252);
   color: #ad5389;
   width: 3rem;
   height: 3rem;
+  box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
   text-align: center;
   border-radius: 2px;
   line-height: 3rem;
@@ -448,7 +473,7 @@ hk-shadow {
 
 .top-link:hover {
   text-decoration: none;
-  color: wheat;
+  color: rgb(19, 18, 18);
 }
 
 #afro {
@@ -599,7 +624,7 @@ hk-shadow {
 
 .study {
   font-family: "Ultra", serif;
-  color: rgba(252, 96, 39, 0.952);
+  color: rgba(231, 180, 10, 0.952);
   font-size: 2.5rem;
   text-shadow: 1px 2px 1px black;
   position: relative;
@@ -941,13 +966,13 @@ customers-cards:before {
   width: 9rem;
   height: 0.3rem;
   margin: 0 auto 1rem;
-  background-color: #c721f0;
+  background-color: #8f06b1;
 }
 
 .big-underline {
   width: 20rem;
   height: 0.2rem;
-  background-color: #c721f0;
+  background-color: #8f02b3;
 }
 
 /*===============*/
@@ -1149,53 +1174,6 @@ customers-cards:before {
   }
 }
 
-/* partner logo */
-.partners-wrapper {
-  display: flex;
-  align-items: center;
-  height: 60vh;
-}
-.partners-header {
-  margin-top: 2rem;
-  background-color: #141e30;
-  color: whitesmoke;
-  padding: 2rem;
-  text-align: center;
-  font-size: 2.5rem;
-  font-family: "Chango", cursive;
-}
-.partner-logo {
-  width: 10rem;
-  height: 10rem;
-  margin: 0 4rem;
-}
-
-.slider {
-  margin: auto;
-  overflow: hidden;
-}
-.slider ul {
-  display: flex;
-  padding: 0;
-  animation: cambio 20s infinite linear;
-}
-.slider li {
-  padding: 0 10px;
-  list-style: none;
-}
-.slider img {
-  max-width: fit-content !important;
-  height: auto !important;
-}
-@keyframes cambio {
-  from {
-    margin-left: 0%;
-  }
-  to {
-    margin-left: -100%;
-  }
-}
-
 /* End of gallery */
 
 /*--------------------------------------------------------------
@@ -1265,11 +1243,11 @@ customers-cards:before {
   height: 12px;
   background-color: #fff;
   opacity: 1;
-  border: 1px solid #e03a3c;
+  border: 1px solid #db1eec;
 }
 
 .clients .swiper-pagination .swiper-pagination-bullet-active {
-  background-color: #e03a3c;
+  background-color: #b90edb;
 }
 
 .swiper-slide img {
@@ -1287,7 +1265,7 @@ customers-cards:before {
 
 .swiper {
   padding: 20px;
-  background-color: #fcfcfc;
+  background-color: #ffffff;
 }
 
 /*--------------------------------------------------------------
@@ -1465,7 +1443,6 @@ customers-cards:before {
   transition: all 1s;
 }
 
-
 #facebook {
   color: rgb(245, 239, 239);
   background-color: rgb(9, 103, 192);
@@ -1512,9 +1489,7 @@ customers-cards:before {
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
-
-
-/*hover links */ 
+/*hover links */
 
 #facebook:hover {
   color: rgb(245, 239, 239);
@@ -1595,32 +1570,33 @@ customers-cards:before {
     #ffffff
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
-  color: rgba(100, 100, 100, 0.815);
+  font-family: Georgia, "Times New Roman", Times, serif;
+  color: rgba(255, 255, 255, 0.815);
 }
 
 .copyright-text {
   padding: 0.2rem 1rem;
   font-size: 0.8rem;
-  font-family: Georgia, "Times New Roman", Times, serif;
   font-weight: 400;
 }
 
 .creator {
-  font-size: 0.9rem;
+  font-size: 1rem;
   padding: 0.5rem 0 0.2rem;
 }
 
 .creator i {
   color: tomato;
+  font-size: 1rem;
 }
 
 .creator span {
   font-family: "Kaushan Script", cursive;
-  color: #f5f2ebe1;
+  color: #fdfcfde1;
   font-size: 1.2rem;
   font-weight: 600;
   margin: 0 0.3rem;
-  text-shadow: 1px 2px 3px black, 2px 3px 4px black, 3px 4px 5px black;
+  text-shadow: 1px 2px 3px black, 2px 3px 4px black;
 }
 /* End footer */
 
