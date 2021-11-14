@@ -484,6 +484,7 @@ hk-shadow {
 
 /* Programs*/
 .program-section-wrapper {
+  overflow-x: hidden;
   margin: 0 0;
   padding: 2rem 0 5rem;
   background-color: rgb(255, 255, 255);
@@ -528,12 +529,12 @@ hk-shadow {
 
 .program-description {
   font-family: "Roboto", sans-serif;
-  font-size: 1rem;
+  font-size: 1.3rem;
   font-weight: 500;
+  margin-top: 1rem;
   font-size: 1rem;
-  line-height: 4rem;
   color: rgba(32, 32, 32, 0.781);
-  line-height: 1.8rem;
+  line-height: 2.3rem;
   /* height: 8rem; */
 }
 
@@ -776,6 +777,7 @@ hk-shadow {
   position: relative; */
   /* background-attachment: fixed; */
   /* background-repeat: no-repeat; */
+  overflow-x: hidden;
   display: flex;
   align-items: center;
   font-family: "Roboto", sans-serif;
@@ -1027,7 +1029,10 @@ customers-cards:before {
   font-weight: 500;
   background-color: #faf9f9;
   text-align: center;
-  font-size: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  font-size: 1.2rem;
+  line-height: 3rem;
   padding: 1rem 1.5rem;
   color: rgba(34, 33, 33, 0.74);
 }
@@ -1179,6 +1184,10 @@ customers-cards:before {
 /*--------------------------------------------------------------
 # Counts
 --------------------------------------------------------------*/
+#counts{
+  overflow-x: hidden;
+}
+
 .counts {
   padding: 80px 0;
   background-color: rgb(255, 255, 255);
@@ -2016,6 +2025,18 @@ customers-cards:before {
     width: 20rem;
     display: inline;
     /* font-size: 0.5rem; */
+  }
+
+  .presentation-heading {
+    letter-spacing: 0.1rem;
+    font-size: 1.2rem;
+  }
+
+
+  .presentation-paragraph {
+    letter-spacing: 0.1rem;
+    font-size: 1rem;
+    line-height: 2rem;
   }
 
   .learn-section {
