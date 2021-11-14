@@ -1654,6 +1654,10 @@ customers-cards:before {
 @media (max-width: 992px) {
   nav {
   }
+  .nav-link{
+    display: flex;
+    justify-content: center;
+  }
 
   .check-programs,
   .get-account {

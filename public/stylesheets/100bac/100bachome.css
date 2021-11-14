@@ -1,5 +1,4 @@
-
-*{
+* {
   padding: 0;
   margin: 0;
 }
@@ -31,7 +30,7 @@ body {
   position: relative;
   background-attachment: fixed;
   background-repeat: no-repeat;
-  height: fit-content;
+  height: 80vh;
   margin: 0;
   padding: 0;
   /* border: 1px solid transparent; */
@@ -58,7 +57,7 @@ body {
   /* background: rgba(0, 0, 0, 0.253); */
   position: absolute;
   bottom: 0;
-  top: 0 ;
+  top: 0;
   left: 0;
   right: 0;
 }
@@ -76,30 +75,46 @@ body {
   padding: 1rem 2rem;
   margin-top: 1.2rem;
   font-family: "Ultra", serif;
-  font-size: 2.5rem;
+  font-size: 3.5rem;
+  text-transform: uppercase;
   color: rgb(211, 211, 214);
-  text-shadow: 0px 4px 3px rgba(247, 66, 21, 0.815),
+  text-shadow: 0px 4px 3px rgba(75, 4, 97, 0.815),
     1px 2px 8px rgba(23, 42, 56, 0.5), 1px 2px 3px rgba(23, 42, 56, 0.3);
   font-weight: 500;
 }
-
-
 
 #moto {
   font-family: "Chango", cursive;
   /* font-family: "Ultra", serif; */
   color: rgb(219, 219, 223);
   font-size: 2rem;
+  background-color: #0000007a;
+  padding: 0.5rem 1rem;
   z-index: 10;
   font-weight: 500;
   text-shadow: 1px 0px 2px rgba(16, 15, 16, 1);
   margin: 3rem 0 0;
 }
 
-.serie-cards-wrapper{
+.serie-cards-wrapper {
   margin: 3rem 0;
   min-height: fit-content;
 }
+
+.series-list{
+  font-family: "Chango", cursive;
+  /* font-family: "Ultra", serif; */
+  color: rgb(96, 10, 117);
+  font-size: 2rem;
+  margin-top: 3rem;
+  padding: 1rem auto;
+  text-align: center; 
+}
+
+.card {
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+}
+
 .card-title {
   color: #133e5a;
   text-shadow: 0px 2px 2px rgba(71, 70, 73, 0.4);
@@ -132,22 +147,22 @@ body {
 }
 
 #serie-d:hover,
-#seri-a:hover,
+#serie-a:hover,
 #serie-c:hover,
 #serie-g2:hover {
-  background: #000000; /* fallback for old browsers */
+  background: #7f7fd5; /* fallback for old browsers */
   background: -webkit-linear-gradient(
     to right,
-    #434343,
-    #000000
+    #91eae4,
+    #86a8e7,
+    #7f7fd5
   ); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(
     to right,
-    #434343,
-    #000000
+    #91eae4,
+    #86a8e7,
+    #7f7fd5
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  color: #ecf0f0;
-  border: 2px solid orangered;
 }
 
 .serie-link {
@@ -158,7 +173,7 @@ body {
 }
 .serie-link:hover {
   text-decoration: none;
-  color: whitesmoke;
+  color: #1b1f1f;
 }
 
 .bi-box-arrow-in-right {
@@ -172,8 +187,7 @@ body {
   color: #56ccf2;
 }
 
-
-.start-learning-btn{
+.start-learning-btn {
   align-self: center;
   z-index: 15;
   padding: 0.5rem 2rem;
@@ -187,7 +201,7 @@ body {
   color: rgb(235, 222, 217);
 }
 
-.start-learning-btn:hover{
+.start-learning-btn:hover {
   color: orangered;
   border: 2px solid rgb(248, 73, 3);
 }
@@ -272,8 +286,20 @@ body {
 }
 
 
+
+@media (max-width: 992px) {
+  html{
+    font-size: 90%;
+  }
+  }
+
+
 @media (max-width: 600px) {
   serie {
     height: 50vh;
+  }
+
+  html{
+    font-size: 70%;
   }
 }
