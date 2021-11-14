@@ -28,19 +28,19 @@
     <div class="collapse" id="article">
       <!-- Article image url -->
       <label class="form-label my-3" for="articleImage">Image Link</label>
-      <input type="text" class="form-control" name="englishClubArticle[articleImage]" id="articleImage" value="" />
+      <input type="text" class="form-control" name="englishClubArticle[articleImage]" id="articleImage" value=""  required/>
 
       <!-- Title  -->
       <label class="form-label my-3" for="title">Title</label>
-      <input type="text" class="form-control" name="englishClubArticle[title]" value="" id="title" />
+      <input type="text" class="form-control" name="englishClubArticle[title]" value="" id="title"  required/>
 
       <!-- Article Summary  -->
       <label class="form-label my-3" for="articleSummary">Article Summary</label>
-      <input type="text" class="form-control" name="englishClubArticle[articleSummary]" value="" id="title" />
+      <input type="text" class="form-control" name="englishClubArticle[articleSummary]" value="" required id="title" />
 
       <!-- Author -->
       <label class="form-label my-3" for="author">Author</label>
-      <input type="text" class="form-control" name="englishClubArticle[articleAuthor]" value="" id="articleAuthor" />
+      <input type="text" class="form-control" name="englishClubArticle[articleAuthor]" value="" required id="articleAuthor" />
 
       <!-- Article Content -->
       <label class="form-label my-3" for="articleContent">Article content</label>
@@ -87,11 +87,11 @@
       <section class="word-day-wrapper my-4" style="background-color: rgb(197, 240, 248); padding: 2rem;">
         <!-- Word Of The day -->
         <label class="form-label fw-bold my-3" for="Word of the day">Word of the day</label>
-        <input type="text" class="form-control" name="wordOfDay[word]" id="word" value="" />
+        <input type="text" class="form-control" name="wordOfDay[word]" id="word" value=""  required/>
 
         <!-- meaning  -->
         <label class="form-label fw-bold my-3" for="title">Meaning</label>
-        <input type="text" class="form-control" name="wordOfDay[wordMeaning]" value="" id="wordMeaning" />
+        <input type="text" class="form-control" name="wordOfDay[wordMeaning]" value="" id="wordMeaning" required />
 
         <!-- Learn more  -->
         <label class="form-label fw-bold my-3" for="learnMoreWord">Learn more</label>
@@ -105,11 +105,11 @@
       <section class="word-day-wrapper my-4" style="background-color: rgb(214, 248, 217); padding: 2rem;">
         <!-- idiom of the day -->
         <label class="form-label fw-bold my-3" for="Word of the day">Idiom or Useful Expression</label>
-        <input type="text" class="form-control" name="IdiomDay[idiom]" id="idiom" value="" />
+        <input type="text" class="form-control" name="IdiomDay[idiom]" id="idiom" required value="" />
 
         <!-- meaning  -->
         <label class="form-label fw-bold my-3" for="title">Meaning</label>
-        <input type="text" class="form-control" name="IdiomDay[idiomMeaning]" value="" id="idiomMeaning" />
+        <input type="text" class="form-control" name="IdiomDay[idiomMeaning]" required value="" id="idiomMeaning" />
 
         <!-- Learn more  -->
         <label class="form-label fw-bold my-3" for="learnMoreIdiom">Learn more</label>
@@ -123,15 +123,15 @@
       <section class="word-day-wrapper my-4" style="background-color: rgb(214, 232, 248); padding: 2rem;">
         <!-- meeting date -->
         <label class="form-label fw-bold my-3" for="Word of the day">Meeting Date</label>
-        <input type="date" class="form-control" name="englishClubMeeting[meetingDate]" id="meetingDate" value="" />
+        <input type="date" class="form-control" name="englishClubMeeting[meetingDate]" id="meetingDate" required value="" />
 
         <!-- Venue  -->
         <label class="form-label fw-bold my-3" for="title"> Venue </label>
-        <input type="text" class="form-control" name="englishClubMeeting[venue]" value="" id="venue" />
+        <input type="text" class="form-control" name="englishClubMeeting[venue]" value="" required id="venue" />
 
         <!-- Time  -->
         <label class="form-label fw-bold my-3" for="title"> Time </label>
-        <input type="time" class="form-control" name="englishClubMeeting[meetingTime]" value="" id="time" />
+        <input type="time" class="form-control" name="englishClubMeeting[meetingTime]" required value="" id="time" />
 
         <!-- About the meeting  -->
         <label class="form-label fw-bold my-3" for="learnMoreIdiom">More about the weekly meeting</label>
@@ -145,27 +145,27 @@
       <section class="word-day-wrapper my-4" style="background-color: rgb(248, 240, 214); padding: 2rem;">
         <!-- topic one-->
         <label class="form-label fw-bold my-3" for="topicOne"> Topic One</label>
-        <input type="text" class="form-control" name="OnlineDebate[topicOne]" value="" id="topicOne" />
+        <input type="text" class="form-control" name="OnlineDebate[topicOne]" required value="" id="topicOne" />
 
         <!-- debate date one -->
         <label class="form-label fw-bold my-3" for="Word of the day">Date for 1st Debate</label>
-        <input type="date" class="form-control" name="OnlineDebate[debateDateOne]" id="debateDateOne" value="" />
+        <input type="date" class="form-control" name="OnlineDebate[debateDateOne]" required id="debateDateOne" value="" />
 
         <!-- Time one -->
         <label class="form-label fw-bold my-3" for="time"> Time </label>
-        <input type="time" class="form-control" name="OnlineDebate[debateTimeOne]" value="" id="time" />
+        <input type="time" class="form-control" name="OnlineDebate[debateTimeOne]" required value="" id="time" />
 
 
         <!-- topic two-->
         <label class="form-label fw-bold my-3" for="topicTwo"> Topic Two</label>
-        <input type="text" class="form-control" name="OnlineDebate[topicTwo]" value="" id="topicTwo" />
+        <input type="text" class="form-control" name="OnlineDebate[topicTwo]" required value="" id="topicTwo" />
         <!-- debate date two -->
         <label class="form-label fw-bold my-3" for="Word of the day">Date for 2nd Debate</label>
-        <input type="date" class="form-control" name="OnlineDebate[debateDateTwo]" id="debateDateTwo" value="" />
+        <input type="date" class="form-control" name="OnlineDebate[debateDateTwo]" required id="debateDateTwo" value="" />
 
         <!-- Time  -->
         <label class="form-label fw-bold my-3" for="time"> Time </label>
-        <input type="time" class="form-control" name="OnlineDebate[debateTimeTwo]" value="" id="time" />
+        <input type="time" class="form-control" name="OnlineDebate[debateTimeTwo]" required value="" id="time" />
 
         <!-- About debate topics  topic  -->
         <label class="form-label fw-bold my-3" for="learnMoreIdiom">More about the online debates</label>
@@ -194,16 +194,16 @@
       <div class="collapse" id="videoLesson">
         <!-- Lesson title -->
         <label class="form-label my-3" for="lessonTitle">Lesson title</label>
-        <input type="text" class="form-control" name="weeklyLesson[lessonTitle]" id="articleImage" value="" />
+        <input type="text" class="form-control" name="weeklyLesson[lessonTitle]" required id="articleImage" value="" />
 
         <!-- Video Link  -->
         <label class="form-label my-3" for="videoLink">Video Link</label>
-        <input type="text" class="form-control" name="weeklyLesson[videoLink]" value="" id="title" />
+        <input type="text" class="form-control" name="weeklyLesson[videoLink]" required value="" id="title" />
 
 
         <!-- Author -->
         <label class="form-label my-3" for="author">Author</label>
-        <input type="text" class="form-control" name="weeklyLesson[lessonAuthor]" value="" id="articleAuthor" />
+        <input type="text" class="form-control" name="weeklyLesson[lessonAuthor]" required value="" id="articleAuthor" />
 
         <!-- Lesson Summary -->
         <label class="form-label my-3" for="lessonSummary">Lesson Summary</label>
@@ -243,16 +243,16 @@
           <h4>Student of the month</h4>
           <!-- full name -->
           <label class="form-label my-3" for="fullname">Student's fullname </label>
-          <input type="text" class="form-control" name="studentOfMonth[fullname]" id="studentFullname" value="" />
+          <input type="text" class="form-control" name="studentOfMonth[fullname]" required id="studentFullname" value="" />
 
           <!-- Image Link -->
           <label class="form-label my-3" for="imageUrl">Image Link</label>
-          <input type="text" class="form-control" name="studentOfMonth[imageUrl]" value="" id="StudentImage" />
+          <input type="text" class="form-control" name="studentOfMonth[imageUrl]" required value="" id="StudentImage" />
 
 
           <!-- Reasons -->
           <label class="form-label my-3" for="author">Reasons</label>
-          <input type="text" class="form-control" name="studentOfMonth[reasons]" value="" id="reasons" />
+          <input type="text" class="form-control" name="studentOfMonth[reasons]" required value="" id="reasons" />
 
           <!-- About -->
           <label class="form-label my-3" for="about">About the Instructor</label>
@@ -266,16 +266,16 @@
         <section class="word-day-wrapper my-4" style="background-color: rgb(197, 206, 248); padding: 2rem;">
           <!-- full name -->
           <label class="form-label my-3" for="fullname">Instructor's fullname </label>
-          <input type="text" class="form-control" name="instructorOfMonth[fullname]" id="intructorFullname" value="" />
+          <input type="text" class="form-control" name="instructorOfMonth[fullname]"  required id="intructorFullname" value="" />
 
           <!-- Image Link -->
           <label class="form-label my-3" for="imageUrl">Image Link</label>
-          <input type="text" class="form-control" name="instructorOfMonth[imageUrl]" value="" id="instructorImage"/>
+          <input type="text" class="form-control" name="instructorOfMonth[imageUrl]" required value="" id="instructorImage"/>
 
 
           <!-- Reasons -->
           <label class="form-label my-3" for="author">Reasons</label>
-          <input type="text" class="form-control" name="instructorOfMonth[reasons]" value="" id="reasons" />
+          <input type="text" class="form-control" name="instructorOfMonth[reasons]" required value="" id="reasons" />
 
           <!-- About -->
           <label class="form-label my-3" for="about">About the Instructor</label>
@@ -308,11 +308,11 @@
       <div class="collapse" id="videoLesson">
         <!-- Lesson title -->
         <label class="form-label my-3" for="mediaTitle">Video Title</label>
-        <input type="text" class="form-control" name="mediaTitle" id="mediaTitle" value="" />
+        <input type="text" class="form-control" name="mediaTitle" id="mediaTitle" required value="" />
 
         <!-- Video Link  -->
         <label class="form-label my-3" for="videoLink">Video Link</label>
-        <input type="text" class="form-control" name="videoLink" value="" id="videoLink" />
+        <input type="text" class="form-control" name="videoLink" value="" required id="videoLink" />
 
         
       <button class="btn my-3  mx-2 btn-outline-success" type="submit">Post Club Media</button>

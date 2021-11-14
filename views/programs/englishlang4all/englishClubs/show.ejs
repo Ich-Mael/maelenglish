@@ -186,35 +186,35 @@
         <h1 class="activity-heading">News</h1>
         <div class="d-flex justifify-content-center">
           <div class="row">
-            <% for(let article of club.articles ){ %>
+            <% for(let i =0; i < 3 ; i++){ %>
             <div class="col-md-6 col-lg-4">
               <div class="card news-card">
-                <img src="<%= article.articleImage %>" class="card-img-top img-thumbnail" alt="">
+                <img src="<%= club.articles[i].articleImage %>" class="card-img-top img-thumbnail" alt="">
                 <div class="card-body">
-                  <h5 class="card-title news-title"><%= article.title %></h5>
-                  <p class="card-text news-summary"><%= article.articleSummary %></p>
+                  <h5 class="card-title news-title"><%=club.articles[i].title %></h5>
+                  <p class="card-text news-summary"><%= club.articles[i].articleSummary %></p>
                   <!-- Button trigger modal -->
                   <button type="button" class="btn btn-small
-                                      btn-primary" data-bs-toggle="modal" data-bs-target="#N<%= article._id %>">
+                                      btn-primary" data-bs-toggle="modal" data-bs-target="#N<%= club.articles[i]._id %>">
                     Read more
                   </button>
 
                   <!-- Modal -->
-                  <div class="modal fade" id="N<%= article._id %>" tabindex="-1" aria-labelledby="exampleModalLabel"
+                  <div class="modal fade" id="N<%= club.articles[i]._id %>" tabindex="-1" aria-labelledby="exampleModalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog modal-lg
                                         modal-fullscreen-md-down">
                       <div class="modal-content">
                         <div class="modal-header">
                           <h5 class="modal-title" id="exampleModalLabel">
-                            <%= article.title %>
+                            <%= club.articles[i].title %>
                           </h5>
                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                           <div>
 
-                            <%- article.articleContent%>
+                            <%- club.articles[i].articleContent%>
 
 
                           </div>
@@ -227,11 +227,11 @@
                     </div>
                   </div>
                   <hr>
-                  <p class="card-text"><small class="text-muted"><%= days[article.postedAT.getDay()] %>,
-                      <%=article.postedAT.getDate()%>
-                      <%= months[article.postedAT.getMonth()] %>
-                      <%=article.postedAT.getFullYear()%></small><em class="mx-3"> <br> By
-                      <%= article.articleAuthor %></em></p>
+                  <p class="card-text"><small class="text-muted"><%= days[club.articles[i].postedAT.getDay()] %>,
+                      <%=club.articles[i].postedAT.getDate()%>
+                      <%= months[club.articles[i].postedAT.getMonth()] %>
+                      <%=club.articles[i].postedAT.getFullYear()%></small><em class="mx-3"> <br> By
+                      <%= club.articles[i].articleAuthor %></em></p>
                 </div>
               </div>
             </div>
@@ -479,7 +479,7 @@
                     <div class="modal-body">
                       <form action="/englishlang4all/clubs/<%= club._id %>/clubMedia/<%= club.media[i]._id %>/comment"
                         method="POST">
-                        <fieldset class="starability-heart mb-1">
+                        <fieldset id="stars" class="starability-heart mb-1">
                           <!-- <legend>Rating</legend> -->
                           <input type="radio" id="no-rate<%= club.media[i]._id %>" class="input-no-rate"
                             name="review[rating]" value="0" checked aria-label="No rating." />

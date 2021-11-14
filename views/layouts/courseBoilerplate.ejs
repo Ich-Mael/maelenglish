@@ -29,10 +29,23 @@
       href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;900&family=Poppins:wght@600;700;800;900&display=swap"
       rel="stylesheet"
     />
+    <script type="text/javascript">
+      function display_c() {
+        var refresh = 1000; // Refresh rate in milli seconds
+        mytime = setTimeout("display_ct()", refresh);
+      }
+
+      function display_ct() {
+        var x = new Date();
+        var x1 = x.toUTCString(); // changing the display to UTC string
+        document.getElementById("ct").innerHTML = x1;
+        tt = display_c();
+      }
+    </script>
     <title>Afro house of Knowledge</title>
   </head>
 
-  <body class="">
+  <body onload="display_ct();">
     <a class="top-link top-btn-display" href="#"
       ><i class="bi bi-arrow-up-circle-fill"></i
     ></a>
