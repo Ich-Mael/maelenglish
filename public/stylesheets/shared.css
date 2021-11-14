@@ -92,10 +92,11 @@ nav {
 
 
 .myNav-link {
-  font-size: 0.89rem;
+  font-size: 1.1rem;
   padding: 0 0 0.4rem 0;
   font-family: "Roboto" serif;
   letter-spacing: 0.2rem;
+  text-align: center;
   text-transform: capitalize;
   color: rgba(32, 31, 31, 0.9) !important;
   font-weight: 500;
@@ -814,6 +815,25 @@ hk-shadow {
   .logo-navbar {
     display: none;
   }
+}
+
+
+@media (max-width: 768px) {
+  #footer {
+    background: -webkit-linear-gradient(
+      to top,
+      #412388,
+      #556497,
+      #ffffff
+    ); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(
+      to top,
+      #412388,
+      #556497,
+      #ffffff
+    ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  }
+  
 }
 
 @media (max-width: 450px) {
