@@ -26,7 +26,7 @@ const {
 } = require("../middlewares/courseController");
 
 //english for everybody
-router.get("/englishlang4all", isLoggedIn, isVerified, (req, res) => {
+router.get("/englishlang4all", isLoggedIn, (req, res) => {
   res.render("programs/englishlang4all/home");
 });
 
@@ -44,7 +44,6 @@ router.get("/englishlang4all/free_english_lessons", (req, res) => {
 router.get(
   "/englishlang4all/clubs",
   isLoggedIn,
-  isVerified,
   async (req, res) => {
     const clubs = await englishClubs.find({});
     res.render("programs/englishlang4all/englishClubs/home", {
@@ -165,7 +164,7 @@ router.get(
   })
 );
 
-// =============================
+// ==============================
 //
 //   Board members privileges
 //
@@ -413,7 +412,7 @@ router.get(
   "/englishlang4all/Clubs/:club_id/board_dashboard/videoLessons",
   isLoggedIn,
   isVerified,
-  checkEnglishBoardMembership,
+  checkRoles("admin"),
   catchAsync(async (req, res) => {
     const club = await englishClubs
       .findById(req.params.club_id)
@@ -433,7 +432,7 @@ router.get(
   "/english/clubs/:club_id/board_dashboard/weeklyVideoLessons/:videoLesson_id/edit",
   isLoggedIn,
   isVerified,
-  checkEnglishBoardMembership,
+  checkRoles("admin"),
   catchAsync(async (req, res) => {
     const videoLesson = await englishWeeklyLessons.findById(
       req.params.videoLesson_id
@@ -455,6 +454,7 @@ router.put(
   "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyVideoLessons/:videoLesson_id",
   isLoggedIn,
   isVerified,
+  checkRoles("admin"),
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const videoLesson = await englishWeeklyLessons.findByIdAndUpdate(
@@ -609,7 +609,7 @@ router.get(
   })
 );
 
-//Edit all vips of the month
+//Edit vidoes of the months
 router.get(
   "/englishlang4all/clubs/:club_id/board_dashboard/clubMedia/:media_id/mediaEdit",
   isLoggedIn,
@@ -626,7 +626,7 @@ router.get(
   })
 );
 
-//Updating leaders of the month
+//Updating videos
 router.put(
   "/englishlang4all/Clubs/:club_id/board_dashboard/clubMedia/:media_id",
   isLoggedIn,
