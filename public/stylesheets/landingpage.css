@@ -81,9 +81,14 @@ nav {
   font-family: "Roboto" serif;
 }
 
-
 .nav-display {
   opacity: 1;
+}
+
+.brand{
+font-size: 1.2rem;
+display: inline-block;
+color: rgb(130, 7, 161);
 }
 
 #brand-name {

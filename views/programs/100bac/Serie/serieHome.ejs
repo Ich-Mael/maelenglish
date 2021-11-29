@@ -1,0 +1,72 @@
+<% layout('layouts/boilerplate') %>
+<link rel="preconnect" href="https://fonts.gstatic.com" />
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+<link href="/stylesheets/100bac/serieHome.css" rel="stylesheet" />
+
+<main class="">
+  <div id="header">
+    <div class="bac-banner d-flex flex-column justify-content-center">
+      <!-- Breadcrumbs-->
+      <div class="breadcrumb">
+        <a href="/100bac" class="">Acceuil - 100% BAC</a>
+        <a href="/100bac/TleD" class="active"><%= serie.title %> </a>
+      </div>
+      <!-- End -->
+      <h1 id="welcome" class="display-4 mb-5 text-center">
+        Bienvenue dans la maison du Savoir
+      </h1>
+      <div class="serie-text">
+      <h3 class="text-center serie-heading animated bounce ">
+        Opération 100% Réussite au BAC <%= serie.title %> 
+      </h3>
+      <p class="text-center about">
+        Étudier et Réviser à son rythme selon ses besoins et sa disponibilité
+      </p>
+    </div>
+      
+   
+    </div>
+    <!--End Header-->
+
+    <a href="/admindashboard/100bac/serie/<%= serie._id %>/subjects" class="btn btn-outline-secondary m-3">View all subjects</a>
+    
+    <!-- Section 1 nos cours -->
+    <div class="container my-5">
+      <h3 class="liste-matiere text-center">Liste des matières</h3>
+      <div class="row mt-3">
+        <% for(let subject of serie.subjects) {%> 
+        <div class="col-12 col-md-4 mb-5 rounded">
+          <div class="d-flex mt- mb-2 justify-content-center">
+            <div class="card my-card" style="width: 18rem">
+              <img
+                class="card-img-top"
+                style="height: 10rem"
+                src="<%= subject.subjectImageUrl %>"
+                alt="Card image cap"
+              />
+              <div class="card-body comprendre-mon-cours">
+                <button
+                  class="btn mt-1 course-btn btn-default btn-outline-dark"
+                >
+                  <a href="/100bac/serie/<%= serie._id %>/subject/<%=subject._id %>" class="course-link"
+                    ><%= subject.title %></a
+                  >
+                </button>
+                <button
+                  class="btn mt-1 course-btn btn-default btn-outline-dark"
+                >
+                  <a href="/100bac/TleD/exomaths" class="course-exo-link"
+                    >Exercices - Sujets d'Examen</a
+                  >
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% } %> 
+      </div>
+    </div>
+  </div>
+  <!--Fin Section 2 -->
+  <!--Fin Section 4 Anglais -->
+</main>

@@ -1,0 +1,17 @@
+<% layout('layouts/boilerplate') %>
+<style>
+  .subject-card{
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  }
+</style>
+<h1 class="text-center py-3 text-primary">Operation 100% BAC</h1>
+<div class="container">
+<div class="row mt-5">
+<% for(let subject of subjects) {%> 
+  <div class="col-md-4 subject-card">
+    <h3 class="text-center pt-3"><%= subject.title %> </h3>
+    <a href="/admindashboard/100bac/serie/<%=serie._id%>/subject/<%=subject._id%>/chapter/new" class="btn my-3 btn-primary">Add a new chapter</a>
+  </div>
+  <% } %> 
+</div>
+</div>

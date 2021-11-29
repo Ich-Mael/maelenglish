@@ -46,3 +46,31 @@
   </form>
 <hr>
 </div>
+
+
+<!-- Managing 100 bac program -->
+<div class="container col-md-6 my-5">
+  <h1 class="text-primary">Operation 100% BAC</h1>
+  <a href="/admindashboard/100bac/series">Voir toutes les series</a>
+<form action="/admindashboard/100bac/serie" method="POST">
+  <!-- Serie General information -->
+  <label class="form-label" for="title">Serie</label>
+  <input
+    type="text"
+    class="form-control"
+    id="serie"
+    name="serie[title]"
+    value=""
+  />
+
+  <label class="form-label" for="title">Image</label>
+  <input
+    type="text"
+    class="form-control"
+    id="serieImage"
+    name="serie[serieImageUrl]"
+    value=""
+  />
+  <button type="submit" class="btn btn-outline-primary my-3">Create a new serie</button>
+</form>
+</div>
