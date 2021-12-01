@@ -58,7 +58,8 @@ module.exports.createChapter = async (req, res) => {
 module.exports.viewChapter = async (req, res) => {
   const serie = await Serie.findById(req.params.serie_id);
   const subject = await Subject.findById(req.params.subject_id);
-  const chapter = await Chapter.findById(req.params.chapter_id);
+  const chapter = await Chapter.findById(req.params.chapter_id).populate("courses");
+
   res.render("programs/100bac/Serie/chapters/viewChapter", {
     serie,
     subject,
@@ -66,7 +67,11 @@ module.exports.viewChapter = async (req, res) => {
   });
 };
 
-/* Video content */
+/*=========================================
+
+                VIDEO CONTENT
+
+===========================================*/
 module.exports.createVideoContent = async (req, res) => {
   // const serie = await Serie.findById(req.params.serie_id);
   // const subject = await Subject.findById(req.params.subject_id);

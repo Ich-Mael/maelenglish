@@ -37,7 +37,15 @@
 
   .course-card{
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-    height: 4rem;
+  }
+
+  .content-title{
+    font-size: 1.4rem;
+    color: rgb(7, 114, 114);
+    font-weight: 500;
+    font-family: 'Times New Roman', Times, serif;
+    text-align: center;
+    padding: 2rem auto;
   }
 
   @media (max-width: 750px) {
@@ -73,17 +81,56 @@
 <h2 class="my-3 text-center"> Contenu du cours </h2>
 
 <div class="container">
-  <div class="row">
+  <div class="row mt-4">
+    <% for(let content of chapter.courses){%> 
   <div class="col-md-4">
-    <div class="course-card mx-3"></div>
-  </div>
+    <div class="course-card m-3 py-3">
+      <h3 class="content-title"><%= content.title %></h3>
+      <!-- Button trigger modal -->
+<a type="button" class="btn d-block mt-3 mx-5 text-center btn-outline-primary" data-bs-toggle="modal" data-bs-target="#N<%= content._id %>">
+  Suivre le cours
+</a>
 
-  <div class="col-md-4">
-    <div class="course-card mx-3"></div>
+<!-- Modal -->
+<div class="modal fade" id="N<%= content._id %>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><%= content.title %></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="tv-container">
+          <div id="monitor">
+            <div class="afrohk-TV">
+              <h3 class="text-center afrohk-text mb-2 py-0">
+                <span class="afrohk">AfroHK</span
+                ><span class="tv">Radar</span>
+              </h3>
+            </div>
+            <div id="monitorscreen">
+              <iframe
+                id="vimeo-content"
+                src="<%= content.link %>"
+                frameborder="0"
+                height="500px"
+                width="1000px"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allow="fullscreen"
+                title="High-intensity Classes"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Quitter</button>
+      </div>
+    </div>
   </div>
-  
-  <div class="col-md-4">
-    <div class="course-card mx-3"></div>
+</div>
+    </div>
   </div>
+  <% } %> 
 </div>
 </div>
