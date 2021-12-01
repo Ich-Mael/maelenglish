@@ -54,13 +54,27 @@ module.exports.createChapter = async (req, res) => {
   res.redirect("/100bac");
 };
 
-// view a chapter
+// view a chapter course
 module.exports.viewChapter = async (req, res) => {
   const serie = await Serie.findById(req.params.serie_id);
   const subject = await Subject.findById(req.params.subject_id);
   const chapter = await Chapter.findById(req.params.chapter_id).populate("courses");
 
   res.render("programs/100bac/Serie/chapters/viewChapter", {
+    serie,
+    subject,
+    chapter,
+  });
+};
+
+
+// view a chapter starter exercice
+module.exports.viewChapterSE = async (req, res) => {
+  const serie = await Serie.findById(req.params.serie_id);
+  const subject = await Subject.findById(req.params.subject_id);
+  const chapter = await Chapter.findById(req.params.chapter_id).populate("courses");
+
+  res.render("programs/100bac/Serie/chapters/viewChapterS-E", {
     serie,
     subject,
     chapter,

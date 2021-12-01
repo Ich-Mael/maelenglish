@@ -813,23 +813,7 @@
 
 <!--End Graph Calculator -->
 
-
-
-
-
-    <h3 class="chapter-list"> Liste des chapitres </h3>
-    <div class="container mt-5">
-      <div class="list-wrap">
-        <div class="list">
-          <% for(let chapter of subject.chapitres) {%> 
-            <div><a class="chapter-link" href="/100bac/serie/<%=serie._id%>/subject/<%=subject._id%>/chapter/<%=chapter._id%>"><%=chapter.title %></a></div>
-          <% } %> 
-        </div>
-      </div>
-    </div>
-
-
-
+<h3 class="chapter-list"> Liste des chapitres </h3>
 
 
 <!-- course chapters -->
@@ -837,6 +821,7 @@
 <div class="week-wrapper">
   <div class="week-lesson my-3">
     <div class="lesson-info row">
+          <% for(const [i, chapter] of subject.chapitres.entries()) {%> 
       <div class="col-md-3 ms-3 d-flex justify-content-center">
         <img
           src="https://images.fineartamerica.com/images/artworkimages/medium/3/the-origin-of-complex-numbers-tom-hill-transparent.png"
@@ -845,133 +830,26 @@
       <div class="col-md-8 ">
         <div class="d-flex justify-content-center flex-wrap align-items-center">
           <h2 class="week-number">
-            Chapitre 1: Nombres Complexes</h2>
-          <!-- Button trigger modal -->
-          <div>
-            <button type="button" class="btn align-self-center video-btn ms-2 btn-outline-secondary"
-              data-bs-toggle="modal" data-bs-target="#learnmore">
-              En savoir plus
-            </button>
-          </div>
-          <!-- Modal -->
-          <div class="modal fade" id="learnmore" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">
-                    Nombres Complexes
-                  </h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body"></div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
-                    Close
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+            Chapitre <%= i +1 %>: <%=chapter.title %></h2>
+          
         </div>
         <div class="lesson-links">
-          <button type="button" class="btn ms-2 video-btn btn-outline-primary" data-bs-toggle="modal"
-            data-bs-target="#lesson-1-vid-1">
-            Partie 1
-          </button>
-
-          <button type="button" class="btn video-btn ms-2 btn-outline-primary" data-bs-toggle="modal"
-            data-bs-target="#lesson-1-vid-2">
-            Partie 2
-          </button>
-
-          <button type="button" class="btn video-btn ms-2 btn-outline-success" data-bs-toggle="modal"
-            data-bs-target="#lesson-1-vid-3">
-            Exerçons ensemble
-          </button>
-
-
-          <!-- Modal  for video 1-->
-          <div class="modal fade" id="lesson-1-vid-1" tabindex="-1" aria-labelledby="exampleModalLabel"
+<!-- Button trigger modal -->
+<div>
+  <button type="button" class="btn ms-2 video-btn btn-outline-primary" data-bs-toggle="modal"
+  data-bs-target="#N<%= chapter._id %>">
+  En savoir plus
+</button>
+            <a class="btn mx-3 btn-outline-success" href="/100bac/serie/<%=serie._id%>/subject/<%=subject._id%>/chapter/<%=chapter._id%>">Contenu du cours</a>
+</div>
+          <!-- Modal  for course details video -->
+          <div class="modal fade" id="N<%= chapter._id %>" tabindex="-1" aria-labelledby="exampleModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-xl">
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="exampleModalLabel">
-                    Video-1
-                  </h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <div id="tv-container">
-                    <div id="monitor">
-                      <div class="afrohk-TV">
-                        <h3 class="text-center afrohk-text mb-2 py-0"><span class="afrohk">AfroHK</span><span
-                            class="tv">Radar</span>
-                        </h3>
-                      </div>
-                      <div id="monitorscreen">
-                        <iframe id="vimeo-content"
-                          src="https://player.vimeo.com/video/536620704?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
-                          frameborder="0" height="500px" width="1000px" allow="autoplay; fullscreen; picture-in-picture"
-                          allow="fullscreen" title="High-intensity Classes"></iframe>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
-                    Close
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Modal  for video 2-->
-          <div class="modal fade" id="lesson-1-vid-2" tabindex="-1" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-xl">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">
-                    Video-2
-                  </h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <div id="tv-container">
-                    <div id="monitor">
-                      <div class="afrohk-TV">
-                        <h3 class="text-center afrohk-text mb-2 py-0"><span class="afrohk">AfroHK</span><span
-                            class="tv">Radar</span>
-                        </h3>
-                      </div>
-                      <div id="monitorscreen">
-                        <iframe id="vimeo-content"
-                          src="https://player.vimeo.com/video/536620704?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
-                          frameborder="0" height="500px" width="1000px" allow="autoplay; fullscreen; picture-in-picture"
-                          allow="fullscreen" title="High-intensity Classes"></iframe>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
-                    Close
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Modal  for video 3-->
-          <div class="modal fade" id="lesson-1-vid-3" tabindex="-1" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-xl">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">
-                    Time to practice together 😉
+                    A propos de ce chapitre
                   </h5>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -1003,44 +881,33 @@
         </div>
         <!-- Self practice -->
         <div class="self-practice-wrapper">
-          <h3 class="practice-alone text-center">S’entraîner seul</h3>
+          <h3 class="practice-alone text-center"> S'Entraîner</h3>
           <div class="self-practice-btn">
-            <button class="btn video-btn btn-info mx-2 my-2" type="button" data-bs-toggle="collapse"
-              data-bs-target="#self-p-1" aria-expanded="false" aria-controls="collapseExample">
-              Exercices d'apprentissage
-            </button>
-            <button class="btn video-btn btn-info mx-2 my-2" type="button" data-bs-toggle="collapse"
-              data-bs-target="#self-p-2" aria-expanded="false" aria-controls="collapseExample">
-              Approfondissement
-            </button>
+            <a class="btn mx-3 btn-success" href="/100bac/serie/<%=serie._id%>/subject/<%=subject._id%>/chapter/<%=chapter._id%>/SE">Exercices d'entrainement</a>
             <button class="btn video-btn btn-warning mx-2 my-2" type="button" data-bs-toggle="collapse"
-              data-bs-target="#self-p-3" aria-expanded="false" aria-controls="collapseExample">
-              More exercises
+              data-bs-target="#self-p-1" aria-expanded="false" aria-controls="collapseExample">
+             Exercices non corrigés 
             </button>
           </div>
 
           <div class="collapse" id="self-p-1">
             <div class="card card-body">
-              self-practice 1
-            </div>
-          </div>
-
-          <div class="collapse" id="self-p-2">
-            <div class="card card-body">
               self-practice-2
             </div>
           </div>
-
-          <div class="collapse" id="self-p-3">
-            <div class="card card-body">
-              More exercises
-            </div>
-          </div>
+          
         </div>
       </div>
+          <% } %> 
     </div>
   </div>
 </div>
+
+
+
+
+
+
 
 <!-- chapter 2 Limites et continuite -->
 <div class="week-wrapper">

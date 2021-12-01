@@ -65,8 +65,10 @@ router.get('/admindashboard/100bac/serie/:serie_id/subject/:subject_id/chapter/n
 //create a new chapter
 router.post('/admindashboard/100bac/serie/:serie_id/subject/:subject_id/chapter', isVerified, checkRoles("admin"), catchAsync(BAC.createChapter));
 
-//view a new chapter
+//view a chapter
 router.get('/100bac/serie/:serie_id/subject/:subject_id/chapter/:chapter_id', isVerified, checkRoles("admin"), catchAsync(BAC.viewChapter));
+
+router.get('/100bac/serie/:serie_id/subject/:subject_id/chapter/:chapter_id/SE', isVerified, checkRoles("admin"), catchAsync(BAC.viewChapterSE));
 
 
 

@@ -16,6 +16,13 @@
     height: 30vh;
   }
 
+  .heading{
+	  color: rgb(72, 26, 116);
+	  text-transform: uppercase;
+    font-size: 1.5rem;
+    letter-spacing: 0.13rem;
+  }
+
   .subject {
     font-family: "Times New Roman", Times, serif;
     color: rgba(96, 11, 175, 0.836);
@@ -78,14 +85,14 @@
     %>
   </h3>
 </div>
-<h2 class="my-3 text-center"> Contenu du cours </h2>
+<h2 class="my-3 pb-3 text-center heading"  style="border-bottom: 2px solid rgb(82, 4, 105);"> Contenu du cours </h2>
 
 <div class="container">
-  <div class="row mt-4">
-    <% for(let content of chapter.courses){%> 
+  <div class="row mt-4 mb-5">
+    <% for(const [i, content] of chapter.courses.entries()){%> 
   <div class="col-md-4">
     <div class="course-card m-3 py-3">
-      <h3 class="content-title"><%= content.title %></h3>
+      <h3 class="content-title px-2"><span style="font-weight: bolder;">Partie <%= i + 1%></span>: <%= content.title %></h3>
       <!-- Button trigger modal -->
 <a type="button" class="btn d-block mt-3 mx-5 text-center btn-outline-primary" data-bs-toggle="modal" data-bs-target="#N<%= content._id %>">
   Suivre le cours
@@ -93,7 +100,7 @@
 
 <!-- Modal -->
 <div class="modal fade" id="N<%= content._id %>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel"><%= content.title %></h5>
