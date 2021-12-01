@@ -59,13 +59,6 @@ const serieSchema = new Schema(
       },
     ],
 
-    instructors: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-
     students: [
       {
         type: Schema.Types.ObjectId,
@@ -132,31 +125,38 @@ const chapterSchema = new Schema({
     default: "",
   },
 
-  courseVideoLinks: [
+  courses: [
     {
-      title: String,
-      link: String,
+      type: Schema.Types.ObjectId,
+      ref: "CourseVideo",
     },
   ],
 
-  starterExerciseLinks: [
+  starterExercise: [
     {
-      title: String,
-      link: String,
+      type: Schema.Types.ObjectId,
+      ref: "CourseVideo",
     },
   ],
 
-  advanceExerciseLinks: [
+  advanceExercise: [
     {
-      title: String,
-      link: String,
+      type: Schema.Types.ObjectId,
+      ref: "CourseVideo",
     },
   ],
 
-  examExerciseLinks: [
+  nationalExams: [
     {
-      title: String,
-      link: String,
+      type: Schema.Types.ObjectId,
+      ref: "CourseVideo",
+    },
+  ],
+
+  schoolExams: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "CourseVideo",
     },
   ],
 
@@ -168,12 +168,28 @@ const chapterSchema = new Schema({
   ],
 });
 
+const courseVideoSchema = new Schema({
+  title: String,
+  country: String,
+  examYear: String ,
+  author: String ,
+  school: String,
+  videoNumber: String,
+  link: String,
+  videoType :{
+    type: String,
+    enum:["course", "starterEx", "advanceEx", "nationalExam", "schoolExam"]
+  }
+});
+
 Serie = mongoose.model("Serie", serieSchema);
 
 Chapter = mongoose.model("Chapitre", chapterSchema);
 
 Subject = mongoose.model("Subject", subjectSchema);
 
+CourseVideo = mongoose.model("CourseVideo", courseVideoSchema);
+
 // Grade = mongoose.model("Grade", gradeSchema);
 
-module.exports = { Serie, Chapter, Subject };
+module.exports = { Serie, Chapter, Subject, CourseVideo};

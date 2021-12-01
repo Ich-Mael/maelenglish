@@ -2,7 +2,7 @@ const express = require('express');
 const catchAsync = require('../utilities/catchAsync');
 const router = express.Router();
 const BAC = require("../controllers/100bac");
-const { Serie, Chapitre, Subject } = require("../models/100bac");
+// const { Serie, Chapitre, Subject } = require("../models/100bac");
 const { isLoggedIn, checkRoles, isVerified} = require("../middlewares/userController");
 const { checkCourseOwnership, checkProgramOwnership } = require('../middlewares/courseController');
 
@@ -53,8 +53,9 @@ router.get('/admindashboard/100bac/serie/:serie_id/subjects', isVerified, checkR
 
 
 
-//============== chapters =================
-// create a new chapter form
+// ============== chapters ================= //
+
+// Create a new chapter form
 router.get('/admindashboard/100bac/serie/:serie_id/subject/:subject_id/chapter/new', isVerified, checkRoles("admin"), catchAsync(async(req, res) =>{
     const serie = await Serie.findById(req.params.serie_id);
     const subject = await Subject.findById(req.params.subject_id);
@@ -74,6 +75,10 @@ router.get('/100bac/serie/:serie_id/subject/:subject_id/chapter/:chapter_id', is
 router.get('/100bac/TleA', isLoggedIn, isVerified, checkProgramOwnership("TleD-ab459"), (req, res) => {
     res.render("programs/100bac/TerminaleA/homeTleA");
 });
+
+//============== video content =================//
+// Create a new video content form
+router.post('/admindashboard/100bac/serie/:serie_id/subject/:subject_id/videocontent', isVerified, checkRoles("admin"), catchAsync(BAC.createVideoContent));
 
 
 module.exports = router;

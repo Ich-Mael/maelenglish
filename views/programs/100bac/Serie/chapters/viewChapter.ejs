@@ -35,6 +35,11 @@
       rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
   }
 
+  .course-card{
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    height: 4rem;
+  }
+
   @media (max-width: 750px) {
     html {
       font-size: 80%;
@@ -64,4 +69,21 @@
     Chapitre <%= subject.chapitres.indexOf(chapter._id)+ 1 %>: <%= chapter.title
     %>
   </h3>
+</div>
+<h2 class="my-3 text-center"> Contenu du cours </h2>
+
+<div class="container">
+  <div class="row">
+  <div class="col-md-4">
+    <div class="course-card mx-3"></div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="course-card mx-3"></div>
+  </div>
+  
+  <div class="col-md-4">
+    <div class="course-card mx-3"></div>
+  </div>
+</div>
 </div>

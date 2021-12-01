@@ -1,17 +1,171 @@
 <% layout('layouts/boilerplate') %>
 <style>
-  .subject-card{
+  .form-label {
+    margin-top: 1rem;
+  }
+</style>
+<style>
+  .subject-card {
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    font-size: 1.2rem;
+    color: rgb(27, 27, 124);
   }
 </style>
 <h1 class="text-center py-3 text-primary">Operation 100% BAC</h1>
 <div class="container">
-<div class="row mt-5">
-<% for(let subject of subjects) {%> 
-  <div class="col-md-4 subject-card">
-    <h3 class="text-center pt-3"><%= subject.title %> </h3>
-    <a href="/admindashboard/100bac/serie/<%=serie._id%>/subject/<%=subject._id%>/chapter/new" class="btn my-3 btn-primary">Add a new chapter</a>
+  <div class="row mt-5">
+    <% for(let subject of subjects) {%>
+    <div class="col-md-4 subject-card">
+      <h3 class="text-center pt-3"><%= subject.title %></h3>
+      <a
+        href="/admindashboard/100bac/serie/<%=serie._id%>/subject/<%=subject._id%>/chapter/new"
+        class="btn my-3 btn-primary"
+        >Add a new chapter</a
+      >
+      <!-- Button trigger modal -->
+      <button
+        type="button"
+        class="btn btn-success"
+        data-bs-toggle="modal"
+        data-bs-target="#N-<%= subject._id %>"
+      >
+        Add a new video content
+      </button>
+
+      <!-- Modal -->
+      <div
+        class="modal fade"
+        id="N-<%= subject._id %>"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">
+                Create a new video content
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <form
+                action="/admindashboard/100bac/serie/<%=serie._id%>/subject/<%=subject._id%>/videocontent"
+                method="post"
+              >
+                <label class="form-label" for="title">Chapter</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="chapter"
+                  name="chapter"
+                  required
+                  value=""
+                />
+
+                <select
+                  class="form-select mt-2"
+                  id="video-type"
+                  class="form-control"
+                  required
+                  name="video[videoType]"
+                  aria-label="Default select example"
+                >
+                  <option selected>Select video Type</option>
+                  <option value="course">Course</option>
+                  <option value="starterEx">Starter Exercise</option>
+                  <option value="advanceEx">Adance Exercise</option>
+                  <option value="nationalExam">National Exam</option>
+                  <option value="schoolExam">School Exam</option>
+                </select>
+
+                <label class="form-label" for="video-number"
+                  >Video Number</label
+                >
+                <input
+                  type="number"
+                  id="video-number"
+                  class="form-control"
+                  required
+                  name="video[videoNumber]"
+                  min="1"
+                  max="200"
+                />
+
+                <label class="form-label" for="title">Video Title</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="video-title"
+                  name="video[title]"
+                  required
+                  value=""
+                />
+
+                <label class="form-label" for="link">Link</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="video-link"
+                  name="video[link]"
+                  value=""
+                  required
+                />
+
+                <label class="form-label" for="author">Author</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="video-author"
+                  name="video[author]"
+                  value=""
+                />
+
+                <label class="form-label" for="exam-year"
+                  >Year of the Exam</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="exam-year"
+                  name="video[examYear]"
+                  value=""
+                />
+
+                <label class="form-label" for="school">School</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="school"
+                  name="video[school]"
+                  value=""
+                />
+
+                <label class="form-label" for="link">Country</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="country"
+                  name="video[country]"
+                  value=""
+                />
+                <button type="submit" class="mt-4 btn btn-outline-success">
+                  Create video content
+                </button>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% } %>
   </div>
-  <% } %> 
-</div>
 </div>
