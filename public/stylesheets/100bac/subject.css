@@ -5,6 +5,7 @@
 
 body {
   font-family: "Roboto", sans-serif;
+  background-color: rgb(210, 215, 218);
 }
 
 .maths-title {
@@ -18,6 +19,12 @@ body {
 }
 
 #course-menu-wrapper {
+}
+
+.calc-card{
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 25px 50px -12px;
+  padding: 0 2rem;
+  margin: 0 4rem;
 }
 
 .scientific-calc-btn {
@@ -325,6 +332,11 @@ div.list div:before {
   flex-wrap: wrap;
   justify-content: space-around;
   margin: 1rem;
+}
+
+.item{
+  padding: 0.3rem 0;
+  font-size: 1.2rem;
 }
 
 /* TV Screen */

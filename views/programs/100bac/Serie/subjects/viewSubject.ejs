@@ -25,13 +25,21 @@
 </div>
 
 <!-- Graph Calculator -->
-<h3 class="text-center my-2"> Utilisation de la calcuatrice</h3>
-<div class="d-flex justify-content-center flex-wrap">
-  <button type="button" class="btn graph-btn" data-bs-toggle="modal" data-bs-target="#graph-calc">Calculatrice
-    Graphique</button>
+<h3 class="text-center my-5"> Utilisation de la calcuatrice</h3>
+<div class="row">
+  <div class="col-md-6">
+    <div class="calc-card d-flex justify-content-center align-items-center flex-column">
+      <h4 class="text-center py-3">Calculatrice Graphique</h4>
+    <button type="button" class="btn mb-4 w-50 btn-outline-primary " data-bs-toggle="modal" data-bs-target="#graph-calc">Tracer une courbe</button>
+  </div>
+</div>
 
-  <button type="button" class="btn scientific-calc-btn" data-bs-toggle="modal" data-bs-target="#scien-calc">Calculatrice
-    Scientifique</button>
+  <div class="col-md-6">
+    <div class="calc-card d-flex justify-content-center align-items-center flex-column">
+      <h4 class="text-center py-3">Calculatrice Scientifique</h4>
+    <button type="button" class="btn mb-4 w-50 btn-outline-primary " data-bs-toggle="modal" data-bs-target="#scien-calc">Faire des Operations</button>
+  </div>
+  </div>
 </div>
 
 <!-- Modal  for Graph Calculator-->
@@ -824,14 +832,13 @@
           <% for(const [i, chapter] of subject.chapitres.entries()) {%> 
       <div class="col-md-3 ms-3 d-flex justify-content-center">
         <img
-          src="https://images.fineartamerica.com/images/artworkimages/medium/3/the-origin-of-complex-numbers-tom-hill-transparent.png"
+          src="<%= chapter.chapterImageUrl%>"
           alt="" class="week-lesson-img img-fluid img-thumbnail border border-dark" />
       </div>
       <div class="col-md-8 ">
         <div class="d-flex justify-content-center flex-wrap align-items-center">
           <h2 class="week-number">
             Chapitre <%= i +1 %>: <%=chapter.title %></h2>
-          
         </div>
         <div class="lesson-links">
 <!-- Button trigger modal -->
@@ -863,7 +870,7 @@
                       </div>
                       <div id="monitorscreen">
                         <iframe id="vimeo-content"
-                          src="https://player.vimeo.com/video/536620704?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+                          src="<%= chapter.aboutLink %>"
                           frameborder="0" height="500px" width="1000px" allow="autoplay; fullscreen; picture-in-picture"
                           allow="fullscreen" title="High-intensity Classes"></iframe>
                       </div>
@@ -886,13 +893,38 @@
             <a class="btn mx-3 btn-success" href="/100bac/serie/<%=serie._id%>/subject/<%=subject._id%>/chapter/<%=chapter._id%>/SE">Exercices d'entrainement</a>
             <button class="btn video-btn btn-warning mx-2 my-2" type="button" data-bs-toggle="collapse"
               data-bs-target="#self-p-1" aria-expanded="false" aria-controls="collapseExample">
-             Exercices non corrigés 
+             Obtenir un compte VIP pour ce chapitre 
             </button>
           </div>
 
           <div class="collapse" id="self-p-1">
             <div class="card card-body">
-              self-practice-2
+              <div class="container">
+                <h5 class="py-3 text-center">Contactez-nous avec le réseau de votre choix pour obtenir un compte VIP</h5>
+                <div class="d-flex pb-3 justify-content-around">
+                    <a style="display: inline-block;" href="tel: +22664350101">
+                      <!-- <i class="fa mx-2 fa-phone" aria-hidden="true"></i> -->
+                      <span class="btn btn-dark">Orange BF</span></a>
+                    <a style="display: inline-block;" href="tel: +22653344444">
+                      <!-- <i class="fa mx-2 fa-phone" aria-hidden="true"></i> -->
+                      <span class="btn btn-primary">Moov Africa</span></a>
+                    <a style="display: inline-block;" href="tel: +22678875576">
+                      <!-- <i class="fa mx-2 fa-phone" aria-hidden="true"></i> -->
+                      <span class="btn btn-info">Telecel Faso</span></a>
+                    <a style="display: inline-block;" class="btn btn-success " href="https://wa.me/22653344444" target="_blank">
+                      <i class="fa fa-whatsapp" aria-hidden="true"></i>
+                      <span class="">WhatsApp</span></a>
+                    </div>
+                </div>
+                <hr>
+              <h3 class="text-center" style="color: rgb(44, 102, 156);">Avantage d'un compte VIP</h3> 
+              <ul class="avantage">
+                <li class="item">Correction détaillée en vidéos des sujets d’examen</li>
+                <li class="item">Correction détaillée en vidéos des sujets des grands établissements</li>
+                <li class="item">Intégration de notre plateforme de coaching pour la réussite au BAC</li>
+                <li class="item">Réduction de 25% pour nos TD de remise à niveaux</li>
+              </ul>
+              </div>
             </div>
           </div>
           

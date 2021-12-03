@@ -15,8 +15,8 @@ body{
 
 .bac-banner {
   background: url(https://images.unsplash.com/photo-1542426144-3e6c375380e9?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1770&q=80) no-repeat center center fixed;
-  background: url(https://images.pexels.com/photos/6238050/pexels-photo-6238050.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260) no-repeat center center fixed;
   background: url(https://images.pexels.com/photos/5965839/pexels-photo-5965839.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500) no-repeat center center fixed;
+  background: url(https://images.pexels.com/photos/6238050/pexels-photo-6238050.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -60,7 +60,7 @@ body{
   letter-spacing: 0.2rem;
   text-transform: uppercase;
   text-shadow: 0px 4px 3px rgba(26, 25, 24, 0.4);
-  color: rgb(247, 244, 240);
+  color: rgb(27, 195, 201);
 }
 
 .liste-matiere {
@@ -85,8 +85,8 @@ body{
 
 .serie-text {
   display: inline;
-  background-color: rgba(255, 255, 255, 0.705);
-  padding: 2rem 0 2rem;
+  background-color: rgba(255, 255, 255, 0.822);
+  padding: 1rem 0;
 }
 
 .serie-heading{
@@ -104,14 +104,15 @@ body{
   /* text-transform: uppercase; */
   font-size: 1.3rem;
   padding: 1rem 0;
-  
 }
+
 .course-link {
   color: #232526;
   padding: 0;
   font-family: "Ultra", serif;
   text-decoration: none;
 }
+
 .course-btn:hover > .course-link {
   text-decoration: none;
   color: whitesmoke;

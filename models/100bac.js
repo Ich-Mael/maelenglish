@@ -111,8 +111,9 @@ const chapterSchema = new Schema({
     required: true,
   },
 
-  willLearn: {
+  aboutLink: {
     type: String,
+    default:""
   },
 
   revealDate: {
@@ -160,6 +161,14 @@ const chapterSchema = new Schema({
     },
   ],
 
+  practiceExercises: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "CourseVideo",
+    },
+  ],
+
+
   reviews: [
     {
       type: Schema.Types.ObjectId,
@@ -174,11 +183,10 @@ const courseVideoSchema = new Schema({
   examYear: String ,
   author: String ,
   school: String,
-  videoNumber: String,
   link: String,
   videoType :{
     type: String,
-    enum:["course", "starterEx", "advanceEx", "nationalExam", "schoolExam"]
+    enum:["course", "starterEx", "advanceEx", "nationalExam", "schoolExam", "practiceEx"]
   }
 });
 

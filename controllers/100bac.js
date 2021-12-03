@@ -58,7 +58,9 @@ module.exports.createChapter = async (req, res) => {
 module.exports.viewChapter = async (req, res) => {
   const serie = await Serie.findById(req.params.serie_id);
   const subject = await Subject.findById(req.params.subject_id);
-  const chapter = await Chapter.findById(req.params.chapter_id).populate("courses");
+  const chapter = await Chapter.findById(req.params.chapter_id).populate(
+    "courses"
+  );
 
   res.render("programs/100bac/Serie/chapters/viewChapter", {
     serie,
@@ -67,12 +69,13 @@ module.exports.viewChapter = async (req, res) => {
   });
 };
 
-
 // view a chapter starter exercice
 module.exports.viewChapterSE = async (req, res) => {
   const serie = await Serie.findById(req.params.serie_id);
   const subject = await Subject.findById(req.params.subject_id);
-  const chapter = await Chapter.findById(req.params.chapter_id).populate("courses");
+  const chapter = await Chapter.findById(req.params.chapter_id)
+    .populate("starterExercise")
+    .populate("practiceExercises");
 
   res.render("programs/100bac/Serie/chapters/viewChapterS-E", {
     serie,
@@ -95,24 +98,28 @@ module.exports.createVideoContent = async (req, res) => {
   await newCourseContent.save();
 
   //saving according to type of videos
-  if(req.body.video.videoType === "course"){
+  if (req.body.video.videoType === "course") {
     chapter.courses.push(newCourseContent._id);
   }
 
-  if(req.body.video.videoType === "starterEx"){
+  if (req.body.video.videoType === "starterEx") {
     chapter.starterExercise.push(newCourseContent._id);
   }
 
-  if(req.body.video.videoType === "advanceEx"){
+  if (req.body.video.videoType === "advanceEx") {
     chapter.advanceExercise.push(newCourseContent._id);
   }
 
-  if(req.body.video.videoType === "nationalExam"){
+  if (req.body.video.videoType === "nationalExam") {
     chapter.nationalExams.push(newCourseContent._id);
   }
 
-  if(req.body.video.videoType === "schoolExam"){
+  if (req.body.video.videoType === "schoolExam") {
     chapter.schoolExams.push(newCourseContent._id);
+  }
+
+  if (req.body.video.videoType === "practiceEx") {
+    chapter.practiceExercises.push(newCourseContent._id);
   }
 
   await chapter.save();
