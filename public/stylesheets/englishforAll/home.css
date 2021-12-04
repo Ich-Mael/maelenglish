@@ -14,21 +14,22 @@ body {
   margin: 0;
   padding: 0;
   background-color: #ffffffce;
-  font-family: "Roboto" serif;
+  font-family: Georgia, 'Times New Roman', Times, serif;
   overflow-x: hidden;
 }
 
 .header-wrapper {
   /* overflow: hidden; */
 }
+
 /* banner */
 .banner-wrapper {
   position: absolute;
   z-index: 10;
-  top: 50%;
+  top: 10%;
   left: 50%;
   overflow: hidden;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -10%);
 }
 
 .bg-img-wrapper {
@@ -64,7 +65,7 @@ body {
 }
 
 .banner-heading {
-  color: rgb(171, 9, 185);
+  color: rgb(246, 240, 247);
   /* width: 100%; */
   padding: 1rem;
   font-family: "Poppins", sans-serif;
@@ -82,14 +83,14 @@ body {
 .banner-paragraph {
   font-size: 3rem;
   font-family: "Chango", cursive;
-  color: rgb(250, 248, 246);
-  width: 100%;
-  margin: 1rem 0;
+  font-family: 'Nosifer', cursive;
+  color: rgb(255, 255, 255);
+  /* width: 100%; */
+  margin-top: 20vh;
   text-align: center;
-  /* line-height: 3rem; */
-  letter-spacing: 0.1rem;
-  text-shadow: 1px 2px 0px rgba(240, 170, 21, 0.678);
-  font-weight: 400;
+  letter-spacing: 0.2rem;
+  text-shadow: 1px 2px 0px rgba(209, 11, 209, 0.678);
+  font-weight: 700;
   opacity: 0;
   animation: moveBanner 1.5s 1.5s forwards;
 }
@@ -126,7 +127,6 @@ body {
   color: rgb(255, 255, 255);
   border: 2px solid rgb(255, 255, 255);
   background-color: rgb(248, 70, 10);
-  background-color: rgba(0, 0, 0, 0.459);
   font-size: 1.3rem;
   margin: 1rem 0;
   /* width: 35rem; */
@@ -139,7 +139,7 @@ body {
 .check-programs:hover {
   /* box-shadow: rgba(38, 39, 39, 0.25) 0px 4px 2px, */
   /* rgba(42, 44, 44, 0.12) 0px 2px 10px; */
-  background-color: rgba(153, 6, 141, 0.808);
+  background-color: rgba(51, 9, 46, 0.808);
   color: rgb(243, 239, 237);
 }
 
@@ -151,10 +151,11 @@ body {
 
 .main-program-description {
   font-family: "Roboto", sans-serif;
+  font-family: Georgia, 'Times New Roman', Times, serif;
   text-align: justify;
   font-weight: 500;
   font-size: 1.6rem;
-  /* line-height: 5rem; */
+  line-height: 2.6rem;
   padding: 5rem 4rem 6rem;
   color: rgba(32, 32, 32, 0.719);
 }
@@ -409,7 +410,6 @@ strong {
   .mission-paragraph,
   .free-lesson-paragraph {
     margin: 2rem 1rem;
-    font-size: 1.4rem;
   }
   .program-presentation {
     padding: 4rem 0 0;
@@ -418,12 +418,8 @@ strong {
     padding: 3rem 2rem 4rem;
   }
 
-  .program-name {
-    font-size: 1.3rem;
-  }
-
-  .program-description {
-    font-size: 0.8rem;
+  html{
+    font-size: 90%;
   }
 
   .know-more-btn {
@@ -446,6 +442,13 @@ strong {
     width: 60%;
   }
 
+  .banner-heading {
+  }
+  
+  .banner-paragraph {
+    font-size: 2.5rem;
+    margin-top: 20vh;
+  }
   .mission-paragraph,
   .free-lesson-paragraph {
     margin: 2rem 1rem;
@@ -455,12 +458,8 @@ strong {
     height: 30vh;
   }
 
-  .get-account,
-  .check-programs {
-    font-size: 0.7rem;
-  }
+  
   .programs {
-    font-size: 2rem;
     padding: 1rem;
     font-weight: 700;
   }
@@ -476,17 +475,19 @@ strong {
 /* Medium devices (landscape tablets, 768px and up) */
 @media (max-width: 800px) {
   .banner-heading {
-    font-size: 3rem;
+  }
+
+  html{
+    font-size: 80%;
   }
 
   .banner-paragraph {
-    font-size: 1.2rem;
     line-height: 2rem;
+    font-size: 2rem;
   }
 
   .main-program-description,
   .mission {
-    font-size: 1.2rem;
     /* line-height: 5rem; */
     padding: 2rem 2rem;
     color: rgba(32, 32, 32, 0.781);
@@ -519,8 +520,9 @@ strong {
     margin-bottom: 7rem;
   }
 
-  .banner-heading {
-    font-size: 2.5rem;
+
+  html{
+    font-size: 75%;
   }
 
   .effect01 span {
@@ -531,13 +533,8 @@ strong {
     margin: 1rem 4rem;
   }
 
-  .banner-paragraph {
-    font-size: 1rem;
-  }
-
   .main-program-description,
   .mission {
-    font-size: 1rem;
     /* line-height: 5rem; */
     padding: 2rem 2rem;
     color: rgba(32, 32, 32, 0.781);
@@ -551,7 +548,6 @@ strong {
 
   .know-more-btn {
     width: 40%;
-    font-size: 1rem;
   }
 
   .free-lesson-section {
@@ -559,38 +555,31 @@ strong {
   }
 
   .programs {
-    font-size: 1.7rem;
   }
 
   .free-lesson-paragraph {
     margin: 3rem 1rem 2rem;
-    font-size: 1.2rem;
   }
 
   .mission-paragraph {
     margin: 1rem;
-    font-size: 1.2rem;
   }
 
   .get-account,
   .check-programs {
-    font-size: 0.5rem;
   }
 }
 
 /* Large devices (laptops/desktops, 992px and up) */
 @media (max-width: 450px) {
   .banner-heading {
-    font-size: 2rem;
   }
 
   .banner-paragraph {
-    font-size: 1rem;
   }
 
   .know-more-btn {
     width: 55%;
-    font-size: 0.8rem;
   }
 
   .program-section-wrapper {
@@ -600,17 +589,14 @@ strong {
 
   .free-lesson-paragraph {
     margin: 3rem 1rem 2rem;
-    font-size: 1.2rem;
   }
 
   .mission-paragraph {
     margin: 1rem;
-    font-size: 1rem;
   }
 
   .programs {
     margin-top: 2rem;
-    font-size: 1.2rem;
   }
 }
 
@@ -618,24 +604,34 @@ strong {
 @media (max-width: 350px) {
   .know-more-btn {
     width: 40%;
-    font-size: 0.4rem;
   }
 
   .free-lesson-paragraph {
     margin: 2rem 0 0;
-    font-size: 1rem;
+  }
+
+  .banner-heading {
+    font-size: 2.5rem;
+  }
+  
+  .banner-paragraph {
+    font-size: 1.5rem;
+    margin-top: 20vh;
   }
 
   .mission-paragraph {
     margin: 1rem 0;
     padding: 0;
-    font-size: 1rem;
   }
 
   .programs {
     margin-top: 2rem;
-    font-size: 1rem;
   }
+
+  .get-account,
+.check-programs{
+  font-size: 1rem;
+}
 }
 
 /*btn_background*/
