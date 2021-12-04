@@ -76,6 +76,12 @@ nav {
   opacity: 1;
 }
 
+.brand{
+  font-size: 1.2rem;
+  display: inline-block;
+  color: rgb(130, 7, 161);
+}
+
 #brand-name {
   color: rgba(255, 250, 240, 0.9);
   /* font-family: 'Albril Fatface', cursive; */
@@ -658,7 +664,6 @@ hk-shadow {
 }
 
 /*hover links */
-
 #facebook:hover {
   color: rgb(245, 239, 239);
   transform: rotate(360deg);
@@ -676,6 +681,7 @@ hk-shadow {
   transform: rotate(360deg);
   background-color: rgb(241, 65, 21);
 }
+
 #instagram:hover {
   color: rgb(245, 239, 239);
   transform: rotate(360deg);
@@ -844,6 +850,10 @@ hk-shadow {
     font-size: 1.2rem;
   }
 
+  .brand{
+    font-size: 1.2rem;
+    }
+
   html {
     font-size: 90%;
   }
@@ -851,4 +861,10 @@ hk-shadow {
   .useful-links {
     font-size: 1rem;
   }
+}
+
+@media (max-width: 350px) {
+  .brand{
+    font-size: 1rem;
+    }
 }

@@ -2079,6 +2079,10 @@ customers-cards:before {
     left: 10%;
   }
 
+  .brand{
+    font-size: 1rem;
+    }
+
   .banner-heading {
     /* font-size: 2rem; */
     line-height: 3rem;
@@ -2112,6 +2116,9 @@ customers-cards:before {
     padding: 0;
     animation: cambio 50s infinite linear;
   }
+  .brand{
+    font-size: 0.8rem;
+    }
 
   .account-wrapper {
     width: 80%;

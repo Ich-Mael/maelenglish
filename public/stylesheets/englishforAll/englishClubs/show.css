@@ -492,6 +492,13 @@ customers-cards:before {
   margin: 2rem 0.5rem;
 }
 
+.news-card img{
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  overflow: hidden;
+}
+
 .news-card:hover {
   border: 3px solid rebeccapurple;
 }

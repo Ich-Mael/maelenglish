@@ -134,7 +134,7 @@ const workersOfMonthData = [
     studentOfMonth: {
       fullname: "AfroHk",
 
-      imageUrl: "https://i.ibb.co/nB7zHTr/afroHK.jpg",
+      imageUrl: "https://i.ibb.co/VDFyzpj/afrohk-logo-only.jpg",
 
       reasons: "AfroHk",
 
@@ -144,7 +144,7 @@ const workersOfMonthData = [
     instructorOfMonth: {
       fullname: "AfroHk",
 
-      imageUrl: "https://i.ibb.co/nB7zHTr/afroHK.jpg",
+      imageUrl: "https://i.ibb.co/VDFyzpj/afrohk-logo-only.jpg",
 
       reasons: "AfroHk",
 
