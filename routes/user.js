@@ -46,7 +46,7 @@ router.post("/register", async (req, res) => {
       } else {
         const redirectUrl = (await req.session.returnTo) || "/";
         delete req.session.returnTo;
-        req.flash("success", "Votre compte a été créé avec success");
+        // req.flash("success", "Votre compte a été créé avec success");
         res.redirect("/user/send-verification-email");
       }
     });
@@ -68,7 +68,7 @@ router.get(
 
     let url;
     let firstName = req.user.surname.split(" ")[0];
-    if (process.env.NODE_ENV == "production") {
+    if (process.env.NODE_ENV === "production") {
       url = "https://www.afrohk.com/user/verifyemail?token=" + token;
     } else {
       url = "http://localhost:3000/user/verifyemail?token=" + token;
@@ -79,7 +79,6 @@ router.get(
     res.render("user/account_handler", {
       username: firstName,
       verified: req.user.isVerified,
-      emailsent: true,
     });
   })
 );
