@@ -26,8 +26,8 @@ router.get("/register", (req, res) => {
 });
 
 // register user to DB
-router.post("/register", async (req, res) => {
-  try {
+router.post("/register", catchAsync(async (req, res) => {
+  
     const { name, surname, email, username, phoneNumber, gender, password } =
       req.body;
     const user = new User({
@@ -40,7 +40,7 @@ router.post("/register", async (req, res) => {
     });
     const registeredUser = await User.register(user, password);
 
-    req.login(registeredUser, async (err) => {
+    await req.login(registeredUser, async (err) => {
       if (err) {
         res.send("Something Went Wrong");
       } else {
@@ -50,11 +50,7 @@ router.post("/register", async (req, res) => {
         res.render("user/welcome");
       }
     });
-  } catch (e) {
-    req.flash("error", e.message);
-    res.redirect("/register");
-  }
-});
+}));
 
 //sending activation mail
 router.get(
