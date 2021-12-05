@@ -47,7 +47,7 @@ router.post("/register", async (req, res) => {
         const redirectUrl = (await req.session.returnTo) || "/";
         delete req.session.returnTo;
         // req.flash("success", "Votre compte a été créé avec success");
-        res.redirect("/user/send-verification-email");
+        res.render("user/welcome");
       }
     });
   } catch (e) {
