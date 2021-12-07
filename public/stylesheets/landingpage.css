@@ -79,6 +79,7 @@ nav {
   /* left: 0; */
   /* right: 0; */
   font-family: "Roboto" serif;
+  font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
 .nav-display {
@@ -164,13 +165,7 @@ profile-link:hover {
   color: rgb(117, 13, 177);
 }
 
-afro-shadow {
-  color: rgb(43, 42, 42);
-}
 
-hk-shadow {
-  color: orangered;
-}
 
 #user {
   text-transform: capitalize;
@@ -185,7 +180,7 @@ hk-shadow {
 
 .dropdown-menu {
   border: 2px solid black;
-  background-color: rgb(185, 182, 182);
+  background-color: rgb(245, 245, 245);
 }
 
 .dropdown-item {
@@ -198,7 +193,7 @@ hk-shadow {
 }
 
 .dropdown-item:hover {
-  background-color: black;
+  background-color: rgb(99, 10, 151);
   color: whitesmoke;
 }
 
@@ -535,7 +530,7 @@ hk-shadow {
 .program-description {
   font-family: "Roboto", sans-serif;
   font-size: 1.3rem;
-  font-weight: 500;
+  font-weight: 400;
   margin-top: 1rem;
   font-size: 1rem;
   color: rgba(32, 32, 32, 0.781);
@@ -793,7 +788,7 @@ hk-shadow {
 
 #customers-cards {
   background: #c6cfd3; /* fallback for old browsers */
-  background: linear-gradient(112deg, #f3b60f 53%, rgb(129, 214, 240) 47%);
+  background: linear-gradient(112deg, #f3b60f81 53%, rgba(129, 214, 240, 0.473) 47%);
   max-width: 900px;
   /* background: url("https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"); */
   background-size: cover;
@@ -836,16 +831,30 @@ customers-cards:before {
   left: 0;
   right: 0;
 }
+.customer-paragraph-1 {
+  font-size: 1.5rem;
+  /* line-height: 1.5rem; */
+  margin-bottom: 3rem;
+  color: #06723c;
+  font-family: "Chivo", sans-serif;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  text-align: center;
+  font-weight: 500;
+  letter-spacing: 0.1rem;
+  /* text-shadow: 1px 1px 0px rgb(31, 30, 30); */
+  padding: 0 0 0.5rem 0;
+}
 
 .carousel-caption {
   position: initial;
   z-index: 10;
   padding: 5rem 8rem;
   font-family: "Roboto", sans-serif;
+  font-family: Georgia, 'Times New Roman', Times, serif;
   font-size: 1rem;
   text-align: center;
-  font-weight: 500;
-  font-size: 1rem;
+  font-weight: 400;
+  font-size: 1.1rem;
   color: rgba(43, 42, 41, 0.849);
   line-height: 2rem;
 }
@@ -865,7 +874,7 @@ customers-cards:before {
     margin: 0 0;
     padding: 2rem 0 5rem;
   }
-
+ 
   .common-heading {
   }
 }
@@ -893,10 +902,10 @@ customers-cards:before {
   padding: 1rem 0 0.4rem;
   text-align: center;
   font-weight: 700;
-  color: rgb(255, 255, 255);
+  color: rgb(121, 6, 136);
   font-family: "Chivo", sans-serif;
   margin-top: 2rem;
-  text-shadow: 1px 2px 3px black;
+  /* text-shadow: 1px 2px 3px black; */
 }
 
 @media (max-width: 767px) {
@@ -908,7 +917,7 @@ customers-cards:before {
 }
 
 .carousel-button {
-  background-color: rgb(247, 87, 12);
+  background-color: rgb(111, 10, 124);
   border-radius: 50%;
   margin: 0 1rem;
   padding: 1rem;
@@ -954,18 +963,6 @@ customers-cards:before {
 .customer-fullname {
 }
 
-.customer-paragraph-1 {
-  font-size: 1.5rem;
-  /* line-height: 1.5rem; */
-  margin-bottom: 3rem;
-  color: #160404;
-  font-family: "Chivo", sans-serif;
-  text-align: center;
-  font-weight: 900;
-  letter-spacing: 0.1rem;
-  /* text-shadow: 1px 1px 0px rgb(31, 30, 30); */
-  padding: 0 0 0.5rem 0;
-}
 
 /* end customer section */
 
@@ -1982,9 +1979,8 @@ customers-cards:before {
   }
 
   .program-description {
-    font-family: "Roboto", sans-serif;
-    font-size: 0.8rem;
-    font-weight: 500;
+    font-size: 1rem;
+    font-weight: 400;
   }
 
   .learn-with-us,

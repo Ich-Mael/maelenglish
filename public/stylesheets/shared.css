@@ -178,7 +178,7 @@ hk-shadow {
 
 .dropdown-menu {
   border: 2px solid black;
-  background-color: rgb(185, 182, 182);
+  background-color: rgb(245, 245, 245);
 }
 
 .dropdown-item {
@@ -191,7 +191,7 @@ hk-shadow {
 }
 
 .dropdown-item:hover {
-  background-color: black;
+  background-color: rgb(99, 10, 151);
   color: whitesmoke;
 }
 
