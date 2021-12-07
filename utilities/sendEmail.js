@@ -40,7 +40,7 @@ module.exports = class Emailer {
   // Send the actual email
   async send(template, subject) {
     // 1) Render HTML based on a pug template
-    let html; 
+    let html;
 
     ejs.renderFile(
       `${__dirname}/../views/emails/${template}.ejs`,
@@ -48,14 +48,15 @@ module.exports = class Emailer {
         firstName: this.firstName,
         url: this.url,
         subject,
-      }, function(err, str){
-	if(err){ 
-		console.log(err);
-	}else{
-		html = str;
-	}
-    });
-
+      },
+      function (err, str) {
+        if (err) {
+          console.log(err);
+        } else {
+          html = str;
+        }
+      }
+    );
     // 2) Define email options
     const mailOptions = {
       from: this.from,

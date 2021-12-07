@@ -9,7 +9,9 @@
   .welcome{
     text-transform: uppercase;
     text-align: center;
+    font-family: Georgia, 'Times New Roman', Times, serif;
     font-weight: bolder;
+    letter-spacing: 0.13rem;
     color: rgb(87, 8, 161);
   }
 </style>
@@ -17,22 +19,15 @@
 
 <div class="container d-flex justify-content-center align-items-center">
   <div class="jumbotron">
-    <h1 class="display-4 py-3 welcome">Bienvenue au temple du savoir</h1>
+    <h1 class="display-3 py-3 welcome">Bienvenue au temple du savoir</h1>
     <hr class="my-4" />
     <p><strong>Etape suivante : Activation de compte </strong></p>
-    <p>
-      Consultez votre boîte mail pour activer votre compte. <br /><span
-        class="text-danger"
-        >Le lien d'activation de compte est valide pour 20 minutes</span
-      >
-    </p>
     <br />
-    <p>Vous n'avez pas reçu le mail d'activation de compte ?</p>
     <a
       class="btn btn-outline-primary btn-small mt-2"
       href="/user/send-verification-email"
       role="button"
-      >Recevoir un nouveau lien d'activation de compte par mail</a
+      >Cliquez ici sur ce lien pour recevoir un mail d'activation de compte</a
     >
   </div>
 </div>
