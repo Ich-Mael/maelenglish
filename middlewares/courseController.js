@@ -46,7 +46,7 @@ module.exports.checkEnglishBoardMembership = catchAsync(async (req, res, next) =
     req.user.role == "admin" || req.user.role == "english-club-admin"
   ) {
     next();
-  } else {
+ } else {
     req.flash("error", "You are not a board member.");
     res.redirect(`/englishlang4all/Clubs`);
   }
