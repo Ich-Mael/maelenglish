@@ -2,6 +2,7 @@ const express = require('express');
 const catchAsync = require('../utilities/catchAsync');
 const router = express.Router();
 const BAC = require("../controllers/100bac");
+
 // const { Serie, Chapitre, Subject } = require("../models/100bac");
 const { isLoggedIn, checkRoles, isVerified} = require("../middlewares/userController");
 const { checkCourseOwnership, checkProgramOwnership } = require('../middlewares/courseController');
@@ -37,7 +38,6 @@ router.get('/100bac/serie/:serie_id', catchAsync(BAC.showSerieHome));
 router.get('/admindashboard/100bac/serie/:serie_id/subject/new', isVerified, checkRoles("admin"), catchAsync(async(req, res) =>{
     const serie = await Serie.findById(req.params.serie_id);
     res.render("programs/100bac/Serie/subjects/newSubject", {serie});
-
 }));
 
 // create a new subject
