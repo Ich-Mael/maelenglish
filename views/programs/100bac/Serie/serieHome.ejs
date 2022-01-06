@@ -20,13 +20,11 @@
         Étudier et Réviser à son rythme selon ses besoins et sa disponibilité
       </p>
     </div>
-      
-   
     </div>
     <!--End Header-->
-
+    <%if(currentUser.role === "admin"){%>
     <a href="/admindashboard/100bac/serie/<%= serie._id %>/subjects" class="btn btn-outline-secondary m-3">View all subjects</a>
-    
+    <%}%>
     <!-- Section 1 nos cours -->
     <div class="container my-5">
       <h3 class="liste-matiere text-center">Liste des matières</h3>
