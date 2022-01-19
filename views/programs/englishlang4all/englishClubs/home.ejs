@@ -150,6 +150,7 @@
 <!-- ours english clubs -->
 <section class="our-englishclubs">
   <h2 class="program-title text-center">Our Natural English clubs</h2>
+
   <div class="univ-eng-clubs">
     <div class="cards-wrapper">
       <h3 class="univ-eng-club-title">
@@ -157,6 +158,29 @@
           class="underline"
         ></span>
       </h3>
+      <div class="d-flex justify-content-center align-items-center">
+        <p>
+          <button class="btn btn-lg btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#ouaga" aria-expanded="false" aria-controls="collapseExample">
+            OUAGADOUGOU
+          </button>
+        </p>
+<!-- 
+        <p>
+          <button class="btn btn-lg btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#bobo" aria-expanded="false" aria-controls="collapseExample">
+            Bobo-Dioulasso
+          </button>
+        </p>
+
+
+        <p>
+          <button class="btn btn-lg btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#koudougou" aria-expanded="false" aria-controls="collapseExample">
+            Koudougou
+          </button>
+        </p>-->
+      </div> 
+ 
+  <div class="collapse" id="ouaga">
+    <div class="card card-body">
       <div class="container">
         <div class="row pb-5">
           <% for(let club of clubs) {%>
@@ -240,6 +264,8 @@
           <%}%>
         </div>
       </div>
+    </div>
+  </div> 
     </div>
   </div>
 </section>
