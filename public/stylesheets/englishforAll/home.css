@@ -14,7 +14,7 @@ body {
   margin: 0;
   padding: 0;
   background-color: #ffffffce;
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: Georgia, "Times New Roman", Times, serif;
   overflow-x: hidden;
 }
 
@@ -83,7 +83,7 @@ body {
 .banner-paragraph {
   font-size: 3rem;
   font-family: "Chango", cursive;
-  font-family: 'Nosifer', cursive;
+  font-family: "Nosifer", cursive;
   color: rgb(255, 255, 255);
   /* width: 100%; */
   margin-top: 20vh;
@@ -151,7 +151,7 @@ body {
 
 .main-program-description {
   font-family: "Roboto", sans-serif;
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: Georgia, "Times New Roman", Times, serif;
   text-align: justify;
   font-weight: 500;
   font-size: 1.6rem;
@@ -227,6 +227,7 @@ body {
 }
 
 .mission-paragraph {
+  font-family: Georgia, "Times New Roman", Times, serif;
   margin: 2rem 0 2rem;
   text-align: center;
   color: rgba(36, 3, 51, 0.651);
@@ -354,7 +355,7 @@ strong {
   background: -webkit-linear-gradient(
     to bottom,
     rgba(0, 0, 0, 0.596),
-    #00000067,
+    #00000067
   ); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(
     to bottom,
@@ -418,7 +419,7 @@ strong {
     padding: 3rem 2rem 4rem;
   }
 
-  html{
+  html {
     font-size: 90%;
   }
 
@@ -444,7 +445,7 @@ strong {
 
   .banner-heading {
   }
-  
+
   .banner-paragraph {
     font-size: 2.5rem;
     margin-top: 20vh;
@@ -458,7 +459,6 @@ strong {
     height: 30vh;
   }
 
-  
   .programs {
     padding: 1rem;
     font-weight: 700;
@@ -477,7 +477,7 @@ strong {
   .banner-heading {
   }
 
-  html{
+  html {
     font-size: 80%;
   }
 
@@ -520,8 +520,7 @@ strong {
     margin-bottom: 7rem;
   }
 
-
-  html{
+  html {
     font-size: 75%;
   }
 
@@ -613,7 +612,7 @@ strong {
   .banner-heading {
     font-size: 2.5rem;
   }
-  
+
   .banner-paragraph {
     font-size: 1.5rem;
     margin-top: 20vh;
@@ -629,9 +628,9 @@ strong {
   }
 
   .get-account,
-.check-programs{
-  font-size: 1rem;
-}
+  .check-programs {
+    font-size: 1rem;
+  }
 }
 
 /*btn_background*/

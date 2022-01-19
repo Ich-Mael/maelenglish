@@ -161,7 +161,7 @@
         <div class="row pb-5">
           <% for(let club of clubs) {%>
           <!-- english club 1 -->
-          <div class="col-sm-6 col-md-4 card-wrapper">
+          <div class="col-sm-6 col-md-3 card-wrapper">
             <div class="eng-club-details">
               <div class="img-wrapper">
                 <img
@@ -178,30 +178,32 @@
                 <p class="found-date">Founded in <%=club.foundDate %></p>
               </div>
               <hr />
-              <div class="join py-2">
-                <div class="m-0">
+              <div class="pb-3">
+                <div class="d-flex justify-content-center">
+                  <div>
                   <!-- Button trigger modal -->
-                  <button
-                    type="button"
-                    class="btn mx-2 btn-primary"
-                    data-bs-toggle="modal"
-                    data-bs-target="#english-club-1"
-                  >
-                    Learn more
-                  </button>
-                  <button class="btn mx-2 btn-outline-primary">
-                    <a
-                      class="join-link"
-                      href="/englishlang4all/Clubs/<%=club._id%>"
-                      >Join us</a
+                      <button
+                      type="button"
+                      class="btn mx-2 btn-primary"
+                      data-bs-toggle="modal"
+                      data-bs-target="#N<%=club._id%>"
                     >
-                  </button>
+                      Learn more
+                    </button>
+                    <button class="btn mx-2 btn-outline-primary">
+                      <a
+                        class="join-link"
+                        href="/englishlang4all/Clubs/<%=club._id%>"
+                        >GET IN</a
+                      >
+                    </button>
+                  </div>
                 </div>
 
                 <!-- Modal -->
                 <div
                   class="modal fade"
-                  id="english-club-1"
+                  id="N<%=club._id%>"
                   tabindex="-1"
                   aria-labelledby="exampleModalLabel"
                   aria-hidden="true"
@@ -219,7 +221,7 @@
                           aria-label="Close"
                         ></button>
                       </div>
-                      <div class="modal-body">...</div>
+                      <div class="modal-body"><%=club.description%></div>
                       <div class="modal-footer">
                         <button
                           type="button"
