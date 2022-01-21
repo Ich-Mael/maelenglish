@@ -67,10 +67,8 @@ const englishClubSchema = new Schema(
     // image
     bannerImageUrlMedium: {
       type: String,
-    },
-
-    bannerImageUrlSmall: {
-      type: String,
+      required: true,
+      trim: true,
     },
 
     logoImageUrl: {

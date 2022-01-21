@@ -30,7 +30,7 @@
       </div>
       <div class="social-links mb-1">
         <!-- Social media -->
-        <h3 class="social-links-header" class="mb-2">
+        <h3 class="social-links-header" class="mb-4">
           Join us on social media
         </h3>
         <div class="social-media-icons">
@@ -74,11 +74,8 @@
   <div class="col-lg-8">
     <div id="banner">
       <div class="bg-img-wrapper">
-        <img class="img-small"
-          src="https://images.unsplash.com/photo-1573166953836-06864dc70a21?ixid=MnwxMjA3fDB8MHxzZWFyY2h8ODV8fGFmcmljYW4lMjBnaXJsfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
-          alt="" />
         <img class="img-medium"
-          src="https://images.unsplash.com/photo-1516182823370-7a5fa91445c3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
+          src="<%= club.bannerImageUrlMedium %>"
           alt="" />
       </div>
     </div>
@@ -727,7 +724,7 @@
             </div>
             <div class="card-body">
               <div>
-                <h3 class="card-title weekly-activity">Weekly English Club Meeting</h3>
+                <h4 class="card-title weekly-activity py-2">English Club Meeting</h4>
                 <h4 class="activity-date fs-4 text-center">
                   <%= days[club.weeklyActivity[0].englishClubMeeting.meetingDate.getDay()] %>,
                   <%=club.weeklyActivity[0].englishClubMeeting.meetingDate.getDate()%>
@@ -752,9 +749,9 @@
                                         modal-fullscreen-md-down">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">
-                          Weekly English Club Meeting Agenda
-                        </h5>
+                        <h6 class="modal-title" id="exampleModalLabel">
+                          Agenda
+                        </h6>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
                       <div class="modal-body">
@@ -773,7 +770,7 @@
               <hr>
               <div>
                 <h3 class="card-title weekly-activity text-primary">Online Debates</h3>
-                <ul class="list-group list-group-flush fs-3">
+                <ul class="list-group list-group-flush fs-4">
                   <li class="list-group-item"> <span class="">Topic 1
                       :</span><br>
                     <span class="text-success fw-bold"><%=club.weeklyActivity[0].OnlineDebate.topicOne %></span> <br>
@@ -782,7 +779,7 @@
                       <%=club.weeklyActivity[0].OnlineDebate.debateDateOne.getDate()%>
                       <%= months[club.weeklyActivity[0].OnlineDebate.debateDateOne.getMonth()]%>
                       <%=club.weeklyActivity[0].OnlineDebate.debateDateOne.getFullYear()%></span>
-                    <br>
+                   At
                     <span class=""><%=club.weeklyActivity[0].OnlineDebate.debateTimeOne%></span>
                   </li>
                   <li class="list-group-item"><span class="">Topic 2 :</span>
@@ -794,8 +791,7 @@
                       <%= months[club.weeklyActivity[0].OnlineDebate.debateDateTwo.getMonth()]%>
                       <%=club.weeklyActivity[0].OnlineDebate.debateDateTwo.getFullYear()%>
                     </span>
-                    <br>
-                    <span class=""> <%=club.weeklyActivity[0].OnlineDebate.debateTimeTwo%></span>
+                    At <span class=""> <%=club.weeklyActivity[0].OnlineDebate.debateTimeTwo%></span>
                   </li>
                 </ul>
 

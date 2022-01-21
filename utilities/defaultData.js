@@ -104,7 +104,7 @@ const defaultWeeklyActivityData = {
 // weekly lesson
 const weeklyLessonsData = [
   {
-    lessonTitle: "Afro House of knowledge 1",
+    lessonTitle: "Prepositions",
 
     // image
     videoLink: "https://www.youtube.com/embed/VaTVklkzFPI",
@@ -117,7 +117,7 @@ const weeklyLessonsData = [
   },
 
   {
-    lessonTitle: "Afro House of knowledge 2",
+    lessonTitle: "Dark L vs Light L",
 
     // image
     videoLink: "https://www.youtube.com/embed/Q2yvSja9G98",
@@ -135,7 +135,7 @@ const weeklyLessonsData = [
 const workersOfMonthData = [
   {
     studentOfMonth: {
-      fullname: "Name of the Student of the Month",
+      fullname: "Fullname of the Student of the Month",
 
       imageUrl: "https://i.ibb.co/VDFyzpj/afrohk-logo-only.jpg",
 
