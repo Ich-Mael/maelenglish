@@ -1,4 +1,18 @@
 <% layout('layouts/boilerplate') %>
+<!-- WORD Processor-->
+<script src="https://cdn.tiny.cloud/1/p06f8vxdpje8xosyvnq48z68vc7n479iauh5s2jk9zx30qg2/tinymce/5/tinymce.min.js"
+  referrerpolicy="origin"></script>
+</script>
+<script>
+  tinymce.init({
+    selector: '.mytextarea',
+    height: 500,
+    max_width: 500,
+    min_height: 300,
+    min_width: 400
+  });
+</script>
+
 <h1 class="text-center my-5">Create a new english club</h1>
 <div class="container">
   <div class="row justify-content-center">
@@ -6,10 +20,65 @@
       <form action="/englishlang4all/clubs/create" method="POST">
         <h3 class="text-center">English club general information</h3>
 
+        <!-- Country -->
+        <label class="form-label" for="Club Country">Country</label>
+        <input
+          type="text"
+          required
+          class="form-control"
+          id="country"
+          name="englishClub[country]"
+          value=""
+        />
+        <!-- city -->
+        <label class="form-label" for="club city"> City </label>
+        <input
+          type="text"   
+          required
+          class="form-control"
+          name="englishClub[city]"
+          id="acronym"
+          value=""
+        />
+        <div class="py-1">
+          <p>Type of English Club</p>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="englishClub[clubType]" id="High-school" value="High-school" required>
+            <label class="form-check-label" for="High-school">High-school</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="englishClub[clubType]" id="female" value="University" required>
+            <label class="form-check-label" for="University">University</label>
+          </div>
+
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="englishClub[clubType]" id="Company" value="Company" required>
+            <label class="form-check-label" for="Company">Company</label>
+          </div>
+
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="englishClub[clubType]" id="Professional" value="Professional" required>
+            <label class="form-check-label" for="Professional"> Professional</label>
+          </div>
+
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="englishClub[clubType]" id="Private" value="Private" required>
+            <label class="form-check-label" for="Private">Private</label>
+          </div>
+
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="englishClub[clubType]" id="Simple" value="Simple" required>
+            <label class="form-check-label" for="Simple">Simple</label>
+          </div>
+        </div>
+<hr>
+
+<h3 class="text-center">Club identity info</h3>
         <!--Instituition -->
         <label class="form-label" for="instituition">Instituition</label>
         <input
           type="text"
+          required
           class="form-control"
           id="instituition"
           name="englishClub[instituition]"
@@ -18,7 +87,7 @@
         <!-- acronym-->
         <label class="form-label" for="Acronym">Acronym</label>
         <input
-          type="text"
+          type="text"   required
           class="form-control"
           name="englishClub[acronym]"
           id="acronym"
@@ -29,6 +98,7 @@
         <label class="form-label" for="name">English club name</label>
         <input
           type="text"
+          required
           class="form-control"
           name="englishClub[name]"
           id="name"
@@ -38,10 +108,10 @@
         <!-- motto -->
         <label class="form-label" for="motto">Motto</label>
         <input
-          type="text"
+          type="text"   required
           class="form-control"
           name="englishClub[motto]"
-          id="motto"
+          id="motto"  
           value=""
         />
 
@@ -58,7 +128,7 @@
         <!-- club logo  -->
         <label class="form-label" for="logoImageUrl">English club Logo Url</label>
         <input
-          type="text"
+          type="text"   required
           class="form-control"
           name="englishClub[logoImageUrl]"
           value=""
@@ -68,7 +138,7 @@
         <!-- Instituition logo  -->
         <label class="form-label" for="logoImageUrl">Instituition Logo Url</label>
         <input
-          type="text"
+          type="text"   required
           class="form-control"
           name="englishClub[instituitionLogoUrl]"
           value=""
@@ -78,7 +148,7 @@
         <!-- Description -->
         <label class="form-label" for="description">Description</label>
         <textarea
-          class="form-control"
+          class="form-control mytextarea"   required
           name="englishClub[description]"
           id="description"
           cols="50"
@@ -91,7 +161,7 @@
         <!-- President -->
         <label class="form-label" for="president-username">President username</label>
         <input
-          type="text"
+          type="text"   required
           class="form-control"
           name="PresidentInfo"
           id="PresidentInfo"
@@ -101,7 +171,7 @@
         <!-- Vice President -->
         <label class="form-label" for="president-username">Vice-President username</label>
         <input
-          type="text"
+          type="text"   required
           class="form-control"
           name="VicePresidentInfo"
           id="VicePresidentInfo"
@@ -112,7 +182,7 @@
         <!-- Treasurer -->
         <label class="form-label" for="president-username">Treasurer username</label>
         <input
-          type="text"
+          type="text"   required
           class="form-control"
           name="treasurerInfo"
           id="treasurerInfo"
@@ -122,7 +192,7 @@
         <!-- Secretary -->
         <label class="form-label" for="president-username">Secretary username</label>
         <input
-          type="text"
+          type="text"   required
           class="form-control"
           name="secretaryInfo"
           id="secretaryInfo"
@@ -133,7 +203,7 @@
         <!-- Communication Manager -->
         <label class="form-label" for="president-username">Communication Manager username</label>
         <input
-          type="text"
+          type="text"    required
           class="form-control"
           name="comManagerInfo"
           id="comManagerInfo"
@@ -143,13 +213,34 @@
         <!-- Communication Manager -->
         <label class="form-label" for="president-username">Cultural Activity Manager username</label>
         <input
-          type="text"
+          type="text"    required
           class="form-control"
           name="cultActMInfo"
           id="cultActMInfo"
           value=""
         />
+      
+        <!-- Female leadership -->
+        <label class="form-label" for="flweOfficer">Female Leadership & Woman Empowerment officer username</label>
+        <input
+          type="text"    
+          required
+          class="form-control"
+          name="flweOfficer"
+          id="flweOfficer"
+          value=""
+        />
        
+        <!-- Multimedia Manager -->
+        <label class="form-label" for="mediaManager">Multimedia Manager username</label>
+        <input
+          type="text"    required
+          class="form-control"
+          name="mediaManager"
+          id="mediaManager"
+          value=""
+        />
+        
        
         <button class="form-control btn-success my-3" type="submit">
           Create an English Club

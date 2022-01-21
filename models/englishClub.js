@@ -5,6 +5,29 @@ const { format, formatDistance, formatRelative, subDays } = require("date-fns");
 // english club schema
 const englishClubSchema = new Schema(
   {
+    country: {
+      type: String,
+      trim: true,
+    },
+
+    city: {
+      type: String,
+      trim: true,
+    },
+
+    clubType: {
+      type: String,
+      required: true,
+      enum: [
+        "High-school",
+        "University",
+        "Company",
+        "Professional",
+        "Private",
+        "Simple",
+      ],
+    },
+
     instituition: {
       type: String,
       trim: true,

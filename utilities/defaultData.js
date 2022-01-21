@@ -5,6 +5,8 @@ const positions = [
   "Secretary",
   "Communication Manager",
   "Cultural Affairs Officer",
+  "Female Leadership & Woman Empowerment Officer",
+  "Multimedia Manager",
 ];
 // Default data
 
@@ -35,17 +37,17 @@ const months = [
 // Articles
 
 defaultArticleData = {
-  title: "New English Club",
+  title: "New Article",
 
   // image
   articleImage:
     "https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?ixid=MnwxMjA3fDB8MHxzZWFyY2h8N3x8bmV3c3xlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
 
-  articleSummary: "New English Club",
+  articleSummary: "This is a new article",
 
   articleContent: "New English Club",
 
-  articleAuthor: "New English Club",
+  articleAuthor: "William Shakespeare",
 
   postedAT: Date.now(),
 };
@@ -53,9 +55,9 @@ defaultArticleData = {
 //Weekly Activity
 const defaultWeeklyActivityData = {
   wordOfDay: {
-    word: "New English Club",
+    word: "New English word",
 
-    wordMeaning: "New English Club",
+    wordMeaning: "Just a new word",
 
     learnMoreWord: "New English Club",
 
@@ -63,9 +65,9 @@ const defaultWeeklyActivityData = {
   },
 
   IdiomDay: {
-    idiom: "New English Club",
+    idiom: "New English Idiom",
 
-    idiomMeaning: "New English Club",
+    idiomMeaning: "Just a new idiomatic expression.",
 
     learnMoreIdiom: "",
 
@@ -75,21 +77,21 @@ const defaultWeeklyActivityData = {
   englishClubMeeting: {
     meetingDate: Date.now(),
 
-    venue: "New English Club",
+    venue: "ROOM 4",
 
     meetingTime: "15:00",
 
-    about: "New English Club",
+    about: "Importance of English",
   },
 
   OnlineDebate: {
-    topicOne: "New English Club",
+    topicOne: "Money Vs Knowledge",
 
     debateDateOne: Date.now(),
 
     debateTimeOne: "15:00",
 
-    topicTwo: "New English Club",
+    topicTwo: "No homework at school",
 
     debateDateTwo: Date.now(),
 
@@ -99,66 +101,66 @@ const defaultWeeklyActivityData = {
   },
 };
 
-
 // weekly lesson
-const weeklyLessonsData = [{
+const weeklyLessonsData = [
+  {
     lessonTitle: "Afro House of knowledge 1",
 
     // image
-    videoLink:"https://youtu.be/vv7cBMCBUdk" ,
+    videoLink: "https://www.youtube.com/embed/VaTVklkzFPI",
 
-    lessonSummary: "Afro House of knowledge" ,
+    lessonSummary: "Use of the prepositions IN, ON and AT ",
 
-    lessonAuthor: "House Of English Lovers",
+    lessonAuthor: "Hadar",
 
-    postedAT: Date.now() 
+    postedAT: Date.now(),
   },
-  
+
   {
-  lessonTitle: "Afro House of knowledge 2",
+    lessonTitle: "Afro House of knowledge 2",
 
-  // image
-  videoLink:"https://youtu.be/vv7cBMCBUdk" ,
+    // image
+    videoLink: "https://www.youtube.com/embed/Q2yvSja9G98",
 
-  lessonSummary: "Afro House of knowledge" ,
+    lessonSummary: "American accent: How to pronounce the letter L",
 
-  lessonAuthor: "House Of English Lovers",
+    lessonAuthor: "Hadar",
 
-  postedAT: Date.now() 
-}];
+    postedAT: Date.now(),
+  },
+];
 
 // workersOfMonth
 // english club article schema
 const workersOfMonthData = [
   {
     studentOfMonth: {
-      fullname: "AfroHk",
+      fullname: "Name of the Student of the Month",
 
       imageUrl: "https://i.ibb.co/VDFyzpj/afrohk-logo-only.jpg",
 
-      reasons: "AfroHk",
+      reasons: "Reason in one sentence",
 
-      about: "AfroHk",
+      about: "More about the SOM",
     },
 
     instructorOfMonth: {
-      fullname: "AfroHk",
+      fullname: "Fullname of the Instructor the Month",
 
       imageUrl: "https://i.ibb.co/VDFyzpj/afrohk-logo-only.jpg",
 
-      reasons: "AfroHk",
+      reasons: "Reason in one sentence",
 
-      about: "AfroHk",
-    }
-  }];
+      about: "More about the IOM",
+    },
+  },
+];
 
-
-  // media schema
-const mediaData = 
-  {
-    mediaTitle: "Describing my best friend",
-    videoLink: "https://www.youtube.com/embed/4nh79-Cbvf0"
-  };
+// media schema
+const mediaData = {
+  mediaTitle: "Describing my best friend",
+  videoLink: "https://www.youtube.com/embed/4nh79-Cbvf0",
+};
 
 module.exports = {
   positions,
@@ -168,5 +170,5 @@ module.exports = {
   defaultArticleData,
   weeklyLessonsData,
   workersOfMonthData,
-  mediaData 
+  mediaData,
 };

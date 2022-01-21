@@ -41,16 +41,12 @@ router.get("/englishlang4all/free_english_lessons", (req, res) => {
  * ================================================ */
 
 //English clubs
-router.get(
-  "/englishlang4all/clubs",
-  isLoggedIn,
-  async (req, res) => {
-    const clubs = await englishClubs.find({});
-    res.render("programs/englishlang4all/englishClubs/home", {
-      clubs,
-    });
-  }
-);
+router.get("/englishlang4all/clubs", isLoggedIn, async (req, res) => {
+  const clubs = await englishClubs.find({});
+  res.render("programs/englishlang4all/englishClubs/home", {
+    clubs,
+  });
+});
 
 // Form for a new english club
 router.get(
@@ -70,6 +66,8 @@ router.post(
   isVerified,
   checkRoles("admin"),
   catchAsync(async (req, res) => {
+    console.log(req.body);
+
     const englishClub = new englishClubs(req.body.englishClub);
 
     const {
@@ -79,6 +77,8 @@ router.post(
       secretaryInfo,
       comManagerInfo,
       cultActMInfo,
+      flweOfficer,
+      mediaManager,
     } = req.body;
 
     // adding boad members
@@ -123,6 +123,20 @@ router.post(
 
     englishClub.boardMembers.push(cultManager._id);
     englishClub.members.push(cultManager._id);
+
+    const FLWEOfficer = await User.findOne({
+      username: flweOfficer,
+    });
+
+    englishClub.boardMembers.push(FLWEOfficer._id);
+    englishClub.members.push(FLWEOfficer._id);
+
+    const MediaManager = await User.findOne({
+      username: mediaManager,
+    });
+
+    englishClub.boardMembers.push(MediaManager._id);
+    englishClub.members.push(MediaManager._id);
 
     await englishClub.save();
 
