@@ -3,18 +3,21 @@ const User = require("../models/user");
 const {
   englishClubs,
   englishClubArticles,
-  englishWeeklyActivities,
+  dailyVocabulary,
+  clubMeeting,
+  onlineDebate,
   englishClubWorkersOfMonth,
   englishWeeklyLessons,
   englishClubMedia,
-  englishClubComment,
 } = require("../models/englishClub");
 
 const {
   positions,
   days,
   months,
-  defaultWeeklyActivityData,
+  dailyVocabData,
+  clubMeetingData,
+  onlineDebateData,
   defaultArticleData,
   mediaData,
   weeklyLessonsData,
@@ -42,12 +45,21 @@ module.exports = async function createDefaultContent(club_id) {
   englishClub.workersOfMonth.push(firstWorkersOfMonth._id);
 
   // Adding default weekly activities
-  const firstWeeklyActivity = new englishWeeklyActivities(
-    defaultWeeklyActivityData
-  );
-  await firstWeeklyActivity.save();
+  const firstDailyVocab = new dailyVocabulary(dailyVocabData);
+  await firstDailyVocab.save();
 
-  englishClub.weeklyActivity.push(firstWeeklyActivity._id);
+  englishClub.dailyVocab.push(firstDailyVocab._id);
+  // Adding default weekly meeting
+  const firstClubMeeting = new clubMeeting(clubMeetingData);
+  await firstClubMeeting.save();
+
+  englishClub.weeklyMeeting.push(firstClubMeeting._id);
+
+  // Adding default online debates
+  const firstOnlineDebate = new onlineDebate(onlineDebateData);
+  await firstOnlineDebate.save();
+
+  englishClub.onlineDebates.push(firstOnlineDebate._id);
 
   // Adding weekly lesson
   for (let weekLessonData of weeklyLessonsData) {
@@ -58,15 +70,13 @@ module.exports = async function createDefaultContent(club_id) {
     englishClub.weeklyVideoLesson.push(weeklyLesson._id);
   }
 
- // Adding media
- for (let i = 0; i < 2; i++) {
-	const newMedia = new englishClubMedia(mediaData);
-	await newMedia.save();
-    
-	englishClub.media.unshift(newMedia._id);
-      }
-     
- await englishClub.save();
+  // Adding media
+  for (let i = 0; i < 2; i++) {
+    const newMedia = new englishClubMedia(mediaData);
+    await newMedia.save();
 
+    englishClub.media.unshift(newMedia._id);
+  }
 
+  await englishClub.save();
 };

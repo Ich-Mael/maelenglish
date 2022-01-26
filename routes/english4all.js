@@ -9,7 +9,9 @@ const { positions, days, months } = require("../utilities/defaultData");
 const {
   englishClubs,
   englishClubArticles,
-  englishWeeklyActivities,
+  dailyVocabulary,
+  clubMeeting,
+  onlineDebate,
   englishClubWorkersOfMonth,
   englishWeeklyLessons,
   englishClubMedia,
@@ -167,7 +169,9 @@ router.get(
         path: "media",
         populate: { path: "mediaComments", populate: { path: "author" } },
       })
-      .populate("weeklyActivity");
+      .populate("dailyVocab")
+      .populate("weeklyMeeting")
+      .populate("onlineDebates");
 
     res.render("programs/englishlang4all/englishClubs/show", {
       club,
@@ -186,11 +190,11 @@ router.get(
 
 // Adding a member to an English Club
 
-//=====================================
+//======================================
 //
 //              Articles
 //
-//=====================================
+//======================================
 
 router.post(
   "/englishlang4all/Clubs/:club_id/board_dashboard/article",
@@ -283,37 +287,33 @@ router.delete(
 
 // **************************** Weekly activities *****************************************
 
-//=====================================
+//=========================================================================================
 //
-//             Weekly activity
+//                                     Weekly activity
 //
-//=====================================
+//=========================================================================================
+
+// Word and idiom of the day
 
 router.post(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyactivity",
+  "/englishlang4all/Clubs/:club_id/board_dashboard/dailyVocab",
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const englishClub = await englishClubs.findById(req.params.club_id);
-    const newWeeklyActivity = new englishWeeklyActivities({
+    const newDailyVocabulary = new dailyVocabulary({
       wordOfDay: {
         ...req.body.wordOfDay,
       },
       IdiomDay: {
         ...req.body.IdiomDay,
       },
-      englishClubMeeting: {
-        ...req.body.englishClubMeeting,
-      },
-      OnlineDebate: {
-        ...req.body.OnlineDebate,
-      },
     });
 
-    await newWeeklyActivity.save();
+    await newDailyVocabulary.save();
 
-    englishClub.weeklyActivity.unshift(newWeeklyActivity);
+    englishClub.dailyVocab.unshift(newDailyVocabulary);
 
     await englishClub.save();
 
@@ -321,86 +321,51 @@ router.post(
   })
 );
 
-//View all weekly activity
-router.get(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyActivities",
+// weekly meeting
+router.post(
+  "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyMeeting",
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
-    const club = await englishClubs
-      .findById(req.params.club_id)
-      .populate("weeklyActivity");
+    const englishClub = await englishClubs.findById(req.params.club_id);
+    const newClubMeeting = new clubMeeting(req.body.englishClubMeeting);
 
-    // console.log(weeklyActivities);
-    res.render(
-      "programs/englishlang4all/englishClubs/activities/weeklyActivitiesShow",
-      {
-        club,
-        days,
-        months,
-      }
-    );
-  })
-);
+    await newClubMeeting.save();
 
-// Form
-router.get(
-  "/english/clubs/:club_id/board_dashboard/weeklyActivities/:weeklyActivity_id/edit",
-  isLoggedIn,
-  isVerified,
-  checkEnglishBoardMembership,
-  catchAsync(async (req, res) => {
-    const weeklyActivity = await englishWeeklyActivities.findById(
-      req.params.weeklyActivity_id
-    );
-    const club = await englishClubs.findById(req.params.club_id);
+    englishClub.weeklyMeeting.unshift(newClubMeeting);
 
-    res.render(
-      "programs/englishlang4all/englishClubs/activities/weeklyActivityEdit",
-      {
-        weeklyActivity,
-        club,
-      }
-    );
-  })
-);
-
-//Updating weekly activity data
-router.put(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyActivities/:weeklyActivity_id",
-  isLoggedIn,
-  isVerified,
-  checkEnglishBoardMembership,
-  catchAsync(async (req, res) => {
-    const weeklActivity = await englishWeeklyActivities.findByIdAndUpdate(
-      req.params.weeklyActivity_id,
-      {
-        wordOfDay: {
-          ...req.body.wordOfDay,
-        },
-        IdiomDay: {
-          ...req.body.IdiomDay,
-        },
-        englishClubMeeting: {
-          ...req.body.englishClubMeeting,
-        },
-        OnlineDebate: {
-          ...req.body.OnlineDebate,
-        },
-      }
-    );
-    weeklActivity.save();
+    await englishClub.save();
 
     res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
   })
 );
 
-//=====================================
+// Online debate
+router.post(
+  "/englishlang4all/Clubs/:club_id/board_dashboard/onlineDebate",
+  isLoggedIn,
+  isVerified,
+  checkEnglishBoardMembership,
+  catchAsync(async (req, res) => {
+    const englishClub = await englishClubs.findById(req.params.club_id);
+    const newOnlineDebate = new onlineDebate(req.body.OnlineDebate);
+
+    await newOnlineDebate.save();
+
+    englishClub.onlineDebates.unshift(newOnlineDebate);
+
+    await englishClub.save();
+
+    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+  })
+);
+
+//==============================================================
 //
-//             Weekly lessons
+//                        Weekly lessons
 //
-//=====================================
+//==============================================================
 
 router.post(
   "/englishlang4all/Clubs/:club_id/board_dashboard/videoLesson",

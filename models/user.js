@@ -26,10 +26,7 @@ const userSchema = new Schema(
     gender: {
       type: String,
       required: true,
-      enum: [
-        "male",
-        "female",
-        "other"] 
+      enum: ["male", "female", "other"],
     },
 
     email: {
@@ -38,13 +35,13 @@ const userSchema = new Schema(
       lowercase: true,
       unique: true,
       validate: {
-          validator: function(v) {
-              return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v);
-          },
-          message: "Saisissez une adresse mail valide"
+        validator: function (v) {
+          return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v);
+        },
+        message: "Saisissez une adresse mail valide",
       },
-      required: [true, "Email required"]
-  },
+      required: [true, "Email required"],
+    },
 
     role: {
       type: String,
@@ -80,6 +77,11 @@ const userSchema = new Schema(
     },
 
     about: {
+      type: String,
+      trim: true,
+    },
+
+    englishLevel: {
       type: String,
       trim: true,
     },
@@ -145,7 +147,6 @@ const userSchema = new Schema(
   },
   { timestamps: true }
 );
-
 
 userSchema.plugin(passportLocalMongoose);
 

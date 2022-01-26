@@ -93,7 +93,7 @@
   </li>
   <li class="nav-item">
     <a class="nav-link engClub-nav-link" href="#weekly-activities-wrapper">Weekly
-      Activities</a>
+      Practice</a>
   </li>
   <li class="nav-item">
     <a class="nav-link engClub-nav-link" href="#media-wrapper">Media</a>
@@ -114,7 +114,7 @@
                     align-items-center">
               <h1 class="align-self-center year"> <span style="color:rgb(22, 155, 243);"><%= club.name %></span>
                 <br>
-                Board Members <br> Year 2021-2022</h1>
+                Board Members <br> Year 2022-2023</h1>
             </div>
           </div>
         </div>
@@ -131,9 +131,6 @@
             </div>
             <p>
               <%= club.boardMembers[i].about%>
-              Lorem Ipsum is simply dummy text of the printing
-              and
-              typesetting industry.
             </p>
             <!-- Social media -->
             <div class="social-media-icons align-self-center">
@@ -244,12 +241,12 @@
             <div>
               <div class="lesson-wrapper my-3">
                 <h4 class="week-lesson-title"><%= club.weeklyVideoLesson[0].lessonTitle %> </h4>
-                <p>
+                <p class="">
                   <%- club.weeklyVideoLesson[0].lessonSummary%>
                 </p>
                 <button type="button" class="btn ms-2 video-btn btn-outline-primary" data-bs-toggle="modal"
                   data-bs-target="#lesson-1-vid-1">
-                  Click to watch the video lesson
+                  Click to watch the lesson
                 </button>
                 <hr>
               </div>
@@ -260,7 +257,7 @@
                 </p>`
                 <button type="button" class="btn video-btn ms-2 btn-outline-primary" data-bs-toggle="modal"
                   data-bs-target="#lesson-1-vid-2">
-                  Click to watch the video lesson
+                  Click to watch the lesson
                 </button>
               </div>
             </div>
@@ -341,7 +338,7 @@
 
       <!-- Weekly activities section -->
       <section id="weekly-activities-wrapper">
-        <h1 class="activity-heading">Weekly Activities</h1>
+        <h1 class="activity-heading">Weekly Practice</h1>
         <div class="accordion my-5" id="accordionExample">
           <div class="accordion-item">
             <h2 class="accordion-header" id="headingOne">
@@ -668,20 +665,20 @@
         <div class="daily-content">
           <div class="card m-2">
             <div class="card-header text-center word-day">
-              Vocabulary Cookies
+              Daily Vocabulary
             </div>
             <div class="card-body">
               <div class="card-title word-day-title py-2 fs-4"><h4 class="fw-bold py-1">Word of the day </h4>
-                <p><%= club.weeklyActivity[0].wordOfDay.word %></p></div>
+                <p><%= club.dailyVocab[0].wordOfDay.word %></p></div>
               <p class="card-text word-day-meaning fs-4"><span class="fw-bold">Meaning : </span>
-                <%= club.weeklyActivity[0].wordOfDay.wordMeaning %>
+                <%= club.dailyVocab[0].wordOfDay.wordMeaning %>
               </p>
               <hr>
               <div class="card-title idioms-title fs-4 py-2"><h4 class="fw-bold">Idiom of the day</h4>
-                  <p class=""><%= club.weeklyActivity[0].IdiomDay.idiom %> </p>
+                  <p class=""><%= club.dailyVocab[0].IdiomDay.idiom %> </p>
               </div>
               <p class="card-text word-day-meaning fs-4"><span class="fw-bold">Meaning : </span>
-                <%= club.weeklyActivity[0].IdiomDay.idiomMeaning %>
+                <%= club.dailyVocab[0].IdiomDay.idiomMeaning %>
               </p>
               <!-- Button trigger modal -->
               <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#wod-1">
@@ -701,11 +698,11 @@
                     </div>
                     <div class="modal-body">
                       <h3>Sentence examples for the WOD</h3>
-                      <p class="fs-3"> <%- club.weeklyActivity[0].wordOfDay.learnMoreWord %>
+                      <p class="fs-3"> <%- club.dailyVocab[0].wordOfDay.learnMoreWord %>
                       </p>
                       <hr>
                       <h3>Sentence examples for the IOD</h3>
-                      <p class="fs-3"> <%- club.weeklyActivity[0].IdiomDay.learnMoreIdiom %> </p>
+                      <p class="fs-3"> <%- club.dailyVocab[0].IdiomDay.learnMoreIdiom %> </p>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn
@@ -725,17 +722,17 @@
             <div class="card-body">
               <div>
                 <h4 class="card-title weekly-activity py-2">English Club Meeting</h4>
-                <h4 class="activity-date fs-4 text-center">
-                  <%= days[club.weeklyActivity[0].englishClubMeeting.meetingDate.getDay()] %>,
-                  <%=club.weeklyActivity[0].englishClubMeeting.meetingDate.getDate()%>
-                  <%= months[club.weeklyActivity[0].englishClubMeeting.meetingDate.getMonth()] %>
-                  <%=club.weeklyActivity[0].englishClubMeeting.meetingDate.getFullYear()%>
+                <h4 class="activity-date fs-4">
+                  <%= days[club.weeklyMeeting[0].meetingDate.getDay()] %>,
+                  <%=club.weeklyMeeting[0].meetingDate.getDate()%>
+                  <%= months[club.weeklyMeeting[0].meetingDate.getMonth()] %>
+                  <%=club.weeklyMeeting[0].meetingDate.getFullYear()%>
                 </h4>
                 <h4 class="activity-place fs-4"> <span class="fw-bold text-danger"><i
-                      class="fas me-2 fa-map-marker-alt"></i>Venue</span> <br>
-                  <%=club.weeklyActivity[0].englishClubMeeting.venue %> </h4>
+                      class="fas me-2 fa-map-marker-alt"></i>Venue : </span> 
+                  <%=club.weeklyMeeting[0].venue %> </h4>
                 <h4 class="activity-time fs-4"> <span class="fw-bold text-danger"><i class="fas me-2 fa-clock"></i>Time:
-                  </span> <%=club.weeklyActivity[0].englishClubMeeting.meetingTime %>
+                  </span> <%=club.weeklyMeeting[0].meetingTime %>
                 </h4>
                 <!-- Button trigger modal -->
                 <button type="button" class="btn mt-2
@@ -755,7 +752,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
                       <div class="modal-body">
-                        <p class="fs-4"> <%- club.weeklyActivity[0].englishClubMeeting.about %>
+                        <p class="fs-4"> <%- club.weeklyMeeting[0].about %>
                         </p>
                       </div>
                       <div class="modal-footer">
@@ -773,25 +770,25 @@
                 <ul class="list-group list-group-flush fs-4">
                   <li class="list-group-item"> <span class="">Topic 1
                       :</span><br>
-                    <span class="text-success fw-bold"><%=club.weeklyActivity[0].OnlineDebate.topicOne %></span> <br>
+                    <span class="text-success fw-bold"><%=club.onlineDebates[0].topicOne %></span> <br>
                     <span class="">
-                      <%= days[club.weeklyActivity[0].OnlineDebate.debateDateOne.getDay()]%>,
-                      <%=club.weeklyActivity[0].OnlineDebate.debateDateOne.getDate()%>
-                      <%= months[club.weeklyActivity[0].OnlineDebate.debateDateOne.getMonth()]%>
-                      <%=club.weeklyActivity[0].OnlineDebate.debateDateOne.getFullYear()%></span>
+                      <%= days[club.onlineDebates[0].debateDateOne.getDay()]%>,
+                      <%=club.onlineDebates[0].debateDateOne.getDate()%>
+                      <%= months[club.onlineDebates[0].debateDateOne.getMonth()]%>
+                      <%=club.onlineDebates[0].debateDateOne.getFullYear()%></span>
                    At
-                    <span class=""><%=club.weeklyActivity[0].OnlineDebate.debateTimeOne%></span>
+                    <span class=""><%=club.onlineDebates[0].debateTimeOne%></span>
                   </li>
                   <li class="list-group-item"><span class="">Topic 2 :</span>
                     <br>
-                    <span class="text-success fw-bold"><%=club.weeklyActivity[0].OnlineDebate.topicTwo%></span>
+                    <span class="text-success fw-bold"><%=club.onlineDebates[0].topicTwo%></span>
                     <br>
-                    <span class=""> <%= days[club.weeklyActivity[0].OnlineDebate.debateDateTwo.getDay()]%>,
-                      <%=club.weeklyActivity[0].OnlineDebate.debateDateTwo.getDate()%>
-                      <%= months[club.weeklyActivity[0].OnlineDebate.debateDateTwo.getMonth()]%>
-                      <%=club.weeklyActivity[0].OnlineDebate.debateDateTwo.getFullYear()%>
+                    <span class=""> <%= days[club.onlineDebates[0].debateDateTwo.getDay()]%>,
+                      <%=club.onlineDebates[0].debateDateTwo.getDate()%>
+                      <%= months[club.onlineDebates[0].debateDateTwo.getMonth()]%>
+                      <%=club.onlineDebates[0].debateDateTwo.getFullYear()%>
                     </span>
-                    At <span class=""> <%=club.weeklyActivity[0].OnlineDebate.debateTimeTwo%></span>
+                    At <span class=""> <%=club.onlineDebates[0].debateTimeTwo%></span>
                   </li>
                 </ul>
 
@@ -814,7 +811,7 @@
                       </div>
                       <div class="modal-body">
                         <p>
-                          <%- club.weeklyActivity[0].OnlineDebate.aboutTopic %>
+                          <%- club.onlineDebates[0].aboutTopic %>
                         </p>
                       </div>
                       <div class="modal-footer">

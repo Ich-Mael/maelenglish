@@ -83,7 +83,7 @@
       <section class="word-day-wrapper my-4" style="background-color: rgb(214, 232, 248); padding: 2rem;">
         <!-- meeting date -->
         <label class="form-label fw-bold my-3" for="Word of the day">Meeting Date</label>
-        <input type="date" class="form-control" name="englishClubMeeting[meetingDate]" id="meetingDate" value="" required/>
+        <input type="date" class="form-control" name="englishClubMeeting[meetingDate]" id="meetingDate" value="<%= weeklyActivity.englishClubMeeting.meetingDate %>" required/>
 
         <!-- Venue  -->
         <label class="form-label fw-bold my-3" for="title"> Venue </label>
@@ -91,7 +91,7 @@
 
         <!-- Time  -->
         <label class="form-label fw-bold my-3" for="title"> Time </label>
-        <input type="time" class="form-control" name="englishClubMeeting[meetingTime]" value="" id="time" required />
+        <input type="time" class="form-control" name="englishClubMeeting[meetingTime]" value="<%=weeklyActivity.englishClubMeeting.meetingTime %> " id="time" required />
 
         <!-- About the meeting  -->
         <label class="form-label fw-bold my-3" for="learnMoreIdiom">More about the weekly

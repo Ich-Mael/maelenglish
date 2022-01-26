@@ -129,10 +129,24 @@ const englishClubSchema = new Schema(
       },
     ],
 
-    weeklyActivity: [
+    dailyVocab: [
       {
         type: Schema.Types.ObjectId,
-        ref: "EnglishWeeklyActivity",
+        ref: "DailyVocabulary",
+      },
+    ],
+
+    weeklyMeeting: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "ClubMeeting",
+      },
+    ],
+
+    onlineDebates: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "OnlineDebate",
       },
     ],
 
@@ -192,7 +206,8 @@ const englishClubArticleSchema = new Schema(
 );
 
 //Daily vocabulary schema
-const weeklyActivitySchema = new Schema({
+
+const dailyVocabularySchema = new Schema({
   wordOfDay: {
     word: {
       type: String,
@@ -203,80 +218,80 @@ const weeklyActivitySchema = new Schema({
       type: String,
       default: "",
     },
+
     learnMoreWord: {
       type: String,
     },
-    examples: [String],
   },
 
   IdiomDay: {
     idiom: {
       type: String,
-      default: "Afro House of Knowledge",
+      default: "When pigs fly",
     },
 
     idiomMeaning: {
       type: String,
-      default: "",
+      default: "To say something will never happen",
     },
 
     learnMoreIdiom: {
       type: String,
-      default: "Afro House of Knowledge",
-    },
-
-    examples: [String],
-  },
-
-  englishClubMeeting: {
-    meetingDate: {
-      type: Date,
-      default: Date.now(),
-    },
-    venue: {
-      type: String,
-      default: "Afro House of Knowledge",
-    },
-    meetingTime: {
-      type: String,
-    },
-    about: {
-      type: String,
-      default: "Afro House of Knowledge",
+      default: "",
     },
   },
+});
 
-  OnlineDebate: {
-    topicOne: {
-      type: String,
-      default: "No debate yet",
-    },
+//weekly meeting
+const englishClubMeetingSchema = new Schema({
+  meetingDate: {
+    type: Date,
+    default: Date.now(),
+  },
+  venue: {
+    type: String,
+    default: "Afro House of Knowledge",
+  },
+  meetingTime: {
+    type: String,
+  },
+  about: {
+    type: String,
+    default: "Afro House of Knowledge",
+  },
+});
 
-    debateDateOne: {
-      type: Date,
-      default: Date.now(),
-    },
+// weekly online debate
+const weeklyOnlineDebateSchema = new Schema({
+  topicOne: {
+    type: String,
+    default: "No debate yet",
+  },
 
-    debateTimeOne: {
-      type: String,
-    },
+  debateDateOne: {
+    type: Date,
+    default: Date.now(),
+  },
 
-    topicTwo: {
-      type: String,
-      default: "No debate yet",
-    },
+  debateTimeOne: {
+    type: String,
+  },
 
-    debateDateTwo: {
-      type: Date,
-      default: Date.now(),
-    },
+  topicTwo: {
+    type: String,
+    default: "No debate yet",
+  },
 
-    debateTimeTwo: {
-      type: String,
-    },
-    aboutTopic: {
-      type: String,
-    },
+  debateDateTwo: {
+    type: Date,
+    default: Date.now(),
+  },
+
+  debateTimeTwo: {
+    type: String,
+  },
+  aboutTopic: {
+    type: String,
   },
 });
 
@@ -390,10 +405,14 @@ const englishClubArticles = mongoose.model(
   englishClubArticleSchema
 );
 
-const englishWeeklyActivities = mongoose.model(
-  "EnglishWeeklyActivity",
-  weeklyActivitySchema
+const dailyVocabulary = mongoose.model(
+  "DailyVocabulary",
+  dailyVocabularySchema
 );
+
+const clubMeeting = mongoose.model("ClubMeeting", englishClubMeetingSchema);
+
+const onlineDebate = mongoose.model("OnlineDebate", weeklyOnlineDebateSchema);
 
 const englishWeeklyLessons = mongoose.model(
   "EnglishWeeklyLessons",
@@ -408,7 +427,9 @@ const englishClubWorkersOfMonth = mongoose.model(
 module.exports = {
   englishClubs,
   englishClubArticles,
-  englishWeeklyActivities,
+  dailyVocabulary,
+  onlineDebate,
+  clubMeeting,
   englishWeeklyLessons,
   englishClubWorkersOfMonth,
   englishClubMedia,

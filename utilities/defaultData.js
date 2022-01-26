@@ -53,15 +53,13 @@ defaultArticleData = {
 };
 
 //Weekly Activity
-const defaultWeeklyActivityData = {
+const dailyVocabData = {
   wordOfDay: {
     word: "New English word",
 
     wordMeaning: "Just a new word",
 
     learnMoreWord: "New English Club",
-
-    examples: [],
   },
 
   IdiomDay: {
@@ -70,35 +68,33 @@ const defaultWeeklyActivityData = {
     idiomMeaning: "Just a new idiomatic expression.",
 
     learnMoreIdiom: "",
-
-    examples: [],
   },
+};
 
-  englishClubMeeting: {
-    meetingDate: Date.now(),
+const clubMeetingData = {
+  meetingDate: Date.now(),
 
-    venue: "ROOM 4",
+  venue: "ROOM 4",
 
-    meetingTime: "15:00",
+  meetingTime: "15:00",
 
-    about: "Importance of English",
-  },
+  about: "Importance of English",
+};
 
-  OnlineDebate: {
-    topicOne: "Money Vs Knowledge",
+const onlineDebateData = {
+  topicOne: "Money Vs Knowledge",
 
-    debateDateOne: Date.now(),
+  debateDateOne: Date.now(),
 
-    debateTimeOne: "15:00",
+  debateTimeOne: "15:00",
 
-    topicTwo: "No homework at school",
+  topicTwo: "No homework at school",
 
-    debateDateTwo: Date.now(),
+  debateDateTwo: Date.now(),
 
-    debateTimeTwo: "20:00",
+  debateTimeTwo: "20:00",
 
-    aboutTopic: "New English Club",
-  },
+  aboutTopic: "New English Club",
 };
 
 // weekly lesson
@@ -166,7 +162,9 @@ module.exports = {
   positions,
   days,
   months,
-  defaultWeeklyActivityData,
+  dailyVocabData,
+  clubMeetingData,
+  onlineDebateData,
   defaultArticleData,
   weeklyLessonsData,
   workersOfMonthData,
