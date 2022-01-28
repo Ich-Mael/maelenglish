@@ -2,7 +2,7 @@ const positions = [
   "President",
   "Vice-President",
   "Treasurer",
-  "Secretary",
+  "General Secretary",
   "Communication Manager",
   "Cultural Affairs Officer",
   "Female Leadership & Woman Empowerment Officer",

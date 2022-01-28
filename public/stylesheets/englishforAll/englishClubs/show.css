@@ -316,7 +316,7 @@ customers-cards:before {
 }
 
 .carousel-item {
-  min-height: 30rem;
+  min-height: 40rem;
 }
 
 .year {
@@ -357,10 +357,10 @@ customers-cards:before {
 }
 
 .carousel-caption img {
-  width: 12rem;
-  height: 12rem;
+  width: 20rem;
+  height: 30rem;
   border: 5px solid rgb(250, 247, 247);
-  border-radius: 50%;
+  /* border-radius: 50%; */
   margin-top: 2rem;
 }
 
