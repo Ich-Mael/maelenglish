@@ -3,6 +3,7 @@
   padding: 0;
   text-decoration: none;
 }
+
 html {
   overflow-x: hidden;
 }
@@ -10,7 +11,7 @@ html {
 body {
   font-family: "Roboto", serif;
   overflow-x: hidden;
-  background-color: rgb(235, 228, 228);
+  background-color: rgb(255, 255, 255);
 }
 
 .carousel-inner {
@@ -23,17 +24,16 @@ body {
   color: rgb(255, 255, 255);
   text-shadow: 1px 2px 1px black;
   font-size: 2.5rem;
-  background: #4568dc; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #b06ab3,
-    #4568dc
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #b06ab3,
-    #4568dc
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #4568dc;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right,
+      #b06ab3,
+      #4568dc);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right,
+      #b06ab3,
+      #4568dc);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   letter-spacing: 0.1rem;
   padding: 2rem 2rem;
 }
@@ -62,12 +62,6 @@ body {
   background-color: rgb(147, 7, 165);
 }
 
-.card-wrapper {
-  display: flex;
-  justify-content: center;
-  padding: 0;
-  margin: 2rem 0;
-}
 
 .eng-club-details:hover {
   border: 1px solid rgb(60, 117, 238);
@@ -86,11 +80,11 @@ body {
 
 .eng-club-details {
   box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
-  background-color: rgb(253, 253, 253);
-  border-radius: 4px;
+  /* background-color: rgb(253, 253, 253); */
   padding: 0;
-  width: 80%;
-  margin: 0 0.5rem;
+  border-radius: 5px;
+  border: 3px solid black;
+  /* width: 100%; */
 }
 
 .img-wrapper {
@@ -115,26 +109,20 @@ body {
 }
 
 .institution {
-  background: #00d2ff; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #3a7bd5,
-    #00d2ff,
-    #3a7bd5
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #3a7bd5,
-    #00d2ff,
-    #3a7bd5
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #FF8008;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #FFC837, #FF8008);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #FFC837, #FF8008);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
 
   padding: 1rem 1rem;
   font-family: "Chivo", sans-serif;
   font-weight: 900;
   font-size: 1.6rem;
   text-align: center;
-  color: rgb(230, 222, 207);
+  color: rgba(24, 23, 23, 0.801);
 }
 
 .definition {
@@ -160,8 +148,7 @@ body {
 /*         responsiveness            */
 /* ================================= */
 
-@media (max-width: 1200px) {
-}
+@media (max-width: 1200px) {}
 
 @media (max-width: 1024px) {
   .underline {
@@ -189,7 +176,7 @@ body {
       display: none;
     }
 
-    .banner-wrapper {
+    banner-wrapper {
       height: 50vh;
       background: url("https://i.ibb.co/1dbjT55/neci-6.jpg");
       background-size: cover;
@@ -222,10 +209,12 @@ body {
     .program-title {
       font-size: 2rem;
     }
+
     .underline {
       width: 3rem;
       height: 0.8rem;
     }
+
     .why-heading {
       font-size: 1.2rem;
       margin: 0;
@@ -239,6 +228,7 @@ body {
     .eng-club-details {
       width: 90%;
     }
+
     .img-wrapper img {
       height: 250px;
     }
@@ -248,6 +238,7 @@ body {
     .why-heading {
       font-size: 1.2rem;
     }
+
     .underline {
       display: none;
     }
@@ -261,11 +252,13 @@ body {
     .eng-club-heading {
       font-size: 1.2rem;
     }
+
     .underline {
       width: 2rem;
       height: 0.5rem;
     }
   }
+
   .why-heading {
     font-size: 1.2rem;
   }
