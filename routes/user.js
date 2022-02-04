@@ -104,20 +104,22 @@ router.get("/user/verifyemail", async (req, res) => {
           res.render("user/account_verified");
         }
       });
-    } else {
-      res.render("user/account_handler", {
-        username: req.user.username,
-        verified: req.user.isVerified,
-        err: "Le lien d’activation de compte est expiré",
-        emailsent: true,
-      });
-    }
-  } else {
-    // doesnt have a token
-    // I will simply redirect to profile
-    res.redirect("/register");
-  }
+    } 
+};
 });
+  //   else {
+  //     res.render("user/account_handler", {
+  //       username: req.user.username,
+  //       verified: req.user.isVerified,
+  //       err: "Le lien d’activation de compte est expiré",
+  //       emailsent: true,
+  //     });
+  //   }
+  // } else {
+  //   // doesnt have a token
+  //   // I will simply redirect to profile
+  //   res.redirect("/register");
+  // }
 
 // login user form
 router.get("/login", (req, res) => {
