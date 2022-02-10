@@ -875,15 +875,7 @@
                                                   margin-top: 2rem;
                                                 }
 
-                                                /*
-@media (max-width: 767px) {
-    .carousel-caption img {
-        width: 6rem;
-        height: 6rem;
-        margin-top: 1rem;
-    }
-}
-*/
+
 
                                                 #image-caption {
                                                   font-style: normal;
@@ -1578,6 +1570,7 @@
                                                 }
 
                                                 /* End footer */
+
                                                 /* animations */
                                                 /*===================================
 

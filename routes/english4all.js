@@ -28,7 +28,7 @@ const {
 } = require("../middlewares/courseController");
 
 //english for everybody
-router.get("/englishlang4all", isLoggedIn, (req, res) => {
+router.get("/englishlang4all", (req, res) => {
   res.render("programs/englishlang4all/home");
 });
 
@@ -43,7 +43,7 @@ router.get("/englishlang4all/free_english_lessons", (req, res) => {
  * ================================================ */
 
 //English clubs
-router.get("/englishlang4all/clubs", isLoggedIn, async (req, res) => {
+router.get("/englishlang4all/clubs", async (req, res) => {
   const clubs = await englishClubs.find({});
   res.render("programs/englishlang4all/englishClubs/home", {
     clubs,
