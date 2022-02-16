@@ -14,8 +14,14 @@ const DateUtil = require("./utilities/date");
 const catchAsync = require("./utilities/catchAsync");
 const ExpressError = require("./utilities/ExpressError");
 
+const {
+    news,
+    allNews
+} = require("./models/news");
+
 // Routes requirements
 const userRoutes = require("./routes/user");
+const newsRoutes = require("./routes/news");
 const commentRoutes = require("./routes/comment");
 const courseRoutes = require("./routes/course");
 const xpaxRoutes = require("./routes/xpaxetudiant");
@@ -29,10 +35,14 @@ const LocalStrategy = require("passport-local");
 const MongoDBStore = require("connect-mongo");
 
 // bring in the app constants
-const { DB, PORT, SECRET } = require("./config");
+const {
+    DB,
+    PORT,
+    SECRET
+} = require("./config");
 
 // connecting to the database
-const connectDB = catchAsync(async() => {
+const connectDB = catchAsync(async () => {
     await mongoose.connect(process.env.APP_DB, {
         useNewUrlParser: true,
         useCreateIndex: true,
@@ -52,7 +62,9 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // parsing the body
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({
+    extended: true
+}));
 
 // setting for method override
 app.use(methodOverride("_method"));
@@ -87,12 +99,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(
-    User.serializeUser(function(user, done) {
+    User.serializeUser(function (user, done) {
         done(null, user);
     })
 );
 passport.deserializeUser(
-    User.deserializeUser(function(user, done) {
+    User.deserializeUser(function (user, done) {
         done(null, user);
     })
 );
@@ -108,9 +120,14 @@ app.use((req, res, next) => {
 });
 
 // Landing page route
-app.get("/", (req, res) => {
-    res.render("home");
-});
+app.get("/", catchAsync(async (req, res) => {
+    let all_articles = await news.find({});
+    all_articles = all_articles.reverse();
+    res.render("home", {
+        all_articles
+    });
+}));
+
 
 // Landing page route
 app.get("/date", (req, res) => {
@@ -130,6 +147,9 @@ app.use("/", bacRoutes);
 //comments routes
 app.use("/", commentRoutes);
 
+//comments routes
+app.use("/", newsRoutes);
+
 //xpax routes
 app.use("/", xpaxRoutes);
 
@@ -145,10 +165,14 @@ app.all("*", (req, res, next) => {
 
 //error handling
 app.use((err, req, res, next) => {
-    const { statusCode = 500 } = err;
+    const {
+        statusCode = 500
+    } = err;
     if (!err.message)
         err.message = `Quelque chose d'inattendue s'est produit 🤷🏽‍♂️!!!`;
-    res.status(statusCode).render("error", { err });
+    res.status(statusCode).render("error", {
+        err
+    });
 });
 
 const port = process.env.PORT || 3000;

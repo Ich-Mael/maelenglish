@@ -4,23 +4,34 @@ const router = express.Router();
 const BAC = require("../controllers/100bac");
 
 // const { Serie, Chapitre, Subject } = require("../models/100bac");
-const { isLoggedIn, checkRoles, isVerified} = require("../middlewares/userController");
-const { checkCourseOwnership, checkProgramOwnership } = require('../middlewares/courseController');
+const {
+    isLoggedIn,
+    checkRoles,
+    isVerified
+} = require("../middlewares/userController");
+const {
+    checkCourseOwnership,
+    checkProgramOwnership
+} = require('../middlewares/courseController');
 
 
 // Operation 100% BAC
-router.get('/100bac', catchAsync(async(req, res) => {
-const allSeries = await Serie.find({});
-    res.render("programs/100bac/home",{ allSeries });
+router.get('/100bac', catchAsync(async (req, res) => {
+    const allSeries = await Serie.find({});
+    res.render("programs/100bac/home", {
+        allSeries
+    });
 }));
 
-router.get('/admindashboard/100bac/series',isVerified, checkRoles("admin"), catchAsync(async(req, res) => {
+router.get('/admindashboard/100bac/series', isVerified, checkRoles("admin"), catchAsync(async (req, res) => {
     const series = await Serie.find({});
-        res.render("programs/100bac/allSeries", {series});
+    res.render("programs/100bac/allSeries", {
+        series
+    });
 }));
-    
+
 // create a new serie
-router.post('/admindashboard/100bac/serie', isVerified, checkRoles("admin"), catchAsync(async(req, res) =>{
+router.post('/admindashboard/100bac/serie', isVerified, checkRoles("admin"), catchAsync(async (req, res) => {
     const newSerie = new Serie(req.body.serie);
     await newSerie.save();
     res.redirect("/100bac");
@@ -35,9 +46,11 @@ router.get('/100bac/serie/:serie_id', catchAsync(BAC.showSerieHome));
 
 
 // create a new subject form
-router.get('/admindashboard/100bac/serie/:serie_id/subject/new', isVerified, checkRoles("admin"), catchAsync(async(req, res) =>{
+router.get('/admindashboard/100bac/serie/:serie_id/subject/new', isVerified, checkRoles("admin"), catchAsync(async (req, res) => {
     const serie = await Serie.findById(req.params.serie_id);
-    res.render("programs/100bac/Serie/subjects/newSubject", {serie});
+    res.render("programs/100bac/Serie/subjects/newSubject", {
+        serie
+    });
 }));
 
 // create a new subject
@@ -56,10 +69,13 @@ router.get('/admindashboard/100bac/serie/:serie_id/subjects', isVerified, checkR
 // ============== chapters ================= //
 
 // Create a new chapter form
-router.get('/admindashboard/100bac/serie/:serie_id/subject/:subject_id/chapter/new', isVerified, checkRoles("admin"), catchAsync(async(req, res) =>{
+router.get('/admindashboard/100bac/serie/:serie_id/subject/:subject_id/chapter/new', isVerified, checkRoles("admin"), catchAsync(async (req, res) => {
     const serie = await Serie.findById(req.params.serie_id);
     const subject = await Subject.findById(req.params.subject_id);
-    res.render("programs/100bac/Serie/subjects/newChapter", {serie, subject});
+    res.render("programs/100bac/Serie/subjects/newChapter", {
+        serie,
+        subject
+    });
 }));
 
 //create a new chapter

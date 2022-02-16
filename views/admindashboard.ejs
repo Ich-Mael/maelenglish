@@ -1,5 +1,19 @@
 <% layout('layouts/boilerplate') %>
 
+<!-- WORD Processor-->
+<script src="https://cdn.tiny.cloud/1/p06f8vxdpje8xosyvnq48z68vc7n479iauh5s2jk9zx30qg2/tinymce/5/tinymce.min.js"
+  referrerpolicy="origin"></script>
+</script>
+<script>
+  tinymce.init({
+    selector: '.mytextarea',
+    height: 300,
+    max_width: 500,
+    min_height: 300,
+    min_width: 400
+  });
+</script>
+
 <style>
   html {
     font-size: 90%;
@@ -25,27 +39,17 @@
 <!-- Managing English Club -->
 <div class="container col-md-6 my-5">
   <h1 class="text-info">English Clubs Program</h1>
-    <a href="/englishlang4all/clubs/new" class="btn btn-outline-primary my-5">Create a new english club</a>
-    <hr>
+  <a href="/englishlang4all/clubs/new" class="btn btn-outline-primary my-5">Create a new english club</a>
+  <hr>
   <h4>Adding a new member to an English Club</h4>
   <form action="/admindashboard/newEnglishClubMember" method="POST">
     <label class="form-label my-3" for="course">English club name</label>
-    <input
-      class="form-control"
-      type="text"
-      name="englishClub_name"
-      placeholder=""
-    />
+    <input class="form-control" type="text" name="englishClub_name" placeholder="" />
     <label class="form-label my-3" for="student">New member name</label>
-    <input
-      class="form-control"
-      type="text"
-      name="memberUsername"
-      placeholder=""
-    />
+    <input class="form-control" type="text" name="memberUsername" placeholder="" />
     <button type="submit" class="btn btn-primary my-3">Add new member</button>
   </form>
-<hr>
+  <hr>
 </div>
 
 
@@ -53,25 +57,70 @@
 <div class="container col-md-6 my-5">
   <h1 class="text-primary">Operation 100% BAC</h1>
   <a href="/admindashboard/100bac/series">Voir toutes les series</a>
-<form action="/admindashboard/100bac/serie" method="POST">
-  <!-- Serie General information -->
-  <label class="form-label" for="title">Serie</label>
-  <input
-    type="text"
-    class="form-control"
-    id="serie"
-    name="serie[title]"
-    value=""
-  />
+  <form action="/admindashboard/100bac/serie" method="POST">
+    <!-- Serie General information -->
+    <label class="form-label" for="title">Serie</label>
+    <input type="text" class="form-control" id="serie" name="serie[title]" value="" />
 
-  <label class="form-label" for="title">Image</label>
-  <input
-    type="text"
-    class="form-control"
-    id="serieImage"
-    name="serie[serieImageUrl]"
-    value=""
-  />
-  <button type="submit" class="btn btn-outline-primary my-3">Create a new serie</button>
-</form>
+    <label class="form-label" for="title">Image</label>
+    <input type="text" class="form-control" id="serieImage" name="serie[serieImageUrl]" value="" />
+    <button type="submit" class="btn btn-outline-primary my-3">Create a new serie</button>
+  </form>
+</div>
+
+
+<!-- News -->
+<div class="container col-md-6 my-5">
+  <h1 class="text-primary">Posting a news</h1>
+  <a href="/admindashboard/all_news">Voir tous les articles</a>
+  <form action="/admindashboard/news" method="POST">
+    <div class="py-1">
+      <p>News Category</p>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="news[newsCategory]" id="English Club" value="English Club"
+          required>
+        <label class="form-check-label" for="Maths">English Club</label>
+      </div>
+
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="news[newsCategory]" id="Maths" value="Maths" required>
+        <label class="form-check-label" for="Maths">Maths</label>
+      </div>
+
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="news[newsCategory]" id="Company" value="Coding" required>
+        <label class="form-check-label" for="Coding">Coding</label>
+      </div>
+
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="news[newsCategory]" id="English_Course"
+          value="English Course" required>
+        <label class="form-check-label" for="English course"> English course</label>
+      </div>
+
+
+    </div>
+    <!-- Article title -->
+    <label class="form-label fw-bold py-2" for="article-title">Article Title</label>
+    <input type="text" required class="form-control" name="news[title]" id="article_title" value="" />
+
+    <!-- Article image link -->
+    <label class="form-label fw-bold py-2" for="article-image-link">Article image link</label>
+    <input type="text" required class="form-control" name="news[newsImageUrl]" id="article_image" value="" />
+
+    <!-- Article summary -->
+    <label class="form-label fw-bold py-2" for="article-summary">Article Summary</label>
+    <input type="text" required class="form-control" name="news[newsSummary]" id="article_title" value="" />
+
+    <!-- Article summary -->
+    <label class="form-label fw-bold py-2" for="readTime">Estimated read time</label>
+    <input type="text" required class="form-control" name="news[readTime]" id="readTime" value="" />
+
+    <!-- Article content-->
+    <label class="form-label" for="description">Article Content </label>
+    <textarea class="form-control mytextarea" required name="news[newsContent]" id="news-content" cols="50" rows="5">
+        </textarea>
+    <hr />
+    <button type="submit" class="btn btn-outline-primary my-3">Post news</button>
+  </form>
 </div>

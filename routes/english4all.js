@@ -4,7 +4,11 @@ const User = require("../models/user");
 const Review = require("../models/comments");
 const createClubDefaultContent = require("../utilities/createClubDefaultContent");
 const catchAsync = require("../utilities/catchAsync");
-const { positions, days, months } = require("../utilities/defaultData");
+const {
+  positions,
+  days,
+  months
+} = require("../utilities/defaultData");
 
 const {
   englishClubs,
@@ -68,8 +72,6 @@ router.post(
   isVerified,
   checkRoles("admin"),
   catchAsync(async (req, res) => {
-    console.log(req.body);
-
     const englishClub = new englishClubs(req.body.englishClub);
 
     const {
@@ -167,7 +169,12 @@ router.get(
       .populate("workersOfMonth")
       .populate({
         path: "media",
-        populate: { path: "mediaComments", populate: { path: "author" } },
+        populate: {
+          path: "mediaComments",
+          populate: {
+            path: "author"
+          }
+        },
       })
       .populate("dailyVocab")
       .populate("weeklyMeeting")
@@ -259,8 +266,7 @@ router.put(
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const article = await englishClubArticles.findByIdAndUpdate(
-      req.params.article_id,
-      {
+      req.params.article_id, {
         ...req.body.englishClubArticle,
       }
     );
@@ -397,8 +403,7 @@ router.get(
       .findById(req.params.club_id)
       .populate("weeklyVideoLesson");
     res.render(
-      "programs/englishlang4all/englishClubs/videoLessons/videoLessonsShow",
-      {
+      "programs/englishlang4all/englishClubs/videoLessons/videoLessonsShow", {
         club,
       }
     );
@@ -419,8 +424,7 @@ router.get(
     const club = await englishClubs.findById(req.params.club_id);
 
     res.render(
-      "programs/englishlang4all/englishClubs/videoLessons/weeklyLessonEdit",
-      {
+      "programs/englishlang4all/englishClubs/videoLessons/weeklyLessonEdit", {
         videoLesson,
         club,
       }
@@ -437,8 +441,7 @@ router.put(
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const videoLesson = await englishWeeklyLessons.findByIdAndUpdate(
-      req.params.videoLesson_id,
-      {
+      req.params.videoLesson_id, {
         ...req.body.weeklyLesson,
       }
     );
@@ -528,8 +531,7 @@ router.put(
   checkEnglishBoardMembership,
   catchAsync(async (req, res) => {
     const leader = await englishClubWorkersOfMonth.findByIdAndUpdate(
-      req.params.leader_id,
-      {
+      req.params.leader_id, {
         studentOfMonth: {
           ...req.body.studentOfMonth,
         },
@@ -636,8 +638,9 @@ router.get(
     const club = await englishClubs.findById(req.params.club_id);
 
     res.render(
-      "programs/englishlang4all/englishClubs/clubQuiz/grammarQuiz.ejs",
-      { club }
+      "programs/englishlang4all/englishClubs/clubQuiz/grammarQuiz.ejs", {
+        club
+      }
     );
   })
 );
