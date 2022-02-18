@@ -629,6 +629,7 @@ customers-cards:before {
 .song-list {
   color: #290744;
   font-size: 2rem;
+  padding: 0 1rem;
 }
 
 /* media */

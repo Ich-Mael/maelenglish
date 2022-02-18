@@ -81,7 +81,8 @@ window.onload = function () {
         'hard',
         'worst',
         'faith',
-        'promises'
+        'promises',
+        'embarassing'
 
     ]);
 };
