@@ -13,8 +13,7 @@ body {
 
 #login-wrapper {
   /* background: url(https://images.pexels.com/photos/1181317/pexels-photo-1181317.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260) */
-  background: url(https://images.unsplash.com/photo-1525715843408-5c6ec44503b1?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1770&q=80)
-    no-repeat center center fixed;
+  background: url(https://images.unsplash.com/photo-1525715843408-5c6ec44503b1?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1770&q=80) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -34,24 +33,22 @@ body {
 
 #login-wrapper:before {
   content: "";
-  background: #000000; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #00000067,
-    #00000056,
-    #00000028,
-    #140f0f77,
-    #00000028
-
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #00000067,
-    #00000056,
-    #00000028,
-    #140f0f77,
-    #00000028
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #000000;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right,
+      #00000067,
+      #00000056,
+      #00000028,
+      #140f0f77,
+      #00000028);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right,
+      #00000067,
+      #00000056,
+      #00000028,
+      #140f0f77,
+      #00000028);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
   /* background: rgba(0, 0, 0, 0.253); */
   position: absolute;
@@ -63,7 +60,7 @@ body {
 
 .login-div {
   width: 330px;
-  background-color: rgba(160, 157, 156, 0.829);
+  background-color: rgba(231, 231, 231, 0.829);
   -webkit-box-shadow: 6px -2px 16px -1px rgba(0, 0, 0, 0.705);
   -moz-box-shadow: 6px -2px 16px -1px rgba(0, 0, 0, 0.726);
   box-shadow: 6px -2px 16px -1px rgba(0, 0, 0, 0.685);
@@ -87,12 +84,12 @@ body {
 .join-text {
   font-family: "Paytone One", sans-serif;
   /* font-family: 'Rye', cursive; */
-	/* font-family: 'Titan One', cursive; */
+  /* font-family: 'Titan One', cursive; */
   line-height: 5rem;
   font-size: 3rem;
   color: #fff;
   text-shadow: 1px 2px 3px rgba(0, 0, 0, 0.651),
-               2px 3px 4px black;
+    2px 3px 4px black;
   font-weight: 400;
 }
 
@@ -116,7 +113,9 @@ body {
 
 label,
 .ii {
-  color: rgba(33, 34, 34, 0.575);
+  color: rgba(89, 5, 122, 0.856);
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 1.1rem;
 }
 
 .fields input {
@@ -155,11 +154,13 @@ label,
 }
 
 .pas-compte {
-  color: antiquewhite;
+  color: rgb(35, 14, 39);
+  transition: all 0.5s;
 }
 
 .pas-compte:hover {
   color: rgb(43, 42, 42);
+  background-color: #dde8f8;
 }
 
 .form-control {
@@ -189,6 +190,7 @@ label,
     align-items: center;
     flex-direction: column;
   }
+
   .join-text {
     font-size: 0.6rem;
     display: none;
@@ -225,9 +227,7 @@ label,
 }
 
 /* Large devices (laptops/desktops, 992px and up) */
-@media (min-width: 992px) {
- 
-}
+@media (min-width: 992px) {}
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media (min-width: 1200px) {

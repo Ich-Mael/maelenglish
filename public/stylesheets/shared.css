@@ -20,6 +20,7 @@ a.active:focus {
   outline: none !important;
   outline-style: none;
 }
+
 .currentTime {
   font-family: Georgia, "Times New Roman", Times, serif;
   font-size: 2rem;
@@ -29,13 +30,14 @@ a.active:focus {
   background-color: #272626;
   text-align: center;
 }
+
 .time-underline {
   border-bottom: 4px solid rgb(241, 238, 238);
 }
 
 .flash-container {
   width: 40%;
-  font-family: "Roboto" serif;
+  font-family: "Roboto"serif;
   height: 2rem;
   padding: 0.5rem;
   letter-spacing: 0.1rem;
@@ -67,16 +69,16 @@ nav {
   /* top: 0; */
   /* left: 0; */
   /* right: 0; */
-  font-family: "Roboto" serif;
+  font-family: "Roboto"serif;
 }
 
-.navbar-top {
-}
+.navbar-top {}
+
 .nav-display {
   opacity: 1;
 }
 
-.brand{
+.brand {
   font-size: 1.2rem;
   display: inline-block;
   color: rgb(130, 7, 161);
@@ -100,7 +102,7 @@ nav {
 .myNav-link {
   font-size: 1.1rem;
   padding: 0 0 0.4rem 0;
-  font-family: "Roboto" serif;
+  font-family: "Roboto"serif;
   letter-spacing: 0.2rem;
   text-align: center;
   text-transform: capitalize;
@@ -118,7 +120,7 @@ nav {
 
 .nav-link-connexion {
   text-align: center;
-  font-family: "Roboto" serif;
+  font-family: "Roboto"serif;
   padding: 0.3rem 1rem;
   border-radius: 5px;
   color: rgb(243, 239, 237);
@@ -136,7 +138,7 @@ nav {
 }
 
 .profile-link {
-  font-family: "Roboto" serif;
+  font-family: "Roboto"serif;
   text-decoration: none;
   font-size: 1rem;
   color: rgb(20, 19, 18);
@@ -167,7 +169,7 @@ hk-shadow {
 
 #user {
   text-transform: capitalize;
-  font-family: "Roboto" serif;
+  font-family: "Roboto"serif;
   font-size: 1.5rem;
 }
 
@@ -184,7 +186,7 @@ hk-shadow {
 .dropdown-item {
   font-size: 1rem;
   color: #272626;
-  font-family: "Roboto" serif;
+  font-family: "Roboto"serif;
   text-align: center;
   font-weight: 600;
   text-transform: uppercase;
@@ -232,6 +234,7 @@ hk-shadow {
   text-decoration: none;
   color: rgb(19, 18, 18);
 }
+
 /* TV Screen */
 
 #tv-container {
@@ -311,30 +314,37 @@ hk-shadow {
     0% {
       box-shadow: 0 0 100px 0 rgba(200, 235, 255, 0.4);
     }
+
     100% {
       box-shadow: 0 0 95px 0 rgba(200, 230, 255, 0.45);
     }
   }
+
   @-moz-keyframes tvflicker {
     0% {
       box-shadow: 0 0 100px 0 rgba(225, 235, 255, 0.4);
     }
+
     100% {
       box-shadow: 0 0 60px 0 rgba(200, 220, 255, 0.6);
     }
   }
+
   @-o-keyframes tvflicker {
     0% {
       box-shadow: 0 0 100px 0 rgba(225, 235, 255, 0.4);
     }
+
     100% {
       box-shadow: 0 0 60px 0 rgba(200, 220, 255, 0.6);
     }
   }
+
   @keyframes tvflicker {
     0% {
       box-shadow: 0 0 100px 0 rgba(225, 235, 255, 0.4);
     }
+
     100% {
       box-shadow: 0 0 60px 0 rgba(200, 220, 255, 0.6);
     }
@@ -368,16 +378,20 @@ hk-shadow {
   background: linear-gradient(#666, #333);
   position: relative;
 }
+
 /*since the first link does not have a triangle before it we can reduce the left padding to make it look consistent with other links*/
 .breadcrumb a:first-child {
   padding-left: 20px;
   /*to match with the parent's radius*/
 }
+
 .breadcrumb a:first-child:before {
   left: 14px;
 }
+
 .breadcrumb a:last-child {
-  border-radius: 0 5px 5px 0; /*this was to prevent glitches on hover*/
+  border-radius: 0 5px 5px 0;
+  /*this was to prevent glitches on hover*/
   padding-right: 20px;
 }
 
@@ -387,6 +401,7 @@ hk-shadow {
   background: #333;
   background: linear-gradient(#333, #000);
 }
+
 .breadcrumb a.active:after,
 .breadcrumb a:hover:after {
   background: #333;
@@ -398,7 +413,8 @@ hk-shadow {
   content: "";
   position: absolute;
   top: 0;
-  right: -18px; /*half of square's length*/
+  right: -18px;
+  /*half of square's length*/
   /*same dimension as the line-height of .breadcrumb a */
   width: 36px;
   height: 36px;
@@ -419,10 +435,12 @@ hk-shadow {
 		50px - to prevent hover glitches on the border created using shadows*/
   border-radius: 0 5px 0 50px;
 }
+
 /*we dont need an arrow after the last link*/
 .breadcrumb a:last-child:after {
   content: none;
 }
+
 /*we will use the :before element to show numbers*/
 
 .flat a,
@@ -431,10 +449,12 @@ hk-shadow {
   color: black;
   transition: all 0.5s;
 }
+
 .flat a:before {
   background: white;
   box-shadow: 0 0 0 1px #ccc;
 }
+
 .flat a:hover,
 .flat a.active,
 .flat a:hover:after,
@@ -460,18 +480,17 @@ hk-shadow {
 #footer {
   text-align: center;
   color: #b9d5e2;
-  background: #e6dada; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #274046,
-    #e6dada
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to left,
-    #412388,
-    #556497,
-    #ffffff
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #e6dada;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right,
+      #274046,
+      #e6dada);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to left,
+      #412388,
+      #556497,
+      #ffffff);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
   min-height: fit-content;
   /* background-color: #E1DDE4; */
@@ -488,6 +507,7 @@ hk-shadow {
     1px 2px 8px rgba(245, 46, 12, 0.5), 1px 2px 3px rgba(245, 25, 9, 0.3);
   font-weight: 500;
 }
+
 .brand-section {
   background-color: rgb(244, 247, 248);
 }
@@ -631,36 +651,35 @@ hk-shadow {
   color: rgb(245, 239, 239);
   background-color: rgb(241, 65, 21);
 }
+
 #instagram {
   color: rgb(245, 239, 239);
-  background: #833ab4; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #fcb045,
-    #fd1d1d,
-    #833ab4
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #fcb045,
-    #fd1d1d,
-    #833ab4
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #833ab4;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right,
+      #fcb045,
+      #fd1d1d,
+      #833ab4);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right,
+      #fcb045,
+      #fd1d1d,
+      #833ab4);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 #twitter {
   color: rgb(245, 239, 239);
-  background: #56ccf2; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #2f80ed,
-    #56ccf2
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #2f80ed,
-    #56ccf2
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #56ccf2;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right,
+      #2f80ed,
+      #56ccf2);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right,
+      #2f80ed,
+      #56ccf2);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 /*hover links */
@@ -685,35 +704,33 @@ hk-shadow {
 #instagram:hover {
   color: rgb(245, 239, 239);
   transform: rotate(360deg);
-  background: #833ab4; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #fcb045,
-    #fd1d1d,
-    #833ab4
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #fcb045,
-    #fd1d1d,
-    #833ab4
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #833ab4;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right,
+      #fcb045,
+      #fd1d1d,
+      #833ab4);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right,
+      #fcb045,
+      #fd1d1d,
+      #833ab4);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 #twitter:hover {
   color: rgb(245, 239, 239);
   transform: rotate(360deg);
-  background: #56ccf2; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #2f80ed,
-    #56ccf2
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #2f80ed,
-    #56ccf2
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #56ccf2;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right,
+      #2f80ed,
+      #56ccf2);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right,
+      #2f80ed,
+      #56ccf2);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 /* End social media */
@@ -722,6 +739,7 @@ hk-shadow {
   0% {
     transform: translateY(4px);
   }
+
   100% {
     transform: translateY(-4px);
   }
@@ -731,18 +749,17 @@ hk-shadow {
   width: 100%;
   margin: 0;
   background-color: #bb97e4;
-  background: #e6dada; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #274046,
-    #e6dada
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #412388,
-    #556497,
-    #ffffff
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #e6dada;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right,
+      #274046,
+      #e6dada);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right,
+      #412388,
+      #556497,
+      #ffffff);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
   font-family: Georgia, "Times New Roman", Times, serif;
   color: rgba(255, 255, 255, 0.815);
@@ -772,6 +789,7 @@ hk-shadow {
   margin: 0 0.3rem;
   text-shadow: 1px 2px 3px black, 2px 3px 4px black;
 }
+
 /* End footer */
 
 /* responsive */
@@ -789,10 +807,12 @@ hk-shadow {
   .header-text {
     font-size: 2.5rem;
   }
-  .nav-link{
+
+  .nav-link {
     display: flex;
     justify-content: center;
   }
+
   .flash-container {
     width: 80%;
   }
@@ -829,20 +849,18 @@ hk-shadow {
 
 @media (max-width: 768px) {
   #footer {
-    background: -webkit-linear-gradient(
-      to top,
-      #412388,
-      #556497,
-      #ffffff
-    ); /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(
-      to top,
-      #412388,
-      #556497,
-      #ffffff
-    ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: -webkit-linear-gradient(to top,
+        #412388,
+        #556497,
+        #ffffff);
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to top,
+        #412388,
+        #556497,
+        #ffffff);
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   }
-  
+
 }
 
 @media (max-width: 450px) {
@@ -850,9 +868,9 @@ hk-shadow {
     font-size: 1.2rem;
   }
 
-  .brand{
-    font-size: 1.2rem;
-    }
+  .brand {
+    font-size: 1rem;
+  }
 
   html {
     font-size: 90%;
@@ -864,7 +882,7 @@ hk-shadow {
 }
 
 @media (max-width: 350px) {
-  .brand{
-    font-size: 1rem;
-    }
+  .brand {
+    font-size: 0.8rem;
+  }
 }

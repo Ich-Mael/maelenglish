@@ -130,7 +130,8 @@ body {
 .engclub-sm-icon {}
 
 .english-club-nav {
-  background-color: rgb(204, 204, 204);
+  background-color: rgb(236, 236, 236);
+  /* border-top: 2px solid rgb(10, 10, 10); */
 }
 
 .engClub-nav-link {
@@ -608,6 +609,28 @@ customers-cards:before {
   background-color: rgb(116, 115, 114);
 }
 
+.song {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  padding: 1rem 2rem;
+}
+
+.song:hover {
+  color: #000000;
+}
+
+.song-list-wrapper {
+  min-height: 10rem;
+  padding: 3rem 0;
+}
+
+
+.song-list {
+  color: #290744;
+  font-size: 2rem;
+}
+
 /* media */
 
 .video-details-wrapper {
@@ -650,11 +673,6 @@ customers-cards:before {
     rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
     rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
 }
-
-
-
-
-
 
 
 

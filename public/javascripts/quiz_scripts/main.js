@@ -1,6 +1,6 @@
 /**
-* Try this example at https://alpsquid.github.io/quizlib
-*/
+ * Try this example at https://alpsquid.github.io/quizlib
+ */
 
 /** Key value pairs using quiz element IDs and Quiz Objects.
  * For example: quizzes['quiz-1'] = [Quiz Object]
@@ -34,7 +34,7 @@ function showResults(quizID) {
         else if (quizScorePercent >= 50) quizResultElement.style.backgroundColor = '#ffc107';
         else if (quizScorePercent >= 25) quizResultElement.style.backgroundColor = '#ff9800';
         else if (quizScorePercent >= 0) quizResultElement.style.backgroundColor = '#f44336';
-        
+
         // Highlight questions according to whether they were correctly answered. The callback allows us to highlight/show the correct answer
         activeQuiz.highlightResults(handleAnswers);
     }
@@ -47,7 +47,7 @@ function handleAnswers(quiz, question, no, correct) {
     if (!correct) {
         var answers = question.getElementsByTagName('input');
         for (var i = 0; i < answers.length; i++) {
-            if (answers[i].type === "checkbox" || answers[i].type === "radio"){ 
+            if (answers[i].type === "checkbox" || answers[i].type === "radio") {
                 // If the current input element is part of the correct answer, highlight it
                 if (quiz.answers[no].indexOf(answers[i].value) > -1) {
                     answers[i].parentNode.classList.add(Quiz.Classes.CORRECT);
@@ -65,11 +65,11 @@ function handleAnswers(quiz, question, no, correct) {
     }
 }
 
-window.onload = function() {
+window.onload = function () {
     // Create quiz instances for each quiz and add them to the quizzes map.
     // The key is the ID of the quiz element, same as what we pass to the Quiz object as the first argument.
     quizzes['quiz-1'] = new Quiz('quiz-1', [
-        'went',
-        'b'
+        'told',
+        'comes'
     ]);
 };
