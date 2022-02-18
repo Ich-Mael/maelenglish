@@ -632,10 +632,7 @@ router.put(
  * ================================================ */
 router.get(
   "/englishlang4all/lsc/song-1",
-  isLoggedIn,
-  isVerified,
   catchAsync(async (req, res) => {
-
     res.render(
       "programs/englishlang4all/lsc/song-1"
     );
