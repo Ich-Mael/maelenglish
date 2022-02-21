@@ -2,97 +2,94 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const moment = require('moment'); // require
 
-const courseSchema = new Schema(
-  {
+const courseSchema = new Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+
+  isActive: {
+    type: Boolean,
+    default: false
+  },
+
+  willLearn: {
+    type: String,
+    default: "New Skills"
+  },
+
+  category: {
+    type: String,
+    default: "Education"
+  },
+
+  syllabusSummary: {
+    type: String,
+    default: "Cours de 3 modules et 2 evalutions"
+  },
+  session: {
+    startDate: {
+      type: Date,
+      default: Date.now()
+    },
+
+    endDate: {
+      type: Date,
+      default: moment().add(1, 'M')
+    }
+  },
+
+  preview: [{
     title: {
       type: String,
-      required: true,
     },
-
-    isActive: {
-        type: Boolean,
-        default: false
-    },
-
-    willLearn: {
+    link: {
       type: String,
-      default: "New Skills"
-    },
+    }
+  }],
 
-    category: {
-      type: String,
-      default: "Education"
-    },
-
-    syllabusSummary: {
-      type: String,
-      default: "Cours de 3 modules et 2 evalutions"
-    },
-    session:{
-      startDate: {
-        type: Date,
-        default: Date.now()
-      },
-
-      endDate:{
-        type: Date,
-        default: moment().add(1, 'M')
-      }
-
-    },
-
-    description: {
-      type: String,
-      default: "New Course"
-    },
-
-    courseImageUrl: {
-      type: String,
-      default:"",
-    },
-
-    price: {
-      type: Number,
-      required: true,
-    },
-   
-    requirements: {
-      type: String,
-      default: "No requirement for this course"
-    },
-
-    reviews: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Comment",
-      },
-    ],
-
-    modules: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Module",
-      },
-    ],
-
-    instructors: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-
-    students: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
+  description: {
+    type: String,
+    default: "New Course"
   },
-  {
-    timestamps: true,
-  }
-);
+
+  courseImageUrl: {
+    type: String,
+    default: "",
+  },
+
+  price: {
+    type: Number,
+    required: true,
+  },
+
+  requirements: {
+    type: String,
+    default: "No requirement for this course"
+  },
+
+  reviews: [{
+    type: Schema.Types.ObjectId,
+    ref: "Comment",
+  }, ],
+
+  modules: [{
+    type: Schema.Types.ObjectId,
+    ref: "Module",
+  }, ],
+
+  instructors: [{
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  }, ],
+
+  students: [{
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  }, ],
+}, {
+  timestamps: true,
+});
 
 /*===================================
             Module
@@ -114,8 +111,10 @@ const moduleSchema = new Schema({
   },
 
   moreDetails: {
-    type: String, 
+    type: String,
   },
+
+  practiceLinks: [],
 
   evaluation: {
     type: Schema.Types.ObjectId,
@@ -127,11 +126,24 @@ const moduleSchema = new Schema({
     default: Date.now()
   },
 
-  videoLinks: [
-    {
-      type: String,
-    },
-  ],
+  videoLinks: [{
+    type: String,
+  }, ],
+});
+
+
+const practiceSchema = new Schema({
+  title: {
+    type: String,
+  },
+
+  category: {
+    type: String,
+  },
+
+  links: [{
+    type: String,
+  }]
 });
 
 /*===================================
@@ -144,19 +156,15 @@ const evaluationSchema = new Schema({
     required: true,
   },
 
-  questions: [
-    {
-      Question_text: String,
-      Question_response: String,
-      options: [
-        {
-          id: String, //or number
-          text: String,
-          value: String,
-        },
-      ],
-    },
-  ],
+  questions: [{
+    Question_text: String,
+    Question_response: String,
+    options: [{
+      id: String, //or number
+      text: String,
+      value: String,
+    }, ],
+  }, ],
   grade: {
     type: Schema.Types.ObjectId,
     ref: "Grade",
@@ -187,8 +195,16 @@ Course = mongoose.model("Course", courseSchema);
 
 Module = mongoose.model("Module", moduleSchema);
 
+Practice = mongoose.model("Practice", practiceSchema);
+
 Evaluation = mongoose.model("Evaluation", evaluationSchema);
 
 Grade = mongoose.model("Grade", gradeSchema);
 
-module.exports = { Course, Module, Evaluation, Grade };
+module.exports = {
+  Course,
+  Module,
+  Practice,
+  Evaluation,
+  Grade
+};

@@ -1,4 +1,10 @@
-const { Course, Module, Evaluation, Grade } = require("../models/courses");
+const {
+  Course,
+  Module,
+  Practice,
+  Evaluation,
+  Grade
+} = require("../models/courses");
 const User = require("../models/user");
 const DateUtil = require("../utilities/date");
 
@@ -41,7 +47,7 @@ module.exports.showModule = async (req, res) => {
 
   const module_number = course.modules.indexOf(req.params.module_id) + 1;
 
-   course = await Course.findById(req.params.course_id).populate("modules", "title");
+  course = await Course.findById(req.params.course_id).populate("modules", "title");
 
   let moduleReveal = DateUtil.revealTime(courseModule.revealDate);
   displayRevealDate = DateUtil.localTime(courseModule.revealDate);
@@ -97,4 +103,27 @@ module.exports.updateModule = async (req, res) => {
   await courseModule.save();
 
   res.redirect(`/admindashboard/courses/${req.params.course_id}/modules`);
+};
+
+// Practice exercises
+
+module.exports.createPractice = async (req, res) => {
+  const course = await Course.findById(req.params.course_id);
+  const module = await Module.findById(req.params.courseModule_id);
+  const {
+    title,
+    category,
+    practice_links
+  } = req.body.practice;
+
+  const links = practice_links.split(",");
+
+  const newPractice = new Practice({
+    title,
+    category,
+    links
+  });
+
+  console.log(newPractice);
+
 };
