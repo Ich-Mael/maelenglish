@@ -8,6 +8,7 @@
     selector: '.mytextarea',
     height: 300,
     max_width: 500,
+    plugins: "print link image lists advlist wordcount",
     min_height: 200,
     min_width: 400
   });
@@ -31,8 +32,7 @@
       <div class="row mt-4">
         <div class="col">
           <label class="form-label  my-2" for="main-instructor">Main Instructor</label>
-          <input class="form-control my-2" type="text" name="instructors[main]"
-            value="" />
+          <input class="form-control my-2" type="text" name="instructors[main]" value="" />
         </div>
         <div class="col">
           <label class="form-label  my-2" for="second-instructor">Second Instructor</label>
@@ -42,16 +42,16 @@
 
       <div class="row mt-4 mb-3">
         <div class="col">
-        <label for="title" class="form-label">Course title</label>
-        <input class="form-control" type="text" name="course[title]" value=""/>
-      </div>
-      <div class="col">
-        <label class="form-label" for="title">Category</label>
-        <input class="form-control" type="text" name="course[category]" value="" />
-      </div>
+          <label for="title" class="form-label">Course title</label>
+          <input class="form-control" type="text" name="course[title]" value="" />
+        </div>
+        <div class="col">
+          <label class="form-label" for="title">Category</label>
+          <input class="form-control" type="text" name="course[category]" value="" />
+        </div>
         <div class="col">
           <label class="form-label" for="price">Price</label>
-          <input class="form-control" type="text" name="course[price]" value=""/>
+          <input class="form-control" type="text" name="course[price]" value="" />
         </div>
       </div>
       <label class="form-label" for="description">Description</label>

@@ -114,7 +114,11 @@ const moduleSchema = new Schema({
     type: String,
   },
 
-  practiceLinks: [],
+  Assignment: [{
+    type: Schema.Types.ObjectId,
+    ref: "Practice",
+  }],
+
 
   evaluation: {
     type: Schema.Types.ObjectId,
@@ -131,6 +135,9 @@ const moduleSchema = new Schema({
   }, ],
 });
 
+/*===================================
+           Practice
+===================================*/
 
 const practiceSchema = new Schema({
   title: {
@@ -139,6 +146,7 @@ const practiceSchema = new Schema({
 
   category: {
     type: String,
+    default: "S'entraîner"
   },
 
   links: [{

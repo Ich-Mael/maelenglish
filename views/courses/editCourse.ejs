@@ -6,6 +6,7 @@
 <script>
   tinymce.init({
     selector: '.mytextarea',
+    plugins: "print link image lists advlist wordcount",
     height: 200,
     max_width: 500,
     min_height: 300,
@@ -49,15 +50,15 @@
             <input class="form-control my-2" type="text" name="instructors[assistant]" value="" />
           </div>
         </div>
-         <!-- Session -->
-         <div class="row mt-2">
+        <!-- Session -->
+        <div class="row mt-2">
           <div class="col">
             <label class="form-label" for="session-start">Start Date</label>
-            <input class="form-control" type="date" name="session[startDate]" value="" required/>
+            <input class="form-control" type="date" name="session[startDate]" value="" required />
           </div>
           <div class="col">
             <label class="form-label" for="title">End Date</label>
-            <input class="form-control" type="date" name="session[endDate]" value="" required/>
+            <input class="form-control" type="date" name="session[endDate]" value="" required />
           </div>
           <div class="col">
             <label class="form-label" for="price">Price</label>
@@ -76,10 +77,11 @@
           </div>
           <div class="col">
             <label class="form-label" for="course-image">Course Image</label>
-            <input class="form-control" type="text" name="course[courseImageUrl]" value="<%= course.courseImageUrl %>" required />
+            <input class="form-control" type="text" name="course[courseImageUrl]" value="<%= course.courseImageUrl %>"
+              required />
           </div>
         </div>
-       
+
 
         <label class="form-label " for="description">Description</label>
         <textarea class="form-control my-2  mytextarea" name="course[description]" id="description">
@@ -92,18 +94,20 @@
         </textarea>
 
         <label class="form-label" for="description">Course Requirement</label>
-        <textarea class="form-control my-2  mytextarea" name="course[requirements]" id="requirement" required><%= course.requirements %></textarea>
+        <textarea class="form-control my-2  mytextarea" name="course[requirements]" id="requirement"
+          required><%= course.requirements %></textarea>
 
         <label class="form-label" for="willLearn">What will you learn ?</label>
-        <textarea class="form-control my-2  mytextarea" name="course[willLearn]" id="willLearn" required><%= course.willLearn %></textarea>
+        <textarea class="form-control my-2  mytextarea" name="course[willLearn]" id="willLearn"
+          required><%= course.willLearn %></textarea>
 
       </div>
     </div>
-      <button type="submit" class="btn my-3 btn-warning">Update course basic info</button>
+    <button type="submit" class="btn my-3 btn-warning">Update course basic info</button>
   </form>
 
   <a class="btn my-4 btn-primary" href="/admindashboard/courses/<%= course._id %>/modules">View all modules</a>
-<section class="my-3 p-2" style="background-color: aliceblue;">
+  <section class="my-3 p-2" style="background-color: aliceblue;">
     <h3>Add a module to the course</h3>
     <form action="/admindashboard/courses/<%= course._id %>/module" method="POST">
       <!-- Course initial details-->
@@ -115,17 +119,17 @@
       </p>
       <div class="collapse" id="new-module">
         <div class="card card-body">
-        <div class="row mt-2">
-          <div class="col">
-          <label class="form-label" for="title">Module title</label>
-          <input class="form-control" type="text" name="module[title]" value="" required />
-        </div>
-      
-          <div class="col">
-          <label class="form-label" for="title">Module date</label>
-          <input class="form-control" type="date" name="module[revealDate]" value="" required/>
-        </div>
-        </div>
+          <div class="row mt-2">
+            <div class="col">
+              <label class="form-label" for="title">Module title</label>
+              <input class="form-control" type="text" name="module[title]" value="" required />
+            </div>
+
+            <div class="col">
+              <label class="form-label" for="title">Module date</label>
+              <input class="form-control" type="date" name="module[revealDate]" value="" required />
+            </div>
+          </div>
           <label class="form-label " for="willLearnModule">What will we learn</label>
           <textarea class="form-control my-2  mytextarea" name="module[willLearnModule]" id="willLearnModule" required>
         </textarea>
@@ -146,4 +150,4 @@
         <button type="submit" class="btn my-3 btn-warning">create Module</button>
       </div>
     </form>
-</section>
+  </section>

@@ -6,6 +6,7 @@
 <script>
   tinymce.init({
     selector: '.mytextarea',
+    plugins: "print link image lists advlist wordcount",
     height: 200,
     max_width: 500,
     min_height: 300,
@@ -74,7 +75,7 @@
     <div class="card card-body">
       <div class="mt-2">
         <div class="col">
-          <label class="form-label" for="title">Practice exercise title</label>
+          <label class="form-label" for="title">Assignment title</label>
           <input class="form-control" type="text" name="practice[title]" value="" required />
         </div>
 
@@ -84,7 +85,7 @@
         </div>
 
         <div class="col">
-          <label class="form-label" for="title">Practice exercise title</label>
+          <label class="form-label" for="title">Assignment Links</label>
           <input class="form-control" type="text" name="practice[practice_links]" value=""
             placeholder="Enter video links separated by ," required />
         </div>

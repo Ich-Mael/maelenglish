@@ -42,12 +42,14 @@ module.exports.createModule = async (req, res) => {
 };
 
 module.exports.showModule = async (req, res) => {
-  const courseModule = await Module.findById(req.params.module_id);
+  const courseModule = await Module.findById(req.params.module_id).populate("Assignment");
   let course = await Course.findById(req.params.course_id);
 
   const module_number = course.modules.indexOf(req.params.module_id) + 1;
 
-  course = await Course.findById(req.params.course_id).populate("modules", "title");
+  course = await Course.findById(req.params.course_id).populate("modules", "title")
+
+  console.log(courseModule);
 
   let moduleReveal = DateUtil.revealTime(courseModule.revealDate);
   displayRevealDate = DateUtil.localTime(courseModule.revealDate);
@@ -110,6 +112,7 @@ module.exports.updateModule = async (req, res) => {
 module.exports.createPractice = async (req, res) => {
   const course = await Course.findById(req.params.course_id);
   const module = await Module.findById(req.params.courseModule_id);
+
   const {
     title,
     category,
@@ -123,7 +126,13 @@ module.exports.createPractice = async (req, res) => {
     category,
     links
   });
+  await newPractice.save();
 
-  console.log(newPractice);
+  module.Assignment.push(newPractice._id)
+
+  await module.save();
+
+
+  res.redirect(`/admindashboard/courses/${req.params.course_id}/modules`);
 
 };
