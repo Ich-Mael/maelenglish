@@ -30,15 +30,17 @@
   <div class="col-md-6">
     <div class="calc-card d-flex justify-content-center align-items-center flex-column">
       <h4 class="text-center py-3">Calculatrice Graphique</h4>
-    <button type="button" class="btn mb-4 w-50 btn-outline-primary " data-bs-toggle="modal" data-bs-target="#graph-calc">Tracer une courbe</button>
+      <button type="button" class="btn mb-4 w-50 btn-outline-primary " data-bs-toggle="modal"
+        data-bs-target="#graph-calc">Tracer une courbe</button>
+    </div>
   </div>
-</div>
 
   <div class="col-md-6">
     <div class="calc-card d-flex justify-content-center align-items-center flex-column">
       <h4 class="text-center py-3">Calculatrice Scientifique</h4>
-    <button type="button" class="btn mb-4 w-50 btn-outline-primary " data-bs-toggle="modal" data-bs-target="#scien-calc">Faire des Operations</button>
-  </div>
+      <button type="button" class="btn mb-4 w-50 btn-outline-primary " data-bs-toggle="modal"
+        data-bs-target="#scien-calc">Faire des Operations</button>
+    </div>
   </div>
 </div>
 
@@ -822,18 +824,15 @@
 <!--End Graph Calculator -->
 
 <h3 class="chapter-list"> Liste des chapitres </h3>
-
-
 <!-- course chapters -->
 <!-- chapter 1 Nombre complexes -->
 <div class="week-wrapper">
-  <div class="week-lesson my-3">
-    <div class="lesson-info row">
-          <% for(const [i, chapter] of subject.chapitres.entries()) {%> 
-      <div class="col-md-3 ms-3 d-flex justify-content-center">
-        <img
-          src="<%= chapter.chapterImageUrl%>"
-          alt="" class="week-lesson-img img-fluid img-thumbnail border border-dark" />
+  <% for(const [i, chapter] of subject.chapitres.entries()) {%>
+  <div class="week-lesson my-5">
+    <div class="lesson-info my-3 row">
+      <div class="col-md-3 d-flex justify-content-center">
+        <img src="<%= chapter.chapterImageUrl%>" alt=""
+          class="week-lesson-img img-fluid img-thumbnail border border-dark" />
       </div>
       <div class="col-md-8 ">
         <div class="d-flex justify-content-center flex-wrap align-items-center">
@@ -841,14 +840,15 @@
             Chapitre <%= i +1 %>: <%=chapter.title %></h2>
         </div>
         <div class="lesson-links">
-<!-- Button trigger modal -->
-<div>
-  <button type="button" class="btn ms-2 video-btn btn-outline-primary" data-bs-toggle="modal"
-  data-bs-target="#N<%= chapter._id %>">
-  En savoir plus
-</button>
-            <a class="btn mx-3 btn-outline-success" href="/100bac/serie/<%=serie._id%>/subject/<%=subject._id%>/chapter/<%=chapter._id%>">Contenu du cours</a>
-</div>
+          <!-- Button trigger modal -->
+          <div>
+            <button type="button" class="btn ms-2 video-btn btn-outline-primary" data-bs-toggle="modal"
+              data-bs-target="#N<%= chapter._id %>">
+              En savoir plus
+            </button>
+            <a class="btn mx-3 btn-outline-success"
+              href="/100bac/serie/<%=serie._id%>/subject/<%=subject._id%>/chapter/<%=chapter._id%>">Contenu du cours</a>
+          </div>
           <!-- Modal  for course details video -->
           <div class="modal fade" id="N<%= chapter._id %>" tabindex="-1" aria-labelledby="exampleModalLabel"
             aria-hidden="true">
@@ -869,10 +869,9 @@
                         </h3>
                       </div>
                       <div id="monitorscreen">
-                        <iframe id="vimeo-content"
-                          src="<%= chapter.aboutLink %>"
-                          frameborder="0" height="500px" width="1000px" allow="autoplay; fullscreen; picture-in-picture"
-                          allow="fullscreen" title="High-intensity Classes"></iframe>
+                        <iframe id="vimeo-content" src="<%= chapter.aboutLink %>" frameborder="0" height="500px"
+                          width="1000px" allow="autoplay; fullscreen; picture-in-picture" allow="fullscreen"
+                          title="High-intensity Classes"></iframe>
                       </div>
                     </div>
                   </div>
@@ -890,50 +889,56 @@
         <div class="self-practice-wrapper">
           <h3 class="practice-alone text-center"> S'Entraîner</h3>
           <div class="self-practice-btn">
-            <a class="btn mx-3 btn-success" href="/100bac/serie/<%=serie._id%>/subject/<%=subject._id%>/chapter/<%=chapter._id%>/SE">Exercices d'apprentissage</a>
+            <a class="btn mx-3 btn-success"
+              href="/100bac/serie/<%=serie._id%>/subject/<%=subject._id%>/chapter/<%=chapter._id%>/SE">Exercices
+              d'apprentissage</a>
             <button class="btn video-btn btn-warning mx-2 my-2" type="button" data-bs-toggle="collapse"
               data-bs-target="#self-p-1" aria-expanded="false" aria-controls="collapseExample">
-             Obtenir un compte VIP pour ce chapitre 
+              Obtenir un compte VIP pour ce chapitre
             </button>
           </div>
 
           <div class="collapse" id="self-p-1">
             <div class="card card-body">
               <div class="container">
-                <h5 class="py-3 text-center">Contactez-nous avec le réseau de votre choix pour obtenir un compte VIP</h5>
+                <h5 class="py-3 text-center">Contactez-nous avec le réseau de votre choix pour obtenir un compte VIP
+                </h5>
                 <div class="d-flex pb-3 justify-content-around">
-                    <a style="display: inline-block;" href="tel: +22664350101">
-                      <!-- <i class="fa mx-2 fa-phone" aria-hidden="true"></i> -->
-                      <span class="btn btn-dark">Orange BF</span></a>
-                    <a style="display: inline-block;" href="tel: +22653344444">
-                      <!-- <i class="fa mx-2 fa-phone" aria-hidden="true"></i> -->
-                      <span class="btn btn-primary">Moov Africa</span></a>
-                    <a style="display: inline-block;" href="tel: +22678875576">
-                      <!-- <i class="fa mx-2 fa-phone" aria-hidden="true"></i> -->
-                      <span class="btn btn-info">Telecel Faso</span></a>
-                    <a style="display: inline-block;" class="btn btn-success " href="https://wa.me/22653344444" target="_blank">
-                      <i class="fa fa-whatsapp" aria-hidden="true"></i>
-                      <span class="">WhatsApp</span></a>
-                    </div>
+                  <a style="display: inline-block;" href="tel: +22664350101">
+                    <!-- <i class="fa mx-2 fa-phone" aria-hidden="true"></i> -->
+                    <span class="btn btn-dark">Orange BF</span></a>
+                  <a style="display: inline-block;" href="tel: +22653344444">
+                    <!-- <i class="fa mx-2 fa-phone" aria-hidden="true"></i> -->
+                    <span class="btn btn-primary">Moov Africa</span></a>
+                  <a style="display: inline-block;" href="tel: +22678875576">
+                    <!-- <i class="fa mx-2 fa-phone" aria-hidden="true"></i> -->
+                    <span class="btn btn-info">Telecel Faso</span></a>
+                  <a style="display: inline-block;" class="btn btn-success " href="https://wa.me/22653344444"
+                    target="_blank">
+                    <i class="fa fa-whatsapp" aria-hidden="true"></i>
+                    <span class="">WhatsApp</span></a>
                 </div>
-                <hr>
-              <h3 class="text-center" style="color: rgb(44, 102, 156);">Avantage d'un compte VIP</h3> 
+              </div>
+              <hr>
+              <h3 class="text-center" style="color: rgb(44, 102, 156);">Avantage d'un compte VIP</h3>
               <ul class="avantage">
                 <li class="item">Correction détaillée en vidéo des sujets d’examen</li>
                 <li class="item">Correction détaillée en vidéo des sujets des grands établissements</li>
                 <li class="item">Intégration à notre plateforme de coaching pour la réussite au BAC</li>
                 <li class="item">Réduction de 25% pour nos TD de remise à niveaux</li>
               </ul>
-              </div>
             </div>
           </div>
-          
         </div>
+
       </div>
-          <% } %> 
     </div>
+    <hr>
   </div>
+  <% } %>
 </div>
+
+
 
 
 

@@ -18,10 +18,9 @@ body {
   font-size: 3rem;
 }
 
-#course-menu-wrapper {
-}
+#course-menu-wrapper {}
 
-.calc-card{
+.calc-card {
   box-shadow: rgba(0, 0, 0, 0.25) 0px 25px 50px -12px;
   padding: 0 2rem;
   margin: 0 4rem;
@@ -64,17 +63,16 @@ body {
 }
 
 .chapter-list {
-  background: #00f260; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #0575e6,
-    #00f260
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #0575e6,
-    #00f260
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #00f260;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right,
+      #0575e6,
+      #00f260);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right,
+      #0575e6,
+      #00f260);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   padding: 1rem 0;
   text-transform: uppercase;
   letter-spacing: 00.13em;
@@ -109,6 +107,7 @@ body {
 div.list {
   counter-reset: list-number;
 }
+
 div.list div:before {
   counter-increment: list-number;
   content: counter(list-number);
@@ -134,14 +133,11 @@ div.list div:before {
 
 
 #maths-section {
-  background: linear-gradient(
-      to top,
+  background: linear-gradient(to top,
       rgba(0, 0, 0, 0.5),
       rgba(0, 0, 0, 0.6),
-      rgba(34, 32, 41, 0.8)
-    ),
-    url("https://images.pexels.com/photos/3729557/pexels-photo-3729557.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500")
-      center no-repeat;
+      rgba(34, 32, 41, 0.8)),
+    url("https://images.pexels.com/photos/3729557/pexels-photo-3729557.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500") center no-repeat;
   background-size: cover;
   color: rgb(32, 30, 20);
   font-weight: 100;
@@ -172,6 +168,7 @@ div.list div:before {
   color: whitesmoke;
   margin-right: 1rem;
 }
+
 .course-video-link {
   text-decoration: none;
   width: 20rem;
@@ -201,6 +198,7 @@ div.list div:before {
   position: relative;
   transition: all 0.3s ease-in-out;
 }
+
 .effect01:hover {
   border: 4px solid #666;
   background-color: #fff;
@@ -212,6 +210,7 @@ div.list div:before {
   transition: all 0.2s ease-out;
   z-index: 2;
 }
+
 .effect01:hover span {
   letter-spacing: 0.13em;
   color: #333;
@@ -230,9 +229,11 @@ div.list div:before {
   -webkit-transform: rotate(35deg);
   transform: rotate(35deg);
   width: 50px;
-  transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1); /*easeOutCirc*/
+  transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+  /*easeOutCirc*/
   z-index: 1;
 }
+
 .effect01:hover:after {
   background: #fff;
   border: 20px solid #000;
@@ -257,6 +258,7 @@ div.list div:before {
   padding: 1rem 0 2rem 0;
   box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
 }
+
 .week-lesson-img {
   margin: 1rem;
   width: 15rem;
@@ -271,17 +273,16 @@ div.list div:before {
   align-self: center;
   border-radius: 2px;
   background-color: #222;
-  background: #56ccf2; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #2f80ed,
-    #56ccf2
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #2f80ed,
-    #4cb2d4
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #56ccf2;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right,
+      #2f80ed,
+      #56ccf2);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right,
+      #2f80ed,
+      #4cb2d4);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
   text-align: center;
   font-family: "Kaushan Script", cursive;
@@ -307,17 +308,16 @@ div.list div:before {
 .practice-alone {
   margin: 0.5rem;
   padding: 1.3rem 0;
-  background: #24c6dc; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #514a9d,
-    #24c6dc
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #514a9d,
-    #24c6dc
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #24c6dc;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right,
+      #514a9d,
+      #24c6dc);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right,
+      #514a9d,
+      #24c6dc);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   color: whitesmoke;
   letter-spacing: 0.17rem;
   justify-content: space-around;
@@ -334,7 +334,7 @@ div.list div:before {
   margin: 1rem;
 }
 
-.item{
+.item {
   padding: 0.3rem 0;
   font-size: 1.2rem;
 }
@@ -418,30 +418,37 @@ div.list div:before {
     0% {
       box-shadow: 0 0 100px 0 rgba(200, 235, 255, 0.4);
     }
+
     100% {
       box-shadow: 0 0 95px 0 rgba(200, 230, 255, 0.45);
     }
   }
+
   @-moz-keyframes tvflicker {
     0% {
       box-shadow: 0 0 100px 0 rgba(225, 235, 255, 0.4);
     }
+
     100% {
       box-shadow: 0 0 60px 0 rgba(200, 220, 255, 0.6);
     }
   }
+
   @-o-keyframes tvflicker {
     0% {
       box-shadow: 0 0 100px 0 rgba(225, 235, 255, 0.4);
     }
+
     100% {
       box-shadow: 0 0 60px 0 rgba(200, 220, 255, 0.6);
     }
   }
+
   @keyframes tvflicker {
     0% {
       box-shadow: 0 0 100px 0 rgba(225, 235, 255, 0.4);
     }
+
     100% {
       box-shadow: 0 0 60px 0 rgba(200, 220, 255, 0.6);
     }
@@ -465,6 +472,7 @@ div.list div:before {
   .maths-title {
     font-size: 2rem;
   }
+
   .week-number span {
     width: 2rem;
     padding: 0 0.5rem;
@@ -479,10 +487,11 @@ div.list div:before {
     padding: 1rem 5rem;
   }
 
-  .learn-with-us > h3 {
+  .learn-with-us>h3 {
     padding: 1rem 0;
   }
-  .img-wrapper > img {
+
+  .img-wrapper>img {
     width: 400px;
     height: 400px;
   }
@@ -516,12 +525,12 @@ div.list div:before {
     padding-left: 2.2rem;
   }
 
-  .img-wrapper > img {
+  .img-wrapper>img {
     width: 300px;
     height: 300px;
   }
 
-  .learn-with-us > h3 {
+  .learn-with-us>h3 {
     font-size: 3rem;
     padding: 1rem 0;
   }
@@ -531,6 +540,7 @@ div.list div:before {
     box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px,
       rgba(0, 0, 0, 0.23) 0px 6px 6px;
   }
+
   .week-number {
     display: block;
     margin: 1rem 0;
@@ -550,6 +560,4 @@ div.list div:before {
 
 }
 
-@media (max-width: 350px) {
-  
-}
+@media (max-width: 350px) {}
