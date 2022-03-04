@@ -19,105 +19,148 @@
   html {
     font-size: 90%;
   }
+
+  .admin {
+    background: url(https://images.pexels.com/photos/38568/apple-imac-ipad-workplace-38568.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500);
+    height: 56vh;
+  }
 </style>
-<h1 class="text-center my-5" style="color: rgb(243, 99, 16)">
-  Welcome to admin Dashboard
-</h1>
-<hr>
-<div class="container col-md-8">
-  <h3 class="courses text-center mb-5">Managing Courses </h3>
-  <div class="d-flex my-3 justify-content-center">
-    <a class="mx-3 btn btn-success" href="/admindashboard/courses/new">Create a new course</a>
-    <a class="mx-3 btn btn-secondary" href="/admindashboard/courses">View all courses</a>
-    <a class="mx-3 btn btn-outline-success" href="/admindashboard/addstudent/new">Enroll student to a course</a>
+<div class="admin">
+  <h1 class="text-center py-2" style="color: rgb(240, 231, 227)">
+    Welcome to admin Dashboard
+  </h1>
+</div>
+
+<div class="d-flex justify-content-around" style="padding: 8rem 0">
+  <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-1"
+    aria-expanded="false" aria-controls="collapseExample">
+    Managing Courses
+  </button>
+
+  <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-2"
+    aria-expanded="false" aria-controls="collapseExample">
+    English Clubs
+  </button>
+
+  <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-3"
+    aria-expanded="false" aria-controls="collapseExample">
+    Easy Maths
+  </button>
+
+  <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-4"
+    aria-expanded="false" aria-controls="collapseExample">
+    News
+  </button>
+</div>
+
+
+<div class="collapse" id="collapse-1">
+  <div class="card card-body">
+    <div class="container col-md-8">
+      <h3 class="courses text-center mb-5">Managing Courses </h3>
+      <div class="d-flex my-3 justify-content-center">
+        <a class="mx-3 btn btn-success" href="/admindashboard/courses/new">Create a new course</a>
+        <a class="mx-3 btn btn-secondary" href="/admindashboard/courses">View all courses</a>
+        <a class="mx-3 btn btn-outline-success" href="/admindashboard/addstudent/new">Enroll student to a course</a>
+      </div>
+    </div>
   </div>
 </div>
-<hr>
-<!-- Managing English Club -->
-<div class="container col-md-6 my-5">
-  <h3 class="text-center">Nattural English Club</h3>
-  <a href="/englishlang4all/clubs/new" class="btn btn-outline-primary my-5">Create a new english club</a>
-  <hr>
-  <h4>Adding a new member to an English Club</h4>
-  <form action="/admindashboard/newEnglishClubMember" method="POST">
-    <label class="form-label my-3" for="course">English club name</label>
-    <input class="form-control" type="text" name="englishClub_name" placeholder="" />
-    <label class="form-label my-3" for="student">New member name</label>
-    <input class="form-control" type="text" name="memberUsername" placeholder="" />
-    <button type="submit" class="btn btn-primary my-3">Add new member</button>
-  </form>
-  <hr>
-</div>
 
-
-<!-- Managing 100 bac program -->
-<div class="container col-md-6 my-5">
-  <h1 class="text-primary">Operation 100% BAC</h1>
-  <a href="/admindashboard/100bac/series">Voir toutes les series</a>
-  <form action="/admindashboard/100bac/serie" method="POST">
-    <!-- Serie General information -->
-    <label class="form-label" for="title">Serie</label>
-    <input type="text" class="form-control" id="serie" name="serie[title]" value="" />
-
-    <label class="form-label" for="title">Image</label>
-    <input type="text" class="form-control" id="serieImage" name="serie[serieImageUrl]" value="" />
-    <button type="submit" class="btn btn-outline-primary my-3">Create a new serie</button>
-  </form>
-</div>
-
-
-<!-- News -->
-<div class="container col-md-6 my-5">
-  <h1 class="text-primary">Posting a news</h1>
-  <a href="/admindashboard/all_news">Voir tous les articles</a>
-  <form action="/admindashboard/news" method="POST">
-    <div class="py-1">
-      <p>News Category</p>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="news[newsCategory]" id="English Club" value="English Club"
-          required>
-        <label class="form-check-label" for="Maths">English Club</label>
-      </div>
-
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="news[newsCategory]" id="Maths" value="Maths" required>
-        <label class="form-check-label" for="Maths">Maths</label>
-      </div>
-
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="news[newsCategory]" id="Company" value="Coding" required>
-        <label class="form-check-label" for="Coding">Coding</label>
-      </div>
-
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="news[newsCategory]" id="English_Course"
-          value="English Course" required>
-        <label class="form-check-label" for="English course"> English course</label>
-      </div>
-
-
+<div class="collapse" id="collapse-2">
+  <div class="card card-body">
+    <!-- Managing English Club -->
+    <div class="container col-md-6 my-5" style="background-color: rgb(233, 229, 224);">
+      <h1 class="text-primary">Natural English Club</h1>
+      <a href="/englishlang4all/clubs/new" class="btn btn-outline-primary my-5">Create a new english club</a>
+      <hr>
+      <h4>Adding a new member to an English Club</h4>
+      <form action="/admindashboard/newEnglishClubMember" method="POST">
+        <label class="form-label my-3" for="course">English club name</label>
+        <input class="form-control" type="text" name="englishClub_name" placeholder="" />
+        <label class="form-label my-3" for="student">New member name</label>
+        <input class="form-control" type="text" name="memberUsername" placeholder="" />
+        <button type="submit" class="btn btn-primary my-3">Add new member</button>
+      </form>
     </div>
-    <!-- Article title -->
-    <label class="form-label fw-bold py-2" for="article-title">Article Title</label>
-    <input type="text" required class="form-control" name="news[title]" id="article_title" value="" />
+  </div>
+</div>
+<div class="collapse" id="collapse-3">
+  <div class="card card-body">
+    <!-- Managing 100 bac program -->
+    <div class="container col-md-6 my-5" style="background-color: rgb(233, 229, 224);">
+      <h1 class="text-primary">Operation 100% BAC</h1>
+      <a href="/admindashboard/100bac/series">Voir toutes les series</a>
+      <form action="/admindashboard/100bac/serie" method="POST">
+        <!-- Serie General information -->
+        <label class="form-label" for="title">Serie</label>
+        <input type="text" class="form-control" id="serie" name="serie[title]" value="" />
 
-    <!-- Article image link -->
-    <label class="form-label fw-bold py-2" for="article-image-link">Article image link</label>
-    <input type="text" required class="form-control" name="news[newsImageUrl]" id="article_image" value="" />
+        <label class="form-label" for="title">Image</label>
+        <input type="text" class="form-control" id="serieImage" name="serie[serieImageUrl]" value="" />
+        <button type="submit" class="btn btn-outline-primary my-3">Create a new serie</button>
+      </form>
+    </div>
+  </div>
+</div>
 
-    <!-- Article summary -->
-    <label class="form-label fw-bold py-2" for="article-summary">Article Summary</label>
-    <input type="text" required class="form-control" name="news[newsSummary]" id="article_title" value="" />
+<div class="collapse" id="collapse-4">
+  <div class="card card-body">
+    <!-- News -->
+    <div class="container col-md-6 my-5">
+      <h1 class="text-primary">Posting a news</h1>
+      <a href="/admindashboard/all_news">Voir tous les articles</a>
+      <form action="/admindashboard/news" method="POST">
+        <div class="py-1">
+          <p>News Category</p>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="news[newsCategory]" id="English Club"
+              value="English Club" required>
+            <label class="form-check-label" for="Maths">English Club</label>
+          </div>
 
-    <!-- Article summary -->
-    <label class="form-label fw-bold py-2" for="readTime">Estimated read time</label>
-    <input type="text" required class="form-control" name="news[readTime]" id="readTime" value="" />
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="news[newsCategory]" id="Maths" value="Maths" required>
+            <label class="form-check-label" for="Maths">Maths</label>
+          </div>
 
-    <!-- Article content-->
-    <label class="form-label" for="description">Article Content </label>
-    <textarea class="form-control mytextarea" required name="news[newsContent]" id="news-content" cols="50" rows="5">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="news[newsCategory]" id="Company" value="Coding" required>
+            <label class="form-check-label" for="Coding">Coding</label>
+          </div>
+
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="news[newsCategory]" id="English_Course"
+              value="English Course" required>
+            <label class="form-check-label" for="English course"> English course</label>
+          </div>
+
+
+        </div>
+        <!-- Article title -->
+        <label class="form-label fw-bold py-2" for="article-title">Article Title</label>
+        <input type="text" required class="form-control" name="news[title]" id="article_title" value="" />
+
+        <!-- Article image link -->
+        <label class="form-label fw-bold py-2" for="article-image-link">Article image link</label>
+        <input type="text" required class="form-control" name="news[newsImageUrl]" id="article_image" value="" />
+
+        <!-- Article summary -->
+        <label class="form-label fw-bold py-2" for="article-summary">Article Summary</label>
+        <input type="text" required class="form-control" name="news[newsSummary]" id="article_title" value="" />
+
+        <!-- Article summary -->
+        <label class="form-label fw-bold py-2" for="readTime">Estimated read time</label>
+        <input type="text" required class="form-control" name="news[readTime]" id="readTime" value="" />
+
+        <!-- Article content-->
+        <label class="form-label" for="description">Article Content </label>
+        <textarea class="form-control mytextarea" required name="news[newsContent]" id="news-content" cols="50"
+          rows="5">
         </textarea>
-    <hr />
-    <button type="submit" class="btn btn-outline-primary my-3">Post news</button>
-  </form>
+        <hr />
+        <button type="submit" class="btn btn-outline-primary my-3">Post news</button>
+      </form>
+    </div>
+  </div>
 </div>

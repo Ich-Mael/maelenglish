@@ -191,15 +191,117 @@
     </div>
 </div>
 
-
-
-
-
 <!-- Clubs Activities -->
 <h1 class="common-heading">
     <span class="underline"></span>English Club Activities<span class="underline"></span>
 </h1>
 <div class="main-content-wrapper">
+    <h1 class="daily-vocabulary-title">Daily Vocabulary</h1>
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <div class="daily-content">
+                <div class="card m-2">
+                    <div class="card-header text-center word-day">
+                        <h4 class="fw-bold py-1">Word of the day </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title word-day-title py-2 fs-4">
+                            <p>
+                                <%= club.dailyVocab[0].wordOfDay.word %>
+                            </p>
+                        </div>
+                        <p class="card-text word-day-meaning fs-4"><span class="fw-bold">Meaning : </span>
+                            <%= club.dailyVocab[0].wordOfDay.wordMeaning %>
+                        </p>
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-outline-success" data-bs-toggle="modal"
+                            data-bs-target="#wod-1">
+                            Understand better with examples
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="wod-1" tabindex="-1" aria-labelledby="exampleModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog modal-lg
+                                  modal-fullscreen-md-down">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title " id="exampleModalLabel">
+                                            Understand better with examples
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h3>Sentence examples for the WOD</h3>
+                                        <p class="fs-3">
+                                            <%- club.dailyVocab[0].wordOfDay.learnMoreWord %>
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn
+                                        btn-danger" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="daily-content">
+                <div class="card m-2">
+                    <div class="card-header text-center idiom-day">
+                        <h4 class="fw-bold">Idiom of the day</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title idioms-title fs-4 py-2">
+                            <p class="">
+                                <%= club.dailyVocab[0].IdiomDay.idiom %>
+                            </p>
+                        </div>
+                        <p class="card-text word-day-meaning fs-4"><span class="fw-bold">Meaning : </span>
+                            <%= club.dailyVocab[0].IdiomDay.idiomMeaning %>
+                        </p>
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                            data-bs-target="#wod-2">
+                            Understand better with examples
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="wod-2" tabindex="-1" aria-labelledby="exampleModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog modal-lg
+                                  modal-fullscreen-md-down">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title " id="exampleModalLabel">
+                                            Understand better with examples
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h3>Sentence examples for the IOD</h3>
+                                        <p class="fs-3">
+                                            <%- club.dailyVocab[0].IdiomDay.learnMoreIdiom %>
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn
+                                        btn-danger" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
     <div class="row">
         <div class="col-lg-9 activities-wrapper py-3">
             <section id="news-wrapper">
@@ -767,70 +869,6 @@
 
                     </div>
                 </div>
-                <div class="daily-content">
-                    <div class="card m-2">
-                        <div class="card-header text-center word-day">
-                            Daily Vocabulary
-                        </div>
-                        <div class="card-body">
-                            <div class="card-title word-day-title py-2 fs-4">
-                                <h4 class="fw-bold py-1">Word of the day </h4>
-                                <p>
-                                    <%= club.dailyVocab[0].wordOfDay.word %>
-                                </p>
-                            </div>
-                            <p class="card-text word-day-meaning fs-4"><span class="fw-bold">Meaning : </span>
-                                <%= club.dailyVocab[0].wordOfDay.wordMeaning %>
-                            </p>
-                            <hr>
-                            <div class="card-title idioms-title fs-4 py-2">
-                                <h4 class="fw-bold">Idiom of the day</h4>
-                                <p class="">
-                                    <%= club.dailyVocab[0].IdiomDay.idiom %>
-                                </p>
-                            </div>
-                            <p class="card-text word-day-meaning fs-4"><span class="fw-bold">Meaning : </span>
-                                <%= club.dailyVocab[0].IdiomDay.idiomMeaning %>
-                            </p>
-                            <!-- Button trigger modal -->
-                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#wod-1">
-                                Understand better with examples
-                            </button>
-
-                            <!-- Modal -->
-                            <div class="modal fade" id="wod-1" tabindex="-1" aria-labelledby="exampleModalLabel"
-                                aria-hidden="true">
-                                <div class="modal-dialog modal-lg
-                                      modal-fullscreen-md-down">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title " id="exampleModalLabel">
-                                                Understand better with examples
-                                            </h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <h3>Sentence examples for the WOD</h3>
-                                            <p class="fs-3">
-                                                <%- club.dailyVocab[0].wordOfDay.learnMoreWord %>
-                                            </p>
-                                            <hr>
-                                            <h3>Sentence examples for the IOD</h3>
-                                            <p class="fs-3">
-                                                <%- club.dailyVocab[0].IdiomDay.learnMoreIdiom %>
-                                            </p>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn
-                                            btn-danger" data-bs-dismiss="modal">Close</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <div class="coming-activity">
                     <div class="card m-2">
                         <div class="card-header text-center incomming-activities">
@@ -950,7 +988,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>

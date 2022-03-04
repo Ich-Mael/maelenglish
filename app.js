@@ -27,6 +27,8 @@ const courseRoutes = require("./routes/course");
 const xpaxRoutes = require("./routes/xpaxetudiant");
 const bacRoutes = require("./routes/100bac");
 const englishRoutes = require("./routes/english4all");
+const english4EveroneRoutes = require("./routes/english4everyone");
+const english4ProfessionRoutes = require("./routes/english4profession");
 const fasopreunariatRoutes = require("./routes/fasopreunariat");
 
 const path = require("path");
@@ -155,6 +157,12 @@ app.use("/", xpaxRoutes);
 
 // english for everybody routes
 app.use("/", englishRoutes);
+
+// English for evryone
+app.use("/", english4EveroneRoutes);
+
+// English for professions
+app.use("/", english4ProfessionRoutes);
 
 // Fasopreunariat routes
 app.use("/", fasopreunariatRoutes);

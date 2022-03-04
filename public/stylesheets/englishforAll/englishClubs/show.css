@@ -536,24 +536,46 @@ customers-cards:before {
 
 .word-day {
   font-family: "Chivo", sans-serif;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.1rem;
+  background: #007991;
+  color: white;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #007991, #489e84, #007991);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #007991, #4ea78c, #007991);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
+
+.idiom-day {
+  font-family: "Chivo", sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.1rem;
+  color: white;
   background: #2980b9;
   /* fallback for old browsers */
   background: -webkit-linear-gradient(to right,
       #2980b9,
-      #6dd5fa,
-      #90e9f0,
-      #6dd5fa,
+      #315e6e,
+      #336577,
       #2980b9);
   /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(to right,
       #2980b9,
-      #6dd5fa,
-      #90e9f0,
-      #6dd5fa,
+      #46869e,
+      #3a7388,
       #2980b9);
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.daily-vocabulary-title {
+  text-align: center;
+  font-size: 2rem;
+  padding: 2rem 0.5rem;
+  font-family: "Chivo", sans-serif;
+  font-weight: 700;
+  color: #075e4b;
 }
 
 .word-day-title {
