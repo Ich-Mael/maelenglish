@@ -56,23 +56,34 @@
 <% if(moduleReveal) { %>
 <!-- Module content -->
 <section class="container col-md-8">
+  <!-- Objectif et structuration du module-->
   <div class="mb-3 mt-5">
-    <h3 class="about-course-heading">
-      <span class="underline-section">Objectifs du module</span>
-    </h3>
-    <p><%- courseModule.willLearnModule %></p>
-  </div>
-  <div class="my-3">
-    <h3 class="about-course-heading">
-      <span class="underline-section">Contenu du module</span>
-    </h3>
-    <% for (video of courseModule.videoLinks) {%>
-    <!-- Button trigger modal -->
-    <button type="button" class="btn me-4 btn-outline-primary" data-bs-toggle="modal"
-      data-bs-target="#video-<%= courseModule.videoLinks.indexOf(video) %>">
-      Partie <%= courseModule.videoLinks.indexOf(video) + 1 %>
-    </button>
 
+    <a class="btn objectives d-block" data-bs-toggle="collapse" href="#objectif" role="button" aria-expanded="false"
+      aria-controls="collapseExample">
+      Cliquez pour voir les objectifs et structuration du module
+    </a>
+
+    <div class="collapse" id="objectif">
+      <div class="card card-body">
+        <p><%- courseModule.willLearnModule %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cours video-->
+  <div class="my-3 video-wrapper" style="">
+    <h3 class="course-video-heading">
+      <span class="underline-section">Contenu en vidéos du module</span>
+    </h3>
+    <div class="d-flex justify-content-around my-3">
+      <% for (video of courseModule.videoLinks) {%>
+      <!-- Button trigger modal -->
+      <button type="button" class="btn me-4 btn-outline-primary" data-bs-toggle="modal"
+        data-bs-target="#video-<%= courseModule.videoLinks.indexOf(video) %>">
+        Partie <%= courseModule.videoLinks.indexOf(video) + 1 %>
+      </button>
+    </div>
     <!-- Modal -->
     <div class="modal fade" id="video-<%= courseModule.videoLinks.indexOf(video) %>" tabindex="-1"
       aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -110,18 +121,35 @@
     </div>
     <% } %>
   </div>
+
+  <!-- Explication supplementaire-->
   <div class="my-3">
-    <h3 class="about-course-heading">
-      <span class="underline-section">Pour mieux comprendre</span>
-    </h3>
-    <p><%- courseModule.explanationText %></p>
+    <div class="mb-3 mt-5">
+      <p class="d-flex justify-content-around">
+        <a class="btn moreLink btn-primary" data-bs-toggle="collapse" href="#moreEx" role="button" aria-expanded="false"
+          aria-controls="collapseExample">
+          Cliquez pour des explication supplémentaires ou remarques
+        </a>
+        <!--more ressources -->
+        <a class="btn moreLink btn-primary" data-bs-toggle="collapse" href="#moreRes" role="button"
+          aria-expanded="false" aria-controls="collapseExample">
+          Cliquez pour des ressources supplémentaires
+        </a>
+      </p>
+      <div class="collapse my-3" id="moreEx">
+        <div class="card card-body">
+          <p><%- courseModule.explanationText %></p>
+        </div>
+      </div>
+
+      <div class="collapse my-3" id="moreRes">
+        <div class="card card-body">
+          <p><%- courseModule.moreDetails %></p>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="my-3">
-    <h3 class="about-course-heading">
-      <span class="underline-section">Ressources Supplémentaires </span>
-    </h3>
-    <p><%- courseModule.moreDetails %></p>
-  </div>
+
   <div class="my-5">
     <h3 class="about-course-heading rok">
       <span class="underline-section"> Retour de Connaissance </span>

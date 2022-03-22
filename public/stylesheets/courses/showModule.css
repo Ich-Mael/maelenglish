@@ -53,7 +53,7 @@ body {
 }
 
 .banner-heading {
-  color: rgb(243, 107, 17);
+  color: rgb(247, 243, 241);
   /* width: 100%; */
   padding: 1rem;
   font-family: "Poppins", sans-serif;
@@ -115,14 +115,41 @@ body {
   font-weight: 700;
 }
 
-.about-course-heading {
+.objectives {
   color: rgb(255, 255, 255);
   background-color: rgb(114, 52, 133);
   background: #aa46fc;
   /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #46c8fc, #3F5EFB, #3F5EFB, #46e1fc);
+  background: -webkit-linear-gradient(to right, #46c8fc, #10227ed5, #46e1fc);
   /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #46d8fc, #3F5EFB, #3F5EFB, #46c8fc);
+  background: linear-gradient(to right, #46d8fc, #081e88b9, #46c8fc);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  margin-bottom: 2rem;
+  padding: 1rem 2rem;
+  text-align: center;
+  font-size: 1.5rem;
+  transition: all 0.3s;
+}
+
+.objectives:hover {
+  font-size: 1.59rem;
+  color: #ffffff;
+}
+
+.video-wrapper {
+  border: 2px solid rgba(46, 10, 88, 0.562);
+  border-radius: 3px;
+}
+
+.course-video-heading {
+  color: rgb(255, 255, 255);
+  background-color: rgb(114, 52, 133);
+  background: #aa46fc;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #46c8fc, #10227ed5, #46e1fc);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #46d8fc, #081e88b9, #46c8fc);
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
   margin-bottom: 2rem;
@@ -133,15 +160,15 @@ body {
 
 .rok {
   background-color: rgb(114, 52, 133);
-  background: #aa46fc;
-  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #fc8f46, #3F5EFB, #3F5EFB, #fc7a46);
-  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #fd4a1d, #3F5EFB, #fc5b46);
-  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   padding: 1.5rem;
   margin-top: 2rem;
-  font-size: 2rem;
+  text-align: center;
+  color: white;
+  font-size: 1.8rem;
+}
+
+.moreLink {
+  font-size: 1.2rem;
 }
 
 .underline-section {

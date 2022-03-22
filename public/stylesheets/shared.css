@@ -633,8 +633,20 @@ hk-shadow {
 #youtube,
 #instagram,
 #linkedIn,
-#twitter {
+#twitter,
+#user_mail,
+#m-whatsapp {
   transition: all 1s;
+}
+
+#user_mail {
+  color: rebeccapurple;
+  background-color: rgb(149, 151, 153);
+}
+
+#m-whatsapp {
+  color: rgb(253, 253, 253);
+  background-color: rgb(4, 161, 38);
 }
 
 #facebook {
@@ -683,6 +695,18 @@ hk-shadow {
 }
 
 /*hover links */
+#user_mail:hover {
+  color: rgb(250, 249, 249);
+  transform: rotate(360deg);
+  background-color: rgb(53, 56, 59);
+}
+
+#m-whatsapp:hover {
+  color: rgb(49, 189, 6);
+  transform: rotate(360deg);
+  background-color: rgb(217, 220, 223);
+}
+
 #facebook:hover {
   color: rgb(245, 239, 239);
   transform: rotate(360deg);
