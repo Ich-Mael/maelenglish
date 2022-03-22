@@ -11,12 +11,17 @@ const {
   englishClubs
 } = require("../models/englishClub");
 const catchAsync = require("../utilities/catchAsync");
-const Course = require("../models/courses");
+
+const {
+  Course
+} = require("../models/courses");
+
 const {
   isLoggedIn,
   checkRoles,
   isVerified,
 } = require("../middlewares/userController");
+
 const {
   checkCourseOwnership,
   checkEnglishBoardMembership,
@@ -241,16 +246,20 @@ router.post(
       courseTitle,
       student
     } = req.body;
+
     const user = await User.findOne({
       username: student
     });
     const course = await Course.findOne({
       title: courseTitle
     });
-    course.student.push(user);
+
+    course.students.push(user);
     await course.save();
+
     user.coursesTaken.push(course);
     await user.save();
+
     res.send("user successfully registered for the course");
   })
 );

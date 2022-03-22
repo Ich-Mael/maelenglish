@@ -27,6 +27,7 @@ const courseSchema = new Schema({
     type: String,
     default: "Cours de 3 modules et 2 evalutions"
   },
+
   session: {
     startDate: {
       type: Date,
