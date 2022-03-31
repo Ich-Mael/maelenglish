@@ -34,11 +34,20 @@ body {
   justify-content: space-around;
 }
 
-.school-logo,
-.club-logo {
+.school-logo {
   width: 150px;
   height: 150px;
   margin: 1.5rem;
+}
+
+.logo-wrapper {
+  position: relative;
+}
+
+.club-logo {
+  margin-top: 8rem;
+  width: 100%;
+  height: 100%;
 }
 
 .banner {
@@ -50,7 +59,7 @@ body {
 
 .bg-img-wrapper {
   width: 100%;
-  height: 90vh;
+  height: 70vh;
   overflow: hidden;
   background-color: rgba(0, 0, 0, 0.979);
 }
@@ -58,7 +67,7 @@ body {
 .bg-img-wrapper img {
   width: 100%;
   height: 100%;
-  opacity: 0.8;
+  opacity: 1;
   object-fit: cover;
   animation: scale 25s;
 }
@@ -74,7 +83,7 @@ body {
 }
 
 .club-info {
-  padding: 2rem 0 0 2rem;
+  padding: 2rem 0 0;
 }
 
 @keyframes moveBanner {
@@ -153,7 +162,7 @@ body {
   text-align: center;
   height: 1rem;
   margin: 0 1rem;
-  background-color: orangered;
+  background-color: rgb(87, 4, 126);
 }
 
 .common-heading {
@@ -240,20 +249,20 @@ body {
 /* End social media */
 
 .position {
-  font-size: 2.5rem;
+  font-size: 1.5rem;
   font-weight: 600;
-  color: #e74c3c;
+  color: #1a0568;
   padding: 1rem 0;
 }
 
 .member-name {
-  font-size: 2rem;
+  font-size: 1.2rem;
   font-weight: 600;
   color: #311544c4;
 }
 
 .customer-section {
-  min-height: 80vh;
+  min-height: 20vh;
   display: flex;
   align-items: center;
   font-family: "Roboto", sans-serif;
@@ -310,17 +319,17 @@ customers-cards:before {
 }
 
 .carousel-item {
-  min-height: 40rem;
+  min-height: 45rem;
 }
 
 .year {
-  padding: 8rem 0;
+  padding: 3rem 2rem;
 }
 
 .carousel-caption {
   position: initial;
   z-index: 10;
-  padding: 2rem 4rem;
+  padding: 2rem;
   font-family: "Roboto", sans-serif;
   font-size: 1rem;
   text-align: center;
@@ -343,7 +352,7 @@ customers-cards:before {
 
   .customer-section {
     margin: 0 0;
-    padding: 2rem 0 5rem;
+    padding: 2rem;
   }
 
   .common-heading {}
@@ -351,10 +360,10 @@ customers-cards:before {
 
 .carousel-caption img {
   width: 20rem;
-  height: 30rem;
+  height: 20rem;
   border: 5px solid rgb(250, 247, 247);
   /* border-radius: 50%; */
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 
 @media (max-width: 767px) {
@@ -462,6 +471,10 @@ customers-cards:before {
   box-sizing: border-box;
   border-left: 3px solid rgb(36, 34, 39);
 }
+
+.member-info-wrapper {}
+
+.member-info {}
 
 /* news section */
 
