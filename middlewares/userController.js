@@ -8,10 +8,10 @@ module.exports.isLoggedIn = (req, res, next) => {
     next();
 };
 
-module.exports.isVerified = (req, res, next)=>{
-    if(req.user.isVerified){
+module.exports.isVerified = (req, res, next) => {
+    if (req.user.isVerified) {
         next();
-    }else{
+    } else {
         return res.redirect('/user/send-verification-email');
     }
 };

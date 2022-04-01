@@ -15,7 +15,7 @@ const accountTokens = new mongoose.Schema({
     },
     // will automatically delete after 10 min
     // can be a bit delay, because the bg thread runs every 60 sec
-    expire_at: { type: Date, default: Date.now, expires: 600 }
+    // expire_at: { type: Date, default: Date.now, expires: 600 }
 });
 
 module.exports = mongoose.model('AccountTokens', accountTokens);
