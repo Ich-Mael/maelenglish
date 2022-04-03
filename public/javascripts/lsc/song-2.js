@@ -74,7 +74,7 @@ window.onload = function () {
         'took',
         'is like',
         'here alone',
-        'won\'t move',
+        'heart won\'t',
         'can make you',
         'alone with',
         'revolves around you',
