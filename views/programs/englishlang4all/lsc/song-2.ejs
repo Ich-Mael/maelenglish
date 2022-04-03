@@ -124,10 +124,19 @@
 
 
     .repeat {
-        padding: 0.5rem;
+        padding: 0.1rem 0.3rem;
         margin: 0 0.5rem;
+        border-radius: 2px;
         background-color: #0f6662;
         color: #f5f1f7;
+    }
+
+    #song-wrapper {
+        position: -webkit-fixed;
+        position: fixed;
+        left: 5%;
+        top: 15%;
+        z-index: 2000;
     }
 
     @media (max-width: 768px) {
@@ -170,13 +179,12 @@
         <h2 class="text-center lsc-title">Améliorer votre Anglais avec des chansons</h2>
         <div class="container col-md-8">
             <h3 class="pb-2 text-center lsc-song-info">Song : No Air By Jordin Sparks Feat Chris Brown </h3>
-            <div class="container">
-                <figure>
-                    <figcaption class="fs-4 py-3">Play the song, listen and fill the gaps with the missing words from
-                        the
-                        lyrics
+            <div class="container ">
+                <figure class="">
+                    <figcaption class="fs-4 py-3">
                     </figcaption>
-                    <audio controls src="/songs/Jordin Sparks Feat. Chris Brown - No Air Lyrics HQ.mp3">
+                    <audio id="song-wrapper" controls>
+                        <source src="/songs/Jordin Sparks Feat. Chris Brown - No Air Lyrics HQ.mp3" />
                         Your browser does not support the
                         <code>audio</code> element.
                     </audio>
@@ -188,7 +196,8 @@
         <div class=" container col-md-8">
             <div id="quiz-1">
                 <!-- 1 -->
-                <p class="text-center bg-dark text-white py-2 fs-3">Lyrics with missing words</p>
+                <p class="text-justify fs-5">Play the song, listen and fill the gaps with the missing words from the
+                    lyrics</p>
                 <p class="text-justify fs-5"> <span class="text-danger">Attention : </span> <br> 1. Toutes les reponses
                     sont
                     en miniscule. <br> 2. Quand plus d'un mot manque, le
@@ -201,6 +210,7 @@
                     dans
                     le champ X.</p>
 
+                <p class="text-center bg-dark text-white py-2 fs-3">Lyrics with missing words</p>
                 <h4 class="py-3 text-center px-2  ms-2">Verse 1</h4>
                 <hr>
                 <div class="quizz-1-card quizlib-question">
