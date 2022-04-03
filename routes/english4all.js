@@ -639,6 +639,15 @@ router.get(
   })
 );
 
+router.get(
+  "/englishlang4all/lsc/song123hg34ukk",
+  catchAsync(async (req, res) => {
+    res.render(
+      "programs/englishlang4all/lsc/song-2"
+    );
+  })
+);
+
 
 
 
