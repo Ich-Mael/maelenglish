@@ -1,51 +1,70 @@
 // creating an array and passing the number, questions, options, and answers
-let questions = [
-  {
+let questions = [{
     numb: 1,
-    question: "How many students in your class ______ from Bobo?",
-    answer: "come",
-    options: ["comes", "come", "are coming", "came"],
+    question: "My brother has a new job. He works ________ the evening",
+    answer: "in",
+    options: ["in", "on", "at"],
   },
   {
     numb: 2,
-    question: "Aicha _____ his teeth before breakfast every morning.",
-    answer: "cleans",
-    options: ["cleans", "is cleaning", "clean", "will clean"],
+    question: "Tom’s birthday is next week, ________ January 14.",
+    answer: "on",
+    options: ["in", "on", "at"],
   },
 
   {
     numb: 3,
-    question: "Sorry, she can't come to the phone. She _______ a bath!",
-    answer: "is having",
-    options: ["having", "have", "has", "is having"],
+    question: "I’m not going to watch Miss University. It starts ________ midnight!",
+    answer: "at",
+    options: ["in", "on", "at"],
   },
 
   {
     numb: 4,
-    question: "Babies______when they are hungry.",
-    answer: "cry",
-    options: ["cry", "crying", "cried", "will cry"],
+    question: "Will we be ________ time, or will we miss our flight?",
+    answer: "on",
+    options: ["in", "on", "at"],
   },
   {
     numb: 5,
-    question:
-      'At a school dance: \n Jane:  _____ yourself? \n Mary: "Yes, I\'m having a great time!"',
-    answer: "Are you enjoying",
-    options: ["You enjoying", "Enjoy you", "Do you enjoy", "Are you enjoying"],
+    question: 'Let\'s meet _______ midday _______ Saturday.',
+    answer: "at, on",
+    options: ["at, at", "in, on", "at, on"],
   },
   // you can uncomment the below codes and make duplicate as more as you want to add question
   // but remember you need to give the numb value serialize like 1,2,3,5,6,7,8,9.....
-  //   {
-  //   numb: 6,
-  //   question: "Your Question is Here",
-  //   answer: "Correct answer of the question is here",
-  //   options: [
-  //     "Option 1",
-  //     "option 2",
-  //     "option 3",
-  //     "option 4"
-  //   ]
-  // },
+  {
+    numb: 6,
+    question: "The manager isn't here _______ the moment, but she'll be back _______ half an hour.",
+    answer: "at, in",
+    options: [
+      "at, on",
+      "at, in",
+      "at, at"
+    ]
+  },
+
+  {
+    numb: 7,
+    question: "I'm busy _______ moment, but I'll be free ______ evening.",
+    answer: "at the, this",
+    options: [
+      "at the, this",
+      "in the, in",
+      "at the, on the"
+    ]
+  },
+
+  {
+    numb: 8,
+    question: "You won't be working _______ Saturday nights _______ the future, will you?",
+    answer: "on, in",
+    options: [
+      "at, in",
+      "on, in",
+      "on, on"
+    ]
+  },
 ];
 //selecting all required elements
 const start_btn = document.querySelector(".start_btn button");
@@ -73,7 +92,7 @@ continue_btn.onclick = () => {
   showQuetions(0); //calling showQestions function
   queCounter(1); //passing 1 parameter to queCounter
   startTimer(15); //calling startTimer function
-//   startTimerLine(0); //calling startTimerLine function
+  //   startTimerLine(0); //calling startTimerLine function
 };
 let timeValue = 15;
 let que_count = 0;
@@ -98,7 +117,7 @@ restart_quiz.onclick = () => {
   clearInterval(counter); //clear counter
   clearInterval(counterLine); //clear counterLine
   startTimer(timeValue); //calling startTimer function
-//   startTimerLine(widthValue); //calling startTimerLine function
+  //   startTimerLine(widthValue); //calling startTimerLine function
   timeText.textContent = "Time Left"; //change the text of timeText to Time Left
   next_btn.classList.remove("show"); //hide the next button
 };
@@ -119,7 +138,7 @@ next_btn.onclick = () => {
     clearInterval(counter); //clear counter
     clearInterval(counterLine); //clear counterLine
     startTimer(timeValue); //calling startTimer function
-//     startTimerLine(widthValue); //calling startTimerLine function
+    //     startTimerLine(widthValue); //calling startTimerLine function
     timeText.textContent = "Time Left"; //change the timeText to Time Left
     next_btn.classList.remove("show"); //hide the next button
   } else {
@@ -147,9 +166,6 @@ function showQuetions(index) {
     "</span></div>" +
     '<div class="option"><span>' +
     questions[index].options[2] +
-    "</span></div>" +
-    '<div class="option"><span>' +
-    questions[index].options[3] +
     "</span></div>";
   que_text.innerHTML = que_tag; //adding new span tag inside que_tag
   option_list.innerHTML = option_tag; //adding new div tag inside option_tag
@@ -196,43 +212,40 @@ function optionSelected(answer) {
   }
   next_btn.classList.add("show"); //show the next button if user selected any option
 }
+
 function showResult() {
   info_box.classList.remove("activeInfo"); //hide info box
   quiz_box.classList.remove("activeQuiz"); //hide quiz box
   result_box.classList.add("activeResult"); //show result box
   const scoreText = result_box.querySelector(".score_text");
-  if (userScore > 3) {
+  if (userScore > 6) {
     // if user scored more than 3
     //creating a new span tag and passing the user score number and total question number
     let scoreTag =
-      "<span>and congrats! , You got <p>" +
-      userScore +
-      "</p> out of <p>" +
-      questions.length +
+      "<span> And congrats! , You got <p>" +
+      userScore / questions.length * 100 + "%" +
       "</p></span>";
     scoreText.innerHTML = scoreTag; //adding new span tag inside score_Text
-  } else if (userScore > 2) {
+  } else if (userScore > 4) {
     // if user scored more than 1
     let scoreTag =
-      "<span>and nice , You got <p>" +
-      userScore +
-      "</p> out of <p>" +
-      questions.length +
-      "</p></span>";
+      "<span>And nice , You got <p>" +
+      userScore / questions.length * 100 + "%"
+    "</p></span>";
     scoreText.innerHTML = scoreTag;
   } else {
     // if user scored less than 1
     let scoreTag =
-      "<span>and sorry , You got only <p>" +
-      userScore +
-      "</p> out of <p>" +
-      questions.length +
-      "</p></span>";
+      "<span>And sorry , You got only <p>" +
+      userScore / questions.length * 100 + "%"
+    "</p></span>";
     scoreText.innerHTML = scoreTag;
   }
 }
+
 function startTimer(time) {
   counter = setInterval(timer, 1000);
+
   function timer() {
     timeCount.textContent = time; //changing the value of timeCount with time value
     time--; //decrement the time value
@@ -262,8 +275,10 @@ function startTimer(time) {
     }
   }
 }
+
 function startTimerLine(time) {
   counterLine = setInterval(timer, 29);
+
   function timer() {
     time += 1; //upgrading time value with 1
     time_line.style.width = time + "px"; //increasing width of time_line with px by time value
@@ -273,6 +288,7 @@ function startTimerLine(time) {
     }
   }
 }
+
 function queCounter(index) {
   //creating a new span tag and passing the question number and total question
   let totalQueCounTag =

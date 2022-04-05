@@ -29,6 +29,7 @@ const bacRoutes = require("./routes/100bac");
 const englishRoutes = require("./routes/english4all");
 const english4EveroneRoutes = require("./routes/english4everyone");
 const english4ProfessionRoutes = require("./routes/english4profession");
+const grammarCP = require("./routes/grammarCheckPoint");
 const fasopreunariatRoutes = require("./routes/fasopreunariat");
 
 const path = require("path");
@@ -160,6 +161,9 @@ app.use("/", englishRoutes);
 
 // English for evryone
 app.use("/", english4EveroneRoutes);
+
+// english for everybody routes
+app.use("/", grammarCP);
 
 // English for professions
 app.use("/", english4ProfessionRoutes);
