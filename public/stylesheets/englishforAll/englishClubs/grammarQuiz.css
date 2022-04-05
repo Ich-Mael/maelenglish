@@ -399,6 +399,7 @@ section .option_list .option .icon {
 
 .buttons button.restart {
   color: #fff;
+  padding: 1rem 0.5rem;
   background: #007bff;
 }
 
@@ -408,6 +409,7 @@ section .option_list .option .icon {
 
 .buttons button.quit {
   color: #007bff;
+  padding: 1rem 0.5rem;
   background: #fff;
 }
 
@@ -426,5 +428,14 @@ section .option_list .option .icon {
     color: #004085;
 
     padding: 0 5px;
+  }
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media (max-width: 450px) {
+
+  .restart,
+  .quit {
+    width: 100px;
   }
 }
