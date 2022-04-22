@@ -1,6 +1,7 @@
 const {
   Course,
   Module,
+  EngCourseVideo,
   Practice,
   Evaluation,
   Grade
@@ -8,6 +9,8 @@ const {
 const User = require("../models/user");
 const DateUtil = require("../utilities/date");
 
+
+// module controller
 module.exports.createModule = async (req, res) => {
   const course = await Course.findById(req.params.course_id);
   const {
@@ -15,11 +18,10 @@ module.exports.createModule = async (req, res) => {
     willLearnModule,
     explanationText,
     moreDetails,
-    videos,
     revealDate,
   } = req.body.module;
 
-  const videoLinks = videos.split(",");
+  // const videoLinks = videos.split(",");
 
   const newModule = new Module({
     title,
@@ -27,7 +29,6 @@ module.exports.createModule = async (req, res) => {
     explanationText,
     moreDetails,
     revealDate,
-    videoLinks,
   });
 
   // saving Course New Module
@@ -42,7 +43,7 @@ module.exports.createModule = async (req, res) => {
 };
 
 module.exports.showModule = async (req, res) => {
-  const courseModule = await Module.findById(req.params.module_id).populate("Assignment");
+  const courseModule = await Module.findById(req.params.module_id).populate("Assignment").populate("videoLinks");
   let course = await Course.findById(req.params.course_id);
 
   const module_number = course.modules.indexOf(req.params.module_id) + 1;
@@ -88,24 +89,44 @@ module.exports.updateModule = async (req, res) => {
     willLearnModule,
     explanationText,
     moreDetails,
-    videos,
     revealDate,
   } = req.body.module;
 
-  const videoLinks = videos.split(",");
+
 
   const courseModule = await Module.findByIdAndUpdate(req.params.module_id, {
     title,
     willLearnModule,
     explanationText,
     moreDetails,
-    videoLinks,
     revealDate,
   });
   await courseModule.save();
 
   res.redirect(`/admindashboard/courses/${req.params.course_id}/modules`);
 };
+
+
+// Video lesson
+
+module.exports.addEngVideoLesson = async (req, res) => {
+  const course = await Course.findById(req.params.course_id);
+  const courseModule = await Module.findById(req.params.courseModule_id);
+
+  const newEngVideo = new EngCourseVideo(req.body.engVideo);
+
+  // saving new video
+  await newEngVideo.save();
+
+  courseModule.videoLinks.push(newEngVideo._id)
+
+  // saving module
+  await courseModule.save();
+
+  res.redirect(`/admindashboard/courses/${req.params.course_id}/modules`);
+
+}
+
 
 // Practice exercises
 

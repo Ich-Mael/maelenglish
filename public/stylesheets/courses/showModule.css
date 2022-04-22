@@ -140,6 +140,7 @@ body {
 .video-wrapper {
   border: 2px solid rgba(46, 10, 88, 0.562);
   border-radius: 3px;
+  margin: 7rem 0;
 }
 
 .course-video-heading {
@@ -159,7 +160,7 @@ body {
 }
 
 .rok {
-  background-color: rgb(114, 52, 133);
+  background-color: rgb(248, 119, 44);
   padding: 1.5rem;
   margin-top: 2rem;
   text-align: center;

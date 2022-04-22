@@ -550,7 +550,7 @@
                 </div>
                 <hr>
                 <p class="news-date"> <span class="fst-italic fw-bold"> Published on :
-                    <%= all_articles[i].updatedAt.toDateString() %></span> <span
+                    <%= all_articles[i].updatedAt.toDateString()%></span> <span
                     class="mx-3"><%= all_articles[i].readTime %> minutes de lecture</span></p>
                 <a class="btn mb-3 btn-outline-primary" href="/news/<%=all_articles[i]._id%>">Lire toute
                   l'actualité</a>
@@ -576,7 +576,7 @@
                   <%= all_articles[i].title %>
                 </h3>
                 <p class="read-time"> <%= all_articles[i].readTime %> min de lecture</p>
-                <a href="" class="pb-2">En savoir plus</a>
+                <a href="/news/<%=all_articles[i]._id %>" class="pb-2">En savoir plus</a>
               </div>
             </div>
             <hr>

@@ -6,6 +6,7 @@ const CourseModules = require('../controllers/courseModules');
 const catchAsync = require('../utilities/catchAsync');
 const {
     Course,
+    EngCourseVideo,
     Module,
     Evaluation,
     Grade
@@ -86,6 +87,16 @@ router.delete("/admindashboard/courses/:course_id/modules/:module_id", isVerifie
  */
 
 router.post('/admindashboard/courses/:course_id/modules/:courseModule_id/practice', isVerified, isLoggedIn, checkRoles("admin"), catchAsync(CourseModules.createPractice));
+
+
+
+
+/*
+ ************************* Practice exercise routes *******************************************
+ */
+
+router.post('/admindashboard/courses/:course_id/modules/:courseModule_id/engcoursevideo', isVerified, isLoggedIn, checkRoles("admin"), catchAsync(CourseModules.addEngVideoLesson));
+
 
 /*
  ************************* EVALUATION ROUTES *******************************************

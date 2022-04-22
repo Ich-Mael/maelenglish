@@ -132,7 +132,8 @@ const moduleSchema = new Schema({
   },
 
   videoLinks: [{
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref: "EngCourseVideo",
   }, ],
 });
 
@@ -200,7 +201,27 @@ const gradeSchema = new Schema({
   },
 });
 
+
+
+const engCourseVideoSchema = new Schema({
+  title: {
+    type: String,
+  },
+
+  lessonType: {
+    type: String,
+    default: "English lesson"
+  },
+
+  engCourseLink: {
+    type: String,
+  }
+});
+
+
 Course = mongoose.model("Course", courseSchema);
+
+EngCourseVideo = mongoose.model("EngCourseVideo", engCourseVideoSchema);
 
 Module = mongoose.model("Module", moduleSchema);
 
@@ -215,5 +236,6 @@ module.exports = {
   Module,
   Practice,
   Evaluation,
+  EngCourseVideo,
   Grade
 };
