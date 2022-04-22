@@ -3,28 +3,15 @@ const router = express.Router();
 const User = require("../models/user");
 const Review = require("../models/comments");
 const createClubDefaultContent = require("../utilities/createClubDefaultContent");
+const engClub = require("../controllers/englishClub");
 const catchAsync = require("../utilities/catchAsync");
-const {
-  positions,
-  days,
-  months
-} = require("../utilities/defaultData");
 
-const {
-  englishClubs,
-  englishClubArticles,
-  dailyVocabulary,
-  clubMeeting,
-  onlineDebate,
-  englishClubWorkersOfMonth,
-  englishWeeklyLessons,
-  englishClubMedia,
-} = require("../models/englishClub");
 const {
   isLoggedIn,
   isVerified,
   checkRoles,
 } = require("../middlewares/userController");
+
 const {
   checkEnglishClubMembership,
   checkEnglishBoardMembership,
@@ -65,93 +52,13 @@ router.get(
   }
 );
 
-// English clubs
+// English create an Englis club
 router.post(
   "/englishlang4all/clubs/create",
   isLoggedIn,
   isVerified,
   checkRoles("admin"),
-  catchAsync(async (req, res) => {
-    const englishClub = new englishClubs(req.body.englishClub);
-
-    const {
-      PresidentInfo,
-      VicePresidentInfo,
-      treasurerInfo,
-      secretaryInfo,
-      comManagerInfo,
-      cultActMInfo,
-      flweOfficer,
-      mediaManager,
-    } = req.body;
-
-    // adding boad members
-    const president = await User.findOne({
-      username: PresidentInfo,
-    });
-
-    englishClub.boardMembers.push(president._id);
-    englishClub.members.push(president._id);
-
-    const vicePresident = await User.findOne({
-      username: VicePresidentInfo,
-    });
-
-    englishClub.boardMembers.push(vicePresident._id);
-    englishClub.members.push(vicePresident._id);
-
-    const treasurer = await User.findOne({
-      username: treasurerInfo,
-    });
-
-    englishClub.boardMembers.push(treasurer._id);
-    englishClub.members.push(treasurer._id);
-
-    const secretary = await User.findOne({
-      username: secretaryInfo,
-    });
-
-    englishClub.boardMembers.push(secretary._id);
-    englishClub.members.push(secretary._id);
-
-    const comManager = await User.findOne({
-      username: comManagerInfo,
-    });
-
-    englishClub.boardMembers.push(comManager._id);
-    englishClub.members.push(comManager._id);
-
-    const cultManager = await User.findOne({
-      username: cultActMInfo,
-    });
-
-    englishClub.boardMembers.push(cultManager._id);
-    englishClub.members.push(cultManager._id);
-
-    const FLWEOfficer = await User.findOne({
-      username: flweOfficer,
-    });
-
-    englishClub.boardMembers.push(FLWEOfficer._id);
-    englishClub.members.push(FLWEOfficer._id);
-
-    const MediaManager = await User.findOne({
-      username: mediaManager,
-    });
-
-    englishClub.boardMembers.push(MediaManager._id);
-    englishClub.members.push(MediaManager._id);
-
-    await englishClub.save();
-
-    // Creating default content
-    await createClubDefaultContent(englishClub._id);
-
-    await englishClub.save();
-
-    // res.send("english club created!!!");
-    res.redirect("/englishlang4all/clubs");
-  })
+  catchAsync(engClub.createEnglishClub)
 );
 
 //show english club content
@@ -160,33 +67,7 @@ router.get(
   isLoggedIn,
   isVerified,
   checkEnglishClubMembership,
-  catchAsync(async (req, res) => {
-    const club = await englishClubs
-      .findById(req.params.club_id)
-      .populate("boardMembers")
-      .populate("articles")
-      .populate("weeklyVideoLesson")
-      .populate("workersOfMonth")
-      .populate({
-        path: "media",
-        populate: {
-          path: "mediaComments",
-          populate: {
-            path: "author"
-          }
-        },
-      })
-      .populate("dailyVocab")
-      .populate("weeklyMeeting")
-      .populate("onlineDebates");
-
-    res.render("programs/englishlang4all/englishClubs/show", {
-      club,
-      positions,
-      days,
-      months,
-    });
-  })
+  catchAsync(engClub.showEnglishClub)
 );
 
 // ==============================
@@ -208,19 +89,7 @@ router.post(
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
-  catchAsync(async (req, res) => {
-    const club_id = req.params.club_id;
-    const englishClub = await englishClubs.findById(club_id);
-    const article = new englishClubArticles(req.body.englishClubArticle);
-
-    await article.save();
-
-    englishClub.articles.unshift(article);
-
-    await englishClub.save();
-
-    res.redirect(`/englishlang4all/Clubs/${club_id}`);
-  })
+  catchAsync(engClub.createArticle)
 );
 
 //View all articles
@@ -229,14 +98,7 @@ router.get(
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
-  catchAsync(async (req, res) => {
-    const club = await englishClubs
-      .findById(req.params.club_id)
-      .populate("articles");
-    res.render("programs/englishlang4all/englishClubs/articles/articlesShow", {
-      club,
-    });
-  })
+  catchAsync(engClub.showAllArticles)
 );
 
 //Edit article
@@ -247,15 +109,7 @@ router.get(
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
-  catchAsync(async (req, res) => {
-    const article = await englishClubArticles.findById(req.params.article_id);
-    const club = await englishClubs.findById(req.params.club_id);
-
-    res.render("programs/englishlang4all/englishClubs/articles/articleEdit", {
-      article,
-      club,
-    });
-  })
+  catchAsync(engClub.editArticleForm)
 );
 
 //Updating article data
@@ -264,17 +118,7 @@ router.put(
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
-  catchAsync(async (req, res) => {
-    const article = await englishClubArticles.findByIdAndUpdate(
-      req.params.article_id, {
-        ...req.body.englishClubArticle,
-      }
-    );
-
-    await article.save();
-
-    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
-  })
+  catchAsync(engClub.updateArticle)
 );
 
 //Deleting an article
@@ -283,12 +127,7 @@ router.delete(
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
-  catchAsync(async (req, res) => {
-    const article = await englishClubArticles.findByIdAndDelete(
-      req.params.article_id
-    );
-    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
-  })
+  catchAsync(engClub.deleteArticle)
 );
 
 // **************************** Weekly activities *****************************************
@@ -306,25 +145,7 @@ router.post(
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
-  catchAsync(async (req, res) => {
-    const englishClub = await englishClubs.findById(req.params.club_id);
-    const newDailyVocabulary = new dailyVocabulary({
-      wordOfDay: {
-        ...req.body.wordOfDay,
-      },
-      IdiomDay: {
-        ...req.body.IdiomDay,
-      },
-    });
-
-    await newDailyVocabulary.save();
-
-    englishClub.dailyVocab.unshift(newDailyVocabulary);
-
-    await englishClub.save();
-
-    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
-  })
+  catchAsync(engClub.createDailyVocabulary)
 );
 
 // weekly meeting
@@ -333,18 +154,7 @@ router.post(
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
-  catchAsync(async (req, res) => {
-    const englishClub = await englishClubs.findById(req.params.club_id);
-    const newClubMeeting = new clubMeeting(req.body.englishClubMeeting);
-
-    await newClubMeeting.save();
-
-    englishClub.weeklyMeeting.unshift(newClubMeeting);
-
-    await englishClub.save();
-
-    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
-  })
+  catchAsync(engClub.createMeeting)
 );
 
 // Online debate
@@ -353,18 +163,7 @@ router.post(
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
-  catchAsync(async (req, res) => {
-    const englishClub = await englishClubs.findById(req.params.club_id);
-    const newOnlineDebate = new onlineDebate(req.body.OnlineDebate);
-
-    await newOnlineDebate.save();
-
-    englishClub.onlineDebates.unshift(newOnlineDebate);
-
-    await englishClub.save();
-
-    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
-  })
+  catchAsync(engClub.createOnlineDebate)
 );
 
 //==============================================================
