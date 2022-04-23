@@ -17,6 +17,23 @@ const {
   checkEnglishBoardMembership,
   checkProgramOwnership,
 } = require("../middlewares/courseController");
+const {
+  positions,
+  days,
+  months
+} = require("../utilities/defaultData");
+
+const {
+  englishClubs,
+  englishClubArticles,
+  dailyVocabulary,
+  clubMeeting,
+  onlineDebate,
+  englishClubWorkersOfMonth,
+  englishWeeklyLessons,
+  englishClubMedia,
+} = require("../models/englishClub");
+
 
 //english for everybody
 router.get("/englishlang4all", (req, res) => {
@@ -262,26 +279,7 @@ router.post(
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
-  catchAsync(async (req, res) => {
-    const englishClub = await englishClubs.findById(req.params.club_id);
-
-    const newWorkersOfMonth = new englishClubWorkersOfMonth({
-      studentOfMonth: {
-        ...req.body.studentOfMonth,
-      },
-      instructorOfMonth: {
-        ...req.body.instructorOfMonth,
-      },
-    });
-
-    await newWorkersOfMonth.save();
-
-    englishClub.workersOfMonth.unshift(newWorkersOfMonth);
-
-    await englishClub.save();
-
-    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
-  })
+  catchAsync(engClub.leaderOM)
 );
 
 //View all vips of the year
@@ -290,16 +288,7 @@ router.get(
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
-  catchAsync(async (req, res) => {
-    const club = await englishClubs
-      .findById(req.params.club_id)
-      .populate("workersOfMonth");
-    res.render("programs/englishlang4all/englishClubs/vips/vipsShow", {
-      club,
-      days,
-      months,
-    });
-  })
+  catchAsync(engClub.allLeadersOM)
 );
 
 //Edit vips of the month
@@ -309,17 +298,7 @@ router.get(
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
-  catchAsync(async (req, res) => {
-    const leader = await englishClubWorkersOfMonth.findById(
-      req.params.leader_id
-    );
-    const club = await englishClubs.findById(req.params.club_id);
-
-    res.render("programs/englishlang4all/englishClubs/vips/vipsEdit", {
-      leader,
-      club,
-    });
-  })
+  catchAsync(engClub.editLeadersOM)
 );
 
 //Updating leaders of the month
@@ -328,21 +307,7 @@ router.put(
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
-  catchAsync(async (req, res) => {
-    const leader = await englishClubWorkersOfMonth.findByIdAndUpdate(
-      req.params.leader_id, {
-        studentOfMonth: {
-          ...req.body.studentOfMonth,
-        },
-        instructorOfMonth: {
-          ...req.body.instructorOfMonth,
-        },
-      }
-    );
-    leader.save();
-
-    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
-  })
+  catchAsync(engClub.updateLeadersOM)
 );
 
 //===========================================================

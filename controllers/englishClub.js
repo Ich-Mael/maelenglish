@@ -133,7 +133,7 @@ module.exports.deleteArticle = async (req, res) => {
 
 
 //======================================
-//             Weekly Activity
+//          Weekly Activity
 //======================================
 
 module.exports.createDailyVocabulary = async (req, res) => {
@@ -181,3 +181,72 @@ module.exports.createOnlineDebate = async (req, res) => {
 
     res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
 }
+
+
+//======================================
+//          Student of the month
+//======================================
+module.exports.leaderOM = async (req, res) => {
+    const englishClub = await englishClubs.findById(req.params.club_id);
+
+    const newWorkersOfMonth = new englishClubWorkersOfMonth({
+        studentOfMonth: {
+            ...req.body.studentOfMonth,
+        },
+        instructorOfMonth: {
+            ...req.body.instructorOfMonth,
+        },
+    });
+
+    await newWorkersOfMonth.save();
+
+    englishClub.workersOfMonth.unshift(newWorkersOfMonth);
+
+    await englishClub.save();
+
+    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+}
+
+module.exports.allLeadersOM = async (req, res) => {
+    const club = await englishClubs
+        .findById(req.params.club_id)
+        .populate("workersOfMonth");
+    res.render("programs/englishlang4all/englishClubs/vips/vipsShow", {
+        club,
+        days,
+        months,
+    });
+}
+
+module.exports.editLeadersOM = async (req, res) => {
+    const leader = await englishClubWorkersOfMonth.findById(
+        req.params.leader_id
+    );
+    const club = await englishClubs.findById(req.params.club_id);
+
+    res.render("programs/englishlang4all/englishClubs/vips/vipsEdit", {
+        leader,
+        club,
+    });
+}
+
+module.exports.updateLeadersOM = async (req, res) => {
+    const leader = await englishClubWorkersOfMonth.findByIdAndUpdate(
+        req.params.leader_id, {
+            studentOfMonth: {
+                ...req.body.studentOfMonth,
+            },
+            instructorOfMonth: {
+                ...req.body.instructorOfMonth,
+            },
+        }
+    );
+    leader.save();
+
+    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+}
+
+
+//======================================
+//         Live Practice
+//======================================
