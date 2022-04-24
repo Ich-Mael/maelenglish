@@ -412,6 +412,15 @@ router.get(
   })
 );
 
+router.get(
+  "/englishlang4all/lsc/songr4442ttf",
+  catchAsync(async (req, res) => {
+    res.render(
+      "programs/englishlang4all/lsc/song-3"
+    );
+  })
+);
+
 
 
 
