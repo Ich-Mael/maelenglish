@@ -13,248 +13,113 @@
   });
 </script>
 
-<h1 class="text-center my-5">Create a new english club</h1>
+<style>
+  .form-wrapper {
+    border: 3px solid rgb(141, 7, 181);
+    border-radius: 8px;
+  }
+</style>
+<div class="d-flex align-items-center justify-content-center" style="height: 20vh; background: #2980b9;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #2c3e50, #2980b9);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #2c3e50, #2980b9); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+">
+  <h1 class="text-center"
+    style="font-family: Georgia, 'Times New Roman', Times, serif; color: aliceblue; letter-spacing: 0.2rem; font-size: 3rem;">
+    Hub of
+    <%= city %> </h1>
+</div>
+<h1 class="text-center my-5">Create a new English Club</h1>
 <div class="container">
   <div class="row justify-content-center">
-    <div class="col-lg-6">
-      <form action="/englishlang4all/clubs/create" method="POST">
-        <h3 class="text-center">English club general information</h3>
-
-        <!-- Country -->
-        <label class="form-label" for="Club Country">Country</label>
-        <input
-          type="text"
-          required
-          class="form-control"
-          id="country"
-          name="englishClub[country]"
-          value=""
-        />
-        <!-- city -->
-        <label class="form-label" for="club city"> City </label>
-        <input
-          type="text"   
-          required
-          class="form-control"
-          name="englishClub[city]"
-          id="acronym"
-          value=""
-        />
-        <div class="py-1">
-          <p>Type of English Club</p>
+    <div class="form-wrapper col-lg-8 px-2">
+      <form action="/englishlang4all/clubs/<%= city %>/<%= hub_id %>/club" class=" px-5" method="POST">
+        <div class="py-1 mt-4">
+          <p class="fs-3">Type of English Club</p>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="englishClub[clubType]" id="High-school" value="High-school" required>
+            <input class="form-check-input" type="radio" name="englishClub[clubType]" id="High-school"
+              value="High-school" required>
             <label class="form-check-label" for="High-school">High-school</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="englishClub[clubType]" id="female" value="University" required>
+            <input class="form-check-input" type="radio" name="englishClub[clubType]" id="female" value="University"
+              required>
             <label class="form-check-label" for="University">University</label>
           </div>
 
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="englishClub[clubType]" id="Company" value="Company" required>
-            <label class="form-check-label" for="Company">Company</label>
+            <input class="form-check-input" type="radio" name="englishClub[clubType]" id="Company" value="Company"
+              required>
+            <label class="form-check-label" for="Company">Company or NGO</label>
           </div>
 
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="englishClub[clubType]" id="Professional" value="Professional" required>
-            <label class="form-check-label" for="Professional"> Professional</label>
+            <input class="form-check-input" type="radio" name="englishClub[clubType]" id="Professional"
+              value="Professional" required>
+            <label class="form-check-label" for="Professional">Professional</label>
           </div>
 
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="englishClub[clubType]" id="Private" value="Private" required>
+            <input class="form-check-input" type="radio" name="englishClub[clubType]" id="Private" value="Private"
+              required>
             <label class="form-check-label" for="Private">Private</label>
           </div>
 
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="englishClub[clubType]" id="Simple" value="Simple" required>
+            <input class="form-check-input" type="radio" name="englishClub[clubType]" id="Simple" value="Simple"
+              required>
             <label class="form-check-label" for="Simple">Simple</label>
           </div>
         </div>
-<hr>
-
-<h3 class="text-center">Club identity info</h3>
+        <hr>
+        <h3 class="fs-3 my-5">Club identity information</h3>
         <!--Instituition -->
         <label class="form-label" for="instituition">Instituition</label>
-        <input
-          type="text"
-          required
-          class="form-control"
-          id="instituition"
-          name="englishClub[instituition]"
-          value=""
-        />
+        <input type="text" required class="form-control" id="instituition" name="englishClub[instituition]" value="" />
         <!-- acronym-->
-        <label class="form-label" for="Acronym">Acronym</label>
-        <input
-          type="text"   required
-          class="form-control"
-          name="englishClub[acronym]"
-          id="acronym"
-          value=""
-        />
+        <label class="form-label  mt-4" for="Acronym">Acronym</label>
+        <input type="text" required class="form-control" name="englishClub[acronym]" id="acronym" value="" />
 
         <!-- name -->
-        <label class="form-label" for="name">English club name</label>
-        <input
-          type="text"
-          required
-          class="form-control"
-          name="englishClub[name]"
-          id="name"
-          value=""
-        />
+        <label class="form-label  mt-4" for="name">English club name</label>
+        <input type="text" required class="form-control" name="englishClub[name]" id="name" value="" />
 
         <!-- motto -->
-        <label class="form-label" for="motto">Motto</label>
-        <input
-          type="text"   required
-          class="form-control"
-          name="englishClub[motto]"
-          id="motto"  
-          value=""
-        />
+        <label class="form-label mt-4" for="motto">Slogan</label>
+        <input type="text" required class="form-control" name="englishClub[motto]" id="motto" value="" />
 
         <!-- found date -->
-        <label class="form-label" for="foundDate">Found Date</label>
-        <input
-          type="text"
-          class="form-control"
-          name="englishClub[foundDate]"
-          id="foundDate"
-          value=""
-        />
+        <label class="form-label mt-4" for="foundDate">Found Date</label>
+        <input type="text" class="form-control" name="englishClub[foundDate]" id="foundDate" value="" />
 
         <!-- club logo  -->
-        <label class="form-label" for="logoImageUrl">English club Logo Url</label>
-        <input
-          type="text"   required
-          class="form-control"
-          name="englishClub[logoImageUrl]"
-          value=""
-          id="logoImageUrl"
-        />
+        <label class="form-label mt-4" for="logoImageUrl">English club Logo Url</label>
+        <input type="text" required class="form-control" name="englishClub[logoImageUrl]" value="" id="logoImageUrl" />
 
         <!-- Instituition logo  -->
-        <label class="form-label" for="logoImageUrl">Instituition Logo Url</label>
-        <input
-          type="text"   required
-          class="form-control"
-          name="englishClub[instituitionLogoUrl]"
-          value=""
-          id="instituitionLogoUrl"
-        />
+        <label class="form-label mt-4" for="logoImageUrl">Instituition Logo Url</label>
+        <input type="text" required class="form-control" name="englishClub[instituitionLogoUrl]" value=""
+          id="instituitionLogoUrl" />
 
         <!-- Club family picture  -->
-        <label class="form-label" for="bannerImageUrlMedium"> Club family picture</label>
-        <input
-          type="text" 
-          required
-          class="form-control"
-          name="englishClub[bannerImageUrlMedium]"
-          value=""
-          id="bannerImageUrlMedium"
-        />
+        <label class="form-label mt-4" for="bannerImageUrlMedium"> Club family picture</label>
+        <input type="text" required class="form-control" name="englishClub[bannerImageUrlMedium]" value=""
+          id="bannerImageUrlMedium" />
 
         <!-- Description -->
-        <label class="form-label" for="description">Description</label>
-        <textarea
-          class="form-control mytextarea"   required
-          name="englishClub[description]"
-          id="description"
-          cols="50"
-          rows="5"
-        >
+        <!-- <label class="form-label" for="description">Description</label>
+        <textarea class="form-control mytextarea" required name="englishClub[description]" id="description" cols="50"
+          rows="5">
         </textarea>
+         -->
         <hr />
+
         <h3 class="text-center">Board Members Section</h3>
-
         <!-- President -->
-        <label class="form-label" for="president-username">President username</label>
-        <input
-          type="text"   required
-          class="form-control"
-          name="PresidentInfo"
-          id="PresidentInfo"
-          value=""
-        />
+        <label class="form-label" for="president-username">President </label>
+        <input type="text" required class="form-control" placeholder="Username of the president" name="PresidentInfo"
+          id="PresidentInfo" value="" />
 
-        <!-- Vice President -->
-        <label class="form-label" for="president-username">Vice-President username</label>
-        <input
-          type="text"   required
-          class="form-control"
-          name="VicePresidentInfo"
-          id="VicePresidentInfo"
-          value=""
-        />
-
-
-        <!-- Treasurer -->
-        <label class="form-label" for="president-username">Treasurer username</label>
-        <input
-          type="text"  
-          required
-          class="form-control"
-          name="treasurerInfo"
-          id="treasurerInfo"
-          value=""
-        />
-
-        <!-- Secretary -->
-        <label class="form-label" for="president-username">Secretary username</label>
-        <input
-          type="text"   required
-          class="form-control"
-          name="secretaryInfo"
-          id="secretaryInfo"
-          value=""
-        />
-
-
-        <!-- Communication Manager -->
-        <label class="form-label" for="president-username">Communication Manager username</label>
-        <input
-          type="text"    required
-          class="form-control"
-          name="comManagerInfo"
-          id="comManagerInfo"
-          value=""
-        />
-
-        <!-- Communication Manager -->
-        <label class="form-label" for="president-username">Cultural Activity Manager username</label>
-        <input
-          type="text"    required
-          class="form-control"
-          name="cultActMInfo"
-          id="cultActMInfo"
-          value=""
-        />
-      
-        <!-- Female leadership -->
-        <label class="form-label" for="flweOfficer">Female Leadership & Woman Empowerment officer username</label>
-        <input
-          type="text"    
-          required
-          class="form-control"
-          name="flweOfficer"
-          id="flweOfficer"
-          value=""
-        />
-       
-        <!-- Multimedia Manager -->
-        <label class="form-label" for="mediaManager">Multimedia Manager username</label>
-        <input
-          type="text"    required
-          class="form-control"
-          name="mediaManager"
-          id="mediaManager"
-          value=""
-        />
-        
-       
-        <button class="form-control btn-success my-3" type="submit">
+        <button class="form-control btn-success my-5" type="submit">
           Create an English Club
         </button>
       </form>

@@ -24,6 +24,7 @@ const {
 } = require("../utilities/defaultData");
 
 const {
+  englishClubHub,
   englishClubs,
   englishClubArticles,
   dailyVocabulary,
@@ -50,28 +51,39 @@ router.get("/englishlang4all/free_english_lessons", (req, res) => {
  *
  * ================================================ */
 
+/** English hub */
+router.post('/admindashboard/newEnglishClubHub', isLoggedIn,
+  isVerified,
+  checkRoles("admin"),
+  catchAsync(engClub.createEnglishHub));
+
 //English clubs
-router.get("/englishlang4all/clubs", async (req, res) => {
-  const clubs = await englishClubs.find({});
-  res.render("programs/englishlang4all/englishClubs/home", {
-    clubs,
-  });
+router.get("/englishlang4all/clubs/home", async (req, res) => {
+  res.render("programs/englishlang4all/englishClubs/home");
 });
+
+//English clubs
+router.get("/englishlang4all/clubs/:country/hubs", catchAsync(engClub.showCountryHubs));
 
 // Form for a new english club
 router.get(
-  "/englishlang4all/clubs/new",
+  "/englishlang4all/clubs/:city/:hub_id/club/new",
   isLoggedIn,
   isVerified,
   checkRoles("admin"),
-  (req, res) => {
-    res.render("programs/englishlang4all/englishClubs/new");
-  }
-);
+  catchAsync(async (req, res) => {
+    city = req.params.city;
+    hub_id = req.params.hub_id;
+
+    res.render("programs/englishlang4all/englishClubs/new", {
+      city,
+      hub_id
+    });
+  }));
 
 // English create an Englis club
 router.post(
-  "/englishlang4all/clubs/create",
+  "/englishlang4all/clubs/:city/:hub_id/club",
   isLoggedIn,
   isVerified,
   checkRoles("admin"),
@@ -86,6 +98,16 @@ router.get(
   checkEnglishClubMembership,
   catchAsync(engClub.showEnglishClub)
 );
+
+//show english club content
+router.get(
+  "/englishlang4all/Clubs/:club_id/home",
+  isLoggedIn,
+  isVerified,
+  checkEnglishClubMembership,
+  catchAsync(engClub.showClubHomePage)
+);
+
 
 // ==============================
 //

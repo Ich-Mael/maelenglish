@@ -1,6 +1,15 @@
 <% layout('layouts/boilerplate') %>
 <link href="/stylesheets/englishforAll/englishClubs/home.css" rel="stylesheet" />
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+<style>
+  .flag-wrapper {
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  }
+
+  .contry {
+    width: 25rem;
+  }
+</style>
 
 <div id="carouselExampleIndicators" class="carousel mb-0 pb-0 slide" data-bs-ride="carousel">
   <div class="carousel-indicators">
@@ -88,10 +97,10 @@
 </section> -->
 
 <!-- ours english clubs -->
-<section class="our-englishclubs">
+<section class="" style="margin-bottom: 3rem;">
   <h2 class="program-title text-center">Apprenez naturellement l’Anglais</h2>
-  <div class="container py-5">
-    <!-- Button trigger modal -->
+  <!-- <div class="container py-5">
+    
     <div class="d-flex flex-column justifify-content-center
     align-items-center">
       <button type="button" class="btn btn-lg btn-outline-primary" data-bs-toggle="modal"
@@ -103,7 +112,6 @@
       </button>
     </div>
 
-    <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -123,99 +131,36 @@
       </div>
     </div>
 
-  </div>
-  <div class="univ-eng-clubs">
-    <div class="cards-wrapper">
-      <h3 class="univ-eng-club-title">
-        <span class="underline"></span>Club d'Anglais Universitaire<span class="underline"></span>
-      </h3>
-      <div class="d-flex justify-content-center align-items-center">
-        <p>
-          <button class="btn btn-lg btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#ouaga"
-            aria-expanded="false" aria-controls="collapseExample">
-            OUAGADOUGOU
-          </button>
-        </p>
-        <!-- 
-        <p>
-          <button class="btn btn-lg btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#bobo" aria-expanded="false" aria-controls="collapseExample">
-            Bobo-Dioulasso
-          </button>
-        </p>
-
-
-        <p>
-          <button class="btn btn-lg btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#koudougou" aria-expanded="false" aria-controls="collapseExample">
-            Koudougou
-          </button>
-        </p>-->
+  </div> -->
+  <div class="d-flex container justify-content-center  flex-wrap mt-5">
+    <div class="contry mx-4">
+      <div class="flag-wrapper my-2 px-4">
+        <img class="img-fluid p-3"
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Flag-map_of_Burkina_Faso.svg/1280px-Flag-map_of_Burkina_Faso.svg.png"
+          alt="Burkina-Faso">
       </div>
-
-      <!-- <div class="collapse" id="ouaga"> -->
-      <div class="card card-body">
-        <div class="container">
-          <div class="row pb-5">
-            <% for(let club of clubs) {%>
-            <!-- english club 1 -->
-            <div class="col-sm-6 col-md-3 m-3">
-              <div class="eng-club-details">
-                <!-- <div class="img-wrapper">
-                    <img
-                      src="<%= club.logoImageUrl %>"
-                      class="img-thumbnail"
-                      alt=""
-                    />
-                  </div> -->
-
-                <h2 class="institution"><%=club.instituition %></h2>
-                <div class="eng-clubs-description">
-                  <h3 class="eng-club-name"><%=club.acronym %></h3>
-                  <p class="definition"><%=club.name%></p>
-                  <p class="found-date">Founded in <%=club.foundDate %></p>
-                </div>
-                <hr />
-                <div class="pb-3">
-                  <div class="d-flex justify-content-center">
-                    <div>
-                      <!-- Button trigger modal -->
-                      <button type="button" class="btn mx-2 btn-outline-secondary" data-bs-toggle="modal"
-                        data-bs-target="#N<%=club._id%>">
-                        Learn more
-                      </button>
-                      <button class="btn mx-2 btn-outline-primary">
-                        <a class="join-link" href="/englishlang4all/Clubs/<%=club._id%>">GET IN</a>
-                      </button>
-                    </div>
-                  </div>
-
-                  <!-- Modal -->
-                  <div class="modal fade" id="N<%=club._id%>" tabindex="-1" aria-labelledby="exampleModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title" id="exampleModalLabel">
-                            All about this English Club
-                          </h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body"><%-club.description%></div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            Close
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <%}%>
-            </div>
-          </div>
-        </div>
-      <!-- </div> -->
+      <h3 class="text-center py-2" style="border-radius: 5px; color: rgb(255, 255, 255); background: #ffb347;  /* fallback for old browsers */
+      background: -webkit-linear-gradient(to right, #ffcc33, #ffb347);  /* Chrome 10-25, Safari 5.1-6 */
+      background: linear-gradient(to right, #ffcc33, #ffb347); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+      ">Burkina-Faso</h3>
+      <a class="btn btn-outline-success fs-5" href="/englishlang4all/clubs/Burkina-Faso/hubs">Join a Club</a>
+    </div>
+    <div class="contry mx-4">
+      <div class="flag-wrapper my-2 px-4">
+        <img class="img-fluid p-3"
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Flag-map_of_Burkina_Faso.svg/1280px-Flag-map_of_Burkina_Faso.svg.png"
+          alt="Burkina-Faso">
+        <h3></h3>
+      </div>
+      <a class="btn" href="/englishlang4all/clubs/:country/hubs">Join a Club</a>
+    </div>
+    <div class="contry mx-4">
+      <div class="flag-wrapper my-2 px-4">
+        <img class="img-fluid p-3"
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Flag-map_of_Burkina_Faso.svg/1280px-Flag-map_of_Burkina_Faso.svg.png"
+          alt="Burkina-Faso">
+      </div>
+      <a class="btn" href="/englishlang4all/clubs/:country/hubs">Join a Club</a>
     </div>
   </div>
 </section>

@@ -1,209 +1,263 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const { format } = require("date-fns");
+const {
+  format
+} = require("date-fns");
 
 // english club schema
-const englishClubSchema = new Schema(
-  {
-    country: {
-      type: String,
-      trim: true,
-    },
+const englishClubSchema = new Schema({
 
-    city: {
-      type: String,
-      trim: true,
-    },
 
-    clubType: {
-      type: String,
-      required: true,
-      enum: [
-        "High-school",
-        "University",
-        "Company",
-        "Professional",
-        "Private",
-        "Simple",
-      ],
-    },
+  city: {
+    type: String,
+    trim: true,
+  },
 
-    instituition: {
-      type: String,
-      trim: true,
-      required: true,
-    },
-
-    acronym: {
-      type: String,
-      trim: true,
-      required: true,
-    },
-
-    name: {
-      type: String,
-      trim: true,
-      unique: true,
-      required: true,
-    },
-
-    motto: {
-      type: String,
-      trim: true,
-      required: true,
-    },
-
-    description: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    foundDate: {
-      type: String,
-      required: true,
-    },
-
-    // image
-    bannerImageUrlMedium: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    logoImageUrl: {
-      type: String,
-      required: true,
-    },
-
-    instituitionLogoUrl: {
-      type: String,
-      required: true,
-    },
-
-    // social media links
-    facebookLink: {
-      type: String,
-      trim: true,
-    },
-
-    twitterLink: {
-      type: String,
-      trim: true,
-    },
-
-    instagramLink: {
-      type: String,
-      trim: true,
-    },
-
-    youtubeLink: {
-      type: String,
-      trim: true,
-    },
-
-    boardMembers: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-    members: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-
-    workersOfMonth: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "EnglishClubWorkersOfMonth",
-      },
-    ],
-
-    articles: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "EnglishClubArticle",
-      },
-    ],
-
-    dailyVocab: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "DailyVocabulary",
-      },
-    ],
-
-    weeklyMeeting: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "ClubMeeting",
-      },
-    ],
-
-    onlineDebates: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "OnlineDebate",
-      },
-    ],
-
-    weeklyVideoLesson: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "EnglishWeeklyLessons",
-      },
-    ],
-    media: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "EnglishClubMedia",
-      },
+  clubType: {
+    type: String,
+    required: true,
+    enum: [
+      "High-school",
+      "University",
+      "Company",
+      "Professional",
+      "Private",
+      "Simple",
     ],
   },
-  {
-    timestamps: true,
+
+  professionType: {
+    type: String,
+    trim: true,
+  },
+
+  instituition: {
+    type: String,
+    trim: true,
+    required: true,
+  },
+
+  acronym: {
+    type: String,
+    trim: true,
+    required: true,
+  },
+
+  name: {
+    type: String,
+    trim: true,
+    unique: true,
+    required: true,
+  },
+
+  motto: {
+    type: String,
+    trim: true,
+    required: true,
+  },
+
+  description: {
+    type: String,
+    trim: true,
+  },
+
+  foundDate: {
+    type: String,
+    required: true,
+  },
+
+  // image
+  bannerImageUrlMedium: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+
+  logoImageUrl: {
+    type: String,
+    required: true,
+  },
+
+  instituitionLogoUrl: {
+    type: String,
+    required: true,
+  },
+
+  // social media links
+  facebookLink: {
+    type: String,
+    trim: true,
+  },
+
+  twitterLink: {
+    type: String,
+    trim: true,
+  },
+
+  instagramLink: {
+    type: String,
+    trim: true,
+  },
+
+  youtubeLink: {
+    type: String,
+    trim: true,
+  },
+
+  clubMentor: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
+
+  mentorDetails: {
+    type: String,
+    trim: true,
+  },
+
+  englishCoach: [{
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  }, ],
+
+  boardMembers: [{
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  }, ],
+
+  members: [{
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  }, ],
+
+  workersOfMonth: [{
+    type: Schema.Types.ObjectId,
+    ref: "EnglishClubWorkersOfMonth",
+  }, ],
+
+  articles: [{
+    type: Schema.Types.ObjectId,
+    ref: "EnglishClubArticle",
+  }, ],
+
+  dailyVocab: [{
+    type: Schema.Types.ObjectId,
+    ref: "DailyVocabulary",
+  }, ],
+
+  weeklyMeeting: [{
+    type: Schema.Types.ObjectId,
+    ref: "ClubMeeting",
+  }, ],
+
+  onlineDebates: [{
+    type: Schema.Types.ObjectId,
+    ref: "OnlineDebate",
+  }, ],
+
+  weeklyVideoLesson: [{
+    type: Schema.Types.ObjectId,
+    ref: "EnglishWeeklyLessons",
+  }, ],
+  media: [{
+    type: Schema.Types.ObjectId,
+    ref: "EnglishClubMedia",
+  }, ],
+}, {
+  timestamps: true,
+});
+
+const englishClubHubSchema = new Schema({
+  cityName: {
+    type: String,
+    trim: true
+  },
+
+  country: {
+    type: String,
+    enum: [
+      "Burkina-Faso",
+      "Niger",
+      "Togo",
+      "Côte d'Ivoire",
+      "Benin",
+      "Cameroun",
+      "Senegal",
+    ],
+  },
+
+  clubs: {
+
+    High_school: [{
+      type: Schema.Types.ObjectId,
+      ref: "EnglishClub",
+    }],
+
+    University: [{
+      type: Schema.Types.ObjectId,
+      ref: "EnglishClub",
+    }],
+
+    Company: [{
+      type: Schema.Types.ObjectId,
+      ref: "EnglishClub",
+    }],
+
+    Professional: [{
+      type: Schema.Types.ObjectId,
+      ref: "EnglishClub",
+    }],
+
+    Private: [{
+      type: Schema.Types.ObjectId,
+      ref: "EnglishClub",
+    }],
+
+    Simple: [{
+      type: Schema.Types.ObjectId,
+      ref: "EnglishClub",
+    }]
+  },
+
+  focalPoint: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
   }
-);
+});
+
 
 // english club article schema
-const englishClubArticleSchema = new Schema(
-  {
-    title: {
-      type: String,
-    },
-    // image
-    articleImage: {
-      type: String,
-    },
-
-    articleSummary: {
-      type: String,
-    },
-
-    articleContent: {
-      type: String,
-    },
-
-    articleAuthor: {
-      type: String,
-    },
-
-    postedAT: {
-      type: Date,
-      default: format(Date.now(), "MM/dd/yyyy"),
-    },
-
-    articleComments: {
-      type: String,
-    },
+const englishClubArticleSchema = new Schema({
+  title: {
+    type: String,
   },
-  {
-    timestamps: true,
-  }
-);
+  // image
+  articleImage: {
+    type: String,
+  },
+
+  articleSummary: {
+    type: String,
+  },
+
+  articleContent: {
+    type: String,
+  },
+
+  articleAuthor: {
+    type: String,
+  },
+
+  postedAT: {
+    type: Date,
+    default: format(Date.now(), "MM/dd/yyyy"),
+  },
+
+  articleComments: {
+    type: String,
+  },
+}, {
+  timestamps: true,
+});
 
 //Daily vocabulary schema
 
@@ -296,102 +350,115 @@ const weeklyOnlineDebateSchema = new Schema({
 });
 
 // weekly lesson schema
-const weeklyLessonSchema = new Schema(
-  {
-    lessonTitle: {
-      type: String,
-    },
-    // image
-    videoLink: {
-      type: String,
-      trim: true,
-    },
-
-    lessonSummary: {
-      type: String,
-    },
-
-    lessonAuthor: {
-      type: String,
-    },
-
-    postedAT: {
-      type: Date,
-      default: format(Date.now(), "MM/dd/yyyy"),
-    },
+const weeklyLessonSchema = new Schema({
+  lessonTitle: {
+    type: String,
   },
-  {
-    timestamps: true,
-  }
-);
+  // image
+  videoLink: {
+    type: String,
+    trim: true,
+  },
+
+  lessonSummary: {
+    type: String,
+  },
+
+  lessonAuthor: {
+    type: String,
+  },
+
+  postedAT: {
+    type: Date,
+    default: format(Date.now(), "MM/dd/yyyy"),
+  },
+}, {
+  timestamps: true,
+});
 
 // english club leaders schema
-const workersOfMonthSchema = new Schema(
-  {
-    studentOfMonth: {
-      fullname: {
-        type: String,
-      },
-      imageUrl: {
-        type: String,
-      },
-
-      reasons: {
-        type: String,
-      },
-
-      about: {
-        type: String,
-      },
+const workersOfMonthSchema = new Schema({
+  studentOfMonth: {
+    fullname: {
+      type: String,
+    },
+    imageUrl: {
+      type: String,
     },
 
-    instructorOfMonth: {
-      fullname: {
-        type: String,
-      },
+    reasons: {
+      type: String,
+    },
 
-      imageUrl: {
-        type: String,
-      },
-
-      reasons: {
-        type: String,
-      },
-
-      about: {
-        type: String,
-      },
+    about: {
+      type: String,
     },
   },
-  {
-    timestamps: true,
-  }
-);
+
+  instructorOfMonth: {
+    fullname: {
+      type: String,
+    },
+
+    imageUrl: {
+      type: String,
+    },
+
+    reasons: {
+      type: String,
+    },
+
+    about: {
+      type: String,
+    },
+  },
+}, {
+  timestamps: true,
+});
 
 // media schema
-const englishClubMediaSchema = new Schema(
-  {
-    mediaTitle: {
-      type: String,
-      trim: true,
-    },
+const englishClubMediaSchema = new Schema({
+  mediaTitle: {
+    type: String,
+    trim: true,
+  },
 
-    videoLink: {
-      type: String,
-      trim: true,
-    },
+  videoLink: {
+    type: String,
+    trim: true,
+  },
 
-    mediaComments: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Comment",
-      },
+  mediaComments: [{
+    type: Schema.Types.ObjectId,
+    ref: "Comment",
+  }, ],
+}, {
+  timestamps: true,
+});
+
+// club members schema
+
+const englishClubMembersSchema = new Schema({
+  clubMember: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
+
+  level: {
+    type: String,
+    required: true,
+    enum: [
+      "A0/A1 - Beginner/Elementary",
+      "A2 - Pre-Intermediate",
+      "B1 - Intermediate",
+      "B2 - Upper-Intermediate",
+      "C1 - Advanced",
+      "C2 - Proficient",
     ],
   },
-  {
-    timestamps: true,
-  }
-);
+})
+
+const englishClubHub = mongoose.model("EnglishClubHub", englishClubHubSchema);
 
 const englishClubs = mongoose.model("EnglishClub", englishClubSchema);
 
@@ -419,12 +486,15 @@ const englishWeeklyLessons = mongoose.model(
   weeklyLessonSchema
 );
 
+
+
 const englishClubWorkersOfMonth = mongoose.model(
   "EnglishClubWorkersOfMonth",
   workersOfMonthSchema
 );
 
 module.exports = {
+  englishClubHub,
   englishClubs,
   englishClubArticles,
   dailyVocabulary,

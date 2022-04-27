@@ -56,6 +56,7 @@ const connectDB = catchAsync(async () => {
 
 connectDB();
 
+
 const app = express();
 // setting up ejs-mate
 app.engine("ejs", ejsMate);

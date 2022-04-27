@@ -1,3 +1,10 @@
+const express = require("express");
+const router = express.Router();
+const User = require("../models/user");
+const Review = require("../models/comments");
+const createClubDefaultContent = require("../utilities/createClubDefaultContent");
+
+
 const {
     positions,
     days,
@@ -5,6 +12,7 @@ const {
 } = require("../utilities/defaultData");
 
 const {
+    englishClubHub,
     englishClubs,
     englishClubArticles,
     dailyVocabulary,
@@ -17,17 +25,95 @@ const {
 
 
 
+function addEngClub(club) {
+
+    if (club.clubType === "High-school") {
+        hub.clubs.High_school.push(club._id);
+    }
+
+    if (club.clubType === "University") {
+        hub.clubs.University.push(club._id);
+    }
+
+    if (club.clubType === "Company") {
+        hub.clubs.Company.push(club._id);
+    }
+
+    if (club.clubType === "Private") {
+        hub.clubs.Private.push(club._id);
+    }
+
+    if (club.clubType === "Professional") {
+        hub.clubs.Professional.push(club._id);
+    }
+
+    if (club.clubType === "Simple") {
+        hub.clubs.Simple.push(club._id);
+    }
+
+}
+
+
+async function addBoardMember(boardUsername, clubname, position) {
+    boardUsername = req.body;
+    const englishClub = englishClubs.findOne({
+        name: clubname
+    });
+
+    // adding boad members
+    const boardmember = await User.findOne({
+        username: boardUsername,
+    });
+
+    englishClub.boardMembers.push(boardmember._id);
+    englishClub.members.push(boardmember._id);
+
+    await englishClub.save();
+
+}
+
+
+
+// English club hub
+module.exports.createEnglishHub = async (req, res) => {
+    const newEngClubHub = new englishClubHub(req.body.engHub);
+    const focalpoint = await User.findOne({
+        username: req.body.focalPoint
+    });
+    newEngClubHub.focalPoint = focalpoint._id;
+
+    await newEngClubHub.save();
+
+    res.send("new hub created");
+}
+
+module.exports.showCountryHubs = async (req, res) => {
+    const hubCountry = req.params.country;
+
+    function filterByCountry(obj) {
+        if (obj.country === hubCountry) {
+            return true
+        }
+    }
+    const hubs = await englishClubHub.find({}).populate("focalPoint").populate("clubs.University").populate("clubs.High_school").populate("clubs.Company").populate("clubs.Professional").populate("clubs.Private").populate("clubs.Simple");
+
+    let countryHubs = await hubs.filter(filterByCountry);
+
+    res.render("programs/englishlang4all/englishClubs/showClubHub", {
+        countryHubs,
+        hubCountry
+    });
+}
+
+// English club
 
 module.exports.createEnglishClub = async (req, res) => {
     const englishClub = new englishClubs(req.body.englishClub);
 
-    const {
-        PresidentInfo,
-    } = req.body;
-
+    hub = await englishClubHub.findById(req.params.hub_id);
     // adding boad members
     const president = await User.findOne({
-        username: PresidentInfo,
+        username: req.body.PresidentInfo,
     });
 
     englishClub.boardMembers.push(president._id);
@@ -35,16 +121,32 @@ module.exports.createEnglishClub = async (req, res) => {
 
     await englishClub.save();
 
+    // adding the English club to the hub
+    addEngClub(englishClub);
+
+    await hub.save();
+
     // Creating default content
     await createClubDefaultContent(englishClub._id);
 
     await englishClub.save();
 
     // res.send("english club created!!!");
-    res.redirect("/englishlang4all/clubs");
+    res.redirect(`/englishlang4all/clubs/${hub.country}/hubs`);
 }
 
+module.exports.showClubHomePage = async (req, res) => {
+    const club = await englishClubs
+        .findById(req.params.club_id)
+        .populate("boardMembers")
 
+    res.render("programs/englishlang4all/englishClubs/clubInfoPage", {
+        club,
+        positions,
+        days,
+        months,
+    });
+}
 
 module.exports.showEnglishClub = async (req, res) => {
     const club = await englishClubs

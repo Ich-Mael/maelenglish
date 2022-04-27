@@ -128,9 +128,9 @@ body {
 }
 
 .slogan {
-  font-family: "Kaushan Script", cursive;
+
   border-top: 3px solid white;
-  text-shadow: 1px 2px 3px black;
+  text-shadow: 1px 1px 1px black;
   padding-top: 5rem;
   font-size: 2.5rem;
   padding-bottom: 2rem;
@@ -2025,355 +2025,353 @@ customers-cards:before {
   .accessibility-text {
     font-size: 1.8rem;
   }
+}
 
-  /* Extra small devices (phones, 600px and down) */
-  @media (max-width: 700px) {
+/* Extra small devices (phones, 600px and down) */
+@media (max-width: 700px) {
 
-    .afrohk-footer,
-    .header-text {
-      font-size: 3rem;
-    }
-
-    .course-link {
-      color: #fcfbfa;
-      font-size: 0.8rem;
-    }
-
-    .logo-navbar {}
-
-    #banner-wrapper {
-      z-index: 2;
-      top: 25%;
-      left: 15%;
-    }
-
-    .banner-heading {
-      font-size: 2rem;
-      line-height: 3rem;
-    }
-
-    .banner-paragraph {
-      font-size: 1.5rem;
-      line-height: 2rem;
-    }
-
-    .check-programs,
-    .get-account {
-      width: 20rem;
-      display: inline;
-      font-size: 1rem;
-    }
-
-    .account-wrapper {
-      width: 100%;
-      margin-bottom: 2rem;
-    }
-
-    .header-text {
-      font-size: 2rem;
-    }
-
-    .account-wrapper {}
-
-    #sky-wrapper {
-      position: relative;
-    }
-
-    .program-name {
-      font-weight: 700;
-      font-size: 1.2rem;
-    }
-
-    .program-description {
-      font-size: 1.2em;
-      font-weight: 400;
-      height: auto;
-    }
-
-    .learn-with-us,
-    .why-afrohk,
-    .partners,
-    .clients,
-    .about,
-    .services {
-      font-size: 2rem;
-      padding: 1rem;
-    }
-
-    .slider ul {
-      display: flex;
-      padding: 0;
-      animation: cambio 40s infinite linear;
-    }
-
-    .card-img-top {
-      display: none;
-    }
-
-    .learn-section {
-      display: none;
-    }
-
-    .study {
-      font-size: 2rem;
-    }
-
-    .word-slider>li {
-      font-size: 1.2rem;
-    }
-
-    .motto-footer {
-      font-size: 0.8rem;
-    }
+  .afrohk-footer,
+  .header-text {
+    font-size: 3rem;
   }
 
-  @media (max-width: 600px) {
-
-    .afrohk-footer,
-    .header-text {
-      font-size: 2rem;
-    }
-
-    .flash {
-      font-size: 0.6rem;
-    }
-
-    .check-programs,
-    .get-account {
-      width: 20rem;
-      display: inline;
-      /* font-size: 0.5rem; */
-    }
-
-    .presentation-heading {
-      letter-spacing: 0.1rem;
-      font-size: 1.2rem;
-    }
-
-    .presentation-paragraph {
-      letter-spacing: 0.1rem;
-      font-size: 1rem;
-      line-height: 2rem;
-    }
-
-    .learn-section {
-      height: 30vh;
-      padding: 1rem;
-      background-color: whitesmoke;
-      margin-bottom: 1rem;
-    }
-
-    .study {
-      font-size: 1.5rem;
-    }
-
-    .word-slider>li {
-      font-size: 1.3rem;
-    }
-
-
+  .course-link {
+    color: #fcfbfa;
+    font-size: 0.8rem;
   }
 
-  @media (max-width: 450px) {
-    .slider ul {
-      display: flex;
-      padding: 0;
-      animation: cambio 50s infinite linear;
-    }
+  .logo-navbar {}
 
-    html {
-      font-size: 90%;
-    }
-
-    .afrohk-title {
-
-      font-size: 3rem;
-    }
-
-    .slogan {
-      font-size: 2rem;
-    }
-
-    #banner-wrapper {
-      z-index: 2;
-      top: 35%;
-      /* width: 100%; */
-      left: 5%;
-    }
-
-    .brand {
-      font-size: 1rem;
-    }
-
-    .banner-heading {
-      /* font-size: 2rem; */
-      line-height: 4rem;
-      /* width: 80%; */
-    }
-
-    .banner-paragraph {
-      /* font-size: 1.2rem; */
-      line-height: 2rem;
-      width: 80%;
-    }
-
-    .presentation-text-wrapper {
-      margin: 1rem 0.3rem;
-    }
-
-    .check-programs,
-    .get-account {
-      width: 20rem;
-      display: inline;
-      /* font-size: 1rem; */
-    }
-
-    .account-wrapper {
-      width: 100%;
-      margin-bottom: 2rem;
-    }
+  #banner-wrapper {
+    z-index: 2;
+    top: 25%;
+    left: 15%;
   }
 
-  @media (max-width: 350px) {
-    .slider ul {
-      display: flex;
-      padding: 0;
-      animation: cambio 50s infinite linear;
-    }
-
-    .brand {
-      font-size: 0.8rem;
-    }
-
-    .afrohk-title {
-      font-size: 2.5rem;
-    }
-
-    .slogan {
-      font-size: 1.5rem;
-    }
-
-    .account-wrapper {
-      width: 80%;
-    }
-
-    #banner-wrapper {
-      z-index: 2;
-      top: 35%;
-      /* width: 100%; */
-      /* left: 10%; */
-    }
-
-    .banner-heading {
-      /* font-size: 1.7rem; */
-      line-height: 3rem;
-      /* width: 80%; */
-    }
-
-    .banner-paragraph {
-      /* font-size: 1.2rem; */
-      line-height: 2rem;
-      width: 80%;
-    }
-
-    .check-programs,
-    .get-account {
-      width: 10rem;
-      display: inline;
-      font-size: 0.8rem;
-    }
-
-    .presentation-text-wrapper {
-      background-color: #000000;
-      border-radius: 5px;
-      margin: 1rem;
-    }
-
-    .account-wrapper {
-      /* width: 100%; */
-      /* margin-bottom: 2rem; */
-    }
+  .banner-heading {
+    font-size: 2rem;
+    line-height: 3rem;
   }
 
-  /* --- animations---- */
-  /* --- animation 1 fade in Up---- */
-  @-webkit-keyframes fadeInUp {
-    from {
-      opacity: 0;
-      -webkit-transform: translate3d(0, 100%, 0);
-      transform: translate3d(0, 100%, 0);
-    }
-
-    to {
-      opacity: 1;
-      -webkit-transform: translate3d(0, 0, 0);
-      transform: translate3d(0, 0, 0);
-    }
+  .banner-paragraph {
+    font-size: 1.5rem;
+    line-height: 2rem;
   }
 
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      -webkit-transform: translate3d(0, 100%, 0);
-      transform: translate3d(0, 100%, 0);
-    }
-
-    to {
-      opacity: 1;
-      -webkit-transform: translate3d(0, 0, 0);
-      transform: translate3d(0, 0, 0);
-    }
+  .check-programs,
+  .get-account {
+    width: 20rem;
+    display: inline;
+    font-size: 1rem;
   }
 
-  .fadeInUp {
-    -webkit-animation-name: fadeInUp;
-    animation-name: fadeInUp;
+  .account-wrapper {
+    width: 100%;
+    margin-bottom: 2rem;
   }
 
-  .animated {
-    -webkit-animation-duration: 1s;
-    animation-duration: 1s;
-    -webkit-animation-fill-mode: both;
-    animation-fill-mode: both;
+  .header-text {
+    font-size: 2rem;
   }
 
-  /* --- animation 1 fade in left ---- */
-  @-webkit-keyframes fadeInLeft {
-    from {
-      opacity: 0;
-      -webkit-transform: translate3d(-100%, 0, 0);
-      transform: translate3d(-100%, 0, 0);
-    }
+  .account-wrapper {}
 
-    to {
-      opacity: 1;
-      -webkit-transform: translate3d(0, 0, 0);
-      transform: translate3d(0, 0, 0);
-    }
+  #sky-wrapper {
+    position: relative;
   }
 
-  @keyframes fadeInLeft {
-    from {
-      opacity: 0;
-      -webkit-transform: translate3d(-100%, 0, 0);
-      transform: translate3d(-100%, 0, 0);
-    }
-
-    to {
-      opacity: 1;
-      -webkit-transform: translate3d(0, 0, 0);
-      transform: translate3d(0, 0, 0);
-    }
+  .program-name {
+    font-weight: 700;
+    font-size: 1.2rem;
   }
 
-  .fadeInLeft {
-    -webkit-animation-name: fadeInLeft;
-    animation-name: fadeInLeft;
+  .program-description {
+    font-size: 1.2em;
+    font-weight: 400;
+    height: auto;
   }
 
-  .animated {
-    -webkit-animation-duration: 1s;
-    animation-duration: 1s;
-    -webkit-animation-fill-mode: both;
-    animation-fill-mode: both;
+  .learn-with-us,
+  .why-afrohk,
+  .partners,
+  .clients,
+  .about,
+  .services {
+    font-size: 2rem;
+    padding: 1rem;
   }
+
+  .slider ul {
+    display: flex;
+    padding: 0;
+    animation: cambio 40s infinite linear;
+  }
+
+  .card-img-top {
+    display: none;
+  }
+
+  .learn-section {
+    display: none;
+  }
+
+  .study {
+    font-size: 2rem;
+  }
+
+  .word-slider>li {
+    font-size: 1.2rem;
+  }
+
+  .motto-footer {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 600px) {
+
+  .afrohk-footer,
+  .header-text {
+    font-size: 2rem;
+  }
+
+  .flash {
+    font-size: 0.6rem;
+  }
+
+  .check-programs,
+  .get-account {
+    width: 20rem;
+    display: inline;
+    /* font-size: 0.5rem; */
+  }
+
+  .presentation-heading {
+    letter-spacing: 0.1rem;
+    font-size: 1.2rem;
+  }
+
+  .presentation-paragraph {
+    letter-spacing: 0.1rem;
+    font-size: 1rem;
+    line-height: 2rem;
+  }
+
+  .learn-section {
+    height: 30vh;
+    padding: 1rem;
+    background-color: whitesmoke;
+    margin-bottom: 1rem;
+  }
+
+  .study {
+    font-size: 1.5rem;
+  }
+
+  .word-slider>li {
+    font-size: 1.3rem;
+  }
+
+
+}
+
+@media (max-width: 450px) {
+  .slider ul {
+    display: flex;
+    padding: 0;
+    animation: cambio 50s infinite linear;
+  }
+
+  html {
+    font-size: 90%;
+  }
+
+  .afrohk-title {
+
+    font-size: 3rem;
+  }
+
+  .slogan {
+    font-size: 2rem;
+  }
+
+  #banner-wrapper {
+    z-index: 2;
+    top: 35%;
+    /* width: 100%; */
+    left: 5%;
+  }
+
+  .brand {
+    font-size: 1rem;
+  }
+
+  .banner-heading {
+    /* font-size: 2rem; */
+    line-height: 4rem;
+    /* width: 80%; */
+  }
+
+  .banner-paragraph {
+    /* font-size: 1.2rem; */
+    line-height: 2rem;
+    width: 80%;
+  }
+
+  .presentation-text-wrapper {
+    margin: 1rem 0.3rem;
+  }
+
+  .check-programs,
+  .get-account {
+    width: 20rem;
+    display: inline;
+    /* font-size: 1rem; */
+  }
+
+  .account-wrapper {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+}
+
+@media (max-width: 350px) {
+  .slider ul {
+    display: flex;
+    padding: 0;
+    animation: cambio 50s infinite linear;
+  }
+
+  .brand {
+    font-size: 0.8rem;
+  }
+
+  .afrohk-title {
+    font-size: 2.5rem;
+  }
+
+  .slogan {
+    font-size: 1.5rem;
+  }
+
+  .account-wrapper {
+    width: 80%;
+  }
+
+  #banner-wrapper {
+    z-index: 2;
+    top: 35%;
+    /* width: 100%; */
+    /* left: 10%; */
+  }
+
+  .banner-heading {
+    /* font-size: 1.7rem; */
+    line-height: 3rem;
+    /* width: 80%; */
+  }
+
+  .banner-paragraph {
+    /* font-size: 1.2rem; */
+    line-height: 2rem;
+    width: 80%;
+  }
+
+  .check-programs,
+  .get-account {
+    width: 10rem;
+    display: inline;
+    font-size: 0.8rem;
+  }
+
+  .presentation-text-wrapper {
+    background-color: #000000;
+    border-radius: 5px;
+    margin: 1rem;
+  }
+
+  .account-wrapper {}
+}
+
+/* --- animations---- */
+/* --- animation 1 fade in Up---- */
+@-webkit-keyframes fadeInUp {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 100%, 0);
+    transform: translate3d(0, 100%, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 100%, 0);
+    transform: translate3d(0, 100%, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.fadeInUp {
+  -webkit-animation-name: fadeInUp;
+  animation-name: fadeInUp;
+}
+
+.animated {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+/* --- animation 1 fade in left ---- */
+@-webkit-keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.fadeInLeft {
+  -webkit-animation-name: fadeInLeft;
+  animation-name: fadeInLeft;
+}
+
+.animated {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
