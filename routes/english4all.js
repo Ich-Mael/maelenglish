@@ -25,6 +25,7 @@ const {
 
 const {
   englishClubHub,
+  englishClubMember,
   englishClubs,
   englishClubArticles,
   dailyVocabulary,
@@ -34,7 +35,6 @@ const {
   englishWeeklyLessons,
   englishClubMedia,
 } = require("../models/englishClub");
-
 
 //english for everybody
 router.get("/englishlang4all", (req, res) => {
@@ -90,32 +90,96 @@ router.post(
   catchAsync(engClub.createEnglishClub)
 );
 
-//show english club content
+//show english club home page
 router.get(
-  "/englishlang4all/Clubs/:club_id",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/home",
+  catchAsync(engClub.showClubHomePage)
+);
+
+//show english club 
+router.get(
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id",
   isLoggedIn,
   isVerified,
   checkEnglishClubMembership,
   catchAsync(engClub.showEnglishClub)
 );
 
-//show english club content
+
+
+// ======================================
+//
+//   Admin and Board members privileges
+//
+//========================================
+
+// Accessing dashboard
+
 router.get(
-  "/englishlang4all/Clubs/:club_id/home",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard",
+  isLoggedIn,
+  checkEnglishBoardMembership,
+  catchAsync(async (req, res) => {
+    // hub 
+    const hub = await englishClubHub.findById(req.params.hub_id);
+
+    const club = await englishClubs.findById(req.params.club_id);
+    res.render(
+      "programs/englishlang4all/englishClubs/board_members_dashboard", {
+        hub,
+        club
+      }
+    );
+  })
+);
+
+// Admin Only
+// adding a student to an english club
+router.post(
+  "/admindashboard/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/new_member",
   isLoggedIn,
   isVerified,
-  checkEnglishClubMembership,
-  catchAsync(engClub.showClubHomePage)
+  checkRoles("admin"),
+  catchAsync(async (req, res) => {
+    const {
+      newMember,
+      level,
+    } = req.body;
+    const user = await User.findOne({
+      username: newMember
+    });
+
+    // create a new english club member
+    const newEngClubMember = new englishClubMember({
+      clubMember: user._id,
+      level
+    });
+
+    await newEngClubMember.save();
+
+    englishClub = await englishClubs.findById(req.params.club_id);
+
+    if (englishClub.members.includes(newEngClubMember._id)) {
+      req.flash("error", `User is already a member of this English club`);
+    } else {
+      await englishClub.members.push(newEngClubMember._id);
+      await englishClub.save();
+      req.flash("success", `User successfully added to this English club`);
+    }
+
+    res.send("new english club member");
+  })
 );
 
 
-// ==============================
-//
-//   Board members privileges
-//
-//===============================
 
-// Adding a member to an English Club
+
+
+
+
+
+
+
 
 //======================================
 //

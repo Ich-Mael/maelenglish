@@ -264,35 +264,6 @@ router.post(
   })
 );
 
-// adding a student to an english club
-router.post(
-  "/admindashboard/newEnglishClubMember",
-  isLoggedIn,
-  isVerified,
-  checkRoles("admin"),
-  catchAsync(async (req, res) => {
-    const {
-      englishClub_name,
-      memberUsername
-    } = req.body;
-    const user = await User.findOne({
-      username: memberUsername
-    });
-    const englishClub = await englishClubs.findOne({
-      name: englishClub_name
-    });
-
-    if (englishClub.members.includes(user._id)) {
-      req.flash("error", `User is already a member of this English club`);
-    } else {
-      await englishClub.members.push(user._id);
-      await englishClub.save();
-      req.flash("success", `User successfully added to this English club`);
-    }
-    res.redirect("/admindashboard");
-  })
-);
-
 //==========================//==========================
 //   Instrucctor Privileges  Managing courses
 //==========================//==========================
@@ -313,18 +284,6 @@ router.get(
 
 // Accessing dashboard
 
-router.get(
-  "/englishlang4all/Clubs/:club_id/board_dashboard",
-  isLoggedIn,
-  checkEnglishBoardMembership,
-  catchAsync(async (req, res) => {
-    const club = await englishClubs.findById(req.params.club_id);
-    res.render(
-      "programs/englishlang4all/englishClubs/board_members_dashboard", {
-        club
-      }
-    );
-  })
-);
+
 
 module.exports = router;

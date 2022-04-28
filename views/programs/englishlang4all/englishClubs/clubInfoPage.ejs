@@ -1,4 +1,4 @@
-<% layout('layouts/engClubBoilerplate') %>
+<% layout('layouts/boilerplate') %>
 <link href="/stylesheets/englishforAll/englishClubs/clubHome.css" rel="stylesheet" />
 <!-- swiper-->
 <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
@@ -15,6 +15,10 @@
       <p class="club-motto">
         <%=club.motto %>
       </p>
+      <div class="d-flex justify-content-center py-3">
+        <a class="btn btn-outline-success fs-5"
+          href="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>">Get in</a>
+      </div>
     </div>
   </div>
 </div>
@@ -29,16 +33,16 @@
       <!--President-->
       <div class="swiper-slide">
         <div class="team-image-wrapper">
-          <img class="team-img img-fluid" src="<%= club.boardMembers[i].imageUrl %>" alt="">
+          <img class="team-img img-fluid" src="<%= club.boardMembers[i].clubMember.imageUrl %>" alt="">
           <div>
             <div class="team-member-info">
-              <h6 class="position">President</h6>
+              <h6 class="position"><%= club.boardMembers[i].position %></h6>
               <div class="d-flex justifify-content-center ">
                 <div class="team-position-line"></div>
               </div>
               <p class="team-member-name"><%=
-                club.boardMembers[i].name +" "+
-                club.boardMembers[i].surname%></p>
+                club.boardMembers[i].clubMember.name +" "+
+                club.boardMembers[i].clubMember.surname%></p>
               <div class="d-flex w-100 member-social justify-content-around">
                 <a target="_blank" class="d-block" href="mailto:ismaelzerbo_18@outlook.com?"><i
                     class="fa-solid fa-envelope"></i></a>

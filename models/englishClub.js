@@ -6,8 +6,6 @@ const {
 
 // english club schema
 const englishClubSchema = new Schema({
-
-
   city: {
     type: String,
     trim: true,
@@ -26,7 +24,8 @@ const englishClubSchema = new Schema({
     ],
   },
 
-  professionType: {
+
+  EnglishType: {
     type: String,
     trim: true,
   },
@@ -66,10 +65,17 @@ const englishClubSchema = new Schema({
     required: true,
   },
 
+
   // image
   bannerImageUrlMedium: {
     type: String,
     required: true,
+    default: "https://images.pexels.com/photos/2422290/pexels-photo-2422290.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+    trim: true,
+  },
+
+  clubPresentationVideoUrl: {
+    type: String,
     trim: true,
   },
 
@@ -110,6 +116,7 @@ const englishClubSchema = new Schema({
   },
 
   mentorDetails: {
+    default: "Mentor Details",
     type: String,
     trim: true,
   },
@@ -121,12 +128,12 @@ const englishClubSchema = new Schema({
 
   boardMembers: [{
     type: Schema.Types.ObjectId,
-    ref: "User",
+    ref: "EnglishClubMember",
   }, ],
 
   members: [{
     type: Schema.Types.ObjectId,
-    ref: "User",
+    ref: "EnglishClubMember",
   }, ],
 
   workersOfMonth: [{
@@ -186,7 +193,6 @@ const englishClubHubSchema = new Schema({
   },
 
   clubs: {
-
     High_school: [{
       type: Schema.Types.ObjectId,
       ref: "EnglishClub",
@@ -223,6 +229,42 @@ const englishClubHubSchema = new Schema({
     ref: "User",
   }
 });
+
+// club members schema
+const englishClubMemberSchema = new Schema({
+  clubMember: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
+
+  isBoardMember: {
+    type: Boolean,
+    default: false
+  },
+
+  position: {
+    type: String,
+    default: "Member"
+  },
+
+  isMuted: {
+    type: Boolean,
+    default: false
+  },
+
+  level: {
+    type: String,
+    required: true,
+    enum: [
+      "A1 - Elementary",
+      "A2 - Pre-Intermediate",
+      "B1 - Intermediate",
+      "B2 - Upper-Intermediate",
+      "C1 - Advanced",
+      "C2 - Proficient",
+    ],
+  },
+})
 
 
 // english club article schema
@@ -436,27 +478,9 @@ const englishClubMediaSchema = new Schema({
   timestamps: true,
 });
 
-// club members schema
 
-const englishClubMembersSchema = new Schema({
-  clubMember: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-  },
 
-  level: {
-    type: String,
-    required: true,
-    enum: [
-      "A0/A1 - Beginner/Elementary",
-      "A2 - Pre-Intermediate",
-      "B1 - Intermediate",
-      "B2 - Upper-Intermediate",
-      "C1 - Advanced",
-      "C2 - Proficient",
-    ],
-  },
-})
+const englishClubMember = mongoose.model("EnglishClubMember", englishClubMemberSchema);
 
 const englishClubHub = mongoose.model("EnglishClubHub", englishClubHubSchema);
 
@@ -494,6 +518,7 @@ const englishClubWorkersOfMonth = mongoose.model(
 );
 
 module.exports = {
+  englishClubMember,
   englishClubHub,
   englishClubs,
   englishClubArticles,

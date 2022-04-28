@@ -12,6 +12,7 @@ const {
 } = require("../utilities/defaultData");
 
 const {
+    englishClubMember,
     englishClubHub,
     englishClubs,
     englishClubArticles,
@@ -116,8 +117,19 @@ module.exports.createEnglishClub = async (req, res) => {
         username: req.body.PresidentInfo,
     });
 
-    englishClub.boardMembers.push(president._id);
-    englishClub.members.push(president._id);
+    // create a new english club member
+    const newEngClubMember = new englishClubMember({
+        clubMember: president._id,
+        position: "Chair Person",
+        level: "B1 - Intermediate",
+        isBoardMember: true
+    });
+
+    await newEngClubMember.save();
+
+
+    englishClub.boardMembers.push(newEngClubMember._id);
+    englishClub.members.push(newEngClubMember._id);
 
     await englishClub.save();
 
@@ -136,11 +148,20 @@ module.exports.createEnglishClub = async (req, res) => {
 }
 
 module.exports.showClubHomePage = async (req, res) => {
+    const hub = await englishClubHub.findById(req.params.hub_id);
     const club = await englishClubs
         .findById(req.params.club_id)
-        .populate("boardMembers")
+        .populate({
+            path: "boardMembers",
+            populate: {
+                path: "clubMember"
+            }
+        })
+
+    console.log(club);
 
     res.render("programs/englishlang4all/englishClubs/clubInfoPage", {
+        hub,
         club,
         positions,
         days,
@@ -149,9 +170,9 @@ module.exports.showClubHomePage = async (req, res) => {
 }
 
 module.exports.showEnglishClub = async (req, res) => {
+    const hub = await englishClubHub.findById(req.params.hub_id);
     const club = await englishClubs
         .findById(req.params.club_id)
-        .populate("boardMembers")
         .populate("articles")
         .populate("weeklyVideoLesson")
         .populate("workersOfMonth")
@@ -170,6 +191,7 @@ module.exports.showEnglishClub = async (req, res) => {
 
     res.render("programs/englishlang4all/englishClubs/show", {
         club,
+        hub,
         positions,
         days,
         months,

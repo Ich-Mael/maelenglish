@@ -190,6 +190,8 @@
               this hub</a>
           </div>
           <%}%>
+
+          <!-- nav -->
           <div class="club-type-list d-flex align-items-center justify-content-around">
             <a href="#highS" class="fs-5 py-2 inline-block">High School</a>
             <a href="#univ" class="fs-5 py-2 inline-block">University</a>
@@ -197,6 +199,8 @@
             <a href="#pro" class="fs-5 py-2 inline-block">Professional</a>
             <a href="#other" class="fs-5 py-2 inline-block">Other</a>
           </div>
+          <!-- nav -->
+
           <!-- High school -->
           <div class="container">
             <!-- University English Club -->
@@ -206,14 +210,16 @@
              <div class="line-2"></div>
            </div>
          <div class="row pb-5">
-         <% for(let univClub of hub.clubs.High_school){%>
+         <% for(let Club of hub.clubs.High_school){%>
           <div class="col-md-6 col-lg-4 my-5">
             <div class="eng-club-details">
-              <h2 class="institution"><%= univClub.instituition %></h2>
+              <h2 class="institution"><%= Club.instituition %></h2>
               <div class="eng-clubs-description">
-                <h3 class="eng-club-name"><%= univClub.name %></h3>
+                <h3 class="eng-club-name"><%= Club.name %></h3>
                 <p class="definition"></p>
-                <p class="found-date">Since <a class="ms-4" href="">Learn more</a></p>
+                <p class="found-date">Since <%= Club.foundDate %> <a class="ms-4"
+                    href="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id%>/club/<%= Club.id%>/home">Learn
+                    more</a></p>
               </div>
             </div>
           </div>
@@ -222,7 +228,7 @@
        <hr>
         </div>
 
-       <!-- university -->
+          <!-- university -->
           <div class="container">
              <!-- University English Club -->
              <div class="container" id="univ">
@@ -231,14 +237,16 @@
               <div class="line-2"></div>
             </div>
           <div class="row pb-5">
-          <% for(let univClub of hub.clubs.University){%>
+          <% for(let Club of hub.clubs.University){%>
           <div class="col-md-6 col-lg-4 my-5">
             <div class="eng-club-details">
-              <h2 class="institution"><%= univClub.instituition %></h2>
+              <h2 class="institution"><%= Club.instituition %></h2>
               <div class="eng-clubs-description">
-                <h3 class="eng-club-name"><%= univClub.name %></h3>
+                <h3 class="eng-club-name"><%= Club.name %></h3>
                 <p class="definition"></p>
-                <p class="found-date">Since <a class="ms-4" href="">Learn more</a></p>
+                <p class="found-date">Since <%= Club.foundDate %> <a class="ms-4"
+                    href="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id%>/club/<%= Club.id%>/home">Learn
+                    more</a></p>
               </div>
             </div>
           </div>
@@ -246,7 +254,7 @@
           </div>
         </div>
 
-        <!-- Company -->
+          <!-- Company -->
           <div class="container">
             <!-- University English Club -->
             <div class="container" id="univ">
@@ -262,7 +270,9 @@
               <div class="eng-clubs-description">
                 <h3 class="eng-club-name"><%= Club.name %></h3>
                 <p class="definition"></p>
-                <p class="found-date">Since <a class="ms-4" href="">Learn more</a></p>
+                <p class="found-date">Since <%= Club.foundDate %> <a class="ms-4"
+                    href="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id%>/club/<%= Club.id%>/home">Learn
+                    more</a></p>
               </div>
             </div>
           </div>
@@ -271,7 +281,7 @@
        <hr>
         </div>
 
-         <!-- Professional -->
+          <!-- Professional -->
          <div class="container">
           <div class="container" id="univ">
            <div class="line-1"></div>
@@ -286,7 +296,9 @@
               <div class="eng-clubs-description">
                 <h3 class="eng-club-name"><%= Club.name %></h3>
                 <p class="definition"></p>
-                <p class="found-date">Since <a class="ms-4" href="">Learn more</a></p>
+                <p class="found-date">Since <%= Club.foundDate %> <a class="ms-4"
+                    href="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id%>/club/<%= Club.id%>/home">Learn
+                    more</a></p>
               </div>
             </div>
           </div>
@@ -295,7 +307,7 @@
      <hr>
       </div>
 
-         <!-- Professional -->
+          <!-- Professional -->
          <div class="container">
           <div class="container" id="univ">
            <div class="line-1"></div>
@@ -310,7 +322,9 @@
               <div class="eng-clubs-description">
                 <h3 class="eng-club-name"><%= Club.name %></h3>
                 <p class="definition"></p>
-                <p class="found-date">Since <a class="ms-4" href="">Learn more</a></p>
+                <p class="found-date">Since <%= Club.foundDate %> <a class="ms-4"
+                    href="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id%>/club/<%= Club.id%>/home">Learn
+                    more</a></p>
               </div>
             </div>
           </div>
@@ -318,10 +332,6 @@
        </div>
      <hr>
       </div>
-
-
-
-
       </div>
     </div>
     <%}%>

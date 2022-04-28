@@ -15,47 +15,82 @@
 
 <h1 class="text-center my-5" style="color: blueviolet;"><%= club.acronym %> Board Members Dashboard</h1>
 
-<% if(currentUser.role === "admin"){%> 
-  <!-- Weekly video lesson -->
-  <div class="container my-5 p-3 col-md-8" style="background-color: aliceblue;">
+<% if(currentUser.role === "admin"){%>
+<!-- Admin  -->
+<div class="container my-5 p-3 col-md-8" style="background-color: aliceblue;">
+  <div class="d-flex justify-content-around">
     <p>
       <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#videoLesson"
         aria-expanded="false" aria-controls="collapseExample">
-        Edit a video lesson
+        Post a new video lesson
       </button>
-  
-  
-      <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/videoLesson" method="POST">
-        <div class="collapse" id="videoLesson">
-          <!-- Lesson title -->
-          <label class="form-label my-3" for="lessonTitle">Lesson title</label>
-          <input type="text" class="form-control" name="weeklyLesson[lessonTitle]" required id="articleImage" value="" />
-  
-          <!-- Video Link  -->
-          <label class="form-label my-3" for="videoLink">Video Link</label>
-          <input type="text" class="form-control" name="weeklyLesson[videoLink]" required value="" id="title" />
-  
-  
-          <!-- Author -->
-          <label class="form-label my-3" for="author">Author</label>
-          <input type="text" class="form-control" name="weeklyLesson[lessonAuthor]" required value="" id="articleAuthor" />
-  
-          <!-- Lesson Summary -->
-          <label class="form-label my-3" for="lessonSummary">Lesson Summary</label>
-          <textarea type="text" class="form-control mytextarea" name="weeklyLesson[lessonSummary]" value=""
-            id="articleContent"></textarea>
-          <hr />
-        </div>
-        <button class="btn my-3  mx-2 btn-outline-success" type="submit">Post video lesson</button>
-      </form>
-      <a href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard/videoLessons" type="button"
-        class="btn mx-2 btn-outline-primary">
-        View all video lessons of the year</a>
+
+      <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#new-boardM"
+        aria-expanded="false" aria-controls="collapseExample">
+        Add new member
+      </button>
     </p>
   </div>
- <hr>
-  <% } %> 
-  
+
+  <!-- Add New Member Form -->
+  <div class="collapse  p-5" id="new-boardM" style="background-color: rgb(192, 198, 203);">
+    <form
+      action="/admindashboard/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/new_member"
+      method="POST">
+      <!-- New Member Username -->
+      <label class="form-label my-3" for="new-member">New Member Username</label>
+      <input type="text" class="form-control" name="newMember" required id="" value="" />
+
+      <!-- New member Level -->
+      <label class="form-label my-3" for="new-member-level">New member level</label>
+      <select class="form-select" name="level" aria-label="Default select example">
+        <option selected value="A1 - Elementary">A1 Elementary</option>
+        <option value="A2 - Pre-Intermediate">A2 Pre-Intermediate</option>
+        <option value="B1 - Intermediate">B1 Intermediate</option>
+        <option value="B2 - Upper-Intermediate">B2 Upper-Intermediate</option>
+        <option value="C1 - Advanced">C1 Advanced</option>
+        <option value="C2 - Proficient">C2 Proficient</option>
+      </select>
+
+      <button class="btn my-3  me-2 btn-success" type="submit">Add</button>
+    </form>
+  </div>
+
+  <!-- Add New Video Form -->
+  <div class="collapse p-5" id="videoLesson" style="background-color: rgb(143, 161, 159);">
+    <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/videoLesson" method="POST">
+      <!-- Lesson title -->
+      <label class="form-label my-3" for="lessonTitle">Lesson title</label>
+      <input type="text" class="form-control" name="weeklyLesson[lessonTitle]" required id="articleImage" value="" />
+
+      <!-- Video Link  -->
+      <label class="form-label my-3" for="videoLink">Video Link</label>
+      <input type="text" class="form-control" name="weeklyLesson[videoLink]" required value="" id="title" />
+
+
+      <!-- Author -->
+      <label class="form-label my-3" for="author">Author</label>
+      <input type="text" class="form-control" name="weeklyLesson[lessonAuthor]" required value="" id="articleAuthor" />
+
+      <!-- Lesson Summary -->
+      <label class="form-label my-3" for="lessonSummary">Lesson Summary</label>
+      <textarea type="text" class="form-control mytextarea" name="weeklyLesson[lessonSummary]" value=""
+        id="articleContent"></textarea>
+
+      <button class="btn my-3  mx-2 btn-outline-success" type="submit">Post</button>
+    </form>
+  </div>
+</div>
+
+<hr class="" style="background-color: rgb(18, 2, 23); height: 1rem;" />
+<div class="d-flex justify-content-center">
+  <a href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard/videoLessons" type="button"
+    class="btn mx-2 btn-outline-primary">
+    View all video lessons of the year</a>
+</div>
+<hr>
+<% } %>
+
 <h3 class="text-center py-3"> ARTICLES </h3>
 <!-- Article -->
 <div class="container my-5 col-md-8 p-3" style="background-color: rgba(175, 247, 250, 0.836);">
@@ -67,29 +102,32 @@
   </p>
 
   <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/article" method="POST">
-    <div class="collapse" id="article" >
+    <div class="collapse" id="article">
       <!-- Article image url -->
       <label class="form-label my-3" for="articleImage">Image Link</label>
-      <input type="text" class="form-control" name="englishClubArticle[articleImage]" id="articleImage" value=""  required/>
+      <input type="text" class="form-control" name="englishClubArticle[articleImage]" id="articleImage" value=""
+        required />
 
       <!-- Title  -->
       <label class="form-label my-3" for="title">Title</label>
-      <input type="text" class="form-control" name="englishClubArticle[title]" value="" id="title"  required/>
+      <input type="text" class="form-control" name="englishClubArticle[title]" value="" id="title" required />
 
       <!-- Article Summary  -->
       <label class="form-label my-3" for="articleSummary">Article Summary</label>
-      <input type="text" class="form-control" name="englishClubArticle[articleSummary]" placeholder="Write a summary of the article (20 words maximum)" maxlength="200" value="" required id="title" />
+      <input type="text" class="form-control" name="englishClubArticle[articleSummary]"
+        placeholder="Write a summary of the article (20 words maximum)" maxlength="200" value="" required id="title" />
 
       <!-- Author -->
       <label class="form-label my-3" for="author">Author</label>
-      <input type="text" class="form-control" name="englishClubArticle[articleAuthor]" value="" required id="articleAuthor" />
+      <input type="text" class="form-control" name="englishClubArticle[articleAuthor]" value="" required
+        id="articleAuthor" />
 
       <!-- Article Content -->
       <label class="form-label my-3" for="articleContent">Article content</label>
       <textarea type="text" class="form-control mytextarea" name="englishClubArticle[articleContent]" value=""
         id="articleContent"></textarea>
       <hr />
-    <button class="btn my-3  mx-2 btn-outline-success" type="submit">Post article</button>
+      <button class="btn my-3  mx-2 btn-outline-success" type="submit">Post article</button>
     </div>
   </form>
   <a href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard/articles" type="button"
@@ -100,7 +138,7 @@
 <h2 class="text-center text-white py-3" style="background-color: rgb(25, 28, 31);">WEEKLY ACTIVITIES </h2>
 <!-- Daily vocabulary-->
 <div class="container my-5 p-3 col-md-8" style="background-color: rgba(241, 237, 223, 0.836);">
-<h3 class="text-center py-3"> Daily Vocabulary</h3>
+  <h3 class="text-center py-3"> Daily Vocabulary</h3>
   <p>
     <button class="btn m-2 btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#wod" aria-expanded="false"
       aria-controls="collapseExample">
@@ -113,55 +151,55 @@
     </button>
   </p>
 
-<form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/dailyVocab" method="POST">
-  <div class="collapse mb-3" id="wod">
-    <!-- Word of the Day Section-->
-    <section class="word-day-wrapper my-4" style="background-color: rgb(197, 240, 248); padding: 2rem;">
-      <!-- Word Of The day -->
-      <label class="form-label fw-bold my-3" for="Word of the day">Word of the day</label>
-      <input type="text" class="form-control" name="wordOfDay[word]" id="word" value=""  required/>
+  <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/dailyVocab" method="POST">
+    <div class="collapse mb-3" id="wod">
+      <!-- Word of the Day Section-->
+      <section class="word-day-wrapper my-4" style="background-color: rgb(197, 240, 248); padding: 2rem;">
+        <!-- Word Of The day -->
+        <label class="form-label fw-bold my-3" for="Word of the day">Word of the day</label>
+        <input type="text" class="form-control" name="wordOfDay[word]" id="word" value="" required />
 
-      <!-- meaning  -->
-      <label class="form-label fw-bold my-3" for="title">Meaning</label>
-      <input type="text" class="form-control" name="wordOfDay[wordMeaning]" value="" id="wordMeaning" required />
+        <!-- meaning  -->
+        <label class="form-label fw-bold my-3" for="title">Meaning</label>
+        <input type="text" class="form-control" name="wordOfDay[wordMeaning]" value="" id="wordMeaning" required />
 
-      <!-- Learn more  -->
-      <label class="form-label fw-bold my-3" for="learnMoreWord">Learn more</label>
-      <textarea type="text" class="form-control mytextarea" name="wordOfDay[learnMoreWord]" value=""
-        id="learnMoreWord"></textarea>
-    </section>
-  </div>
+        <!-- Learn more  -->
+        <label class="form-label fw-bold my-3" for="learnMoreWord">Learn more</label>
+        <textarea type="text" class="form-control mytextarea" name="wordOfDay[learnMoreWord]" value=""
+          id="learnMoreWord"></textarea>
+      </section>
+    </div>
 
-  <div class="collapse mb-3" id="iod">
-    <!-- Idiom Of The Day Section-->
-    <section class="word-day-wrapper my-4" style="background-color: rgb(214, 248, 217); padding: 2rem;">
-      <!-- idiom of the day -->
-      <label class="form-label fw-bold my-3" for="Word of the day">Idiom or Useful Expression</label>
-      <input type="text" class="form-control" name="IdiomDay[idiom]" id="idiom" required value="" />
+    <div class="collapse mb-3" id="iod">
+      <!-- Idiom Of The Day Section-->
+      <section class="word-day-wrapper my-4" style="background-color: rgb(214, 248, 217); padding: 2rem;">
+        <!-- idiom of the day -->
+        <label class="form-label fw-bold my-3" for="Word of the day">Idiom or Useful Expression</label>
+        <input type="text" class="form-control" name="IdiomDay[idiom]" id="idiom" required value="" />
 
-      <!-- meaning  -->
-      <label class="form-label fw-bold my-3" for="title">Meaning</label>
-      <input type="text" class="form-control" name="IdiomDay[idiomMeaning]" required value="" id="idiomMeaning" />
+        <!-- meaning  -->
+        <label class="form-label fw-bold my-3" for="title">Meaning</label>
+        <input type="text" class="form-control" name="IdiomDay[idiomMeaning]" required value="" id="idiomMeaning" />
 
-      <!-- Learn more  -->
-      <label class="form-label fw-bold my-3" for="learnMoreIdiom">Learn more</label>
-      <textarea type="text" class="form-control mytextarea" name="IdiomDay[learnMoreIdiom]" value=""
-        id="learnMoreIdiom"></textarea>
-    </section>
-  </div>
-  <button class="btn my-3 mx-2 btn-outline-success" type="submit">Post daily Vocabulary</button>
+        <!-- Learn more  -->
+        <label class="form-label fw-bold my-3" for="learnMoreIdiom">Learn more</label>
+        <textarea type="text" class="form-control mytextarea" name="IdiomDay[learnMoreIdiom]" value=""
+          id="learnMoreIdiom"></textarea>
+      </section>
+    </div>
+    <button class="btn my-3 mx-2 btn-outline-success" type="submit">Post daily Vocabulary</button>
   </form>
 </div>
 
 <!--Weekly meeting-->
 <div class="container my-5 p-3 col-md-8" style="background-color: rgba(39, 40, 41, 0.836);">
-<h3 class="text-center text-white py-3">Weekly Meeting</h3>
-<p>
+  <h3 class="text-center text-white py-3">Weekly Meeting</h3>
+  <p>
     <button class="btn m-2 btn-warning" type="button" data-bs-toggle="collapse" data-bs-target="#wec"
       aria-expanded="false" aria-controls="collapseExample">
       Weekly English Club Meeting
     </button>
-</p>
+  </p>
 
   <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/weeklyMeeting" method="POST">
     <!-- English Club Meeting Section-->
@@ -169,7 +207,8 @@
       <section class="word-day-wrapper my-4" style="background-color: rgb(154, 172, 172); padding: 2rem;">
         <!-- meeting date -->
         <label class="form-label fw-bold my-3" for="Word of the day">Meeting Date</label>
-        <input type="date" class="form-control" name="englishClubMeeting[meetingDate]" id="meetingDate" required value="" />
+        <input type="date" class="form-control" name="englishClubMeeting[meetingDate]" id="meetingDate" required
+          value="" />
 
         <!-- Venue  -->
         <label class="form-label fw-bold my-3" for="title"> Venue </label>
@@ -186,20 +225,20 @@
       </section>
     </div>
     <button class="btn my-3 mx-2 btn-outline-warning" type="submit">Post Weekly Meeting Info</button>
-</form>
+  </form>
 </div>
 
 
 <div class="container my-5 p-3 col-md-8" style="background-color: rgba(244, 236, 245, 0.836);">
   <h3 class="text-center py-3">Online Debate</h3>
-<p>
-  <button class="btn m-2 btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#eod"
-    aria-expanded="false" aria-controls="collapseExample">
-    Online Debate
-  </button>
-</p>
+  <p>
+    <button class="btn m-2 btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#eod"
+      aria-expanded="false" aria-controls="collapseExample">
+      Online Debate
+    </button>
+  </p>
 
-<form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/onlineDebate" method="POST">
+  <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/onlineDebate" method="POST">
     <!-- Online debate Section-->
     <div class="collapse mb-3" id="eod">
       <section class="word-day-wrapper my-4" style="background-color: rgb(248, 240, 214); padding: 2rem;">
@@ -209,7 +248,8 @@
 
         <!-- debate date one -->
         <label class="form-label fw-bold my-3" for="Word of the day">Date for 1st Debate</label>
-        <input type="date" class="form-control" name="OnlineDebate[debateDateOne]" required id="debateDateOne" value="" />
+        <input type="date" class="form-control" name="OnlineDebate[debateDateOne]" required id="debateDateOne"
+          value="" />
 
         <!-- Time one -->
         <label class="form-label fw-bold my-3" for="time"> Time </label>
@@ -221,7 +261,8 @@
         <input type="text" class="form-control" name="OnlineDebate[topicTwo]" required value="" id="topicTwo" />
         <!-- debate date two -->
         <label class="form-label fw-bold my-3" for="Word of the day">Date for 2nd Debate</label>
-        <input type="date" class="form-control" name="OnlineDebate[debateDateTwo]" required id="debateDateTwo" value="" />
+        <input type="date" class="form-control" name="OnlineDebate[debateDateTwo]" required id="debateDateTwo"
+          value="" />
 
         <!-- Time  -->
         <label class="form-label fw-bold my-3" for="time"> Time </label>
@@ -260,7 +301,8 @@
           <h4>Student of the month</h4>
           <!-- full name -->
           <label class="form-label my-3" for="fullname">Student's fullname </label>
-          <input type="text" class="form-control" name="studentOfMonth[fullname]" required id="studentFullname" value="" />
+          <input type="text" class="form-control" name="studentOfMonth[fullname]" required id="studentFullname"
+            value="" />
 
           <!-- Image Link -->
           <label class="form-label my-3" for="imageUrl">Image Link</label>
@@ -283,11 +325,13 @@
         <section class="word-day-wrapper my-4" style="background-color: rgb(197, 206, 248); padding: 2rem;">
           <!-- full name -->
           <label class="form-label my-3" for="fullname">Instructor's fullname </label>
-          <input type="text" class="form-control" name="instructorOfMonth[fullname]"  required id="intructorFullname" value="" />
+          <input type="text" class="form-control" name="instructorOfMonth[fullname]" required id="intructorFullname"
+            value="" />
 
           <!-- Image Link -->
           <label class="form-label my-3" for="imageUrl">Image Link</label>
-          <input type="text" class="form-control" name="instructorOfMonth[imageUrl]" required value="" id="instructorImage"/>
+          <input type="text" class="form-control" name="instructorOfMonth[imageUrl]" required value=""
+            id="instructorImage" />
 
 
           <!-- Reasons -->
@@ -300,7 +344,7 @@
             id="articleContent"></textarea>
           <hr />
         </section>
-      <button class="btn my-3  mx-2 btn-outline-success" type="submit">Post leaders of the Month</button>
+        <button class="btn my-3  mx-2 btn-outline-success" type="submit">Post leaders of the Month</button>
       </div>
     </form>
     <a href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard/workersOfMonth" type="button"
@@ -319,21 +363,21 @@
     </button>
   </p>
 
-    <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/clubMedia" method="POST">
-      <div class="collapse" id="videoLesson">
-        <!-- Lesson title -->
-        <label class="form-label my-3" for="mediaTitle">Video Title</label>
-        <input type="text" class="form-control" name="mediaTitle" id="mediaTitle" required value="" />
+  <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/clubMedia" method="POST">
+    <div class="collapse" id="videoLesson">
+      <!-- Lesson title -->
+      <label class="form-label my-3" for="mediaTitle">Video Title</label>
+      <input type="text" class="form-control" name="mediaTitle" id="mediaTitle" required value="" />
 
-        <!-- Video Link  -->
-        <label class="form-label my-3" for="videoLink">Video Link</label>
-        <input type="text" class="form-control" name="videoLink" value="" required id="videoLink" />
+      <!-- Video Link  -->
+      <label class="form-label my-3" for="videoLink">Video Link</label>
+      <input type="text" class="form-control" name="videoLink" value="" required id="videoLink" />
 
-        
+
       <button class="btn my-3  mx-2 btn-outline-success" type="submit">Post Club Media</button>
     </div>
-    </form>
-    <a href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard/allClubMedia" type="button"
-      class="btn mx-2 btn-outline-primary">
-      View all the video of the English Club </a>
+  </form>
+  <a href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard/allClubMedia" type="button"
+    class="btn mx-2 btn-outline-primary">
+    View all the video of the English Club </a>
 </div>
