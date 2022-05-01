@@ -9,7 +9,7 @@
   });
 </script>
 <style>
-  html{
+  html {
     font-size: 80%;
   }
 
@@ -43,7 +43,7 @@
 </style>
 
 <h1 class="text-center my-5" style="color: blueviolet;"><%= club.acronym %> Board Members Dashboard</h1>
-<h3 class="text-center">All media</h3>
+<h3 class="text-center">All Live Practice</h3>
 <hr>
 
 <div class="df container">
@@ -71,7 +71,8 @@
         <div class="video-details-wrapper m-0">
           <h5 class="text-center"><%= media.mediaTitle %></h5>
         </div>
-              <a href="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/clubMedia/<%= media.id %>/mediaEdit" class="btn btn-outline-success mx-5 my-2">Edit video</a>
+        <a href="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/board_dashboard/clubMedia/<%= media.id %>/mediaEdit"
+          class="btn btn-outline-success mx-5 my-2">Edit video</a>
       </div>
     </div>
     <% } %>

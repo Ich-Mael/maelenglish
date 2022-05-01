@@ -69,7 +69,7 @@
       <div class="card border border-dark m-2">
         <div class="card-header text-center
 				student-month">
-          Student of the Month
+          Female leader of the Month
         </div>
         <div class="card-body">
           <div class="som-img-wrapper">
@@ -79,7 +79,7 @@
           <p class="card-text"><%= leader.studentOfMonth.reasons %></p>
           <!-- Button trigger modal -->
           <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#som">
-            Learn more about the SOM
+            Learn more about the FLOM
           </button>
 
           <!-- Modal -->
@@ -89,8 +89,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="exampleModalLabel">
-                    All about the Student
-                    of the Month
+                    All about the FLOM
                   </h5>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -112,7 +111,7 @@
       <div class="card border border-dark m-2">
         <div class="card-header text-center
 				instructor-month">
-          Instructor of the Month
+          Male leader of the Month
         </div>
         <div class="card-body">
           <div class="som-img-wrapper">
@@ -122,7 +121,7 @@
           <p class="card-text"><%= leader.instructorOfMonth.reasons %></p>
           <!-- Button trigger modal -->
           <button type="button" class="btn
-				  btn-secondary" data-bs-toggle="modal" data-bs-target="#iom"> Learn more about the IOM
+				  btn-secondary" data-bs-toggle="modal" data-bs-target="#iom"> Learn more about the MLOM
           </button>
 
           <!-- Modal -->
@@ -132,8 +131,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="exampleModalLabel">
-                    All about the Instructor
-                    of the Month
+                    All about the MLOM
                   </h5>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -151,7 +149,8 @@
       </div>
     </div>
   </div>
-  <a href="/english/clubs/<%= club._id%>/board_dashboard/leaders/<%= leader._id %>/vipsEdit" class="btn btn-outline-success">Edit leaders of the month</a>
+  <a href="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/board_dashboard/leadersOfMonth/<%= leader._id%>/edit"
+    class="btn btn-outline-success">Edit leaders of the month</a>
   <hr>
   <%}%>
 </div>

@@ -27,13 +27,6 @@ const {
   englishClubHub,
   englishClubMember,
   englishClubs,
-  englishClubArticles,
-  dailyVocabulary,
-  clubMeeting,
-  onlineDebate,
-  englishClubWorkersOfMonth,
-  englishWeeklyLessons,
-  englishClubMedia,
 } = require("../models/englishClub");
 
 //english for everybody
@@ -123,6 +116,7 @@ router.get(
     // hub 
     const hub = await englishClubHub.findById(req.params.hub_id);
 
+
     const club = await englishClubs.findById(req.params.club_id);
     res.render(
       "programs/englishlang4all/englishClubs/board_members_dashboard", {
@@ -163,7 +157,9 @@ router.post(
       req.flash("error", `User is already a member of this English club`);
     } else {
       await englishClub.members.push(newEngClubMember._id);
+
       await englishClub.save();
+
       req.flash("success", `User successfully added to this English club`);
     }
 
@@ -171,11 +167,59 @@ router.post(
   })
 );
 
+router.post(
+  "/admindashboard/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/new_board_member",
+  isLoggedIn,
+  isVerified,
+  checkRoles("admin"),
+  catchAsync(async (req, res) => {
+    const {
+      newBoardMember,
+      position,
+    } = req.body;
+
+    const user = await User.findOne({
+      username: newBoardMember
+    });
+
+    const board = await englishClubMember.findOne({
+      clubMember: user._id
+    })
+
+    englishClub = await englishClubs.findById(req.params.club_id);
+
+    if (englishClub.boardMembers.includes(board._id)) {
+      req.flash("error", `User is already a member of this English club`);
+    } else {
+
+      await englishClub.boardMembers.push(board._id);
+      board.position = position
+
+      await board.save();
+      await englishClub.save();
+
+      req.flash("success", `User successfully added to this English club`);
+    }
+
+    res.redirect("back");
+  })
+);
 
 
 
+//======================================
+//
+//           Upcoming event 
+//
+//======================================
 
-
+router.post(
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/event",
+  isLoggedIn,
+  isVerified,
+  checkEnglishBoardMembership,
+  catchAsync(engClub.createEvent)
+);
 
 
 
@@ -188,7 +232,7 @@ router.post(
 //======================================
 
 router.post(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/article",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/article",
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
@@ -197,7 +241,7 @@ router.post(
 
 //View all articles
 router.get(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/articles",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/articles",
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
@@ -208,7 +252,7 @@ router.get(
 
 //form
 router.get(
-  "/english/clubs/:club_id/board_dashboard/articles/:article_id/edit",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/articles/:article_id/edit",
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
@@ -217,7 +261,7 @@ router.get(
 
 //Updating article data
 router.put(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/articles/:article_id",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/articles/:article_id",
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
@@ -226,7 +270,7 @@ router.put(
 
 //Deleting an article
 router.delete(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/articles/:article_id",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/articles/:article_id",
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
@@ -244,7 +288,7 @@ router.delete(
 // Word and idiom of the day
 
 router.post(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/dailyVocab",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/dailyVocab",
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
@@ -253,7 +297,7 @@ router.post(
 
 // weekly meeting
 router.post(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyMeeting",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/weeklyMeeting",
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
@@ -262,7 +306,7 @@ router.post(
 
 // Online debate
 router.post(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/onlineDebate",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/onlineDebate",
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
@@ -276,82 +320,40 @@ router.post(
 //==============================================================
 
 router.post(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/videoLesson",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/videoLesson",
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
-  catchAsync(async (req, res) => {
-    const englishClub = await englishClubs.findById(req.params.club_id);
-
-    const newVideoLesson = new englishWeeklyLessons(req.body.weeklyLesson);
-    await newVideoLesson.save();
-
-    englishClub.weeklyVideoLesson.unshift(newVideoLesson);
-
-    await englishClub.save();
-
-    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
-  })
+  catchAsync(engClub.postLesson)
 );
 
 //View all lessons
 router.get(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/videoLessons",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/videoLessons",
   isLoggedIn,
   isVerified,
   checkRoles("admin"),
-  catchAsync(async (req, res) => {
-    const club = await englishClubs
-      .findById(req.params.club_id)
-      .populate("weeklyVideoLesson");
-    res.render(
-      "programs/englishlang4all/englishClubs/videoLessons/videoLessonsShow", {
-        club,
-      }
-    );
-  })
+  catchAsync(engClub.allLessons)
 );
 
 //edit video lesson form
 
 router.get(
-  "/english/clubs/:club_id/board_dashboard/weeklyVideoLessons/:videoLesson_id/edit",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/videoLessons/:lesson_id/edit",
   isLoggedIn,
   isVerified,
   checkRoles("admin"),
-  catchAsync(async (req, res) => {
-    const videoLesson = await englishWeeklyLessons.findById(
-      req.params.videoLesson_id
-    );
-    const club = await englishClubs.findById(req.params.club_id);
-
-    res.render(
-      "programs/englishlang4all/englishClubs/videoLessons/weeklyLessonEdit", {
-        videoLesson,
-        club,
-      }
-    );
-  })
+  catchAsync(engClub.editLessonForm)
 );
 
 //Updating video lesson data
 router.put(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/weeklyVideoLessons/:videoLesson_id",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/videoLessons/:lesson_id",
   isLoggedIn,
   isVerified,
   checkRoles("admin"),
   checkEnglishBoardMembership,
-  catchAsync(async (req, res) => {
-    const videoLesson = await englishWeeklyLessons.findByIdAndUpdate(
-      req.params.videoLesson_id, {
-        ...req.body.weeklyLesson,
-      }
-    );
-
-    await videoLesson.save();
-
-    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
-  })
+  catchAsync(engClub.updateLesson)
 );
 
 //=====================================
@@ -361,16 +363,16 @@ router.put(
 //=====================================
 
 router.post(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/workerOfMonth",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/leadersOfMonth",
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
   catchAsync(engClub.leaderOM)
 );
 
-//View all vips of the year
+//View all the leaders of the year
 router.get(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/workersOfMonth",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/allLeaders",
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
@@ -380,7 +382,7 @@ router.get(
 //Edit vips of the month
 
 router.get(
-  "/english/clubs/:club_id/board_dashboard/leaders/:leader_id/vipsEdit",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/leadersOfMonth/:leader_id/edit",
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
@@ -389,7 +391,7 @@ router.get(
 
 //Updating leaders of the month
 router.put(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/leaders/:leader_id",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/leadersOfMonth/:leader_id/",
   isLoggedIn,
   isVerified,
   checkEnglishBoardMembership,
@@ -398,80 +400,43 @@ router.put(
 
 //===========================================================
 //
-//             media of the english club
+//             Live practice the english club
 //
 //===========================================================
 
 router.post(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/clubMedia",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/clubMedia",
   isLoggedIn,
   isVerified,
-  checkEnglishBoardMembership,
-  catchAsync(async (req, res) => {
-    const englishClub = await englishClubs.findById(req.params.club_id);
-
-    const newMedia = new englishClubMedia(req.body);
-
-    await newMedia.save();
-
-    englishClub.media.unshift(newMedia);
-
-    await englishClub.save();
-
-    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
-  })
+  checkRoles("admin"),
+  catchAsync(engClub.livePractice)
 );
 
 //View all media of the year
 router.get(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/allClubMedia",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/allClubMedia",
   isLoggedIn,
   isVerified,
-  checkEnglishBoardMembership,
-  catchAsync(async (req, res) => {
-    const club = await englishClubs
-      .findById(req.params.club_id)
-      .populate("media");
-    res.render("programs/englishlang4all/englishClubs/clubMedia/mediaShow", {
-      club,
-      days,
-      months,
-    });
-  })
+  checkRoles("admin"),
+  catchAsync(engClub.allLivePractice)
 );
 
-//Edit vidoes of the months
+//Edit video
 router.get(
-  "/englishlang4all/clubs/:club_id/board_dashboard/clubMedia/:media_id/mediaEdit",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/clubMedia/:media_id/mediaEdit",
   isLoggedIn,
   isVerified,
-  checkEnglishBoardMembership,
-  catchAsync(async (req, res) => {
-    const media = await englishClubMedia.findById(req.params.media_id);
-    const club = await englishClubs.findById(req.params.club_id);
-
-    res.render("programs/englishlang4all/englishClubs/clubMedia/mediaEdit", {
-      media,
-      club,
-    });
-  })
+  checkRoles("admin"),
+  catchAsync(engClub.livePraticeEditForm)
 );
 
 //Updating videos
 router.put(
-  "/englishlang4all/Clubs/:club_id/board_dashboard/clubMedia/:media_id",
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/clubMedia/:media_id",
   isLoggedIn,
   isVerified,
-  checkEnglishBoardMembership,
-  catchAsync(async (req, res) => {
-    const media = await englishClubMedia.findByIdAndUpdate(
-      req.params.media_id,
-      req.body
-    );
-    media.save();
-
-    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
-  })
+  checkRoles("admin"),
+  catchAsync(engClub.updateLivePractice)
 );
 
 

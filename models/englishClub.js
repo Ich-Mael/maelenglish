@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const moment = require('moment'); // require
 const {
   format
 } = require("date-fns");
@@ -77,7 +78,14 @@ const englishClubSchema = new Schema({
   clubPresentationVideoUrl: {
     type: String,
     trim: true,
+    default: "https://www.youtube.com/embed/MGbCBxVdm5Y"
   },
+
+  //club gallery
+  clubGallery: [{
+    imageTitle: String,
+    imageLink: String,
+  }],
 
   logoImageUrl: {
     type: String,
@@ -124,6 +132,11 @@ const englishClubSchema = new Schema({
   englishCoach: [{
     type: Schema.Types.ObjectId,
     ref: "User",
+  }, ],
+
+  clubEvents: [{
+    type: Schema.Types.ObjectId,
+    ref: "Event",
   }, ],
 
   boardMembers: [{
@@ -173,6 +186,7 @@ const englishClubSchema = new Schema({
   timestamps: true,
 });
 
+// english club hub schema
 const englishClubHubSchema = new Schema({
   cityName: {
     type: String,
@@ -230,6 +244,46 @@ const englishClubHubSchema = new Schema({
   }
 });
 
+// english club event schema
+const eventSchema = new Schema({
+  title: {
+    type: String,
+    required: true
+  },
+
+  aboutEvent: {
+    type: String,
+    default: "About"
+  },
+
+  eventImgLink: {
+    type: String,
+    default: ""
+  },
+
+  date: {
+    type: Date,
+    default: Date.now()
+  },
+
+  venue: {
+    type: String,
+    default: "At Head-quarter"
+  },
+
+  time: {
+    type: String,
+    default: "3:00 p.m"
+  },
+
+  entry: {
+    type: String,
+    enum: ["Free", "Ticket", "On invitation"]
+  }
+}, {
+  timestamps: true,
+});
+
 // club members schema
 const englishClubMemberSchema = new Schema({
   clubMember: {
@@ -266,7 +320,6 @@ const englishClubMemberSchema = new Schema({
   },
 })
 
-
 // english club article schema
 const englishClubArticleSchema = new Schema({
   title: {
@@ -302,7 +355,6 @@ const englishClubArticleSchema = new Schema({
 });
 
 //Daily vocabulary schema
-
 const dailyVocabularySchema = new Schema({
   wordOfDay: {
     word: {
@@ -484,6 +536,8 @@ const englishClubMember = mongoose.model("EnglishClubMember", englishClubMemberS
 
 const englishClubHub = mongoose.model("EnglishClubHub", englishClubHubSchema);
 
+const event = mongoose.model("Event", eventSchema);
+
 const englishClubs = mongoose.model("EnglishClub", englishClubSchema);
 
 const englishClubMedia = mongoose.model(
@@ -521,6 +575,7 @@ module.exports = {
   englishClubMember,
   englishClubHub,
   englishClubs,
+  event,
   englishClubArticles,
   dailyVocabulary,
   onlineDebate,

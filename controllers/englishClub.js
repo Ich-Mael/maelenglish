@@ -15,6 +15,7 @@ const {
     englishClubMember,
     englishClubHub,
     englishClubs,
+    event,
     englishClubArticles,
     dailyVocabulary,
     clubMeeting,
@@ -51,7 +52,6 @@ function addEngClub(club) {
     if (club.clubType === "Simple") {
         hub.clubs.Simple.push(club._id);
     }
-
 }
 
 
@@ -72,8 +72,6 @@ async function addBoardMember(boardUsername, clubname, position) {
     await englishClub.save();
 
 }
-
-
 
 // English club hub
 module.exports.createEnglishHub = async (req, res) => {
@@ -150,7 +148,7 @@ module.exports.createEnglishClub = async (req, res) => {
 module.exports.showClubHomePage = async (req, res) => {
     const hub = await englishClubHub.findById(req.params.hub_id);
     const club = await englishClubs
-        .findById(req.params.club_id)
+        .findById(req.params.club_id).populate("clubEvents")
         .populate({
             path: "boardMembers",
             populate: {
@@ -158,7 +156,6 @@ module.exports.showClubHomePage = async (req, res) => {
             }
         })
 
-    console.log(club);
 
     res.render("programs/englishlang4all/englishClubs/clubInfoPage", {
         hub,
@@ -200,11 +197,36 @@ module.exports.showEnglishClub = async (req, res) => {
 
 
 //======================================
-//              Articles
+//             Event
+//======================================
+
+module.exports.createEvent = async (req, res) => {
+    const club_id = req.params.club_id;
+    const city = req.params.city;
+    const hub_id = req.params.hub_id;
+
+    const englishClub = await englishClubs.findById(club_id);
+    const newEvent = new event(req.body.event);
+
+    console.log(newEvent);
+
+    await newEvent.save();
+    englishClub.clubEvents.unshift(newEvent._id);
+
+    await englishClub.save();
+
+    res.redirect(`/englishlang4all/clubs/${city}/hub/${hub_id}/club/${club_id}`);
+}
+
+//======================================
+//             Articles
 //======================================
 
 module.exports.createArticle = async (req, res) => {
     const club_id = req.params.club_id;
+    const city = req.params.city;
+    const hub_id = req.params.hub_id;
+
     const englishClub = await englishClubs.findById(club_id);
     const article = new englishClubArticles(req.body.englishClubArticle);
 
@@ -214,29 +236,44 @@ module.exports.createArticle = async (req, res) => {
 
     await englishClub.save();
 
-    res.redirect(`/englishlang4all/Clubs/${club_id}`);
+    res.redirect(`/englishlang4all/clubs/${city}/hub/${hub_id}/club/${club_id}`);
 }
 
 module.exports.showAllArticles = async (req, res) => {
+
+    // hub 
+    const hub = await englishClubHub.findById(req.params.hub_id);
     const club = await englishClubs
         .findById(req.params.club_id)
         .populate("articles");
     res.render("programs/englishlang4all/englishClubs/articles/articlesShow", {
         club,
+        hub
     });
 }
 
 module.exports.editArticleForm = async (req, res) => {
+    const club_id = req.params.club_id;
+    const city = req.params.city;
+    const hub_id = req.params.hub_id;
     const article = await englishClubArticles.findById(req.params.article_id);
+    // hub 
+    const hub = await englishClubHub.findById(req.params.hub_id);
     const club = await englishClubs.findById(req.params.club_id);
 
     res.render("programs/englishlang4all/englishClubs/articles/articleEdit", {
         article,
+        hub,
         club,
     });
 }
 
 module.exports.updateArticle = async (req, res) => {
+    const club_id = req.params.club_id;
+    const city = req.params.city;
+    const hub_id = req.params.hub_id;
+    // hub 
+    const hub = await englishClubHub.findById(req.params.hub_id);
     const article = await englishClubArticles.findByIdAndUpdate(
         req.params.article_id, {
             ...req.body.englishClubArticle,
@@ -245,22 +282,28 @@ module.exports.updateArticle = async (req, res) => {
 
     await article.save();
 
-    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+    res.redirect(`/englishlang4all/clubs/${city}/hub/${hub_id}/club/${club_id}`);
 }
 
 module.exports.deleteArticle = async (req, res) => {
+    const club_id = req.params.club_id;
+    const city = req.params.city;
+    const hub_id = req.params.hub_id;
     const article = await englishClubArticles.findByIdAndDelete(
         req.params.article_id
     );
-    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
-}
 
+    res.redirect(`/englishlang4all/clubs/${city}/hub/${hub_id}/club/${club_id}`);
+}
 
 //======================================
 //          Weekly Activity
 //======================================
 
 module.exports.createDailyVocabulary = async (req, res) => {
+    const club_id = req.params.club_id;
+    const city = req.params.city;
+    const hub_id = req.params.hub_id;
     const englishClub = await englishClubs.findById(req.params.club_id);
     const newDailyVocabulary = new dailyVocabulary({
         wordOfDay: {
@@ -277,10 +320,13 @@ module.exports.createDailyVocabulary = async (req, res) => {
 
     await englishClub.save();
 
-    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+    res.redirect(`/englishlang4all/clubs/${city}/hub/${hub_id}/club/${club_id}`);
 }
 
 module.exports.createMeeting = async (req, res) => {
+    const club_id = req.params.club_id;
+    const city = req.params.city;
+    const hub_id = req.params.hub_id;
     const englishClub = await englishClubs.findById(req.params.club_id);
     const newClubMeeting = new clubMeeting(req.body.englishClubMeeting);
 
@@ -290,11 +336,15 @@ module.exports.createMeeting = async (req, res) => {
 
     await englishClub.save();
 
-    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+    res.redirect(`/englishlang4all/clubs/${city}/hub/${hub_id}/club/${club_id}`);
 }
 
 module.exports.createOnlineDebate = async (req, res) => {
-    const englishClub = await englishClubs.findById(req.params.club_id);
+    const club_id = req.params.club_id;
+    const city = req.params.city;
+    const hub_id = req.params.hub_id;
+
+    const englishClub = await englishClubs.findById(club_id);
     const newOnlineDebate = new onlineDebate(req.body.OnlineDebate);
 
     await newOnlineDebate.save();
@@ -303,14 +353,88 @@ module.exports.createOnlineDebate = async (req, res) => {
 
     await englishClub.save();
 
-    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+    res.redirect(`/englishlang4all/clubs/${city}/hub/${hub_id}/club/${club_id}`);
+}
+
+//======================================
+//       Weekly Lessons 
+//======================================
+
+module.exports.postLesson = async (req, res) => {
+    const club_id = req.params.club_id;
+    const city = req.params.city;
+    const hub_id = req.params.hub_id;
+
+
+    const englishClub = await englishClubs.findById(club_id);
+
+    const newVideoLesson = new englishWeeklyLessons(req.body.weeklyLesson);
+    await newVideoLesson.save();
+
+    englishClub.weeklyVideoLesson.unshift(newVideoLesson);
+
+    await englishClub.save();
+
+    res.redirect(`/englishlang4all/clubs/${city}/hub/${hub_id}/club/${club_id}`);
+};
+
+module.exports.allLessons = async (req, res) => {
+    const club_id = req.params.club_id;
+    const hub = await englishClubHub.findById(req.params.hub_id);
+
+    const club = await englishClubs
+        .findById(club_id)
+        .populate("weeklyVideoLesson");
+    res.render(
+        "programs/englishlang4all/englishClubs/videoLessons/videoLessonsShow", {
+            club,
+            hub,
+        }
+    );
+};
+
+module.exports.editLessonForm = async (req, res) => {
+    const hub = await englishClubHub.findById(req.params.hub_id);
+    const videoLesson = await englishWeeklyLessons.findById(
+        req.params.lesson_id
+    );
+    const club = await englishClubs.findById(req.params.club_id);
+
+    res.render(
+        "programs/englishlang4all/englishClubs/videoLessons/weeklyLessonEdit", {
+            videoLesson,
+            club,
+            hub
+        }
+    );
+};
+
+module.exports.updateLesson = async (req, res) => {
+    const club_id = req.params.club_id;
+    const city = req.params.city;
+    const hub_id = req.params.hub_id;
+
+    const videoLesson = await englishWeeklyLessons.findByIdAndUpdate(
+        req.params.lesson_id, {
+            ...req.body.weeklyLesson,
+        }
+    );
+
+    await videoLesson.save();
+
+    res.redirect(`/englishlang4all/clubs/${city}/hub/${hub_id}/club/${club_id}`);
 }
 
 
+
+
 //======================================
-//          Student of the month
+//        Leaders of the month
 //======================================
 module.exports.leaderOM = async (req, res) => {
+    const club_id = req.params.club_id;
+    const city = req.params.city;
+    const hub_id = req.params.hub_id;
     const englishClub = await englishClubs.findById(req.params.club_id);
 
     const newWorkersOfMonth = new englishClubWorkersOfMonth({
@@ -328,21 +452,24 @@ module.exports.leaderOM = async (req, res) => {
 
     await englishClub.save();
 
-    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+    res.redirect(`/englishlang4all/clubs/${city}/hub/${hub_id}/club/${club_id}`);
 }
 
 module.exports.allLeadersOM = async (req, res) => {
+    const hub = await englishClubHub.findById(req.params.hub_id);
     const club = await englishClubs
         .findById(req.params.club_id)
         .populate("workersOfMonth");
     res.render("programs/englishlang4all/englishClubs/vips/vipsShow", {
         club,
+        hub,
         days,
         months,
     });
 }
 
 module.exports.editLeadersOM = async (req, res) => {
+    const hub = await englishClubHub.findById(req.params.hub_id);
     const leader = await englishClubWorkersOfMonth.findById(
         req.params.leader_id
     );
@@ -350,11 +477,15 @@ module.exports.editLeadersOM = async (req, res) => {
 
     res.render("programs/englishlang4all/englishClubs/vips/vipsEdit", {
         leader,
+        hub,
         club,
     });
 }
 
 module.exports.updateLeadersOM = async (req, res) => {
+    const club_id = req.params.club_id;
+    const city = req.params.city;
+    const hub_id = req.params.hub_id;
     const leader = await englishClubWorkersOfMonth.findByIdAndUpdate(
         req.params.leader_id, {
             studentOfMonth: {
@@ -367,10 +498,68 @@ module.exports.updateLeadersOM = async (req, res) => {
     );
     leader.save();
 
-    res.redirect(`/englishlang4all/Clubs/${req.params.club_id}`);
+    res.redirect(`/englishlang4all/clubs/${city}/hub/${hub_id}/club/${club_id}`);
 }
 
 
-//======================================
-//         Live Practice
-//======================================
+///==========================================
+//      Live Practice 
+//==========================================
+
+module.exports.livePractice = async (req, res) => {
+    const club_id = req.params.club_id;
+    const city = req.params.city;
+    const hub_id = req.params.hub_id;
+
+    const englishClub = await englishClubs.findById(req.params.club_id);
+
+    const newMedia = new englishClubMedia(req.body);
+
+    await newMedia.save();
+
+    englishClub.media.unshift(newMedia);
+
+    await englishClub.save();
+
+
+    res.redirect(`/englishlang4all/clubs/${city}/hub/${hub_id}/club/${club_id}`);
+}
+
+module.exports.allLivePractice = async (req, res) => {
+    // hub 
+    const hub = await englishClubHub.findById(req.params.hub_id);
+    const club = await englishClubs
+        .findById(req.params.club_id)
+        .populate("media");
+    res.render("programs/englishlang4all/englishClubs/clubMedia/mediaShow", {
+        club,
+        hub,
+        days,
+        months,
+    });
+}
+
+module.exports.livePraticeEditForm = async (req, res) => {
+    const hub = await englishClubHub.findById(req.params.hub_id);
+    const media = await englishClubMedia.findById(req.params.media_id);
+    const club = await englishClubs.findById(req.params.club_id);
+
+    res.render("programs/englishlang4all/englishClubs/clubMedia/mediaEdit", {
+        media,
+        club,
+        hub
+    });
+}
+
+module.exports.updateLivePractice = async (req, res) => {
+    const club_id = req.params.club_id;
+    const city = req.params.city;
+    const hub_id = req.params.hub_id;
+    const media = await englishClubMedia.findByIdAndUpdate(
+        req.params.media_id,
+        req.body
+    );
+    media.save();
+
+    res.redirect(`/englishlang4all/clubs/${city}/hub/${hub_id}/club/${club_id}`);
+}

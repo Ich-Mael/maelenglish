@@ -1,4 +1,4 @@
-<% layout('layouts/engClubBoilerplate') %>
+<% layout('layouts/boilerplate') %>
 <!-- WORD Processor-->
 <script src="https://cdn.tiny.cloud/1/p06f8vxdpje8xosyvnq48z68vc7n479iauh5s2jk9zx30qg2/tinymce/5/tinymce.min.js"
   referrerpolicy="origin"></script>
@@ -14,7 +14,12 @@
 </script>
 
 <h1 class="text-center my-5" style="color: blueviolet;"><%= club.acronym %> Board Members Dashboard</h1>
-
+<div class="d-flex justify-content-around py-3" style="background-color: rgb(40, 43, 43);">
+  <a class="btn btn-outline-warning mx-3 fs-5"
+    href="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>">Go back to club</a>
+  <a class="btn btn-outline-warning mx-3 fs-5"
+    href="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/home">Club home page</a>
+</div>
 <% if(currentUser.role === "admin"){%>
 <!-- Admin  -->
 <div class="container my-5 p-3 col-md-8" style="background-color: aliceblue;">
@@ -25,15 +30,20 @@
         Post a new video lesson
       </button>
 
-      <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#new-boardM"
+      <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#new-member"
         aria-expanded="false" aria-controls="collapseExample">
         Add new member
+      </button>
+
+      <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#new-boardM"
+        aria-expanded="false" aria-controls="collapseExample">
+        Add new board member
       </button>
     </p>
   </div>
 
   <!-- Add New Member Form -->
-  <div class="collapse  p-5" id="new-boardM" style="background-color: rgb(192, 198, 203);">
+  <div class="collapse  p-5" id="new-member" style="background-color: rgb(192, 198, 203);">
     <form
       action="/admindashboard/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/new_member"
       method="POST">
@@ -56,9 +66,28 @@
     </form>
   </div>
 
+  <!-- Add board Member Form -->
+  <div class="collapse  p-5" id="new-boardM" style="background-color: rgb(201, 192, 203);">
+    <form
+      action="/admindashboard/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/new_board_member"
+      method="POST">
+      <!-- New Member Username -->
+      <label class="form-label my-3" for="new-member">New Board Member Username</label>
+      <input type="text" class="form-control" name="newBoardMember" required id="" value="" />
+
+      <!-- New Member Username -->
+      <label class="form-label my-3" for="new-member">New Board Member Position</label>
+      <input type="text" class="form-control" name="position" required id="" value="" />
+
+      <button class="btn my-3  me-2 btn-success" type="submit">Create a new board position</button>
+    </form>
+  </div>
+
   <!-- Add New Video Form -->
-  <div class="collapse p-5" id="videoLesson" style="background-color: rgb(143, 161, 159);">
-    <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/videoLesson" method="POST">
+  <div class="collapse p-5" id="videoLesson" style="background-color: rgb(129, 157, 153);">
+    <form
+      action="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/board_dashboard/videoLesson"
+      method="POST">
       <!-- Lesson title -->
       <label class="form-label my-3" for="lessonTitle">Lesson title</label>
       <input type="text" class="form-control" name="weeklyLesson[lessonTitle]" required id="articleImage" value="" />
@@ -77,22 +106,101 @@
       <textarea type="text" class="form-control mytextarea" name="weeklyLesson[lessonSummary]" value=""
         id="articleContent"></textarea>
 
-      <button class="btn my-3  mx-2 btn-outline-success" type="submit">Post</button>
+      <button class="btn my-3  mx-2 btn-success" type="submit">Post</button>
     </form>
   </div>
 </div>
 
 <hr class="" style="background-color: rgb(18, 2, 23); height: 1rem;" />
-<div class="d-flex justify-content-center">
-  <a href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard/videoLessons" type="button"
-    class="btn mx-2 btn-outline-primary">
+<div class="d-flex mb-3 justify-content-center">
+  <a href="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/board_dashboard/videoLessons"
+    type="button" class="btn mx-2 btn-outline-primary">
     View all video lessons of the year</a>
 </div>
-<hr>
+<!-- Media of the english club -->
+<h3 class="text-center text-white py-3" style="background-color: rgb(25, 28, 31);"> Live Practice </h3>
+<div class="container my-5 col-md-8 p-3" style="background-color: rgba(248, 243, 218, 0.993);">
+  <p>
+    <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#LivePractice"
+      aria-expanded="false" aria-controls="collapseExample">
+      English Club activity Video Clip
+    </button>
+  </p>
+  <div class="collapse" id="LivePractice">
+    <form
+      action="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/board_dashboard/clubMedia"
+      method="POST">
+
+      <!-- Lesson title -->
+      <label class="form-label my-3" for="mediaTitle">Video Title</label>
+      <input type="text" class="form-control" name="mediaTitle" id="mediaTitle" required value="" />
+
+      <!-- Video Link  -->
+      <label class="form-label my-3" for="videoLink">Video Link</label>
+      <input type="text" class="form-control" name="videoLink" value="" required id="videoLink" />
+
+
+      <button class="btn my-3  mx-2 btn-outline-success" type="submit">Post Club Media</button>
+
+    </form>
+  </div>
+  <a href="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/board_dashboard/allClubMedia"
+    type="button" class="btn mx-2 btn-outline-primary">
+    View all the video of the English Club </a>
+</div>
 <% } %>
 
-<h3 class="text-center py-3"> ARTICLES </h3>
+<!-- Event -->
+<h3 class="text-center text-white py-3" style="background-color: rgb(41, 2, 67);"> UPCOMING EVENT OF THE CLUB </h3>
+<div class="container my-5 col-md-8 p-3" style="background-color: rgba(218, 219, 248, 0.993);">
+  <p>
+    <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#event"
+      aria-expanded="false" aria-controls="collapseExample">
+      Post new event
+    </button>
+  </p>
+
+  <div class="collapse" id="event">
+    <form
+      action="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/board_dashboard/event"
+      method="POST">
+      <!-- title -->
+      <label class="form-label my-3" for="title"> Title </label>
+      <input type="text" class="form-control" name="event[title]" id="" required value="" />
+
+      <!-- image link  -->
+      <label class="form-label my-3" for="videoLink"> Event image Link </label>
+      <input type="text" class="form-control" name="event[eventImgLink]" value="" required id="eventImgLink" />
+
+      <!-- date  -->
+      <label class="form-label my-3" for="videoLink"> Event Date </label>
+      <input type="date" class="form-control" name="event[date]" value="" required id="venue" />
+
+      <!-- Venue  -->
+      <label class="form-label my-3" for="videoLink"> Venue </label>
+      <input type="text" class="form-control" name="event[venue]" value="" required id="venue" />
+
+      <!-- time  -->
+      <label class="form-label my-3" for="videoLink"> Time </label>
+      <input type="time" class="form-control" name="event[time]" value="" required id="venue" />
+
+      <!-- New member Level -->
+      <label class="form-label my-3" for="new-member-level">Entry</label>
+      <select class="form-select" name="event[entry]" aria-label="Default select example">
+        <option selected value="Free">Free</option>
+        <option value="Ticket">Ticket</option>
+        <option value="On invitation">On invitation</option>
+      </select>
+      <!-- About event -->
+      <label class="form-label my-3" for="aboutEvent">About event</label>
+      <textarea type="text" class="form-control mytextarea" name="event[aboutEvent]" value="" id="event"></textarea>
+      <button class="btn my-3  btn-success" type="submit"> Post event </button>
+    </form>
+  </div>
+</div>
+
 <!-- Article -->
+<h3 class="text-center text-white py-3" style="background-color: rgb(25, 28, 31);"> ARTICLES </h3>
 <div class="container my-5 col-md-8 p-3" style="background-color: rgba(175, 247, 250, 0.836);">
   <p>
     <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#article"
@@ -101,7 +209,9 @@
     </button>
   </p>
 
-  <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/article" method="POST">
+  <form
+    action="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/board_dashboard/article"
+    method="POST">
     <div class="collapse" id="article">
       <!-- Article image url -->
       <label class="form-label my-3" for="articleImage">Image Link</label>
@@ -130,13 +240,13 @@
       <button class="btn my-3  mx-2 btn-outline-success" type="submit">Post article</button>
     </div>
   </form>
-  <a href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard/articles" type="button"
-    class="btn  mx-2 btn-outline-primary">
+  <a href="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/board_dashboard/articles"
+    type="button" class="btn  mx-2 btn-outline-primary">
     View all articles of the year </a>
 </div>
 
-<h2 class="text-center text-white py-3" style="background-color: rgb(25, 28, 31);">WEEKLY ACTIVITIES </h2>
 <!-- Daily vocabulary-->
+<h2 class="text-center text-white py-3" style="background-color: rgb(25, 28, 31);">WEEKLY ACTIVITIES </h2>
 <div class="container my-5 p-3 col-md-8" style="background-color: rgba(241, 237, 223, 0.836);">
   <h3 class="text-center py-3"> Daily Vocabulary</h3>
   <p>
@@ -151,7 +261,9 @@
     </button>
   </p>
 
-  <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/dailyVocab" method="POST">
+  <form
+    action="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/board_dashboard/dailyVocab"
+    method="POST">
     <div class="collapse mb-3" id="wod">
       <!-- Word of the Day Section-->
       <section class="word-day-wrapper my-4" style="background-color: rgb(197, 240, 248); padding: 2rem;">
@@ -192,7 +304,7 @@
 </div>
 
 <!--Weekly meeting-->
-<div class="container my-5 p-3 col-md-8" style="background-color: rgba(39, 40, 41, 0.836);">
+<div class="container my-5 p-3 col-md-8" style="background-color: rgba(74, 70, 51, 0.836);">
   <h3 class="text-center text-white py-3">Weekly Meeting</h3>
   <p>
     <button class="btn m-2 btn-warning" type="button" data-bs-toggle="collapse" data-bs-target="#wec"
@@ -201,7 +313,9 @@
     </button>
   </p>
 
-  <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/weeklyMeeting" method="POST">
+  <form
+    action="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/board_dashboard/weeklyMeeting"
+    method="POST">
     <!-- English Club Meeting Section-->
     <div class="collapse mb-3" id="wec">
       <section class="word-day-wrapper my-4" style="background-color: rgb(154, 172, 172); padding: 2rem;">
@@ -228,7 +342,7 @@
   </form>
 </div>
 
-
+<!-- Online debate -->
 <div class="container my-5 p-3 col-md-8" style="background-color: rgba(244, 236, 245, 0.836);">
   <h3 class="text-center py-3">Online Debate</h3>
   <p>
@@ -238,7 +352,9 @@
     </button>
   </p>
 
-  <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/onlineDebate" method="POST">
+  <form
+    action="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/board_dashboard/onlineDebate"
+    method="POST">
     <!-- Online debate Section-->
     <div class="collapse mb-3" id="eod">
       <section class="word-day-wrapper my-4" style="background-color: rgb(248, 240, 214); padding: 2rem;">
@@ -278,7 +394,6 @@
   </form>
 </div>
 
-
 <!-- Workers of the months -->
 <h3 class="text-center  text-white py-3" style="background-color: rgb(25, 28, 31);"> LEADERS OF THE MONTH </h3>
 <div class="container my-5 col-md-8 p-3" style="background-color: rgba(234, 243, 243, 0.836);">
@@ -294,11 +409,13 @@
     </button>
 
 
-    <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/workerOfMonth" method="POST">
+    <form
+      action="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/board_dashboard/leadersOfMonth"
+      method="POST">
       <div class="collapse" id="student">
 
         <section class="word-day-wrapper my-4" style="background-color: rgb(221, 241, 195); padding: 2rem;">
-          <h4>Student of the month</h4>
+          <h4>Female leader of the month</h4>
           <!-- full name -->
           <label class="form-label my-3" for="fullname">Student's fullname </label>
           <input type="text" class="form-control" name="studentOfMonth[fullname]" required id="studentFullname"
@@ -314,17 +431,17 @@
           <input type="text" class="form-control" name="studentOfMonth[reasons]" required value="" id="reasons" />
 
           <!-- About -->
-          <label class="form-label my-3" for="about">About the Instructor</label>
+          <label class="form-label my-3" for="about">About the leader</label>
           <textarea type="text" class="form-control mytextarea" name="studentOfMonth[about]" value=""
             id="articleContent"></textarea>
           <hr />
         </section>
       </div>
       <div class="collapse" id="instructor">
-        <h4>Instructor of the month</h4>
+        <h4>Male leader of the month</h4>
         <section class="word-day-wrapper my-4" style="background-color: rgb(197, 206, 248); padding: 2rem;">
           <!-- full name -->
-          <label class="form-label my-3" for="fullname">Instructor's fullname </label>
+          <label class="form-label my-3" for="fullname">Leader's fullname </label>
           <input type="text" class="form-control" name="instructorOfMonth[fullname]" required id="intructorFullname"
             value="" />
 
@@ -339,7 +456,7 @@
           <input type="text" class="form-control" name="instructorOfMonth[reasons]" required value="" id="reasons" />
 
           <!-- About -->
-          <label class="form-label my-3" for="about">About the Instructor</label>
+          <label class="form-label my-3" for="about">About the leader</label>
           <textarea type="text" class="form-control mytextarea" name="instructorOfMonth[about]" value=""
             id="articleContent"></textarea>
           <hr />
@@ -347,37 +464,11 @@
         <button class="btn my-3  mx-2 btn-outline-success" type="submit">Post leaders of the Month</button>
       </div>
     </form>
-    <a href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard/workersOfMonth" type="button"
-      class="btn mx-2 btn-outline-primary">
+    <a href="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/board_dashboard/allLeaders"
+      type="button" class="btn mx-2 btn-outline-primary">
       View all leaders of the Year</a>
   </p>
 </div>
 
-<!-- Media of the english club -->
-<h3 class="text-center text-white py-3" style="background-color: rgb(25, 28, 31);"> CLUB ACTIVITIES MEDIA </h3>
-<div class="container my-5 col-md-8 p-3" style="background-color: rgba(248, 243, 218, 0.993);">
-  <p>
-    <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#videoLesson"
-      aria-expanded="false" aria-controls="collapseExample">
-      English Club activity Video Clip
-    </button>
-  </p>
 
-  <form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/clubMedia" method="POST">
-    <div class="collapse" id="videoLesson">
-      <!-- Lesson title -->
-      <label class="form-label my-3" for="mediaTitle">Video Title</label>
-      <input type="text" class="form-control" name="mediaTitle" id="mediaTitle" required value="" />
-
-      <!-- Video Link  -->
-      <label class="form-label my-3" for="videoLink">Video Link</label>
-      <input type="text" class="form-control" name="videoLink" value="" required id="videoLink" />
-
-
-      <button class="btn my-3  mx-2 btn-outline-success" type="submit">Post Club Media</button>
-    </div>
-  </form>
-  <a href="/englishlang4all/Clubs/<%=club._id%>/board_dashboard/allClubMedia" type="button"
-    class="btn mx-2 btn-outline-primary">
-    View all the video of the English Club </a>
-</div>
+<!--  -->

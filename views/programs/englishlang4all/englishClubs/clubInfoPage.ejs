@@ -16,8 +16,10 @@
         <%=club.motto %>
       </p>
       <div class="d-flex justify-content-center py-3">
-        <a class="btn btn-outline-success fs-5"
+        <a class="btn btn-outline-primary mx-3 fs-5"
           href="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>">Get in</a>
+
+        <a class="btn btn-primary mx-3 fs-5" href="#join-us">Join this Club</a>
       </div>
     </div>
   </div>
@@ -134,6 +136,7 @@ English Coach
   </div>
 </section>
 
+
 <!-- English club rules -->
 <section class="club-info">
   <h1 class="section-title">About us</h1>
@@ -145,15 +148,16 @@ English Coach
           </h3>
         </div>
         <div id="monitorscreen">
-          <iframe id="vimeo-content" width="100%" height="100%" src="" title="YouTube video player" frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; fullscreen; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen>
-          </iframe>
-        </div>
-      </div>
+          <iframe id="vimeo-content" width="100%" height="100%" src="<%= club.clubPresentationVideoUrl %>"title="YouTube
+      video player" frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; fullscreen; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen>
+      </iframe>
     </div>
   </div>
-  <h2 class="need-to-know">What you need to know</h2>
+  </div>
+  </div>
+  <h2 id="join-us" class="need-to-know">What you need to know before joining</h2>
   <div class="club-description">
     <div class="container col-md-8 py-5">
       <%-club.description%>
@@ -161,28 +165,22 @@ English Coach
   </div>
 </section>
 
+<!-- Event -->
 <section id="Coming-Events" class="">
   <h1 class="section-title">Upcoming Public Events</h1>
   <div class="container pt-5">
     <div class="row mb-5">
       <div class="col-lg-6" data-aos="fade-right" data-aos-easing="linear" data-aos-duration="500">
-        <h2 class="event-title px-4">Female Leadership in action</h2>
+        <h2 class="event-title px-4"><%= club.clubEvents[0].title %></h2>
         <div>
           <h4 class="event-summary">Know more</h4>
-          <p class="event-paragraph">The Front-end Queens Coding Bootcamp is a beginner-friendly bootcamp
-            for girls
-            aiming at breaking the myth about coding. It focuses on web design and introduces smoothly
-            participants to the world of programming. <br> The bootcamp is intensive and lasts one
-            month. At the end,
-            participants will be able to use the knowledge they have gained to work on real world
-            projects</p>
-
+          <div class="event-paragraph"><%- club.clubEvents[0].aboutEvent %>
+          </div>
         </div>
       </div>
       <div class="col-lg-6">
         <div class="event-img-wrapper" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="500">
-          <img src="https://images.pexels.com/photos/1181609/pexels-photo-1181609.jpeg?auto=compress&cs=tinysrgb&w=800"
-            class="img-fluid event-img" alt="">
+          <img src=" <%= club.clubEvents[0].eventImgLink %>" class="img-fluid event-img" alt="">
         </div>
       </div>
     </div>
@@ -190,12 +188,15 @@ English Coach
       <div class="container">
         <h3 class="registration-info">Event Details</h3>
         <div class="event-info-wrapper">
-          <h5 class="event-date"> <span class="start-date ">Date</span> Sunday, April
-            24, 2022
+          <h5 class="event-date"> <span class="start-date ">Date</span>
+            <%= days[club.clubEvents[0].date.getDay()] %>,
+            <%=club.clubEvents[0].date.getDate()%>
+            <%= months[club.clubEvents[0].date.getMonth()] %>
+            <%=club.clubEvents[0].date.getFullYear()%>
           </h5>
-          <h5 class="event-date"> <span class="start-date "> Time</span> 3:00 pm </h5>
-          <h5 class="event-date"> <span class="start-date "> Venue</span> American Corner</h5>
-          <h5 class="event-date"> <span class="start-date "> Entry</span> Free</h5>
+          <h5 class="event-date"> <span class="start-date "> Time</span> <%= club.clubEvents[0].time %> </h5>
+          <h5 class="event-date"> <span class="start-date "> Venue</span> <%= club.clubEvents[0].venue %></h5>
+          <h5 class="event-date"> <span class="start-date "> Entry</span> <%= club.clubEvents[0].entry %></h5>
 
         </div>
         <p class="event-line"></p>

@@ -14,28 +14,30 @@
 </script>
 <div class="container col-md-8 pb-5">
 	<div id="article mt-5">
-  <h3 class="text-center fw-bold">Edit an article</h3>
-		<form action="/englishlang4all/Clubs/<%= club._id %>/board_dashboard/articles/<%= article._id %>?_method=PUT" method="POST">
+		<h3 class="text-center fw-bold">Edit an article</h3>
+		<form
+			action="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/board_dashboard/articles/<%= article._id%>?_method=PUT"
+			method="POST">
 
 			<!-- Article image url -->
 			<label class="form-label fw-bold my-3" for="articleImage">Article image</label>
-			<input type="text" class="form-control" name="englishClubArticle[articleImage]"
-				id="articleImage" value="<%= article.articleImage %>" required/>
+			<input type="text" class="form-control" name="englishClubArticle[articleImage]" id="articleImage"
+				value="<%= article.articleImage %>" required />
 
 			<!-- Title  -->
 			<label class="form-label fw-bold my-3" for="title">Title</label>
-			<input type="text" class="form-control" name="englishClubArticle[title]"
-				value="<%= article.title %>" id="title" />
+			<input type="text" class="form-control" name="englishClubArticle[title]" value="<%= article.title %>"
+				id="title" />
 
 			<!-- Article Summary  -->
 			<label class="form-label fw-bold my-3" for="articleSummary">Article Summary</label>
 			<input type="text" class="form-control" name="englishClubArticle[articleSummary]"
-				value="<%= article.articleSummary %>" id="title" required/>
+				value="<%= article.articleSummary %>" id="title" required />
 
 			<!-- Author -->
 			<label class="form-label fw-bold my-3" for="author">Author</label>
 			<input type="text" class="form-control" name="englishClubArticle[articleAuthor]"
-				value="<%= article.articleAuthor %>" id="articleAuthor" required/>
+				value="<%= article.articleAuthor %>" id="articleAuthor" required />
 
 			<!-- Article Content -->
 			<label class="form-label fw-bold my-3" for="articleContent">Article content</label>

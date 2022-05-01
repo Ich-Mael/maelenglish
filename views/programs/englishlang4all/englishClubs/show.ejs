@@ -18,20 +18,17 @@
 
 <!-- Banner section -->
 <div class="">
-
-  <div class="">
-    <div id="banner">
-      <div class="bg-img-wrapper">
+  <div id="banner">
+    <!-- <div class="bg-img-wrapper">
         <img class="img-medium" src="<%= club.bannerImageUrlMedium %>" alt="" />
-      </div>
-      <div class="club-info">
-        <h1 class="club-name">
-          <%=club.name%>
-        </h1>
-        <p class="club-motto">
-          <%=club.motto %>
-        </p>
-      </div>
+      </div> -->
+    <div class="club-info">
+      <h1 class="club-name">
+        <%=club.name%>
+      </h1>
+      <p class="club-motto">
+        <%=club.motto %>
+      </p>
     </div>
   </div>
 
@@ -89,6 +86,7 @@
 <!-- nav section -->
 <ul id="activities" class="english-club-nav nav py-3
         justify-content-around">
+  <div style="height: 0.2rem; width: 100%; background-color: #080364;"></div>
   <li class="nav-item">
     <a class="nav-link engClub-nav-link active" aria-current="page" href="#news-wrapper">News</a>
   </li>
@@ -105,8 +103,9 @@
   </li>
 
   <li class="nav-item">
-    <a class="nav-link engClub-nav-link" href="#media-wrapper">Media</a>
+    <a class="nav-link engClub-nav-link" href="#media-wrapper">Live Practive</a>
   </li>
+  <div style="height: 0.2rem; width: 100%; background-color: #080364;"></div>
 </ul>
 
 <!-- board section 
@@ -173,7 +172,6 @@
                               <a class="btn btn-outline-light btn-floating m-2"
                                 href="mailto:<%= club.boardMembers[i].email %>" target="_blank" role="button"
                                 id="user_mail"><i class="fas fa-at"></i></a>-->
-
 <!-- Facebook -->
 <!-- <a class="btn btn-outline-light btn-floating" href="<%=
                                     club.boardMembers[i].facebookLink %>" id="m-facebook" role="button" target="_blank"><i
@@ -218,13 +216,15 @@
   </div>
 </div>
 -->
+
+
 <!-- Clubs Activities -->
 <h1 class="common-heading">
   <span class="underline"></span>English Club Activities<span class="underline"></span>
 </h1>
 <div class="main-content-wrapper">
   <div class="container p-2 current-activity">
-    <h1 class="current-activity-heading"><span>Upcoming Events</span></h1>
+    <h1 class="current-activity-heading"><span>Upcoming Events of the week</span></h1>
     <div class="container my-5">
       <div class="row">
         <div class="col-md">

@@ -50,11 +50,22 @@ body {
   height: 100%;
 }
 
-.banner {
+#banner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   position: relative;
   overflow: hidden;
+  height: 40vh;
   perspective: 100rem;
+  background: #2b5876;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #4e4376, #2b5876);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #4e4376, #2b5876);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
 }
 
 .bg-img-wrapper {
@@ -98,22 +109,22 @@ body {
 }
 
 .club-name {
-  color: #0e0c29d7;
+  color: #ffffffd7;
   font-family: "Poppins", sans-serif;
   /* font-family: "Kaushan Script", cursive; */
-  font-size: 3rem;
+  font-size: 5rem;
   font-weight: 900;
   opacity: 0;
   text-align: center;
   letter-spacing: 0.1rem;
-  text-shadow: 1px 2px 2px rgba(250, 250, 250, 0.89);
+  text-shadow: 1px 2px 2px rgba(72, 13, 131, 0.89);
   animation: moveBanner 2s 1.2s forwards;
 }
 
 .club-motto {
   font-size: 1.5rem;
   text-align: center;
-  color: rgb(39, 38, 38);
+  color: rgb(255, 255, 255);
   margin: 2rem 0;
   font-family: "Noto Sans", sans-serif;
   line-height: 3rem;
@@ -139,7 +150,7 @@ body {
 .engclub-sm-icon {}
 
 .english-club-nav {
-  background-color: rgb(236, 236, 236);
+  background-color: rgb(255, 255, 255);
   /* border-top: 2px solid rgb(10, 10, 10); */
 }
 
