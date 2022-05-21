@@ -112,11 +112,13 @@
 </div>
 
 <hr class="" style="background-color: rgb(18, 2, 23); height: 1rem;" />
+
 <div class="d-flex mb-3 justify-content-center">
   <a href="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/board_dashboard/videoLessons"
     type="button" class="btn mx-2 btn-outline-primary">
     View all video lessons of the year</a>
 </div>
+
 <!-- Media of the english club -->
 <h3 class="text-center text-white py-3" style="background-color: rgb(25, 28, 31);"> Live Practice </h3>
 <div class="container my-5 col-md-8 p-3" style="background-color: rgba(248, 243, 218, 0.993);">
@@ -150,8 +152,72 @@
 </div>
 <% } %>
 
+<hr class="" style="background-color: rgb(18, 2, 23); height: 1rem;" />
+
+<!-- club members list -->
+<div class="d-flex justify-content-around py-5">
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-secondary fs-3 py-3 px-4" data-bs-toggle="modal" data-bs-target="#club_members">
+    Club Members List
+  </button>
+</div>
+
+<!-- Modal for club members list-->
+<div class="modal fade" id="club_members" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Club Members List</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Full name</th>
+              <th scope="col">English Level</th>
+              <th scope="col">Take action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% for(let i=0; i < club.members.length ; i++){ %>
+
+            <tr>
+              <th scope="row"><%= i + 1 %></th>
+              <td><%=
+                club.members[i].clubMember.name +" "+
+                club.members[i].clubMember.surname%></td>
+              <td><%=
+                club.members[i].level %>
+                <% if(currentUser.role === "admin"){%>
+                <a href="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/member/<%=club.members[i]._id %>/grade"
+                  class="btn btn-warning">Grade this member</a>
+                <%}%>
+              </td>
+              <% if(club.members[i].isMuted){%>
+              <td><a href="" class="btn mx-2 btn-success">Unmute this member</a>
+              </td>
+              <%}else{%>
+              <td> <a href="" class="btn mx-2 btn-danger">Mute this member</a></td>s
+              <%}%>
+            </tr>
+            <%}%>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Event -->
-<h3 class="text-center text-white py-3" style="background-color: rgb(41, 2, 67);"> UPCOMING EVENT OF THE CLUB </h3>
+<h3 class="text-center text-white py-3" style="background-color: rgb(41, 2, 67);"> UPCOMING EVENT OF THE CLUB
+</h3>
+
 <div class="container my-5 col-md-8 p-3" style="background-color: rgba(218, 219, 248, 0.993);">
   <p>
     <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#event"
@@ -470,5 +536,24 @@
   </p>
 </div>
 
+<!-- Mediatheque  -->
+<div>
+  <h3 class="text-center  text-white py-3" style="background-color: rgb(24, 122, 221);"> Mediatheque </h3>
+  <section class="container my-5 col-md-8 p-3" style="background-color: rgb(221, 241, 195); padding: 2rem;">
+    <form
+      action="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/board_dashboard/pics"
+      method="POST">
 
-<!--  -->
+      <h4>Picture details</h4>
+      <!-- full name -->
+      <label class="form-label my-3" for="fullname">Title </label>
+      <input type="text" class="form-control" name="gallery[imageTitle]" required id="" value="" />
+
+      <!-- Image Link -->
+      <label class="form-label my-3" for="imageUrl">Link</label>
+      <input type="text" class="form-control" name="gallery[imageLink]" required value="" id="StudentImage" />
+      <button class="btn btn-primary my-4" type="submit">Post Club new Pics</button>
+
+    </form>
+  </section>
+</div>

@@ -107,7 +107,6 @@ router.get(
 //========================================
 
 // Accessing dashboard
-
 router.get(
   "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard",
   isLoggedIn,
@@ -117,7 +116,18 @@ router.get(
     const hub = await englishClubHub.findById(req.params.hub_id);
 
 
-    const club = await englishClubs.findById(req.params.club_id);
+    const club = await englishClubs.findById(req.params.club_id).populate({
+      path: "members",
+      populate: {
+        path: "clubMember",
+      }
+    }).populate({
+      path: "members",
+      populate: {
+        path: "clubMemberProgress",
+      }
+    });
+
     res.render(
       "programs/englishlang4all/englishClubs/board_members_dashboard", {
         hub,
@@ -128,6 +138,7 @@ router.get(
 );
 
 // Admin Only
+
 // adding a student to an english club
 router.post(
   "/admindashboard/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/new_member",
@@ -167,6 +178,7 @@ router.post(
   })
 );
 
+//new board member
 router.post(
   "/admindashboard/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/new_board_member",
   isLoggedIn,
@@ -193,9 +205,12 @@ router.post(
     } else {
 
       await englishClub.boardMembers.push(board._id);
+      await englishClub.members.push(board._id);
+
       board.position = position
 
       await board.save();
+
       await englishClub.save();
 
       req.flash("success", `User successfully added to this English club`);
@@ -203,6 +218,23 @@ router.post(
 
     res.redirect("back");
   })
+);
+
+//grading a club member
+router.get(
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/member/:member_id/grade",
+  isLoggedIn,
+  isVerified,
+  checkRoles("admin"),
+  catchAsync(engClub.memberGradeForm)
+);
+
+router.post(
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/member/:member_id/grade",
+  isLoggedIn,
+  isVerified,
+  checkRoles("admin"),
+  catchAsync(engClub.memberGrade)
 );
 
 
@@ -219,6 +251,15 @@ router.post(
   isVerified,
   checkEnglishBoardMembership,
   catchAsync(engClub.createEvent)
+);
+
+
+router.post(
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/pics",
+  isLoggedIn,
+  isVerified,
+  checkEnglishBoardMembership,
+  catchAsync(engClub.eventPic)
 );
 
 

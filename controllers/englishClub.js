@@ -156,7 +156,6 @@ module.exports.showClubHomePage = async (req, res) => {
             }
         })
 
-
     res.render("programs/englishlang4all/englishClubs/clubInfoPage", {
         hub,
         club,
@@ -217,6 +216,21 @@ module.exports.createEvent = async (req, res) => {
 
     res.redirect(`/englishlang4all/clubs/${city}/hub/${hub_id}/club/${club_id}`);
 }
+
+module.exports.eventPic = async (req, res) => {
+    const club_id = req.params.club_id;
+    const city = req.params.city;
+    const hub_id = req.params.hub_id;
+
+    const englishClub = await englishClubs.findById(club_id);
+
+    englishClub.clubGallery.unshift(req.body.gallery)
+
+    await englishClub.save();
+
+    res.redirect(`/englishlang4all/clubs/${city}/hub/${hub_id}/club/${club_id}/home`);
+}
+
 
 //======================================
 //             Articles
@@ -296,6 +310,8 @@ module.exports.deleteArticle = async (req, res) => {
     res.redirect(`/englishlang4all/clubs/${city}/hub/${hub_id}/club/${club_id}`);
 }
 
+
+
 //======================================
 //          Weekly Activity
 //======================================
@@ -355,6 +371,8 @@ module.exports.createOnlineDebate = async (req, res) => {
 
     res.redirect(`/englishlang4all/clubs/${city}/hub/${hub_id}/club/${club_id}`);
 }
+
+
 
 //======================================
 //       Weekly Lessons 
@@ -562,4 +580,25 @@ module.exports.updateLivePractice = async (req, res) => {
     media.save();
 
     res.redirect(`/englishlang4all/clubs/${city}/hub/${hub_id}/club/${club_id}`);
+}
+
+
+///==========================================
+//      Grading a new member
+//==========================================
+
+module.exports.memberGradeForm = async (req, res) => {
+    const hub = await englishClubHub.findById(req.params.hub_id);
+    const user = await englishClubMember.findById(req.params.member_id).populate("clubMember");
+
+
+    res.render("programs/englishlang4all/englishClubs/grading/englishClubGradeForm", {
+        hub,
+        user
+    });
+}
+
+
+module.exports.memberGrade = async (req, res) => {
+
 }

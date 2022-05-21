@@ -291,6 +291,11 @@ const englishClubMemberSchema = new Schema({
     ref: "User",
   },
 
+  clubMemberProgress: {
+    type: Schema.Types.ObjectId,
+    ref: "ProgressTrack",
+  },
+
   isBoardMember: {
     type: Boolean,
     default: false
@@ -319,6 +324,100 @@ const englishClubMemberSchema = new Schema({
     ],
   },
 })
+
+// club member progress schema
+const progressTrackSchema = new Schema({
+  testGrade: {
+    type: Number,
+    required: true,
+  },
+
+  period: {
+    type: Date,
+    default: Date.now(),
+    required: true,
+  },
+
+  feedback: {
+    type: String,
+    required: true,
+  },
+
+  structure: {
+    type: String,
+    required: true,
+    enum: [
+      "Not Sufficient",
+      "Sufficient",
+      "Good",
+      "Very good",
+      "Excellent",
+    ],
+  },
+
+  pronunciation: {
+    type: String,
+    required: true,
+    enum: [
+      "Not Sufficient",
+      "Sufficient",
+      "Good",
+      "Very good",
+      "Excellent",
+    ],
+  },
+
+
+  fluency: {
+    type: String,
+    required: true,
+    enum: [
+      "Not Sufficient",
+      "Sufficient",
+      "Good",
+      "Very good",
+      "Excellent",
+    ],
+  },
+
+  vocabulary: {
+    type: String,
+    required: true,
+    enum: [
+      "Not Sufficient",
+      "Sufficient",
+      "Good",
+      "Very good",
+      "Excellent",
+    ],
+  },
+
+  comprehension: {
+    type: String,
+    required: true,
+    enum: [
+      "Not Sufficient",
+      "Sufficient",
+      "Good",
+      "Very good",
+      "Excellent",
+    ],
+  },
+
+  interaction: {
+    type: String,
+    required: true,
+    enum: [
+      "Not Sufficient",
+      "Sufficient",
+      "Good",
+      "Very good",
+      "Excellent",
+    ],
+  }
+
+})
+
 
 // english club article schema
 const englishClubArticleSchema = new Schema({
@@ -531,19 +630,24 @@ const englishClubMediaSchema = new Schema({
 });
 
 
+const englishClubHub = mongoose.model("EnglishClubHub", englishClubHubSchema);
+
+const englishClubs = mongoose.model("EnglishClub", englishClubSchema);
 
 const englishClubMember = mongoose.model("EnglishClubMember", englishClubMemberSchema);
 
-const englishClubHub = mongoose.model("EnglishClubHub", englishClubHubSchema);
+const progressTrack = mongoose.model("ProgressTrack", progressTrackSchema);
 
 const event = mongoose.model("Event", eventSchema);
 
-const englishClubs = mongoose.model("EnglishClub", englishClubSchema);
+
+
 
 const englishClubMedia = mongoose.model(
   "EnglishClubMedia",
   englishClubMediaSchema
 );
+
 
 const englishClubArticles = mongoose.model(
   "EnglishClubArticle",
@@ -564,8 +668,6 @@ const englishWeeklyLessons = mongoose.model(
   weeklyLessonSchema
 );
 
-
-
 const englishClubWorkersOfMonth = mongoose.model(
   "EnglishClubWorkersOfMonth",
   workersOfMonthSchema
@@ -575,6 +677,7 @@ module.exports = {
   englishClubMember,
   englishClubHub,
   englishClubs,
+  progressTrack,
   event,
   englishClubArticles,
   dailyVocabulary,
