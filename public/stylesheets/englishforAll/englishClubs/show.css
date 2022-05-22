@@ -11,13 +11,10 @@ html {
   box-sizing: border-box;
 }
 
-html,
-body {}
-
 body {
   margin: 0;
   padding: auto;
-  font-family: "Roboto"serif;
+  font-family: "Roboto";
 }
 
 /* banner section */
@@ -131,6 +128,17 @@ body {
   letter-spacing: 0.1rem;
   opacity: 0;
   animation: moveBanner 1.5s 1.5s forwards;
+}
+
+.my-progress {
+  color: rgb(43, 3, 92);
+  padding: 1rem 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  background-color: #00d2ff;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  border: 1px solid whitesmoke;
+  border-radius: 5px;
 }
 
 /* social media icons */

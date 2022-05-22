@@ -155,14 +155,14 @@ router.post(
     });
 
     // create a new english club member
+    englishClub = await englishClubs.findById(req.params.club_id);
+
     const newEngClubMember = new englishClubMember({
       clubMember: user._id,
       level
     });
 
     await newEngClubMember.save();
-
-    englishClub = await englishClubs.findById(req.params.club_id);
 
     if (englishClub.members.includes(newEngClubMember._id)) {
       req.flash("error", `User is already a member of this English club`);
@@ -201,11 +201,10 @@ router.post(
     englishClub = await englishClubs.findById(req.params.club_id);
 
     if (englishClub.boardMembers.includes(board._id)) {
-      req.flash("error", `User is already a member of this English club`);
+      req.flash("error", `User is already a board member of this English club`);
     } else {
 
       await englishClub.boardMembers.push(board._id);
-      await englishClub.members.push(board._id);
 
       board.position = position
 
@@ -235,6 +234,14 @@ router.post(
   isVerified,
   checkRoles("admin"),
   catchAsync(engClub.memberGrade)
+);
+
+router.get(
+  "/englishlang4all/clubs/:club_id/member/:member_id/myprogress",
+  isLoggedIn,
+  isVerified,
+
+  catchAsync(engClub.showMemberGrade)
 );
 
 

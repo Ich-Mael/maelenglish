@@ -291,10 +291,11 @@ const englishClubMemberSchema = new Schema({
     ref: "User",
   },
 
-  clubMemberProgress: {
+  clubMemberProgress: [{
     type: Schema.Types.ObjectId,
     ref: "ProgressTrack",
-  },
+  }],
+
 
   isBoardMember: {
     type: Boolean,
@@ -327,6 +328,19 @@ const englishClubMemberSchema = new Schema({
 
 // club member progress schema
 const progressTrackSchema = new Schema({
+  testLevel: {
+    type: String,
+    required: true,
+    enum: [
+      "A1",
+      "A2",
+      "B1",
+      "B2",
+      "C1",
+      "C2"
+    ],
+  },
+
   testGrade: {
     type: Number,
     required: true,
@@ -350,7 +364,7 @@ const progressTrackSchema = new Schema({
       "Not Sufficient",
       "Sufficient",
       "Good",
-      "Very good",
+      "Very Good",
       "Excellent",
     ],
   },
@@ -417,7 +431,6 @@ const progressTrackSchema = new Schema({
   }
 
 })
-
 
 // english club article schema
 const englishClubArticleSchema = new Schema({

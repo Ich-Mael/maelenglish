@@ -15,6 +15,7 @@ const {
     englishClubMember,
     englishClubHub,
     englishClubs,
+    progressTrack,
     event,
     englishClubArticles,
     dailyVocabulary,
@@ -167,6 +168,12 @@ module.exports.showClubHomePage = async (req, res) => {
 
 module.exports.showEnglishClub = async (req, res) => {
     const hub = await englishClubHub.findById(req.params.hub_id);
+    const clubMemberInfo = await englishClubMember.findOne({
+        clubMember: req.user._id
+    });
+
+    console.log(clubMemberInfo);
+
     const club = await englishClubs
         .findById(req.params.club_id)
         .populate("articles")
@@ -185,8 +192,10 @@ module.exports.showEnglishClub = async (req, res) => {
         .populate("weeklyMeeting")
         .populate("onlineDebates");
 
+
     res.render("programs/englishlang4all/englishClubs/show", {
         club,
+        clubMemberInfo,
         hub,
         positions,
         days,
@@ -589,16 +598,38 @@ module.exports.updateLivePractice = async (req, res) => {
 
 module.exports.memberGradeForm = async (req, res) => {
     const hub = await englishClubHub.findById(req.params.hub_id);
+    const club = await englishClubs.findById(req.params.club_id);
+    const member_id = req.params.member_id;
     const user = await englishClubMember.findById(req.params.member_id).populate("clubMember");
-
-
     res.render("programs/englishlang4all/englishClubs/grading/englishClubGradeForm", {
         hub,
+        member_id,
+        club,
         user
     });
 }
 
-
 module.exports.memberGrade = async (req, res) => {
 
+    const member = await englishClubMember.findById(req.params.member_id);
+
+    const memberGrade = new progressTrack(req.body.grade);
+
+    await memberGrade.save();
+
+    member.clubMemberProgress.unshift(memberGrade._id);
+
+    await member.save();
+
+    res.send("User has been successfully graded");
+}
+
+module.exports.showMemberGrade = async (req, res) => {
+    const clubMember = await englishClubMember.findById(req.params.member_id).populate("clubMemberProgress").populate("clubMember");
+    const club = await englishClubs.findById(req.params.club_id);
+    console.log(clubMember);
+    res.render("programs/englishlang4all/englishClubs/grading/memberGradeShow", {
+        clubMember,
+        club
+    });
 }
