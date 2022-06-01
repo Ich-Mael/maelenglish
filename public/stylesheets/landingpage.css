@@ -1726,8 +1726,7 @@ customers-cards:before {
   }
 
   .afrohk-title {
-
-    font-size: 8rem;
+    font-size: 4rem;
   }
 
   .header-text {
@@ -1761,10 +1760,11 @@ customers-cards:before {
     justify-content: center;
   }
 
-  .afrohk-title {
-
-    font-size: 6rem;
+  .more-btn {
+    font-size: 1rem;
+    padding: 1rem 1.4rem;
   }
+
 
   .check-programs,
   .get-account {
@@ -1772,6 +1772,7 @@ customers-cards:before {
     display: inline;
     font-size: 0.8rem;
   }
+
 
   .account-wrapper {
     width: 100%;
@@ -1790,8 +1791,7 @@ customers-cards:before {
   }
 
   .banner-heading {
-    font-size: 2.5rem;
-    line-height: 3rem;
+    padding-left: 4rem;
   }
 
   .banner-paragraph {
@@ -2007,8 +2007,12 @@ customers-cards:before {
 
 
   .afrohk-title {
+    font-size: 3rem;
+  }
 
-    font-size: 4rem;
+  .slogan {
+    font-size: 1.5rem;
+    padding-bottom: 1rem;
   }
 
 }
@@ -2025,7 +2029,12 @@ customers-cards:before {
   }
 
   .slogan {
-    font-size: 2rem;
+    font-size: 1.5rem;
+  }
+
+  .more-btn {
+    font-size: 1rem;
+    padding: 0 1.4rem;
   }
 
   .accessibility-text {
@@ -2193,13 +2202,18 @@ customers-cards:before {
   }
 
   .afrohk-title {
-
-    font-size: 3rem;
+    font-size: 2.3rem;
   }
 
   .slogan {
-    font-size: 2rem;
+    font-size: 1.2rem;
   }
+
+  .more-btn {
+    padding: 0 1.5rem;
+    font-size: 1rem;
+  }
+
 
   #banner-wrapper {
     z-index: 2;
@@ -2253,11 +2267,11 @@ customers-cards:before {
   }
 
   .afrohk-title {
-    font-size: 2.5rem;
+    font-size: 2rem;
   }
 
   .slogan {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
   }
 
   .account-wrapper {
