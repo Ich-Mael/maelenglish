@@ -20,6 +20,10 @@ body {
   font-family: "Roboto";
 }
 
+#site-content {
+  overflow-x: hidden;
+}
+
 .learn-with-us,
 .why-afrohk,
 .partners,
@@ -857,7 +861,7 @@ profile-link:hover {
 
 .customer-section {
   min-height: 100vh;
-  background: url("https://images.pexels.com/photos/9159397/pexels-photo-9159397.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500");
+  background: url("https://images.pexels.com/photos/5537940/pexels-photo-5537940.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
   background-size: cover;
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -876,16 +880,16 @@ profile-link:hover {
 }
 
 #customers-cards {
-  background: #23343fb9;
-  background: #a8c0ff;
+  background: #C9D6FF;
   /* fallback for old browsers */
-  background: -webkit-linear-gradient(to top, #3f2b96, #a8c0ff, #a8c0ff);
+  background: -webkit-linear-gradient(to right, #e2e2e2e3, #c9d6ffdb);
   /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to top, #3f2b96, #a8c0ff, #a8c0ff);
+  background: linear-gradient(to right, #e2e2e2e6, #c9d6ffe7);
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
+
   max-width: 1000px;
-  min-height: 38rem;
+  min-height: 32rem;
   /* background: url("https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"); */
   background-size: cover;
   -webkit-background-size: cover;
@@ -901,6 +905,16 @@ profile-link:hover {
   border-radius: 5px;
   border: 5px solid rgb(250, 248, 248);
   box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+  transition: all 0.5s;
+}
+
+#customers-cards:hover {
+  background: #C9D6FF;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #ffffff, #c9d6ff);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #ffffff, #c9d6ff);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 customers-cards:before {
@@ -920,14 +934,13 @@ customers-cards:before {
 }
 
 .customer-paragraph-1 {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   /* line-height: 1.5rem; */
-  margin-bottom: 1rem;
   color: #240536;
   font-family: "Chivo", sans-serif;
   font-family: Georgia, "Times New Roman", Times, serif;
   text-transform: uppercase;
-  text-align: center;
+  text-align: start;
   font-weight: 700;
   letter-spacing: 0.1rem;
   /* text-shadow: 1px 1px 0px rgb(31, 30, 30); */
@@ -941,7 +954,7 @@ customers-cards:before {
   font-family: "Roboto", sans-serif;
   font-family: Georgia, "Times New Roman", Times, serif;
   font-size: 1rem;
-  text-align: center;
+  text-align: start;
   letter-spacing: 0.1rem;
   font-weight: 400;
   font-size: 1.2rem;
@@ -950,7 +963,8 @@ customers-cards:before {
 }
 
 .customer-job {
-  color: rgb(216, 195, 195);
+  color: rgb(25, 19, 28);
+  text-align: start;
 }
 
 @media (max-width: 767px) {
@@ -958,8 +972,7 @@ customers-cards:before {
     position: initial;
     z-index: 10;
     padding: 3rem 2rem;
-    text-align: center;
-    font-size: 0.9rem;
+    font-size: 1rem;
     line-height: 2.3rem;
   }
 
@@ -969,7 +982,7 @@ customers-cards:before {
   }
 
   #customers-cards {
-    min-height: 60rem;
+    height: 52rem;
   }
 }
 
@@ -977,7 +990,8 @@ customers-cards:before {
   width: 100%;
   height: 20rem;
   border-radius: 5px;
-  border: 3px solid white;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  /* border: 1px solid rgb(23, 2, 31); */
   margin-top: 2rem;
 }
 
@@ -986,11 +1000,11 @@ customers-cards:before {
 #image-caption {
   font-style: normal;
   font-size: 1.3rem;
+  font-family: Georgia, "Times New Roman", Times, serif;
   padding: 1rem 0 0.4rem;
-  text-align: center;
+  text-align: start;
   font-weight: 700;
-  color: rgb(255, 255, 255);
-  font-family: "Chivo", sans-serif;
+  color: rgb(136, 6, 165);
   margin-top: 1rem;
   /* text-shadow: 1px 2px 3px black; */
 }
@@ -1001,12 +1015,22 @@ customers-cards:before {
     font-size: 1.5rem;
     margin-top: 1rem;
   }
+
+  .carousel-caption img {
+    width: 100%;
+    height: 18rem;
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    /* border: 1px solid rgb(23, 2, 31); */
+    margin-top: 1rem;
+  }
+
 }
 
 .carousel-button {
-  background-color: rgb(244, 241, 245);
+  background-color: rgb(172, 9, 226);
   border-radius: 50%;
-  color: #000;
+  color: rgb(255, 255, 255);
   margin: 0 1rem;
   padding: 1rem;
 }
@@ -1288,30 +1312,63 @@ customers-cards:before {
   background-color: #fafafac7;
 }
 
+.recent-news-title {
+  background: #8E2DE2;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #4A00E0, #8E2DE2);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #4A00E0, #8E2DE2);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  color: rgba(250, 247, 247, 0.853);
+}
+
+.more-news-title {
+  background: #4e54c8;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #8f94fb, #4e54c8);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #8f94fb, #4e54c8);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  color: rgba(250, 247, 247, 0.933);
+}
+
 .news-card {
   box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 }
 
 .news-title {
   color: rgb(133, 7, 150);
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-family: Georgia, 'Times New Roman', Times, serif;
-  font-family: "Chivo", sans-serif;
   letter-spacing: 0.14rem;
-  line-height: 2.5rem;
-  font-weight: 700;
+  height: 4rem;
+  font-weight: 400;
   padding: 1rem auto;
   text-align: center;
   background-color: rgb(255, 255, 255);
 }
 
-.news-img {}
+.news-img-wrapper {}
+
+.news-img {
+  display: block;
+  opacity: 0.9;
+  width: 100%;
+  height: 20rem;
+  transition: all ease-in-out 0.3s;
+}
+
+
+.news-img:hover {
+  transform: scale(1.2);
+  opacity: 1;
+}
 
 .news-text {
   padding-top: 1rem;
   font-family: Georgia, 'Times New Roman', Times, serif;
   font-size: 1.1rem;
-  height: 13rem;
+  height: 10rem;
 }
 
 /*------------ Counts ------------------------*/
@@ -1751,7 +1808,6 @@ customers-cards:before {
   .news-text {
     padding-top: 1rem;
     font-size: 1.2rem;
-    height: 18rem;
   }
 }
 
@@ -1814,15 +1870,24 @@ customers-cards:before {
     font-size: 1rem;
   }
 
+
+
   .program-description {
     line-height: 3rem;
     height: 10rem;
   }
 
+  .news-img {
+    height: auto;
+  }
+
+  .news-content-wrapper {
+    padding: 1rem 2rem;
+  }
+
   .news-text {
-    padding-top: 1rem;
     font-size: 1.2rem;
-    height: 10rem;
+    height: auto;
   }
 }
 
@@ -1946,6 +2011,11 @@ customers-cards:before {
     animation: cambio 30s infinite linear;
   }
 
+  .news-text {
+
+    height: auto;
+  }
+
   .header-text {
     font-size: 2rem;
   }
@@ -1996,9 +2066,8 @@ customers-cards:before {
   }
 
   .news-text {
-    padding-top: 1rem;
-    font-size: 1.2rem;
-    height: 15rem;
+
+    height: auto;
   }
 }
 
