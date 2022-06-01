@@ -344,6 +344,7 @@
     </div>
   </div>
   <hr>
+  <!-- Daily vocabulary -->
   <div class="container  col-lg-10">
     <h1 class="daily-vocabulary-title">Daily Vocabulary</h1>
     <div class="row mb-5">
@@ -446,6 +447,7 @@
 
     </div>
   </div>
+
   <div class="container  col-lg-10">
     <div class="activities-wrapper py-3">
       <section id="news-wrapper" class="my-5">
@@ -519,136 +521,103 @@
         <h1 class="activity-heading">Weekly Lessons</h1>
         <div class="container">
           <div class="lesson-links">
-            <div>
-              <div class="lesson-wrapper my-3">
-                <h4 class="week-lesson-title">
-                  <%= club.weeklyVideoLesson[0].lessonTitle %>
-                </h4>
-                <p class="">
-                  <%- club.weeklyVideoLesson[0].lessonSummary%>
-                </p>
-                <button type="button" class="btn ms-2 video-btn btn-outline-primary" data-bs-toggle="modal"
-                  data-bs-target="#lesson-1-vid-1">
-                  Click to watch the lesson
-                </button>
-                <hr>
-              </div>
-              <div class="lesson-wrapper my-3">
-                <h4 class="week-lesson-title">
-                  <%= club.weeklyVideoLesson[1].lessonTitle %>
-                </h4>
-                <p>
-                  <%- club.weeklyVideoLesson[1].lessonSummary%>
-                </p>`
-                <button type="button" class="btn video-btn ms-2 btn-outline-primary" data-bs-toggle="modal"
-                  data-bs-target="#lesson-1-vid-2">
-                  Click to watch the lesson
-                </button>
-              </div>
-            </div>
-            <!-- Modal  for video 1-->
-            <div class="modal fade" id="lesson-1-vid-1" tabindex="-1" aria-labelledby="exampleModalLabel"
-              aria-hidden="true">
-              <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title text-primary" id="exampleModalLabel">
-                      <%= club.weeklyVideoLesson[0].lessonTitle %>
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <div id="tv-container">
-                      <div id="monitor">
-                        <div class="afrohk-TV">
-                          <h3 class="text-center afrohk-text mb-2 py-0"><span class="afrohk">AfroHK</span><span
-                              class="tv">Radar</span>
-                          </h3>
-                        </div>
-                        <div id="monitorscreen">
-                          <iframe id="vimeo-content" src="<%= club.weeklyVideoLesson[0].videoLink %>" frameborder="0"
-                            height="500px" width="1000px" allow="autoplay; fullscreen; picture-in-picture"
-                            allow="fullscreen" title="High-intensity Classes"></iframe>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
-                      Close
-                    </button>
-                  </div>
+            <div class="row">
+              <% for(i= 0; i < 2 ; i++){ %>
+              <div class="col-md-6">
+                <div class="lesson-wrapper my-3">
+                  <h4 class="week-lesson-title">
+                    <%= club.weeklyVideoLesson[i].lessonTitle %>
+                  </h4>
+                  <p class="">
+                    <%- club.weeklyVideoLesson[i].lessonSummary%>
+                  </p>
+                  <button type="button" class="btn ms-2 video-btn btn-outline-primary" data-bs-toggle="modal"
+                    data-bs-target="#lesson-1-vid-<%=i%>">
+                    Click to watch the lesson
+                  </button>
                 </div>
               </div>
-            </div>
-
-            <!-- Modal  for video 2-->
-            <div class="modal fade" id="lesson-1-vid-2" tabindex="-1" aria-labelledby="exampleModalLabel"
-              aria-hidden="true">
-              <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title text-primary" id="exampleModalLabel">
-                      <%= club.weeklyVideoLesson[1].lessonTitle %>
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <div id="tv-container">
-                      <div id="monitor">
-                        <div class="afrohk-TV">
-                          <h3 class="text-center afrohk-text mb-2 py-0"><span class="afrohk">AfroHK</span><span
-                              class="tv">Radar</span>
-                          </h3>
-                        </div>
-                        <div id="monitorscreen">
-                          <iframe id="vimeo-content" src="<%= club.weeklyVideoLesson[1].videoLink %>" frameborder="0"
-                            height="500px" width="1000px" allow="autoplay; fullscreen; picture-in-picture"
-                            allow="fullscreen" title="High-intensity Classes"></iframe>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
-                      Close
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+              <%}%>
           </div>
-        </div>
-      </section>
+          <% for(i= 0; i < 2 ; i++){ %>
+              <!-- Modal  for video -->
+              <div class="modal fade" id="lesson-1-vid-<%=i%>" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title text-primary" id="exampleModalLabel">
+                        <%= club.weeklyVideoLesson[i].lessonTitle %>
+                      </h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div id="tv-container">
+                        <div id="monitor">
+                          <div class="afrohk-TV">
+                            <h3 class="text-center afrohk-text mb-2 py-0"><span class="afrohk">AfroHK</span><span
+                                class="tv">Radar</span>
+                            </h3>
+                          </div>
+                          <div id="monitorscreen">
+                            <iframe id="vimeo-content" src="<%= club.weeklyVideoLesson[i].videoLink %>" frameborder="0"
+                              height="500px" width="1000px" allow="autoplay; fullscreen; picture-in-picture"
+                              allow="fullscreen" title="High-intensity Classes"></iframe>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                        Close
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <%}%>
+   
+  </div>
+</div>
+</section>
 
-      <!-- Weekly activities section -->
-      <section id="weekly-activities-wrapper" class="my-5">
-        <h1 class="activity-heading">Weekly Practice</h1>
-        <div class="accordion my-5" id="accordionExample">
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="headingOne">
-              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
-                aria-expanded="true" aria-controls="collapseOne">
-                Grammar
-              </button>
-            </h2>
-            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
-              data-bs-parent="#accordionExample">
-              <div class="accordion-body">
-                <h4>Check your grammar</h4>
-                <ol>
-                  <li>
-                    <a class="d-inline-block m-2 fs-5" target="_blank"
-                      href="https://www.englisch-hilfen.de/en/complex_tests/simple_present1/index.php">Simple
-                      present</a> <br>
-                  </li>
-                  <li>
-                    <a class="d-inline-block m-2 fs-5" target="_blank"
-                      href="https://www.englisch-hilfen.de/en/exercises/tenses/present_progressive_auxiliaries.htm">Present
-                      progressive</a>
-                  </li>
-                </ol>
-                <!--  <div id="quiz-result" class="quizz-1-card">
+<!-- Weekly activities section -->
+<section id="weekly-activities-wrapper" class="my-5">
+  <h1 class="activity-heading">Weekly Practice</h1>
+  <div class="accordion my-5" id="accordionExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingOne">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+          aria-expanded="true" aria-controls="collapseOne">
+          Grammar
+        </button>
+      </h2>
+      <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+        data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <div class="row">
+            <%for(i=0; i < 2 ; i++){%>
+              <% if(club.grammarExercise[i]){%>
+              <div class="col-md-4">
+                <div class="exercise-wrapper">
+                  <p
+                    style="background-color: green; border-radius:5px; text-align: center;font-size: 14px;  color:aliceblue; padding: 5px;">
+                    Level
+                    <%= club.grammarExercise[i].level %></p>
+                  <a class="d-inline-block m-2 fs-5" target="_blank" href="<%= club.grammarExercise[i].exerciseLink %>">
+                    <%= club.grammarExercise[i].exerciseTitle %> </a>
+                  <hr>
+                  <p><a class="d-inline-block m-2 fs-5" target="_blank"
+                      href="<%= club.grammarExercise[i].exerciseCorrectionLink %>">
+                      <i class="mx-3 bi bi-file-play"></i>Answers in Video </a></p>
+
+                </div>
+              </div>
+              <%}%>
+              <%}%>
+
+            </div>
+            <!--  <div id="quiz-result" class="quizz-1-card">
                   You Scored <span id="quiz-percent"></span>% - <span id="quiz-score"></span>/<span id="quiz-max-score"></span><br/>
               </div>
 
@@ -672,319 +641,316 @@
                   <button class="btn btn-primary my-3" type="button" onclick="showResults(this.parentNode.id);">Check Answers</button>
               </div>
               <a href="/englishlang4all/Clubs/<%= club._id %>/grammar">Take the Global Grammar Challenge Test</a>-->
-              </div>
-            </div>
-          </div>
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="headingTwo">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                Vocabulary Builder
-              </button>
-            </h2>
-            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
-              data-bs-parent="#accordionExample">
-              <div class="accordion-body">
-                <ol>
-                  <li>
-                    <a class="d-inline-block m-2 fs-5" target="_blank"
-                      href="https://www.englisch-hilfen.de/en/exercises/confusing_words/big_large_tall.htm">How
-                      to use: Great, high, tall</a> <br>
-                  </li>
-                  <li>
-                    <a class="d-inline-block m-2 fs-5" target="_blank"
-                      href="https://www.englisch-hilfen.de/en/exercises/vocabulary11/house1.htm">Vocabulary
-                      Game : At home</a>
-                  </li>
-                </ol>
-              </div>
-            </div>
-          </div>
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="headingThree">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                Listening Challenge
-              </button>
-            </h2>
-            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
-              data-bs-parent="#accordionExample">
-              <div class="accordion-body">
-                <ol>
-                  <li>
-                    <a class="d-inline-block m-2 fs-5" target="_blank"
-                      href="https://learnenglish.britishcouncil.org/skills/listening/intermediate-b1/a-student-discussion">A
-                      student discussion</a> <br>
-                  </li>
-                  <li>
-                    <a class="d-inline-block m-2 fs-5" target="_blank"
-                      href="https://learnenglish.britishcouncil.org/skills/listening/intermediate-b1/arriving-late-to-class">Arriving
-                      late to class</a>
-                  </li>
-                </ol>
-              </div>
-            </div>
-          </div>
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="headingFour">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                Reading Practice
-              </button>
-            </h2>
-            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
-              data-bs-parent="#accordionExample">
-              <div class="accordion-body">
-                <ol>
-                  <li>
-                    <a class="d-inline-block m-2 fs-5" target="_blank"
-                      href="https://learnenglish.britishcouncil.org/skills/reading/intermediate-b1/digital-habits-across-generations">Digital
-                      habits across generations</a> <br>
-                  </li>
-                  <li>
-                    <a class="d-inline-block m-2 fs-5" target="_blank"
-                      href="https://learnenglish.britishcouncil.org/skills/reading/intermediate-b1/social-media-influencers">Social
-                      media influencers</a>
-                  </li>
-                </ol>
-
-              </div>
-            </div>
           </div>
         </div>
+    </div>
 
 
-      </section>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingTwo">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+          aria-expanded="false" aria-controls="collapseTwo">
+          Vocabulary Builder
+        </button>
+      </h2>
+      <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+        data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <ol>
+            <li>
+              <a class="d-inline-block m-2 fs-5" target="_blank"
+                href="https://www.englisch-hilfen.de/en/exercises/confusing_words/big_large_tall.htm">How
+                to use: Great, high, tall</a> <br>
+            </li>
+            <li>
+              <a class="d-inline-block m-2 fs-5" target="_blank"
+                href="https://www.englisch-hilfen.de/en/exercises/vocabulary11/house1.htm">Vocabulary
+                Game : At home</a>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingThree">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+          data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          Listening Challenge
+        </button>
+      </h2>
+      <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+        data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <ol>
+            <li>
+              <a class="d-inline-block m-2 fs-5" target="_blank"
+                href="https://learnenglish.britishcouncil.org/skills/listening/intermediate-b1/a-student-discussion">A
+                student discussion</a> <br>
+            </li>
+            <li>
+              <a class="d-inline-block m-2 fs-5" target="_blank"
+                href="https://learnenglish.britishcouncil.org/skills/listening/intermediate-b1/arriving-late-to-class">Arriving
+                late to class</a>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingFour">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+          data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+          Reading Practice
+        </button>
+      </h2>
+      <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
+        data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <ol>
+            <li>
+              <a class="d-inline-block m-2 fs-5" target="_blank"
+                href="https://learnenglish.britishcouncil.org/skills/reading/intermediate-b1/digital-habits-across-generations">Digital
+                habits across generations</a> <br>
+            </li>
+            <li>
+              <a class="d-inline-block m-2 fs-5" target="_blank"
+                href="https://learnenglish.britishcouncil.org/skills/reading/intermediate-b1/social-media-influencers">Social
+                media influencers</a>
+            </li>
+          </ol>
 
-      <!-- LSC -->
-      <div id="lsc-section" class="my-5">
-        <h1 class="activity-heading">Listen Sing and Complete</h1>
-        <div class="song-list-wrapper">
-          <h3 class="song-list">Suggested Songs</h3>
-          <hr>
-          <p class="py-3 px-4 fs-4"><span class="fw-bold"> Instructions:</span> Click on the song to try the
-            LSC
-            challenge</p>
-          <a class="song" href="/englishlang4all/lsc/song-1">1. Impossible from Shontelle</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  </section>
+
+  <!-- LSC -->
+  <div id="lsc-section" class="my-5">
+    <h1 class="activity-heading">Listen Sing and Complete</h1>
+    <div class="song-list-wrapper">
+      <h3 class="song-list">Suggested Songs</h3>
+      <hr>
+      <p class="py-3 px-4 fs-4"><span class="fw-bold"> Instructions:</span> Click on the song to try the
+        LSC
+        challenge</p>
+      <a class="song" href="/englishlang4all/lsc/song-1">1. Impossible from Shontelle</a>
+    </div>
+  </div>
+
+  <!-- leaders -->
+  <section id="top-stories-wrapper" class="my-5">
+    <h1 class="activity-heading">Leaders of the Month</h1>
+    <div class="row">
+      <div class="col-md student-OM">
+        <div class="leaders-card me-4">
+          <div class="card-header text-center
+                                  student-month">
+            Female leader of the Month
+          </div>
+          <div class="card-body">
+            <div class="som-img-wrapper">
+              <img src="<%= club.workersOfMonth[0].studentOfMonth.imageUrl %>" alt="" class="img-thumbnail img-fluid">
+            </div>
+            <h5 class="card-title fs-3 fw-bold">
+              <%= club.workersOfMonth[0].studentOfMonth.fullname %>
+            </h5>
+            <p class="card-text fs-4">
+              <%= club.workersOfMonth[0].studentOfMonth.reasons %>
+            </p>
+            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#som">
+              Learn more about the FLOM
+            </button>
+
+            <div class="modal fade" id="som" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-lg
+                                      modal-fullscreen-md-down">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                      All about the Female leader of the Month</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <%- club.workersOfMonth[0].studentOfMonth.about %>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn
+                                            btn-danger" data-bs-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- leaders -->
-      <section id="top-stories-wrapper" class="my-5">
-        <h1 class="activity-heading">Leaders of the Month</h1>
-        <div class="row">
-          <div class=" col-md student-OM">
-            <div class="card m-2">
-              <div class="card-header text-center
-                                  student-month">
-                Female leader of the Month
-              </div>
-              <div class="card-body">
-                <div class="som-img-wrapper">
-                  <img src="<%= club.workersOfMonth[0].studentOfMonth.imageUrl %>" alt="" class="img-thumbnail">
-                </div>
-                <h5 class="card-title fs-3 fw-bold">
-                  <%= club.workersOfMonth[0].studentOfMonth.fullname %>
-                </h5>
-                <p class="card-text fs-4">
-                  <%= club.workersOfMonth[0].studentOfMonth.reasons %>
-                </p>
-                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#som">
-                  Learn more about the FLOM
-                </button>
-
-                <div class="modal fade" id="som" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                  <div class="modal-dialog modal-lg
-                                      modal-fullscreen-md-down">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">
-                          All about the Female leader of the Month
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body">
-                        <%- club.workersOfMonth[0].studentOfMonth.about %>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn
-                                            btn-danger" data-bs-dismiss="modal">Close</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md instructor-OM">
-            <div class="card m-2">
-              <div class="card-header text-center
+      <div class="col-md instructor-OM">
+        <div class="leaders-card ms-4">
+          <div class="card-header text-center
                                   instructor-month">
-                Male leader of the Month
-              </div>
-              <div class="card-body">
-                <div class="som-img-wrapper">
-                  <img src="<%= club.workersOfMonth[0].instructorOfMonth.imageUrl %>" alt=""
-                    class="img-thumbnail img-fluid">
-                </div>
-                <h5 class="card-title fs-3 fw-bold">
-                  <%= club.workersOfMonth[0].instructorOfMonth.fullname%>
-                </h5>
-                <p class="card-text fs-4">
-                  <%= club.workersOfMonth[0].instructorOfMonth.reasons %>
-                </p>
+            Male leader of the Month
+          </div>
+          <div class="card-body">
+            <div class="som-img-wrapper">
+              <img src="<%= club.workersOfMonth[0].instructorOfMonth.imageUrl %>" alt=""
+                class="img-thumbnail img-fluid">
+            </div>
+            <h5 class="card-title fs-3 fw-bold">
+              <%= club.workersOfMonth[0].instructorOfMonth.fullname%>
+            </h5>
+            <p class="card-text fs-4">
+              <%= club.workersOfMonth[0].instructorOfMonth.reasons %>
+            </p>
 
-                <button type="button" class="btn
+            <button type="button" class="btn
                                     btn-secondary" data-bs-toggle="modal" data-bs-target="#iom">
-                  Learn more about the MLOM
-                </button>
+              Learn more about the MLOM
+            </button>
 
-                <div class="modal fade" id="iom" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                  <div class="modal-dialog modal-lg
+            <div class="modal fade" id="iom" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-lg
                                       modal-fullscreen-md-down">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">
-                          All about Male leader of the month
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body">
-                        <%- club.workersOfMonth[0].instructorOfMonth.about %>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                      All about Male leader of the month
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <%- club.workersOfMonth[0].instructorOfMonth.about %>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn
                                             btn-danger" data-bs-dismiss="modal">Close</button>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </section>
+      </div>
+    </div>
+  </section>
 
-      <!-- Media section -->
-      <section id="top-stories-wrapper">
-        <h1 class="activity-heading">Live Practice</h1>
-        <div class="row mt-4">
-          <% for(let i = 0 ; i < 2 ; i++){ %>
-          <div class="col-md-6 my-3">
-            <div class="media-card py-1">
-              <!--  <div class="card-body"> -->
-              <div id="tv-container">
-                <div id="monitor">
-                  <div class="afrohk-TV">
-                    <h3 class="text-center afrohk-text mb-2 py-0"><span class="afrohk">AfroHK</span><span
-                        class="tv">Radar</span>
-                    </h3>
-                  </div>
-                  <div id="monitorscreen">
-                    <iframe id="vimeo-content" width="100%" height="100%" src="<%= club.media[i].videoLink %>"
-                      title="YouTube video player" frameborder="0"
-                      allow="accelerometer; autoplay; clipboard-write; fullscreen; encrypted-media; gyroscope; picture-in-picture"
-                      allowfullscreen>
-                    </iframe>
-                  </div>
+  <!-- Media section -->
+  <section id="top-stories-wrapper">
+    <h1 class="activity-heading">Live Practice</h1>
+    <div class="row mt-4">
+      <% for(let i = 0 ; i < 2 ; i++){ %>
+      <div class="col-md-6 my-3">
+        <div class="media-card py-1">
+          <!--  <div class="card-body"> -->
+          <div id="tv-container">
+            <div id="monitor">
+              <div class="afrohk-TV">
+                <h3 class="text-center afrohk-text mb-2 py-0"><span class="afrohk">AfroHK</span><span
+                    class="tv">Radar</span>
+                </h3>
+              </div>
+              <div id="monitorscreen">
+                <iframe id="vimeo-content" width="100%" height="100%" src="<%= club.media[i].videoLink %>"
+                  title="YouTube video player" frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; fullscreen; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen>
+                </iframe>
+              </div>
+            </div>
+          </div>
+          <div class="video-details-wrapper m-0">
+            <h5 class="text-center">
+              <%= club.media[i].mediaTitle %>
+            </h5>
+          </div>
+          <!-- Button trigger modal -->
+          <button type="button" class="btn mx-2 my-2 btn-outline-primary" data-bs-toggle="modal"
+            data-bs-target='#mediaComment<%= club.media[i]._id%>'>Leave your feeling 🙃
+          </button>
+          <!-- Modal -->
+          <div class="modal fade" id='mediaComment<%= club.media[i]._id%>' tabindex="-1"
+            aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Club members' feeling</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-              </div>
-              <div class="video-details-wrapper m-0">
-                <h5 class="text-center">
-                  <%= club.media[i].mediaTitle %>
-                </h5>
-              </div>
-              <!-- Button trigger modal -->
-              <button type="button" class="btn mx-2 my-2 btn-outline-primary" data-bs-toggle="modal"
-                data-bs-target='#mediaComment<%= club.media[i]._id%>'>Leave your feeling 🙃
-              </button>
-              <!-- Modal -->
-              <div class="modal fade" id='mediaComment<%= club.media[i]._id%>' tabindex="-1"
-                aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="exampleModalLabel">Club members' feeling</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-body">
+                  <form action="/englishlang4all/clubs/<%= club._id %>/clubMedia/<%= club.media[i]._id %>/comment"
+                    method="POST">
+                    <fieldset id="stars" class="starability-heart mb-1">
+                      <!-- <legend>Rating</legend> -->
+                      <input type="radio" id="no-rate<%= club.media[i]._id %>" class="input-no-rate"
+                        name="review[rating]" value="0" checked aria-label="No rating." />
+                      <input type="radio" id="first-of-rate1<%= club.media[i]._id %>" name="review[rating]" value="1" />
+                      <label for="first-rate1<%= club.media[i]._id %>" title="Terrible">1
+                        star</label>
+                      <input type="radio" id="first-rate2<%= club.media[i]._id %>" name="review[rating]" value="2" />
+                      <label for="first-rate2<%= club.media[i]._id %>" title="Not good">2
+                        stars</label>
+                      <input type="radio" id="first-rate3<%= club.media[i]._id %>" name="review[rating]" value="3" />
+                      <label for="first-rate3<%= club.media[i]._id %>" title="Average">3
+                        stars</label>
+                      <input type="radio" id="first-rate4<%= club.media[i]._id %>" name="review[rating]" value="4" />
+                      <label for="first-rate4<%= club.media[i]._id %>" title="Very good">4
+                        stars</label>
+                      <input type="radio" id="first-rate5<%= club.media[i]._id %>" name="review[rating]" value="5" />
+                      <label for="first-rate5<%= club.media[i]._id %>" title="Amazing">5
+                        stars</label>
+                    </fieldset>
+                    <div class="form-floating">
+                      <textarea class="form-control" name="review[text]" placeholder="Leave a comment here"
+                        id="floatingTextarea" style="height: 70px" required></textarea>
+                      <label for="floatingTextarea">Leave a comment</label>
                     </div>
-                    <div class="modal-body">
-                      <form action="/englishlang4all/clubs/<%= club._id %>/clubMedia/<%= club.media[i]._id %>/comment"
-                        method="POST">
-                        <fieldset id="stars" class="starability-heart mb-1">
-                          <!-- <legend>Rating</legend> -->
-                          <input type="radio" id="no-rate<%= club.media[i]._id %>" class="input-no-rate"
-                            name="review[rating]" value="0" checked aria-label="No rating." />
-                          <input type="radio" id="first-of-rate1<%= club.media[i]._id %>" name="review[rating]"
-                            value="1" />
-                          <label for="first-rate1<%= club.media[i]._id %>" title="Terrible">1
-                            star</label>
-                          <input type="radio" id="first-rate2<%= club.media[i]._id %>" name="review[rating]"
-                            value="2" />
-                          <label for="first-rate2<%= club.media[i]._id %>" title="Not good">2
-                            stars</label>
-                          <input type="radio" id="first-rate3<%= club.media[i]._id %>" name="review[rating]"
-                            value="3" />
-                          <label for="first-rate3<%= club.media[i]._id %>" title="Average">3
-                            stars</label>
-                          <input type="radio" id="first-rate4<%= club.media[i]._id %>" name="review[rating]"
-                            value="4" />
-                          <label for="first-rate4<%= club.media[i]._id %>" title="Very good">4
-                            stars</label>
-                          <input type="radio" id="first-rate5<%= club.media[i]._id %>" name="review[rating]"
-                            value="5" />
-                          <label for="first-rate5<%= club.media[i]._id %>" title="Amazing">5
-                            stars</label>
-                        </fieldset>
-                        <div class="form-floating">
-                          <textarea class="form-control" name="review[text]" placeholder="Leave a comment here"
-                            id="floatingTextarea" style="height: 70px" required></textarea>
-                          <label for="floatingTextarea">Leave a comment</label>
-                        </div>
-                        <button class="btn btn-outline-primary my-3">Post Comment</button>
-                      </form>
-                      <!-- all comments -->
-                      <hr>
+                    <button class="btn btn-outline-primary my-3">Post Comment</button>
+                  </form>
+                  <!-- all comments -->
+                  <hr>
 
-                      <h5 class="text-center py-3 mb-3" style="background: #34e89e;  
+                  <h5 class="text-center py-3 mb-3" style="background: #34e89e;  
                       background: -webkit-linear-gradient(to right, #0f3443, #34e89e, #0f3443);  
                       background: linear-gradient(to right, #0f3443, #34e89e, #0f3443); color: rgb(43, 42, 41);
                       ">Previous Comments</h5>
-                      <% for (let review of club.media[i].mediaComments){%>
-                      <div class="card comment-card mb-3 ">
-                        <div class="p-2 d-flex justifify-content-center">
-                          <div class="p-2"><span class="rounded"><img class="img-thumbnail"
-                                src="<%= review.author.imageUrl %>" alt="user" width="80"></span>
-                          </div>
-                          <div class="w-100 align-self-center">
-                            <h5>
-                              <%= review.author.username %> <span class="card-text mx-2"><small
-                                  class="text-muted fst-italic"><%= days[review.createdAt.getDay()] %>,
-                                  <%=review.createdAt.getDate()%>
-                                  <%= months[review.createdAt.getMonth()] %>
-                                  <%=review.createdAt.getFullYear()%></small> </span>
-                            </h5>
-                            <p class="starability-result" data-rating="<%=review.rating%>">
-                              Rated:
-                              <%= review.rating %> stars
-                            </p>
-                          </div>
-                        </div>
-                        <p class="mx-3">
-                          <%= review.text %>
+                  <% for (let review of club.media[i].mediaComments){%>
+                  <div class="card comment-card mb-3 ">
+                    <div class="p-2 d-flex justifify-content-center">
+                      <div class="p-2"><span class="rounded"><img class="img-thumbnail"
+                            src="<%= review.author.imageUrl %>" alt="user" width="80"></span>
+                      </div>
+                      <div class="w-100 align-self-center">
+                        <h5>
+                          <%= review.author.username %> <span class="card-text mx-2"><small
+                              class="text-muted fst-italic"><%= days[review.createdAt.getDay()] %>,
+                              <%=review.createdAt.getDate()%>
+                              <%= months[review.createdAt.getMonth()] %>
+                              <%=review.createdAt.getFullYear()%></small> </span>
+                        </h5>
+                        <p class="starability-result" data-rating="<%=review.rating%>">
+                          Rated:
+                          <%= review.rating %> stars
                         </p>
                       </div>
-                      <% } %>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                      </div>
                     </div>
+                    <p class="mx-3">
+                      <%= review.text %>
+                    </p>
+                  </div>
+                  <% } %>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <% } %>
-      </section>
-    </div>
-  </div>
+        </div>
+      </div>
+      <% } %>
+  </section>
+</div>
+</div>
 </div>

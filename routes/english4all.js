@@ -371,7 +371,7 @@ router.post(
   "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/videoLesson",
   isLoggedIn,
   isVerified,
-  checkEnglishBoardMembership,
+  checkRoles("admin"),
   catchAsync(engClub.postLesson)
 );
 
@@ -400,9 +400,20 @@ router.put(
   isLoggedIn,
   isVerified,
   checkRoles("admin"),
-  checkEnglishBoardMembership,
   catchAsync(engClub.updateLesson)
 );
+
+
+router.post(
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/weeklyPractice",
+  isLoggedIn,
+  isVerified,
+  checkRoles("admin"),
+  catchAsync(engClub.postWeeklyPractice)
+);
+
+
+
 
 //=====================================
 //

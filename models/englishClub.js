@@ -25,7 +25,6 @@ const englishClubSchema = new Schema({
     ],
   },
 
-
   EnglishType: {
     type: String,
     trim: true,
@@ -65,7 +64,6 @@ const englishClubSchema = new Schema({
     type: String,
     required: true,
   },
-
 
   // image
   bannerImageUrlMedium: {
@@ -129,6 +127,10 @@ const englishClubSchema = new Schema({
     trim: true,
   },
 
+  onlineMonthlyEvaluationLink: {
+    type: String,
+  },
+
   englishCoach: [{
     type: Schema.Types.ObjectId,
     ref: "User",
@@ -178,10 +180,54 @@ const englishClubSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "EnglishWeeklyLessons",
   }, ],
+
   media: [{
     type: Schema.Types.ObjectId,
     ref: "EnglishClubMedia",
   }, ],
+
+  // English Club Exercise
+  grammarExercise: [{
+    type: Schema.Types.ObjectId,
+    ref: "EnglishWeeklyExercises",
+  }, ],
+
+  vocabularyExercise: [{
+    type: Schema.Types.ObjectId,
+    ref: "EnglishWeeklyExercises",
+  }, ],
+
+  LSC: [{
+    type: Schema.Types.ObjectId,
+    ref: "EnglishWeeklyExercises",
+  }, ],
+
+
+  readingComprehensionExercise: [{
+    type: Schema.Types.ObjectId,
+    ref: "EnglishWeeklyExercises",
+  }, ],
+
+  listeningExercise: [{
+    type: Schema.Types.ObjectId,
+    ref: "EnglishWeeklyExercises",
+  }, ],
+
+  watchingComprehensionExercise: [{
+    type: Schema.Types.ObjectId,
+    ref: "EnglishWeeklyExercises",
+  }, ],
+
+  readAloudExercise: [{
+    type: Schema.Types.ObjectId,
+    ref: "EnglishWeeklyExercises",
+  }, ],
+
+  dictationExercise: [{
+    type: Schema.Types.ObjectId,
+    ref: "EnglishWeeklyExercises",
+  }, ],
+
 }, {
   timestamps: true,
 });
@@ -582,6 +628,63 @@ const weeklyLessonSchema = new Schema({
   timestamps: true,
 });
 
+// weekly lesson schema
+const weeklyExerciseSchema = new Schema({
+  exerciseTitle: {
+    type: String,
+  },
+
+  exerciseLink: {
+    type: String,
+  },
+
+  exerciseCorrectionLink: {
+    type: String,
+  },
+
+  level: {
+    type: String,
+    required: true,
+    enum: [
+      "A1",
+      "A2",
+      "B1",
+      "B2",
+      "C1",
+      "C2",
+    ],
+  },
+
+  exerciseType: {
+    type: String,
+    required: true,
+    enum: [
+      "Grammar",
+      "Vocabulary",
+      "Listening Comprehemsion",
+      "Dictation",
+      "Reading Comprehension",
+      "Watching Comprehension",
+      "Read Aloud",
+      "LSC"
+    ],
+  },
+
+  moreExerciseLink: {
+    type: String,
+  },
+
+
+  postedAT: {
+    type: Date,
+    default: format(Date.now(), "MM/dd/yyyy"),
+  },
+}, {
+  timestamps: true,
+});
+
+
+
 // english club leaders schema
 const workersOfMonthSchema = new Schema({
   studentOfMonth: {
@@ -681,6 +784,12 @@ const englishWeeklyLessons = mongoose.model(
   weeklyLessonSchema
 );
 
+const englishWeeklyExercises = mongoose.model(
+  "EnglishWeeklyExercises",
+  weeklyExerciseSchema
+);
+
+
 const englishClubWorkersOfMonth = mongoose.model(
   "EnglishClubWorkersOfMonth",
   workersOfMonthSchema
@@ -697,6 +806,7 @@ module.exports = {
   onlineDebate,
   clubMeeting,
   englishWeeklyLessons,
+  englishWeeklyExercises,
   englishClubWorkersOfMonth,
   englishClubMedia,
 };

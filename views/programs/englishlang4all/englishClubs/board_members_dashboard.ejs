@@ -23,13 +23,9 @@
 <% if(currentUser.role === "admin"){%>
 <!-- Admin  -->
 <div class="container my-5 p-3 col-md-8" style="background-color: aliceblue;">
+  <h4 class="text-center py-4">Handling Club Members</h4>
   <div class="d-flex justify-content-around">
     <p>
-      <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#videoLesson"
-        aria-expanded="false" aria-controls="collapseExample">
-        Post a new video lesson
-      </button>
-
       <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#new-member"
         aria-expanded="false" aria-controls="collapseExample">
         Add new member
@@ -41,6 +37,7 @@
       </button>
     </p>
   </div>
+
 
   <!-- Add New Member Form -->
   <div class="collapse  p-5" id="new-member" style="background-color: rgb(192, 198, 203);">
@@ -82,6 +79,23 @@
       <button class="btn my-3  me-2 btn-success" type="submit">Create a new board position</button>
     </form>
   </div>
+</div>
+
+
+<div class="container my-5 p-3 col-md-8" style="background-color: rgb(147, 175, 250);">
+  <h4 class="text-center py-4">English Club Weekly Activities</h4>
+  <div class="d-flex justify-content-around">
+    <p>
+      <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#videoLesson"
+        aria-expanded="false" aria-controls="collapseExample">
+        Post a new video lesson
+      </button>
+
+      <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#weeklyExercise"
+        aria-expanded="false" aria-controls="collapseExample">
+        Post weekly practice exercises
+      </button>
+  </div>
 
   <!-- Add New Video Form -->
   <div class="collapse p-5" id="videoLesson" style="background-color: rgb(129, 157, 153);">
@@ -109,10 +123,61 @@
       <button class="btn my-3  mx-2 btn-success" type="submit">Post</button>
     </form>
   </div>
+
+  <!-- Weekly exercise Form -->
+  <div class="collapse  p-5" id="weeklyExercise" style="background-color: rgb(238, 240, 243);">
+    <form
+      action="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/board_dashboard/weeklyPractice"
+      method="POST">
+
+      <!-- Exercise Type-->
+      <label class="form-label my-3" for="exerciseType">Type of exercise</label>
+      <select class="form-select" name="practice[exerciseType]" aria-label="Default select example">
+        <option selected value="Grammar">Grammar</option>
+        <option value="Vocabulary">Vocabulary</option>
+        <option value="Listening Comprehension">Listening Comprehension</option>
+        <option value="Reading Comprehension">Reading Comprehension</option>
+        <option value="Watching Comprehension">Watching Comprehension</option>
+        <option value="Dictation">Dictation</option>
+        <option value="Read Aloud">Read Aloud</option>
+        <option value="LSC">Read Aloud</option>
+      </select>
+
+      <!-- Exercise Level -->
+      <label class="form-label my-3" for="">Exercise level</label>
+      <select class="form-select" name="practice[level]" aria-label="Default select example">
+        <option selected value="A1">A1 Elementary</option>
+        <option value="A2">A2 Pre-Intermediate</option>
+        <option value="B1">B1 Intermediate</option>
+        <option value="B2">B2 Upper-Intermediate</option>
+        <option value="C1">C1 Advanced</option>
+        <option value="C2">C2 Proficient</option>
+      </select>
+
+      <!-- Exercice Title-->
+      <label class="form-label my-3" for="Exercise title">Exercise Title</label>
+      <input type="text" class="form-control" name="practice[exerciseTitle]" required id="" value="" />
+
+      <!-- Exercice Link-->
+      <label class="form-label my-3" for="Exercise Link">Exercise link</label>
+      <input type="text" class="form-control" name="practice[exerciseLink]" required id="" value="" />
+
+      <!-- Exercice Correction Link-->
+      <label class="form-label my-3" for="Exercise Link">Exercise Correction link</label>
+      <input type="text" class="form-control" name="practice[exerciseCorrectionLink]" required id="" value="" />
+
+      <!-- More Exercice Link-->
+      <label class="form-label my-3" for="Exercise Link">More Exercise link</label>
+      <input type="text" class="form-control" name="practice[moreExerciseLink]" required id="" value="" />
+
+      <button class="btn my-3  me-2 btn-success" type="submit">Add new weekly practice</button>
+    </form>
+  </div>
 </div>
 
 <hr class="" style="background-color: rgb(18, 2, 23); height: 1rem;" />
 
+<!-- Video Lesson -->
 <div class="d-flex mb-3 justify-content-center">
   <a href="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/board_dashboard/videoLessons"
     type="button" class="btn mx-2 btn-outline-primary">

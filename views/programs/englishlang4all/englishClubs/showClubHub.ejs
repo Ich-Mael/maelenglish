@@ -30,33 +30,30 @@
     height: 2.3rem;
   }
 
+  .clubs-card {
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+    border-radius: 5px;
+    margin-top: 5rem;
+    padding: 0 2rem;
+  }
+
   .type-of-club {
-    margin: 2rem;
-    color: #057c5e;
+    margin: 1rem 0 0;
+    color: #f0f5f4;
     z-index: 300;
     display: inline-block;
     text-align: start;
     font-family: Georgia, 'Times New Roman', Times, serif;
-    padding: 2rem;
-    border: 1px solid rgb(15, 14, 14);
+    padding: 1.2rem;
+    background-color: #057c5e;
+    border: 1px solid rgb(255, 255, 255);
     font-weight: 600;
+    border-radius: 5px;
     letter-spacing: 0.2rem;
-    font-size: 2.5rem;
+    font-size: 1.3rem;
   }
 
-  .line-1 {
-    width: 5rem;
-    display: inline-block;
-    background-color: #057c5e;
-    height: 1.2rem;
-  }
 
-  .line-2 {
-    width: 35rem;
-    display: inline-block;
-    background-color: #057c5e;
-    height: 1.2rem;
-  }
 
   @media (max-width: 1200px) {
     .type-of-club {
@@ -202,13 +199,9 @@
           <!-- nav -->
 
           <!-- High school -->
-          <div class="container">
+          <div class="container clubs-card">
             <!-- University English Club -->
-            <div class="container" id="univ">
-             <div class="line-1"></div>
              <h4 class="type-of-club">High-School English Clubs</h4>
-             <div class="line-2"></div>
-           </div>
          <div class="row pb-5">
          <% for(let Club of hub.clubs.High_school){%>
           <div class="col-md-6 col-lg-4 my-5">
@@ -229,13 +222,9 @@
         </div>
 
           <!-- university -->
-          <div class="container">
+          <div class="container clubs-card ">
              <!-- University English Club -->
-             <div class="container" id="univ">
-              <div class="line-1"></div>
               <h4 class="type-of-club">University English Clubs</h4>
-              <div class="line-2"></div>
-            </div>
           <div class="row pb-5">
           <% for(let Club of hub.clubs.University){%>
           <div class="col-md-6 col-lg-4 my-5">
@@ -252,16 +241,13 @@
           </div>
           <%}%>
           </div>
+       <hr>
         </div>
 
           <!-- Company -->
-          <div class="container">
+          <div class="container clubs-card ">
             <!-- University English Club -->
-            <div class="container" id="univ">
-             <div class="line-1"></div>
              <h4 class="type-of-club">Company English Clubs</h4>
-             <div class="line-2"></div>
-           </div>
          <div class="row pb-5">
          <% for(let Club of hub.clubs.Company){%>
           <div class="col-md-6 col-lg-4 my-5">
@@ -282,12 +268,8 @@
         </div>
 
           <!-- Professional -->
-         <div class="container">
-          <div class="container" id="univ">
-           <div class="line-1"></div>
+         <div class="container clubs-card ">
            <h4 class="type-of-club">Professional English Clubs</h4>
-           <div class="line-2"></div>
-         </div>
        <div class="row pb-5">
        <% for(let Club of hub.clubs.Professional){%>
           <div class="col-md-6 col-lg-4 my-5">
@@ -308,12 +290,8 @@
       </div>
 
           <!-- Professional -->
-         <div class="container">
-          <div class="container" id="univ">
-           <div class="line-1"></div>
+         <div class="container clubs-card ">
            <h4 class="type-of-club">Other English Clubs</h4>
-           <div class="line-2"></div>
-         </div>
        <div class="row pb-5">
        <% for(let Club of hub.clubs.Simple){%>
           <div class="col-md-6 col-lg-4 my-5">

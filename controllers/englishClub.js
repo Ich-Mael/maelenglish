@@ -23,6 +23,7 @@ const {
     onlineDebate,
     englishClubWorkersOfMonth,
     englishWeeklyLessons,
+    englishWeeklyExercises,
     englishClubMedia,
 } = require("../models/englishClub");
 
@@ -190,8 +191,17 @@ module.exports.showEnglishClub = async (req, res) => {
         })
         .populate("dailyVocab")
         .populate("weeklyMeeting")
+        .populate("grammarExercise")
+        .populate("vocabularyExercise")
+        .populate("LSC")
+        .populate("readingComprehensionExercise")
+        .populate("listeningExercise")
+        .populate("watchingComprehensionExercise")
+        .populate("readAloudExercise")
+        .populate("dictationExercise")
         .populate("onlineDebates");
 
+    console.log(club);
 
     res.render("programs/englishlang4all/englishClubs/show", {
         club,
@@ -453,6 +463,66 @@ module.exports.updateLesson = async (req, res) => {
 }
 
 
+//======================================
+//       Weekly Practice 
+//======================================
+module.exports.postWeeklyPractice = async (req, res) => {
+    const club_id = req.params.club_id;
+    const city = req.params.city;
+    const hub_id = req.params.hub_id;
+
+    const englishClub = await englishClubs.findById(club_id);
+
+    const newPractice = new englishWeeklyExercises(req.body.practice)
+    await newPractice.save();
+
+    if (newPractice.exerciseType === "Grammar") {
+        englishClub.grammarExercise.push(newPractice._id);
+        await englishClub.save();
+    }
+
+    if (newPractice.exerciseType === "Vocabulary") {
+        englishClub.vocabularyExercise.push(newPractice._id);
+        await englishClub.save();
+    }
+
+    if (newPractice.exerciseType === "Listening Comprehemsion") {
+        englishClub.listeningExercise.push(newPractice._id);
+        await englishClub.save();
+    }
+
+
+    if (newPractice.exerciseType === "Dictation") {
+        englishClub.dictactionExercise.push(newPractice._id);
+        await englishClub.save();
+    }
+
+
+    if (newPractice.exerciseType === "Reading Comprehension") {
+        englishClub.readingComprehensionExercise.push(newPractice._id);
+        await englishClub.save();
+    }
+
+    if (newPractice.exerciseType === "Watching Comprehension") {
+        englishClub.watchingComprehensionExercise.push(newPractice._id);
+        await englishClub.save();
+    }
+
+    if (newPractice.exerciseType === "Read Aloud") {
+        englishClub.readAloudExercise.push(newPractice._id);
+        await englishClub.save();
+    }
+
+    if (newPractice.exerciseType === "LSC") {
+        englishClub.LSC.push(newPractice._id);
+        await englishClub.save();
+    }
+
+    res.send("New exercise posted");
+}
+
+
+
 
 
 //======================================
@@ -627,9 +697,12 @@ module.exports.memberGrade = async (req, res) => {
 module.exports.showMemberGrade = async (req, res) => {
     const clubMember = await englishClubMember.findById(req.params.member_id).populate("clubMemberProgress").populate("clubMember");
     const club = await englishClubs.findById(req.params.club_id);
-    console.log(clubMember);
-    res.render("programs/englishlang4all/englishClubs/grading/memberGradeShow", {
-        clubMember,
-        club
-    });
+    if (clubMember) {
+        res.render("programs/englishlang4all/englishClubs/grading/memberGradeShow", {
+            clubMember,
+            club
+        })
+    } else {
+        req.flash("error", "Vous n’êtes pas membre de ce club d’Anglais");
+    };
 }
