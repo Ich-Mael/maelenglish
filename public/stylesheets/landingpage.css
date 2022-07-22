@@ -16,7 +16,7 @@ body {
   margin: 0;
   /* overflow-x: hidden; */
   padding: auto;
-  background: #f5f5f7;
+  background: #f3edf9;
   font-family: "Roboto";
 }
 
@@ -24,26 +24,57 @@ body {
   overflow-x: hidden;
 }
 
-.learn-with-us,
-.why-afrohk,
-.partners,
-.clients,
-.about,
-.services {
+
+.section-bg {
+  padding: 120px 0;
+  color: #fff;
+}
+
+.section-bg:before {
+  content: "";
+  background: #1b1b1b;
+  position: absolute;
+  bottom: 60px;
+  top: 60px;
+  left: 0;
+  right: 0;
+  transform: skewY(-3deg);
+}
+
+.section-title {
   font-size: 2.5rem;
   /* text-transform: uppercase; */
-  font-family: "Chivo", sans-serif;
+  /* font-family: "Chivo", sans-serif; */
+  /* font-family: "Raleway", sans-serif; */
+  font-family: Georgia, 'Times New Roman', Times, serif;
   margin: 0;
   font-weight: 900;
-  letter-spacing: 0.1rem;
-  padding: 2rem 0;
+  letter-spacing: 0.2rem;
+
   color: rgba(2, 24, 51, 0.979);
   text-shadow: 1px 2px 0px rgba(255, 255, 255, 0.712);
   text-align: center;
+  font-weight: bold;
+  /* text-transform: uppercase; */
+  margin-bottom: 20px;
+  padding: 2rem 0;
+  position: relative;
 }
 
+.section-title::after {
+  content: '';
+  position: absolute;
+  display: block;
+  width: 150px;
+  height: 5px;
+  background: #6704a5;
+  bottom: 0;
+  left: calc(50% - 75px);
+}
+
+
 .title-underline {
-  border-bottom: 5px solid rgb(151, 3, 151);
+  border-bottom: 5px solid rgb(84, 3, 151);
   padding-bottom: 1rem;
 }
 
@@ -563,95 +594,30 @@ profile-link:hover {
 
 /*  End main content */
 
+/* learn with us */
 
-/* Programs*/
-.program-section-wrapper {
-  overflow-x: hidden;
-  margin: 0 0;
-  padding: 2rem 0 5rem;
-  background-color: rgb(246, 237, 248);
+.learn-line-top {
+  padding: 2rem 0;
+  margin-top: 10rem;
+  transform: skewY(-3deg);
+  background-color: rgb(81, 9, 157);
 }
 
-.my-card-wrapper {
-  margin: 0 2rem;
+.learn-line-bottom {
+  transform: skewY(-3deg);
+  height: 1.5rem;
+  background-color: rgb(81, 9, 157);
 }
 
-.my-card {
-  animation: moveProgCards 2s 1.2s forwards;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
-}
+.why-join-us {
+  font-family: "Chango";
+  color: white;
+  text-align: center;
 
-.my-card img {
-  width: 100%;
-  height: 280px;
-  object-fit: cover;
-  overflow: hidden;
 }
-
-.image-wrapper {
-  overflow: hidden;
-}
-
-.program-image {
-  opacity: 0.8;
-}
-
-.program-name {
-  font-family: "Chivo", sans-serif;
-  font-weight: 700;
-  font-size: 1.5rem;
-}
-
-.program-description {
-  font-family: Georgia, 'Times New Roman', Times, serif;
-  font-size: 1.3rem;
-  font-weight: 400;
-  margin: 1.5rem 0;
-  font-size: 1.2rem;
-  color: rgba(32, 32, 32, 0.781);
-  line-height: 3rem;
-  /* height: 8rem; */
-}
-
-.my-card:hover .program-name {
-  color: rgb(92, 18, 114);
-}
-
-.my-card:hover .program-image {
-  opacity: 1;
-}
-
-.course-btn {
-  background-color: rgba(159, 33, 163, 0.938);
-  transition: all 0.7s;
-}
-
-.course-link {
-  color: #fcfbfa;
-  font-size: 1rem;
-  padding: 0;
-  text-decoration: none;
-}
-
-.course-btn:hover {
-  background-color: #000;
-  color: #fcfbfa;
-}
-
-.course-btn:hover .cours-link {
-  text-decoration: none;
-  color: whitesmoke;
-}
-
-.course-link:hover {
-  color: #fcfbfa;
-}
-
-/* Section 2 */
 
 .learn-section {
-  height: 55vh;
-  background: url("https://images.pexels.com/photos/3059748/pexels-photo-3059748.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
+  height: 75vh;
   background-size: cover;
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -660,8 +626,9 @@ profile-link:hover {
   position: relative;
   /* background-attachment: fixed; */
   background-repeat: no-repeat;
-  margin: 0;
+  margin: 1rem 0 2rem;
   padding: 0;
+
 }
 
 .learn-section:before {
@@ -673,11 +640,22 @@ profile-link:hover {
   background: linear-gradient(to bottom, rgba(36, 36, 35, 0.452), rgba(23, 24, 24, 0.342), rgba(33, 34, 34, 0.247));
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   /* background: rgba(0, 0, 0, 0.253); */
+  background: url("https://images.pexels.com/photos/3184163/pexels-photo-3184163.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2");
+  height: 75vh;
+  background-size: cover;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-position: center center;
+  position: relative;
+  /* background-attachment: fixed; */
+  background-repeat: no-repeat;
   position: absolute;
   bottom: 0;
   top: 0;
   left: 0;
   right: 0;
+  transform: skewY(-3deg);
 }
 
 .hero {
@@ -696,10 +674,12 @@ profile-link:hover {
 
 .study {
   font-family: "Ultra", serif;
-  color: rgba(231, 180, 10, 0.952);
+  color: rgba(114, 8, 167, 0.952);
   font-size: 2.5rem;
-  text-shadow: 1px 2px 1px black;
+  text-shadow: 1px 1px 1px rgb(255, 255, 255);
   position: relative;
+  padding: 1rem;
+  /* background-color: rgba(255, 255, 255, 0.686); */
   letter-spacing: 0.15rem;
   font-weight: 600;
   z-index: 200;
@@ -718,7 +698,7 @@ profile-link:hover {
 
 .word-slider>li {
   font-family: "Ultra", serif;
-  color: rgb(240, 232, 229);
+  color: rgb(247, 101, 10);
   text-shadow: 1px 2px 1px black;
   text-align: center;
   font-size: 2.5rem;
@@ -856,6 +836,99 @@ profile-link:hover {
   clear: both;
 }
 
+
+
+
+
+/* Programs*/
+.program-section-wrapper {
+  overflow-x: hidden;
+  margin: 0 0;
+  padding: 2rem 0 4rem;
+  /* background-color: rgb(255, 255, 255); */
+}
+
+#program {
+  margin-top: 4rem;
+}
+
+.my-card-wrapper {
+  margin: 0 2rem;
+}
+
+.my-card {
+  animation: moveProgCards 2s 1.2s forwards;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+}
+
+.my-card img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  overflow: hidden;
+}
+
+.image-wrapper {
+  overflow: hidden;
+}
+
+.program-image {
+  opacity: 0.8;
+}
+
+.program-name {
+  font-family: "Chivo", sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.program-description {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 1.3rem;
+  font-weight: 400;
+  margin: 1.5rem 0;
+  font-size: 1.2rem;
+  color: rgba(32, 32, 32, 0.781);
+  line-height: 3rem;
+  /* height: 8rem; */
+}
+
+.my-card:hover .program-name {
+  color: rgb(92, 18, 114);
+}
+
+.my-card:hover .program-image {
+  opacity: 1;
+}
+
+.course-btn {
+  background-color: rgba(159, 33, 163, 0.938);
+  transition: all 0.7s;
+}
+
+.course-link {
+  color: #fcfbfa;
+  font-size: 1rem;
+  padding: 0;
+  text-decoration: none;
+}
+
+.course-btn:hover {
+  background-color: #000;
+  color: #fcfbfa;
+}
+
+.course-btn:hover .cours-link {
+  text-decoration: none;
+  color: whitesmoke;
+}
+
+.course-link:hover {
+  color: #fcfbfa;
+}
+
+/* Section 2 */
+
 /* End Programs*/
 /* testimonials section */
 
@@ -873,10 +946,25 @@ profile-link:hover {
   overflow-x: hidden;
   display: flex;
   align-items: center;
+
   font-family: "Roboto", sans-serif;
   justify-content: space-around;
-  background-color: rgb(255, 255, 255);
+  /* background-color: rgb(255, 255, 255); */
   padding: 5rem 0 10rem;
+
+  transform: skewY(-3deg);
+}
+
+.customer-section-top-line {
+  transform: skewY(-2deg);
+  margin: 5rem 0 2rem;
+  height: 2rem;
+  background-color: rgb(81, 9, 157);
+
+}
+
+.custumer-container {
+  transform: skewY(3deg);
 }
 
 #customers-cards {
@@ -1101,7 +1189,7 @@ customers-cards:before {
 }
 
 .mission {
-  background-color: whitesmoke;
+  /* background-color: whitesmoke; */
 }
 
 .presentation-text-wrapper {
@@ -1291,6 +1379,7 @@ customers-cards:before {
 
 #access-wrapper {
   background-color: white;
+  padding: 10rem 0 6rem;
 }
 
 .acc-text-wrapper {
@@ -1378,8 +1467,8 @@ customers-cards:before {
 }
 
 .counts {
-  padding: 80px 0;
-  background-color: rgb(255, 255, 255);
+  padding: 5rem 0 10rem 0;
+  background-color: rgba(240, 247, 250, 0.65);
 }
 
 .counts .count-box {
@@ -1387,8 +1476,8 @@ customers-cards:before {
   width: 100%;
   position: relative;
   text-align: center;
-  box-shadow: 0px 2px 35px rgba(0, 0, 0, 0.06);
-  box-shadow: rgba(0, 0, 0, 0.09) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+
   border-radius: 4px;
 }
 
@@ -1400,8 +1489,8 @@ customers-cards:before {
   left: 50%;
   transform: translateX(-50%);
   font-size: 24px;
-  background: rgb(22, 22, 22);
-  color: rgb(234, 0, 255);
+  background: rgb(159, 3, 211);
+  color: rgb(255, 255, 255);
   border-radius: 50px;
   border: 2px solid #fff;
   box-shadow: 0px 2px 25px rgba(0, 0, 0, 0.1);
@@ -1411,19 +1500,24 @@ customers-cards:before {
 }
 
 .counts .count-box span {
-  font-size: 36px;
+  font-size: 4rem;
   display: block;
   font-weight: 700;
-  color: #56047c;
+  color: #8005a5;
 }
 
 .counts .count-box p {
   padding: 0;
   margin: 0;
+  background-color: rgba(0, 0, 0, 0.77);
   font-family: "Raleway", sans-serif;
   font-weight: 500;
-  font-size: 14px;
+  color: rgba(255, 255, 255, 0.76);
+  padding: 1rem;
+  border-radius: 5px;
+  font-size: 1.52rem;
 }
+
 
 /*--------------- Clients ----------*/
 
@@ -2200,9 +2294,13 @@ customers-cards:before {
     display: none;
   }
 
-  .learn-section {
+  .learn-section,
+  .learn-line-top,
+  .learn-line-bottom {
     display: none;
   }
+
+
 
   .study {
     font-size: 2rem;
