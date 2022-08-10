@@ -1,84 +1,165 @@
-const { Serie, CourseVideo, Subject, Chapter } = require("../models/100bac");
+const User = require("../models/user");
+const {
+  Class,
+  Chapter,
+  Subject,
+  HStudent,
+  HTeacher,
+  HSCourseVideo,
+} = require("../models/100bac");
 
 // show serie home
-module.exports.showSerieHome = async (req, res) => {
-  const serie = await Serie.findById(req.params.serie_id).populate("subjects");
-  res.render("programs/100bac/Serie/serieHome", { serie });
+module.exports.showClassHome = async (req, res) => {
+  const schoolClass = await Class.findById(req.params.class_id).populate("subjects");
+  res.render("programs/100bac/Class/classHome", {
+    schoolClass
+  });
 };
+
+//student
+module.exports.createHStudent = async (req, res) => {
+
+  const user = await User.findOne({
+    username: req.body.student_username
+  });
+
+  //create a new high student
+
+  const new_highStudent = new HStudent({
+    school: req.body.school,
+    class: req.body.class,
+    serie: req.body.serie,
+    studentBasicInfo: user._id
+  });
+
+  await new_highStudent.save();
+
+  // Adding user status to user
+  user.isHighSchoolStudent = true;
+  user.highSchool_id = new_highStudent._id;
+
+  await user.save();
+
+  res.redirect("/admindashboard");
+}
+
+//Student profile
+module.exports.studentProfile = async (req, res) => {
+
+  const student = await HStudent.findById(req.params.highSchool_id).populate("chaptersPremium").populate("homeTeacher").populate("studentBasicInfo")
+
+  res.render("programs/100bac/student/profile", {
+    student
+  });
+}
 
 /* SUBJECTS */
 
-// add a subject to a serie
+// add a subject to a class
 module.exports.addSubject = async (req, res) => {
-  const serie = await Serie.findById(req.params.serie_id);
+  const schoolClass = await Class.findById(req.params.class_id);
   const newSubject = new Subject(req.body.subject);
   await newSubject.save();
 
-  serie.subjects.push(newSubject._id);
-  await serie.save();
+  schoolClass.subjects.push(newSubject._id);
+  await schoolClass.save();
 
   res.redirect("/100bac");
 };
 
 // view a subject
 module.exports.viewSubject = async (req, res) => {
-  const serie = await Serie.findById(req.params.serie_id);
+  const schoolClass = await Class.findById(req.params.class_id);
   const subject = await Subject.findById(req.params.subject_id).populate(
     "chapitres"
   );
-  res.render("programs/100bac/Serie/subjects/viewSubject", { serie, subject });
+  res.render("programs/100bac/Class/subjects/viewSubject", {
+    schoolClass,
+    subject
+  });
 };
 
 // view all subjects
 module.exports.viewAllSubject = async (req, res) => {
-  const serie = await Serie.findById(req.params.serie_id);
+  const schoolClass = await Class.findById(req.params.class_id);
   const subjects = await Subject.find({});
-  res.render("programs/100bac/Serie/subjects/viewAllSubject", {
-    serie,
+  res.render("programs/100bac/Class/subjects/viewAllSubject", {
+    schoolClass,
     subjects,
   });
 };
 
 /* CHAPTERS */
 
-// create a chapter
+// Show all chapters
+module.exports.viewAllChapters = async (req, res) => {
+
+  const schoolClass = await Class.findById(req.params.class_id);
+  const subject = await Subject.findById(req.params.subject_id).populate("chapitres");
+  res.render("programs/100bac/Class/chapters/allChapters", {
+    subject,
+    schoolClass
+  })
+};
+
+// Create a chapter
 module.exports.createChapter = async (req, res) => {
-  const serie = await Serie.findById(req.params.serie_id);
+  const schoolClass = await Class.findById(req.params.class_id);
   const subject = await Subject.findById(req.params.subject_id);
 
   const newChapter = new Chapter(req.body.chapter);
   await newChapter.save();
+
 
   subject.chapitres.push(newChapter._id);
   await subject.save();
   res.redirect("/100bac");
 };
 
-// view a chapter course
+// View a chapter course
 module.exports.viewChapter = async (req, res) => {
-  const serie = await Serie.findById(req.params.serie_id);
+  const schoolClass = await Class.findById(req.params.class_id);
   const subject = await Subject.findById(req.params.subject_id);
   const chapter = await Chapter.findById(req.params.chapter_id).populate(
     "courses"
   );
+  console.log(chapter)
+  res.render("programs/100bac/Class/chapters/viewChapter", {
+    schoolClass,
+    subject,
+    chapter,
+  });
+};
 
-  res.render("programs/100bac/Serie/chapters/viewChapter", {
+// Free exercise
+module.exports.viewChapterSE = async (req, res) => {
+  const serie = await Class.findById(req.params.class_id);
+  const subject = await Subject.findById(req.params.subject_id);
+  const chapter = await Chapter.findById(req.params.chapter_id)
+    .populate("starterExercise")
+    .populate("CIAM_Basic")
+    .populate("practiceExercises");
+
+  res.render("programs/100bac/Class/chapters/viewChapterS-E", {
     serie,
     subject,
     chapter,
   });
 };
 
-// view a chapter starter exercice
-module.exports.viewChapterSE = async (req, res) => {
-  const serie = await Serie.findById(req.params.serie_id);
+// Premium
+
+module.exports.viewChapterPRE = async (req, res) => {
+  const schoolClass = await Class.findById(req.params.class_id);
   const subject = await Subject.findById(req.params.subject_id);
   const chapter = await Chapter.findById(req.params.chapter_id)
-    .populate("starterExercise")
-    .populate("practiceExercises");
+    .populate("advanceExercise")
+    .populate("nationalExams")
+    .populate("CIAM_Premium")
+    .populate("schoolExams");
 
-  res.render("programs/100bac/Serie/chapters/viewChapterS-E", {
-    serie,
+  res.render("programs/100bac/Class/chapters/viewChapterPRE", {
+    schoolClass,
     subject,
     chapter,
   });
@@ -90,16 +171,19 @@ module.exports.viewChapterSE = async (req, res) => {
 
 ===========================================*/
 module.exports.createVideoContent = async (req, res) => {
-  // const serie = await Serie.findById(req.params.serie_id);
+  // const serie = await Class.findById(req.params.class_id);
   // const subject = await Subject.findById(req.params.subject_id);
-  const chapter = await Chapter.findOne({ title: req.body.chapter });
-
-  const newCourseContent = new CourseVideo(req.body.video);
+  const chapter = await Chapter.findById(req.params.chapter_id)
+  const newCourseContent = new HSCourseVideo(req.body.video);
   await newCourseContent.save();
 
   //saving according to type of videos
   if (req.body.video.videoType === "course") {
     chapter.courses.push(newCourseContent._id);
+  }
+
+  if (req.body.video.videoType === "bonus_profs") {
+    chapter.Bonus_Prof.push(newCourseContent._id);
   }
 
   if (req.body.video.videoType === "starterEx") {
@@ -122,6 +206,17 @@ module.exports.createVideoContent = async (req, res) => {
     chapter.practiceExercises.push(newCourseContent._id);
   }
 
+  if (req.body.video.videoType === "CIAM_basic") {
+    chapter.CIAM_Basic.push(newCourseContent._id);
+  }
+
+  if (req.body.video.videoType === "CIAM_Premium") {
+    chapter.CIAM_Premium.push(newCourseContent._id);
+  }
+
+  if (req.body.video.videoType === "exo_perso") {
+    chapter.exo_perso.push(newCourseContent._id);
+  }
   await chapter.save();
 
   res.redirect("/100bac");

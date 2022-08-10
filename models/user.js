@@ -84,7 +84,36 @@ const userSchema = new Schema({
     trim: true,
   },
 
+  //High_school student
+  isHighSchoolStudent: {
+    type: Boolean,
+    default: false,
+  },
+
+  highSchool_id: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
+  //Home Teacher
+  isHomeTeacher: {
+    type: Boolean,
+    default: false,
+  },
+
+  homeTeacher_id: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
   //social media links
+  likedPage: {
+    type: Boolean,
+    default: false,
+  },
+
   facebookLink: {
     type: String,
     trim: true,
@@ -114,6 +143,7 @@ const userSchema = new Schema({
     type: Boolean,
     default: false,
   },
+
 
   // programs
   ownedPrograms: [],

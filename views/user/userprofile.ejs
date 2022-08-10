@@ -1,24 +1,12 @@
 <% layout('layouts/boilerplate') %>
-    <link href="/stylesheets/user/userprofile.css" rel="stylesheet" />
+<link href="/stylesheets/user/userprofile.css" rel="stylesheet" />
 
-    <h1 class="welcome-msg text-center">
-        Hi
-        <%= user.username %> ! <span>Welcome to your dashboard</span>
-    </h1>
+<h1 class="welcome-msg text-center">
+    Hi
+    <%= user.username %> ! <span>Welcome to your dashboard</span>
+</h1>
 
-    <div>
-        <h3>Mes cours</h3>
-        <% for(let course of user.coursesTaken) {%>
-            <div>
-                <%= course.title %>
-            </div>
-            <%}%>
-    </div>
-    <div>
-        <h3>Cours Dispenses</h3>
-        <% for(let course of user.coursesGiven) {%>
-            <div>
-                <%= course.title %>
-            </div>
-            <%}%>
-    </div>
+<% if (currentUser.isHighSchoolStudent) {%>
+<a class="btn btn-outline-primary"
+    href="/user/<%=currentUser._id%>/highschoolDashboard/<%=currentUser.highSchool_id%>">Easy-Maths</a>
+<%}%>

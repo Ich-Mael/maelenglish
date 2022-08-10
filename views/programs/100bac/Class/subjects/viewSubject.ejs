@@ -6,28 +6,34 @@
 <!-- Breadcrumbs-->
 <div class="breadcrumb">
   <a href="/100bac" class="">Acceuil - 100% BAC</a>
-  <a href="/100bac/TleD" class=""><%= serie.title %></a>
+  <a href="/100bac/TleD" class=""><%=  schoolClass.title %></a>
   <a href="/100bac/TleD/maths" class="active"><%= subject.title %> </a>
 </div>
 <!-- End -->
 
-<h1 class="maths-title text-center"><span><%=serie.title%></span> <%=subject.title%></h1>
+<h1 class="subject-title text-center"><span><%=subject.title%> </span><%=  schoolClass.title %></h1>
 
 <div id="maths-section">
   <div class="chapters">
-    <h3 class="text-warning text-center pt-4">Explication du Cours et Exercices d'Entraînement</h3>
+    <h3 class="text-warning text-center pt-4">Profitez gratuitement des explications du Cours et Exercices corrigés de
+      CIAM</h3>
     <p class="instruction-paragraph">
       Prenez le temps de bien suivre les explications dans les vidéos <br> Essayez les exercices
       d'entrainement pour mieux comprendre. <br>
       Bonne Concentration 😉...
     </p>
+
   </div>
 </div>
+<!--
+<h4 class="text-center mt-4 py-2" style="color: rgb(46, 57, 69); font-style: italic;">Obtenez un Accès Premium en
+  s'inscrivant dans nos centres de cours d'appui</h4>
+-->
 
 <!-- Graph Calculator -->
 <h3 class="text-center my-5"> Utilisation de la calcuatrice</h3>
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-md-6 my-2">
     <div class="calc-card d-flex justify-content-center align-items-center flex-column">
       <h4 class="text-center py-3">Calculatrice Graphique</h4>
       <button type="button" class="btn mb-4 w-50 btn-outline-primary " data-bs-toggle="modal"
@@ -35,7 +41,7 @@
     </div>
   </div>
 
-  <div class="col-md-6">
+  <div class="col-md-6 my-2">
     <div class="calc-card d-flex justify-content-center align-items-center flex-column">
       <h4 class="text-center py-3">Calculatrice Scientifique</h4>
       <button type="button" class="btn mb-4 w-50 btn-outline-primary " data-bs-toggle="modal"
@@ -837,7 +843,7 @@
       <div class="col-md-8 ">
         <div class="d-flex justify-content-center flex-wrap align-items-center">
           <h2 class="week-number">
-            Chapitre <%= i +1 %>: <%=chapter.title %></h2>
+            Chapitre <%= i +1 %>: <%= chapter.title %></h2>
         </div>
         <div class="lesson-links">
           <!-- Button trigger modal -->
@@ -847,7 +853,8 @@
               En savoir plus
             </button>
             <a class="btn mx-3 btn-outline-success"
-              href="/100bac/serie/<%=serie._id%>/subject/<%=subject._id%>/chapter/<%=chapter._id%>">Contenu du cours</a>
+              href="/100bac/class/<%= schoolClass._id%>/subject/<%=subject._id%>/chapter/<%=chapter._id%>">Contenu du
+              cours</a>
           </div>
           <!-- Modal  for course details video -->
           <div class="modal fade" id="N<%= chapter._id %>" tabindex="-1" aria-labelledby="exampleModalLabel"
@@ -889,24 +896,27 @@
         <div class="self-practice-wrapper">
           <h3 class="practice-alone text-center"> S'Entraîner</h3>
           <div class="self-practice-btn">
-            <a class="btn mx-3 btn-success"
-              href="/100bac/serie/<%=serie._id%>/subject/<%=subject._id%>/chapter/<%=chapter._id%>/SE">Exercices
+            <a class="btn mx-3 btn-primary"
+              href="/100bac/class/<%= schoolClass._id%>/subject/<%=subject._id%>/chapter/<%=chapter._id%>/SE">Exercices
               d'apprentissage</a>
-            <button class="btn video-btn btn-warning mx-2 my-2" type="button" data-bs-toggle="collapse"
+            <button class="btn video-btn btn-outline-primary mx-2 my-2" type="button" data-bs-toggle="collapse"
               data-bs-target="#self-p-1" aria-expanded="false" aria-controls="collapseExample">
-              Obtenir un compte VIP pour ce chapitre
+              Obtenir une accès premium pour ce chapitre
             </button>
+            <a class="btn mx-3 btn-warning"
+              href="/100bac/class/<%= schoolClass._id%>/subject/<%=subject._id%>/chapter/<%=chapter._id%>/PRE">Accès
+              Premium</a>
           </div>
 
           <div class="collapse" id="self-p-1">
             <div class="card card-body">
               <div class="container">
-                <h5 class="py-3 text-center">Contactez-nous avec le réseau de votre choix pour obtenir un compte VIP
+                <h5 class="py-3 text-center">Contactez-nous avec le réseau de votre choix pour obtenir un accès premium
                 </h5>
                 <div class="d-flex pb-3 justify-content-around">
                   <a style="display: inline-block;" href="tel: +22664350101">
                     <!-- <i class="fa mx-2 fa-phone" aria-hidden="true"></i> -->
-                    <span class="btn btn-dark">Orange BF</span></a>
+                    <span class="btn btn-dark" style="color: orangered;">Orange BF</span></a>
                   <a style="display: inline-block;" href="tel: +22653344444">
                     <!-- <i class="fa mx-2 fa-phone" aria-hidden="true"></i> -->
                     <span class="btn btn-primary">Moov Africa</span></a>
@@ -918,14 +928,16 @@
                     <i class="fa fa-whatsapp" aria-hidden="true"></i>
                     <span class="">WhatsApp</span></a>
                 </div>
+                <h4 class="text-center container py-2 price my-3">Prix: 2000fcfa</h4>
               </div>
               <hr>
-              <h3 class="text-center" style="color: rgb(44, 102, 156);">Avantage d'un compte VIP</h3>
+
+              <h3 class="text-center" style="color: rgb(44, 102, 156);">Avantage d'un accès premium</h3>
               <ul class="avantage">
+                <li class="item">Correction détaillée en vidéo des exercices de CIAM et plus</li>
                 <li class="item">Correction détaillée en vidéo des sujets d’examen</li>
                 <li class="item">Correction détaillée en vidéo des sujets des grands établissements</li>
-                <li class="item">Intégration à notre plateforme de coaching pour la réussite au BAC</li>
-                <li class="item">Réduction de 25% pour nos TD de remise à niveaux</li>
+                <li class="item">Intégration à notre plateforme pour le coaching</li>
               </ul>
             </div>
           </div>
@@ -937,10 +949,6 @@
   </div>
   <% } %>
 </div>
-
-
-
-
 
 
 <!-- Graph calculator script -->
