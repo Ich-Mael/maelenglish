@@ -16,7 +16,7 @@ module.exports.facebookPageLike = catchAsync(async (req, res, next) => {
     if ((req.user.isHighSchoolStudent && req.user.likedPage && Subject.students.includes(req.user._id)) || req.user.role === "admin") {
         next();
     } else {
-        res.send("Like our page");
+        res.render("social_media");
     }
 });
 

@@ -96,7 +96,7 @@
         </a>
         <ul class="dropdown-menu mx-2" aria-labelledby="navbarDropdown">
           <li>
-            <a class="dropdown-item" href="/100bac">OPERATION 100 % BAC</a>
+            <a class="dropdown-item" href="/100bac">Easy-Maths</a>
           </li>
           <li>
             <a class="dropdown-item" href="/englishlang4all">House Of English Lovers</a>
@@ -109,17 +109,17 @@
     </ul>
     <div class="navbar-nav ms-auto">
       <% if(typeof currentUser !=undefined){%>
-        <% if (!currentUser) {%>
-          <a class="nav-link-connexion me-2 my-2" href="/login">Connexion</a>
-          <%} else { %>
-            <h3 id="user" class="px-2 align-self-center">
-              <a class="profile-link" href="/">
-                <i class="bi bi-person-circle"></i>
-                <%=currentUser.username%>
-              </a>
-            </h3>
-            <a class="my-1  mx-2 btn btn-outline-danger" href="/logout">Deconnexion</a>
-            <%}%>
+      <% if (!currentUser) {%>
+      <a class="nav-link-connexion me-2 my-2" href="/login">Connexion</a>
+      <%} else { %>
+      <h3 id="user" class="px-2 align-self-center">
+        <a class="profile-link" href="/">
+          <i class="bi bi-person-circle"></i>
+          <%=currentUser.username%>
+        </a>
+      </h3>
+      <a class="my-1  mx-2 btn btn-outline-danger" href="/logout">Deconnexion</a>
+      <%}%>
               <%}%>
     </div>
   </div>

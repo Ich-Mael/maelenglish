@@ -632,7 +632,7 @@ hk-shadow {
 #facebook,
 #youtube,
 #instagram,
-#linkedIn,
+#linkedin,
 #twitter,
 #user_mail,
 #m-whatsapp {
@@ -662,6 +662,11 @@ hk-shadow {
 #youtube {
   color: rgb(245, 239, 239);
   background-color: rgb(241, 65, 21);
+}
+
+#linkedin {
+  color: rgb(245, 239, 239);
+  background-color: #0e76a8;
 }
 
 #instagram {
@@ -713,7 +718,7 @@ hk-shadow {
   background-color: rgb(9, 103, 192);
 }
 
-#linkedIn:hover {
+#linkedin:hover {
   color: rgb(245, 239, 239);
   transform: rotate(360deg);
   background-color: #0e76a8;
