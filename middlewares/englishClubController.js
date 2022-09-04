@@ -8,7 +8,8 @@ const {
 } = require("../models/courses");
 
 const {
-    englishClubs
+    englishClubs,
+    englishClubMember
 } = require("../models/englishClub");
 
 const catchAsync = require("../utilities/catchAsync");
@@ -20,7 +21,11 @@ module.exports.checkEnglishClubMembership = catchAsync(async (req, res, next) =>
         club_id
     } = req.params;
     const englishClub = await englishClubs.findById(club_id);
-    if (englishClub.members.includes(req.user._id) || req.user.role == "admin" || req.user.role == "english-club-admin") {
+    const checkingMember = await englishClubMember.findOne({
+        clubMember: req.user._id
+    })
+
+    if (englishClub.members.includes(checkingMember._id) || req.user.role == "admin" || req.user.role == "english-club-admin") {
         next();
     } else {
         req.flash("error", "Vous n’êtes pas membre de ce club d’Anglais");

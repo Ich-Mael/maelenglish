@@ -75,6 +75,7 @@
         </g>
       </g>
     </svg>
+
   </a>
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
     aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,7 +83,9 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
     <ul class="navbar-nav ms-auto">
-      <a class="nav-link active" aria-current="page" href="#"> <span class="myNav-link"><%= club.acronym%></span></a>
+      <a class="nav-link active" aria-current="page"
+        href="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/home"> <span
+          class="myNav-link"><%= club.acronym%> home</span></a>
 
       <li class="nav-item active">
         <a class="nav-link m-0" id="drop-down-contact" href="#activities"><span class="myNav-link">Activities</span></a>
@@ -103,7 +106,7 @@
       <a class="nav-link-connexion me-2 my-2" href="/login">Connexion</a>
       <%} else { %>
       <h3 id="user" class="px-2 align-self-center">
-        <a class="profile-link" href="#">
+        <a class="profile-link" href="/user/<%= currentUser._id%>">
           <i class="bi bi-person-circle"></i>
           <%=currentUser.username%>
         </a>

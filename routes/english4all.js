@@ -154,27 +154,35 @@ router.post(
       username: newMember
     });
 
+
     // create a new english club member
     englishClub = await englishClubs.findById(req.params.club_id);
 
-    const newEngClubMember = new englishClubMember({
-      clubMember: user._id,
-      level
-    });
-
-    await newEngClubMember.save();
-
-    if (englishClub.members.includes(newEngClubMember._id)) {
-      req.flash("error", `User is already a member of this English club`);
+    const checkingMember = await englishClubMember.findOne({
+      clubMember: user._id
+    })
+    if (!checkingMember) {
+      const newEngClubMember = new englishClubMember({
+        clubMember: user._id,
+        level
+      });
+      await newEngClubMember.save();
     } else {
-      await englishClub.members.push(newEngClubMember._id);
-
-      await englishClub.save();
-
-      req.flash("success", `User successfully added to this English club`);
+      newEngClubMember = checkingMember;
     }
 
-    res.send("new english club member");
+    if (englishClub.members.includes(newEngClubMember._id)) {
+      req.flash("error", `${user.username} is already a member of this English club`);
+      res.redirect('back');
+    } else {
+
+      englishClub.members.push(newEngClubMember._id);
+
+      await englishClub.save();
+      req.flash("success", `${user.username} is successfully added to this English club`);
+      res.send("new english club member added");
+    }
+
   })
 );
 

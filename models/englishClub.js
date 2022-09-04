@@ -337,6 +337,11 @@ const englishClubMemberSchema = new Schema({
     ref: "User",
   },
 
+  memberEnglishClubs: [{
+    type: Schema.Types.ObjectId,
+    ref: "EnglishClub",
+  }],
+
   clubMemberProgress: [{
     type: Schema.Types.ObjectId,
     ref: "ProgressTrack",

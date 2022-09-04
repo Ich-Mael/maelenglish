@@ -339,7 +339,6 @@
         </div>
       </div>
       <div>
-
       </div>
     </div>
   </div>
@@ -560,8 +559,9 @@
                             </h3>
                           </div>
                           <div id="monitorscreen">
-                            <iframe id="vimeo-content" src="<%= club.weeklyVideoLesson[i].videoLink %>" frameborder="0"
-                              height="500px" width="1000px" allow="autoplay; fullscreen; picture-in-picture"
+                            <iframe id="vimeo-content" src="<%= club.weeklyVideoLesson[i].videoLink %>"
+                              title="YouTube video player" frameborder="0" height="100%" width="100%"
+                              allow="accelerometer; accelerometer; autoplay; clipboard-write; fullscreen; encrypted-media; gyroscope; picture-in-picture"
                               allow="fullscreen" title="High-intensity Classes"></iframe>
                           </div>
                         </div>
@@ -742,25 +742,31 @@
 
   <!-- leaders -->
   <section id="top-stories-wrapper" class="my-5">
-    <h1 class="activity-heading">Leaders of the Month</h1>
+    <h1 class="activity-heading mb-5">Leaders of the Month</h1>
     <div class="row">
+      <!-- Female leader of the month-->
       <div class="col-md student-OM">
-        <div class="leaders-card me-4">
+        <div class="leaders-card">
           <div class="card-header text-center
                                   student-month">
-            Female leader of the Month
+            Female leader
           </div>
           <div class="card-body">
-            <div class="som-img-wrapper">
-              <img src="<%= club.workersOfMonth[0].studentOfMonth.imageUrl %>" alt="" class="img-thumbnail img-fluid">
+            <div class="row">
+              <div class="som-img-wrapper col-lg-6">
+                <img src="<%= club.workersOfMonth[0].studentOfMonth.imageUrl %>" alt="" class="img-thumbnail img-fluid">
+              </div>
+              <div class="col-lg-6">
+                <h5 class="leader-name text-center">
+                  <%= club.workersOfMonth[0].studentOfMonth.fullname %>
+                </h5>
+                <hr>
+                <p class="card-text leader-occupation">
+                  <%= club.workersOfMonth[0].studentOfMonth.reasons %>
+                </p>
+              </div>
             </div>
-            <h5 class="card-title fs-3 fw-bold">
-              <%= club.workersOfMonth[0].studentOfMonth.fullname %>
-            </h5>
-            <p class="card-text fs-4">
-              <%= club.workersOfMonth[0].studentOfMonth.reasons %>
-            </p>
-            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#som">
+            <button type="button" class="btn student-month-btn w-100" data-bs-toggle="modal" data-bs-target="#som">
               Learn more about the FLOM
             </button>
 
@@ -787,26 +793,32 @@
         </div>
       </div>
 
+      <!-- Male leader of the month-->
       <div class="col-md instructor-OM">
-        <div class="leaders-card ms-4">
+        <div class="leaders-card">
           <div class="card-header text-center
                                   instructor-month">
-            Male leader of the Month
+            Male leader
           </div>
           <div class="card-body">
-            <div class="som-img-wrapper">
-              <img src="<%= club.workersOfMonth[0].instructorOfMonth.imageUrl %>" alt=""
-                class="img-thumbnail img-fluid">
+            <div class="row">
+              <div class="som-img-wrapper col-lg-6">
+                <img src="<%= club.workersOfMonth[0].instructorOfMonth.imageUrl %>" alt=""
+                  class="img-thumbnail img-fluid">
+              </div>
+              <div class="col-lg-6">
+                <h5 class="leader-name text-center  ">
+                  <%= club.workersOfMonth[0].instructorOfMonth.fullname%>
+                </h5>
+                <hr>
+                <p class="card-text leader-occupation">
+                  <%= club.workersOfMonth[0].instructorOfMonth.reasons %>
+                </p>
+              </div>
             </div>
-            <h5 class="card-title fs-3 fw-bold">
-              <%= club.workersOfMonth[0].instructorOfMonth.fullname%>
-            </h5>
-            <p class="card-text fs-4">
-              <%= club.workersOfMonth[0].instructorOfMonth.reasons %>
-            </p>
 
-            <button type="button" class="btn
-                                    btn-secondary" data-bs-toggle="modal" data-bs-target="#iom">
+            <button type="button" class="btn w-100 
+            instructor-month-btn" data-bs-toggle="modal" data-bs-target="#iom">
               Learn more about the MLOM
             </button>
 
@@ -838,7 +850,7 @@
 
   <!-- Media section -->
   <section id="top-stories-wrapper">
-    <h1 class="activity-heading">Live Practice</h1>
+    <h1 class="activity-heading">Live Practice Challenges</h1>
     <div class="row mt-4">
       <% for(let i = 0 ; i < 2 ; i++){ %>
       <div class="col-md-6 my-3">

@@ -40,8 +40,7 @@ defaultArticleData = {
   title: "New Article",
 
   // image
-  articleImage:
-    "https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?ixid=MnwxMjA3fDB8MHxzZWFyY2h8N3x8bmV3c3xlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+  articleImage: "https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?ixid=MnwxMjA3fDB8MHxzZWFyY2h8N3x8bmV3c3xlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
 
   articleSummary: "This is a new article",
 
@@ -98,8 +97,7 @@ const onlineDebateData = {
 };
 
 // weekly lesson
-const weeklyLessonsData = [
-  {
+const weeklyLessonsData = [{
     lessonTitle: "Prepositions",
 
     // image
@@ -128,29 +126,27 @@ const weeklyLessonsData = [
 
 // workersOfMonth
 // english club article schema
-const workersOfMonthData = [
-  {
-    studentOfMonth: {
-      fullname: "Fullname of the Student of the Month",
+const workersOfMonthData = [{
+  studentOfMonth: {
+    fullname: "Fullname of the female leader of the month",
 
-      imageUrl: "https://i.ibb.co/VDFyzpj/afrohk-logo-only.jpg",
+    imageUrl: "https://i.ibb.co/VDFyzpj/afrohk-logo-only.jpg",
 
-      reasons: "Reason in one sentence",
+    reasons: "Title or Occupattion",
 
-      about: "More about the SOM",
-    },
-
-    instructorOfMonth: {
-      fullname: "Fullname of the Instructor the Month",
-
-      imageUrl: "https://i.ibb.co/VDFyzpj/afrohk-logo-only.jpg",
-
-      reasons: "Reason in one sentence",
-
-      about: "More about the IOM",
-    },
+    about: "More about the ",
   },
-];
+
+  instructorOfMonth: {
+    fullname: "Fullname of the male leader of the Month",
+
+    imageUrl: "https://i.ibb.co/VDFyzpj/afrohk-logo-only.jpg",
+
+    reasons: "Title or Occupation",
+
+    about: "More about the IOM",
+  },
+}, ];
 
 // media schema
 const mediaData = {
