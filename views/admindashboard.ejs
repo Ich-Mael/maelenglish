@@ -21,17 +21,36 @@
   }
 
   .admin {
-    background: url(https://images.pexels.com/photos/38568/apple-imac-ipad-workplace-38568.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500) no-repeat center center fixed;
+    background: url(https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2) no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
     height: 56vh;
+
+  }
+
+  .admin:after {
+    content: '';
+    z-index: 1;
+    height: 56vh;
+    width: 100%;
+
+    background: rgba(18, 1, 36, 0.2);
+  }
+
+  .admin-text {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-family: "Chivo", sans-serif;
+    text-shadow: 1px 1px 1px red;
+    font-size: 5rem;
+    z-index: 400;
   }
 </style>
-<div class="admin">
-  <h1 class="text-center py-2" style="color: rgb(240, 231, 227)">
-    Welcome to admin Dashboard
+
+<div class="admin d-flex justify-content-center align-items-center">
+  <h1 class="text-center admin-text py-2" style="color: rgb(235, 227, 237)">
+    Welcome to Admin Dashboard
   </h1>
 </div>
 
@@ -179,8 +198,17 @@
         </select>
 
 
-        <label class="form-label mt-2" for="title">Class</label>
-        <input type="text" class="form-control" id="serie" name="class[title]" value="" />
+        <select class="form-select mt-2" id="class_title" class="form-control" required name="class[title]"
+          aria-label="Default select example">
+          <option selected>Selectionnez la classe</option>
+          <option value="Seconde">Seconde</option>
+          <option value="Premiere">Premiere</option>
+          <option value="Terminale">Terminale</option>
+          <option value="Troisieme">Troisieme</option>
+          <option value="F">Quatrieme</option>
+          <option value="Cinquieme">Cinquieme</option>
+          <option value="Sixieme">Sixieme</option>
+        </select>
 
         <label class="form-label mt-2" for="title">Image</label>
         <input type="text" class="form-control" id="serieImage" name="class[serieImageUrl]" value="" />
@@ -190,19 +218,38 @@
       <!-- new high school student -->
       <hr>
       <h2 class="text-center">Create a new high-school student</h2>
-      <form action="/admindashboard/100bac/serie/newHighschoolStudent" method="POST">
+      <form action="/admindashboard/100bac/class/newHighschoolStudent" method="POST">
         <!-- Serie General information -->
         <label class="form-label" for="student_username">Student username</label>
-        <input type="text" class="form-control" id="student_username" name="student_username" value="" />
+        <input type="text" class="form-control" id="student_username" name="student_username" value="" required />
 
         <label class="form-label" for="school">School</label>
-        <input type="text" class="form-control" id="school" name="school" value="" />
+        <input type="text" class="form-control" id="school" name="school" value="" required />
 
-        <label class="form-label" for="serie">Serie</label>
-        <input type="text" class="form-control" id="serie" name="serie" value="" />
 
-        <label class="form-label" for="class">Class</label>
-        <input type="text" class="form-control" id="class" name="class" value="" />
+        <select class="form-select mt-2" id="serie" class="form-control" required name="serie"
+          aria-label="Default select example">
+          <option selected>Selectionnez la serie</option>
+          <option value="A">Serie A</option>
+          <option value="C">Serie C</option>
+          <option value="D">Serie D</option>
+          <option value="G2">Serie G2</option>
+          <option value="F">Serie F</option>
+          <option value="Collège">Collège</option>
+          <option value="Primaire">Primaire</option>
+        </select>
+
+        <select class="form-select mt-2" id="class_title" class="form-control" required name="class"
+          aria-label="Default select example">
+          <option selected>Selectionnez la classe</option>
+          <option value="Seconde">Seconde</option>
+          <option value="Premiere">Premiere</option>
+          <option value="Terminale">Terminale</option>
+          <option value="Troisieme">Troisieme</option>
+          <option value="F">Quatrieme</option>
+          <option value="Cinquieme">Cinquieme</option>
+          <option value="Sixieme">Sixieme</option>
+        </select>
 
         <button type="submit" class="btn btn-outline-primary my-3">Create a new high school student</button>
       </form>

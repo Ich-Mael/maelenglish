@@ -13,6 +13,8 @@ const {
 
 const catchAsync = require("../utilities/catchAsync");
 
+
+
 module.exports.checkEnglishClubMembership = catchAsync(async (req, res, next) => {
     const {
         club_id
@@ -22,7 +24,7 @@ module.exports.checkEnglishClubMembership = catchAsync(async (req, res, next) =>
         next();
     } else {
         req.flash("error", "Vous n’êtes pas membre de ce club d’Anglais");
-        res.redirect(`/englishlang4all/Clubs`);
+        res.redirect(`back`);
     }
 });
 
@@ -38,6 +40,6 @@ module.exports.checkEnglishBoardMembership = catchAsync(async (req, res, next) =
         next();
     } else {
         req.flash("error", "You are not a board member.");
-        res.redirect(`/englishlang4all/Clubs`);
+        res.redirect(`back`);
     }
 });

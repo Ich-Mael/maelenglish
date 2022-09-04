@@ -16,6 +16,7 @@ const {
 
 const {
     facebookPageLike,
+    classCheck,
     chapterPremiumAccess
 } = require('../middlewares/mathsController');
 
@@ -31,6 +32,7 @@ router.get('/100bac', catchAsync(async (req, res) => {
     });
 }));
 
+//view series and classes
 router.get('/admindashboard/100bac/series_and_classes', isVerified, checkRoles("admin"), catchAsync(async (req, res) => {
     const schoolClassesD = await Class.find({});
     res.render("programs/100bac/allClasses", {
@@ -45,16 +47,16 @@ router.post('/admindashboard/100bac/class', isVerified, checkRoles("admin"), cat
     res.redirect("/100bac");
 }));
 
+// Show create student
 router.post('/admindashboard/100bac/class/newHighschoolStudent', isVerified, checkRoles("admin"), catchAsync(BAC.createHStudent));
 
+//student profile
 router.get('/user/:user_id/highschoolDashboard/:highSchool_id', isVerified, catchAsync(BAC.studentProfile));
 
 // Show class home
 router.get('/100bac/class/:class_id', catchAsync(BAC.showClassHome));
 
-
 //=================== Subject ========================
-
 
 // Create a new subject form
 router.get('/admindashboard/100bac/class/:class_id/subject/new', isVerified, checkRoles("admin"), catchAsync(async (req, res) => {
@@ -68,14 +70,12 @@ router.get('/admindashboard/100bac/class/:class_id/subject/new', isVerified, che
 router.post('/admindashboard/100bac/class/:class_id/subject', isVerified, isLoggedIn, checkRoles("admin"), catchAsync(BAC.addSubject));
 
 // View subject
-router.get('/100bac/class/:class_id/subject/:subject_id', isVerified, isLoggedIn, facebookPageLike, catchAsync(BAC.viewSubject));
+router.get('/100bac/class/:class_id/subject/:subject_id', isVerified, isLoggedIn, facebookPageLike, classCheck, catchAsync(BAC.viewSubject));
 
 // View all subject by admin
 router.get('/admindashboard/100bac/class/:class_id/subjects', isVerified, checkRoles("admin"), catchAsync(BAC.viewAllSubject));
 
 // Cours Maths Tle D
-
-
 
 // ======================== Chapters ===================== 
 
@@ -96,13 +96,16 @@ router.post('/admindashboard/100bac/class/:class_id/subject/:subject_id/chapter'
 router.get('/admindashboard/100bac/class/:class_id/subject/:subject_id/chapters', isVerified, checkRoles("admin"), catchAsync(BAC.viewAllChapters));
 
 //view a chapter
-router.get('/100bac/class/:class_id/subject/:subject_id/chapter/:chapter_id', isVerified, isLoggedIn, facebookPageLike, catchAsync(BAC.viewChapter));
+router.get('/100bac/class/:class_id/subject/:subject_id/chapter/:chapter_id', isVerified, isLoggedIn, facebookPageLike, classCheck, catchAsync(BAC.viewChapter));
 
 //Starter exercises 
-router.get('/100bac/class/:class_id/subject/:subject_id/chapter/:chapter_id/SE', isVerified, isLoggedIn, facebookPageLike, catchAsync(BAC.viewChapterSE));
+router.get('/100bac/class/:class_id/subject/:subject_id/chapter/:chapter_id/SE', isVerified, isLoggedIn, facebookPageLike, classCheck, catchAsync(BAC.viewChapterSE));
 
 //Premium content
-router.get('/100bac/class/:class_id/subject/:subject_id/chapter/:chapter_id/PRE', isVerified, isLoggedIn, chapterPremiumAccess, catchAsync(BAC.viewChapterPRE));
+router.get('/100bac/class/:class_id/subject/:subject_id/chapter/:chapter_id/PRE', isVerified, isLoggedIn, classCheck, chapterPremiumAccess, catchAsync(BAC.viewChapterPRE));
+
+//Give Premium access
+router.post('/admindashboard/100bac/class/:class_id/subject/:subject_id/chapter/:chapter_id/givepremiumaccess', isVerified, checkRoles("admin"), catchAsync(BAC.givePremiumAccess));
 
 
 //========================= Video content =================//

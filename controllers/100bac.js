@@ -18,29 +18,47 @@ module.exports.showClassHome = async (req, res) => {
 
 //student
 module.exports.createHStudent = async (req, res) => {
-
   const user = await User.findOne({
     username: req.body.student_username
   });
 
-  //create a new high student
+  const studentClass = await Class.findOne({
+    title: req.body.class,
+    serie: req.body.serie
+  });
 
-  const new_highStudent = new HStudent({
-    school: req.body.school,
-    class: req.body.class,
-    serie: req.body.serie,
+  // Checking if user already has high_school status
+  const checkingStudent = await HStudent.findOne({
     studentBasicInfo: user._id
   });
 
-  await new_highStudent.save();
+  if (checkingStudent) {
+    req.flash('error', `${user.surname} ${user.name} a déjà un compte élève`);
+    res.redirect("back");
+  } else {
+    // Create a new high student
+    const new_highStudent = new HStudent({
+      school: req.body.school,
+      class: req.body.class,
+      serie: req.body.serie,
+      studentBasicInfo: user._id
+    });
 
-  // Adding user status to user
-  user.isHighSchoolStudent = true;
-  user.highSchool_id = new_highStudent._id;
+    await new_highStudent.save();
 
-  await user.save();
+    //adding new student to its class
+    studentClass.students.push(new_highStudent._id);
+    await studentClass.save();
 
-  res.redirect("/admindashboard");
+    // Adding user status to user
+    user.isHighSchoolStudent = true;
+    user.highSchool_id = new_highStudent._id;
+
+    await user.save();
+
+    req.flash('success', `Compte élève crée avec succès pour ${user.surname} ${user.name}`);
+    res.redirect("back");
+  }
 }
 
 //Student profile
@@ -123,7 +141,7 @@ module.exports.viewChapter = async (req, res) => {
   const chapter = await Chapter.findById(req.params.chapter_id).populate(
     "courses"
   );
-  console.log(chapter)
+
   res.render("programs/100bac/Class/chapters/viewChapter", {
     schoolClass,
     subject,
@@ -148,7 +166,6 @@ module.exports.viewChapterSE = async (req, res) => {
 };
 
 // Premium
-
 module.exports.viewChapterPRE = async (req, res) => {
   const schoolClass = await Class.findById(req.params.class_id);
   const subject = await Subject.findById(req.params.subject_id);
@@ -164,6 +181,34 @@ module.exports.viewChapterPRE = async (req, res) => {
     chapter,
   });
 };
+
+
+
+// Give Premium access
+module.exports.givePremiumAccess = async (req, res) => {
+  const schoolClass = await Class.findById(req.params.class_id);
+  const subject = await Subject.findById(req.params.subject_id);
+  const chapter = await Chapter.findById(req.params.chapter_id);
+
+  const user = await User.findOne({
+    username: req.body.student_username
+  });
+
+  const user_hstudent = await HStudent.findOne({
+    studentBasicInfo: user._id
+  });
+
+  if (chapter.premiumStudents.includes(user_hstudent._id)) {
+    req.flash('error', 'Cet élève à déjà un accès premium');
+    res.redirect("back")
+  } else {
+    chapter.premiumStudents.push(user_hstudent._id);
+    await chapter.save()
+    req.flash('success', `Accès premium accordé à ${user.surname} ${user.name}`);
+    res.redirect("back")
+  }
+};
+
 
 /*=========================================
 

@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const moment = require("moment"); // require
 
-
 /*===================================
              High School
 ===================================*/
@@ -119,7 +118,6 @@ const HStudentSchema = new Schema({
   timestamps: true,
 });
 
-
 /*=================================
              Home Teacher
 ===================================*/
@@ -155,12 +153,13 @@ const homeTeacherSchema = new Schema({
 });
 
 /*================================
-                Serie = Class
+              Class
 ===================================*/
 const classSchema = new Schema({
   title: {
     type: String,
     required: true,
+    enum: ["Seconde", "Premiere", "Terminale", "Troisieme", "Quatrieme", "Cinquieme", "Sixieme"]
   },
 
   isActive: {
@@ -191,8 +190,6 @@ const classSchema = new Schema({
 }, {
   timestamps: true,
 });
-
-
 
 /*===================================
                 Subject

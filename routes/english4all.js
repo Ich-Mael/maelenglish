@@ -13,10 +13,14 @@ const {
 } = require("../middlewares/userController");
 
 const {
-  checkEnglishClubMembership,
-  checkEnglishBoardMembership,
   checkProgramOwnership,
 } = require("../middlewares/courseController");
+
+const {
+  checkEnglishClubMembership,
+  checkEnglishBoardMembership,
+} = require("../middlewares/englishClubController");
+
 const {
   positions,
   days,
@@ -98,8 +102,6 @@ router.get(
   catchAsync(engClub.showEnglishClub)
 );
 
-
-
 // ======================================
 //
 //   Admin and Board members privileges
@@ -137,9 +139,7 @@ router.get(
   })
 );
 
-// Admin Only
-
-// adding a student to an english club
+// Adding a student to an english club
 router.post(
   "/admindashboard/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/new_member",
   isLoggedIn,
@@ -243,8 +243,6 @@ router.get(
 
   catchAsync(engClub.showMemberGrade)
 );
-
-
 
 //======================================
 //

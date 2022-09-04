@@ -6,17 +6,18 @@
 <!-- Breadcrumbs-->
 <div class="breadcrumb">
   <a href="/100bac" class="">Acceuil - 100% BAC</a>
-  <a href="/100bac/TleD" class=""><%=  schoolClass.title %></a>
-  <a href="/100bac/TleD/maths" class="active"><%= subject.title %> </a>
+  <a href="/100bac/class/<%=  schoolClass._id %>" class=""><%=  schoolClass.title %> <%= schoolClass.serie %></a>
+  <a href="/100bac" class="active"><%= subject.title %> </a>
 </div>
 <!-- End -->
 
-<h1 class="subject-title text-center"><span><%=subject.title%> </span><%=  schoolClass.title %></h1>
+<h1 class="subject-title text-center"><span><%=subject.title%> </span><%=  schoolClass.title %>
+  <%=  schoolClass.serie %></h1>
 
 <div id="maths-section">
   <div class="chapters">
-    <h3 class="text-warning text-center pt-4">Profitez gratuitement des explications du Cours et Exercices corrigés de
-      CIAM</h3>
+    <h3 class="text-warning text-center pt-4">Profitez gratuitement des explications du Cours et Exercices corrigés
+      d'appliation directe du cours</h3>
     <p class="instruction-paragraph">
       Prenez le temps de bien suivre les explications dans les vidéos <br> Essayez les exercices
       d'entrainement pour mieux comprendre. <br>
@@ -831,7 +832,6 @@
 
 <h3 class="chapter-list"> Liste des chapitres </h3>
 <!-- course chapters -->
-<!-- chapter 1 Nombre complexes -->
 <div class="week-wrapper">
   <% for(const [i, chapter] of subject.chapitres.entries()) {%>
   <div class="week-lesson my-5">
