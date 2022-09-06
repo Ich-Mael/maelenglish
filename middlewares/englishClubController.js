@@ -20,7 +20,9 @@ module.exports.checkEnglishClubMembership = catchAsync(async (req, res, next) =>
     const {
         club_id
     } = req.params;
+
     const englishClub = await englishClubs.findById(club_id);
+
     const checkingMember = await englishClubMember.findOne({
         clubMember: req.user._id
     })

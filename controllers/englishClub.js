@@ -147,6 +147,18 @@ module.exports.createEnglishClub = async (req, res) => {
     res.redirect(`/englishlang4all/clubs/${hub.country}/hubs`);
 }
 
+// English Club info
+module.exports.englishClubInfo = async (req, res) => {
+    const club = await englishClubs.findByIdAndUpdate(req.params.club_id, {
+        description: req.body.englishClubDescription,
+        bannerImageUrlMedium: req.body.familyPictureUrl,
+        clubPresentationVideoUrl: req.body.clubPresentationVideoUrl
+    });
+
+    res.redirect('back');
+
+}
+
 module.exports.showClubHomePage = async (req, res) => {
     const hub = await englishClubHub.findById(req.params.hub_id);
     const club = await englishClubs

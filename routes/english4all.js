@@ -87,6 +87,16 @@ router.post(
   catchAsync(engClub.createEnglishClub)
 );
 
+// English create an Englis club
+router.put(
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/info",
+  isLoggedIn,
+  isVerified,
+  checkRoles("admin"),
+  catchAsync(engClub.englishClubInfo)
+);
+
+
 //show english club home page
 router.get(
   "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/home",

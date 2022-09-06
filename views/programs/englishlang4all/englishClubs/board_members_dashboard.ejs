@@ -35,9 +35,13 @@
         aria-expanded="false" aria-controls="collapseExample">
         Add new board member
       </button>
+
+      <button class="btn btn-success ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#club_info"
+        aria-expanded="false" aria-controls="collapseExample">
+        Update Club Info
+      </button>
     </p>
   </div>
-
 
   <!-- Add New Member Form -->
   <div class="collapse  p-5" id="new-member" style="background-color: rgb(192, 198, 203);">
@@ -77,6 +81,29 @@
       <input type="text" class="form-control" name="position" required id="" value="" />
 
       <button class="btn my-3  me-2 btn-success" type="submit">Create a new board position</button>
+    </form>
+  </div>
+
+  <!-- Update club info  -->
+  <div class="collapse  p-5" id="club_info" style="background-color: rgb(192, 198, 203);">
+    <form action="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/info?_method=PUT"
+      method="POST">
+      <!-- Family picture -->
+      <label class="form-label my-3" for="family_picture">Family Picture</label>
+      <input type="text" class="form-control" name="familyPictureUrl" required id=""
+        value="<%= club.bannerImageUrlMedium %>" />
+
+      <!-- Club Presentation video -->
+      <label class="form-label my-3" for="family_picture">Club Presentation video</label>
+      <input type="text" class="form-control" name="clubPresentationVideoUrl" required id=""
+        value="<%= club.clubPresentationVideoUrl %>" />
+
+      <!-- Club Description -->
+      <label class="form-label my-3" for="english Club description">Club Description</label>
+      <textarea type="text" class="form-control mytextarea" name="englishClubDescription" value=""
+        id="articleContent"><%- club.desciption -%></textarea>
+
+      <button class="btn my-3  me-2 btn-success" type="submit">Add</button>
     </form>
   </div>
 </div>
@@ -531,12 +558,12 @@
   <p>
     <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#student"
       aria-expanded="false" aria-controls="collapseExample">
-      Student of the Month
+      Female leader of the Month
     </button>
 
     <button class="btn btn-primary ms-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#instructor"
       aria-expanded="false" aria-controls="collapseExample">
-      Instructor of the Month
+      Male leader of the Month
     </button>
 
 
