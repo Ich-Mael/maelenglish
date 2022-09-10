@@ -515,6 +515,19 @@ router.put(
 );
 
 
+// Post english comment route
+router.post(
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/clubMedia/:media_id/comment",
+  isLoggedIn, isVerified,
+  checkEnglishClubMembership,
+  catchAsync(engClub.postComment)
+);
+
+
+
+
+
+
 /* =================================================
  *
  *               Song Challenges

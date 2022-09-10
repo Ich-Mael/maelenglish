@@ -18,8 +18,9 @@
     <hr>
     <h4 class="title text-center"><%= clubMember.clubMember.surname %> <%= clubMember.clubMember.name %></h4>
   </div>
-
+  <% if(clubMember.clubMemberProgress.length > 0) {%>
   <div class="my-4" style=" border: 1px solid rgb(33, 12, 15); border-radius: 4px;">
+
     <h4 class="text-center py-3 mb-3" style="letter-spacing: 0.1rem; color: white; background: #1488CC;  /* fallback for old browsers */
         background: -webkit-linear-gradient(to right, #2B32B2, #1488CC);  /* Chrome 10-25, Safari 5.1-6 */
         background: linear-gradient(to right, #2B32B2, #1488CC); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
@@ -91,6 +92,7 @@
         <div class="p-3"><%- clubMember.clubMemberProgress[0].feedback %></div>
       </div>
     </div>
+
   </div>
 
   <!-- View all results -->
@@ -185,4 +187,13 @@
       </div>
     </div>
   </div>
+  <%} else {%>
+          <img src="http://www.sulitest.org/files/source/logo%20test%20horiz%20bis.png?1574185700651"
+            class="img img-fluid" alt="">
+          <p class="tesxt-center my-5 fs-3">You have not taken the initial progress test yet. <br> Contact your English
+            Club leaders for all information about the initial test. <br>
+
+            <em class="text-primary">Once you take the test, the result will be available on your profile page within 2
+              days.</em> </p>
+          <%}%>
 </div>

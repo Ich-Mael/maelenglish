@@ -213,7 +213,6 @@ module.exports.showEnglishClub = async (req, res) => {
         .populate("dictationExercise")
         .populate("onlineDebates");
 
-    console.log(club);
 
     res.render("programs/englishlang4all/englishClubs/show", {
         club,
@@ -673,6 +672,24 @@ module.exports.updateLivePractice = async (req, res) => {
     res.redirect(`/englishlang4all/clubs/${city}/hub/${hub_id}/club/${club_id}`);
 }
 
+module.exports.postComment = async (req, res) => {
+    const club_id = req.params.club_id;
+    const city = req.params.city;
+    const hub_id = req.params.hub_id;
+    const media = await englishClubMedia.findById(req.params.media_id);
+
+    const newReview = new Review(req.body.review);
+    newReview.author = req.user._id;
+    await newReview.save();
+
+    media.mediaComments.push(newReview);
+
+    await media.save();
+
+    req.flash("success", `Comment successfully posted`);
+    res.redirect(`/englishlang4all/clubs/${city}/hub/${hub_id}/club/${club_id}`);
+}
+
 
 ///==========================================
 //      Grading a new member
@@ -703,11 +720,20 @@ module.exports.memberGrade = async (req, res) => {
 
     await member.save();
 
-    res.send("User has been successfully graded");
+    console.log("*********");
+    console.log(req.params.member_id);
+
+
+    res.send("English member has been successfully graded");
 }
 
 module.exports.showMemberGrade = async (req, res) => {
     const clubMember = await englishClubMember.findById(req.params.member_id).populate("clubMemberProgress").populate("clubMember");
+
+    console.log("***=======******");
+    console.log(req.params.member_id);
+
+
     const club = await englishClubs.findById(req.params.club_id);
     if (clubMember) {
         res.render("programs/englishlang4all/englishClubs/grading/memberGradeShow", {

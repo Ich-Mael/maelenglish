@@ -105,7 +105,7 @@
   </li>
 
   <li class="nav-item">
-    <a class="nav-link engClub-nav-link" href="#media-wrapper">Live Practive</a>
+    <a class="nav-link engClub-nav-link" href="#media-wrapper">Live Practice Challenges</a>
   </li>
   <div style="height: 0.2rem; width: 100%; background-color: #080364;"></div>
 </ul>
@@ -891,7 +891,8 @@
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                  <form action="/englishlang4all/clubs/<%= club._id %>/clubMedia/<%= club.media[i]._id %>/comment"
+                  <form
+                    action="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id %>/club/<%= club._id %>/clubMedia/<%= club.media[i]._id %>/comment"
                     method="POST">
                     <fieldset id="stars" class="starability-heart mb-1">
                       <!-- <legend>Rating</legend> -->
@@ -923,9 +924,10 @@
                   <!-- all comments -->
                   <hr>
 
-                  <h5 class="text-center py-3 mb-3" style="background: #34e89e;  
-                      background: -webkit-linear-gradient(to right, #0f3443, #34e89e, #0f3443);  
-                      background: linear-gradient(to right, #0f3443, #34e89e, #0f3443); color: rgb(43, 42, 41);
+                  <h5 class="text-center py-3 mb-3" style="color:white; background: #8E2DE2;  /* fallback for old browsers */
+                  background: -webkit-linear-gradient(to right, #4A00E0, #8E2DE2);  /* Chrome 10-25, Safari 5.1-6 */
+                  background: linear-gradient(to right, #4A00E0, #8E2DE2); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+                  ;
                       ">Previous Comments</h5>
                   <% for (let review of club.media[i].mediaComments){%>
                   <div class="card comment-card mb-3 ">
@@ -947,7 +949,7 @@
                         </p>
                       </div>
                     </div>
-                    <p class="mx-3">
+                    <p class="comment-text mx-3">
                       <%= review.text %>
                     </p>
                   </div>

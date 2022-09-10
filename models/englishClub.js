@@ -61,7 +61,7 @@ const englishClubSchema = new Schema({
     default: `<h1 style="text-align: center;"><span style="font-size: 14pt; color: #236fa1; font-family: 'trebuchet ms', geneva, sans-serif;"><strong>ENGLISH CLUB INFORMATION</strong></span></h1>
     <p><span style="font-size: 14pt; font-family: 'book antiqua', palatino, serif;">In This Section of the English Club,</span></p>
     <p><span style="font-size: 14pt; font-family: 'book antiqua', palatino, serif;">A visitor should find all the information about your english club and the requirements to become a member.&nbsp;</span></p>
-    <p><em><span style="font-size: 14pt; font-family: 'book antiqua', palatino, serif;">Some of the information you can put in this section are :</span></em></p>
+    <p><em><span style="font-size: 14pt; font-family: 'book antiqua', palatino, serif;">The information you can put in this section can be :</span></em></p>
     <p><span style="font-size: 14pt; font-family: 'book antiqua', palatino, serif;">&nbsp; &nbsp; &nbsp;Club origin or creation history</span></p>
     <p><span style="font-size: 14pt; font-family: 'book antiqua', palatino, serif;">&nbsp; &nbsp; &nbsp;Club Goals</span></p>
     <p><span style="font-size: 14pt; font-family: 'book antiqua', palatino, serif;">&nbsp; &nbsp; &nbsp;Membership requirements</span></p>
@@ -77,7 +77,7 @@ const englishClubSchema = new Schema({
   // image
   bannerImageUrlMedium: {
     type: String,
-    default: "https://images.pexels.com/photos/8199562/pexels-photo-8199562.jpeg?auto=compress&cs=tinysrgb&w=800",
+    default: "https://i.ibb.co/kc7Czs8/IST-family-pic-1.jpg",
     trim: true,
   },
 
@@ -366,6 +366,11 @@ const englishClubMemberSchema = new Schema({
     default: "Member"
   },
 
+  mediaComments: [{
+    type: Schema.Types.ObjectId,
+    ref: "Comment",
+  }, ],
+
   isMuted: {
     type: Boolean,
     default: false
@@ -435,7 +440,7 @@ const progressTrackSchema = new Schema({
       "Not Sufficient",
       "Sufficient",
       "Good",
-      "Very good",
+      "Very Good",
       "Excellent",
     ],
   },
@@ -448,7 +453,7 @@ const progressTrackSchema = new Schema({
       "Not Sufficient",
       "Sufficient",
       "Good",
-      "Very good",
+      "Very Good",
       "Excellent",
     ],
   },
@@ -460,7 +465,7 @@ const progressTrackSchema = new Schema({
       "Not Sufficient",
       "Sufficient",
       "Good",
-      "Very good",
+      "Very Good",
       "Excellent",
     ],
   },
@@ -472,7 +477,7 @@ const progressTrackSchema = new Schema({
       "Not Sufficient",
       "Sufficient",
       "Good",
-      "Very good",
+      "Very Good",
       "Excellent",
     ],
   },
@@ -484,7 +489,7 @@ const progressTrackSchema = new Schema({
       "Not Sufficient",
       "Sufficient",
       "Good",
-      "Very good",
+      "Very Good",
       "Excellent",
     ],
   }
