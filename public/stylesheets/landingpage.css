@@ -215,15 +215,14 @@ body {
 
 .mission {
   /* background-color: whitesmoke; */
-  margin-top: 8rem;
+  margin-top: 5rem;
 }
 
 .presentation-text-wrapper {
   background-color: #fdfbfb;
   border-radius: 5px;
   margin: 1rem 2rem;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
-  box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+  box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px;
 }
 
 .presentation-heading {
@@ -2114,8 +2113,9 @@ customers-cards:before {
     font-size: 2rem;
   }
 
-  .gallery {
-    grid-gap: 0.2rem;
+  .mission {
+    /* background-color: whitesmoke; */
+    margin-top: 3rem;
   }
 
   .common-heading {
