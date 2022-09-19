@@ -34,17 +34,18 @@ a.active:focus {
 
 :root {
   --fg: #17181c;
-  --shade1: #727274;
-  --shade2: #cccdd1;
-  --shade3: #f3f4f8;
-  --shade4: #ffffff;
+  --shade1: #7006d4;
+  --shade2: #812ae3;
+  --shade3: #9a65e0;
+  --shade4: #c957f3;
   --dur1: 1s;
   --dur2: 6s;
   /* font-size: calc(16px + (32 - 16)*(100vw - 320px)/(2560 - 320)); */
 }
 
 .pre-w {
-  background-image: linear-gradient(145deg, var(--shade3), var(--shade2));
+  /* background-image: linear-gradient(145deg, var(--shade3), var(--shade2)); */
+  background-color: rgb(172, 75, 211);
   color: var(--fg);
   display: flex;
   font: 1em/1.5 Hind, sans-serif;
@@ -57,6 +58,7 @@ a.active:focus {
 
 .wrap {
   margin: auto;
+  font-size: 1.5rem;
 }
 
 .preloader {
@@ -71,6 +73,21 @@ a.active:focus {
   position: relative;
   width: 12em;
   height: 12em;
+}
+
+.status-msg {
+  font-family: "Kaushan Script", cursive;
+  /* font-family: 'Paytone One', sans-serif; */
+  /* font-family: "Rye", cursive; */
+  /* font-family: 'Titan One', cursive; */
+  /* font-family: "Nosifer", cursive; */
+  font-size: 2rem;
+  color: white;
+}
+
+.status__dot {
+  font-size: 3rem;
+  color: white;
 }
 
 .preloader__square {

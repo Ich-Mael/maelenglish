@@ -14,9 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-
-
-
 window.addEventListener("scroll", function () {
   const nav = document.querySelector("nav");
   const logo = document.querySelector(".logo-navbar");
