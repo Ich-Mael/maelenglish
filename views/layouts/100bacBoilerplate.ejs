@@ -27,6 +27,22 @@
   <%-include('../partials/100bacNavbar')%> <%-include('../partials/flash')%>
   <main><%- body %></main>
   <%-include('../partials/footer')%>
+
+
+  <!-- preloader -->
+  <div class="pre-w">
+    <div class="wrap">
+      <div class="preloader">
+        <div class="preloader__square"></div>
+        <div class="preloader__square"></div>
+        <div class="preloader__square"></div>
+        <div class="preloader__square"></div>
+      </div>
+      <div class="status">Loading<span class="status__dot">.</span><span class="status__dot">.</span><span
+          class="status__dot">.</span></div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js"
     integrity="sha384-KsvD1yqQ1/1+IA7gi3P0tyJcT3vR+NdBTt13hSJ2lnve8agRGXTTyNaBYmCR/Nwi" crossorigin="anonymous">
   </script>

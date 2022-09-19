@@ -1,3 +1,22 @@
+document.addEventListener('DOMContentLoaded', () => {
+  "use strict";
+
+  /**
+   * Preloader
+   */
+  const preloader = document.querySelector('.pre-w');
+  if (preloader) {
+    window.addEventListener('load', () => {
+      preloader.remove();
+    });
+  }
+})
+
+
+
+
+
+
 window.addEventListener("scroll", function () {
   const nav = document.querySelector("nav");
   const logo = document.querySelector(".logo-navbar");
@@ -22,77 +41,77 @@ window.addEventListener("scroll", function () {
 });
 
 
- /**
-   * Clients Slider
-   */
-  
- new Swiper('.clients-slider', {
-    speed: 400,
-    loop: true,
-    autoplay: {
-      delay: 5000,
-      disableOnInteraction: false
+/**
+ * Clients Slider
+ */
+
+new Swiper('.clients-slider', {
+  speed: 400,
+  loop: true,
+  autoplay: {
+    delay: 5000,
+    disableOnInteraction: false
+  },
+  slidesPerView: '',
+  pagination: {
+    el: '.swiper-pagination',
+    type: 'bullets',
+    clickable: true
+  },
+  breakpoints: {
+    320: {
+      slidesPerView: 2,
+      spaceBetween: 40
     },
-    slidesPerView: '',
-    pagination: {
-      el: '.swiper-pagination',
-      type: 'bullets',
-      clickable: true
+    480: {
+      slidesPerView: 3,
+      spaceBetween: 60
     },
-    breakpoints: {
-      320: {
-        slidesPerView: 2,
-        spaceBetween: 40
-      },
-      480: {
-        slidesPerView: 3,
-        spaceBetween: 60
-      },
-      640: {
-        slidesPerView: 4,
-        spaceBetween: 80
-      },
-      992: {
-        slidesPerView: 6,
-        spaceBetween: 120
-      }
+    640: {
+      slidesPerView: 4,
+      spaceBetween: 80
+    },
+    992: {
+      slidesPerView: 6,
+      spaceBetween: 120
     }
-  });
+  }
+});
 
 
-  new Swiper('.swiper', {
-    // Optional parameters
-    speed: 400,
-    loop: true,
-    autoplay: {
-      delay: 5000,
-      disableOnInteraction: false
+new Swiper('.swiper', {
+  // Optional parameters
+  speed: 400,
+  loop: true,
+  autoplay: {
+    delay: 5000,
+    disableOnInteraction: false
+  },
+
+  slidesPerView: 'auto',
+  pagination: {
+    el: '.swiper-pagination',
+    type: 'bullets',
+    clickable: true
+  },
+  breakpoints: {
+    320: {
+      slidesPerView: 2,
+      spaceBetween: 20
     },
-
-    slidesPerView: 'auto',
-    pagination: {
-      el: '.swiper-pagination',
-      type: 'bullets',
-      clickable: true
+    480: {
+      slidesPerView: 2,
+      spaceBetween: 60
     },
-    breakpoints: {
-      320: {
-        slidesPerView: 2,
-        spaceBetween: 20
-      },
-      480: {
-        slidesPerView: 2,
-        spaceBetween: 60
-      },
-      640: {
-        slidesPerView: 3,
-        spaceBetween: 80
-      },
-      992: {
-        slidesPerView: 4,
-        spaceBetween: 120
-      }
+    640: {
+      slidesPerView: 3,
+      spaceBetween: 80
+    },
+    992: {
+      slidesPerView: 4,
+      spaceBetween: 120
     }
-   
-  
-  });
+  }
+
+
+});
