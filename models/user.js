@@ -96,6 +96,31 @@ const userSchema = new Schema({
     default: "",
   },
 
+  // pecp student
+  isPecpStudent: {
+    type: Boolean,
+    default: false,
+  },
+
+  pecpStudent_id: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
+  // pecp student
+  isPecpCoach: {
+    type: Boolean,
+    default: false,
+  },
+
+  pecpCoach_id: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
+
   //Home Teacher
   isHomeTeacher: {
     type: Boolean,

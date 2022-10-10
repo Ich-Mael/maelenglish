@@ -50,7 +50,7 @@ module.exports.createHStudent = async (req, res) => {
     studentClass.students.push(new_highStudent._id);
     await studentClass.save();
 
-    // Adding user status to user
+    // Adding student status to user
     user.isHighSchoolStudent = true;
     user.highSchool_id = new_highStudent._id;
 

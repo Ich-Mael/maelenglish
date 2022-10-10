@@ -26,7 +26,7 @@ router.get('/100bac', catchAsync(async (req, res) => {
         serie: "D"
     });
 
-    console.log(allClassesD)
+
     res.render("programs/100bac/home", {
         allClassesD
     });

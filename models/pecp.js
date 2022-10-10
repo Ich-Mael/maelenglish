@@ -1,0 +1,233 @@
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+const moment = require('moment'); // require
+const {
+    format
+} = require("date-fns");
+
+// PECP Student  schema
+const pecpStudentSchema = new Schema({
+    pecpStudentBasicInfo: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+    },
+
+    learningGoal: {
+        type: String,
+        required: true,
+    },
+
+    assignedCoach: [{
+        type: Schema.Types.ObjectId,
+        ref: "pecpCoach",
+    }],
+
+    generalRecommendation: {
+        type: String,
+    },
+
+    studentCourses: [{
+        type: Schema.Types.ObjectId,
+        ref: "Courses",
+    }],
+
+    pecpStudentProgress: [{
+        type: Schema.Types.ObjectId,
+        ref: " pecpStudentProgressTrack",
+    }],
+
+    pecpStudentConvFeedback: [{
+        type: Schema.Types.ObjectId,
+        ref: " pecpConvFeedback",
+    }],
+
+    level: {
+        type: String,
+        required: true,
+        enum: [
+            "A1 - Elementary",
+            "A2 - Pre-Intermediate",
+            "B1 - Intermediate",
+            "B2 - Upper-Intermediate",
+            "C1 - Advanced",
+            "C2 - Proficient",
+        ],
+    },
+})
+
+// PECP Coach  schema
+const pecpCoachSchema = new Schema({
+    pecpCoachBasicInfo: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+    },
+
+    coachPresentationLink: {
+        type: String,
+    },
+
+    students: [{
+        type: Schema.Types.ObjectId,
+        ref: "pepcStudent",
+    }],
+
+    feedbackFromStudent: [{
+        studentName: String,
+        feedback: String,
+    }],
+
+    level: {
+        type: String,
+        required: true,
+        enum: [
+            "A1 - Elementary",
+            "A2 - Pre-Intermediate",
+            "B1 - Intermediate",
+            "B2 - Upper-Intermediate",
+            "C1 - Advanced",
+            "C2 - Proficient",
+        ],
+    },
+});
+
+// PECP Student progress schema
+const pecpStudentProgressTrackSchema = new Schema({
+    testLevel: {
+        type: String,
+        required: true,
+        enum: [
+            "A1",
+            "A2",
+            "B1",
+            "B2",
+            "C1",
+            "C2"
+        ],
+    },
+
+    testGrade: {
+        type: Number,
+        required: true,
+    },
+
+    period: {
+        type: Date,
+        default: Date.now(),
+        required: true,
+    },
+
+    feedback: {
+        type: String,
+        required: true,
+    },
+
+    structure: {
+        type: String,
+        required: true,
+        enum: [
+            "Not Sufficient",
+            "Sufficient",
+            "Good",
+            "Very Good",
+            "Excellent",
+        ],
+    },
+
+    pronunciation: {
+        type: String,
+        required: true,
+        enum: [
+            "Not Sufficient",
+            "Sufficient",
+            "Good",
+            "Very Good",
+            "Excellent",
+        ],
+    },
+
+
+    fluency: {
+        type: String,
+        required: true,
+        enum: [
+            "Not Sufficient",
+            "Sufficient",
+            "Good",
+            "Very Good",
+            "Excellent",
+        ],
+    },
+
+    vocabulary: {
+        type: String,
+        required: true,
+        enum: [
+            "Not Sufficient",
+            "Sufficient",
+            "Good",
+            "Very Good",
+            "Excellent",
+        ],
+    },
+
+    comprehension: {
+        type: String,
+        required: true,
+        enum: [
+            "Not Sufficient",
+            "Sufficient",
+            "Good",
+            "Very Good",
+            "Excellent",
+        ],
+    },
+
+    interaction: {
+        type: String,
+        required: true,
+        enum: [
+            "Not Sufficient",
+            "Sufficient",
+            "Good",
+            "Very Good",
+            "Excellent",
+        ],
+    }
+
+})
+
+//  PECP Student Conversation feedback
+const pecpConvFeedbackSchema = new Schema({
+    feedback: {
+        type: String,
+        required: true,
+    },
+
+    recommendation: {
+        type: String,
+        required: true,
+    },
+
+    Suggested_exercise: {
+        type: String,
+        required: true,
+    }
+}, {
+    timestamps: true,
+});
+
+const pecpStudent = mongoose.model("pecpStudent", pecpStudentSchema);
+
+const pecpCoach = mongoose.model("pecpCoach", pecpCoachSchema);
+
+const pecpConvFeedback = mongoose.model("pecpConvFeedback ", pecpConvFeedbackSchema);
+
+const pecpStudentProgressTrack = mongoose.model("pecpStudentProgressTrack", pecpStudentProgressTrackSchema);
+
+
+module.exports = {
+    pecpStudent,
+    pecpCoach,
+    pecpConvFeedback,
+    pecpStudentProgressTrack,
+};

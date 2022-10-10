@@ -45,6 +45,7 @@
     </div>
   </div>
   <a class="top-link top-btn-display" href="#"><i class="bi bi-arrow-up-circle-fill"></i></a>
+
   <!-- navbar -->
   <nav class="navbar p-0 navbar-light sticky-top navbar-expand-lg">
     <!-- <div id="top-section" class="container-fluid"> -->
@@ -174,7 +175,7 @@
         <a class="nav-link-connexion me-2 my-2" href="/login">Connexion</a>
         <%} else { %>
         <h3 id="user" class="px-2 align-self-center">
-          <a class="profile-link" href="/">
+          <a class="profile-link" href="/user/<%= currentUser._id%>">
             <i class="bi bi-person-circle"></i>
             <%=currentUser.username%>
           </a>
@@ -319,6 +320,7 @@
     </section>
     <div class="learn-line-bottom">
     </div>
+
     <!--Programmes section-->
     <div class="program-section-wrapper">
       <h1 id="program" class="section-title">Nos Programmes</h1>
@@ -421,7 +423,15 @@
         </div>
       </div>
     </div>
-
+    <!--New Program -->
+    <div class="new-program-wrapper col-md-10 container">
+      <div class="d-flex justify-content-center align-items-center">
+        <div class="">
+          <a href="/pecp" class="new-program">Personal English Coaching Program <span
+              class="badge bg-success">New</span></a>
+        </div>
+      </div>
+    </div>
     <!-- Customers section -->
 
     <div class="learn-line-top">

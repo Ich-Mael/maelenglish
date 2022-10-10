@@ -65,6 +65,11 @@
     English Clubs
   </button>
 
+  <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#pecp" aria-expanded="false"
+    aria-controls="collapseExample">
+    Personal English Coaching Program
+  </button>
+
   <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-3"
     aria-expanded="false" aria-controls="collapseExample">
     Easy Maths
@@ -76,7 +81,7 @@
   </button>
 </div>
 
-<!-- collapse -->
+<!-- Courses -->
 <div class="collapse" id="collapse-1">
   <div class="card card-body">
     <div class="container col-md-8">
@@ -156,6 +161,76 @@
       </div>
     </div>
   </div>
+</div>
+
+<!-- PECP -->
+
+<!-- Add New Pecp Student Form -->
+<div class="collapse container  p-5" id="pecp" style="background-color: rgb(192, 198, 203); padding: 1rem 3rem;">
+
+  <h1 class="text-center">Add a new PECP Student</h1>
+  <form action="/admindashboard/pecp/student" method="POST">
+    <!-- New Member Username -->
+    <label class="form-label my-3" for="new-member">New PEPC student Username</label>
+    <input type="text" class="form-control" name="pecpUser" required id="" value="" />
+
+    <!-- New member Level -->
+    <label class="form-label my-3" for="new-member-level">New member level</label>
+    <select class="form-select" name="level" aria-label="Default select example">
+      <option selected value="A1 - Elementary">A1 Elementary</option>
+      <option value="A2 - Pre-Intermediate">A2 Pre-Intermediate</option>
+      <option value="B1 - Intermediate">B1 Intermediate</option>
+      <option value="B2 - Upper-Intermediate">B2 Upper-Intermediate</option>
+      <option value="C1 - Advanced">C1 Advanced</option>
+      <option value="C2 - Proficient">C2 Proficient</option>
+    </select>
+
+    <!-- Learning Goal -->
+    <label class="form-label my-3" for="Learning Goal">Learning Goal</label>
+    <input type="text" class="form-control" name="learningGoal" required id="" value="" />
+
+    <button class="btn my-3  me-2 btn-success" type="submit">Add New Student to PECP</button>
+  </form>
+
+  <div class="my-3" style="width: 100%; height:0.4rem;; background-color: black"></div>
+
+  <!-- Add New Pecp Coach Form -->
+  <h1 class="text-center">Add a Coach</h1>
+  <form action="/admindashboard/pecp/coach" method="POST">
+    <!-- New Member Username -->
+    <label class="form-label my-3" for="new-member">New PEPC coah Username</label>
+    <input type="text" class="form-control" name="pecpUser" required id="" value="" />
+
+    <!-- New member Level -->
+    <label class="form-label my-3" for="new-member-level">Coah level</label>
+    <select class="form-select" name="level" aria-label="Default select example">
+      <option selected value="A1 - Elementary">A1 Elementary</option>
+      <option value="A2 - Pre-Intermediate">A2 Pre-Intermediate</option>
+      <option value="B1 - Intermediate">B1 Intermediate</option>
+      <option value="B2 - Upper-Intermediate">B2 Upper-Intermediate</option>
+      <option value="C1 - Advanced">C1 Advanced</option>
+      <option value="C2 - Proficient">C2 Proficient</option>
+    </select>
+
+    <button class="btn my-3  me-2 btn-success" type="submit">Add New PECP Coach</button>
+  </form>
+
+  <!-- Assign a Pecp Coach to student -->
+  <div class="my-3" style="width: 100%; height:0.4rem;; background-color: black"></div>
+
+  <h1 class="text-center">Assign a coach to a student</h1>
+  <form action=" /admindashboard/pecp/coach/assignment" method="POST">
+    <!-- New Member Username -->
+    <label class="form-label my-3" for="new-member">PEPC coah Username</label>
+    <input type="text" class="form-control" name="coach" required id="" value="" />
+
+    <!-- New Member Username -->
+    <label class="form-label my-3" for="new-member">PEPC Student Username</label>
+    <input type="text" class="form-control" name="student" required id="" value="" />
+
+    <button class="btn my-3  me-2 btn-dark" type="submit">Proceed</button>
+  </form>
+
 </div>
 
 <!-- Easy Maths -->
@@ -244,7 +319,7 @@
   </div>
 </div>
 
-<!-- collapse -->
+<!-- news -->
 <div class="collapse" id="collapse-4">
   <div class="card card-body">
     <!-- News -->
