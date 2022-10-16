@@ -32,4 +32,16 @@ router.get('/user/:user_id/pecpCoachDashboard/:pecpCoach_id', isVerified, catchA
 //Coach Assignment
 router.post("/admindashboard/pecp/coach/assignment", isVerified, catchAsync(englishCoaching.pecpCoachAssignment))
 
+//************************************************ */
+//  Coach dashboard
+//************************************************ */
+
+// Schedule Conversation topic
+router.post("/user/:user_id/pecpCoachDashboard/:pecpCoach_id/pecpStudent/:pecpStudent_id/schedule_topic", isVerified, catchAsync(englishCoaching.pecpCoachST))
+
+// feedback form
+router.get("/user/:user_id/pecpCoachDashboard/:pecpCoach_id/pecpStudent/:pecpStudent_id/conv/:conv_id/feedback", isVerified, catchAsync(englishCoaching.pecpConvFeedbackForm))
+
+// feedback 
+router.put("/user/:user_id/pecpCoachDashboard/:pecpCoach_id/pecpStudent/:pecpStudent_id/conv/:conv_id/feedback", isVerified, catchAsync(englishCoaching.pecpConvFeedback))
 module.exports = router;

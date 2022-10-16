@@ -83,7 +83,7 @@ module.exports.addNewPecpCoach = async (req, res) => {
 
 //Pecp student dashboard
 module.exports.pecpStudentDashboard = async (req, res) => {
-    const student = await pecpStudent.findById(req.params.pecpStudent_id).populate("pecpStudentProgressTrack");
+    const student = await pecpStudent.findById(req.params.pecpStudent_id).populate("pecpStudentProgress").populate("assignedCoach").populate("pecpStudentConvFeedback");
     const user = await User.findById(req.params.user_id).populate("coursesTaken")
 
     res.render("programs/pecp/myPecpSpace", {
@@ -93,14 +93,40 @@ module.exports.pecpStudentDashboard = async (req, res) => {
 }
 
 //Pecp Coach dashboard
-module.exports.pecpStudentDashboard = async (req, res) => {
-    const coach = await pecpCoach.findById(req.params.pecpCoach_id).populate("Students");
+module.exports.pecpCoachDashboard = async (req, res) => {
+
+    const coach = await pecpCoach.findById(req.params.pecpCoach_id).populate({
+        path: "students",
+        populate: {
+            path: "pecpStudentBasicInfo",
+        }
+    }).populate({
+        path: "students",
+        populate: {
+            path: "pecpStudentConvFeedback"
+        }
+    });
+    /*
+
+    const coach = await pecpCoach.findById(req.params.pecpCoach_id);
+
+    const coach_students = coach.students;
+
+    let Students_details = [];
+    for (student of coach_students) {
+        let full_student_details = await pecpStudent.findById(student).populate("pecpStudentBasicInfo").populate("assignedCoach").populate("pecpStudentConvFeedback");
+        Students_details.push(full_student_details);
+    }
+  console.log(Students_details);
+*/
+
     const user = await User.findById(req.params.user_id)
 
     res.render("programs/pecp/myPecpCoachingSpace", {
         coach,
         user
     })
+
 }
 
 // Assign a coach to a student
@@ -125,4 +151,59 @@ module.exports.pecpCoachAssignment = async (req, res) => {
     await pecp_Student.save();
 
     res.redirect("back");
+}
+
+// Schedule Conversation
+module.exports.pecpCoachST = async (req, res) => {
+
+    const student = await pecpStudent.findById(req.params.pecpStudent_id);
+
+    const coach = await pecpCoach.findById(req.params.pecpCoach_id);
+
+    const newConv = new pecpConvFeedback(req.body.conversation);
+
+    await newConv.save();
+
+    student.pecpStudentConvFeedback.unshift(newConv._id);
+
+    await student.save();
+
+    req.flash('success', `Conversation practice succesfully, scheduled for this learner. The conversation details and call information is sent to his/her dashboard.`);
+
+    res.redirect("back");
+
+}
+
+// conversation topic feedback form
+module.exports.pecpConvFeedbackForm = async (req, res) => {
+
+    const student = await pecpStudent.findById(req.params.pecpStudent_id).populate("pecpStudentBasicInfo");
+
+    const coach = await pecpCoach.findById(req.params.pecpCoach_id);
+
+    const conv = await pecpConvFeedback.findById(req.params.conv_id);
+
+
+    res.render("programs/pecp/convFeedbackForm", {
+        student,
+        coach,
+        conv
+    })
+}
+
+// conversation topic feedback  
+module.exports.pecpConvFeedback = async (req, res) => {
+
+    const student = await pecpStudent.findById(req.params.pecpStudent_id).populate("pecpStudentBasicInfo");
+
+    const coach = await pecpCoach.findById(req.params.pecpCoach_id);
+
+    const conv = await pecpConvFeedback.findByIdAndUpdate(req.params.conv_id, {
+        feedback: req.body.feedback,
+        recommendation: req.body.recommendation,
+        suggested_exercise: req.body.suggested_exercise
+    });
+
+    req.flash('success', `Feedback has been succesfully transmitted to the learner`);
+    res.redirect('back');
 }

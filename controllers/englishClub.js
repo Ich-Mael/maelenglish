@@ -27,8 +27,6 @@ const {
     englishClubMedia,
 } = require("../models/englishClub");
 
-
-
 function addEngClub(club) {
 
     if (club.clubType === "High-school") {
@@ -55,7 +53,6 @@ function addEngClub(club) {
         hub.clubs.Simple.push(club._id);
     }
 }
-
 
 async function addBoardMember(boardUsername, clubname, position) {
     boardUsername = req.body;
@@ -185,7 +182,6 @@ module.exports.showEnglishClub = async (req, res) => {
         clubMember: req.user._id
     });
 
-    console.log(clubMemberInfo);
 
     const club = await englishClubs
         .findById(req.params.club_id)
@@ -729,9 +725,6 @@ module.exports.memberGrade = async (req, res) => {
 
 module.exports.showMemberGrade = async (req, res) => {
     const clubMember = await englishClubMember.findById(req.params.member_id).populate("clubMemberProgress").populate("clubMember");
-
-    console.log("***=======******");
-    console.log(req.params.member_id);
 
 
     const club = await englishClubs.findById(req.params.club_id);

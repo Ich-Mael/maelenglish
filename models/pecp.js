@@ -24,6 +24,7 @@ const pecpStudentSchema = new Schema({
 
     generalRecommendation: {
         type: String,
+        default: "Practice English as much as you can"
     },
 
     studentCourses: [{
@@ -33,12 +34,12 @@ const pecpStudentSchema = new Schema({
 
     pecpStudentProgress: [{
         type: Schema.Types.ObjectId,
-        ref: " pecpStudentProgressTrack",
+        ref: "pecpStudentProgressTrack",
     }],
 
     pecpStudentConvFeedback: [{
         type: Schema.Types.ObjectId,
-        ref: " pecpConvFeedback",
+        ref: "pecpConvFeedback",
     }],
 
     level: {
@@ -68,7 +69,7 @@ const pecpCoachSchema = new Schema({
 
     students: [{
         type: Schema.Types.ObjectId,
-        ref: "pepcStudent",
+        ref: "pecpStudent",
     }],
 
     feedbackFromStudent: [{
@@ -200,17 +201,38 @@ const pecpStudentProgressTrackSchema = new Schema({
 const pecpConvFeedbackSchema = new Schema({
     feedback: {
         type: String,
-        required: true,
+        default: "Feedback will be provided once the conversation practice is done."
+    },
+
+    topicTitle: {
+        type: String,
+    },
+
+    topicDetails: {
+        type: String,
+    },
+
+    callDate: {
+        type: Date,
+        default: format(Date.now(), "MM/dd/yyyy"),
+    },
+
+    callTime: {
+        type: String,
+    },
+
+    callLinkInfo: {
+        type: String,
     },
 
     recommendation: {
         type: String,
-        required: true,
+        default: "Advice for improvement will be provided once the conversation practice is done."
     },
 
-    Suggested_exercise: {
+    suggested_exercise: {
         type: String,
-        required: true,
+        default: "Link for self-pratice will be provided once the conversation practice is done."
     }
 }, {
     timestamps: true,
@@ -220,7 +242,7 @@ const pecpStudent = mongoose.model("pecpStudent", pecpStudentSchema);
 
 const pecpCoach = mongoose.model("pecpCoach", pecpCoachSchema);
 
-const pecpConvFeedback = mongoose.model("pecpConvFeedback ", pecpConvFeedbackSchema);
+const pecpConvFeedback = mongoose.model("pecpConvFeedback", pecpConvFeedbackSchema);
 
 const pecpStudentProgressTrack = mongoose.model("pecpStudentProgressTrack", pecpStudentProgressTrackSchema);
 

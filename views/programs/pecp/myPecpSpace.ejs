@@ -1,135 +1,288 @@
 <% layout('layouts/pecpBoilerplate') %>
 <style>
-    .pecp_wrapper {
-        box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
-        background-color: aliceblue;
-        border-radius: 5px;
-    }
+ body {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+ }
 
-    .pecs {
-        padding: 2rem 5rem;
-        font-family: 'Rye', cursive;
-        color: rgb(13, 87, 152);
-    }
+ .pecp_wrapper {
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  background-color: aliceblue;
+  border-radius: 5px;
+ }
 
-    .lg-heading {
+ .pecs {
+  padding: 2rem 5rem;
+  font-family: 'Rye', cursive;
+  color: rgb(13, 87, 152);
+ }
 
-        color: rgb(13, 87, 152);
-        font-size: 1.3rem;
+ .lg-heading {
 
-        text-align: center;
-    }
+  color: rgb(13, 87, 152);
+  font-size: 1.3rem;
 
-    .lg-heading-text {
-        font-family: Georgia, 'Times New Roman', Times, serif;
-        /* font-family: "Paytone One", sans-serif; */
-        /* font-family: 'Rye', cursive; */
-        /* font-family: 'Titan One', cursive; */
-        font-size: 1.4rem;
-    }
+  text-align: center;
+ }
 
-    .lg-heading-paragraph {
-        font-family: "Paytone One", sans-serif;
-        font-size: 1.4rem;
+ .lg-heading-text {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  /* font-family: "Paytone One", sans-serif; */
+  /* font-family: 'Rye', cursive; */
+  /* font-family: 'Titan One', cursive; */
+  font-size: 1.4rem;
+ }
 
-    }
+ .lg-heading-paragraph {
+  font-family: "Paytone One", sans-serif;
+  font-size: 1.4rem;
 
-    .activity-links {
-        font-size: 1.2rem;
-        background-color: rgb(26, 136, 232);
-        color: aliceblue;
-        text-decoration: none;
-        padding: 0.5rem;
-        transition: all 0.3s;
-        border-radius: 5px;
-    }
+ }
 
-    .activity-links:hover {
-        color: blue;
-        background-color: aliceblue;
-        border: 1px solid black;
-    }
+ .activity-links {
+  font-size: 1.2rem;
+  background-color: rgb(26, 136, 232);
+  color: aliceblue;
+  text-decoration: none;
+  padding: 0.5rem;
+  transition: all 0.3s;
+  border-radius: 5px;
+ }
 
-    .section-title {
-        font-family: "Paytone One", sans-serif;
-        font-size: 1.8rem;
-        background-color: blueviolet;
-        color: white;
-        text-align: center;
-        padding: 2rem 1rem;
-    }
+ .activity-links:hover {
+  color: blue;
+  background-color: aliceblue;
+  border: 1px solid black;
+ }
 
-    .course-wrapper {
-        border: 3px solid rgb(43, 73, 226);
-        border-radius: 5px;
-    }
+ .section-title {
+  font-family: "Paytone One", sans-serif;
+  font-size: 1.8rem;
+  background-color: blueviolet;
+  color: white;
+  text-align: center;
+  padding: 2rem 1rem;
+ }
 
-    .course-link {
-        color: white;
-        text-decoration: none;
-        font-size: 1.3rem;
-        padding: 2rem 1rem;
-        transition: all 0.3s;
-    }
+ .course-wrapper {
+  border: 3px solid rgb(43, 73, 226);
+  border-radius: 5px;
+ }
 
-    .course-link:hover {
-        text-decoration: none;
-        font-size: 1.35rem;
-        color: white;
+ .course-link {
+  color: white;
+  text-decoration: none;
+  font-size: 1.3rem;
+  padding: 2rem 1rem;
+  transition: all 0.3s;
+ }
 
-    }
+ .course-link:hover {
+  text-decoration: none;
+  font-size: 1.35rem;
+  color: white;
+
+ }
+
+ .conv-info-wrapper {
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+  background-color: rgb(245, 242, 248);
+  border-radius: 5px;
+ }
+
+ .conv-info-text {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 1.4rem;
+  font-style: italic;
+  padding: 2rem 3rem;
+ }
 </style>
 <div class="container mb-5 d-flex flex-column align-items-center">
-    <div class="pecp_wrapper mt-5">
-        <h1 class="pecs">My Personal English Coaching Space</h1>
-        <hr>
-        <div class="d-flex justify-content-around py-3">
-            <a href="#courses" class="mx-2 activity-links d-block">My courses</a>
-            <a href="#recommendation" class="mx-2 activity-links d-block">Recommendation</a>
-            <a href="#progress" class="mx-2 activity-links d-block">Progress</a>
-            <a href="#cvInt" class="mx-2 activity-links d-block">My CV as Interview</a>
-        </div>
-        <hr>
-        <div class="container ps-5 py-5">
-            <!-- <h3 class="lg-heading">Active learning goal</h3> -->
-            <h3 class="lg-heading-text">Hello <%= user.surname %> ! Always remember your goal, during your English
-                learning
-                journey.
-            </h3>
-            <p class="lg-heading-paragraph"> - <%= student.learningGoal %> -</p>
-        </div>
-    </div>
+ <div class="pecp_wrapper mt-5">
+  <h1 class="pecs">My Personal English Coaching Space</h1>
+  <hr>
+  <div class="d-flex justify-content-around py-3">
+   <a href="#courses" class="mx-2 activity-links d-block">My courses</a>
+   <a href="#recommendation" class="mx-2 activity-links d-block">Conversation Practice</a>
+   <a href="#progress" class="mx-2 activity-links d-block">Progress</a>
+   <a href="#cvInt" class="mx-2 activity-links d-block">My CV as Interview</a>
+  </div>
+  <hr>
+  <div class="container ps-5 py-5">
+   <!-- <h3 class="lg-heading">Active learning goal</h3> -->
+   <h3 class="lg-heading-text">Hello <%= user.surname %> ! Always remember your goal, during your English
+    learning
+    journey.
+   </h3>
+   <p class="lg-heading-paragraph"> - <%= student.learningGoal %> -</p>
+  </div>
+ </div>
 
 </div>
 
 <!-- My courses -->
 <div id="courses">
-    <h3 class="section-title">My courses</h3>
-    <div class="container my-5">
-        <div class="row">
-            <% for (let course of user.coursesTaken){ %>
-            <div class="col-md-4 course-wrapper">
-                <div class="img-wrapper">
-                    <img src="<%=course.courseImageUrl %>" class="img-fluid img-thumbnail mt-2 " class="" alt="">
-                </div>
-                <p class="my-3 py-3 bg-primary">
-                    <a href="/courses/<%= course._id %>" target="_blank" class="course-link">
-                        <%= course.title %></a>
-                </p>
-            </div>
-            <%}%>
+ <h3 class="section-title">My courses</h3>
+ <div class="container my-5">
+  <div class="row">
+   <% for (let course of user.coursesTaken){ %>
+   <div class="col-md-4 course-wrapper">
+    <div class="img-wrapper">
+     <img src="<%=course.courseImageUrl %>" class="img-fluid img-thumbnail mt-2 " class="" alt="">
+    </div>
+    <p class="my-3 py-3 bg-primary">
+     <a href="/courses/<%= course._id %>" target="_blank" class="course-link">
+      <%= course.title %></a>
+    </p>
+   </div>
+   <%}%>
     </div>
 </div>
 </div>
+
 <!-- My recoomendation -->
-<div id="recommendation">
-    <h3 class="section-title">My Learning Recommendation</h3>
+<div id="recommendation" class="mb-5 pb-5 pt-2">
+    <h3 class="section-title">Conversation Practice</h3>
+    <p class="conv-info-text container col-md-10">Dans cette section vous aurez toutes les informations concernant votre apprentissage pratique de l'Anglais. Votre coach vous assistera pour l'amelioration continue de votre capacité linguistique orale. <br> Pour chaque séance de conversation pratique, votre coach vous fera des retours constructifs et vous suggerera des exercices pour vous améliorer.</p>
+    <% if( student.pecpStudentConvFeedback.length !== 0) {%>
+   <div class="container pb-5">
+    <div class="row py-3">
+     <% for( [i, conv] of student.pecpStudentConvFeedback.entries()){%>
+     <div class="col-md-4">
+      <div class="conv-info-wrapper">
+       <h3 class="pt-3 px-3 fs-5 text-center"><i class="fa-regular fa-comments mx-2"></i>Conversation
+        Practice
+        <span> #<%= student.pecpStudentConvFeedback.length - i%> </span>
+        <% if(i === 0){%> <span class="badge bg-primary">New</span>
+        <%}%></h3>
+                            <hr>
+                                <p class="pb-2 fs-5 px-4" style="height: 4rem;"><span class="fw-bold text-primary">Topic </span> <i class="fa-solid text-primary fa-hand-point-right mx-2"></i><%= conv.topicTitle %>
+        </p>
+
+        <div class="">
+         <!-- Modal buttons -->
+         <div class="d-flex justify-content-around py-3" style="background: #6190E8;  /* fallback for old browsers */
+                                background: -webkit-linear-gradient(to left, #A7BFE8, #6190E8);  /* Chrome 10-25, Safari 5.1-6 */
+                                background: linear-gradient(to left, #A7BFE8, #6190E8); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+                                ">
+          <!-- Button trigger modal -->
+          <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#conv_<%= conv._id %>">
+           Details
+          </button>
+
+          <!-- Button trigger modal -->
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+           data-bs-target="#feedback_<%= conv._id %>">
+           Feedback
+          </button>
+         </div>
+
+         <!-- Modal for conversation info-->
+         <div class="modal fade" id="conv_<%= conv._id %>" tabindex="-1" aria-labelledby="exampleModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-centered">
+           <div class="modal-content">
+            <div class="modal-header" style="background-color: rgb(109, 54, 151);">
+             <h5 class="modal-title text-white" id="exampleModalLabel">Details for
+              Conversation
+              Practice
+              <span> #<%= student.pecpStudentConvFeedback.length - i%></h5>
+             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+             <div>
+              <div>
+               <%- conv.topicDetails %>
+              </div>
+             </div>
+             <div>
+              <h5>This conversation practice is scheduled for
+               <span class="fst-ittalic text-primary"><%= conv.callDate.toDateString() %> </span> At
+               <span class="text-primary"><%= conv.callTime %> </span></h5>
+              <a href="<%= conv.callLinkInfo %>" class="fs-5 mt-3 mx-3" target="_blank"> <i
+                class="fa-solid fa-headset mx-3"></i>Click here to join the
+               conversation</a>
+              <hr>
+              <p class="fst-italic fs-5"><i class="fa-solid fa-triangle-exclamation text-danger mx-3"></i>In case you
+               can't
+               make the call,
+               please inform your coach as soon possible</p>
+             </div>
+
+            </div>
+            <div class="modal-footer">
+             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+           </div>
+          </div>
+         </div>
+
+         <!-- Modal for feedback-->
+         <div class="modal fade" id="feedback_<%= conv._id %>" tabindex="-1" aria-labelledby="exampleModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-centered">
+           <div class="modal-content">
+            <div class="modal-header" style="background-color: rgb(8, 121, 95);">
+             <h5 class=" modal-title text-white" id="exampleModalLabel">Feedback for
+              Conversation
+              Practice
+              <span> #<%= student.pecpStudentConvFeedback.length - i%> </span>
+             </h5>
+             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+             <div>
+              <div class=" py-3 px-2 fs-5 my-3" style="border: 2px solid green ; border-radius: 5px;">
+               <p class="text-center text-success">Conversation Feedback</p>
+               <hr>
+               <%- conv.feedback %>
+              </div>
+
+              <div class=" py-3 px-2 fs-5  my-3 " style="border: 2px solid rgb(42, 7, 98) ; border-radius: 5px;">
+               <p class="text-center text-primary">Advice for better learning habits</p>
+               <hr>
+               <%- conv.recommendation %>
+              </div>
+
+              <div class=" py-3 px-2 fs-5  my-3 " style="border: 2px solid rgb(16, 18, 128) ; border-radius: 5px;">
+               <p class="text-center text-secondary">Suggested Exercise</p>
+               <hr>
+               <%- conv.suggested_exercise %>
+              </div>
+             </div>
+             <div>
+              <hr>
+              <p class="fst-italic text-success px-2 fs-5">Feel free to contact the coach for further explanation</p>
+
+              <p class="fst-italic text-danger px-2 fs-5">If you haven't received your feedback within 24h, please
+               contact
+               AfroHK customer service</p>
+             </div>
+
+            </div>
+            <div class="modal-footer">
+             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+      </div>
+     </div>
+     <%}%>
+                    </div>
+                    <%}else {%>
+    </div>
+    <%}%>
+
 </div>
+
 <!-- My progress -->
 <div id="progress">
     <h3 class="section-title">My Progress</h3>
+   
 </div>
-<!-- My cvInt -->
-<div id="cvInt">
-    <h3 class="section-title">My CV as Interview</h3>
-</div>
+
+        <!-- My cvInt -->
+        <div id="cvInt">
+            <h3 class="section-title">My CV as Interview</h3>
+        </div>
