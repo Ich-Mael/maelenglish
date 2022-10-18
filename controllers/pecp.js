@@ -207,3 +207,23 @@ module.exports.pecpConvFeedback = async (req, res) => {
     req.flash('success', `Feedback has been succesfully transmitted to the learner`);
     res.redirect('back');
 }
+
+// pecp grade
+module.exports.pecpGrade = async (req, res) => {
+    //
+    const student = await pecpStudent.findById(req.params.pecpStudent_id)
+
+    //
+    const coach = await pecpCoach.findById(req.params.pecpCoach_id);
+
+    //creating new grade
+    const studentGrade = new pecpStudentProgressTrack(req.body.grade);
+
+    await studentGrade.save();
+
+    student.pecpStudentProgress.unshift(studentGrade);
+    student.save();
+
+    req.flash('success', `This Learner has been succesfully graded`);
+    res.redirect('back');
+}
