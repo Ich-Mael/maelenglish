@@ -4,23 +4,24 @@
 <link href="stylesheets/pecp/home.css" rel="stylesheet" />
 <!-- Series -->
 <div class="banner-wrapper d-flex flex-column align-items-center justify-content-center">
- <div class="banner-content">
-  <h1 class="banner-heading">Personal English Coaching Program</h1>
-  <div class="buttons-wrapper d-flex justify-content-center" style="">
-   <!-- Button trigger modal -->
-   <a class=" btn mx-5 more btn btn-primary" data-bs-toggle="modal" data-bs-target="#more-pecp">
-    En Savoir Plus
-   </a>
-   <% if(typeof currentUser !=undefined){%>
-   <% if (currentUser.isPecpStudent) {%>
-   <a href="/user/<%= currentUser._id%>/pecpStudentDashboard/<%= currentUser.pecpStudent_id%>"
-    class="my_pecp btn btn-success mx-2">My English Coaching Space</a>
-   <%} else { %>
-   <a class="btn mx-5 more btn btn-success" data-bs-toggle="modal" data-bs-target="#inscription">
-    Contactez-nous pour s'inscrire
-   </a>
-   <%}%>
-   <%}%>
+  <div class="banner-content">
+    <h1 class="banner-heading">Personal English Coaching Program</h1>
+    <div class="buttons-wrapper d-flex justify-content-center" style="">
+      <!-- Button trigger modal -->
+      <a class=" btn mx-5 more btn btn-primary" data-bs-toggle="modal" data-bs-target="#more-pecp">
+        En Savoir Plus
+      </a>
+      <% if(currentUser){%>
+      <% if (currentUser.isPecpStudent) {%>
+      <a href="/user/<%= currentUser._id%>/pecpStudentDashboard/<%= currentUser.pecpStudent_id%>"
+        class="my_pecp btn btn-success mx-2">My English Coaching Space</a>
+      <%}%>
+
+      <%}else {%>
+      <a class="btn mx-5 more btn btn-success" data-bs-toggle="modal" data-bs-target="#inscription">
+        Contactez-nous pour s'inscrire
+      </a>
+      <%}%>
 
    <!-- Modal for know more -->
    <div class="modal fade" id="more-pecp" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
