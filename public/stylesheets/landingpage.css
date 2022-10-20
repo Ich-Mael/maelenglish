@@ -13,6 +13,8 @@
   padding: 0;
 }
 
+/* preloader */
+
 :root {
   --fg: #17181c;
   --shade1: #7006d4;
@@ -2572,6 +2574,16 @@ customers-cards:before {
     font-size: 1rem;
   }
 
+  .new-program {
+    font-family: "Chivo", sans-serif;
+    font-family: "Chango";
+    font-size: 1.5rem;
+    color: rgb(245, 235, 235);
+    text-shadow: 1px 2px 1px black;
+    transition: all 1s;
+    padding-bottom: 0.5rem;
+  }
+
   .news-text {
     padding-top: 1rem;
     font-size: 1.2rem;
@@ -2837,6 +2849,16 @@ customers-cards:before {
   .account-wrapper {
     width: 100%;
     margin: 5rem 0 0;
+  }
+
+  .new-program-wrapper {
+    margin-bottom: 4rem;
+  }
+
+  .new-program {
+    font-size: 1.5rem;
+    text-transform: capitalize;
+    font-family: Georgia, 'Times New Roman', Times, serif;
   }
 
   .header-text {
