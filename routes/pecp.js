@@ -50,6 +50,8 @@ router.put("/user/:user_id/pecpCoachDashboard/:pecpCoach_id/pecpStudent/:pecpStu
 // Grade a student
 router.post("/user/:user_id/pecpCoachDashboard/:pecpCoach_id/pecpStudent/:pecpStudent_id/grade", isVerified, catchAsync(englishCoaching.pecpGrade))
 
+// Student Cv
+router.post("/user/:user_id/pecpCoachDashboard/:pecpCoach_id/pecpStudent/:pecpStudent_id/cv", isVerified, catchAsync(englishCoaching.pecpStudentCv))
 
 
 module.exports = router;

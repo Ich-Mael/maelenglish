@@ -22,6 +22,11 @@ const pecpStudentSchema = new Schema({
         ref: "pecpCoach",
     }],
 
+    myCv: [{
+        type: Schema.Types.ObjectId,
+        ref: "pecpStudentCv",
+    }],
+
     generalRecommendation: {
         type: String,
         default: "Practice English as much as you can"
@@ -238,6 +243,24 @@ const pecpConvFeedbackSchema = new Schema({
     timestamps: true,
 });
 
+// PECP Student Cv schema
+const pecpStudentCvSchema = new Schema({
+
+    studentCvPdf: {
+        type: String,
+    },
+
+    studentCvInterview: {
+        type: String,
+    },
+
+    studentCvAudio: {
+        type: String,
+    },
+
+});
+
+
 const pecpStudent = mongoose.model("pecpStudent", pecpStudentSchema);
 
 const pecpCoach = mongoose.model("pecpCoach", pecpCoachSchema);
@@ -247,9 +270,12 @@ const pecpConvFeedback = mongoose.model("pecpConvFeedback", pecpConvFeedbackSche
 const pecpStudentProgressTrack = mongoose.model("pecpStudentProgressTrack", pecpStudentProgressTrackSchema);
 
 
+const pecpStudentCv = mongoose.model("pecpStudentCv", pecpStudentCvSchema);
+
 module.exports = {
     pecpStudent,
     pecpCoach,
+    pecpStudentCv,
     pecpConvFeedback,
     pecpStudentProgressTrack,
 };

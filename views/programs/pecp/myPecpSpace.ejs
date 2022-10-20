@@ -99,10 +99,50 @@
  td {
   color: #0a3d93;
  }
+
+ .notest {
+  /* background: url(https://images.pexels.com/photos/1181317/pexels-photo-1181317.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260) */
+  background: url(https://images.pexels.com/photos/5336951/pexels-photo-5336951.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  /* width: 100vw; */
+  /* overflow: hidden; */
+  /* font-family: */
+  font-weight: 700;
+  min-height: 90vh;
+  position: relative;
+  /* padding: 0 10rem 0 2rem; */
+  display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+  justify-content: center;
+ }
+
+ .interview {
+  /* background: url(https://images.pexels.com/photos/1181317/pexels-photo-1181317.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260) */
+  background: url(https://images.pexels.com/photos/5336951/pexels-photo-5336951.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  /* width: 100vw; */
+  /* overflow: hidden; */
+  /* font-family: */
+  font-weight: 700;
+  min-height: 90vh;
+  position: relative;
+  /* padding: 0 10rem 0 2rem; */
+  /* flex-direction: column; */
+  align-items: center;
+  justify-content: center;
+ }
 </style>
+
 <div class="container mb-5 d-flex flex-column align-items-center">
  <div class="pecp_wrapper mt-5">
-  <h1 class="pecs">My Personal English Coaching Space</h1>
+  <h1 class="pecs">My Personal English Learning Space</h1>
   <hr>
   <div class="d-flex justify-content-around py-3">
    <a href="#courses" class="mx-2 activity-links d-block">My courses</a>
@@ -474,5 +514,38 @@
 
 <!-- My cvInt -->
 <div id="cvInt">
-<h3 class="section-title">My CV as Interview</h3>
+<h3 class="section-title">My Cv as Interview</h3>
+<% if(student.myCv.length > 0) {%>
+        <div class="container py-5">
+         <div class="d-flex interview justify-content-around">
+          <!--  -->
+          <a href="<%= student.myCv[0].studentCvPdf%>" class="d-block btn btn-success fs-5 px-5 my-4"
+           target="_blank">Click here to access your Cv in
+           English version</a>
+
+         </div>
+
+         <div class="col-md-8 container my-5">
+          <p class="fs-5 fst-italic pb-3"> <span class="fw-bold">"L'habitude est une seconde nature" </span> <br> <i
+            class="fa-solid fa-headphones"></i>
+           Prenez l'habitude de vous écoutez faire votre meilleure performance pour
+           un interview en Anglais.</p>
+          <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay"
+           src="<%= student.myCv[0].studentCvAudio%>"></iframe>
+         </div>
+         <div class="container py-3">
+          <div class="col-lg-8 container">
+           <hr>
+           <h4 class="ps-3" style="font-family: Georgia, 'Times New Roman', Times, serif; color:#0a3d93;">Interview
+            Transcript</h4>
+           <%- student.myCv[0].studentCvInterview %>
+          </div>
+         </div>
+        </div>
+        <%}else{%>
+        <div class="fs-5  notest">
+         <p class="text-center text-white fs-1 fst-italic" style="text-shadow: 1px 1px black;">You haven't practiced for
+          an interview yet.</p>
+        </div>
+        <%}%>
 </div>

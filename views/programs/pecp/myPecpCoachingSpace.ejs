@@ -146,12 +146,17 @@
       data-bs-target="#GD_<%= student._id %>" aria-expanded="false" aria-controls="collapseExample">
       Grade Student
      </button>
+
+     <button class="btn ms-2 my-2 d-block btn-danger" type="button" data-bs-toggle="collapse"
+      data-bs-target="#Cv_<%= student._id %>" aria-expanded="false" aria-controls="collapseExample">
+      Cv
+     </button>
      <% if(currentUser.role == "admin"){%>
      <%}%>
     
     <button type="button" class="btn d-block ms-2 my-2 btn-primary" data-bs-toggle="collapse"
      data-bs-target="#GR_<%= student._id %>">
-     General Recommendation
+     Learning Advice
      </button>
 
      <button type="button" class="btn d-block ms-2 my-2 btn-success" data-bs-toggle="collapse"
@@ -311,6 +316,36 @@
       </div>
      </div>
 
+     <!-- Cv -->
+     <div class="collapse" id="Cv_<%= student._id %>" tabindex="-1" aria-labelledby="exampleModalLabel"
+      aria-hidden="true">
+      <div class="ontainer">
+       <h5 class="modal-title text-center" id="">Cv Interview Practice files for
+        <%= student.pecpStudentBasicInfo.surname %> </h5>
+      </div>
+      <div class="container col-lg-10">
+       <form
+        action="/user/<%=currentUser._id%>/pecpCoachDashboard/<%=currentUser.pecpCoach_id%>/pecpStudent/<%= student._id %>/cv"
+        method="POST">
+        <!-- Cv in English -->
+        <label class="form-label my-3" for="">Cv in English pdf link</label>
+        <input type="text" class="form-control" placeholder="" name="cv[studentCvPdf]" required id="" value="" />
+
+        <!--Cv text-->
+        <label class="form-label my-3" for="Conv topic Details">Cv Interview text</label>
+        <textarea type="text" class="form-control mytextarea " placeholder=" " name="cv[studentCvInterview]"
+         id=""></textarea>
+
+        <!-- Student Cv audio -->
+        <label class="form-label my-3" for="call-link">Cv interview audio link</label>
+        <input type="text" class="form-control" placeholder="" name="cv[studentCvAudio]" required id="" value="" />
+
+        <button class="btn my-3  me-2 btn-success" type="submit">Submit Student C</button>
+
+       </form>
+      </div>
+     </div>
+
      <!-- GR Modal -->
      <div class="collapse" id="GR_<%= student._id %>" tabindex="-1" aria-labelledby="exampleModalLabel"
       aria-hidden="true">
@@ -385,7 +420,7 @@
        <div class="container">
         <div class="row">
          <% for(conv of student.pecpStudentConvFeedback) {%>
-         <div class="col-md-6">
+         <div class="col-md-6 my-3">
           <div class="py-2 px-3" style="background-color: rgb(238, 248, 251); border-radius: 5px;">
            <h6><i class="fa-regular mx-3 fa-comments" style="height: 3rem;"></i><%= conv.topicTitle %></h6>
            <hr>

@@ -3,6 +3,7 @@ const User = require("../models/user");
 const {
     pecpStudent,
     pecpCoach,
+    pecpStudentCv,
     pecpConvFeedback,
     pecpStudentProgressTrack,
 } = require("../models/pecp");
@@ -83,7 +84,8 @@ module.exports.addNewPecpCoach = async (req, res) => {
 
 //Pecp student dashboard
 module.exports.pecpStudentDashboard = async (req, res) => {
-    const student = await pecpStudent.findById(req.params.pecpStudent_id).populate("pecpStudentProgress").populate("assignedCoach").populate("pecpStudentConvFeedback");
+    const student = await pecpStudent.findById(req.params.pecpStudent_id).populate("pecpStudentProgress").populate("assignedCoach").populate("pecpStudentConvFeedback").populate("myCv");
+
     const user = await User.findById(req.params.user_id).populate("coursesTaken")
 
     res.render("programs/pecp/myPecpSpace", {
@@ -221,9 +223,29 @@ module.exports.pecpGrade = async (req, res) => {
 
     await studentGrade.save();
 
-    student.pecpStudentProgress.unshift(studentGrade);
+    student.pecpStudentProgress.unshift(studentGrade._id);
     student.save();
 
     req.flash('success', `This Learner has been succesfully graded`);
     res.redirect('back');
+}
+
+//pecp student cv
+module.exports.pecpStudentCv = async (req, res) => {
+    //
+    const student = await pecpStudent.findById(req.params.pecpStudent_id)
+
+    //
+    const coach = await pecpCoach.findById(req.params.pecpCoach_id);
+
+    const student_cv = new pecpStudentCv(req.body.cv);
+
+    await student_cv.save()
+
+    student.myCv.unshift(student_cv._id);
+    student.save();
+
+    req.flash('success', `This learner's Cv Interview practice files has been succesfully submitted. `);
+    res.redirect('back');
+
 }
