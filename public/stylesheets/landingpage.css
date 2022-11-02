@@ -3,6 +3,22 @@
   margin: 0;
 }
 
+a {
+  text-decoration: none;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 90%;
+}
+
+body {
+  margin: 0;
+  /* overflow-x: hidden; */
+  padding: auto;
+  background: #ffffff;
+  font-family: "Roboto";
+}
 
 /* preloader */
 
@@ -613,22 +629,7 @@
 
 
 
-a {
-  text-decoration: none;
-}
 
-html {
-  box-sizing: border-box;
-  font-size: 90%;
-}
-
-body {
-  margin: 0;
-  /* overflow-x: hidden; */
-  padding: auto;
-  background: #f3edf9;
-  font-family: "Roboto";
-}
 
 #site-content {
   overflow-x: hidden;
@@ -707,6 +708,7 @@ body {
   overflow-y: hidden;
 }
 
+
 @media (max-width: 1200px) {}
 
 .video-container {
@@ -736,7 +738,7 @@ body {
   width: 100%;
   top: 0;
   left: 0;
-  background: rgba(18, 1, 36, 0.2);
+  background: rgba(17, 1, 32, 0.626);
   position: absolute;
 }
 
@@ -776,10 +778,11 @@ body {
 
 .slogan {
   /* border-top: 3px solid white; */
-  font-family: "Titan One", cursive;
+  /* font-family: "Titan One", cursive; */
   /* font-family: 'Poppins', sans-serif; */
   /* font-family: "Ultra", serif; */
-  text-shadow: 1px 1px 1px rgb(182, 8, 212);
+  font-family: "Chivo", sans-serif;
+  text-shadow: 1px 1px 1px rgb(28, 28, 29);
   padding-top: 3rem;
   /* font-family: 'Meriweather', Times, serif; */
   letter-spacing: 0.3rem;
@@ -793,11 +796,11 @@ body {
   margin-top: 1rem;
   font-size: 1.3rem;
   display: inline-block;
-  border-radius: 60px;
+  border-radius: 6px;
   color: rgb(255, 255, 255);
   background-color: rgba(108, 12, 204, 0.752);
   border: 1.3px solid rgb(255, 255, 255);
-  padding: 1rem 1.5rem;
+  padding: 0.5rem 1.5rem;
   transition: all 0.5s;
 
 }
@@ -1122,7 +1125,7 @@ profile-link:hover {
 
 @keyframes moveBanner {
   0% {
-    transform: translateY(30rem) rotate(-20deg);
+    transform: translateY(20rem) rotate(-10deg);
   }
 
   100% {
@@ -2071,13 +2074,12 @@ customers-cards:before {
 }
 
 .recent-news-title {
-  background: #8E2DE2;
-  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #4A00E0, #8E2DE2);
-  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #4A00E0, #8E2DE2);
-  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  color: rgba(250, 247, 247, 0.853);
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  color: #8E2DE2;
+  font-size: 2rem;
+  border-bottom: 1px solid rgb(24, 23, 24);
+  border-top: 1px solid rgb(28, 27, 28);
+  padding: 0 0.2rem;
 }
 
 .more-news-title {
@@ -2092,12 +2094,20 @@ customers-cards:before {
 
 .news-card {
   box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+  border-radius: 5px;
 }
 
 .news-title {
   color: rgb(133, 7, 150);
-  font-size: 1.2rem;
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 1.4rem;
+  /* font-family: 'Albril Fatface', cursive; */
+  font-family: "Esteban";
+  /* font-family: "Titan One", cursive; */
+  /* font-family: 'Chivo', sans-serif; */
+  /* font-family: 'Poppins', sans-serif; */
+  /* font-family: "Ultra", serif; */
+  /* font-family: "Roboto"; */
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   letter-spacing: 0.14rem;
   height: 4rem;
   font-weight: 400;
@@ -2118,14 +2128,23 @@ customers-cards:before {
 
 
 .news-img:hover {
-  transform: scale(1.2);
+  transform: scale(1.02);
   opacity: 1;
 }
 
 .news-text {
-  padding-top: 1rem;
-  font-family: Georgia, 'Times New Roman', Times, serif;
-  font-size: 1.1rem;
+  /* font-family: Georgia, 'Times New Roman', Times, serif; */
+  /* font-family: 'Albril Fatface', cursive; */
+  /* font-family: "Esteban"; */
+  /* font-family: "Titan One", cursive; */
+  /* font-family: 'Chivo', sans-serif; */
+  /* font-family: 'Poppins', sans-serif; */
+  /* font-family: "Ultra", serif; */
+  /* font-family: "Roboto"; */
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  padding: 1rem 1rem;
+  color: #231f24;
+  font-size: 1.3rem;
   height: 10rem;
 }
 
@@ -2208,11 +2227,11 @@ customers-cards:before {
 }
 
 .swiper-slide img {
-  opacity: 0.5;
+  opacity: 0.7;
   width: 200px;
   height: 200px;
   transition: 0.3s;
-  filter: grayscale(100);
+  /* filter: grayscale(100); */
 }
 
 .swiper-slide img:hover {
@@ -2244,9 +2263,9 @@ customers-cards:before {
   color: #b9d5e2;
   background: #e6dada;
   /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #274046, #e6dada);
+  background: -webkit-linear-gradient(to left, #412388, #412388, #274046, #e6dada);
   /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to left, #412388, #556497, #ffffff);
+  background: linear-gradient(to left, #412388, #412388, #556497, #ffffff);
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   min-height: fit-content;
   /* background-color: #E1DDE4; */
@@ -2371,6 +2390,7 @@ customers-cards:before {
 
 .useful-links {
   text-decoration: none;
+
   color: #ffffffb0;
   font-size: 1.2rem;
   padding: 1rem 0;
@@ -2486,9 +2506,9 @@ customers-cards:before {
   background-color: #bb97e4;
   background: #e6dada;
   /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #274046, #e6dada);
+  background: -webkit-linear-gradient(to right, #412388, #412388, #274046, #e6dada);
   /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #412388, #556497, #ffffff);
+  background: linear-gradient(to right, #412388, #412388, #556497, #ffffff);
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   font-family: Georgia, "Times New Roman", Times, serif;
   color: rgba(255, 255, 255, 0.815);

@@ -7,6 +7,7 @@ const crypto = require("crypto");
 const router = express.Router();
 const User = require("../models/user");
 const accountToken = require("../models/accountTokens");
+const resetAccountToken = require("../models/resetAccountToken");
 const {
   englishClubs
 } = require("../models/englishClub");
@@ -53,6 +54,7 @@ router.post("/register", catchAsync(async (req, res) => {
     gender,
     username,
   });
+
   const registeredUser = await User.register(user, password);
 
   await req.login(registeredUser, async (err) => {
@@ -97,6 +99,7 @@ router.get(
   })
 );
 
+// Verify email
 router.get("/user/verifyemail", async (req, res) => {
   // grab the token
   const token = req.query.token;
@@ -159,11 +162,10 @@ router.post(
   async (req, res) => {
     req.flash(
       "success",
-      "Content de vous revoir " + req.user.username.toUpperCase()
+      "Content de vous revoir " + req.user.username
     );
     const redirectUrl = (await req.session.returnTo) || "/";
     delete req.session.returnTo;
-    console.log(req.session.returnTo);
     res.redirect(redirectUrl);
   }
 );
@@ -174,6 +176,99 @@ router.get("/logout", async (req, res) => {
   req.flash("success", `Au revoir 👋🏽 ! À la prochaine!!`);
   res.redirect("/");
 });
+
+// Password Reset link page
+router.get("/reset-password", (req, res) => {
+  res.render("user/password_reset")
+});
+
+// send resset password link 
+router.post("/reset-password", catchAsync(async (req, res) => {
+  const {
+    email
+  } = req.body;
+
+  userData = await User.findOne({
+    email: email
+  });
+
+  if (userData) {
+    // generate a token
+    const token = crypto.randomBytes(32).toString("hex");
+
+    // add that to database
+    await resetAccountToken({
+      token: token,
+      email: userData.email
+    }).save();
+
+    let url;
+    // let firstName = userData.surname.split(" ")[0];
+    if (process.env.NODE_ENV === "production") {
+      url = "https://www.afrohk.com/userPassworLost/reset-password?token=" + token;
+    } else {
+      url = "http://localhost:3000/userPassworLost/reset-password?token=" + token;
+    }
+    // send an email for verification
+    await new Emailer(userData, url).sendPasswordReset()
+
+    req.flash("success", `Le lien de réinitialisation de votre mot de passe a été envoyé dans votre boîte mail.`);
+    res.redirect("back");
+  } else {
+    req.flash("error", `Il n'existe pas de compte pour cette adresse mail.`);
+    res.redirect("back");
+  }
+
+}));
+
+// new password form 
+router.get('/userPassworLost/reset-password', catchAsync(async (req, res) => {
+  // grab the token
+  const token = req.query.token;
+  // check if token exists
+  // or just send an error
+  if (token) {
+    const check = await resetAccountToken.findOne({
+      token: token
+    });
+    if (check) {
+      // token verified
+      // set the property of verified to true for the user
+      const userData = await User.findOne({
+        email: check.email
+      });
+
+
+      // delete the token now itself
+      await resetAccountToken.findOneAndDelete({
+        token: token
+      });
+      res.render("user/resetPassword", {
+        email: userData.email
+      });
+
+    }
+  };
+
+}));
+
+// reset password 
+router.post('/userPassworLost/reset-password', catchAsync(async (req, res) => {
+
+  // find user 
+  const userData = await User.findOne({
+    email: req.body.email
+  });
+
+  await userData.setPassword(req.body.password);
+
+  userData.save();
+
+  req.flash("success", `Votre mot de passe a été réinitialisé.`);
+  res.redirect("/login");
+
+}));
+
 
 // newsletter
 

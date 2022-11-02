@@ -27,7 +27,7 @@ const {
  */
 
 // All Courses route for user
-router.get('/courses', isVerified, Courses.allCourses);
+router.get('/courses', Courses.allCourses);
 
 // All Courses route for admin
 router.get('/admindashboard/courses', isVerified, checkRoles("admin"), Courses.allCoursesAdmin);
@@ -35,7 +35,7 @@ router.get('/admindashboard/courses', isVerified, checkRoles("admin"), Courses.a
 //======================== ========= ============ ============= ============ =============
 
 // Form for a new course
-router.get('/admindashboard/courses/new', isVerified, isLoggedIn, checkRoles("admin"), (req, res) => {
+router.get('/admindashboard/courses/new', isLoggedIn, isVerified, checkRoles("admin"), (req, res) => {
     res.render('courses/new');
 });
 
@@ -43,7 +43,7 @@ router.get('/admindashboard/courses/new', isVerified, isLoggedIn, checkRoles("ad
 router.post('/admindashboard/courses', isVerified, isLoggedIn, checkRoles("admin"), catchAsync(Courses.createCourse));
 
 // Show course content
-router.get('/courses/:course_id', isVerified, isLoggedIn, checkCourseOwnership, catchAsync(Courses.showCourse));
+router.get('/courses/:course_id', isLoggedIn, isVerified, checkCourseOwnership, catchAsync(Courses.showCourse));
 
 // Edit new course
 router.get("/admindashboard/courses/:course_id/edit", isVerified, isLoggedIn, checkRoles("admin"), catchAsync(Courses.editCourse));

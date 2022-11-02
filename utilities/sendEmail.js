@@ -43,8 +43,7 @@ module.exports = class Emailer {
     let html;
 
     ejs.renderFile(
-      `${__dirname}/../views/emails/${template}.ejs`,
-      {
+      `${__dirname}/../views/emails/${template}.ejs`, {
         firstName: this.firstName,
         url: this.url,
         subject,
@@ -78,7 +77,7 @@ module.exports = class Emailer {
   async sendPasswordReset() {
     await this.send(
       "passwordReset",
-      "Your password reset token (valid for only 10 minutes)"
+      "Réinitialisation de mot de passe"
     );
   }
 };
