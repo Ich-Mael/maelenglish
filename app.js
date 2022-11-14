@@ -25,6 +25,7 @@ const newsRoutes = require("./routes/news");
 const commentRoutes = require("./routes/comment");
 const courseRoutes = require("./routes/course");
 const xpaxRoutes = require("./routes/xpaxetudiant");
+const cmathRoutes = require("./routes/cmath");
 const bacRoutes = require("./routes/100bac");
 const englishRoutes = require("./routes/english4all");
 const pecpRoutes = require("./routes/pecp");
@@ -157,6 +158,10 @@ app.use("/", newsRoutes);
 
 //xpax routes
 app.use("/", xpaxRoutes);
+
+//cmath routes
+app.use("/", cmathRoutes);
+
 
 // english for everybody routes
 app.use("/", englishRoutes);

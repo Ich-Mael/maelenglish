@@ -1582,10 +1582,25 @@ profile-link:hover {
   opacity: 0.8;
 }
 
+.sponsored-program-image {}
+
+.sponsored-program-card {
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+}
+
 .program-name {
   font-family: "Chivo", sans-serif;
 
   font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.sponsored-program-name {
+  font-family: "Chivo", sans-serif;
+  text-align: center;
+  color: rgb(66, 16, 141);
+  font-weight: 700;
+  padding: 1rem;
   font-size: 1.5rem;
 }
 
@@ -1604,31 +1619,26 @@ profile-link:hover {
   color: rgb(92, 18, 114);
 }
 
-.new-program {
+.sponsored-program-title {
   font-family: "Chivo", sans-serif;
   font-family: "Chango";
-  font-size: 2.5rem;
+  font-size: 2rem;
   color: rgb(245, 235, 235);
   text-shadow: 1px 2px 1px black;
   transition: all 1s;
   padding-bottom: 0.5rem;
 }
 
-.new-program:hover {
-  color: rgb(224, 243, 244);
-  text-shadow: 1px 2px 1px black;
-  border-bottom: 4px solid white;
-}
 
 .new-program-wrapper {
-  height: 20vh;
+  height: ;
   background: #667db6;
   /* fallback for old browsers */
   background: -webkit-linear-gradient(to right, #667db6, #0082c8, #0082c8, #667db6);
   /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(to right, #667db6, #0082c8, #0082c8, #667db6);
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  padding: 3rem;
+  padding: 2rem;
   border-radius: 5px;
 
 }

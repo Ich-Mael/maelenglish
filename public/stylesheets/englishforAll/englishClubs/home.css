@@ -86,6 +86,16 @@ body {
   /* width: 100%; */
 }
 
+
+.afrohk-club-details {
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 10px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  /* background-color: rgb(253, 253, 253); */
+  padding: 0;
+  border-radius: 5px;
+  border: 3px solid rgb(3, 85, 143);
+  /* width: 100%; */
+}
+
 .img-wrapper {
   margin: 0;
 }
@@ -123,6 +133,19 @@ body {
   text-align: center;
   color: rgba(24, 23, 23, 0.801);
 }
+
+.inst-afrohk {
+  background: #4a91ef;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #3d90de, #1660a1);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #3d90de, #1660a1);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  color: white;
+}
+
+
 
 .definition {
   margin-top: 0.5rem;
