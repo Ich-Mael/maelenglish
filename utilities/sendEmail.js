@@ -6,7 +6,7 @@ const ejs = require("ejs");
 module.exports = class Emailer {
   constructor(user, url) {
     this.to = user.email;
-    this.firstName = user.name.split(" ")[0];
+    this.user = user;
     this.url = url;
     this.from = `AfroHK Team <${process.env.EMAIL_FROM}>`;
   }
@@ -44,7 +44,7 @@ module.exports = class Emailer {
 
     ejs.renderFile(
       `${__dirname}/../views/emails/${template}.ejs`, {
-        firstName: this.firstName,
+        user: this.user,
         url: this.url,
         subject,
       },

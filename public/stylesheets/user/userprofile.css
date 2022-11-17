@@ -3,23 +3,33 @@ body {
 }
 
 .user-banner {
+    padding: 2rem 1rem;
     margin-top: 3rem;
     margin-bottom: 4rem;
-    height: 30vh;
+    /* height: 30vh; */
     display: flex;
-    flex-direction: column;
+    /* flex-direction: column; */
     justify-content: center;
     align-items: center;
     background-color: rgb(255, 255, 254);
+    border: 3px solid purple;
+    border-radius: 5px;
     box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
 }
 
+
+
+.user-img{
+    width: 60%;
+    height: 60%;
+}
 .welcome-msg {
     font-family: Georgia, 'Times New Roman', Times, serif;
-    text-align: center;
-    font-size: 2rem;
+    text-align: start;
+    font-size: 1.5rem;
+    line-height: 2rem;
     /* font-family: "Kaushan Script", cursive; */
-    font-family: 'Paytone One', sans-serif;
+    /* font-family: 'Paytone One', sans-serif; */
     /* font-family: "Rye", cursive; */
     /* font-family: 'Titan One', cursive; */
     color: rgb(12, 78, 12);
@@ -57,6 +67,7 @@ body {
     height: 13rem;
     width: 100%;
 }
+
 
 .pecp-coach {
     background: url(https://images.pexels.com/photos/5685821/pexels-photo-5685821.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2);

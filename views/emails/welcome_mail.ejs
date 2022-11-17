@@ -38,9 +38,9 @@
 																<td>
 																	<strong
 																		style="font-size:16px; font-family:Helvetica,Arial,sans-serif;color:#234567">
-																		Hello <%= firstName %> ! 🤩 </strong>
+																		Salut <%= user.name.split(" ")[0] %> 😃 !  </strong>
 
-																	<h1
+																	<p
 																		style="font-size:16px; color:#054752; word-break:normal">
 																		Nous sommes très ravies de vous compter dans la
 																		grande famille <a href="https://www.afrohk.com"
@@ -48,13 +48,14 @@
 																			target="_blank">
 																			Afro House of Knowledge !
 																		</a>
-																	</h1>
+																	</p>
 																	<hr>
-																	<h2 style="font-size:16px; margin-top: 10px;"><span
+																	<p style="font-size:16px; margin-top: 10px;"><span
 																			style="color: #f54e00;">IMPORTANT !</span>
-																		Pour profiter de nos services, veuillez activer
+																		Pour avoir accès à nos services, veuillez activer
 																		votre compte en cliquant sur le lien ci-dessous.
-																	</h2>
+                 </p>
+																
 																</td>
 															</tr>
 														</tbody>
@@ -70,9 +71,13 @@
 														<tbody>
 															<tr>
 																<td
-																	style="background-color:#ffffff;color:rgb(240, 219, 199);text-align:center;border-radius:10px;padding:16px 24px;border: 1px solid black;font-weight:bold;font-size:16px;line-height:1">
-																	<a style="color: rgb(17, 17, 17); text-decoration: none;"
-																		href=<%= url %>> Activation de compte </a>
+																	style="">
+																	<a style="color: rgb(247, 243, 243); text-decoration: none; background-color: #56037d;text-align:center;border-radius:10px;padding:12px 24px;border: 1px solid black;font-weight:bold;font-size:16px;line-height:1"
+																		href=<%= url %>> Activez mon compte </a>
+                  <hr>
+                  <h4 style="color: orangered; padding-top: 3rem;">Vos paramètres de connexion</h4>
+                  <p>Nom d'utilisateur: <%= user.username %></p>
+                  <p>Mot de passe: <%= user.defP %></p>
 																</td>
 															</tr>
 														</tbody>

@@ -22,6 +22,12 @@ const userSchema = new Schema({
     unique: true,
   },
 
+  defP: {
+    type: String,
+    trim: true,
+    required: true,
+  },
+
   gender: {
     type: String,
     required: true,

@@ -29,7 +29,7 @@ const {
 } = require("../middlewares/courseController");
 
 // register a user form
-router.get("/register", (req, res) => {
+router.get("/register", isLoggedIn, checkRoles("admin"), (req, res) => {
   res.render("user/register");
 });
 
@@ -41,6 +41,7 @@ router.post("/register", catchAsync(async (req, res) => {
     surname,
     email,
     username,
+    defP,
     phoneNumber,
     gender,
     password
@@ -49,6 +50,7 @@ router.post("/register", catchAsync(async (req, res) => {
   const user = new User({
     name,
     surname,
+    defP,
     email,
     phoneNumber,
     gender,
@@ -83,17 +85,18 @@ router.get(
     }).save();
 
     let url;
-    let firstName = req.user.surname.split(" ")[0];
+    let user = req.user;
+    // let firstName = req.user.surname.split(" ")[0];
     if (process.env.NODE_ENV === "production") {
       url = "https://www.afrohk.com/user/verifyemail?token=" + token;
     } else {
       url = "http://localhost:3000/user/verifyemail?token=" + token;
     }
     // send an email for verification
-    await new Emailer(req.user, url).sendVerifyEmail();
+    await new Emailer(user, url).sendVerifyEmail();
 
     res.render("user/account_handler", {
-      username: firstName,
+      username: req.user.firstName,
       verified: req.user.isVerified,
     });
   })
@@ -128,7 +131,7 @@ router.get("/user/verifyemail", async (req, res) => {
         } else {
           // const redirectUrl = (await req.session.returnTo) || "/";
           // delete req.session.returnTo;
-          res.render("user/account_verified");
+          res.render("user/account_verified", {userData});
         }
       });
     }
