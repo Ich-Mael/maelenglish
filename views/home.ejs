@@ -641,11 +641,11 @@
                     </p>
                   </div>
                   <hr>
-                  <p class="news-date"> <span class="fst-italic fw-bold"> Published on :
+                   <span class=" ms-2 fst-italic news-date fw-bold d-inline-block"> Published on :
                       <%= all_articles[i].updatedAt.toDateString()%></span> <span
-                      class="mx-3"><%= all_articles[i].readTime %> minutes de lecture</span>
-                    <a class="btn ms-3 btn-primary" href="/news/<%=all_articles[i]._id%>">Lire toute
-                      l'actualité</a></p>
+                      class="ms-2 news-date d-inline-block" style="display: inline-block ;"><%= all_articles[i].readTime %> minutes de lecture</span>
+                    <a class="btn ms-2 my-2 btn-outline-primary" href="/news/<%=all_articles[i]._id%>">Lire toute
+                      l'actualité</a>
                 </div>
               </div>
               <%}%>
