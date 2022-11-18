@@ -2885,6 +2885,10 @@ customers-cards:before {
     margin: 5rem 0 0;
   }
 
+  .video-container video{
+display: none;
+  }
+
   .new-program-wrapper {
     margin-bottom: 4rem;
   }
@@ -2926,7 +2930,6 @@ customers-cards:before {
 }
 
 
-@media (max-width: 650px) {}
 
 @media (max-width: 768px) {
   #footer {
@@ -3064,6 +3067,11 @@ customers-cards:before {
     font-size: 2rem;
   }
 
+
+  .afrohk-title {
+    font-size: 4rem;
+  }
+
   .flash {
     font-size: 0.6rem;
   }
@@ -3116,7 +3124,7 @@ customers-cards:before {
   }
 
   .afrohk-title {
-    font-size: 4rem;
+    font-size: 3rem;
   }
 
   .slogan {
