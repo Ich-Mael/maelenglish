@@ -58,7 +58,10 @@ router.post("/register", catchAsync(async (req, res) => {
   });
 
   const registeredUser = await User.register(user, password);
-
+new_user_mail = registeredUser.email;
+req.flash("success", "Le nouveau compte a été créé avec success");
+res.render("user/welcome", {new_user_mail});
+/*
   await req.login(registeredUser, async (err) => {
     if (err) {
       res.send("Something Went Wrong");
@@ -68,12 +71,14 @@ router.post("/register", catchAsync(async (req, res) => {
       // req.flash("success", "Votre compte a été créé avec success");
       res.render("user/welcome");
     }
+    
   });
+  */
 }));
 
 //sending activation mail
 router.get(
-  "/user/send-verification-email",
+  "/user/send-verification-email/:new_user_mail",
   catchAsync(async (req, res) => {
     // generate a token
     const token = crypto.randomBytes(32).toString("hex");
@@ -81,11 +86,11 @@ router.get(
     // add that to database
     await accountToken({
       token: token,
-      email: req.user.email
+      email: req.params.new_user_mail
     }).save();
 
     let url;
-    let user = req.user;
+    let user = await User.findOne({email: req.params.new_user_mail});
     // let firstName = req.user.surname.split(" ")[0];
     if (process.env.NODE_ENV === "production") {
       url = "https://www.afrohk.com/user/verifyemail?token=" + token;
@@ -96,8 +101,7 @@ router.get(
     await new Emailer(user, url).sendVerifyEmail();
 
     res.render("user/account_handler", {
-      username: req.user.firstName,
-      verified: req.user.isVerified,
+      username: user.firstName,
     });
   })
 );
@@ -125,6 +129,8 @@ router.get("/user/verifyemail", async (req, res) => {
         token: token
       });
 
+      res.render("user/account_verified", {userData});
+/*
       await req.login(userData, (err) => {
         if (err) {
           res.render("errorpage");
@@ -134,6 +140,7 @@ router.get("/user/verifyemail", async (req, res) => {
           res.render("user/account_verified", {userData});
         }
       });
+      */
     }
   };
 });

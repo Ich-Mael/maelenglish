@@ -29,12 +29,16 @@
   /* font-family: "Paytone One", sans-serif; */
   /* font-family: 'Rye', cursive; */
   /* font-family: 'Titan One', cursive; */
-  font-size: 1.4rem;
+  font-size: 1.2rem;
+  text-align: center;
  }
 
  .lg-heading-paragraph {
   font-family: "Paytone One", sans-serif;
   font-size: 1.4rem;
+  text-align: center;
+  color: #2B32B2;
+  margin-top: 2rem;
 
  }
 
@@ -139,7 +143,7 @@
  }
 </style>
 
-<div class="container mb-5 d-flex flex-column align-items-center">
+<div class="container col-lg-8 mb-5 d-flex flex-column align-items-center">
  <div class="pecp_wrapper mt-5">
   <h1 class="pecs">My Personal English Learning Space</h1>
   <hr>
@@ -152,9 +156,7 @@
   <hr>
   <div class="container ps-5 py-5">
    <!-- <h3 class="lg-heading">Active learning goal</h3> -->
-   <h3 class="lg-heading-text">Hello <%= user.surname %> ! Always remember your goal, during your English
-    learning
-    journey.
+   <h3 class="lg-heading-text">Hello <%= user.surname %> ! Souvenez-vous toujours de votre objectif tout au long de cette aventure pour maitriser l'Anglais.
    </h3>
    <p class="lg-heading-paragraph"> - <%= student.learningGoal %> -</p>
   </div>
@@ -162,7 +164,6 @@
 
 </div>
 
-<a href="/pdf/English Coaching Program NP.pdf"></a>
 
 <div class="container  mb-5 d-flex flex-column align-items-center">
 <!-- Button trigger modal -->
