@@ -719,7 +719,7 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: url('https://images.pexels.com/photos/4260325/pexels-photo-4260325.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"') no-repeat center center/cover;
+  background: url('https://images.pexels.com/photos/1181211/pexels-photo-1181211.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2') no-repeat center center/cover;
 }
 
 .video-container video {
@@ -739,7 +739,8 @@ body {
   width: 100%;
   top: 0;
   left: 0;
-  background: rgba(17, 1, 32, 0.626);
+  background: rgba(17, 2, 31, 0.606);
+  
   position: absolute;
 }
 
