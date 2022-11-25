@@ -2411,17 +2411,19 @@ customers-cards:before {
   letter-spacing: 0.13rem;
 }
 
+
 .useful-links {
   text-decoration: none;
   color: #ffffffb2;
   font-size: 1.1rem;
-  font-family: Georgia, 'Times New Roman', Times, serif;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  padding: 1rem 0;
+  padding: 0.5rem 0;
+  margin: 1.5rem 0;
+  transition: all 0.5s;
 }
 
 .useful-links:hover {
-  font-size: 1.15rem;
+  border-bottom: 2px solid rgb(43, 101, 226);
   color: #2ac7fc;
 }
 
