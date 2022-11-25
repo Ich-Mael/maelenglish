@@ -2388,10 +2388,11 @@ customers-cards:before {
 }
 
 .contact-us {
-  border: 0.5px solid rgba(54, 4, 95, 0.233);
-  box-shadow: rgba(77, 50, 93, 0.25) 0px 50px 100px -20px,
-    rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
-    rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+  border: 0.5px solid rgba(161, 115, 198, 0.233);
+  box-shadow: rgba(118, 96, 131, 0.25) 0px 50px 100px -20px,
+    rgba(87, 109, 162, 0.3) 0px 30px 60px -30px,
+    rgba(78, 113, 148, 0.35) 0px -2px 6px 0px inset;
+    border-radius: 5px;
 }
 
 #cont-ns {
@@ -2573,19 +2574,10 @@ customers-cards:before {
 .made-by {
   width: 100%;
   margin: 0;
-  background-color: #bb97e4;
-  background: #e6dada;
-  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right,
-      #274046,
-      #e6dada);
-  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right,
-      #412388,
-      #556497,
-      #ffffff);
-  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
+  background: #6441A5;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #2a0845, #6441A5);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #2a0845, #6441A5); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  
   font-family: Georgia, "Times New Roman", Times, serif;
   color: rgba(255, 255, 255, 0.815);
 }
@@ -2690,7 +2682,8 @@ customers-cards:before {
 
 @media (max-width: 450px) {
   .footer-links-header {
-    font-size: 1.2rem;
+    font-size: 1rem;
+    margin-top: 1rem;
   }
 
   .brand {
@@ -2801,6 +2794,10 @@ customers-cards:before {
   .nav-link {
     display: flex;
     justify-content: center;
+  }
+  .footer-links-header{
+    font-size: 1rem;
+    margin-top: 1rem;
   }
 
   .more-btn {
@@ -3096,14 +3093,19 @@ display: none;
 
 @media (max-width: 768px) {
   #footer {
-    background: -webkit-linear-gradient(to top, #412388, #556497, #ffffff);
-    /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to top, #412388, #556497, #ffffff);
-    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: #141E30;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #243B55, #141E30);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #243B55, #141E30); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    
   }
 
   .slogan {
     font-size: 1.5rem;
+  }
+
+  .footer-links-header{
+    font-size: 1rem;
+
   }
 
   .more-btn {
