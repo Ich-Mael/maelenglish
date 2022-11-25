@@ -1082,29 +1082,26 @@ hk-shadow {
   font-size: 4rem;
   font-weight: 900;
 }
-
+.svg-logo{
+  border: 1px solid white;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px, rgba(17, 17, 26, 0.1) 0px 24px 80px;
+}
 .footer-hk {
   color: rgba(109, 12, 148, 0.993);
 }
 
 #footer {
-  text-align: center;
+  /* text-align: center; */
   color: #b9d5e2;
-  background: #e6dada;
-  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right,
-      #274046,
-      #e6dada);
-  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to left,
-      #412388,
-      #556497,
-      #ffffff);
-  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
+  background: #141E30;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #243B55, #141E30);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #243B55, #141E30); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  
   min-height: fit-content;
   /* background-color: #E1DDE4; */
-  background-color: #3a3838;
+
   font-family: "Poppins", sans-serif;
   overflow-x: hidden;
 }
@@ -1149,6 +1146,7 @@ hk-shadow {
 #call-manager-2 {
   width: 100%;
   font-size: 1rem;
+  text-align: start;
   background: none;
   outline: none;
   border: none;
@@ -1217,25 +1215,29 @@ hk-shadow {
 }
 
 .footer-links-header {
-  color: rgba(224, 224, 213, 0.925);
-  text-shadow: 1px 2px 0px rgb(58, 6, 100);
+  color: rgba(22, 145, 246, 0.925);
+  text-shadow: 1px 1px 0px rgb(58, 6, 100);
   font-size: 1.3rem;
   /* text-transform: uppercase; */
   font-family: "Chivo", sans-serif;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   font-weight: 700;
+  text-transform: uppercase;
   letter-spacing: 0.13rem;
 }
 
 .useful-links {
   text-decoration: none;
-  color: #ffffffb0;
-  font-size: 1.2rem;
+  color: #ffffffb2;
+  font-size: 1.1rem;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   padding: 1rem 0;
 }
 
 .useful-links:hover {
-  font-size: 1.25rem;
-  color: #fcb22a;
+  font-size: 1.15rem;
+  color: #2ac7fc;
 }
 
 /* social media */

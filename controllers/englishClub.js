@@ -493,14 +493,14 @@ module.exports.postWeeklyPractice = async (req, res) => {
         await englishClub.save();
     }
 
-    if (newPractice.exerciseType === "Listening Comprehemsion") {
+    if (newPractice.exerciseType === "Listening Comprehension") {
         englishClub.listeningExercise.push(newPractice._id);
         await englishClub.save();
     }
 
 
     if (newPractice.exerciseType === "Dictation") {
-        englishClub.dictactionExercise.push(newPractice._id);
+        englishClub.dictationExercise.push(newPractice._id);
         await englishClub.save();
     }
 
@@ -528,6 +528,21 @@ module.exports.postWeeklyPractice = async (req, res) => {
     res.send("New exercise posted");
 }
 
+module.exports.readAloud = async (req, res)=>{
+    const club_id = req.params.club_id;
+    const city = req.params.city;
+    const hub = await englishClubHub.findById(req.params.hub_id);
+
+    const club = await englishClubs.findById(club_id); 
+    const readAloudExercise = await englishWeeklyExercises.findById(req.params.readAloud_id); 
+
+    res.render("programs/englishlang4all/englishClubs/activities/readAloud", {
+        club,
+        readAloudExercise,
+        hub,
+
+    });
+}
 
 
 

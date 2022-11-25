@@ -646,7 +646,7 @@ const weeklyLessonSchema = new Schema({
   timestamps: true,
 });
 
-// weekly lesson schema
+// weekly Exercise schema
 const weeklyExerciseSchema = new Schema({
   exerciseTitle: {
     type: String,
@@ -654,6 +654,18 @@ const weeklyExerciseSchema = new Schema({
 
   exerciseLink: {
     type: String,
+  },
+
+  readingText:{
+    type: String,
+  },
+
+  slowReadingLink:{
+
+  },
+
+  normalReadingLink:{
+
   },
 
   exerciseCorrectionLink: {
@@ -679,7 +691,7 @@ const weeklyExerciseSchema = new Schema({
     enum: [
       "Grammar",
       "Vocabulary",
-      "Listening Comprehemsion",
+      "Listening Comprehension",
       "Dictation",
       "Reading Comprehension",
       "Watching Comprehension",

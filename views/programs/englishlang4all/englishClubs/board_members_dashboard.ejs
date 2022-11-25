@@ -183,19 +183,34 @@
 
       <!-- Exercice Title-->
       <label class="form-label my-3" for="Exercise title">Exercise Title</label>
-      <input type="text" class="form-control" name="practice[exerciseTitle]" required id="" value="" />
+      <input type="text" class="form-control" name="practice[exerciseTitle]" id="" value="" />
 
       <!-- Exercice Link-->
       <label class="form-label my-3" for="Exercise Link">Exercise link</label>
-      <input type="text" class="form-control" name="practice[exerciseLink]" required id="" value="" />
+      <input type="text" class="form-control" name="practice[exerciseLink]" id="" value="" />
 
       <!-- Exercice Correction Link-->
       <label class="form-label my-3" for="Exercise Link">Exercise Correction link</label>
-      <input type="text" class="form-control" name="practice[exerciseCorrectionLink]" required id="" value="" />
+      <input type="text" class="form-control" name="practice[exerciseCorrectionLink]" id="" value="" />
 
       <!-- More Exercice Link-->
       <label class="form-label my-3" for="Exercise Link">More Exercise link</label>
-      <input type="text" class="form-control" name="practice[moreExerciseLink]" required id="" value="" />
+      <input type="text" class="form-control" name="practice[moreExerciseLink]"id="" value="" />
+      <hr>
+      <p class="text-danger">This section is only for reading aloud exercise</p>
+       <!-- Reading -->
+       <label class="form-label my-3" for="articleContent">Reading Text</label>
+       <textarea type="text" class="form-control mytextarea" name="practice[readingText]" value=""
+         id="articleContent"></textarea>
+
+         <!-- Slow reading Link-->
+      <label class="form-label my-3" for="Exercise Link">Slow reading link</label>
+      <input type="text" class="form-control" name="practice[slowReadingLink]"id="" value="" />
+
+      <!-- Normal reading Link-->
+      <label class="form-label my-3" for="Exercise Link">Normal Reading link</label>
+      <input type="text" class="form-control" name="practice[normalReadingLink]" id="" value="" />
+       <hr />
 
       <button class="btn my-3  me-2 btn-success" type="submit">Add new weekly practice</button>
     </form>

@@ -420,6 +420,13 @@ router.put(
 );
 
 
+
+//==============================================================
+//
+//                        Weekly practice
+//
+//==============================================================
+
 router.post(
   "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/board_dashboard/weeklyPractice",
   isLoggedIn,
@@ -427,6 +434,17 @@ router.post(
   checkRoles("admin"),
   catchAsync(engClub.postWeeklyPractice)
 );
+
+//View all lessons
+router.get(
+  "/englishlang4all/clubs/:city/hub/:hub_id/club/:club_id/readAloud/:readAloud_id",
+  isLoggedIn,
+  isVerified,
+  checkEnglishBoardMembership,
+  catchAsync(engClub.readAloud)
+);
+
+
 
 
 
