@@ -26,8 +26,8 @@
 
   .club-type-list {
     background-color: aliceblue;
-    padding: 1rem 0s;
-    height: 2.3rem;
+    padding: 1rem 2rem;
+    /* height: 2.3rem; */
   }
 
   .clubs-card {
@@ -140,7 +140,7 @@
     }
 
     .type-of-club {
-      font-size: 1.5rem;
+      font-size: 1.2rem;
     }
 
 
@@ -149,6 +149,10 @@
   @media (max-width: 350px) {
     .hub-country {
       font-size: 2.4rem;
+    }
+    
+    .type-of-club {
+      font-size: 1rem;
     }
   }
 </style>
@@ -192,29 +196,29 @@
           <%}%>
 
           <!-- nav -->
-          <div class="club-type-list d-flex align-items-center justify-content-around">
-            <a href="#highS" class="fs-5 py-2 inline-block">High School</a>
-            <a href="#univ" class="fs-5 py-2 inline-block">University</a>
-            <a href="#comp" class="fs-5 py-2 inline-block">Company</a>
-            <a href="#pro" class="fs-5 py-2 inline-block">Professional</a>
-            <a href="#other" class="fs-5 py-2 inline-block">Other</a>
+          <div class="club-type-list d-flex flex-wrap justify-content-around">
+            <a href="#highS" class="fs-5 px-3 py-2 inline-block">High School</a>
+            <a href="#univ" class="fs-5 px-3 py-2 inline-block">University</a>
+            <a href="#comp" class="fs-5 px-3 py-2 inline-block">Company</a>
+            <a href="#pro" class="fs-5 px-3 py-2 inline-block">Professional</a>
+            <a href="#other" class="fs-5 px-3 py-2 inline-block">Private Clubs</a>
           </div>
           <!-- nav -->
     <!-- Special English Club -->
     <div class="container clubs-card ">
       <h4 class="type-of-club afrohk-club">Special English Clubs </h4>
-      <p class="fst-italic mt-3 text-primary fs-5">Les clubs spéciaux sont mises en place par AfroHK pour atteindre des objectifs spécifiques bien définis </p>
+      <p class="fst-italic my-3 px-2 text-primary fs-6 ">Les clubs spéciaux sont mises en place par AfroHK pour atteindre des objectifs spécifiques bien définis </p>
   <div class="row pb-5">
   <% for(let Club of hub.clubs.Simple){%>
-          <div class="col-md-6 col-lg-4 my-5">
-            <div class="eng-club-details afrohk-club-details">
+          <div class="col-md-6 col-lg-4 my-3">
+            <div class="eng-club-details afrohk-club-details pb-3">
               <h2 class="institution inst-afrohk"><%= Club.instituition %></h2>
               <div class="eng-clubs-description">
                 <h3 class="eng-club-name"><%= Club.name %></h3>
                 <p class="definition"></p>
-                <p class="found-date">Since <%= Club.foundDate %> <a class="ms-4"
+                <p class="found-date inline-block me-3">Since <%= Club.foundDate %></p> <a class="inline-block"
                     href="/englishlang4all/clubs/<%= hub.cityName %>/hub/<%= hub._id%>/club/<%= Club.id%>/home">Learn
-                    more</a></p>
+                    more</a>
               </div>
             </div>
           </div>

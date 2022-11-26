@@ -93,7 +93,7 @@ new Swiper('.swiper', {
   },
   breakpoints: {
     320: {
-      slidesPerView: 2,
+      slidesPerView: 1,
       spaceBetween: 20
     },
     480: {
@@ -109,6 +109,5 @@ new Swiper('.swiper', {
       spaceBetween: 120
     }
   }
-
 
 });

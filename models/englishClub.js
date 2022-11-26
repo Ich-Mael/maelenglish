@@ -77,7 +77,7 @@ const englishClubSchema = new Schema({
   // image
   bannerImageUrlMedium: {
     type: String,
-    default: "https://i.ibb.co/kc7Czs8/IST-family-pic-1.jpg",
+    default: "https://i.ibb.co/PxNvNrv/neci-family.jpg",
     trim: true,
   },
 
