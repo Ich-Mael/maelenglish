@@ -355,10 +355,8 @@
       </div>
     </div>
 
-
     <div class="container  col-lg-10">
       <div class="activities-wrapper py-3">
-
         <!-- Daily vocabulary -->
         <section class="">
           <h1 class="daily-vocabulary-title">Daily Vocabulary</h1>
@@ -577,7 +575,7 @@
                               </h3>
                             </div>
                             <div id="monitorscreen">
-                              <iframe id="vimeo-content" src="<%= club.weeklyVideoLesson[i].videoLink %>"
+                              <iframe id="vimeo-content" loading="lazy" src="<%= club.weeklyVideoLesson[i].videoLink %>"
                                 title="YouTube video player" frameborder="0" height="100%" width="100%"
                                 allow="accelerometer; accelerometer; autoplay; clipboard-write; fullscreen; encrypted-media; gyroscope; picture-in-picture"
                                 allow="fullscreen" title="High-intensity Classes"></iframe>
