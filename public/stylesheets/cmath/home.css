@@ -385,20 +385,20 @@ border-radius: 5px;
     }
 
     .banner-heading {
-        color: rgb(246, 240, 247);
-        /* width: 100%; */
-        padding: 1rem;
-        font-family: "Poppins", sans-serif;
-        text-align: center;
+       
         /* font-family: "Kaushan Script", cursive; */
         font-size: 2.5rem;
         font-weight: 900;
         opacity: 0;
-        margin-top: 20vh;
-        letter-spacing: 0.2rem;
-        /* line-height: 5rem; */
-        text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.89);
-        animation: moveBanner 2s 1.2s forwards;
+        margin-top: 10vh;
+      
+    }
+
+    .bg-img-wrapper {
+        width: 100%;
+        height: 40vh;
+        overflow: hidden;
+        background-color: rgba(0, 0, 0, 0.979);
     }
     
  
