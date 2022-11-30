@@ -209,6 +209,7 @@ module.exports.showEnglishClub = async (req, res) => {
         .populate("dictationExercise")
         .populate("onlineDebates");
 
+        // console.log(club.description);
 
     res.render("programs/englishlang4all/englishClubs/show", {
         club,
