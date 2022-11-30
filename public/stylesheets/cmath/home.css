@@ -140,6 +140,7 @@ body {
     border-bottom: 8px solid rgba(61, 61, 216, 0.863);
     font-family: "Poppins", sans-serif;
     font-size: 2.5rem;
+    line-height: 5rem;
 }
 
 .about-wrapper {
@@ -209,6 +210,7 @@ background-repeat: no-repeat;
     font-size: 1.6rem;
     background-color: #100e81;
     padding: 1rem 1.5rem;
+    margin: 1rem 2rem;
     color: #fff;
     transition: all 0.6s;
     border-radius: 5px;
@@ -224,7 +226,7 @@ background-repeat: no-repeat;
 }
 
 .maths-section{
-    background-color: #f0f3f2;
+    /* background-color: #f0f3f2; */
     border: 4px solid rgb(7, 150, 178);
     border-radius: 4px ;
     box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
@@ -232,7 +234,7 @@ background-repeat: no-repeat;
 
 
 .pc-section{
-    background-color: #f0f3f2;
+    /* background-color: #f0f3f2; */
     border-radius: 4px ;
     border: 4px solid rgb(12, 36, 91);
     box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
@@ -245,6 +247,7 @@ background-repeat: no-repeat;
     color: #ffffff;
 display: inline-block;
 background-color: rgb(238, 94, 32);
+    margin-left: 1rem;
 border-radius: 5px;
 }
 
@@ -253,11 +256,16 @@ border-radius: 5px;
     padding: 0.5rem 1rem;
     font-size: 1.5rem;
     color: #ffffff;
+    margin-left: 1rem;
 display: inline-block;
 background-color: rgb(238, 94, 32);
 border-radius: 5px;
 }
 
+.subject-text{
+    font-size: 1.2rem;
+    padding: 1rem;
+}
 
 /* team*/
 .team {
@@ -342,4 +350,56 @@ border-radius: 5px;
     opacity: 1;
     bottom: 15px;
   }
-  
+ 
+  @media (max-width: 800px) { 
+
+  html {
+    font-size: 90%;
+  }
+
+  .banner-heading {
+    color: rgb(246, 240, 247);
+    /* width: 100%; */
+    padding: 1rem;
+    font-family: "Poppins", sans-serif;
+    text-align: center;
+    /* font-family: "Kaushan Script", cursive; */
+    font-size: 3rem;
+    font-weight: 900;
+    opacity: 0;
+    margin-top: 20vh;
+    letter-spacing: 0.2rem;
+    /* line-height: 5rem; */
+    text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.89);
+    animation: moveBanner 2s 1.2s forwards;
+}
+
+
+ 
+}
+
+@media (max-width: 650px) { 
+
+    html {
+      font-size: 70%;
+    }
+
+    .banner-heading {
+        color: rgb(246, 240, 247);
+        /* width: 100%; */
+        padding: 1rem;
+        font-family: "Poppins", sans-serif;
+        text-align: center;
+        /* font-family: "Kaushan Script", cursive; */
+        font-size: 2.5rem;
+        font-weight: 900;
+        opacity: 0;
+        margin-top: 20vh;
+        letter-spacing: 0.2rem;
+        /* line-height: 5rem; */
+        text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.89);
+        animation: moveBanner 2s 1.2s forwards;
+    }
+    
+ 
+  }
