@@ -4,7 +4,7 @@ const router = express.Router();
 const BAC = require("../controllers/cmath");
 
 router.get("/cmath", (req, res) => {
-    res.send("programs/cmath/home")
+    res.render("programs/cmath/home")
 });
 
 
