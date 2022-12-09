@@ -127,11 +127,30 @@ app.use((req, res, next) => {
 
 // Landing page route
 app.get("/", catchAsync(async (req, res) => {
+    
+    res.render("afrohk_home", {
+    });
+}));
+
+// Language Lab  home page
+app.get("/language-lab", catchAsync(async (req, res) => {
     let all_articles = await news.find({});
     all_articles = all_articles.reverse();
-    res.render("home", {
+    res.render("all_home", {
         all_articles
     });
+}));
+
+
+// Language Lab  home page
+app.get("/elearning", catchAsync(async (req, res) => {
+    res.render("comingsoon");
+}));
+
+
+// Language Lab  home page
+app.get("/tech-innovation", catchAsync(async (req, res) => {
+    res.render("comingsoon");
 }));
 
 

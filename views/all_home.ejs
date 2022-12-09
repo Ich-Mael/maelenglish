@@ -13,6 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
   <!--animate css-->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
@@ -159,9 +160,6 @@
           </a>
           <ul class="dropdown-menu mx-2" aria-labelledby="navbarDropdown">
             <li>
-              <a class="dropdown-item" href="/100bac">Easy-Maths</a>
-            </li>
-            <li>
               <a class="dropdown-item" href="/englishlang4all/clubs/home">Natural English Clubs</a>
             </li>
             <li>
@@ -200,9 +198,8 @@
     </div>
     <div class="content">
       <div class="banner-heading">
-        <h1 class="afrohk-title"><span class="afro-title">AFRO</span> HOUSE <span class="d-inline-block">OF
-            KNOWLEDGE</span> </h1>
-        <h3 class="slogan">Le Digital au Service de l'Education</h3>
+        <h1 class="afrohk-title"><span class="afro-title">Afro Language Lab </h1>
+        <h3 class="slogan">Apprenez naturellement l'Anglais</h3>
         <p style="text-align: start;"><a href="#apropos" class="more-btn">En Savoir Plus</a></p>
       </div>
     </div>
@@ -265,19 +262,22 @@
   <!--  About us-->
   <main id="site-content" class="">
     <section class="mission container">
-      <h1 class="about section-title" data-aos="fade-up" data-aos-easing="linear" id="apropos">A Propos</h1>
+      <div class="section-title">
+        <h2>À Propos</h2>
+        <p>Tout Savoir du Language Lab</p>
+      </div>
       <div class="row d-flex align-items-center m-0 p-0">
         <div class="col-lg-4 py-5">
           <div class="presentation-text-wrapper" data-aos="fade-up" data-aos-duration="">
             <h3 class="presentation-heading">MISSION</h3>
             <p class="presentation-paragraph">
-              Notre mission est d’assurer l'accès à une éducation de qualité à tous.
+              Notre mission est de vous amenez à parler naturellement l'Anglais en 6 mois.
             </p>
-            <div class="d-flex justify-content-center">
+            
               <% if (!currentUser) {%>
               <a class="start-btn-1" href="#footer"> Appelez-nous</a>
               <%} %>
-            </div>
+           
           </div>
         </div>
         <div class="col-lg-8 py-5" data-aos="fade-up" data-aos-duration="">
@@ -298,17 +298,146 @@
         </div>
       </div>
     </section>
-    <!-- End  About us -->
+  <!-- End  About us -->
+
+ <!--Programmes section-->
+ <div class="program-section-wrapper">
+  <div class="section-title  container">
+    <h2>Nos Programmes</h2>
+    <p>Anglais pour tous</p>
+  </div>
+  <div class="container">
+    <div class="row">
+      <!-- Operation 100% BAC
+      <div class="col-lg-6 mt-5 mb-2" data-aos="fade-up" data-aos-easing="linear">
+        <div class="d-flex mb-2 my-card-wrapper justify-content-center flex-column">
+          <div class="my-card">
+            <div class="img-wrapper m-2">
+              <img class="program-image"
+                src="https://images.unsplash.com/photo-1632571401005-458e9d244591?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2071&q=80"
+                alt="Card image cap" />
+            </div>
+            <div class="card-body d-flex flex-column align-items-start ms-3">
+              <h3 class="program-name">Easy Maths</h3>
+              <p class="program-description">
+                Un programme qui vise à faciliter la compréhension des mathématiques. A l’aide des contenus visuels,
+                approfondissez votre compréhension du
+                cours et augmentez vos chances de réussite au BAC.
+              </p>
+              <button class="btn my-3 course-btn btn-default">
+                <a href="/100bac" class="course-link">En Savoir Plus</a>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    -->
+      <!-- Personal English Coaching Program -->
+      <div class="col-lg-6 mt-5 mb-2" data-aos="fade-up" data-aos-easing="linear">
+        <div class="d-flex mb-2 my-card-wrapper justify-content-center flex-column">
+          <div class="my-card">
+            <div class="img-wrapper m-2">
+              <img class="program-image"
+                src="https://4953540.fs1.hubspotusercontent-na1.net/hubfs/4953540/7-benefits-of-executive-coaching.webp"
+                alt="pecp-img" />
+            </div>
+            <div class="card-body d-flex flex-column align-items-start ms-3">
+              <h3 class="program-name">Personal English Coaching Program</h3>
+              <p class="program-description">
+                Programme d'Anglais personalisé selon les besoins de l'apprenant. Il est axé sur l'apprentissage
+                naturel et
+                se déroule en ligne et en présentiel.
+              </p>
+              <button class="btn my-3 course-btn btn-default">
+                <a href="/pecp" class="course-link">En Savoir Plus</a>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- English  club for all-->
+      <div class="col-lg-6 mt-5 mb-2" data-aos="fade-up" data-aos-easing="linear">
+        <div class="d-flex mb-2 my-card-wrapper justify-content-center flex-column">
+          <div class="my-card">
+            <div class="img-wrapper m-2">
+              <img class="program-image"
+                src="https://images.unsplash.com/photo-1627897495484-229b29feb0d5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
+                alt="Card image cap" />
+            </div>
+            <div class="card-body d-flex flex-column align-items-start ms-3">
+              <h3 class="program-name">Natural English Clubs</h3>
+              <p class="program-description">
+                Un programme bien élaboré pour permettre aux etudiants, professionnels et
+                particuliers d'améliorer naturellement leur niveau d'anglais à travers des clubs.
+              </p>
+              <button class="btn my-3 course-btn btn-default">
+                <a href="/englishlang4all/clubs/home" class="course-link">En Savoir Plus</a>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tech for Kids
+      <div class="col-lg-6 mt-5 mb-2" data-aos="zoom-in-down" data-aos-easing="linear" data-aos-duration="500">
+        <div class="d-flex mb-2 my-card-wrapper justify-content-center flex-column">
+          <div class="my-card">
+            <div class="img-wrapper m-2">
+              <img class="program-image"
+                src="https://images.pexels.com/photos/6437625/pexels-photo-6437625.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
+                alt="Tech for kids" />
+            </div>
+            <div class="card-body d-flex flex-column align-items-start ms-3">
+              <h3 class="program-name">Tech for Kids</h3>
+              <p class="program-description">
+                Un programme pour développer les compétences du numérique chez l’enfant. S’habituer
+                et se servir du digital pour la bonne cause.
+              </p>
+              <button class="btn my-3 course-btn btn-default">
+                <a href="#footer" class="course-link">Contactez-nous pour plus d'info</a>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    -->
+      <!-- Coders Saloon 
+      <div class="col-lg-6 mt-5 mb-2" data-aos="zoom-in-down" data-aos-easing="linear" data-aos-duration="500">
+        <div class="d-flex mb-2 my-card-wrapper justify-content-center flex-column">
+          <div class="my-card">
+            <div class="img-wrapper m-2">
+              <img class="program-image"
+                src="https://images.pexels.com/photos/1181359/pexels-photo-1181359.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260"
+                alt="Card image cap" />
+            </div>
+            <div class="card-body d-flex flex-column align-items-start ms-3">
+              <h3 class="program-name">Coders Saloon</h3>
+              <p class="program-description">
+                Un programme pour l'apprentissage de la programmation, le developpement des sites
+                web et applications mobiles.
+              </p>
+              <button class="btn my-3 course-btn btn-default">
+                <a href="#footer" class="course-link">Contactez-nous pour plus d'info</a>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      -->
+      <!-- End Programmes section-->
+    </div>
+  </div>
+</div>
 
     <!--SECTION 2 Why learn with us-->
     <div class="learn-line-top">
-      <h1 class="why-join-us" data-aos="fade-up" data-aos-easing="linear">AfroHK c'est </h1>
+      <h1 class="why-join-us" data-aos="fade-up" data-aos-easing="linear">À Afro Language Lab </h1>
     </div>
     <section class="learn-section">
       <div class="hero flexbox-container-center">
         <article class="flexbox-item-center">
           <div class="inline-block group">
-            <h1 class="hero-tagline study">Étudiez</h1>
+            <h1 class="hero-tagline study">Apprenez</h1>
             <ul class="word-slider">
               <li>À tout moment</li>
               <li>En tout lieu</li>
@@ -322,139 +451,27 @@
       <a class="start-learning-btn" href="/login"> Se Connecter </a>
     </div> -->
     </section>
-
     <div class="learn-line-bottom">
     </div>
 
-    <!--Programmes section-->
-    <div class="program-section-wrapper">
-      <!-- <h1 id="program" class="section-title" data-aos="fade-up" data-aos-easing="linear">Nos Programmes</h1> -->
-      <div class="new-program-wrapper px-2 container" data-aos="fade-up" data-aos-easing="linear">
-        <h1 class="sponsored-program-title">Nos Programmes</h1>
+   
+    <!-- Access-->
+    <div class="row" id="access-wrapper">
+      <div class="col-md-4" data-aos="fade-up" data-aos-easing="linear">
+        <div class="d-flex acc-text-wrapper align-items-center justify-content-center">
+          <p class="accessibility-text animate__animated animate__bounce">
+            Accessible sur tous <br /> les supports digitaux
+          </p>
+        </div>
       </div>
-      <div class="container">
-        <div class="row">
-          <!-- Operation 100% BAC
-          <div class="col-lg-6 mt-5 mb-2" data-aos="fade-up" data-aos-easing="linear">
-            <div class="d-flex mb-2 my-card-wrapper justify-content-center flex-column">
-              <div class="my-card">
-                <div class="img-wrapper m-2">
-                  <img class="program-image"
-                    src="https://images.unsplash.com/photo-1632571401005-458e9d244591?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2071&q=80"
-                    alt="Card image cap" />
-                </div>
-                <div class="card-body d-flex flex-column align-items-start ms-3">
-                  <h3 class="program-name">Easy Maths</h3>
-                  <p class="program-description">
-                    Un programme qui vise à faciliter la compréhension des mathématiques. A l’aide des contenus visuels,
-                    approfondissez votre compréhension du
-                    cours et augmentez vos chances de réussite au BAC.
-                  </p>
-                  <button class="btn my-3 course-btn btn-default">
-                    <a href="/100bac" class="course-link">En Savoir Plus</a>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        -->
-          <!-- Personal English Coaching Program -->
-          <div class="col-lg-6 mt-5 mb-2" data-aos="fade-up" data-aos-easing="linear">
-            <div class="d-flex mb-2 my-card-wrapper justify-content-center flex-column">
-              <div class="my-card">
-                <div class="img-wrapper m-2">
-                  <img class="program-image"
-                    src="https://4953540.fs1.hubspotusercontent-na1.net/hubfs/4953540/7-benefits-of-executive-coaching.webp"
-                    alt="pecp-img" />
-                </div>
-                <div class="card-body d-flex flex-column align-items-start ms-3">
-                  <h3 class="program-name">Personal English Coaching Program</h3>
-                  <p class="program-description">
-                    Programme d'Anglais personalisé selon les besoins de l'apprenant. Il est axé sur l'apprentissage
-                    naturel et
-                    se déroule en ligne et en présentiel.
-                  </p>
-                  <button class="btn my-3 course-btn btn-default">
-                    <a href="/pecp" class="course-link">En Savoir Plus</a>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- English  club for all-->
-          <div class="col-lg-6 mt-5 mb-2" data-aos="fade-up" data-aos-easing="linear">
-            <div class="d-flex mb-2 my-card-wrapper justify-content-center flex-column">
-              <div class="my-card">
-                <div class="img-wrapper m-2">
-                  <img class="program-image"
-                    src="https://images.unsplash.com/photo-1627897495484-229b29feb0d5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
-                    alt="Card image cap" />
-                </div>
-                <div class="card-body d-flex flex-column align-items-start ms-3">
-                  <h3 class="program-name">Natural English Clubs</h3>
-                  <p class="program-description">
-                    Un programme bien élaboré pour permettre aux etudiants, professionnels et
-                    particuliers d'améliorer naturellement leur niveau d'anglais à travers des clubs.
-                  </p>
-                  <button class="btn my-3 course-btn btn-default">
-                    <a href="/englishlang4all/clubs/home" class="course-link">En Savoir Plus</a>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Tech for Kids
-          <div class="col-lg-6 mt-5 mb-2" data-aos="zoom-in-down" data-aos-easing="linear" data-aos-duration="500">
-            <div class="d-flex mb-2 my-card-wrapper justify-content-center flex-column">
-              <div class="my-card">
-                <div class="img-wrapper m-2">
-                  <img class="program-image"
-                    src="https://images.pexels.com/photos/6437625/pexels-photo-6437625.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
-                    alt="Tech for kids" />
-                </div>
-                <div class="card-body d-flex flex-column align-items-start ms-3">
-                  <h3 class="program-name">Tech for Kids</h3>
-                  <p class="program-description">
-                    Un programme pour développer les compétences du numérique chez l’enfant. S’habituer
-                    et se servir du digital pour la bonne cause.
-                  </p>
-                  <button class="btn my-3 course-btn btn-default">
-                    <a href="#footer" class="course-link">Contactez-nous pour plus d'info</a>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        -->
-          <!-- Coders Saloon 
-          <div class="col-lg-6 mt-5 mb-2" data-aos="zoom-in-down" data-aos-easing="linear" data-aos-duration="500">
-            <div class="d-flex mb-2 my-card-wrapper justify-content-center flex-column">
-              <div class="my-card">
-                <div class="img-wrapper m-2">
-                  <img class="program-image"
-                    src="https://images.pexels.com/photos/1181359/pexels-photo-1181359.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260"
-                    alt="Card image cap" />
-                </div>
-                <div class="card-body d-flex flex-column align-items-start ms-3">
-                  <h3 class="program-name">Coders Saloon</h3>
-                  <p class="program-description">
-                    Un programme pour l'apprentissage de la programmation, le developpement des sites
-                    web et applications mobiles.
-                  </p>
-                  <button class="btn my-3 course-btn btn-default">
-                    <a href="#footer" class="course-link">Contactez-nous pour plus d'info</a>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          -->
-          <!-- End Programmes section-->
+      <div class="col-md-8" data-aos="fade-up" data-aos-easing="linear">
+        <div>
+          <img src="https://i.ibb.co/7WPSg5q/ads-1.png" class="img-fluid" alt="accessible" />
         </div>
       </div>
     </div>
 
+   
     <!-- Sponsored program 
     <div class="new-program-wrapper container" data-aos="fade-up" data-aos-easing="linear">
       <h1 class="sponsored-program-title">Programmes Sponsorisés</h1>
@@ -476,7 +493,8 @@
       </div>
     </div>
 -->
-    <!-- Customers section -->
+   
+<!-- Customers section -->
 
     <div class="learn-line-top">
       <h1 class="why-join-us" data-aos="fade-up" data-aos-easing="linear">Temoignages</h1>
@@ -549,30 +567,14 @@
         </div>
       </div>
     </div>
-
-    <!-- end customers section -->
-    <!-- Access-->
-    <div class="row" id="access-wrapper">
-      <div class="col-md-4" data-aos="fade-up" data-aos-easing="linear">
-        <div class="d-flex acc-text-wrapper align-items-center justify-content-center">
-          <p class="accessibility-text animate__animated animate__bounce">
-            Accessible sur tous <br /> les supports digitaux
-          </p>
-        </div>
-      </div>
-      <div class="col-md-8" data-aos="fade-up" data-aos-easing="linear">
-        <div>
-          <img src="https://i.ibb.co/7WPSg5q/ads-1.png" class="img-fluid" alt="accessible" />
-        </div>
-      </div>
-    </div>
-
-    <!-- <h1 class="clients my-2">Latest News</h1> -->
-
-
+ <!-- end customers section -->
+  
     <!-- ======= Counts Section ======= -->
     <section id="counts" class="counts " data-aos="fade-up" data-aos-easing="linear">
-      <h1 class="clients my-2 section-title">Quelques Statistiques</h1>
+      <div class="section-title  container">
+        <h2>Statistiques</h2>
+        <p>Afro Language Lab en Chiffre</p>
+      </div>
       <div class="container mt-5 " data-aos="fade-up" data-aos-offset="200" data-aos-delay="250">
         <div class="row">
           <div class="col-lg-3 mt-5 col-md-6">
@@ -596,7 +598,7 @@
           <div class="col-lg-3 col-md-6 mt-5">
             <div class="count-box">
               <i class="bi bi-headset"></i>
-              <span data-purecounter-start="0" data-purecounter-end="12" data-purecounter-duration="2"
+              <span data-purecounter-start="0" data-purecounter-end="6" data-purecounter-duration="2"
                 class="purecounter">0</span>
               <p class="count-item">Formations</p>
             </div>
@@ -618,7 +620,10 @@
 
     <!-- News Section-->
     <div class="news-section-wrapper py-4" data-aos="fade-up" data-aos-easing="linear">
-      <h1 id="news-section" data-aos="fade-up" data-aos-easing="linear" class=" section-title">Actualités</h1>
+      <div class="section-title  container">
+        <h2>News</h2>
+        <p>Actualités et Evenements</p>
+      </div>
       <div class="container d-flex justify-content-center">
         <div class="">
           <div class="recents-news-wrapper container my-2">
@@ -684,8 +689,12 @@
 
   <!-- Partners section-->
     <!-- Slider main container -->
-    <h1 class="partners section-title my-2">Nos Partenaires</h1>
+ 
     <div class="swiper" style="background-color: rgb(255, 255, 255);"> 
+      <div class="section-title pt-4  container"  data-aos="fade-up" data-aos-easing="linear">
+        <h2>Partenaires et Sponsors</h2>
+        <p>Découvrez notre réseau</p>
+      </div>
         <!-- Additional required wrapper -->
         <div class="swiper-wrapper align-items-center py-5">
             <!-- Slides -->

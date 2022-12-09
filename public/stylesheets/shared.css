@@ -651,7 +651,7 @@ a.active:focus {
   height: 2rem;
   padding: 0.5rem;
   letter-spacing: 0.1rem;
-  z-index: 2;
+  z-index: 300;
 }
 
 .flash {
