@@ -57,9 +57,9 @@ section {
 .section-title h2::after {
   content: "";
   width: 120px;
-  height: 1px;
+  height: 2px;
   display: inline-block;
-  background: #f38b74;
+  background: #9203ab;
   margin: 4px 10px;
 }
 
@@ -75,604 +75,6 @@ section {
 
 
 
-/* preloader */
-
-:root {
-  --fg: #ffffff;
-  --shade1: #e5e4e5;
-  --shade2: #eeeaf2;
-  --shade3: #e6e5e7;
-  --shade4: #ececec;
-  --dur1: 1s;
-  --dur2: 6s;
-  /* font-size: calc(16px + (32 - 16)*(100vw - 320px)/(2560 - 320)); */
-}
-
-.pre-w {
-  /* background-image: linear-gradient(145deg, var(--shade3), var(--shade2)); */
-  background-color: rgb(75, 6, 103);
-  color: var(--fg);
-  display: flex;
-  font: 1em/1.5 Hind, sans-serif;
-  flex-direction: column;
-  height: 100vh;
-  width: 100%;
-  position: fixed;
-  z-index: 1500;
-}
-
-.status-msg {
-  font-family: "Kaushan Script", cursive;
-  /* font-family: 'Paytone One', sans-serif; */
-  /* font-family: "Rye", cursive; */
-  /* font-family: 'Titan One', cursive; */
-  /* font-family: "Nosifer", cursive; */
-  font-size: 2rem;
-  color: white;
-}
-
-.status__dot {
-  font-size: 3rem;
-  color: white;
-}
-
-.wrap {
-  margin: auto;
-  font-size: 1.5rem;
-}
-
-.preloader {
-  animation: largePopOut var(--dur1) linear;
-  border-radius: 50%;
-  box-shadow:
-    0.15em 0.15em 0.15em var(--shade4) inset,
-    -0.15em -0.15em 0.15em var(--shade1) inset,
-    1em 1em 2em var(--shade1),
-    -1em -1em 2em var(--shade4);
-  margin-bottom: 3em;
-  position: relative;
-  width: 12em;
-  height: 12em;
-}
-
-.preloader__square {
-  animation: smallPopOut1 var(--dur1) linear, popInOut var(--dur2) var(--dur1) linear infinite;
-  border-radius: 0.5em;
-  box-shadow:
-    0.15em 0.15em 0.15em var(--shade4) inset,
-    -0.15em -0.15em 0.15em var(--shade1) inset,
-    0.25em 0.25em 0.5em var(--shade1),
-    -0.25em -0.25em 0.5em var(--shade4);
-  position: absolute;
-  top: 2.5em;
-  left: 2.5em;
-  width: 3em;
-  height: 3em;
-}
-
-.preloader__square:nth-child(n + 2):nth-child(-n + 3) {
-  left: 6.5em;
-}
-
-.preloader__square:nth-child(n + 3) {
-  top: 6.5em;
-}
-
-.preloader__square:nth-child(2) {
-  animation: smallPopOut2 var(--dur1) linear, move2 var(--dur2) var(--dur1) linear infinite;
-}
-
-.preloader__square:nth-child(3) {
-  animation: smallPopOut3 var(--dur1) linear, move3 var(--dur2) var(--dur1) linear infinite;
-}
-
-.preloader__square:nth-child(4) {
-  animation: smallPopOut4 var(--dur1) linear, move4 var(--dur2) var(--dur1) linear infinite;
-}
-
-.status {
-  animation: fadeIn var(--dur1) linear forwards;
-  text-align: center;
-}
-
-.status__dot {
-  animation: appear1 var(--dur1) var(--dur1) steps(1, start) infinite;
-  display: inline-block;
-}
-
-.status__dot:nth-child(2) {
-  animation: appear2 var(--dur1) var(--dur1) steps(1, start) infinite;
-}
-
-.status__dot:nth-child(3) {
-  animation: appear3 var(--dur1) var(--dur1) steps(1, start) infinite;
-}
-
-
-/* Animations */
-@keyframes largePopOut {
-
-  from,
-  20% {
-    box-shadow:
-      0 0 0 var(--shade4) inset,
-      0 0 0 var(--shade1) inset,
-      0 0 0 var(--shade1),
-      0 0 0 var(--shade4);
-  }
-
-  40% {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      2em 2em 2em var(--shade1),
-      -2em -2em 4em var(--shade4);
-  }
-
-  60%,
-  to {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      1em 1em 2em var(--shade1),
-      -1em -1em 2em var(--shade4);
-  }
-}
-
-@keyframes smallPopOut1 {
-
-  from,
-  40% {
-    box-shadow:
-      0 0 0 var(--shade4) inset,
-      0 0 0 var(--shade1) inset,
-      0 0 0 var(--shade1),
-      0 0 0 var(--shade4);
-  }
-
-  60% {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      0.5em 0.5em 0.5em var(--shade1),
-      -0.5em -0.5em 1em var(--shade4);
-  }
-
-  80%,
-  to {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      0.25em 0.25em 0.5em var(--shade1),
-      -0.25em -0.25em 0.5em var(--shade4);
-  }
-}
-
-@keyframes smallPopOut2 {
-
-  from,
-  45% {
-    box-shadow:
-      0 0 0 var(--shade4) inset,
-      0 0 0 var(--shade1) inset,
-      0 0 0 var(--shade1),
-      0 0 0 var(--shade4);
-  }
-
-  65% {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      0.5em 0.5em 0.5em var(--shade1),
-      -0.5em -0.5em 1em var(--shade4);
-  }
-
-  85%,
-  to {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      0.25em 0.25em 0.5em var(--shade1),
-      -0.25em -0.25em 0.5em var(--shade4);
-  }
-}
-
-@keyframes smallPopOut3 {
-
-  from,
-  50% {
-    box-shadow:
-      0 0 0 var(--shade4) inset,
-      0 0 0 var(--shade1) inset,
-      0 0 0 var(--shade1),
-      0 0 0 var(--shade4);
-  }
-
-  70% {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      0.5em 0.5em 0.5em var(--shade1),
-      -0.5em -0.5em 1em var(--shade4);
-  }
-
-  90%,
-  to {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      0.25em 0.25em 0.5em var(--shade1),
-      -0.25em -0.25em 0.5em var(--shade4);
-  }
-}
-
-@keyframes smallPopOut4 {
-
-  from,
-  55% {
-    box-shadow:
-      0 0 0 var(--shade4) inset,
-      0 0 0 var(--shade1) inset,
-      0 0 0 var(--shade1),
-      0 0 0 var(--shade4);
-  }
-
-  75% {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      0.5em 0.5em 0.5em var(--shade1),
-      -0.5em -0.5em 1em var(--shade4);
-  }
-
-  95%,
-  to {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      0.25em 0.25em 0.5em var(--shade1),
-      -0.25em -0.25em 0.5em var(--shade4);
-  }
-}
-
-@keyframes popInOut {
-  from {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      0.25em 0.25em 0.5em var(--shade1),
-      -0.25em -0.25em 0.5em var(--shade4);
-    transform: translate(0, 0);
-  }
-
-  4% {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      0.5em 0.5em 0.5em var(--shade1),
-      -0.5em -0.5em 1em var(--shade4);
-    transform: translate(0, 0);
-  }
-
-  8% {
-    box-shadow:
-      0 0 0 var(--shade4) inset,
-      0 0 0 var(--shade1) inset,
-      0 0 0 var(--shade1),
-      0 0 0 var(--shade4);
-    transform: translate(0, 0);
-  }
-
-  12%,
-  16% {
-    box-shadow:
-      0 0 0 var(--shade4) inset,
-      0 0 0 var(--shade1) inset,
-      0 0 0 var(--shade1),
-      0 0 0 var(--shade4);
-    transform: translate(4em, 0);
-  }
-
-  20% {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      0.5em 0.5em 0.5em var(--shade1),
-      -0.5em -0.5em 1em var(--shade4);
-    transform: translate(4em, 0);
-  }
-
-  24%,
-  25% {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      0.25em 0.25em 0.5em var(--shade1),
-      -0.25em -0.25em 0.5em var(--shade4);
-    transform: translate(4em, 0);
-  }
-
-  29% {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      0.5em 0.5em 0.5em var(--shade1),
-      -0.5em -0.5em 1em var(--shade4);
-    transform: translate(4em, 0);
-  }
-
-  33% {
-    box-shadow:
-      0 0 0 var(--shade4) inset,
-      0 0 0 var(--shade1) inset,
-      0 0 0 var(--shade1),
-      0 0 0 var(--shade4);
-    transform: translate(4em, 0);
-  }
-
-  37%,
-  41% {
-    box-shadow:
-      0 0 0 var(--shade4) inset,
-      0 0 0 var(--shade1) inset,
-      0 0 0 var(--shade1),
-      0 0 0 var(--shade4);
-    transform: translate(4em, 4em);
-  }
-
-  45% {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      0.5em 0.5em 0.5em var(--shade1),
-      -0.5em -0.5em 1em var(--shade4);
-    transform: translate(4em, 4em);
-  }
-
-  49%,
-  50% {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      0.25em 0.25em 0.5em var(--shade1),
-      -0.25em -0.25em 0.5em var(--shade4);
-    transform: translate(4em, 4em);
-  }
-
-  54% {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      0.5em 0.5em 0.5em var(--shade1),
-      -0.5em -0.5em 1em var(--shade4);
-    transform: translate(4em, 4em);
-  }
-
-  58% {
-    box-shadow:
-      0 0 0 var(--shade4) inset,
-      0 0 0 var(--shade1) inset,
-      0 0 0 var(--shade1),
-      0 0 0 var(--shade4);
-    transform: translate(4em, 4em);
-  }
-
-  62%,
-  66% {
-    box-shadow:
-      0 0 0 var(--shade4) inset,
-      0 0 0 var(--shade1) inset,
-      0 0 0 var(--shade1),
-      0 0 0 var(--shade4);
-    transform: translate(0, 4em);
-  }
-
-  70% {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      0.5em 0.5em 0.5em var(--shade1),
-      -0.5em -0.5em 1em var(--shade4);
-    transform: translate(0, 4em);
-  }
-
-  74%,
-  75% {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      0.25em 0.25em 0.5em var(--shade1),
-      -0.25em -0.25em 0.5em var(--shade4);
-    transform: translate(0, 4em);
-  }
-
-  79% {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      0.5em 0.5em 0.5em var(--shade1),
-      -0.5em -0.5em 1em var(--shade4);
-    transform: translate(0, 4em);
-  }
-
-  83% {
-    box-shadow:
-      0 0 0 var(--shade4) inset,
-      0 0 0 var(--shade1) inset,
-      0 0 0 var(--shade1),
-      0 0 0 var(--shade4);
-    transform: translate(0, 4em);
-  }
-
-  87%,
-  91% {
-    box-shadow:
-      0 0 0 var(--shade4) inset,
-      0 0 0 var(--shade1) inset,
-      0 0 0 var(--shade1),
-      0 0 0 var(--shade4);
-    transform: translate(0, 0);
-  }
-
-  95% {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      0.5em 0.5em 0.5em var(--shade1),
-      -0.5em -0.5em 1em var(--shade4);
-    transform: translate(0, 0);
-  }
-
-  99%,
-  to {
-    box-shadow:
-      0.15em 0.15em 0.15em var(--shade4) inset,
-      -0.15em -0.15em 0.15em var(--shade1) inset,
-      0.25em 0.25em 0.5em var(--shade1),
-      -0.25em -0.25em 0.5em var(--shade4);
-    transform: translate(0, 0);
-  }
-}
-
-@keyframes move2 {
-
-  from,
-  8% {
-    transform: translate(0, 0);
-    width: 3em;
-    height: 3em;
-  }
-
-  12% {
-    transform: translate(-4em, 0);
-    width: 7em;
-    height: 3em;
-  }
-
-  16%,
-  83% {
-    transform: translate(-4em, 0);
-    width: 3em;
-    height: 3em;
-  }
-
-  87% {
-    transform: translate(-4em, 0);
-    width: 3em;
-    height: 7em;
-  }
-
-  91%,
-  to {
-    transform: translate(-4em, 4em);
-    width: 3em;
-    height: 3em;
-  }
-}
-
-@keyframes move3 {
-
-  from,
-  33% {
-    transform: translate(0, 0);
-    height: 3em;
-  }
-
-  37% {
-    transform: translate(0, -4em);
-    height: 7em;
-  }
-
-  41%,
-  to {
-    transform: translate(0, -4em);
-    height: 3em;
-  }
-}
-
-@keyframes move4 {
-
-  from,
-  58% {
-    transform: translate(0, 0);
-    width: 3em;
-  }
-
-  62% {
-    transform: translate(0, 0);
-    width: 7em;
-  }
-
-  66%,
-  to {
-    transform: translate(4em, 0);
-    width: 3em;
-  }
-}
-
-@keyframes fadeIn {
-
-  from,
-  67% {
-    opacity: 0;
-  }
-
-  83.3%,
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes appear1 {
-  from {
-    visibility: hidden;
-  }
-
-  33%,
-  to {
-    visibility: visible;
-  }
-}
-
-@keyframes appear2 {
-
-  from,
-  33% {
-    visibility: hidden;
-  }
-
-  67%,
-  to {
-    visibility: visible;
-  }
-}
-
-@keyframes appear3 {
-
-  from,
-  67% {
-    visibility: hidden;
-  }
-
-  to {
-    visibility: visible;
-  }
-}
-
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --fg: #e3e4e8;
-    --shade1: #23252a;
-    --shade2: #3e424c;
-    --shade3: #4a4e5a;
-    --shade4: #686e7e;
-  }
-}
-
-
-
-
 #site-content {
   overflow-x: hidden;
 }
@@ -685,7 +87,148 @@ section {
 }
 
 /* Navbar */
+/**/
+.logo-navbar {
+  opacity: 1;
+  margin: 0;
+  padding: 0;
+}
 
+.logo-display {
+  display: none;
+}
+
+nav {
+  z-index: 300;
+  padding: 0 0 !important;
+  background-color: transparent;
+  /* background-color: transparent; */
+  /* background-color: #000; */
+  /* position: absolute !important; */
+  /* top: 0; */
+  /* left: 0; */
+  /* right: 0; */
+  font-family: "Roboto";
+  font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+.nav-display {
+  opacity: 1;
+}
+
+.brand {
+  font-size: 1rem;
+  display: inline-block;
+  color: rgb(130, 7, 161);
+}
+
+#brand-name {
+  color: rgba(255, 250, 240, 0.9);
+  /* font-family: 'Albril Fatface', cursive; */
+  font-family: "Esteban";
+  font-family: "Titan One", cursive;
+  /* font-family: 'Chivo', sans-serif; */
+  /* font-family: 'Poppins', sans-serif; */
+  /* font-family: "Ultra", serif; */
+  width: 4rem;
+  height: 4rem;
+  border: 3px solid rgb(239, 235, 241);
+  border-radius: 5px;
+  margin: 0 1rem;
+  padding: 0;
+  /* text-shadow: 0.2rem 0.1rem 0.2rem rgba(34, 24, 67, 0.8); */
+}
+
+.myNav-link {
+  font-size: 1.1rem;
+  padding: 0 0 0.4rem 0;
+  font-family: "Roboto";
+  letter-spacing: 0.2rem;
+  text-transform: capitalize;
+  color: rgba(252, 252, 252, 0.9) !important;
+  font-weight: 500;
+  transition: all 0.4s !important;
+}
+
+.myNav-link:hover {
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1.5px solid rgb(255, 255, 255);
+  color: rgb(255, 255, 255) !important;
+}
+
+.nav-link-connexion {
+  text-align: center;
+  font-family: "Roboto";
+  padding: 0.3rem 1rem;
+  border-radius: 5px;
+  color: rgb(243, 239, 237);
+  border: 1px solid rgb(243, 241, 241);
+  text-decoration: none;
+  background-color: rgba(108, 12, 204, 0.752);
+}
+
+.nav-link-connexion:hover {
+  background-color: transparent;
+  background-color: rgb(250, 245, 245);
+  text-decoration: none;
+  border: 2px solid rgb(109, 5, 109);
+  color: rgba(130, 14, 165, 0.925);
+}
+
+.profile-link {
+  font-family: "Roboto";
+  text-decoration: none;
+  font-size: 1rem;
+  color: rgb(237, 237, 237);
+}
+
+.profile-link:hover, .profile-link:focus {
+  text-decoration: none;
+  color: rgb(237, 237, 237);
+  background-color: #000;
+  padding: 0.5rem 1rem;
+}
+
+.afro {
+  letter-spacing: 0.2rem;
+  color: rgb(43, 42, 42);
+}
+
+.hk {
+  letter-spacing: 0.2rem;
+  color: rgb(117, 13, 177);
+}
+
+#user {
+  text-transform: capitalize;
+  font-family: "Roboto";
+  font-size: 1.5rem;
+}
+
+.user-shadow {
+  color: azure;
+  text-transform: capitalize;
+}
+
+.dropdown-menu {
+  border: 2px solid black;
+  background-color: rgb(245, 245, 245);
+}
+
+.dropdown-item {
+  font-size: 1rem;
+  color: #272626;
+  font-family: "Roboto";
+  text-align: center;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.dropdown-item:hover {
+  background-color: rgb(99, 10, 151);
+  color: whitesmoke;
+}
 
 /**/
 
@@ -709,7 +252,7 @@ section {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: url('https://static.wixstatic.com/media/4e3af7_f0d55afd540b49f889903e027622a9ef~mv2.png/v1/fill/w_1250,h_675,al_c,q_90,enc_auto/4e3af7_f0d55afd540b49f889903e027622a9ef~mv2.png') no-repeat center center/cover;
+  background: url('https://www.oasisfinancial.com/wp-content/uploads/2019/02/What-can-I-do-for-you_-590052924_6248x4912.jpeg') no-repeat center center/cover;
 }
 
 .video-container video {
@@ -729,7 +272,7 @@ section {
   width: 100%;
   top: 0;
   left: 0;
-  background: rgba(17, 2, 31, 0.606);
+  background: rgba(33, 4, 46, 0.606);
   
   position: absolute;
 }
@@ -775,18 +318,21 @@ section {
   /* font-family: "Ultra", serif; */
   font-family: "Chivo", sans-serif;
   text-shadow: 1px 1px 1px rgb(28, 28, 29);
-  padding-top: 3rem;
+  padding-top: 1.3rem;
   /* font-family: 'Meriweather', Times, serif; */
-  letter-spacing: 0.3rem;
+  letter-spacing: 0.1rem;
+  width: 60%;
+  line-height: 2.5rem;
   text-align: start;
   color: rgb(255, 255, 255);
-  font-size: 2rem;
+  font-size: 1.6rem;
   padding-bottom: 2rem;
 }
 
 .more-btn {
   margin-top: 1rem;
   font-size: 1.3rem;
+  font-family: "Chivo", sans-serif;
   display: inline-block;
   border-radius: 6px;
   color: rgb(255, 255, 255);
@@ -819,8 +365,8 @@ section {
 }
 
 .mission {
-  /* background-color: whitesmoke; */
-  margin-top: 5rem;
+  background-color: whitesmoke;
+  /* margin-top: 5rem; */
 }
 
 .presentation-text-wrapper {
@@ -892,145 +438,7 @@ section {
 
 
 
-/**/
-.logo-navbar {
-  opacity: 1;
-  margin: 0;
-  padding: 0;
-}
 
-.logo-display {
-  display: none;
-}
-
-nav {
-  z-index: 300;
-  padding: 0.3rem 0 !important;
-  background-color: #ffffff;
-  /* background-color: transparent; */
-  /* background-color: #000; */
-  /* position: absolute !important; */
-  /* top: 0; */
-  /* left: 0; */
-  /* right: 0; */
-  font-family: "Roboto";
-  font-family: Georgia, "Times New Roman", Times, serif;
-}
-
-.nav-display {
-  opacity: 1;
-}
-
-.brand {
-  font-size: 1.2rem;
-  display: inline-block;
-  color: rgb(130, 7, 161);
-}
-
-#brand-name {
-  color: rgba(255, 250, 240, 0.9);
-  /* font-family: 'Albril Fatface', cursive; */
-  font-family: "Esteban";
-  font-family: "Titan One", cursive;
-  /* font-family: 'Chivo', sans-serif; */
-  /* font-family: 'Poppins', sans-serif; */
-  /* font-family: "Ultra", serif; */
-  width: 5rem;
-  height: 5rem;
-  border: 1px solid black;
-  border-radius: 5px;
-  margin: 0 1rem;
-  /* text-shadow: 0.2rem 0.1rem 0.2rem rgba(34, 24, 67, 0.8); */
-}
-
-.myNav-link {
-  font-size: 1.1rem;
-  padding: 0 0 0.4rem 0;
-  font-family: "Roboto";
-  letter-spacing: 0.2rem;
-  text-transform: capitalize;
-  color: rgba(146, 7, 211, 0.9) !important;
-  font-weight: 500;
-  transition: all 0.4s !important;
-}
-
-.myNav-link:hover {
-  text-decoration: none;
-  font-weight: 600;
-  border-bottom: 1.5px solid rgb(111, 9, 121);
-  color: rgb(113, 16, 143) !important;
-}
-
-.nav-link-connexion {
-  text-align: center;
-  font-family: "Roboto";
-  padding: 0.3rem 1rem;
-  border-radius: 5px;
-  color: rgb(243, 239, 237);
-  border: 1px solid rgb(243, 241, 241);
-  text-decoration: none;
-  background-color: rgb(138, 30, 201);
-}
-
-.nav-link-connexion:hover {
-  background-color: transparent;
-  background-color: rgb(250, 245, 245);
-  text-decoration: none;
-  border: 2px solid rgb(109, 5, 109);
-  color: rgba(130, 14, 165, 0.925);
-}
-
-.profile-link {
-  font-family: "Roboto";
-  text-decoration: none;
-  font-size: 1rem;
-  color: rgb(20, 19, 18);
-}
-
-profile-link:hover {
-  text-decoration: none;
-  color: rgb(31, 28, 27);
-}
-
-.afro {
-  letter-spacing: 0.2rem;
-  color: rgb(43, 42, 42);
-}
-
-.hk {
-  letter-spacing: 0.2rem;
-  color: rgb(117, 13, 177);
-}
-
-#user {
-  text-transform: capitalize;
-  font-family: "Roboto";
-  font-size: 1.5rem;
-}
-
-.user-shadow {
-  color: azure;
-  text-transform: capitalize;
-}
-
-.dropdown-menu {
-  border: 2px solid black;
-  background-color: rgb(245, 245, 245);
-}
-
-.dropdown-item {
-  font-size: 1rem;
-  color: #272626;
-  font-family: "Roboto";
-  text-align: center;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.dropdown-item:hover {
-  background-color: rgb(99, 10, 151);
-  color: whitesmoke;
-}
 
 /* End Navbar */
 /* banner section */
