@@ -101,7 +101,7 @@ section {
 nav {
   z-index: 300;
   padding: 0 0 !important;
-  background-color: transparent;
+  background-color: white;
   /* background-color: transparent; */
   /* background-color: #000; */
   /* position: absolute !important; */
@@ -132,7 +132,7 @@ nav {
   /* font-family: "Ultra", serif; */
   width: 4rem;
   height: 4rem;
-  border: 3px solid rgb(239, 235, 241);
+  /* border: 3px solid rgb(35, 8, 48); */
   border-radius: 5px;
   margin: 0 1rem;
   padding: 0;
@@ -145,7 +145,7 @@ nav {
   font-family: "Roboto";
   letter-spacing: 0.2rem;
   text-transform: capitalize;
-  color: rgba(252, 252, 252, 0.9) !important;
+  color: rgba(51, 6, 136, 0.9) !important;
   font-weight: 500;
   transition: all 0.4s !important;
 }
@@ -153,8 +153,8 @@ nav {
 .myNav-link:hover {
   text-decoration: none;
   font-weight: 600;
-  border-bottom: 1.5px solid rgb(255, 255, 255);
-  color: rgb(255, 255, 255) !important;
+  border-bottom: 1.5px solid rgb(40, 3, 100);
+  color: rgb(82, 5, 164) !important;
 }
 
 .nav-link-connexion {
