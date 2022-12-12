@@ -60,7 +60,6 @@ body {
 }
 
 
-
 .banner-wrapper:after {
     content: "";
     background: #0f1d32b6;
@@ -90,10 +89,6 @@ body {
     z-index: 5;
     /* align-self: start; */
 }
-
-
-
-
 
 
 /* CSS */
@@ -184,8 +179,8 @@ margin: 4rem;
 
 
 .pricing-wrapper{
-    min-height: 90vh;
-    background: url("https://assets.entrepreneur.com/content/3x2/2000/1610399544-GettyImages-1262424851.jpg");
+    min-height: 100vh;
+    background: url("https://aaattorneynetwork.com/wp-content/uploads/2018/12/grow-your-firm.jpg");
     background-repeat: no-repeat;
     background-size: cover;
     color: white;
@@ -193,7 +188,7 @@ margin: 4rem;
     font-size: 16px;
 }
 
-.container {
+.pricing-wrapper .container {
     max-width: 1320px;
     margin: 0 auto;
     padding: 0 2rem;
@@ -209,8 +204,8 @@ margin: 4rem;
 
 .card {
     padding: 30px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    background: rgba(40, 36, 36, 0.1);
+    border: 2px solid rgba(230, 224, 224, 0.2);
     backdrop-filter: blur(10px);
     border-radius: 25px;
     transition: all 0.5s;
@@ -229,6 +224,7 @@ margin: 4rem;
 .pricing {
     font-weight: normal;
     font-size: 36px;
+    color: #04a738;
 }
 
 .pricing .small {
@@ -275,13 +271,18 @@ a.cta_btn:hover {
     }
 }
 
-@media only screen and (max-width: 425px) {
+@media only screen and (max-width: 685px) {
     .grid {
-        grid-template-columns: 1fr;
-        gap: 2%;
         padding-bottom: 25%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
-
+    .card{
+        width: 30rem;
+        margin-bottom: 2rem;
+    }
     .container {
         padding: 0 1rem;
     }
@@ -311,6 +312,23 @@ a.cta_btn:hover {
         font-size: 11px;
     }
 }
+
+
+@media only screen and (max-width: 485px) {
+    .grid {
+        padding-bottom: 25%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .card{
+        width: 23rem;
+        margin-bottom: 2rem;
+    }
+.pricing{
+    font-size: 32px; 
+}}
 
 /* testimonial */
 
@@ -413,6 +431,7 @@ a.cta_btn:hover {
   .testimonial_section .about_content .layer_content .section_title p {
     color: #fff;
     margin: 0 0 15px;
+    font-size: 1.1rem;
   }
   .testimonial_section .about_content .layer_content a {
     color: #fff;
@@ -614,7 +633,7 @@ a.cta_btn:hover {
   
   .why-us .content h3 {
     font-weight: 400;
-    font-size: 34px;
+    font-size: 24px;
     color: #123a6d;
   }
   
@@ -629,9 +648,7 @@ a.cta_btn:hover {
     color: #848484;
   }
   
-  .why-us .video-box {
-   
-  }
+
   
   .why-us .accordion-list {
     padding: 0 100px 60px 100px;
@@ -694,7 +711,7 @@ a.cta_btn:hover {
   }
   
   .why-us .accordion-list a.collapsed:hover {
-    color: #ed502e;
+    color: #174ef5;
   }
   
   .why-us .accordion-list a.collapsed .icon-show {
@@ -705,18 +722,7 @@ a.cta_btn:hover {
     display: none;
   }
   
-  .why-us .play-btn {
-    width: 94px;
-    height: 94px;
-    background: radial-gradient(#ed502e 50%, rgba(237, 80, 46, 0.4) 52%);
-    border-radius: 50%;
-    display: block;
-    position: absolute;
-    left: calc(50% - 47px);
-    top: calc(50% - 47px);
-    overflow: hidden;
-  }
-  
+
   .why-us .play-btn::after {
     content: "";
     position: absolute;
@@ -732,34 +738,9 @@ a.cta_btn:hover {
     transition: all 400ms cubic-bezier(0.55, 0.055, 0.675, 0.19);
   }
   
-  .why-us .play-btn::before {
-    content: "";
-    position: absolute;
-    width: 120px;
-    height: 120px;
-    -webkit-animation-delay: 0s;
-    animation-delay: 0s;
-    -webkit-animation: pulsate-btn 2s;
-    animation: pulsate-btn 2s;
-    -webkit-animation-direction: forwards;
-    animation-direction: forwards;
-    -webkit-animation-iteration-count: infinite;
-    animation-iteration-count: infinite;
-    -webkit-animation-timing-function: steps;
-    animation-timing-function: steps;
-    opacity: 1;
-    border-radius: 50%;
-    border: 5px solid rgba(237, 80, 46, 0.7);
-    top: -15%;
-    left: -15%;
-    background: rgba(198, 16, 0, 0);
-  }
+ 
   
-  .why-us .play-btn:hover::after {
-    border-left: 15px solid #ed502e;
-    transform: scale(20);
-  }
-  
+
   .why-us .play-btn:hover::before {
     content: "";
     position: absolute;
@@ -796,31 +777,7 @@ a.cta_btn:hover {
       padding-bottom: 30px;
     }
   }
-  
-  @-webkit-keyframes pulsate-btn {
-    0% {
-      transform: scale(0.6, 0.6);
-      opacity: 1;
-    }
-  
-    100% {
-      transform: scale(1, 1);
-      opacity: 0;
-    }
-  }
-  
-  @keyframes pulsate-btn {
-    0% {
-      transform: scale(0.6, 0.6);
-      opacity: 1;
-    }
-  
-    100% {
-      transform: scale(1, 1);
-      opacity: 0;
-    }
-  }
-  
+
 
   /* FAQ */
 
@@ -881,11 +838,12 @@ a.cta_btn:hover {
 
 @media (max-width: 600px) {
 
-    html {
-        font-size: 65%;
-    }
 
-
+    .section-title h2::after {
+        content: "";
+        width: 50px;
+      
+      }
     .banner-heading {
         padding: 1rem;
         margin-bottom: 3rem;
@@ -894,22 +852,42 @@ a.cta_btn:hover {
         font-size: 2.5rem;
         
     }
+
+  
 }
 
 
 
 @media (max-width: 575px) {
+html{
+    font-size: 85%;
+}
 
     .more {
         
         width: 20rem;
       height: auto; 
     }
+
+    .section-title h2 {
+        font-size: 14px;
+    
+      }
+
+      .section-title p {
+        font-size: 26px;
+       
+      }
+      
 }
 
-@media (max-width: 350px) {
-
+@media (max-width: 385px) {
+    .section-title h2::after {
+        content: "";
+        width: 20px;
+      
+      }
     html {
-        font-size: 55%;
+        /* font-size: 55%; */
     }
 }

@@ -29,7 +29,6 @@ body {
   padding: 0;
 }
 
-
 section {
   padding: 60px 0;
 }
@@ -119,7 +118,7 @@ nav {
 .brand {
   font-size: 1rem;
   display: inline-block;
-  color: rgb(130, 7, 161);
+  color: #4d0db4;
 }
 
 #brand-name {
