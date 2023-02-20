@@ -127,19 +127,17 @@ app.use((req, res, next) => {
 
 // Landing page route
 app.get("/", catchAsync(async (req, res) => {
-    
     res.render("afrohk_home", {
     });
 }));
 
-// Language Lab  home page
-app.get("/language-lab", catchAsync(async (req, res) => {
-    let all_articles = await news.find({});
-    all_articles = all_articles.reverse();
-    res.render("all_home", {
-        all_articles
-    });
-}));
+// app.get("/", catchAsync(async (req, res) => {
+//     let all_articles = await news.find({});
+//     all_articles = all_articles.reverse();
+//     res.render("all_home", {
+//         all_articles
+//     });
+// }));
 
 
 // Language Lab  home page
@@ -153,12 +151,6 @@ app.get("/tech-innovation", catchAsync(async (req, res) => {
     res.render("comingsoon");
 }));
 
-
-// Landing page route
-app.get("/date", (req, res) => {
-    console.log(moment().format("dddd, MMMM Do YYYY, h:mm:ss a"));
-    res.send(" Date test");
-});
 
 //user routes
 app.use("/", userRoutes);

@@ -180,7 +180,7 @@ margin: 4rem;
 
 .pricing-wrapper{
     min-height: 100vh;
-    background: url("https://aaattorneynetwork.com/wp-content/uploads/2018/12/grow-your-firm.jpg");
+    background: url("https://blog.stemscopes.com/hubfs/bigstock-education-business-success--136768256.jpg");
     background-repeat: no-repeat;
     background-size: cover;
     color: white;
@@ -192,7 +192,7 @@ margin: 4rem;
     max-width: 1320px;
     margin: 0 auto;
     padding: 0 2rem;
-    height: 90%;
+    height: 100%;
 }
 
 .grid {
@@ -204,8 +204,8 @@ margin: 4rem;
 
 .card {
     padding: 30px;
-    background: rgba(40, 36, 36, 0.1);
-    border: 2px solid rgba(230, 224, 224, 0.2);
+    background: rgba(25, 24, 54, 0.523);
+    border: 2px solid rgba(61, 57, 57, 0.586);
     backdrop-filter: blur(10px);
     border-radius: 25px;
     transition: all 0.5s;
@@ -223,8 +223,10 @@ margin: 4rem;
 
 .pricing {
     font-weight: normal;
-    font-size: 36px;
-    color: #04a738;
+    font-size: 26px;
+    color: #d0e1ed;
+    text-shadow: 1px 1px 1px rgb(7, 86, 2);
+    font-family: Ultra;
 }
 
 .pricing .small {
@@ -267,8 +269,16 @@ a.cta_btn:hover {
     .grid {
         grid-template-columns: 1fr 1fr;
         gap: 2%;
+        padding: 4% 0;
 
     }
+    .card {
+        padding: 20px 30px;
+    }
+
+    hr {
+        margin-top: 10px;
+    } 
 }
 
 @media only screen and (max-width: 685px) {
@@ -301,7 +311,7 @@ a.cta_btn:hover {
     }
 
     .pricing {
-        font-size: 52px;
+        font-size: 30px;
     }
 
     hr {
@@ -875,7 +885,7 @@ html{
       }
 
       .section-title p {
-        font-size: 26px;
+        font-size: 20px;
        
       }
       
