@@ -403,7 +403,8 @@ div.list div:before {
 
 .tv {
   letter-spacing: 0.2rem;
-  color: orangered;
+  color: rgb(53, 3, 97);
+}
 }
 
 #vimeo-content {

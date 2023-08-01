@@ -1,7 +1,7 @@
 <% layout('layouts/100bacBoilerplate') %>
 <link rel="preconnect" href="https://fonts.gstatic.com" />
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
-<link href="/stylesheets/100bac/serieHome.css" rel="stylesheet" />
+<link href="/stylesheets/100bac/classeHome.css" rel="stylesheet" />
 
 
 <div id="header">
@@ -15,17 +15,18 @@
     <div class="d-flex flex-column">
       <div class="serie-text">
         <h1 id="welcome" class="display-4 animated bounce text-center">
-          Easy-<span style="color:rgb(125, 6, 164) ;">Maths</span> <%= schoolClass.title %>
+          Easy-<span style="color:rgb(72, 6, 164) ;">School</span> <span style="color:rgb(58, 70, 233) ;"><%= schoolClass.title %>  <%= schoolClass.serie %></span> 
         </h1>
-        <p class="text-center about">
-          Étudier et Réviser à son rythme selon ses besoins et sa disponibilité
-        </p>
+      
       </div>
     </div>
   </div>
   <!--End Header-->
   <!-- Section 1 nos cours -->
   <div class="container my-5">
+    <p class="text-center about">
+      Étudier et Réviser à son rythme selon ses besoins et sa disponibilité
+    </p>
     <div class="row mt-3">
       <% for(let subject of schoolClass.subjects) {%>
       <div class="col-12 col-md-4 mb-5 rounded">
@@ -46,7 +47,7 @@
               <!-- Modal -->
               <div class="modal fade" id="N<%= subject.title %>" tabindex="-1" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
-                <div class="modal-dialog modal-xl">
+                <div class="modal-dialog modal-lg">
                   <div class="modal-content">
                     <div class="modal-header">
                       <h5 class="modal-title text-primary" id="exampleModalLabel">A propos de <%= subject.title %></h5>

@@ -1,130 +1,133 @@
-a:hover,a:focus, a{
-  text-decoration: none;
-}
-/*--------------------------------------------------------------
-# Hero Section
---------------------------------------------------------------*/
-#hero {
-  width: 100%;
-  height: 100vh;
-  background: url("https://images.pexels.com/photos/5620561/pexels-photo-5620561.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2") top right;
-  background-size: cover;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  position: relative;
+* {
+  box-sizing: border-box;
+  margin: 0;
+
+  padding: 0;
 }
 
-#hero:before {
-  content: "";
-  background: rgba(5, 9, 9, 0.517);
+
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  line-height: 1.5;
+}
+
+.showcase {
+  height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #fff;
+  overflow-y: hidden;
+}
+
+.video-container {
   position: absolute;
-  bottom: 0;
   top: 0;
   left: 0;
-  right: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: url('https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=10159001957204994') no-repeat center center/cover;
 }
 
-#hero .hero-container {
-  display: flex;
-  justify-content: start;
-  align-items:center;
-  align-self: center;
-  flex-direction: column;
-  /* padding: 0 15px; */
-  /* border: 1px solid red; */
-  z-index: 100;
+.video-container video {
+  min-width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
 }
 
-#hero .service-container {
-  z-index: 100;
-  margin-top: 5rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  align-self: end;
-  flex-direction: column;
-  padding: 0 15px;
+.video-container:after {
+  content: '';
+  z-index: 1;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background: rgba(48, 7, 122, 0.647);
+  position: absolute;
 }
 
-#hero h1 {
-  margin: 0 10px 40px 10px;
-  font-size: 84px;
-  font-family: "Raleway", serif;
-  letter-spacing: 0.2rem;
+.content {
+  z-index: 2;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+}
+
+.afrohk {
+  font-family: "Chivo", sans-serif;
+  font-size: 4rem;
   font-weight: 900;
-  color: rgba(255, 255, 255, 0.918);
+  letter-spacing: 0.1rem;
+}
+
+.motto{
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  margin: 2rem 0 3rem 0;
+  letter-spacing: 0.1rem;
+}
+
+.more-btn {
+  display: inline-block;
+  padding: 10px 30px;
+  background: rgb(67, 4, 127);
+  color: rgb(212, 221, 218);
+  border-radius: 5px;
+  border: solid rgb(255, 255, 255) 1px;
+  margin-top: 25px;
+  text-decoration: none;
+  transition: all 0.5s;
+}
+
+.more-btn:hover {
+  transform: scale(0.98);
+  text-decoration: none;
+  color: rgb(67, 4, 127);
+  background-color: white;
+}
+
+/* about section*/
+#services{
+  margin-top: 6rem;
+  padding: 3rem 0 6rem 0;
+}
+
+
+
+#about {
+  margin: 0;
+  padding: 3rem;
   text-align: center;
 }
 
-#hero h2 {
-  color: #eee;
-  margin: 20px;
-  font-size: 18px;
-  font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-  letter-spacing: 0.3rem;
-  font-weight: 500;
-  text-transform: uppercase;
+#about p {
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin: auto;
+}
+
+.about-title {
+  font-family: Georgia, 'Times New Roman', Times, serif;
   text-align: center;
-}
-
-#hero .btn-scroll {
-  transition: 0.4s;
-  color: rgba(255, 255, 255, 0.6);
-  animation: up-down 1s ease-in-out infinite alternate-reverse both;
-}
-
-#hero .btn-scroll i {
-  font-size: 48px;
-}
-
-#hero .btn-scroll:hover {
-  color: #ffb727;
-}
-
-@media (min-width: 1024px) {
-  #hero {
-    background-attachment: fixed;
-  }
-}
-
-@media (max-width: 575px) {
-  #hero h1 {
-    font-size: 40px;
-    text-align: center;
-  }
-
-  #hero h2 {
-    text-align: center;
-    margin-bottom: 30px;
-  }
+  font-size: 3rem;
+  color: rgb(51, 18, 87);
+  margin-bottom: 2rem;
 }
 
 
-@-webkit-keyframes up-down {
-  0% {
-    transform: translateY(5px);
-  }
-
-  100% {
-    transform: translateY(-5px);
-  }
-}
-
-@keyframes up-down {
-  0% {
-    transform: translateY(5px);
-  }
-
-  100% {
-    transform: translateY(-5px);
-  }
-}
 
 .services-title{
   font-size: 1rem;
-  color:#e36019;
-  background-color:black;
+  color:#ffffff;
+  background-color:rgb(56, 3, 131);
   display: block;
   padding: 0.7rem 1rem;
   transition: all 0.6s;
@@ -133,7 +136,7 @@ a:hover,a:focus, a{
 }
 
 .services-title:focus, .services-title:hover{
-  background-color:#cc520b ;
+  background-color:#0a2798 ;
   color: #eee;
 }
 

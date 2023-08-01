@@ -11,17 +11,9 @@ body {
 
 /* Site Content */
 
-/* .container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-} */
-
 .serie {
   background: url("https://images.unsplash.com/photo-1535982330050-f1c2fb79ff78?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1567&q=80");
-  background: url("https://images.pexels.com/photos/5905434/pexels-photo-5905434.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
-  background: url("https://res.cloudinary.com/afro-house-of-knowledge/image/upload/v1633194142/Afrohk/bac_gg0whz.jpg");
+  background: url("https://queenslibrary.org/sites/default/files/2022-10/College%20Readiness%20blog%20post1.jpg");
   background-size: cover;
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -38,7 +30,7 @@ body {
 
 .serie:before {
   content: "";
-  background: #000000;
+  background: #00000097;
   /* fallback for old browsers */
   background: -webkit-linear-gradient(to bottom,
       rgba(0, 0, 0, 0.671),
@@ -77,23 +69,24 @@ body {
 
 .title {
   padding: 1rem 2rem;
-  margin: 0 2rem;
+  margin: 2rem 2rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  justify-content:flex-start;
+  align-items:flex-start;
 }
 
 .title-heading {
-  padding: 1rem 2rem;
-  margin-top: 1.2rem;
+  padding: 1rem 0 0 0;
+  margin-top: 1rem;
   font-family: "Ultra", serif;
-  font-size: 3.5rem;
+  font-size: 3.8rem;
   text-transform: uppercase;
-  color: rgb(211, 211, 214);
-  text-shadow: 0px 4px 3px rgba(75, 4, 97, 0.815),
-    1px 2px 8px rgba(23, 42, 56, 0.5), 1px 2px 3px rgba(23, 42, 56, 0.3);
+  color: rgb(15, 15, 19);
+  text-shadow: 0px 2px 2px rgba(240, 226, 244, 0.815),
+     1px 2px 2px rgb(255, 255, 255);
   font-weight: 500;
+  align-content: flex-end;
 }
 
 #moto {
@@ -101,11 +94,11 @@ body {
   /* font-family: "Ultra", serif; */
   color: rgb(219, 219, 223);
   font-size: 2rem;
-  background-color: #0000007a;
-  padding: 0.5rem 1rem;
+  /* background-color: #0000007a; */
+  padding: 1rem 0;
   z-index: 10;
   font-weight: 500;
-  text-shadow: 1px 0px 2px rgba(16, 15, 16, 1);
+  text-shadow: 1px 0px 2px rgb(41, 3, 91);
   margin: 3rem 0 0;
 }
 

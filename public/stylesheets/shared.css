@@ -96,7 +96,6 @@ nav {
 #brand-name {
   color: rgba(255, 250, 240, 0.9);
   /* font-family: 'Albril Fatface', cursive; */
-  font-family: "Esteban";
   font-family: "Titan One", cursive;
   /* font-family: 'Chivo', sans-serif; */
   /* font-family: 'Poppins', sans-serif; */
@@ -299,7 +298,7 @@ hk-shadow {
 
 .tv {
   letter-spacing: 0.2rem;
-  color: rgb(191, 17, 235);
+  color: rgb(53, 3, 97);
 }
 
 #vimeo-content {
@@ -487,17 +486,20 @@ hk-shadow {
   background-color: white;
   box-shadow: rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px, rgba(17, 17, 26, 0.1) 0px 24px 80px;
 }
+.edu-m{
+  font-family: "Chivo", sans-serif;
+  font-size: 3rem;
+  padding: 1rem;
+  font-weight: 900; 
+}
 .footer-hk {
-  color: rgba(109, 12, 148, 0.993);
+  color: rgba(56, 5, 168, 0.993);
 }
 
 #footer {
   /* text-align: center; */
   color: #b9d5e2;
-  background: #141E30;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #243B55, #141E30);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #243B55, #141E30); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  
+  background: #0f0622;  /* fallback for old browsers */
   min-height: fit-content;
   /* background-color: #E1DDE4; */
 
@@ -590,7 +592,7 @@ hk-shadow {
 }
 
 #send-mail:hover {
-  color: #e9c707;
+  color: #7c65eedd;
   text-decoration: none;
 }
 
@@ -615,12 +617,11 @@ hk-shadow {
 }
 
 .footer-links-header {
-  color: rgba(22, 145, 246, 0.925);
-  text-shadow: 1px 1px 0px rgb(58, 6, 100);
+  color: rgba(79, 94, 235, 0.856);
+  text-shadow: 1px 1px 0px rgb(255, 255, 255);
   font-size: 1.3rem;
   /* text-transform: uppercase; */
   font-family: "Chivo", sans-serif;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.13rem;
@@ -633,12 +634,11 @@ hk-shadow {
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   padding: 0.5rem 0;
   margin: 1.5rem 0;
-  transition: all 0.5s;
+  transition: all 0.3s;
 }
 
 .useful-links:hover {
-  border-bottom: 2px solid rgb(43, 101, 226);
-  color: #2ac7fc;
+  color: #4f3be8;
 }
 
 /* social media */
@@ -789,12 +789,9 @@ hk-shadow {
 
 .made-by {
   width: 100%;
+  border-top: 2px solid white;
   margin: 0;
-  background: #6441A5;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #2a0845, #6441A5);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #2a0845, #6441A5); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-   
-
+  background: #09080a;  /* fallback for old browsers */
   font-family: Georgia, "Times New Roman", Times, serif;
   color: rgba(255, 255, 255, 0.815);
 }

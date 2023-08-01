@@ -14,14 +14,14 @@ body {
 }
 
 .bac-banner {
-  background: url(https://scholarshipowl.com/blog/wp-content/uploads/2019/11/40868452_s.jpg) no-repeat center center fixed;
+  background: url(https://enkoeducation.com/wp-content/uploads/2019/08/0010enko-john-wesley_abidjan_cote-divoire.jpg) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
   background-attachment: fixed;
   background-repeat: no-repeat;
-  height: 50vh;
+  height: 70vh;
   opacity: 1;
   margin-top: 0;
   padding-top: 0;
@@ -56,10 +56,10 @@ body {
 #welcome {
   margin: 3rem 0 2rem 0;
   font-family: "Ultra", serif;
-  font-size: 2.5rem;
+  font-size: 3rem;
   letter-spacing: 0.2rem;
   /* text-transform: uppercase; */
-  text-shadow: 1px 2px 1px rgb(253, 253, 253);
+  text-shadow: 1px 2px 1px rgba(253, 253, 253, 0.928);
   color: rgb(30, 33, 33);
 }
 
@@ -86,7 +86,7 @@ body {
 
 .serie-text {
   display: inline;
-  background-color: rgba(255, 255, 255, 0.497);
+  background-color: rgba(255, 255, 255, 0.077);
   padding: 1rem 0;
 }
 
@@ -100,13 +100,13 @@ body {
 }
 
 .about {
-  color: rgba(26, 11, 50, 0.919);
+  color: rgba(104, 31, 199, 0.919);
   font-weight: 500;
   font-family: Georgia, 'Times New Roman', Times, serif;
   /* text-transform: uppercase; */
   font-size: 1.3rem;
+  padding-bottom: 2rem;
   font-style: italic;
-  padding: 1rem 0;
 }
 
 .course-link {

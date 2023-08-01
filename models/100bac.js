@@ -209,6 +209,11 @@ const subjectSchema = new Schema({
     type: String,
   },
 
+  isScience:{
+    type: Boolean,
+    default: false, 
+  }, 
+
   subjectImageUrl: {
     type: String,
     default: "",

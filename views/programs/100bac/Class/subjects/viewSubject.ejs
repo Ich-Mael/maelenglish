@@ -5,7 +5,7 @@
 
 <!-- Breadcrumbs-->
 <div class="breadcrumb">
-  <a href="/100bac" class="">Acceuil - 100% BAC</a>
+  <a href="/100bac" class="">Acceuil - Afro Easy-School</a>
   <a href="/100bac/class/<%=  schoolClass._id %>" class=""><%=  schoolClass.title %> <%= schoolClass.serie %></a>
   <a href="/100bac" class="active"><%= subject.title %> </a>
 </div>
@@ -16,8 +16,8 @@
 
 <div id="maths-section">
   <div class="chapters">
-    <h3 class="text-warning text-center pt-4">Profitez gratuitement des explications du Cours et Exercices corrigés
-      d'appliation directe du cours</h3>
+    <h3 class="text-warning text-center pt-4">Profitez gratuitement des explications du cours et exercices corrigés
+      d'application directe du cours</h3>
     <p class="instruction-paragraph">
       Prenez le temps de bien suivre les explications dans les vidéos <br> Essayez les exercices
       d'entrainement pour mieux comprendre. <br>
@@ -30,9 +30,9 @@
 <h4 class="text-center mt-4 py-2" style="color: rgb(46, 57, 69); font-style: italic;">Obtenez un Accès Premium en
   s'inscrivant dans nos centres de cours d'appui</h4>
 -->
-
+<% if(subject.isScience){%>
 <!-- Graph Calculator -->
-<h3 class="text-center my-5"> Utilisation de la calcuatrice</h3>
+<h3 class="text-center my-5">Calculatrice en ligne</h3>
 <div class="row">
   <div class="col-md-6 my-2">
     <div class="calc-card d-flex justify-content-center align-items-center flex-column">
@@ -827,7 +827,7 @@
     </div>
   </div>
 </div>
-
+<%}%>
 <!--End Graph Calculator -->
 
 <h3 class="chapter-list"> Liste des chapitres </h3>
@@ -859,7 +859,7 @@
           <!-- Modal  for course details video -->
           <div class="modal fade" id="N<%= chapter._id %>" tabindex="-1" aria-labelledby="exampleModalLabel"
             aria-hidden="true">
-            <div class="modal-dialog modal-xl">
+            <div class="modal-dialog modal-lg">
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="exampleModalLabel">
