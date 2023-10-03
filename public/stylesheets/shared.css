@@ -617,13 +617,14 @@ hk-shadow {
 }
 
 .footer-links-header {
-  color: rgba(79, 94, 235, 0.856);
-  text-shadow: 1px 1px 0px rgb(255, 255, 255);
+  color: rgba(193, 222, 245, 0.856);
+  /* text-shadow: 1px 1px 0px rgb(255, 255, 255); */
   font-size: 1.3rem;
   /* text-transform: uppercase; */
-  font-family: "Chivo", sans-serif;
+  /* font-family: "Chivo", sans-serif; */
+  /* font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; */
   font-weight: 700;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   letter-spacing: 0.13rem;
 }
 
