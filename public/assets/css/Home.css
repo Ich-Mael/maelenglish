@@ -33,12 +33,178 @@ h6 {
   font-family: "Raleway", sans-serif;
 }
 
-.values{
+/* TV Screen */
+
+#tv-container {
+  max-width: 1024px;
+  margin: auto;
+  
+}
+
+#monitor {
+  background: #000;
+  position: relative;
+  border-top: 3px solid #888;
+  margin: 5%;
+  
+  padding: 0.5% 2% 4% 2%;
+  border-radius: 10px;
+  border-bottom-left-radius: 50% 2%;
+  border-bottom-right-radius: 50% 2%;
+  transition: margin-right 1s;
+}
+
+#monitor:after {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: 3%;
+  left: 36%;
+  height: 0.5%;
+  width: 28%;
+  background: #ddd;
+  border-radius: 50%;
+  box-shadow: 0 0 3px 0 white;
+}
+
+#monitorscreen {
+  position: relative;
+  background-color: #777;
+  background-size: cover;
+  background-position: top center;
+  height: 0;
+  padding-bottom: 56.25%;
+  position: relative;
+  overflow: hidden;
+}
+
+.afrohk-text {
+  font-size: 1.2rem;
+  font-family: "Kaushan Script", cursive;
+}
+
+.afrohk {
+  letter-spacing: 0.2rem;
+  color: white;
+  padding: 10px 0;
+  font-size: 1rem;
+}
+
+.tv {
+  letter-spacing: 0.2rem;
+  color: rgb(191, 17, 235);
+  font-size: 1rem;
+}
+
+#vimeo-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  padding: 0;
+}
+
+@media all and (min-width: 560px) {
+  #monitor {
+    -webkit-animation: tvflicker 0.2s infinite alternate;
+    -moz-animation: tvflicker 0.5s infinite alternate;
+    -o-animation: tvflicker 0.5s infinite alternate;
+    animation: tvflicker 0.5s infinite alternate;
+  }
+
+  @-webkit-keyframes tvflicker {
+    0% {
+      box-shadow: 0 0 100px 0 rgba(200, 235, 255, 0.4);
+    }
+
+    100% {
+      box-shadow: 0 0 95px 0 rgba(200, 230, 255, 0.45);
+    }
+  }
+
+  @-moz-keyframes tvflicker {
+    0% {
+      box-shadow: 0 0 100px 0 rgba(225, 235, 255, 0.4);
+    }
+
+    100% {
+      box-shadow: 0 0 60px 0 rgba(200, 220, 255, 0.6);
+    }
+  }
+
+  @-o-keyframes tvflicker {
+    0% {
+      box-shadow: 0 0 100px 0 rgba(225, 235, 255, 0.4);
+    }
+
+    100% {
+      box-shadow: 0 0 60px 0 rgba(200, 220, 255, 0.6);
+    }
+  }
+
+  @keyframes tvflicker {
+    0% {
+      box-shadow: 0 0 100px 0 rgba(225, 235, 255, 0.4);
+    }
+
+    100% {
+      box-shadow: 0 0 60px 0 rgba(200, 220, 255, 0.6);
+    }
+  }
+}
+
+
+#values{
+  font-weight: 900;
+  font-size: 32px;
+  letter-spacing: 1px;
+  padding: 0 0 0 0;
+  color: rgb(228, 220, 241);
+}
+
+.visit-platform-btn{
+  /* margin-left: 30px; */
+  background: rgb(42, 5, 112);
+  color: #fff;
+  border-radius: 4px;
+  border: none;
+  padding: 8px 25px;
+  white-space: nowrap;
+  transition: 0.3s;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-block;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  -webkit-transition: 0.3s;
+  -moz-transition: 0.3s;
+  -ms-transition: 0.3s;
+  -o-transition: 0.3s;
+}
+
+.visit-platform-btn a{
+  color: whitesmoke;
+  transition: all 1ms;
+  -webkit-transition: all 1ms;
+  -moz-transition: all 1ms;
+  -ms-transition: all 1ms;
+  -o-transition: all 1ms;
+}
+
+.visit-platform-btn:hover{
+  background-color: rgb(58, 11, 145);
+}
+
+.platform-title{
   font-weight: 900;
   font-size: 32px;
   letter-spacing: 1px;
   padding: 0 0 1rem 0;
-  color: rgb(208, 185, 254); 
+  color: rgb(42, 5, 112); 
+  margin-bottom: 30px; 
 }
 /*--------------------------------------------------------------
 # Back to top button
@@ -50,7 +216,7 @@ h6 {
   right: 15px;
   bottom: 15px;
   z-index: 996;
-  background: #e03a3c;
+  background: #2f06ab;
   width: 40px;
   height: 40px;
   border-radius: 4px;
@@ -64,7 +230,7 @@ h6 {
 }
 
 .back-to-top:hover {
-  background: #e65d5f;
+  background: #240cab;
   color: #fff;
 }
 
@@ -379,7 +545,7 @@ h6 {
 #hero {
   width: 100%;
   height: 90vh;
-  background: url("../img/hero-bg-4.jpg") top center no-repeat;
+  background: url("../img/hero-bg-6.jpeg") top center no-repeat;
   background-size: cover;
   position: relative;
   padding-top: 82px;
@@ -387,7 +553,7 @@ h6 {
 
 #hero:before {
   content: "";
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.7);
   position: absolute;
   bottom: 0;
   top: 0;
@@ -433,7 +599,7 @@ hero h2 {
 .slogan {
   margin: 1.5rem 0 0;
   font-weight: 900;
-  font-size: 28px;
+  font-size: 20px;
   font-family: system-ui, -apple-system, sans-serif;
   letter-spacing: 1px;
   padding: 0 0 1rem 0;
@@ -583,7 +749,7 @@ section {
 .breadcrumbs ol li + li::before {
   display: inline-block;
   padding-right: 10px;
-  color: #e03a3c;
+  color: #2d0370;
   content: "/";
 }
 
@@ -630,10 +796,10 @@ section {
   padding: 30px 30px 30px 0;
 }
 
-.about .content h3 {
+.about .content h2 {
   font-weight: 700;
-  font-size: 34px;
-  margin-bottom: 30px;
+  font-size: 40px;
+  margin-bottom: 80px;
 }
 
 .about .content p {
@@ -761,6 +927,7 @@ section {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
 }
 
 .tabs .nav-link i {
@@ -775,13 +942,13 @@ section {
 }
 
 .tabs .nav-link:hover {
-  color: #e03a3c;
+  color: #2d0370;
 }
 
 .tabs .nav-link.active {
-  background: #e03a3c;
+  background: #2d0370;
   color: #fff;
-  border-color: #e03a3c;
+  border-color: #2d0370;
 }
 
 @media (max-width: 768px) {
@@ -809,6 +976,8 @@ section {
 .tabs .tab-pane h3 {
   font-weight: 600;
   font-size: 26px;
+  padding: 2rem 0;
+  color: #240cab;
 }
 
 .tabs .tab-pane ul {
@@ -823,7 +992,7 @@ section {
 .tabs .tab-pane ul i {
   font-size: 20px;
   padding-right: 4px;
-  color: #e03a3c;
+  color: #2d0370;
 }
 
 .tabs .tab-pane p:last-child {
