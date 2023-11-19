@@ -154,13 +154,12 @@ h6 {
   }
 }
 
-
-#values{
+.values{
   font-weight: 900;
   font-size: 32px;
   letter-spacing: 1px;
   padding: 0 0 0 0;
-  color: rgb(228, 220, 241);
+  color: rgb(136, 107, 184);
 }
 
 .visit-platform-btn{
@@ -544,8 +543,8 @@ h6 {
 --------------------------------------------------------------*/
 #hero {
   width: 100%;
-  height: 90vh;
-  background: url("../img/hero-bg-6.jpeg") top center no-repeat;
+  height: 100vh;
+  background: url("../img/hero-bg-2.jpg") top center no-repeat;
   background-size: cover;
   position: relative;
   padding-top: 82px;
@@ -553,7 +552,7 @@ h6 {
 
 #hero:before {
   content: "";
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.568);
   position: absolute;
   bottom: 0;
   top: 0;
@@ -563,7 +562,7 @@ h6 {
 
 #hero h1 {
   margin: 0;
-  font-size: 48px;
+  font-size: 100px;
   font-weight: 700;
   color: #fff;
 }
@@ -571,7 +570,7 @@ h6 {
 hero h2 {
   color: #fff;
   margin: 10px 0 0 0;
-  font-size: 36px;
+  font-size: 40px;
   background-size: 100% 15%;
   margin-bottom: 3.5rem;
   background-repeat: repeat-x;
@@ -597,9 +596,9 @@ hero h2 {
 }
 
 .slogan {
-  margin: 1.5rem 0 0;
+  margin: 3rem 0 0;
   font-weight: 900;
-  font-size: 20px;
+  font-size: 30px;
   font-family: system-ui, -apple-system, sans-serif;
   letter-spacing: 1px;
   padding: 0 0 1rem 0;
@@ -638,12 +637,41 @@ hero h2 {
   }
 
   #hero h1 {
-    font-size: 28px;
+    font-size: 70px;
   }
 
   #hero h2 {
     font-size: 18px;
     line-height: 24px;
+  }
+
+  .slogan {
+    margin: 3rem 0 0;
+    font-weight: 900;
+    font-size: 20px;
+  }
+}
+
+
+@media (max-width: 500px) {
+  #hero {
+    text-align: center;
+    padding-top: 58px;
+  }
+
+  #hero h1 {
+    font-size: 50px;
+  }
+
+  #hero h2 {
+    font-size: 18px;
+    line-height: 24px;
+  }
+
+  .slogan {
+    margin: 3rem 0 0;
+    font-weight: 900;
+    font-size: 20px;
   }
 }
 
@@ -651,6 +679,8 @@ hero h2 {
   #hero {
     height: 120vh;
   }
+
+ 
 }
 
 /*--------------------------------------------------------------
@@ -835,19 +865,20 @@ section {
 
 .about .icon-boxes .icon-box i {
   font-size: 40px;
-  color: #793bf4;
+  color: #9b71ef;
   margin-bottom: 10px;
 }
 
-.about .icon-boxes .icon-box h4 {
+.about .icon-boxes .icon-box h5 {
   font-size: 20px;
   font-weight: 700;
   margin: 0 0 10px 0;
+  color: rgba(230, 220, 245, 0.764);
 }
 
 .about .icon-boxes .icon-box p {
   font-size: 15px;
-  color: #848484;
+  color: #cf3b3b;
 }
 
 @media (max-width: 1200px) {
