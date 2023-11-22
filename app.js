@@ -14,10 +14,17 @@ const DateUtil = require("./utilities/date");
 const catchAsync = require("./utilities/catchAsync");
 const ExpressError = require("./utilities/ExpressError");
 
+// models requirements
+
+// News
 const {
     news,
     allNews
 } = require("./models/news");
+
+// Visitors
+const visitor = require("./models/visitors");
+
 
 // Routes requirements
 const userRoutes = require("./routes/user");
@@ -131,6 +138,14 @@ app.get("/", catchAsync(async (req, res) => {
 //     });
 // }));
 
+
+// visitor message routes
+app.post("/visitormessage", catchAsync(async(req, res)=>{
+    const newVisitorMessage = new visitor(req.body.visitor);
+    await newVisitorMessage.save();
+    req.flash('success', 'Votre message a été envoyé avec succès')
+    res.redirect("/");
+}));
 
 // Language Lab  home page
 app.get("/elearning", catchAsync(async (req, res) => {

@@ -311,6 +311,7 @@
     <!-- End Header -->
 
     <!-- ======= Hero Section ======= -->
+    <!-- <%-include('./partials/flash')%> -->
     <section id="hero" class="d-flex align-items-center">
       <div class="container" data-aos="zoom-out" data-aos-delay="100">
         <div class="row mt-5">
@@ -344,7 +345,7 @@
       </div>
     </section>
     <!-- End Hero -->
-
+    
     <main id="main">
       <!-- ======= Clients Section ======= -->
       <section id="clients" class="clients">
@@ -1572,16 +1573,15 @@
 
             <div class="col-lg-6">
               <form
-                action=""
+                action="/visitormessage"
                 method="post"
-                role="form"
-                class="php-email-form"
+                class="msg-form"
               >
                 <div class="row">
                   <div class="col form-group">
                     <input
                       type="text"
-                      name="name"
+                      name="visitor[name]"
                       class="form-control"
                       id="name"
                       placeholder="Votre nom"
@@ -1592,7 +1592,7 @@
                     <input
                       type="email"
                       class="form-control"
-                      name="email"
+                      name="visitor[email]"
                       id="email"
                       placeholder="Votre Email"
                       required
@@ -1603,7 +1603,7 @@
                   <input
                     type="text"
                     class="form-control"
-                    name="subject"
+                    name="visitor[subject]"
                     id="subject"
                     placeholder="objet"
                     required
@@ -1612,15 +1612,15 @@
                 <div class="form-group">
                   <textarea
                     class="form-control"
-                    name="message"
+                    name="visitor[message]"
                     rows="5"
                     placeholder="Message"
                     required
                   ></textarea>
                 </div>
-                <div class="text-center">
-                  <button type="submit">Send Message</button>
-                </div>
+                <!-- <div class="text-center"> -->
+                  <button type="submit">Envoyez le Message</button>
+                <!-- </div> -->
               </form>
             </div>
           </div>
