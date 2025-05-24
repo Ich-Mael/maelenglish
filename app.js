@@ -2,6 +2,7 @@ if (process.env.NODE_ENV !== "production") {
      require("dotenv").config();
 }
 
+
 const moment = require("moment");
 const express = require("express");
 const mongoose = require("mongoose");
@@ -126,7 +127,7 @@ app.use((req, res, next) => {
 
 // Landing page route
 app.get("/", catchAsync(async (req, res) => {
-    res.render("afrohk_home", {
+    res.render("comingsoon", {
     });
 }));
 
