@@ -127,7 +127,7 @@ app.use((req, res, next) => {
 
 // Landing page route
 app.get("/", catchAsync(async (req, res) => {
-    res.render("comingsoon", {
+    res.render("afrohk_home", {
     });
 }));
 
