@@ -131,3 +131,90 @@
       </div>
     </form>
   </section>
+
+  <!-- English Coach Resources -->
+  <section class="container col-md-8 my-5 p-2" style="background-color: rgb(184, 187, 247)">
+    <h3 class="text-center">
+      <i class="bi bi-file-earmark-text"></i>
+      English Coach Resources
+    </h3>
+    <p class="text-center text-muted">Add teaching materials and resources for English coaches</p>
+    <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/coach-resource" method="POST">
+      <div class="card card-body">
+        <div class="mt-2">
+          <div class="col">
+            <label class="form-label" for="resourceTitle">Resource Title</label>
+            <input class="form-control" type="text" name="resource[title]" id="resourceTitle" 
+                   placeholder="e.g., Lesson Plan, Teaching Guide, Answer Key" required />
+          </div>
+
+          <!-- Resource type -->
+          <div class="col">
+            <label class="form-label my-3" for="resourceType">Resource Type</label>
+            <select class="form-select" name="resource[type]" id="resourceType" required>
+              <option value="">-- Select resource type --</option>
+              <option value="Lesson Plan">Lesson Plan</option>
+              <option value="Teaching Guide">Teaching Guide</option>
+              <option value="Answer Key">Answer Key</option>
+              <option value="Presentation Slides">Presentation Slides</option>
+              <option value="Worksheet">Worksheet</option>
+              <option value="Assessment Rubric">Assessment Rubric</option>
+              <option value="Additional Materials">Additional Materials</option>
+            </select>
+          </div>
+
+          <div class="col">
+            <label class="form-label my-3" for="resourceDescription">Description</label>
+            <textarea class="form-control" name="resource[description]" id="resourceDescription" 
+                      rows="3" placeholder="Brief description of this resource"></textarea>
+          </div>
+
+          <div class="col">
+            <label class="form-label my-3" for="resourceLink">Resource Link</label>
+            <input class="form-control" type="url" name="resource[link]" id="resourceLink" 
+                   placeholder="Enter link to Google Drive, Dropbox, or other resource" required />
+            <small class="form-text text-muted">Provide a shareable link to the resource file</small>
+          </div>
+        </div>
+
+        <button class="btn btn-primary mx-2 my-3" type="submit">
+          <i class="bi bi-plus-circle"></i>
+          Add Coach Resource
+        </button>
+      </div>
+    </form>
+
+    <!-- Display existing coach resources -->
+    <% if (courseModule.coachResources && courseModule.coachResources.length > 0) { %>
+      <div class="card card-body mt-4" style="background-color: #f8f9fa;">
+        <h5 class="mb-3">
+          <i class="bi bi-folder2-open"></i>
+          Existing Coach Resources
+        </h5>
+        <div class="list-group">
+          <% courseModule.coachResources.forEach(resource => { %>
+            <div class="list-group-item d-flex justify-content-between align-items-start">
+              <div class="flex-grow-1">
+                <h6 class="mb-1"><%= resource.title %></h6>
+                <p class="mb-1 text-muted"><small><%= resource.type %></small></p>
+                <% if (resource.description) { %>
+                  <p class="mb-1"><small><%= resource.description %></small></p>
+                <% } %>
+                <a href="<%= resource.link %>" target="_blank" class="btn btn-sm btn-outline-primary mt-2">
+                  <i class="bi bi-box-arrow-up-right"></i>
+                  Open Resource
+                </a>
+              </div>
+              <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/coach-resource/<%= resource._id %>?_method=DELETE" 
+                    method="POST" class="ms-3"
+                    onsubmit="return confirm('Are you sure you want to delete this resource?');">
+                <button type="submit" class="btn btn-sm btn-outline-danger">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </form>
+            </div>
+          <% }); %>
+        </div>
+      </div>
+    <% } %>
+  </section>

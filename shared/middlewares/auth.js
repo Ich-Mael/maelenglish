@@ -15,6 +15,18 @@ module.exports.isVerified = (req, res, next) => {
     }
 };
 
+module.exports.isAdmin = (req, res, next) => {
+    if (!req.isAuthenticated()) {
+        req.flash('error', 'Vous devez d\'abord vous connecter!');
+        return res.redirect('/login');
+    }
+    if (req.user.role === 'admin' || req.user.role === 'super-admin') {
+        return next();
+    }
+    req.flash('error', 'Vous n\'avez pas les permissions nécessaires');
+    res.redirect('/');
+};
+
 module.exports.checkRoles = roles => (req, res, next) =>
     !roles.includes(req.user.role) ?
     res.render('noAccess') :

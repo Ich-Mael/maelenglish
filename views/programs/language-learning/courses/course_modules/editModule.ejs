@@ -20,34 +20,65 @@
     font-family: var(--font-family);
   }
 
+  /* Modern Gradient Header */
   .page-header {
-    background: white;
-    padding: 2rem 0;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 2rem;
+    background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+    color: white;
+    padding: 7rem 0 5rem 0; /* Increased top padding to fix navbar overlap */
+    margin-bottom: -3rem; /* Overlap effect */
+    position: relative;
+    z-index: 1;
   }
 
   .breadcrumb-item a {
-    color: var(--primary-color);
+    color: rgba(255, 255, 255, 0.8);
     text-decoration: none;
+    font-weight: 500;
   }
   
   .breadcrumb-item.active {
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .breadcrumb-item + .breadcrumb-item::before {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .page-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    font-weight: 300;
+  }
+
+  /* Content Cards */
+  .content-wrapper {
+    position: relative;
+    z-index: 2;
+    padding-bottom: 3rem;
   }
 
   .card-premium {
     background: white;
-    border: 1px solid rgba(0,0,0,0.05);
-    box-shadow: var(--shadow-sm);
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08); /* Stronger shadow for overlap */
     border-radius: var(--radius-md);
     padding: 2rem;
     margin-bottom: 2rem;
-    transition: box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
   
   .card-premium:hover {
-    box-shadow: var(--shadow-md);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
   }
 
   .card-title {
@@ -57,7 +88,9 @@
     margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f0f0f0;
   }
 
   .form-label {
@@ -65,46 +98,82 @@
     color: var(--text-dark);
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   .form-control, .form-select {
     border-radius: 8px;
-    border: 1px solid #dee2e6;
+    border: 2px solid #f0f0f0;
     padding: 0.75rem 1rem;
     transition: all 0.2s;
+    background-color: #fcfcfc;
+    font-size: 0.95rem;
   }
 
   .form-control:focus, .form-select:focus {
     border-color: var(--primary-color);
+    background-color: white;
     box-shadow: 0 0 0 4px var(--primary-light);
   }
 
+  .mytextarea {
+    border-radius: 8px;
+  }
+
+  /* Buttons */
   .btn-primary-custom {
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, #5d06ba 0%, #4a0496 100%);
     border: none;
-    padding: 0.75rem 1.5rem;
+    padding: 0.8rem 1.5rem;
     border-radius: 8px;
     font-weight: 600;
     color: white;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
     width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 15px rgba(93, 6, 186, 0.2);
   }
 
   .btn-primary-custom:hover {
-    background-color: var(--primary-dark);
     transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(93, 6, 186, 0.3);
+    color: white;
   }
 
+  /* Icons Badge */
   .badge-section {
     background: var(--primary-light);
     color: var(--primary-color);
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1.25rem;
+    box-shadow: 0 2px 5px rgba(93, 6, 186, 0.1);
+  }
+
+  /* Specific Badge Colors */
+  .badge-video { background: #e0f2fe; color: #0284c7; }
+  .badge-practice { background: #dcfce7; color: #16a34a; }
+  .badge-resource { background: #f3e8ff; color: #7e22ce; }
+
+  .btn-video { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); box-shadow: 0 4px 15px rgba(2, 132, 199, 0.2); }
+  .btn-practice { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); box-shadow: 0 4px 15px rgba(22, 163, 74, 0.2); }
+  .btn-resource { background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%); box-shadow: 0 4px 15px rgba(126, 34, 206, 0.2); }
+
+  /* Interactive List Items */
+  .list-group-item {
+    transition: background-color 0.2s;
+    border-color: #f0f0f0;
+  }
+  .list-group-item:hover {
+    background-color: #fcfcfc;
   }
 </style>
 
@@ -112,28 +181,40 @@
 <div class="page-header">
   <div class="container">
     <nav aria-label="breadcrumb">
-      <ol class="breadcrumb mb-2">
+      <ol class="breadcrumb mb-3">
         <li class="breadcrumb-item"><a href="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>">Course Dashboard</a></li>
         <li class="breadcrumb-item"><a href="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules">Modules</a></li>
         <li class="breadcrumb-item active" aria-current="page">Edit Module</li>
       </ol>
     </nav>
-    <h1 class="h3 fw-bold text-dark mb-0">Edit Module: <span class="text-muted"><%= courseModule.title %></span></h1>
+    <div class="page-title">
+      <i class="bi bi-pencil-square"></i>
+      Edit Module
+    </div>
+    <div class="page-subtitle">
+      <%= courseModule.title %>
+    </div>
   </div>
 </div>
 
-<div class="container">
+<div class="container content-wrapper">
   <div class="row g-4">
     <!-- Main Edit Form -->
-    <div class="col-lg-8">
+    <div class="col-12">
       <div class="card-premium">
-        <div class="card-title">
-          <div class="badge-section"><i class="bi bi-pencil-square"></i></div>
-          Module Details
+        <div class="d-flex justify-content-between align-items-center mb-0 pb-3 border-bottom">
+          <div class="card-title mb-0 border-0 pb-0">
+            <div class="badge-section"><i class="bi bi-sliders"></i></div>
+            Module Details
+          </div>
+          <button class="btn btn-sm btn-outline-primary rounded-circle" type="button" data-bs-toggle="collapse" data-bs-target="#moduleDetailsForm" aria-expanded="true" aria-controls="moduleDetailsForm" style="width: 30px; height: 30px; padding: 0;">
+            <i class="bi bi-chevron-down"></i>
+          </button>
         </div>
         
-        <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>?_method=PUT" method="POST">
-          <div class="row g-3">
+        <div class="collapse show" id="moduleDetailsForm">
+          <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>?_method=PUT" method="POST">
+            <div class="row g-3 pt-4">
             <div class="col-md-8">
               <label class="form-label" for="title">Module Title</label>
               <input class="form-control" type="text" id="title" name="module[title]" value="<%= courseModule.title %>" required />
@@ -159,92 +240,227 @@
               <textarea class="form-control mytextarea" id="moreDetails" name="module[moreDetails]" rows="3" required><%= courseModule.moreDetails %></textarea>
             </div>
 
-            <div class="col-12 mt-4">
-              <button type="submit" class="btn-primary-custom">
-                <i class="bi bi-save me-2"></i> Update Module Details
+            <div class="col-12 mt-4 pt-3 border-top">
+              <button type="submit" class="btn-primary-custom" style="padding: 1rem 2rem; font-size: 1.1rem;">
+                <i class="bi bi-check-circle-fill"></i> Save Changes
               </button>
             </div>
           </div>
         </form>
       </div>
+      </div>
     </div>
 
     <!-- Sidebar: Add Items -->
-    <div class="col-lg-4">
+    <div class="col-12">
       <!-- Add Video Card -->
       <div class="card-premium">
-        <div class="card-title">
-          <div class="badge-section" style="background:#e0f2fe; color:#0284c7;"><i class="bi bi-camera-video"></i></div>
-          Add Video Lesson
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="card-title mb-0 border-0 pb-0">
+            <div class="badge-section badge-video"><i class="bi bi-camera-video"></i></div>
+            Add Video
+          </div>
+          <button class="btn btn-sm btn-outline-primary rounded-circle" type="button" data-bs-toggle="collapse" data-bs-target="#addVideoForm" aria-expanded="false" aria-controls="addVideoForm" style="width: 30px; height: 30px; padding: 0;">
+            <i class="bi bi-chevron-down"></i>
+          </button>
         </div>
         
-        <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/engcoursevideo" method="POST">
-          <div class="mb-3">
-            <label class="form-label">Lesson Title</label>
-            <input class="form-control" type="text" name="engVideo[title]" placeholder="e.g. Introduction to Verbs" required />
-          </div>
+        <div class="collapse" id="addVideoForm">
+          <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/engcoursevideo" method="POST">
+            <div class="mb-3">
+              <label class="form-label">Lesson Title</label>
+              <input class="form-control" type="text" name="engVideo[title]" placeholder="e.g. Introduction to Verbs" required />
+            </div>
 
-          <div class="mb-3">
-            <label class="form-label">Lesson Type</label>
-            <select class="form-select" name="engVideo[lessonType]" required>
-              <option value="English lesson" selected>English lesson</option>
-              <option value="Grammar">Grammar</option>
-              <option value="Vocabulary">Vocabulary</option>
-              <option value="Pronunciation">Pronunciation</option>
-              <option value="Writing">Writing</option>
-            </select>
-          </div>
+            <div class="mb-3">
+              <label class="form-label">Lesson Type</label>
+              <select class="form-select" name="engVideo[lessonType]" required>
+                <option value="English lesson" selected>English lesson</option>
+                <option value="Grammar">Grammar</option>
+                <option value="Vocabulary">Vocabulary</option>
+                <option value="Pronunciation">Pronunciation</option>
+                <option value="Writing">Writing</option>
+              </select>
+            </div>
 
-          <div class="mb-3">
-            <label class="form-label">Thumbnail Image URL</label>
-            <input class="form-control" type="text" name="engVideo[lessonImage]" placeholder="https://..." required />
-          </div>
+            <div class="mb-3">
+              <label class="form-label">Thumbnail Image URL</label>
+              <input class="form-control" type="text" name="engVideo[lessonImage]" placeholder="https://..." required />
+            </div>
 
-          <div class="mb-3">
-            <label class="form-label">Video Link (Embed)</label>
-            <input class="form-control" type="text" name="engVideo[engCourseLink]" placeholder="Vimeo/YouTube Embed URL" required />
-          </div>
+            <div class="mb-3">
+              <label class="form-label">Video Link (Embed)</label>
+              <input class="form-control" type="text" name="engVideo[engCourseLink]" placeholder="Vimeo/YouTube Embed URL" required />
+            </div>
 
-          <button class="btn-primary-custom" type="submit" style="background-color: #0284c7;">
-            <i class="bi bi-plus-circle me-2"></i> Add Video
-          </button>
-        </form>
+            <button class="btn-primary-custom btn-video" type="submit">
+              <i class="bi bi-plus-circle-fill"></i> Add Video
+            </button>
+          </form>
+        </div>
       </div>
 
       <!-- Add Practice Card -->
       <div class="card-premium">
-        <div class="card-title">
-          <div class="badge-section" style="background:#dcfce7; color:#16a34a;"><i class="bi bi-puzzle"></i></div>
-          Add Practice
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="card-title mb-0 border-0 pb-0">
+            <div class="badge-section badge-practice"><i class="bi bi-puzzle"></i></div>
+            Add Practice
+          </div>
+          <button class="btn btn-sm btn-outline-success rounded-circle" type="button" data-bs-toggle="collapse" data-bs-target="#addPracticeForm" aria-expanded="false" aria-controls="addPracticeForm" style="width: 30px; height: 30px; padding: 0;">
+            <i class="bi bi-chevron-down"></i>
+          </button>
         </div>
         
-        <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/practice" method="POST">
-          <div class="mb-3">
-            <label class="form-label">Assignment Title</label>
-            <input class="form-control" type="text" name="practice[title]" placeholder="e.g. Quiz 1" required />
-          </div>
+        <div class="collapse" id="addPracticeForm">
+          <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/practice" method="POST">
+            <div class="mb-3">
+              <label class="form-label">Assignment Title</label>
+              <input class="form-control" type="text" name="practice[title]" placeholder="e.g. Quiz 1" required />
+            </div>
 
-          <div class="mb-3">
-            <label class="form-label">Category</label>
-            <select class="form-select" name="practice[category]" required>
-              <option value="English lesson" selected>English Exercise</option>
-              <option value="Grammar">Grammar</option>
-              <option value="Vocabulary">Vocabulary</option>
-              <option value="Listening">Listening</option>
-              <option value="Reading">Reading</option>
-              <option value="Writing">Writing</option>
-            </select>
-          </div>
+            <div class="mb-3">
+              <label class="form-label">Category</label>
+              <select class="form-select" name="practice[category]" required>
+                <option value="English lesson" selected>English Exercise</option>
+                <option value="Grammar">Grammar</option>
+                <option value="Vocabulary">Vocabulary</option>
+                <option value="Listening">Listening</option>
+                <option value="Reading">Reading</option>
+                <option value="Writing">Writing</option>
+              </select>
+            </div>
 
-          <div class="mb-3">
-            <label class="form-label">Assignment Links (Comma separated)</label>
-            <input class="form-control" type="text" name="practice[practice_links]" placeholder="Link1, Link2..." required />
-          </div>
+            <div class="mb-3">
+              <label class="form-label">Assignment Links (Comma separated)</label>
+              <input class="form-control" type="text" name="practice[practice_links]" placeholder="Link1, Link2..." required />
+            </div>
 
-          <button class="btn-primary-custom" type="submit" style="background-color: #16a34a;">
-            <i class="bi bi-plus-circle me-2"></i> Add Practice
+            <button class="btn-primary-custom btn-practice" type="submit">
+              <i class="bi bi-plus-circle-fill"></i> Add Practice
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Coach Resources - Full Width Section -->
+    <div class="col-12">
+      <div class="card-premium">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+          <div class="card-title mb-0 border-0 pb-0">
+            <div class="badge-section badge-resource"><i class="bi bi-mortarboard-fill"></i></div>
+            English Coach Resources
+          </div>
+          <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#addResourceForm" aria-expanded="false" aria-controls="addResourceForm">
+            <i class="bi bi-plus-lg"></i> Add New Resource
           </button>
-        </form>
+        </div>
+
+        <!-- Add Resource Form (Collapsible) -->
+        <div class="collapse mb-4" id="addResourceForm">
+          <div class="card card-body bg-light border-0">
+            <h5 class="mb-3 text-primary fw-bold">New Resource Details</h5>
+            <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/coach-resource" method="POST">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Resource Title</label>
+                  <input class="form-control" type="text" name="resource[title]" placeholder="e.g. Lesson Plan" required />
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Resource Type</label>
+                  <select class="form-select" name="resource[type]" required>
+                    <option value="">-- Select Type --</option>
+                    <option value="Lesson Plan">Lesson Plan</option>
+                    <option value="Teaching Guide">Teaching Guide</option>
+                    <option value="Answer Key">Answer Key</option>
+                    <option value="Presentation Slides">Presentation Slides</option>
+                    <option value="Worksheet">Worksheet</option>
+                    <option value="Assessment Rubric">Assessment Rubric</option>
+                    <option value="Additional Materials">Additional Materials</option>
+                  </select>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label">Description (Instructions for Coach)</label>
+                  <!-- Added 'mytextarea' class for rich text editor -->
+                  <textarea class="form-control mytextarea" name="resource[description]" rows="4" placeholder="Detailed instructions or description..."></textarea>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label">Resource Link</label>
+                  <input class="form-control" type="url" name="resource[link]" placeholder="https://..." required />
+                  <div class="form-text">Direct link to the resource (Google Drive, Dropbox, etc.)</div>
+                </div>
+
+                <div class="col-12 text-end">
+                  <button class="btn-primary-custom btn-resource" type="submit" style="width: auto; padding-left: 2rem; padding-right: 2rem;">
+                    <i class="bi bi-plus-circle-fill"></i> Save Resource
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+        <!-- Existing Resources List -->
+        <% if (courseModule.coachResources && courseModule.coachResources.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col" style="width: 25%">Title</th>
+                  <th scope="col" style="width: 15%">Type</th>
+                  <th scope="col" style="width: 40%">Description</th>
+                  <th scope="col" style="width: 20%">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% courseModule.coachResources.forEach(resource => { %>
+                  <tr>
+                    <td>
+                      <div class="fw-bold"><%= resource.title %></div>
+                    </td>
+                    <td>
+                      <span class="badge bg-light text-dark border"><%= resource.type %></span>
+                    </td>
+                    <td>
+                      <% if (resource.description) { %>
+                        <div class="text-muted small text-truncate" style="max-width: 300px;">
+                          <%- resource.description %> <!-- Render HTML from rich text -->
+                        </div>
+                      <% } else { %>
+                        <span class="text-muted fst-italic">No description</span>
+                      <% } %>
+                    </td>
+                    <td>
+                      <div class="d-flex gap-2">
+                        <a href="<%= resource.link %>" target="_blank" class="btn btn-sm btn-outline-primary">
+                          <i class="bi bi-box-arrow-up-right"></i> Open
+                        </a>
+                        <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/coach-resource/<%= resource._id %>?_method=DELETE" 
+                              method="POST" 
+                              onsubmit="return confirm('Are you sure you want to delete this resource?');"
+                              style="display: inline;">
+                          <button type="submit" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+            <div class="text-center py-5 text-muted bg-light rounded-3 mt-2">
+                <i class="bi bi-folder-x fs-1 d-block mb-2 opacity-50"></i>
+                <p class="mb-0">No resources added yet.</p>
+                <small>Click "Add New Resource" to get started</small>
+            </div>
+        <% } %>
       </div>
     </div>
   </div>

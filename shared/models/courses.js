@@ -144,6 +144,29 @@ const moduleSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "EngCourseVideo",
   }, ],
+
+  coachResources: [{
+    title: {
+      type: String,
+      required: true
+    },
+    type: {
+      type: String,
+      enum: ["Lesson Plan", "Teaching Guide", "Answer Key", "Presentation Slides", "Worksheet", "Assessment Rubric", "Additional Materials"],
+      required: true
+    },
+    description: {
+      type: String
+    },
+    link: {
+      type: String,
+      required: true
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }
+  }]
 });
 
 /*===================================

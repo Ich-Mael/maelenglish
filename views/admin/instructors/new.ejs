@@ -1,0 +1,277 @@
+<%- layout('layouts/main') %>
+
+<style>
+  .instructor-create-page {
+    margin-top: 100px;
+    padding-bottom: 3rem;
+    background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+    min-height: calc(100vh - 100px);
+  }
+  
+  .page-header {
+    background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 40px rgba(93, 6, 186, 0.3);
+  }
+  
+  .page-header h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .btn-back {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .btn-back:hover {
+    background: white;
+    color: #5d06ba;
+    text-decoration: none;
+  }
+  
+  .form-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+  
+  .form-section {
+    margin-bottom: 2rem;
+  }
+  
+  .form-section:last-child {
+    margin-bottom: 0;
+  }
+  
+  .form-label {
+    font-weight: 600;
+    color: #2d0370;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  
+  .required {
+    color: #e74c3c;
+  }
+  
+  .form-control, .form-select {
+    padding: 0.875rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+  
+  .form-control:focus, .form-select:focus {
+    border-color: #5d06ba;
+    box-shadow: 0 0 0 3px rgba(93, 6, 186, 0.1);
+    outline: none;
+  }
+  
+  .form-text {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 0.5rem;
+    display: block;
+  }
+  
+  .checkbox-container {
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    background: #f8f9fa;
+  }
+  
+  .form-check {
+    padding: 0.75rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+  
+  .form-check:hover {
+    background: rgba(93, 6, 186, 0.05);
+  }
+  
+  .form-check-input {
+    width: 20px;
+    height: 20px;
+    margin-top: 0.15rem;
+    cursor: pointer;
+  }
+  
+  .form-check-input:checked {
+    background-color: #5d06ba;
+    border-color: #5d06ba;
+  }
+  
+  .form-check-label {
+    cursor: pointer;
+    margin-left: 0.5rem;
+    font-weight: 500;
+  }
+  
+  .form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding-top: 2rem;
+    border-top: 2px solid #f0f0f0;
+    margin-top: 2rem;
+  }
+  
+  .btn {
+    padding: 0.875rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .btn-primary {
+    background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(93, 6, 186, 0.3);
+    color: white;
+    text-decoration: none;
+  }
+  
+  .btn-secondary {
+    background: #e0e0e0;
+    color: #333;
+  }
+  
+  .btn-secondary:hover {
+    background: #d0d0d0;
+    text-decoration: none;
+  }
+  
+  @media (max-width: 768px) {
+    .form-actions {
+      flex-direction: column;
+    }
+    
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+
+<div class="instructor-create-page">
+  <div class="container px-4">
+    <a href="/programs/language-learning/admin/instructors" class="btn-back">
+      <i class="bi bi-arrow-left"></i>
+      Back to Coaches
+    </a>
+    
+    <div class="page-header">
+      <h2>
+        <i class="bi bi-person-plus"></i>
+        Add New English Coach
+      </h2>
+      <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Create a new coach profile from an existing user account</p>
+    </div>
+
+    <div class="form-card">
+      <form action="/programs/language-learning/admin/instructors" method="POST">
+        <div class="form-section">
+          <label for="userId" class="form-label">
+            Select User <span class="required">*</span>
+          </label>
+          <select name="userId" id="userId" class="form-select" required>
+            <option value="">-- Select a user with english-coach role --</option>
+            <% availableUsers.forEach(user => { %>
+              <option value="<%= user._id %>">
+                <%= user.name %> <%= user.surname %> (<%= user.email %>)
+              </option>
+            <% }); %>
+          </select>
+          <small class="form-text text-muted">
+            Only users with "english-coach" role are shown. The user's name and email will be used for the coach profile.
+          </small>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Course Specializations</label>
+          <div class="checkbox-container">
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" name="specializations" value="General English (A1-C1)" id="spec1">
+              <label class="form-check-label" for="spec1">General English (A1-C1)</label>
+            </div>
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" name="specializations" value="TOEFL" id="spec2">
+              <label class="form-check-label" for="spec2">TOEFL</label>
+            </div>
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" name="specializations" value="IELTS" id="spec3">
+              <label class="form-check-label" for="spec3">IELTS</label>
+            </div>
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" name="specializations" value="TOEIC" id="spec4">
+              <label class="form-check-label" for="spec4">TOEIC</label>
+            </div>
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" name="specializations" value="Medical English" id="spec5">
+              <label class="form-check-label" for="spec5">Medical English</label>
+            </div>
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" name="specializations" value="Aviation English" id="spec6">
+              <label class="form-check-label" for="spec6">Aviation English</label>
+            </div>
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" name="specializations" value="Business English" id="spec7">
+              <label class="form-check-label" for="spec7">Business English</label>
+            </div>
+          </div>
+          <small class="form-text text-muted">Select all specializations that apply</small>
+        </div>
+
+        <div class="form-section">
+          <label for="bio" class="form-label">Bio</label>
+          <textarea name="bio" id="bio" class="form-control" rows="5" 
+                    placeholder="Brief description of the coach's background and expertise"></textarea>
+          <small class="form-text text-muted">Provide a brief professional biography</small>
+        </div>
+
+        <div class="form-actions">
+          <a href="/programs/language-learning/admin/instructors" class="btn btn-secondary">
+            <i class="bi bi-x-circle"></i>
+            Cancel
+          </a>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-circle"></i>
+            Create Coach Profile
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

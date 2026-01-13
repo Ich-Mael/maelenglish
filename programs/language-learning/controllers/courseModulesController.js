@@ -153,3 +153,44 @@ module.exports.createPractice = catchAsync(async (req, res) => {
   res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${req.params.course_id}/modules`);
 });
 
+// Coach Resources
+module.exports.addCoachResource = catchAsync(async (req, res) => {
+  const courseModule = await Module.findById(req.params.courseModule_id);
+  
+  if (!courseModule) {
+    req.flash("error", "Module non trouvé");
+    return res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${req.params.course_id}/modules`);
+  }
+
+  const { title, type, description, link } = req.body.resource;
+  
+  courseModule.coachResources.push({
+    title,
+    type,
+    description,
+    link
+  });
+  
+  await courseModule.save();
+  
+  req.flash("success", "Ressource pour coach ajoutée avec succès");
+  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${req.params.course_id}/modules/${req.params.courseModule_id}/edit`);
+});
+
+module.exports.deleteCoachResource = catchAsync(async (req, res) => {
+  const courseModule = await Module.findById(req.params.courseModule_id);
+  
+  if (!courseModule) {
+    req.flash("error", "Module non trouvé");
+    return res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${req.params.course_id}/modules`);
+  }
+  
+  courseModule.coachResources = courseModule.coachResources.filter(
+    resource => resource._id.toString() !== req.params.resource_id
+  );
+  
+  await courseModule.save();
+  
+  req.flash("success", "Ressource supprimée avec succès");
+  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${req.params.course_id}/modules/${req.params.courseModule_id}/edit`);
+});

@@ -100,5 +100,14 @@ router.get('/:course_id/evaluations/:evaluation', isLoggedIn, isVerified, checkC
     res.send("Evaluation page - To be implemented");
 }));
 
+/*
+ ************************* COACH RESOURCES ROUTES *******************************************
+ */
+// Add coach resource to a module
+router.post('/admindashboard/:course_id/modules/:courseModule_id/coach-resource', isLoggedIn, isVerified, checkRoles("admin"), CourseModules.addCoachResource);
+
+// Delete coach resource from a module
+router.delete('/admindashboard/:course_id/modules/:courseModule_id/coach-resource/:resource_id', isLoggedIn, isVerified, checkRoles("admin"), CourseModules.deleteCoachResource);
+
 module.exports = router;
 
