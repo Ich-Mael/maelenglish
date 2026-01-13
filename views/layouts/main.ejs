@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+  <title><%= typeof title !== 'undefined' ? title : 'Afro House of Knowledge' %></title>
+  <meta content="Afro House of Knowledge - Plateforme éducative en ligne proposant des formations d'excellence académique, accompagnement scolaire et apprentissage des langues. Le savoir sans barrières. Découvrir, Développer, Devenir." name="description" />
+  <meta content="" name="keywords" />
+
+  <!-- Favicons -->
+  <link href="/assets/img/afrohk_logo_2.png" rel="icon"/>
+
+  <!-- Font awesome -->
+  <script src="https://kit.fontawesome.com/9ecb022092.js"></script>
+
+  <!-- Google Fonts - Optimized Font Stack -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Open+Sans:wght@300;400;600&family=Kaushan+Script&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="/assets/vendor/aos/aos.css" rel="stylesheet" />
+  <link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet" />
+  <link href="/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet" />
+  <link href="/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet" />
+  <link href="/assets/vendor/remixicon/remixicon.css" rel="stylesheet" />
+  <link href="/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet" />
+
+  <!-- Template Main CSS File -->
+  <link href="/assets/css/Home.css" rel="stylesheet" />
+  <link href="/assets/css/navbar.css" rel="stylesheet" />
+  <link href="/assets/css/hero-redesign.css" rel="stylesheet" />
+  <link href="/assets/css/contact-redesign.css" rel="stylesheet" />
+  <link href="/assets/css/gallery-redesign.css" rel="stylesheet" />
+  <link href="/assets/css/calculators.css" rel="stylesheet" />
+
+  <!-- Desmos Calculator API -->
+  <script src="https://www.desmos.com/api/v1.5/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6&lang=fr"></script>
+
+  <%- typeof headContent !== 'undefined' ? headContent : '' %>
+</head>
+
+<body>
+  <!-- Header/Navbar -->
+  <% if(typeof isProgramPage !== 'undefined' && isProgramPage) { %>
+    <%-include('../partials/program-navbar')%>
+  <% } else { %>
+    <%-include('../partials/navbar')%>
+  <% } %>
+  
+  <!-- Flash Messages -->
+  <%-include('../partials/flash')%>
+  
+  <!-- Main Content -->
+  <main id="main">
+    <%- body %>
+  </main>
+  
+  <!-- Footer -->
+  <%-include('../partials/footer')%>
+  
+  <!-- Back to top button -->
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center">
+    <i class="bi bi-arrow-up-short"></i>
+  </a>
+  
+  <!-- Vendor JS Files -->
+  <script src="/assets/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="/assets/vendor/aos/aos.js"></script>
+  <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="/assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+  <script src="/assets/vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="/assets/vendor/php-email-form/validate.js"></script>
+  
+  <!-- Template Main JS File -->
+  <script src="/assets/js/main.js"></script>
+  
+  <!-- Calculators Initialization -->
+  <script src="/assets/js/calculators/desmos-init.js"></script>
+  
+  <%- typeof scripts !== 'undefined' ? scripts : '' %>
+</body>
+
+</html>
+

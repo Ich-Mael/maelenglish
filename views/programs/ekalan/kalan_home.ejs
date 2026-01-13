@@ -1,0 +1,659 @@
+<% layout('layouts/main') %>
+
+<% headContent = `
+  <style>
+    /* Enhanced Kalan Home Styles */
+    .kalan-hero {
+      min-height: 85vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* Fix: Ensure hero overlay doesn't block clicks */
+    .kalan-hero::before,
+    #hero::before {
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    /* Ensure content is above overlay */
+    .kalan-hero .container {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .kalan-hero .hero-content {
+      position: relative;
+      z-index: 3;
+    }
+    
+    /* Ensure buttons are clickable */
+    .btn-hero-primary,
+    .btn-hero-secondary {
+      position: relative;
+      z-index: 4;
+      cursor: pointer;
+    }
+    
+    .kalan-hero .hero-content h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+      color: #fff;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .kalan-hero .hero-subtitle {
+      font-size: 1.4rem;
+      color: rgba(255, 255, 255, 0.95);
+      margin-bottom: 2.5rem;
+      font-weight: 400;
+      line-height: 1.6;
+    }
+    
+    .kalan-hero .hero-highlight {
+      color: #FFD700;
+      font-weight: 700;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+    
+    .hero-cta-wrapper {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .btn-hero-primary {
+      padding: 16px 40px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 50px;
+      background: linear-gradient(135deg, #5d09cb 0%, #7c3aed 100%);
+      border: 2px solid transparent;
+      color: #fff;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 25px rgba(93, 9, 203, 0.4);
+      display: inline-block;
+    }
+    
+    .btn-hero-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(93, 9, 203, 0.6);
+      background: linear-gradient(135deg, #7c3aed 0%, #5d09cb 100%);
+      color: #fff;
+    }
+    
+    .btn-hero-secondary {
+      padding: 16px 40px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 50px;
+      background: transparent;
+      border: 2px solid #fff;
+      color: #fff;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+    
+    .btn-hero-secondary:hover {
+      background: #fff;
+      color: #5d09cb;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
+    }
+    
+    /* Video Modal Styles */
+    .video-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(5px);
+      z-index: 9998;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .video-modal-overlay.active {
+      display: block;
+      opacity: 1;
+    }
+    
+    .video-modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      width: 90%;
+      max-width: 900px;
+      background: #ffffff;
+      padding: 1.5rem 1.5rem 1.25rem 1.5rem; /* extra space at top for close button */
+      border-radius: 20px;
+      z-index: 9999;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 0;
+    }
+    
+    .video-modal.active {
+      display: block;
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+    
+    .video-modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: purple;
+      color: #fff;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      z-index: 10000;
+    }
+    
+    .video-modal-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: rotate(90deg) scale(1.1);
+      color: purple;
+    }
+    
+    @media (max-width: 768px) {
+      .video-modal {
+        width: 95%;
+        padding: 1rem 1rem 0.75rem 1rem;
+      }
+      
+      .video-modal-close {
+        width: 35px;
+        height: 35px;
+        font-size: 1.2rem;
+        top: 0.5rem;
+        right: 0.5rem;
+      }
+    }
+    
+    /* Enhanced About Section */
+    .about-enhanced {
+      background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+      position: relative;
+    }
+    
+    .section-title-enhanced {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    
+    .section-title-enhanced h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #2d0370;
+      margin-bottom: 1rem;
+      position: relative;
+      display: inline-block;
+    }
+    
+    .section-title-enhanced h2::after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, #5d09cb, #FFD700);
+      border-radius: 2px;
+    }
+    
+    .section-title-enhanced p {
+      font-size: 1.2rem;
+      color: #666;
+      margin-top: 2rem;
+    }
+    
+    .icon-box-enhanced {
+      padding: 2.5rem;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 5px 30px rgba(0,0,0,0.08);
+      transition: all 0.4s ease;
+      height: 100%;
+      border: 1px solid #f0f0f0;
+      margin-bottom: 2rem;
+    }
+    
+    .icon-box-enhanced:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 50px rgba(93, 9, 203, 0.15);
+      border-color: #5d09cb;
+    }
+    
+    .icon-box-enhanced .icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #5d09cb 0%, #7c3aed 100%);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .icon-box-enhanced:hover .icon {
+      transform: scale(1.1) rotate(5deg);
+      box-shadow: 0 10px 25px rgba(93, 9, 203, 0.3);
+    }
+    
+    .icon-box-enhanced .icon i {
+      font-size: 2.5rem;
+      color: #fff;
+    }
+    
+    .icon-box-enhanced .title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #2d0370;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+    }
+    
+    .icon-box-enhanced .description {
+      color: #666;
+      line-height: 1.8;
+      font-size: 1rem;
+    }
+    
+    /* Enhanced Video Container for Modal */
+    .video-container-enhanced {
+      position: relative;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      background: transparent;
+      width: 100%;
+      margin: 0.5rem auto 0; /* push video slightly below close button */
+    }
+    
+    #tv-container {
+      max-width: 100%;
+    }
+    
+    #monitor {
+      margin: 0;
+      padding: 0;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      animation: none !important; /* Stop any TV flicker animations */
+      -webkit-animation: none !important;
+      -moz-animation: none !important;
+      -o-animation: none !important;
+    }
+    
+    #monitor:after {
+      display: none !important; /* Remove TV stand indicator */
+    }
+    
+    #monitorscreen {
+      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      background: transparent !important;
+      border-radius: 15px;
+      overflow: hidden;
+    }
+    
+    /* Ensure video iframe is clickable */
+    #vimeo-content-modal {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 2;
+      border-radius: 15px;
+    }
+    
+    /* Stats in Modal */
+    .modal-stats {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+    }
+    
+    .modal-stats-title {
+      text-align: center;
+      color: #2d0370;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    
+    .modal-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+    }
+    
+    .count-box-modal {
+      text-align: center;
+      padding: 0.75rem 0.5rem;
+      background: #fff;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      transition: all 0.3s ease;
+    }
+    
+    .count-box-modal:hover {
+      transform: translateY(-3px);
+      border-color: rgba(93, 9, 203, 0.5);
+    }
+    
+    .count-box-modal i {
+      font-size: 1.25rem;
+      color: #5d09cb;
+      margin-bottom: 0.25rem;
+      display: block;
+    }
+    
+    .count-box-modal .purecounter {
+      font-size: 1.25rem;
+      font-weight: 800;
+      display: block;
+      color: purple;
+      margin-bottom: 0.15rem;
+      line-height: 1.2;
+    }
+    
+    .count-box-modal p {
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: #555;
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      line-height: 1.2;
+    }
+    
+    @media (max-width: 768px) {
+      .modal-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+      }
+      
+      .count-box-modal {
+        padding: 0.75rem 0.5rem;
+      }
+      
+      .count-box-modal i {
+        font-size: 1.1rem;
+      }
+      
+      .count-box-modal .purecounter {
+        font-size: 1.1rem;
+      }
+      
+      .count-box-modal p {
+        font-size: 0.65rem;
+      }
+      
+      .modal-stats-title {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+      }
+    }
+    
+    /* Ensure all links are clickable */
+    a {
+      position: relative;
+      z-index: 1;
+      cursor: pointer;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .kalan-hero .hero-content h1 {
+        font-size: 2.2rem;
+      }
+      
+      .kalan-hero .hero-subtitle {
+        font-size: 1.1rem;
+      }
+      
+      .hero-cta-wrapper {
+        flex-direction: column;
+      }
+      
+      .btn-hero-primary,
+      .btn-hero-secondary {
+        width: 100%;
+        text-align: center;
+      }
+      
+      .section-title-enhanced h2 {
+        font-size: 2rem;
+      }
+      
+      .icon-box-enhanced {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+` %>
+
+<!-- ======= Enhanced Hero Section ======= -->
+<section id="hero" class="kalan-hero">
+    <div class="container">
+    <div class="row justify-content-between align-items-center">
+      <div class="col-lg-7 pt-1 pt-lg-0 order-2 order-lg-1">
+        <div class="hero-content" data-aos="fade-right">
+          <h1>
+            Assurez votre <span class="hero-highlight">réussite scolaire</span> avec 
+            <span class="d-inline-block"><span class="afrohk">e-kalan</span></span>
+          </h1>
+          <p class="hero-subtitle">
+            Une plateforme d'e-learning innovante qui vous accompagne dans votre parcours scolaire. 
+            Accédez à des cours de qualité, des ressources pédagogiques complètes et un suivi personnalisé 
+            pour exceller dans vos études.
+          </p>
+          <div class="hero-cta-wrapper">
+            <% if(typeof currentUser !== 'undefined' && currentUser) { %>
+              <a href="/dashboard" class="btn-hero-primary">
+                <i class="bi bi-arrow-right me-2"></i>Accéder au dashboard
+              </a>
+            <% } else { %>
+              <a href="/login" class="btn-hero-primary">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
+              </a>
+              <button type="button" class="btn-hero-secondary" id="enSavoirPlusBtn">
+                <i class="bi bi-eye me-2"></i>En savoir plus
+              </button>
+            <% } %>
+              </div>
+            </div>
+                </div>
+              </div>
+            </div>
+  </section><!-- End Hero -->
+
+<!-- Video Modal -->
+<div class="video-modal-overlay" id="videoModalOverlay" style="background: rgba(200, 165, 165, 0.5);">
+<button class="video-modal-close" id="closeVideoModal" aria-label="Fermer">
+  <i class="bi bi-x"></i>
+</button>
+          </div>
+<div class="video-modal" id="videoModal">
+  
+  <div class="video-container-enhanced">
+    <div id="tv-container">
+      <div id="monitor">
+        <div id="monitorscreen">
+          <iframe
+            id="vimeo-content-modal"
+            src="https://player.vimeo.com/video/1064482540?h=2db4f2c774&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+            frameborder="0"
+            loading="lazy"
+            height="100%"
+            width="100%"
+            allow="autoplay; fullscreen; picture-in-picture"
+            title="e-kalan Platform Presentation"
+            style="position: absolute; top: 0; left: 0;">
+          </iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+
+  <!-- Stats Section in Modal -->
+  <div class="modal-stats">
+    <h3 class="modal-stats-title">Notre impact en chiffres</h3>
+    <div class="modal-stats-grid">
+      <div class="count-box-modal">
+        <i class="bi bi-emoji-smile"></i>
+        <span data-purecounter-start="0" data-purecounter-end="549" data-purecounter-duration="1" class="purecounter"></span>
+        <p>Élèves</p>
+          </div>
+
+      <div class="count-box-modal">
+        <i class="bi bi-journal-richtext"></i>
+        <span data-purecounter-start="0" data-purecounter-end="321" data-purecounter-duration="1" class="purecounter"></span>
+        <p>Étudiants</p>
+          </div>
+
+      <div class="count-box-modal">
+        <i class="bi bi-building"></i>
+        <span data-purecounter-start="0" data-purecounter-end="10" data-purecounter-duration="1" class="purecounter"></span>
+        <p>Écoles</p>
+        </div>
+
+      <div class="count-box-modal">
+        <i class="bi bi-geo-alt"></i>
+        <span data-purecounter-start="0" data-purecounter-end="3" data-purecounter-duration="1" class="purecounter"></span>
+        <p>Villes</p>
+              </div>
+            </div>
+          </div>
+        </div>
+<!-- End Video Modal -->
+
+<!-- ======= Enhanced About Section ======= -->
+<section id="about" class="about about-enhanced">
+      <div class="container">
+    <div class="section-title-enhanced" data-aos="fade-up">
+      <h2>À propos</h2>
+      <p>Ce qu'il faut savoir sur <span class="d-inline-block"><span class="afrohk-2">e-kalan</span></span></p>
+        </div>
+
+    <!-- Restructured Cards Grid -->
+    <div class="about-cards-grid">
+      <div class="icon-box-enhanced" data-aos="zoom-in" data-aos-delay="100">
+        <div class="icon">
+          <i class="fa-solid fa-book-open-reader"></i>
+              </div>
+        <h4 class="title">Étudiez à votre rythme, quand et où vous le souhaitez</h4>
+        <p class="description">
+          La plateforme e-kalan est accessible sur tous les supports digitaux (ordinateur, tablette, smartphone) 
+          afin que vous puissiez étudier dans les conditions qui vous conviennent le mieux, à tout moment de la journée.
+                </p>
+              </div>
+
+      <div class="icon-box-enhanced" data-aos="zoom-in" data-aos-delay="200">
+        <div class="icon">
+          <i class="fa-solid fa-person-chalkboard"></i>
+              </div>
+        <h4 class="title">Des cours bien expliqués avec tous les détails</h4>
+        <p class="description">
+          Les cours sont expliqués par des professeurs passionnés et expérimentés qui maîtrisent parfaitement 
+          leur domaine. Chaque leçon est conçue pour être claire, complète et facile à comprendre.
+                </p>
+              </div>
+
+      <div class="icon-box-enhanced" data-aos="zoom-in" data-aos-delay="300">
+        <div class="icon">
+          <i class="fa-solid fa-brain"></i>
+        </div>
+        <h4 class="title">Les meilleurs vous viennent en aide</h4>
+        <p class="description">
+          Accédez aux sujets corrigés des grands établissements par les meilleurs élèves et étudiants. 
+          Apprenez des meilleures pratiques et des techniques qui mènent à l'excellence académique.
+                </p>
+              </div>
+        </div>
+      </div>
+</section><!-- End About Section -->
+
+
+<% scripts = `
+  <script>
+    // Video Modal Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const enSavoirPlusBtn = document.getElementById('enSavoirPlusBtn');
+      const videoModal = document.getElementById('videoModal');
+      const videoModalOverlay = document.getElementById('videoModalOverlay');
+      const closeVideoModal = document.getElementById('closeVideoModal');
+      
+      function openModal() {
+        if (videoModal && videoModalOverlay) {
+          document.body.style.overflow = 'hidden'; // Prevent body scroll
+          videoModalOverlay.classList.add('active');
+          videoModal.classList.add('active');
+        }
+      }
+      
+      function closeModal() {
+        if (videoModal && videoModalOverlay) {
+          document.body.style.overflow = ''; // Restore body scroll
+          videoModal.classList.remove('active');
+          videoModalOverlay.classList.remove('active');
+        }
+      }
+      
+      if (enSavoirPlusBtn && videoModal) {
+        // Open modal on button click
+        enSavoirPlusBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          openModal();
+        });
+        
+        // Close modal on close button click
+        if (closeVideoModal) {
+          closeVideoModal.addEventListener('click', function(e) {
+            e.preventDefault();
+            closeModal();
+          });
+        }
+        
+        // Close modal when clicking on overlay
+        if (videoModalOverlay) {
+          videoModalOverlay.addEventListener('click', function(e) {
+            if (e.target === videoModalOverlay) {
+              closeModal();
+            }
+          });
+        }
+        
+        // Close modal on ESC key
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && videoModal.classList.contains('active')) {
+            closeModal();
+          }
+        });
+      }
+    });
+  </script>
+` %>

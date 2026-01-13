@@ -1,178 +1,295 @@
-<footer id="footer" class="d-flex-row justify-content-center">
-  <div class="text-center brand-section pt-5">
-    <h1 class="header-text">Afro <span class="footer-hk"> House of Knowledge</span></h1>
-    </h1>
-    <p class="motto-footer px-2">
-      Le digital au service de l'Éducation
-    </p>
-    <hr>
-  </div>
+<!-- ======= Footer ======= -->
+<style>
+  /* Footer Premium Styles */
+  #footer {
+    background: #0f0f12;
+    color: #e0e0e0;
+    font-size: 0.95rem;
+    font-family: 'Outfit', sans-serif;
+    padding-top: 5rem;
+    margin-top: auto;
+    position: relative;
+    overflow: hidden;
+  }
 
-  <div class="contact container py-3">
-    <div class="row justify-content-center">
-      <!-- Our programs -->
-      <div class="col-lg-3">
-        <p class="edu-m">Quality  Education for all matters</p>
+  /* Top Gradient Border */
+  #footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #5d06ba 0%, #a259ff 50%, #5d06ba 100%);
+  }
+
+  /* Subtle Background Glow */
+  #footer::after {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(93, 6, 186, 0.15) 0%, transparent 70%);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .footer-content {
+    position: relative;
+    z-index: 1;
+    padding-bottom: 4rem;
+  }
+
+  /* Brand Section */
+  .footer-brand h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    letter-spacing: -0.5px;
+    color: white;
+    display: inline-block;
+  }
+  
+  .footer-brand h3 span {
+    color: #5d06ba;
+  }
+
+  .footer-brand p {
+    color: #a0a0a5;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    max-width: 320px;
+    font-size: 1rem;
+  }
+
+  /* Column Titles */
+  .footer-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.5px;
+  }
+
+  /* Links with Hover Effect */
+  .footer-links ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-links li {
+    margin-bottom: 1rem;
+  }
+
+  .footer-links a {
+    color: #a0a0a5;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+  }
+
+  .footer-links a:hover {
+    color: #a259ff;
+    transform: translateX(5px);
+  }
+  
+  .footer-links a i {
+      font-size: 0.8rem;
+      color: #5d06ba;
+      transition: color 0.3s ease;
+  }
+  
+  .footer-links a:hover i {
+      color: #a259ff;
+  }
+
+  /* Contact Items */
+  .footer-contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    color: #a0a0a5;
+  }
+
+  .footer-contact-item i {
+    color: #5d06ba;
+    font-size: 1.25rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  /* Modern Social Icons */
+  .social-links {
+    display: flex;
+    gap: 12px;
+  }
+
+  .social-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .social-btn:hover {
+    background: #5d06ba;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(93, 6, 186, 0.3);
+    border-color: #5d06ba;
+  }
+  
+  .social-btn i {
+    font-size: 1.2rem;
+  }
+
+  /* Footer Bottom */
+  .footer-bottom {
+    background: #050507;
+    padding: 2rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.9rem;
+    color: #6e6e73;
+  }
+
+  /* Newsletter/Input Group (Optional Future Use) */
+  .footer-input-group {
+    position: relative;
+    margin-top: 1rem;
+  }
+  
+  .footer-input {
+    width: 100%;
+    padding: 12px 16px;
+    padding-right: 50px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: white;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+  
+  .footer-input:focus {
+    border-color: #5d06ba;
+    background: rgba(255,255,255,0.08);
+  }
+  
+  .footer-input-btn {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    bottom: 5px;
+    width: 40px;
+    background: #5d06ba;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .footer-input-btn:hover {
+    background: #7b2cbf;
+  }
+
+  @media (max-width: 991px) {
+    .footer-brand { margin-bottom: 2rem; }
+    .footer-links { margin-bottom: 2rem; }
+  }
+</style>
+
+<footer id="footer">
+  <div class="container footer-content">
+    <div class="row">
+      <!-- Brand & About -->
+      <div class="col-lg-4 col-md-12 footer-brand">
+        <h3>Afro HK<span>.</span></h3>
+        <p>
+          Libérez votre potentiel grâce à une éducation d'excellence. 
+          Afro House of Knowledge construit les leaders de demain à travers l'innovation et la culture.
+        </p>
+        <div class="social-links">
+          <a href="https://web.facebook.com/Afro-House-Of-Knowledge-104795908266730" target="_blank" class="social-btn" aria-label="Facebook"><i class="bx bxl-facebook"></i></a>
+          <a href="https://www.instagram.com/afro_h_k/" target="_blank" class="social-btn" aria-label="Instagram"><i class="bx bxl-instagram"></i></a>
+          <a href="https://www.youtube.com/channel/UCoyOQOqSqRGjH8FrkvT4b0g" target="_blank" class="social-btn" aria-label="YouTube"><i class="bx bxl-youtube"></i></a>
+          <a href="https://twitter.com/afro__HK" target="_blank" class="social-btn" aria-label="Twitter"><i class="bx bxl-twitter"></i></a>
+          <a href="#" class="social-btn" aria-label="LinkedIn"><i class="bx bxl-linkedin"></i></a>
+        </div>
       </div>
-      <!--Grid column-->
-      <div class="col-lg-6  px-2 mb-lg-0">
-        <div class="container d-flex justify-content-around">
+
+      <!-- Quick Links -->
+      <div class="col-lg-2 col-md-6 footer-links">
+        <div class="footer-title">Navigation</div>
+        <ul>
+          <li><a href="/">Accueil</a></li>
+          <li><a href="/#about">À propos</a></li>
+          <li><a href="/#portfolio">Communauté</a></li>
+        </ul>
+      </div>
+
+      <!-- Programs -->
+      <div class="col-lg-3 col-md-6 footer-links">
+        <div class="footer-title">Nos Programmes</div>
+        <ul>
+            <li><a href="/programs/language-learning/english4all">English Boost</a></li>
+            <li><a href="/programs/ekalan/kalan">e-Kalan</a></li>
+            <li><a href="www.englishbiiga.com" target="_blank">English biiga</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div class="col-lg-3 col-md-12 footer-links">
+        <div class="footer-title">Nous Contacter</div>
+        <div class="footer-contact-item">
+          <i class="bi bi-geo-alt"></i>
           <div>
-            <h5 class="footer-links-header mb-4">Liens Utiles</h5>
-
-            <!-- <li>
-                        <a href="/courses" class="useful-links">Our Courses</a>
-                    </li> -->
-          
-            <div class="my-3">
-              <a class=" useful-links" href="/"><i class="fa-solid fa-check-double mx-2 "></i>Acceuil</a>
-            </div>
-            <div class="my-3">
-              <a href="/elearning" class="useful-links"><i class="fa-solid fa-check-double mx-2"></i>Afro E-learning</a>
-            </div>
-            <div class="my-3">
-              <a class="useful-links" href="https://www.afrolanguagelab.com" target="_blank"><i
-                  class="fa-solid  fa-check-double mx-2"></i> Afro Language Lab</a>
-            </div>
-
-            <!-- Social media -->
-            <div class="my-5">
-              <h3 class="footer-links-header" class="mb-4 pb-3">Suivez-nous</h3>
-              <!-- Facebook -->
-              <a class="btn btn-outline-light btn-floating m-2"
-                href="https://web.facebook.com/Afro-House-Of-Knowledge-104795908266730" id="facebook" role="button"
-                target="_blank"><i class="fab fa-facebook-f"></i></a>
-
-              <!-- Twitter -->
-              <a class="btn btn-outline-light btn-floating m-2" href="https://twitter.com/afro__HK" id="twitter"
-                target="_blank" role="button"><i class="fab fa-twitter"></i></a>
-
-              <!-- Google -->
-              <!-- <a
-            class="btn btn-outline-light btn-floating m-2"
-            href="#!"
-            target="_blank"
-            role="button"
-            ><i class="fab fa-google"></i
-          ></a> -->
-
-              <!-- Instagram -->
-              <a class="btn btn-outline-light btn-floating m-2" href="https://www.instagram.com/afro_h_k/" role="button"
-                id="instagram" target="_blank"><i class="fab fa-instagram"></i></a>
-
-              <!-- Linkedin -->
-              <!-- <a class="btn btn-outline-light btn-floating m-2" href="#!" target="_blank" role="button" id="linkedIn"><i -->
-              <!-- class="fab fa-linkedin-in"></i></a> -->
-              <!-- Youtube -->
-              <a class="btn btn-outline-light btn-floating m-2"
-                href="https://www.youtube.com/channel/UCoyOQOqSqRGjH8FrkvT4b0g" role="button" id="youtube"
-                target="_blank"><i class="bi bi-youtube"></i></a>
-            </div>
+            <strong>Siège Social</strong><br>
+            Ouagadougou, Burkina Faso
           </div>
-
-          <!-- End Social media -->
         </div>
-      </div>
-      <!--Grid column-->
-
-      <!--Send a Message-->
-      <div class="col-lg-3">
-        <!--Contact Us-->
-        <div class="d-flex flex-column justify-content-center align-items-center">
-          <div class="col-8 col-md-6 col-lg-10 d-flex justify-content-center flex-column">
-            <div class="contact-us py-3">
-              <div class="bg-primary ps-3 py-2">
-                Envoyez nous un mail
-              </div>
-              <div class="my-2">
-                <a id="send-mail" class="" href="mailto:afrohouseofknowledge@gmail.com?">
-                  <p>
-                    <i class="fa mx-2 fa-envelope-o" id="mail-icon" style="color: rgb(255, 255, 255); "
-                      aria-hidden="true"></i> afrohkteam@afrohk.com
-                  </p>
-                </a>
-              </div>
-              <hr class="m-0 p-0">
-              <div class="bg-dark ps-3 py-2">
-                 Appelez nous
-              </div>
-              <hr class="m-0 p-0">
-              <div class="call ps-3 py-2">
-                <button id="call-manager-2">
-                  <i class="fa mx-2 fa-phone" style="color: rgb(255, 255, 255); " aria-hidden="true"></i> <span
-                    class="network">+22667323131</span>
-                </button>
-              </div>
-              <div class="call ps-3 py-2">
-                <button id="call-manager-2" class="">
-                  <i class="fa mx-2 fa-phone" style="color: rgb(255, 255, 255); " aria-hidden="true"></i> <span
-                    class="network">+22653344444</span>
-                </button>
-              </div>
-              <!--
-              <div class="call py-2">
-                <button id="call-manager-2" class="">
-                
-                    <span class="network">Telecel Faso</span>
-                </button>
-              </div> -->
-              <div class="call ps-3 py-3">
-                <button id="call-manager-2">
-                  <a id="call-manager-link-3" class="text-success" href="https://wa.me/22653344444" target="_blank">
-                    <i class="fa mx-2 fa-whatsapp" aria-hidden="true"></i>
-                    <span class="">WhatsApp</span></a>
-                </button>
-              </div>
-            </div>
+        <div class="footer-contact-item">
+          <i class="bi bi-envelope"></i>
+          <div>
+            <strong>Email</strong><br>
+            contact@afrohk.com
+          </div>
+        </div>
+        <div class="footer-contact-item">
+          <i class="bi bi-telephone"></i>
+          <div>
+            <strong>Téléphone</strong><br>
+            +226 67323131
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Grid container -->
-  <!-- <div class="container p-4">
-    <section class="">
-      <form action="/newsletter" method="POST">
-        <div class="row d-flex justify-content-center align-items-center">
-          <div class="col-auto">
-            <p class="pt-2">
-              <strong>Sign up for our newsletter</strong>
-            </p>
-          </div>
-
-          <div class="col-md-5 col-12">
-            <div class="form-outline form-white mb-4">
-              <input
-                type="email"
-                id="susbcribemail"
-                name="email"
-                class="form-control text-center"
-                placeholder="Enter your email address"
-              />
-            </div>
-          </div>
-
-          <div class="col-auto">
-            <button type="submit" class="btn btn-outline-light mb-4">
-              Subscribe
-            </button>
-          </div>
+  <div class="footer-bottom">
+    <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between">
+      <div class="copyright text-center text-md-start mb-2 mb-md-0">
+        &copy; <%= new Date().getFullYear() %> <strong>Afro House of Knowledge</strong>. Tous droits réservés.
+      </div>
+      <div class="text-center text-md-end">
+        <div class="d-flex gap-4">
+           <a href="#" class="text-white text-decoration-none small" style="opacity:0.6;">Mentions Légales</a>
+           <a href="#" class="text-white text-decoration-none small" style="opacity:0.6;">Confidentialité</a>
         </div>
-      </form>
-    </section>
-  </div>
-   -->
-  <!--Copyright-->
-  <div class="row made-by d-flex justify-content-center flex-wrap pt-3">
-    <div class="col-12  d-flex justify-content-around col-sm-6 copyright-text">
-      <p class="">Copyright &copy; 2020 Afro House of Knowledge. All right reserved</p>
-    </div>
-    <div class="col-12 d-flex justify-content-around col-sm-6 creator">
-      <p class="px-5">
-        Made with <i class="fas fa-heart"></i> by <span>Afrohk DEV Team</span>
-      </p>
+      </div>
     </div>
   </div>
 </footer>
-<!-- End footer -->

@@ -1,0 +1,668 @@
+<% layout('layouts/main') %>
+
+<style>
+  /* Hero Section */
+  .english-hero {
+    background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+    padding: 8rem 0 6rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .english-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+    opacity: 0.3;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: white;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.5px;
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+    animation: fadeInUp 0.8s ease-out;
+  }
+
+  .hero-subtitle {
+    font-size: 1.3rem;
+    opacity: 0.95;
+    max-width: 700px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.6;
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Intro Section */
+  .intro-section {
+    padding: 5rem 0;
+    background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+  }
+
+  .intro-content {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .intro-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #5d06ba;
+    margin-bottom: 2rem;
+  }
+
+  .intro-text {
+    font-size: 1.2rem;
+    color: #6e6e73;
+    line-height: 1.8;
+    margin-bottom: 3rem;
+  }
+
+  .intro-features {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  @media (max-width: 992px) {
+    .intro-features {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .intro-feature {
+    text-align: center;
+    padding: 2rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .intro-feature:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(93, 6, 186, 0.2);
+  }
+
+  .intro-feature-icon {
+    font-size: 2.5rem;
+    color: #5d06ba;
+    margin-bottom: 1rem;
+  }
+
+  .intro-feature-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1d1d1f;
+    margin-bottom: 0.5rem;
+  }
+
+  .intro-feature-text {
+    color: #6e6e73;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  /* Levels Section */
+  .levels-section {
+    padding: 5rem 0;
+    background: white;
+  }
+
+  .levels-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1d1d1f;
+    margin-bottom: 1rem;
+  }
+
+  .levels-subtitle {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #6e6e73;
+    margin-bottom: 4rem;
+  }
+
+  .levels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .level-card {
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s ease;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .level-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 60px rgba(93, 6, 186, 0.25);
+  }
+
+  .level-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 280px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #8E54E9 0%, #4776E6 100%);
+  }
+
+  .level-card.beg .level-image-wrapper {
+    background: linear-gradient(135deg, #8E54E9 0%, #4776E6 100%);
+  }
+
+  .level-card.int .level-image-wrapper {
+    background: linear-gradient(135deg, #4e4376 0%, #2b5876 100%);
+  }
+
+  .level-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.9;
+    transition: transform 0.4s ease;
+  }
+
+  .level-card:hover .level-image-wrapper img {
+    transform: scale(1.1);
+  }
+
+  .level-header {
+    padding: 2rem;
+    background: linear-gradient(135deg, #8E54E9 0%, #4776E6 100%);
+    color: white;
+    text-align: center;
+  }
+
+  .level-card.int .level-header {
+    background: linear-gradient(135deg, #4e4376 0%, #2b5876 100%);
+  }
+
+  .level-name {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 1px;
+  }
+
+  .level-content {
+    padding: 2.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .level-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: nowrap;
+    margin-top: 2rem;
+    justify-content: center;
+  }
+
+  @media (max-width: 768px) {
+    .level-actions {
+      flex-wrap: wrap;
+    }
+  }
+
+  .btn-level {
+    padding: 0.875rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-level-primary {
+    background: #5d06ba;
+    color: white;
+    border-color: #5d06ba;
+  }
+
+  .btn-level-primary:hover {
+    background: #2d0370;
+    border-color: #2d0370;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(93, 6, 186, 0.4);
+  }
+
+  .btn-level-success {
+    background: transparent;
+    color: #5d06ba;
+    border-color: #5d06ba;
+  }
+
+  .btn-level-success:hover {
+    background: #5d06ba;
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  .btn-level-secondary {
+    background: transparent;
+    color: #6e6e73;
+    border-color: #d2d2d7;
+  }
+
+  .btn-level-secondary:hover {
+    background: #6e6e73;
+    color: white;
+    border-color: #6e6e73;
+    transform: translateY(-2px);
+  }
+
+  /* Modal Styles */
+  .modal-content {
+    border-radius: 24px;
+    border: none;
+    overflow: hidden;
+  }
+
+  .modal-header {
+    background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+    color: white;
+    border: none;
+    padding: 1.5rem 2rem;
+  }
+
+  .modal-title {
+    font-weight: 700;
+    font-size: 1.5rem;
+  }
+
+  .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 1;
+  }
+
+  .tv-container {
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .tv-monitor {
+    background: #000;
+    position: relative;
+    border-top: 3px solid #888;
+    margin: 0 auto;
+    padding: 0.5% 2% 4% 2%;
+    border-radius: 10px;
+    border-bottom-left-radius: 50% 2%;
+    border-bottom-right-radius: 50% 2%;
+    max-width: 900px;
+  }
+
+  .tv-monitor::after {
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: 3%;
+    left: 36%;
+    height: 0.5%;
+    width: 28%;
+    background: #ddd;
+    border-radius: 50%;
+    box-shadow: 0 0 3px 0 white;
+  }
+
+  .tv-screen {
+    position: relative;
+    background-color: #777;
+    background-size: cover;
+    background-position: top center;
+    height: 0;
+    padding-bottom: 56.25%;
+    overflow: hidden;
+  }
+
+  .tv-brand {
+    text-align: center;
+    padding: 1rem 0;
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  .tv-brand-text {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .tv-brand .afrohk {
+    color: white;
+    letter-spacing: 0.2rem;
+  }
+
+  .tv-brand .tv-text {
+    color: rgb(76, 131, 234);
+    letter-spacing: 0.2rem;
+  }
+
+  .tv-brand .lab-text {
+    color: rgb(255, 197, 8);
+    letter-spacing: 0.2rem;
+  }
+
+  .tv-screen iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  /* Enrollment Modal */
+  .enrollment-modal-body {
+    padding: 2.5rem;
+    text-align: center;
+  }
+
+  .enrollment-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #5d06ba;
+    margin-bottom: 1.5rem;
+  }
+
+  .contact-info {
+    background: #f8f9fa;
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 1.5rem 0;
+  }
+
+  .phone-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1d1d1f;
+    margin: 1rem 0;
+    font-family: 'Courier New', monospace;
+  }
+
+  .whatsapp-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #25D366;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+  }
+
+  .whatsapp-link:hover {
+    background: #20BA5A;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2.5rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+    }
+
+    .levels-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .level-actions {
+      flex-direction: column;
+    }
+
+    .btn-level {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .intro-features {
+      grid-template-columns: 1fr;
+    }
+
+    .tv-container {
+      padding: 1rem;
+    }
+  }
+</style>
+
+<!-- Hero Section -->
+<section class="english-hero">
+  <div class="container">
+    <div class="hero-content">
+      <span class="hero-badge">🇬🇧 Programme General English Boost</span>
+      <h1 class="hero-title">Élevez votre niveau d'Anglais</h1>
+      <p class="hero-subtitle">
+        Un programme de formation intensif en anglais par module de 6 semaines, 
+        en présentiel et en ligne, pour vous aider à atteindre vos objectifs académiques et professionnels.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Intro Section -->
+<section class="intro-section">
+  <div class="container">
+    <div class="intro-content">
+      <h2 class="intro-title">Pourquoi choisir General English Boost ?</h2>
+      <p class="intro-text">
+        Professionnels et étudiants, ce programme de formation est conçu sur mesure pour vous !
+        Rejoignez "General English Boost" et transformez votre niveau d'anglais en seulement quelques semaines.
+      </p>
+      
+      <div class="intro-features">
+        <div class="intro-feature">
+          <div class="intro-feature-icon">
+            <i class="bi bi-star-fill"></i>
+          </div>
+          <h3 class="intro-feature-title">Enseignement de qualité</h3>
+          <p class="intro-feature-text">Des formateurs expérimentés pour un apprentissage efficace</p>
+        </div>
+        
+        <div class="intro-feature">
+          <div class="intro-feature-icon">
+            <i class="bi bi-calendar-check"></i>
+          </div>
+          <h3 class="intro-feature-title">Flexibilité</h3>
+          <p class="intro-feature-text">Suivez les cours en présentiel ou en ligne, selon votre emploi du temps</p>
+        </div>
+        
+        <div class="intro-feature">
+          <div class="intro-feature-icon">
+            <i class="bi bi-trophy-fill"></i>
+          </div>
+          <h3 class="intro-feature-title">Résultats garantis</h3>
+          <p class="intro-feature-text">Gagnez en aisance à l'oral et en écriture en seulement 3 mois</p>
+        </div>
+        
+        <div class="intro-feature">
+          <div class="intro-feature-icon">
+            <i class="bi bi-tools"></i>
+          </div>
+          <h3 class="intro-feature-title">Outils pratiques</h3>
+          <p class="intro-feature-text">Approches modernes pour exceller dans vos études ou votre carrière</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Levels Section -->
+<section class="levels-section">
+  <div class="container">
+    <h2 class="levels-title">Programme General English Boost par niveau</h2>
+    <p class="levels-subtitle">Choisissez le niveau qui correspond à vos besoins</p>
+    
+    <div class="levels-grid">
+      <% if(courses && courses.length > 0) { %>
+        <% courses.forEach((course, index) => { %>
+          <% 
+             const isEnrolled = currentUser && currentUser.coursesTaken && currentUser.coursesTaken.some(c => c.toString() === course._id.toString());
+          %>
+          <!-- Level Card -->
+          <div class="level-card <%= index % 2 === 0 ? 'beg' : 'int' %>">
+            <div class="level-image-wrapper">
+              <img src="<%= course.courseImageUrl || 'https://images.pexels.com/photos/3184163/pexels-photo-3184163.jpeg' %>" alt="<%= course.title %>">
+            </div>
+            <div class="level-header">
+              <h3 class="level-name"><%= course.title %></h3>
+            </div>
+            <div class="level-content">
+              <div class="level-actions">
+                <button type="button" class="btn-level btn-level-primary" data-bs-toggle="modal" data-bs-target="#courseModal<%= course._id %>">
+                  <i class="bi bi-info-circle"></i>
+                  En savoir plus
+                </button>
+                
+                <% if(isEnrolled) { %>
+                  <a href="/programs/language-learning/general-english-boost/<%= course._id %>" class="btn-level btn-level-success">
+                    <i class="bi bi-play-circle-fill"></i>
+                    Accéder
+                  </a>
+                <% } else { %>
+                  <a href="/programs/language-learning/general-english-boost/<%= course._id %>" class="btn-level btn-level-success">
+                    <i class="bi bi-book"></i>
+                    Voir les chapitres
+                  </a>
+                  <button type="button" class="btn-level btn-level-secondary" data-bs-toggle="modal" data-bs-target="#enrollModal">
+                    <i class="bi bi-person-plus"></i>
+                    S'inscrire
+                  </button>
+                <% } %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Course Modal -->
+          <div class="modal fade" id="courseModal<%= course._id %>" tabindex="-1" aria-labelledby="courseModalLabel<%= course._id %>" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="courseModalLabel<%= course._id %>"><%= course.title %></h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="p-3">
+                     <%- course.description %>
+                  </div>
+                  <% if(course.vimeoId) { %>
+                    <div class="tv-container mt-4">
+                      <div class="tv-monitor">
+                        <div class="tv-brand">
+                          <h3 class="tv-brand-text">
+                            <span class="afrohk">Afro</span>
+                            <span class="tv-text"> Language </span>
+                            <span class="lab-text">Lab</span>
+                          </h3>
+                        </div>
+                        <div class="tv-screen">
+                          <iframe 
+                            src="https://player.vimeo.com/video/<%= course.vimeoId %>?h=<%= course.vimeoHash || '' %>"
+                            allow="autoplay; fullscreen; picture-in-picture" 
+                            allowfullscreen
+                            title="<%= course.title %>">
+                          </iframe>
+                        </div>
+                      </div>
+                    </div>
+                  <% } %>
+                </div>
+                <div class="modal-footer">
+                  <a href="/programs/language-learning/general-english-boost/<%= course._id %>" class="btn btn-primary">
+                    <%= isEnrolled ? 'Continuer' : 'Voir le programme' %>
+                  </a>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <div class="col-12 text-center">
+            <h3>Aucun cours disponible pour le moment.</h3>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<!-- Modal Inscription -->
+<div class="modal fade" id="enrollModal" tabindex="-1" aria-labelledby="enrollModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="enrollModalLabel">Inscription</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="enrollment-modal-body">
+        <h3 class="enrollment-title">Pour vous inscrire, veuillez contacter le service commercial</h3>
+        <div class="contact-info">
+          <p class="mb-2"><strong>Service commercial</strong></p>
+          <p class="phone-number">+226 67323131 - 53344444</p>
+        </div>
+        <a href="https://wa.me/22667323131" target="_blank" class="whatsapp-link">
+          <i class="bi bi-whatsapp"></i>
+          Écrivez-nous sur WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

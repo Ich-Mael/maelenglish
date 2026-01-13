@@ -1,0 +1,899 @@
+<% layout('layouts/main') %>
+
+<% headContent = `
+  <style>
+    #main {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+    }
+    
+    .class-home-page {
+      padding: 0;
+      min-height: calc(100vh - 200px);
+      background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+      margin-top: 80px !important;
+    }
+    
+    /* Hero Banner */
+    .class-hero {
+      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+      color: white;
+      padding: 2rem 2rem 2rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(93, 6, 186, 0.2);
+    }
+    
+    .class-hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 600px;
+      height: 600px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      animation: float 20s infinite ease-in-out;
+    }
+    
+    .class-hero::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -5%;
+      width: 400px;
+      height: 400px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 50%;
+      animation: float 25s infinite ease-in-out reverse;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      50% { transform: translate(-30px, -30px) rotate(180deg); }
+    }
+    
+    .class-hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .hero-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50px;
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+    
+    .back-button:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: translateX(-5px);
+      color: white;
+      text-decoration: none;
+    }
+    
+    .back-button i {
+      font-size: 1.1rem;
+    }
+    
+    .class-title-wrapper {
+      text-align: center;
+      margin-bottom: 0.75rem;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .class-title {
+      font-size: 3.5rem;
+      font-weight: 700;
+      margin: 0;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+      letter-spacing: -1px;
+      text-align: center;
+    }
+    
+    .class-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      padding: 0.5rem 1.5rem;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      margin-top: 0.5rem;
+    }
+    
+    .class-subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      margin: 1rem 0 1.5rem 0;
+      font-weight: 300;
+      line-height: 1.5;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+    
+    /* Calculators in Hero */
+    .hero-calculators {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .btn-calculator-hero {
+      padding: 0.875rem 1.75rem;
+      border-radius: 50px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      color: white;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    .btn-calculator-hero:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      color: white;
+    }
+    
+    .btn-calculator-hero i {
+      font-size: 1.3rem;
+    }
+    
+    /* Subjects Section */
+    .subjects-section {
+      padding: 4rem 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #2d0370;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+    
+    .section-title i {
+      font-size: 2rem;
+    }
+    
+    .section-description {
+      font-size: 1.15rem;
+      color: #666;
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    
+    /* Subjects Grid - 3 columns */
+    .subjects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    
+    .subject-card {
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 2px solid transparent;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .subject-card:hover {
+      transform: translateY(-12px);
+      box-shadow: 0 20px 50px rgba(93, 6, 186, 0.2);
+      border-color: #5d06ba;
+    }
+    
+    .subject-image-wrapper {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    
+    .subject-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    
+    .subject-card:hover .subject-image {
+      transform: scale(1.15);
+    }
+    
+    .subject-content {
+      padding: 2rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .subject-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #2d0370;
+      margin: 0 0 1.5rem 0;
+    }
+    
+    .subject-actions {
+      margin-top: auto;
+    }
+    
+    .btn-subject {
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      border: 2px solid white;
+      width: 100%;
+      position: relative;
+    }
+    
+    .btn-subject-primary {
+      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+      color: white;
+    }
+    
+    .btn-subject-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(93, 6, 186, 0.4);
+      text-decoration: none;
+      color: white;
+    }
+    
+    .btn-subject-primary i {
+      font-size: 1.2rem;
+    }
+    
+    .btn-subject-warning {
+      background: #000;
+      border: 2px solid #ffd700;
+      color: #ffd700;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+    }
+    
+    .btn-subject-warning::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .btn-subject-warning:hover::before {
+      left: 100%;
+    }
+    
+    .btn-subject-warning:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 30px rgba(255, 215, 0, 0.4);
+      color: #ffd700;
+      background: #1a1a1a;
+      border-color: #ffed4e;
+    }
+    
+    .btn-subject-warning:active {
+      transform: translateY(-1px) scale(0.98);
+    }
+    
+    .btn-subject-warning i {
+      animation: sparkle 2s ease-in-out infinite;
+    }
+    
+    @keyframes sparkle {
+      0%, 100% { 
+        transform: scale(1) rotate(0deg);
+        filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.8));
+      }
+      50% { 
+        transform: scale(1.1) rotate(5deg);
+        filter: drop-shadow(0 0 8px rgba(255, 215, 0, 1));
+      }
+    }
+    
+    
+    .btn-subject-secondary {
+      background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+      color: white;
+      border: none;
+      position: relative;
+      cursor: not-allowed;
+      opacity: 0.85;
+    }
+    
+    .btn-subject-secondary::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+    
+    .premium-badge {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 2px 10px rgba(40, 167, 69, 0.3);
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% {
+        box-shadow: 0 2px 10px rgba(40, 167, 69, 0.3);
+      }
+      50% {
+        box-shadow: 0 2px 20px rgba(40, 167, 69, 0.6);
+      }
+    }
+    
+    .premium-badge i {
+      font-size: 1rem;
+      animation: star-rotate 3s linear infinite;
+    }
+    
+    @keyframes star-rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .premium-info-tooltip {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .premium-info-tooltip .tooltip-text {
+      visibility: hidden;
+      width: 200px;
+      background-color: #2d0370;
+      color: #fff;
+      text-align: center;
+      border-radius: 8px;
+      padding: 0.75rem;
+      position: absolute;
+      z-index: 1000;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -100px;
+      opacity: 0;
+      transition: opacity 0.3s, visibility 0.3s;
+      font-size: 0.85rem;
+      box-shadow: 0 4px 15px rgba(45, 3, 112, 0.3);
+    }
+    
+    .premium-info-tooltip .tooltip-text::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #2d0370 transparent transparent transparent;
+    }
+    
+    .premium-info-tooltip:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+    
+    /* Contact Premium Buttons */
+    /* Contact Premium Buttons - Simple and Stable */
+    .btn-contact-whatsapp,
+    .btn-contact-phone {
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background-color 0.2s ease;
+      border: none;
+      width: 100%;
+      color: white;
+    }
+    
+    .btn-contact-whatsapp {
+      background: #25D366;
+    }
+    
+    .btn-contact-whatsapp:hover {
+      background: #128C7E;
+      color: white;
+      text-decoration: none;
+    }
+    
+    .btn-contact-phone {
+      background: #007bff;
+    }
+    
+    .btn-contact-phone:hover {
+      background: #0056b3;
+      color: white;
+      text-decoration: none;
+    }
+    
+    /* Dropdown Premium Contact - Brand Colors */
+    .premium-dropdown-menu {
+      min-width: 280px;
+      padding: 0;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(45, 3, 112, 0.2);
+      border: 1px solid rgba(93, 6, 186, 0.1);
+      margin-top: 0.5rem;
+      overflow: hidden;
+    }
+    
+    .premium-dropdown-menu .dropdown-header {
+      padding: 1.25rem 1rem;
+      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+      color: white;
+      border-radius: 0;
+    }
+    
+    .premium-dropdown-menu .dropdown-header strong {
+      font-size: 1.1rem;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    
+    .premium-dropdown-menu .dropdown-header .price-info {
+      font-size: 0.9rem;
+      opacity: 0.95;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .premium-dropdown-menu .dropdown-header .price-value {
+      color: #ffd700;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    
+    .premium-dropdown-menu .dropdown-item {
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+    }
+    
+    .premium-dropdown-menu .dropdown-item:hover {
+      background: linear-gradient(90deg, rgba(93, 6, 186, 0.05) 0%, rgba(93, 6, 186, 0.02) 100%);
+      border-left-color: #5d06ba;
+    }
+    
+    .premium-dropdown-menu .dropdown-item-content {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex: 1;
+    }
+    
+    .premium-dropdown-menu .dropdown-item.btn-contact-whatsapp,
+    .premium-dropdown-menu .dropdown-item.btn-contact-phone {
+      background: none;
+      color: #2d0370;
+      border: none;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .premium-dropdown-menu .dropdown-item.btn-contact-whatsapp:hover {
+      color: #25D366;
+    }
+    
+    .premium-dropdown-menu .dropdown-item.btn-contact-phone:hover {
+      color: #5d06ba;
+    }
+    
+    .premium-dropdown-menu .dropdown-item.btn-contact-whatsapp i,
+    .premium-dropdown-menu .dropdown-item.btn-contact-phone i {
+      font-size: 1.4rem;
+      width: 24px;
+      text-align: center;
+    }
+    
+    .premium-dropdown-menu .phone-number {
+      font-size: 0.95rem;
+      color: #666;
+      font-weight: 600;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.5px;
+    }
+    
+    .premium-dropdown-menu .dropdown-item.btn-contact-phone:hover .phone-number {
+      color: #5d06ba;
+    }
+    
+    .premium-dropdown-menu .dropdown-item-text {
+      background: linear-gradient(135deg, rgba(93, 6, 186, 0.05) 0%, rgba(45, 3, 112, 0.05) 100%);
+      border-radius: 0;
+      border-top: 1px solid rgba(93, 6, 186, 0.1);
+      color: #666;
+      padding: 0.75rem 1rem;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .premium-dropdown-menu .dropdown-item-text i {
+      color: #5d06ba;
+    }
+    
+    .premium-dropdown-menu .dropdown-divider {
+      margin: 0;
+      border-color: rgba(93, 6, 186, 0.1);
+    }
+    
+    .btn-contact-whatsapp i,
+    .btn-contact-phone i {
+      font-size: 1.5rem;
+    }
+    
+    .subject-actions form {
+      margin: 0;
+      margin-top: 0.75rem;
+    }
+    
+    .subject-actions button[type="submit"] {
+      width: 100%;
+      border: none;
+      background: inherit;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 5rem 2rem;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      grid-column: 1 / -1;
+    }
+    
+    .empty-state i {
+      font-size: 5rem;
+      color: #ccc;
+      margin-bottom: 1.5rem;
+    }
+    
+    .empty-state h3 {
+      color: #333;
+      margin-bottom: 0.75rem;
+      font-size: 1.75rem;
+    }
+    
+    .empty-state p {
+      color: #666;
+      font-size: 1.1rem;
+    }
+    
+    
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .subjects-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .class-hero {
+        padding: 1.5rem 1.5rem 1.5rem;
+      }
+      
+      .hero-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .back-button {
+        padding: 0.625rem 1.25rem;
+        font-size: 0.9rem;
+      }
+      
+      .class-title-wrapper {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .class-title {
+        font-size: 2.25rem;
+      }
+      
+      .class-subtitle {
+        font-size: 1rem;
+        margin: 0.75rem 0 1rem 0;
+      }
+      
+      .hero-calculators {
+        margin-top: 1rem;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      
+      .btn-calculator-hero {
+        width: 100%;
+        justify-content: center;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.9rem;
+      }
+      
+      .subjects-section {
+        padding: 3rem 1rem;
+      }
+      
+      .subjects-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      
+      .section-title {
+        font-size: 2rem;
+      }
+      
+      .section-description {
+        font-size: 1rem;
+      }
+    }
+    
+    @media (min-width: 1400px) {
+      .subjects-grid {
+        gap: 2.5rem;
+      }
+    }
+  </style>
+` %>
+
+<div class="class-home-page">
+  <!-- Hero Banner -->
+  <div class="class-hero">
+    <div class="class-hero-content">
+      <!-- Header with Back Button and Class Title -->
+      <div class="hero-header">
+        <a href="/programs/ekalan/kalan" class="back-button">
+          <i class="bi bi-arrow-left"></i>
+          Retour
+        </a>
+        <div class="class-title-wrapper">
+          <h1 class="class-title">
+            <%= schoolClass.title %> <%= schoolClass.serie %>
+          </h1>
+        </div>
+      </div>
+      
+      
+      <p class="class-subtitle">
+        Étudiez et révisez à votre rythme selon vos besoins et votre disponibilité. Accédez à toutes les matières et progressez dans votre apprentissage.
+      </p>
+      
+      <!-- Calculators in Hero -->
+      <div class="hero-calculators">
+        <button type="button" class="btn-calculator-hero" data-bs-toggle="modal" data-bs-target="#graph-calc-modal">
+          <i class="bi bi-graph-up"></i>
+          Calculatrice Graphique
+        </button>
+        <button type="button" class="btn-calculator-hero" data-bs-toggle="modal" data-bs-target="#scien-calc-modal">
+          <i class="bi bi-calculator"></i>
+          Calculatrice Scientifique
+        </button>
+    </div>
+    </div>
+  </div>
+  
+  <!-- Calculator Modals -->
+  <%- include('../../../shared/partials/calculators/graphing-calculator-modal') %>
+  <%- include('../../../shared/partials/calculators/scientific-calculator-modal') %>
+  
+  <!-- Subjects Section -->
+  <div class="subjects-section">
+    <div class="section-header">
+      <h2 class="section-title">
+        <i class="bi bi-book"></i>
+        Matières disponibles
+      </h2>
+      <p class="section-description">
+        Explorez les matières de votre classe et accédez à tout le contenu pédagogique pour exceller dans vos études
+      </p>
+</div>
+    
+    <% if (schoolClass.subjects && schoolClass.subjects.length > 0) { %>
+      <div class="subjects-grid">
+        <% schoolClass.subjects.forEach(subject => { %>
+          <div class="subject-card">
+            <div class="subject-image-wrapper">
+              <% if (subject.subjectImageUrl) { %>
+          <img
+            src="<%= subject.subjectImageUrl %>"
+                  alt="<%= subject.title %>" 
+                  class="subject-image"
+                />
+              <% } else { %>
+                <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);">
+                  <i class="bi bi-book" style="font-size: 4rem; color: white;"></i>
+                  </div>
+              <% } %>
+                        </div>
+            
+            <div class="subject-content">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <h3 class="subject-title" style="margin: 0;"><%= subject.title %></h3>
+                <% if (subject.hasPremiumAccess) { %>
+                  <span class="premium-badge">
+                    <i class="bi bi-star-fill"></i> Premium
+                  </span>
+                <% } %>
+                        </div>
+              
+              <div class="subject-actions">
+                <a 
+                  href="/programs/ekalan/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>" 
+                  class="btn-subject btn-subject-primary"
+                >
+                  <i class="bi bi-box-arrow-in-right"></i>
+                  Accéder au contenu
+                </a>
+                
+                <% if (!subject.hasPremiumAccess && currentUser && currentUser.highSchool_id) { %>
+                  <% if (subject.hasPendingRequest) { %>
+                    <div class="premium-info-tooltip" style="margin-top: 0.75rem; width: 100%;">
+                      <button class="btn-subject btn-subject-secondary" style="width: 100%;" disabled>
+                        <i class="bi bi-clock-history"></i>
+                        Demande en attente
+                      </button>
+                      <span class="tooltip-text">Votre demande est en cours de traitement par un administrateur. Vous recevrez une notification une fois approuvée.</span>
+                    </div>
+                  <% } else { %>
+                    <!-- Dropdown pour contact premium -->
+                    <div class="dropdown" style="width: 100%; margin-top: 0.75rem;">
+                      <button class="btn-subject btn-subject-warning dropdown-toggle" 
+                      type="button"
+                              id="premiumDropdown<%= subject._id %>" 
+                              data-bs-toggle="dropdown" 
+                              aria-expanded="false"
+                              style="width: 100%;">
+                        <i class="bi bi-star-fill"></i>
+                        <span>Accès Premium</span>
+                    </button>
+                      <ul class="dropdown-menu premium-dropdown-menu" aria-labelledby="premiumDropdown<%= subject._id %>">
+                        <li class="dropdown-header">
+                          <strong><%= subject.title %></strong>
+                          <div class="price-info">
+                            <span>Prix:</span>
+                            <span class="price-value">2000 FCFA</span>
+                          </div>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                          <a class="dropdown-item btn-contact-whatsapp" 
+                             href="https://wa.me/22653344444?text=Bonjour,%20je%20souhaite%20obtenir%20l'accès%20premium%20pour%20la%20matière%20<%= encodeURIComponent(subject.title) %>%20(%20Classe:%20<%= encodeURIComponent(schoolClass.title + ' ' + schoolClass.serie) %>).%20Prix:%202000%20FCFA" 
+                             target="_blank">
+                            <div class="dropdown-item-content">
+                              <i class="bi bi-whatsapp"></i>
+                              <span>Écrire sur WhatsApp</span>
+                            </div>
+                          </a>
+                        </li>
+                        <li>
+                          <a class="dropdown-item btn-contact-phone" 
+                             href="tel:+22653344444">
+                            <div class="dropdown-item-content">
+                              <i class="bi bi-telephone-fill"></i>
+                              <span>Appeler</span>
+                  </div>
+                            <span class="phone-number">+226 53 34 44 44</span>
+                          </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li class="dropdown-item-text">
+                          <i class="bi bi-info-circle"></i>
+                          <span>Activation sous 24h après paiement</span>
+                        </li>
+                      </ul>
+                </div>
+                  <% } %>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <i class="bi bi-inbox"></i>
+        <h3>Aucune matière disponible</h3>
+        <p>Les matières de cette classe seront bientôt ajoutées. Veuillez revenir plus tard.</p>
+    </div>
+    <% } %>
+  </div>
+</div>

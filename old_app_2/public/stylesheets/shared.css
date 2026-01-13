@@ -1,0 +1,984 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  font-size: 90%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Roboto", sans-serif;
+}
+
+a:focus,
+a:active:focus,
+a.active:focus {
+  outline: none !important;
+  outline-style: none;
+}
+
+
+* {
+  border: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+.currentTime {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 2rem;
+  padding: 1rem 1.5rem;
+  text-transform: capitalize;
+  color: wheat;
+  background-color: #272626;
+  text-align: center;
+}
+
+.time-underline {
+  border-bottom: 4px solid rgb(241, 238, 238);
+}
+
+.flash-container {
+  width: 40%;
+  font-family: "Roboto" serif;
+  height: 2rem;
+  padding: 0.5rem;
+  letter-spacing: 0.1rem;
+  z-index: 300;
+}
+
+.flash {
+  font-size: 1rem;
+}
+
+/* Navbar */
+.logo-navbar {
+  opacity: 1;
+  margin: 0;
+  padding: 0;
+}
+
+.logo-display {
+  display: none;
+}
+
+nav {
+  z-index: 300;
+  padding: 0.3rem 0 !important;
+  background-color: #e1dde4;
+  /* background-color: transparent; */
+  /* background-color: #000; */
+  /* position: absolute !important; */
+  /* top: 0; */
+  /* left: 0; */
+  /* right: 0; */
+  font-family: "Roboto" serif;
+}
+
+.navbar-top {}
+
+.nav-display {
+  opacity: 1;
+}
+
+.brand {
+  font-size: 1.2rem;
+  display: inline-block;
+  color: #4d0db4;
+}
+
+#brand-name {
+  color: rgba(255, 250, 240, 0.9);
+  /* font-family: 'Albril Fatface', cursive; */
+  font-family: "Esteban";
+  font-family: "Titan One", cursive;
+  /* font-family: 'Chivo', sans-serif; */
+  /* font-family: 'Poppins', sans-serif; */
+  /* font-family: "Ultra", serif; */
+  width: 5rem;
+  height: 5rem;
+  margin: 0 0.7rem;
+  /* text-shadow: 0.2rem 0.1rem 0.2rem rgba(34, 24, 67, 0.8); */
+}
+
+
+.myNav-link {
+  font-size: 1.1rem;
+  padding: 0 0 0.4rem 0;
+  font-family: "Roboto" serif;
+  letter-spacing: 0.2rem;
+  text-align: center;
+  text-transform: capitalize;
+  color: rgba(32, 31, 31, 0.9) !important;
+  font-weight: 500;
+  transition: all 0.4s !important;
+}
+
+.myNav-link:hover {
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1.5px solid rgb(111, 9, 121);
+  color: rgb(113, 16, 143) !important;
+}
+
+.nav-link-connexion {
+  text-align: center;
+  font-family: "Roboto" serif;
+  padding: 0.3rem 1rem;
+  border-radius: 5px;
+  color: rgb(243, 239, 237);
+  border: 1px solid rgb(243, 241, 241);
+  text-decoration: none;
+  background-color: rgb(67, 30, 201);
+}
+
+.nav-link-connexion:hover {
+  background-color: transparent;
+  background-color: rgb(250, 245, 245);
+  text-decoration: none;
+  border: 2px solid rgb(40, 5, 109);
+  color: rgba(69, 14, 165, 0.925);
+}
+
+.profile-link {
+  font-family: "Roboto";
+  text-decoration: none;
+  font-size: 1rem;
+  color: rgb(237, 237, 237);
+  /* padding: 0.5rem 1rem; */
+  border-radius: 3px;
+  background-color: rgb(7, 3, 85);
+  transition: all 0.3s;
+}
+
+.profile-link:hover {
+  text-decoration: none;
+  background-color: rgb(53, 5, 151);
+  color: white;
+}
+
+.afro {
+  letter-spacing: 0.2rem;
+  color: rgb(43, 42, 42);
+}
+
+.hk {
+  letter-spacing: 0.2rem;
+  color: rgb(117, 13, 177);
+}
+
+afro-shadow {
+  color: rgb(43, 42, 42);
+}
+
+hk-shadow {
+  color: orangered;
+}
+
+#user {
+  text-transform: capitalize;
+  font-family: "Roboto" serif;
+  font-size: 1.5rem;
+}
+
+.user-shadow {
+  color: azure;
+  text-transform: capitalize;
+}
+
+.dropdown-menu {
+  border: 2px solid black;
+  background-color: rgb(245, 245, 245);
+}
+
+.dropdown-item {
+  font-size: 1rem;
+  color: #272626;
+  font-family: "Roboto" serif;
+  text-align: center;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.dropdown-item:hover {
+  background-color: rgb(99, 10, 151);
+  color: whitesmoke;
+}
+
+/* End Navbar */
+
+/* End Navbar*/
+
+/* Got to top link */
+
+.top-link {
+  background-color: rgb(252, 252, 252);
+  color: #2f0578;
+  width: 3rem;
+  height: 3rem;
+  box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
+  text-align: center;
+  border-radius: 2px;
+  line-height: 3rem;
+  font-size: 2rem;
+  position: fixed;
+  text-decoration: none;
+  right: 3%;
+  bottom: 2%;
+  visibility: hidden;
+  display: none;
+  opacity: 0;
+  z-index: 99;
+}
+
+.top-btn-display {
+  opacity: 1;
+  visibility: visible;
+  display: block;
+}
+
+.top-link:hover {
+  text-decoration: none;
+  color: rgb(19, 18, 18);
+}
+
+/* TV Screen */
+
+#tv-container {
+  max-width: 1024px;
+  margin: auto;
+}
+
+#monitor {
+  background: #000;
+  position: relative;
+  border-top: 3px solid #888;
+  margin: 5%;
+  padding: 0.5% 2% 4% 2%;
+  border-radius: 10px;
+  border-bottom-left-radius: 50% 2%;
+  border-bottom-right-radius: 50% 2%;
+  transition: margin-right 1s;
+}
+
+#monitor:after {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: 3%;
+  left: 36%;
+  height: 0.5%;
+  width: 28%;
+  background: #ddd;
+  border-radius: 50%;
+  box-shadow: 0 0 3px 0 white;
+}
+
+#monitorscreen {
+  position: relative;
+  background-color: #777;
+  background-size: cover;
+  background-position: top center;
+  height: 0;
+  padding-bottom: 56.25%;
+  position: relative;
+  overflow: hidden;
+}
+
+.afrohk-text {
+  font-size: 1rem;
+}
+
+.afrohk {
+  letter-spacing: 0.2rem;
+  color: white;
+}
+
+.tv {
+  letter-spacing: 0.2rem;
+  color: rgb(76, 131, 234);
+}
+
+.lab{
+  letter-spacing: 0.2rem;
+  color: rgb(255, 197, 8); 
+}
+
+
+#vimeo-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  padding: 0;
+}
+
+@media all and (min-width: 560px) {
+  #monitor {
+    -webkit-animation: tvflicker 0.2s infinite alternate;
+    -moz-animation: tvflicker 0.5s infinite alternate;
+    -o-animation: tvflicker 0.5s infinite alternate;
+    animation: tvflicker 0.5s infinite alternate;
+  }
+
+  @-webkit-keyframes tvflicker {
+    0% {
+      box-shadow: 0 0 100px 0 rgba(200, 235, 255, 0.4);
+    }
+
+    100% {
+      box-shadow: 0 0 95px 0 rgba(200, 230, 255, 0.45);
+    }
+  }
+
+  @-moz-keyframes tvflicker {
+    0% {
+      box-shadow: 0 0 100px 0 rgba(225, 235, 255, 0.4);
+    }
+
+    100% {
+      box-shadow: 0 0 60px 0 rgba(200, 220, 255, 0.6);
+    }
+  }
+
+  @-o-keyframes tvflicker {
+    0% {
+      box-shadow: 0 0 100px 0 rgba(225, 235, 255, 0.4);
+    }
+
+    100% {
+      box-shadow: 0 0 60px 0 rgba(200, 220, 255, 0.6);
+    }
+  }
+
+  @keyframes tvflicker {
+    0% {
+      box-shadow: 0 0 100px 0 rgba(225, 235, 255, 0.4);
+    }
+
+    100% {
+      box-shadow: 0 0 60px 0 rgba(200, 220, 255, 0.6);
+    }
+  }
+}
+
+/* Breadcrumbs */
+
+.breadcrumb {
+  /*centering*/
+  display: inline-block;
+  box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  border-radius: 5px;
+  /*Lets add the numbers for each link using CSS counters. flag is the name of the counter. to be defined using counter-reset in the parent element of the links*/
+  /* counter-reset: flag;  */
+}
+
+.breadcrumb a {
+  text-decoration: none;
+  outline: none;
+  display: block;
+  font-family: "Merriweather Sans", arial, verdana;
+  float: left;
+  font-size: 0.9rem;
+  line-height: 36px;
+  color: white;
+  /*need more margin on the left of links to accomodate the numbers*/
+  padding: 0 10px 0 30px;
+  background: #666;
+  background: linear-gradient(#666, #333);
+  position: relative;
+}
+
+/*since the first link does not have a triangle before it we can reduce the left padding to make it look consistent with other links*/
+.breadcrumb a:first-child {
+  padding-left: 20px;
+  /*to match with the parent's radius*/
+}
+
+.breadcrumb a:first-child:before {
+  left: 14px;
+}
+
+.breadcrumb a:last-child {
+  border-radius: 0 5px 5px 0;
+  /*this was to prevent glitches on hover*/
+  padding-right: 20px;
+}
+
+/*hover/active styles*/
+.breadcrumb a.active,
+.breadcrumb a:hover {
+  background: #333;
+  background: linear-gradient(#333, #000);
+}
+
+.breadcrumb a.active:after,
+.breadcrumb a:hover:after {
+  background: #333;
+  background: linear-gradient(135deg, #333, #000);
+}
+
+/*adding the arrows for the breadcrumbs using rotated pseudo elements*/
+.breadcrumb a:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -18px;
+  /*half of square's length*/
+  /*same dimension as the line-height of .breadcrumb a */
+  width: 36px;
+  height: 36px;
+  /*as you see the rotated square takes a larger height. which makes it tough to position it properly. So we are going to scale it down so that the diagonals become equal to the line-height of the link. We scale it to 70.7% because if square's: 
+	length = 1; diagonal = (1^2 + 1^2)^0.5 = 1.414 (pythagoras theorem)
+	if diagonal required = 1; length = 1/1.414 = 0.707*/
+  transform: scale(0.707) rotate(45deg);
+  /*we need to prevent the arrows from getting buried under the next link*/
+  z-index: 1;
+  /*background same as links but the gradient will be rotated to compensate with the transform applied*/
+  background: #666;
+  background: linear-gradient(135deg, #666, #333);
+  /*stylish arrow design using box shadow*/
+  box-shadow: 2px -2px 0 2px rgba(0, 0, 0, 0.4),
+    3px -3px 0 2px rgba(255, 255, 255, 0.1);
+  /*
+		5px - for rounded arrows and 
+		50px - to prevent hover glitches on the border created using shadows*/
+  border-radius: 0 5px 0 50px;
+}
+
+/*we dont need an arrow after the last link*/
+.breadcrumb a:last-child:after {
+  content: none;
+}
+
+/*we will use the :before element to show numbers*/
+
+.flat a,
+.flat a:after {
+  background: white;
+  color: black;
+  transition: all 0.5s;
+}
+
+.flat a:before {
+  background: white;
+  box-shadow: 0 0 0 1px #ccc;
+}
+
+.flat a:hover,
+.flat a.active,
+.flat a:hover:after,
+.flat a.active:after {
+  background: #9eeb62;
+}
+
+
+
+/*--------------------------------------------------------------
+/* footer 
+============================================================*/
+.svg-logo {
+  width: 70%;
+  height: 70%;
+}
+
+.text {
+  align-self: center;
+}
+
+.footer-slogan {
+  font-family: 'Playfair Display', serif;
+  color: #5806c5;
+
+  font-size: 1.2rem;
+}
+
+.top-footer-line {
+  background-color: #5000c8;
+  width: 100%;
+}
+
+.top-footer-line>p {
+  text-align: center;
+  position: relative;
+  letter-spacing: 0.1rem;
+  background-color: #5000c8d0;
+  background: #4776E6;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #8E54E9, #4776E6);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #8E54E9, #4776E6);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  font-size: 1.2rem;
+  line-height: 35px;
+  /* font-family: 'Playfair Display', serif; */
+  color: #ffffffe9;
+  padding: 2rem 1rem;
+  font-weight: 700;
+  margin-bottom: 27px;
+}
+
+
+a,
+a:hover,
+a:focus,
+a:active {
+  text-decoration: none;
+  outline: none;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.main-footer {
+  position: relative;
+  background: #ffffff;
+}
+
+.footer-content {
+  position: relative;
+  padding: 35px 0px 0px;
+}
+
+.footer-content:before {
+  position: absolute;
+  content: '';
+  background: url();
+  width: 744px;
+  height: 365px;
+  top: 50px;
+  right: 0px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  animation-name: float-bob;
+  animation-duration: 30s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  -webkit-animation-name: float-bob;
+  -webkit-animation-duration: 30s;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+  -moz-animation-name: float-bob;
+  -moz-animation-duration: 30s;
+  -moz-animation-iteration-count: infinite;
+  -moz-animation-timing-function: linear;
+  -ms-animation-name: float-bob;
+  -ms-animation-duration: 30s;
+  -ms-animation-iteration-count: infinite;
+  -ms-animation-timing-function: linear;
+  -o-animation-name: float-bob;
+  -o-animation-duration: 30s;
+  -o-animation-iteration-count: infinite;
+  -o-animation-timing-function: linear;
+}
+
+
+.footer-column,
+.logo-widget .footer-widget {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: first baseline;
+}
+
+.footer-content .logo-widget {
+  position: relative;
+  margin-top: -5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-social {
+  margin: 10px 0;
+}
+
+ .footer-social li {
+  position: relative;
+  display: inline-block;
+  margin-right: 9px;
+  margin-top: 7px;
+}
+
+.footer-social li:last-child {
+  margin-right: 0px;
+}
+
+.footer-social li a {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 42px;
+  line-height: 42px;
+  text-align: center;
+  border-radius: 50%;
+}
+
+.footer-social li a:hover {
+  color: #ffffff;
+  background: #5806c5;
+}
+
+.footer-content .logo-widget .logo-box {
+  margin-bottom: 25px;
+}
+
+.footer-content .logo-widget .text p {
+  margin-bottom: 32px;
+}
+
+.footer-content .footer-title {
+  position: relative;
+  font-size: 24px;
+  line-height: 35px;
+  font-family: 'Playfair Display', serif;
+  color: #4c07ad;
+  font-weight: 700;
+  margin-bottom: 27px;
+}
+
+.footer-content .service-widget .list li {
+  display: block;
+  margin-bottom: 12px;
+}
+
+.footer-content .service-widget .list li a {
+  position: relative;
+  display: inline-block;
+  color: #1e1f21;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.footer-content .service-widget .list li a:hover {
+  color: white;
+  background-color: #640eb5;
+  padding: 2px;
+  border-radius: 3px;
+}
+
+.footer-content .contact-widget p {
+  color: #9ea0a9;
+  margin-bottom: 15px;
+}
+
+.footer-content .contact-widget {}
+
+.footer-content .contact-widget .footer-title {
+  margin-bottom: 29px;
+}
+
+#m-facebook {
+  color: rgb(245, 239, 239);
+  background-color: rgb(9, 103, 192);
+}
+
+#m-instagram {
+  color: rgb(245, 239, 239);
+  background: #833ab4;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient (to right, #fcb045, #fd1d1d, #833ab4);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #fcb045, #fd1d1d, #833ab4);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+#m-linkedIn {
+  color: rgb(245, 239, 239);
+  background-color: #0e76a8;
+}
+
+#m-whatsapp {
+  background-color: rgb(29, 199, 29);
+  color: rgb(245, 239, 239);
+}
+
+#m-youtube {
+  color: rgb(245, 239, 239);
+  background-color: rgb(241, 65, 21);
+}
+
+#m-facebook:hover,
+#m-youtube:hover,
+#m-instagram:hover,
+#m-linkedIn:hover,
+#m-whatsapp:hover,
+#m-twitter:hover,
+#user_mail:hover {
+  transform: scale(1.1);
+}
+
+/** footer-bottom **/
+
+.footer-bottom {
+  background-color: #5000c8;
+  padding: 20px 0px;
+  margin-bottom: 0;
+}
+
+.copyright {
+  color: rgb(203, 214, 221);
+  text-align: center;
+}
+
+/* footer responsive */
+@media (max-width: 767px) {
+  .slogan {
+    font-size: 1.2rem;
+  }
+
+
+
+  @media (max-width: 578px) {
+    .slogan {
+      font-size: 1rem;
+    }
+  }
+
+  /* End social media */
+
+  @keyframes anim2 {
+    0% {
+      transform: translateY(4px);
+    }
+
+    100% {
+      transform: translateY(-4px);
+    }
+  }
+  /* Button  */
+
+  /* ======== Button 29 =====*/
+
+  .button-29 {
+    align-items: center;
+    appearance: none;
+    background-image: radial-gradient(100% 100% at 100% 0, #5adaff 0, #5468ff 100%);
+    border: 0;
+    border-radius: 6px;
+    box-shadow: rgba(45, 35, 66, .4) 0 2px 4px, rgba(45, 35, 66, .3) 0 7px 13px -3px, rgba(58, 65, 111, .5) 0 -3px 0 inset;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    font-family: "JetBrains Mono", monospace;
+    height: 48px;
+    justify-content: center;
+    line-height: 1;
+    list-style: none;
+    overflow: hidden;
+    padding-left: 16px;
+    padding-right: 16px;
+    position: relative;
+    text-align: left;
+    text-decoration: none;
+    transition: box-shadow .15s, transform .15s;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    white-space: nowrap;
+    will-change: box-shadow, transform;
+    font-size: 18px;
+  }
+
+  .button-29:focus {
+    box-shadow: #3c4fe0 0 0 0 1.5px inset, rgba(45, 35, 66, .4) 0 2px 4px, rgba(45, 35, 66, .3) 0 7px 13px -3px, #3c4fe0 0 -3px 0 inset;
+  }
+
+  .button-29:hover {
+    box-shadow: rgba(45, 35, 66, .4) 0 4px 8px, rgba(45, 35, 66, .3) 0 7px 13px -3px, #3c4fe0 0 -3px 0 inset;
+    transform: translateY(-2px);
+  }
+
+  .button-29:active {
+    box-shadow: #3c4fe0 0 3px 7px inset;
+    transform: translateY(2px);
+  }
+
+
+  /* button-70 */
+  .button-70 {
+    background-image: linear-gradient(#0dccea, #0d70ea);
+    border: 0;
+    border-radius: 4px;
+    box-shadow: rgba(0, 0, 0, .3) 0 5px 15px;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    font-family: Montserrat, sans-serif;
+    font-size: .9em;
+    margin: 5px;
+    padding: 10px 15px;
+    text-align: center;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+
+  .button-70:hover {
+    color: white;
+  }
+
+
+  /* btn 7 */
+  .button-7 {
+    background-color: #0095ff;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    box-shadow: rgba(255, 255, 255, .4) 0 1px 0 0 inset;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-family: -apple-system, system-ui, "Segoe UI", "Liberation Sans", sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.15385;
+    margin: 0 1rem;
+    outline: none;
+    padding: 8px .8em;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: baseline;
+    white-space: nowrap;
+  }
+
+  .button-7:hover,
+  .button-7:focus {
+    background-color: #07c;
+    color: white;
+  }
+
+  .button-7:focus {
+    box-shadow: 0 0 0 4px rgba(0, 149, 255, .15);
+  }
+
+  .button-7:active {
+    background-color: #0064bd;
+    box-shadow: none;
+  }
+
+
+  /* End footer */
+
+  /* responsive */
+  @media (max-width: 1200px) {
+    .header-text {
+      font-size: 3rem;
+    }
+
+    .motto-footer {
+      font-size: 1.2rem;
+    }
+  }
+
+  @media (max-width: 990px) {
+    .header-text {
+      font-size: 2.5rem;
+    }
+
+    .footer-links-header {
+      font-size: 1rem;
+      margin-top: 1rem;
+    }
+
+    .nav-link {
+      display: flex;
+      justify-content: center;
+    }
+
+    .flash-container {
+      width: 80%;
+    }
+
+    .motto-footer {
+      font-size: 1rem;
+    }
+
+    .top-link {
+      right: 5%;
+      bottom: 5%;
+    }
+
+    .top-footer-line>p {
+      font-size: 1.5rem;
+    }
+  }
+
+  @media (max-width: 800px) {
+    .logo-footer {
+      width: 150px;
+      height: 200px;
+    }
+
+    #brand-name {
+      font-size: 2rem;
+    }
+
+    .motto-footer {
+      font-size: 0.8rem;
+    }
+
+    .logo-navbar {
+      display: none;
+    }
+  }
+
+
+  @media (max-width: 768px) {
+    #footer {
+      /* background: #141E30; */
+    }
+
+    .footer-links-header {
+      font-size: 1rem;
+      margin-top: 1rem;
+    }
+
+
+  }
+
+  @media (max-width: 450px) {
+    .footer-links-header {
+      font-size: 1rem;
+    }
+
+    .brand {
+      font-size: 1rem;
+    }
+
+    html {
+      font-size: 90%;
+    }
+
+    .top-footer-line>p {
+      font-size: 1.3rem;
+    }
+
+    .useful-links {
+      font-size: 1rem;
+    }
+  }
+
+  @media (max-width: 350px) {
+    .brand {
+      font-size: 0.8rem;
+    }
+  }

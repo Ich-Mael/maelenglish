@@ -1,0 +1,332 @@
+<% layout('layouts/main') %>
+
+<% headContent = `
+  <style>
+    .create-account-container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 2rem;
+    }
+    
+    .create-account-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 15px 15px 0 0;
+      text-align: center;
+      margin-bottom: 0;
+    }
+    
+    .create-account-card {
+      background: white;
+      border-radius: 0 0 15px 15px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      padding: 2rem;
+    }
+    
+    .form-section {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #667eea;
+    }
+    
+    .form-group-enhanced {
+      margin-bottom: 1.25rem;
+    }
+    
+    .form-group-enhanced label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #555;
+    }
+    
+    .form-group-enhanced label .text-danger {
+      color: #dc3545;
+    }
+    
+    .form-control-enhanced {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .form-control-enhanced:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .form-text {
+      font-size: 0.875rem;
+      color: #6c757d;
+      margin-top: 0.25rem;
+    }
+    
+    .password-match {
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 5px;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    
+    .password-match.match {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .password-match.no-match {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .btn-submit-enhanced {
+      width: 100%;
+      padding: 0.875rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+    }
+    
+    .btn-submit-enhanced:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .info-box {
+      background-color: #e7f3ff;
+      border-left: 4px solid #667eea;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      border-radius: 5px;
+    }
+    
+    .info-box p {
+      margin: 0;
+      color: #004085;
+      font-size: 0.9rem;
+    }
+    
+    .row-cols-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+      .row-cols-2 {
+        grid-template-columns: 1fr;
+      }
+      
+      .create-account-container {
+        padding: 1rem;
+      }
+    }
+  </style>
+` %>
+
+<div class="create-account-container">
+  <div class="create-account-header">
+    <h1><i class="bi bi-person-plus me-2"></i>Création de compte utilisateur</h1>
+    <p class="mb-0 mt-2" style="opacity: 0.9;">Créez un nouveau compte utilisateur de base</p>
+  </div>
+  
+  <div class="create-account-card">
+    <div class="info-box">
+      <p><strong>Note importante :</strong> Ce formulaire crée uniquement un compte utilisateur de base. 
+      L'enrôlement dans les programmes (Kalan, English Boost, etc.) se fera séparément depuis les dashboards spécifiques de chaque programme.</p>
+    </div>
+    
+    <form action="/createaccount" method="post" id="createAccountForm">
+      <div class="form-section">
+        <h3 class="form-section-title">Informations personnelles</h3>
+        
+        <div class="row-cols-2">
+          <div class="form-group-enhanced">
+            <label for="name">
+              Nom <span class="text-danger">*</span>
+            </label>
+            <input 
+              type="text" 
+              name="account[name]" 
+              class="form-control-enhanced" 
+              id="name" 
+              placeholder="Entrez le nom"
+              required>
+          </div>
+
+          <div class="form-group-enhanced">
+            <label for="surname">
+              Prénom <span class="text-danger">*</span>
+            </label>
+            <input 
+              type="text" 
+              name="account[surname]" 
+              class="form-control-enhanced" 
+              id="surname" 
+              placeholder="Entrez le prénom"
+              required>
+          </div>
+        </div>
+
+        <div class="form-group-enhanced">
+          <label for="username">
+            Nom d'utilisateur <span class="text-danger">*</span>
+          </label>
+          <input 
+            type="text" 
+            name="account[username]" 
+            class="form-control-enhanced" 
+            id="username" 
+            placeholder="Choisissez un nom d'utilisateur unique"
+            required>
+          <small class="form-text">Ce nom sera utilisé pour la connexion</small>
+        </div>
+
+        <div class="form-group-enhanced">
+          <label for="email">
+            Adresse email <span class="text-danger">*</span>
+          </label>
+          <input 
+            type="email" 
+            name="account[email]" 
+            class="form-control-enhanced" 
+            id="email" 
+            placeholder="exemple@email.com"
+            required>
+        </div>
+
+        <div class="form-group-enhanced">
+          <label for="gender">
+            Genre <span class="text-danger">*</span>
+          </label>
+          <select
+            id="gender"
+            name="account[gender]"
+            class="form-control-enhanced"
+            required
+          >
+            <option value="">-- Sélectionnez le genre --</option>
+            <option value="male">Homme</option>
+            <option value="female">Femme</option>
+            <option value="other">Autre</option>
+          </select>
+        </div>
+
+        <div class="form-group-enhanced">
+          <label for="phoneNumber">
+            Contact téléphonique
+          </label>
+          <input 
+            type="tel" 
+            name="account[phoneNumber]" 
+            class="form-control-enhanced" 
+            id="phoneNumber" 
+            placeholder="Numéro de téléphone (optionnel)">
+        </div>
+
+        <div class="form-group-enhanced">
+          <label for="role">
+            Rôle
+          </label>
+          <select
+            id="role"
+            name="account[role]"
+            class="form-control-enhanced"
+          >
+            <option value="user">Utilisateur</option>
+            <option value="admin">Administrateur</option>
+            <option value="super-admin">Super Administrateur</option>
+            <option value="account-manager">Gestionnaire de comptes</option>
+          </select>
+          <small class="form-text">Si aucun admin n'existe, le premier compte sera automatiquement un admin</small>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3 class="form-section-title">Sécurité du compte</h3>
+        
+        <div class="form-group-enhanced">
+          <label for="password">
+            Mot de passe
+          </label>
+          <input 
+            type="password" 
+            name="account[password]" 
+            class="form-control-enhanced" 
+            id="password" 
+            placeholder="Laissez vide pour générer automatiquement"
+            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
+            title="Au moins 6 caractères, incluant un chiffre, une minuscule et une majuscule">
+          <small class="form-text">Laissez vide pour générer un mot de passe aléatoire et l'envoyer par email.</small>
+        </div>
+
+        <div class="form-group-enhanced">
+          <label for="defP">
+            Confirmer le mot de passe
+          </label>
+          <input 
+            type="password" 
+            name="account[defP]" 
+            class="form-control-enhanced" 
+            id="defP" 
+            placeholder="Confirmez le mot de passe">
+          <div id="passwordMatch" class="password-match" style="display: none;"></div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit-enhanced">
+        <i class="bi bi-person-plus me-2"></i>Créer le compte
+      </button>
+    </form>
+  </div>
+</div>
+
+<% scripts = `
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const password = document.getElementById('password');
+      const defP = document.getElementById('defP');
+      const passwordMatch = document.getElementById('passwordMatch');
+      
+      function checkPasswordMatch() {
+        if (defP.value === '') {
+          passwordMatch.style.display = 'none';
+          return;
+        }
+        
+        passwordMatch.style.display = 'block';
+        if (password.value === defP.value) {
+          passwordMatch.className = 'password-match match';
+          passwordMatch.innerHTML = '<i class="bi bi-check-circle me-2"></i>Les mots de passe correspondent';
+        } else {
+          passwordMatch.className = 'password-match no-match';
+          passwordMatch.innerHTML = '<i class="bi bi-x-circle me-2"></i>Les mots de passe ne correspondent pas';
+        }
+      }
+      
+      password.addEventListener('keyup', checkPasswordMatch);
+      defP.addEventListener('keyup', checkPasswordMatch);
+    });
+  </script>
+` %>
+

@@ -1,0 +1,94 @@
+body {
+    background-color: rgb(255, 255, 255);
+}
+
+.user-banner {
+    padding: 2rem 1rem;
+    margin-top: 3rem;
+    margin-bottom: 4rem;
+    /* height: 30vh; */
+    display: flex;
+    /* flex-direction: column; */
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(255, 255, 254);
+    border: 3px solid rgb(0, 73, 128);
+    border-radius: 5px;
+    box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+}
+
+
+
+.user-img{
+    width: 60%;
+    height: 60%;
+}
+.welcome-msg {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    text-align: start;
+    font-size: 1.5rem;
+    line-height: 2rem;
+    /* font-family: "Kaushan Script", cursive; */
+    /* font-family: 'Paytone One', sans-serif; */
+    /* font-family: "Rye", cursive; */
+    /* font-family: 'Titan One', cursive; */
+    color: rgb(6, 19, 6);
+    /* font-family: "Nosifer", cursive; */
+}
+
+.quote {
+    margin: 2rem 1rem;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    text-align: center;
+    color: rgba(0, 55, 255, 0.809);
+    font-size: 2rem;
+}
+
+.my-program {
+    text-align: center;
+    /* font-family: "Kaushan Script", cursive; */
+    /* font-family: 'Paytone One', sans-serif; */
+    /* font-family: "Rye", cursive; */
+    /* font-family: 'Titan One', cursive; */
+    /* font-family: "Nosifer", cursive; */
+    font-size: 1.5rem;
+    padding: 2rem 2rem;
+    background-color: rgb(12, 35, 78);
+    color: aliceblue;
+}
+
+.program-img-wrapper {
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+    border-radius: 5px;
+    padding: 0.5rem;
+    /* margin: 1rem 2rem; */
+}
+
+.program-img-wrapper img {
+    height: 13rem;
+    width: 100%;
+}
+
+
+.pecp-coach {
+    background: url(https://images.pexels.com/photos/5685821/pexels-photo-5685821.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2);
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-position: center center;
+    position: relative;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    margin: 0;
+    padding: 0;
+    height: 69vh;
+    position: relative;
+}
+
+.pecp-link-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

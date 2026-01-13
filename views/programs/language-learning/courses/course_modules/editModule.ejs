@@ -1,0 +1,251 @@
+<% layout('layouts/main') %>
+
+<style>
+  :root {
+    --primary-color: #5d06ba;
+    --primary-light: #f3e5f5;
+    --primary-dark: #2d0370;
+    --text-dark: #1d1d1f;
+    --text-muted: #6e6e73;
+    --border-color: #e5e5e5;
+    --card-bg: #ffffff;
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --radius-md: 16px;
+    font-family: 'Outfit', sans-serif;
+  }
+  
+  body {
+    background-color: #f8f9fa;
+    font-family: var(--font-family);
+  }
+
+  .page-header {
+    background: white;
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 2rem;
+  }
+
+  .breadcrumb-item a {
+    color: var(--primary-color);
+    text-decoration: none;
+  }
+  
+  .breadcrumb-item.active {
+    color: var(--text-muted);
+  }
+
+  .card-premium {
+    background: white;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-md);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .card-premium:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .form-label {
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    padding: 0.75rem 1rem;
+    transition: all 0.2s;
+  }
+
+  .form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px var(--primary-light);
+  }
+
+  .btn-primary-custom {
+    background-color: var(--primary-color);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    color: white;
+    transition: all 0.2s;
+    width: 100%;
+  }
+
+  .btn-primary-custom:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+  }
+
+  .badge-section {
+    background: var(--primary-light);
+    color: var(--primary-color);
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+  }
+</style>
+
+<!-- Header -->
+<div class="page-header">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-2">
+        <li class="breadcrumb-item"><a href="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>">Course Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules">Modules</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Edit Module</li>
+      </ol>
+    </nav>
+    <h1 class="h3 fw-bold text-dark mb-0">Edit Module: <span class="text-muted"><%= courseModule.title %></span></h1>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row g-4">
+    <!-- Main Edit Form -->
+    <div class="col-lg-8">
+      <div class="card-premium">
+        <div class="card-title">
+          <div class="badge-section"><i class="bi bi-pencil-square"></i></div>
+          Module Details
+        </div>
+        
+        <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>?_method=PUT" method="POST">
+          <div class="row g-3">
+            <div class="col-md-8">
+              <label class="form-label" for="title">Module Title</label>
+              <input class="form-control" type="text" id="title" name="module[title]" value="<%= courseModule.title %>" required />
+            </div>
+            
+            <div class="col-md-4">
+              <label class="form-label" for="revealDate">Reveal Date</label>
+              <input class="form-control" type="date" id="revealDate" name="module[revealDate]" value="<%= courseModule.revealDate ? new Date(courseModule.revealDate).toISOString().split('T')[0] : '' %>" required />
+            </div>
+
+            <div class="col-12">
+              <label class="form-label" for="willLearnModule">What will we learn?</label>
+              <textarea class="form-control mytextarea" id="willLearnModule" name="module[willLearnModule]" rows="3" required><%= courseModule.willLearnModule %></textarea>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label" for="explanationText">Module Content (Explanation)</label>
+              <textarea class="form-control mytextarea" id="explanationText" name="module[explanationText]" rows="5" required><%= courseModule.explanationText%></textarea>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label" for="moreDetails">More Details</label>
+              <textarea class="form-control mytextarea" id="moreDetails" name="module[moreDetails]" rows="3" required><%= courseModule.moreDetails %></textarea>
+            </div>
+
+            <div class="col-12 mt-4">
+              <button type="submit" class="btn-primary-custom">
+                <i class="bi bi-save me-2"></i> Update Module Details
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Sidebar: Add Items -->
+    <div class="col-lg-4">
+      <!-- Add Video Card -->
+      <div class="card-premium">
+        <div class="card-title">
+          <div class="badge-section" style="background:#e0f2fe; color:#0284c7;"><i class="bi bi-camera-video"></i></div>
+          Add Video Lesson
+        </div>
+        
+        <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/engcoursevideo" method="POST">
+          <div class="mb-3">
+            <label class="form-label">Lesson Title</label>
+            <input class="form-control" type="text" name="engVideo[title]" placeholder="e.g. Introduction to Verbs" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Lesson Type</label>
+            <select class="form-select" name="engVideo[lessonType]" required>
+              <option value="English lesson" selected>English lesson</option>
+              <option value="Grammar">Grammar</option>
+              <option value="Vocabulary">Vocabulary</option>
+              <option value="Pronunciation">Pronunciation</option>
+              <option value="Writing">Writing</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Thumbnail Image URL</label>
+            <input class="form-control" type="text" name="engVideo[lessonImage]" placeholder="https://..." required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Video Link (Embed)</label>
+            <input class="form-control" type="text" name="engVideo[engCourseLink]" placeholder="Vimeo/YouTube Embed URL" required />
+          </div>
+
+          <button class="btn-primary-custom" type="submit" style="background-color: #0284c7;">
+            <i class="bi bi-plus-circle me-2"></i> Add Video
+          </button>
+        </form>
+      </div>
+
+      <!-- Add Practice Card -->
+      <div class="card-premium">
+        <div class="card-title">
+          <div class="badge-section" style="background:#dcfce7; color:#16a34a;"><i class="bi bi-puzzle"></i></div>
+          Add Practice
+        </div>
+        
+        <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/practice" method="POST">
+          <div class="mb-3">
+            <label class="form-label">Assignment Title</label>
+            <input class="form-control" type="text" name="practice[title]" placeholder="e.g. Quiz 1" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Category</label>
+            <select class="form-select" name="practice[category]" required>
+              <option value="English lesson" selected>English Exercise</option>
+              <option value="Grammar">Grammar</option>
+              <option value="Vocabulary">Vocabulary</option>
+              <option value="Listening">Listening</option>
+              <option value="Reading">Reading</option>
+              <option value="Writing">Writing</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Assignment Links (Comma separated)</label>
+            <input class="form-control" type="text" name="practice[practice_links]" placeholder="Link1, Link2..." required />
+          </div>
+
+          <button class="btn-primary-custom" type="submit" style="background-color: #16a34a;">
+            <i class="bi bi-plus-circle me-2"></i> Add Practice
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

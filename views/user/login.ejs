@@ -1,48 +1,596 @@
-<% layout('layouts/boilerplate') %>
-<link href="stylesheets/user/login.css" rel="stylesheet" />
-<link href="https://fonts.googleapis.com/css2?family=Paytone+One&family=Rye&family=Titan+One&display=swap"
-  rel="stylesheet" />
-<link
-  href="https://fonts.googleapis.com/css2?family=Akronim&family=Great+Vibes&family=Kaushan+Script&family=Marck+Script&family=Markazi+Text&family=Nosifer&family=Sigmar+One&display=swap"
-  rel="stylesheet" />
-<div id="login-wrapper" class="">
-  <div class="join">
-    <h1 class="join-text">
-      Rejoignez-nous et faîtes-vous former par les meilleurs 😉
-    </h1>
-    <div class="program-inscription-wrapper">
-      <a class="pas-compte mx-2 my-2 btn" href="#footer">Contactez-nous pour s'inscrire à un programme</a>
-    </div>
-  </div>
-  <div class="login-div">
-    <h1 class="text-center" id="login-header">CONNEXION</h1>
-    <form class="row g-3 validated-form mx-1" action="/login" method="POST" novalidate>
-      <div class="fields">
-        <div class="col my-1">
-          <i class="bi ii bi-person-circle fs-5"></i>
-          <label class="form-label" for="username">Nom Utilisateur</label>
-          <input class="form-control" placeholder="" id="username" name="username" type="text" value="" required />
-        </div>
-        <div class="col my-2">
-          <i class="bi ii bi-shield-lock-fill fs-5"></i>
-          <label class="form-label" for="password">Mot de Passe</label>
-          <input class="form-control" id="password" name="password" type="password" value="" required />
-        </div>
-        <div class="
-            col-12
-            mt-4
-            pb-3
-            d-flex
-            flex-column
-            align-items-center
-            justify-content-around
-          ">
-          <button type="submit" class="btn connexion my-2">
-            Connexion
-          </button>
-          <a class="mx-2 my-2 " href="/reset-password">Avez-vous oublié votre mot de passe?</a>
+<% layout('layouts/main') %>
+
+<% headContent = `
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    .login-page-wrapper {
+      min-height: calc(100vh - 80px);
+      margin-top: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* Animated background elements */
+    .login-page-wrapper::before,
+    .login-page-wrapper::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      animation: float 20s infinite ease-in-out;
+    }
+    
+    .login-page-wrapper::before {
+      width: 500px;
+      height: 500px;
+      top: -250px;
+      left: -250px;
+      animation-delay: 0s;
+    }
+    
+    .login-page-wrapper::after {
+      width: 400px;
+      height: 400px;
+      bottom: -200px;
+      right: -200px;
+      animation-delay: 10s;
+    }
+    
+    @keyframes float {
+      0%, 100% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.1;
+      }
+      50% {
+        transform: translate(50px, 50px) scale(1.1);
+        opacity: 0.15;
+      }
+    }
+    
+    /* Main Login Container */
+    .login-container-modern {
+      width: 100%;
+      max-width: 1100px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      background: white;
+      border-radius: 32px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      animation: slideUp 0.6s ease-out;
+      position: relative;
+      z-index: 1;
+    }
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Left Side - Branding */
+    .login-brand-section {
+      background: linear-gradient(135deg, rgba(93, 6, 186, 0.85) 0%, rgba(45, 3, 112, 0.85) 100%);
+      padding: 4rem 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .login-brand-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url('/assets/img/hero-bg-5.jpg');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.4;
+      animation: subtleZoom 20s ease-in-out infinite;
+    }
+    
+    @keyframes subtleZoom {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+    
+    .login-brand-content {
+      position: relative;
+      z-index: 2;
+      max-width: 450px;
+      animation: fadeInLeft 1s ease-out;
+    }
+    
+    @keyframes fadeInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .brand-logo {
+      animation: fadeInScale 1.2s ease-out 0.2s both, pulse 3s infinite ease-in-out 1.5s;
+    }
+    
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    
+    .brand-logo {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 2rem;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    }
+    
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 12px 40px rgba(255, 255, 255, 0.3);
+      }
+    }
+    
+    .brand-logo svg {
+      width: 80px;
+      height: 80px;
+    }
+    
+    .brand-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+      letter-spacing: -0.5px;
+      animation: fadeInUp 1s ease-out 0.3s both;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .brand-subtitle {
+      font-size: 1.15rem;
+      line-height: 1.8;
+      opacity: 0.95;
+      font-weight: 400;
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+      animation: fadeInUp 1s ease-out 0.5s both;
+    }
+    
+    .brand-mission {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      animation: fadeInUp 1s ease-out 0.7s both;
+    }
+    
+    .brand-mission-text {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.9;
+      font-style: italic;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    }
+    
+    .brand-mission-icon {
+      display: inline-block;
+      margin-right: 0.5rem;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-5px);
+      }
+    }
+    
+    /* Right Side - Form */
+    .login-form-section-modern {
+      padding: 3rem 3.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: white;
+      animation: fadeInRight 1s ease-out;
+    }
+    
+    @keyframes fadeInRight {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    @keyframes fadeInRight {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .form-header {
+      margin-bottom: 2rem;
+      animation: fadeInDown 0.8s ease-out 0.2s both;
+    }
+    
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .form-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.5px;
+    }
+    
+    .form-header p {
+      color: #666;
+      font-size: 1rem;
+      margin: 0;
+    }
+    
+    /* Form Styles */
+    .modern-form {
+      width: 100%;
+    }
+    
+    .form-field {
+      margin-bottom: 1.5rem;
+      position: relative;
+      animation: fadeInUp 0.6s ease-out both;
+    }
+    
+    .form-field:nth-child(1) {
+      animation-delay: 0.3s;
+    }
+    
+    .form-field:nth-child(2) {
+      animation-delay: 0.4s;
+    }
+    
+    .form-field label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .input-container {
+      position: relative;
+    }
+    
+    .input-container i {
+      position: absolute;
+      left: 1.25rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #5d06ba;
+      font-size: 1.25rem;
+      transition: all 0.3s ease;
+      z-index: 1;
+    }
+    
+    .input-container input {
+      width: 100%;
+      padding: 1.125rem 1.25rem 1.125rem 3.5rem;
+      font-size: 1rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      background: #fafafa;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: inherit;
+    }
+    
+    .input-container input:focus {
+      outline: none;
+      border-color: #5d06ba;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(93, 6, 186, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .input-container:focus-within i {
+      color: #2d0370;
+      transform: translateY(-50%) scale(1.1);
+    }
+    
+    .input-container input::placeholder {
+      color: #9ca3af;
+    }
+    
+    /* Submit Button */
+    .submit-btn {
+      width: 100%;
+      padding: 1.125rem;
+      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-top: 0.5rem;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      box-shadow: 0 4px 15px rgba(93, 6, 186, 0.3);
+      animation: fadeInUp 0.6s ease-out 0.5s both;
+    }
+    
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.6s;
+    }
+    
+    .submit-btn:hover::before {
+      left: 100%;
+    }
+    
+    .submit-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(93, 6, 186, 0.4);
+    }
+    
+    .submit-btn:active {
+      transform: translateY(-1px);
+    }
+    
+    .submit-btn i {
+      font-size: 1.2rem;
+    }
+    
+    /* Forgot Password Link */
+    .forgot-password-link {
+      text-align: center;
+      margin-top: 1.25rem;
+    }
+    
+    .forgot-password-link a {
+      color: #666;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .forgot-password-link a:hover {
+      color: #5d06ba;
+      transform: translateY(-1px);
+    }
+    
+    .forgot-password-link a i {
+      font-size: 0.875rem;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 968px) {
+      .login-container-modern {
+        grid-template-columns: 1fr;
+        max-width: 500px;
+      }
+      
+      .login-brand-section {
+        padding: 3rem 2rem;
+        min-height: 300px;
+      }
+      
+      .brand-title {
+        font-size: 2rem;
+      }
+      
+      .brand-subtitle {
+        font-size: 1rem;
+      }
+      
+      .login-form-section-modern {
+        padding: 2.5rem 2rem;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .login-page-wrapper {
+        padding: 1rem;
+      }
+      
+      .login-container-modern {
+        border-radius: 24px;
+      }
+      
+      .login-brand-section {
+        padding: 2.5rem 1.5rem;
+      }
+      
+      .brand-logo {
+        width: 100px;
+        height: 100px;
+      }
+      
+      .brand-logo svg {
+        width: 60px;
+        height: 60px;
+      }
+      
+      .brand-title {
+        font-size: 1.75rem;
+      }
+      
+      .login-form-section-modern {
+        padding: 2.5rem 2rem;
+      }
+      
+      .form-header h1 {
+        font-size: 1.75rem;
+      }
+      
+      .input-container input {
+        padding: 1rem 1rem 1rem 3rem;
+      }
+      
+      .input-container i {
+        left: 1rem;
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+` %>
+
+<div class="login-page-wrapper">
+  <div class="login-container-modern">
+    <!-- Left Side - Branding -->
+    <div class="login-brand-section">
+      <div class="login-brand-content">
+        <h1 class="brand-title">Bienvenue chez AfroHK</h1>
+        <p class="brand-subtitle">
+          Votre plateforme d'excellence pour l'apprentissage et le développement. 
+          Accédez à des ressources pédagogiques de qualité et transformez votre parcours éducatif.
+        </p>
+        <div class="brand-mission">
+          <p class="brand-mission-text">
+            <i class="bi bi-lightbulb-fill brand-mission-icon"></i>
+            Devenez acteur de votre réussite et de l'avenir du continent
+          </p>
         </div>
       </div>
-    </form>
+    </div>
+    
+    <!-- Right Side - Login Form -->
+    <div class="login-form-section-modern">
+      <div class="form-header">
+        <h1>Connexion</h1>
+        <p>Accédez à votre compte</p>
+      </div>
+      
+      <form action="/login" method="POST" class="modern-form" id="loginForm">
+        <div class="form-field">
+          <label for="username">Nom d'utilisateur</label>
+          <div class="input-container">
+            <i class="bi bi-person-circle"></i>
+            <input 
+              type="text" 
+              id="username" 
+              name="username" 
+              placeholder="Entrez votre nom d'utilisateur"
+              required
+              autocomplete="username">
+          </div>
+        </div>
+        
+        <div class="form-field">
+          <label for="password">Mot de passe</label>
+          <div class="input-container">
+            <i class="bi bi-shield-lock-fill"></i>
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              placeholder="Entrez votre mot de passe"
+              required
+              autocomplete="current-password">
+          </div>
+        </div>
+        
+        <button type="submit" class="submit-btn">
+          <i class="bi bi-box-arrow-in-right"></i>
+          <span>Se connecter</span>
+        </button>
+        
+        <div class="forgot-password-link">
+          <a href="/forgot-password">
+            <i class="bi bi-question-circle"></i>
+            Mot de passe oublié ?
+          </a>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

@@ -1,0 +1,170 @@
+/* *{box-sizing: border-box} */
+
+
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;500&display=swap');
+
+* {
+  box-sizing: border-box;
+  font-family: 'Quicksand', sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+
+.full-screen-container {
+  background-image: url('/assets/img/background-12.jpg');
+  height: 100vh;
+  width: 100vw;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-container {
+  background-color: hsla(201, 100%, 6%, 0.6);
+  padding: 50px 30px;
+  margin: 0 2rem;
+  /* min-width: 400px; */
+  border-radius: 10px;
+  /* width: 50%; */
+  border: 3px solid rgba(0, 102, 255, 0.422);
+  /* max-width: 500px; */
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+}
+
+.login-title {
+  color: #fff;
+  text-align: center;
+  margin: 0;
+  margin-bottom: 40px;
+  font-size: 2.5em;
+  font-weight: normal;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  color: #fff;
+  font-weight: lighter;
+  font-family: Roboto;
+  font-size: 1.4em;
+  letter-spacing: 0.1rem;
+  margin-bottom: 17px;
+}
+
+.input-group input {
+  font-size: 1.3em;
+  padding: 0.1em 0.25em;
+  background-color: hsla(201, 100%, 91%, 0.3);
+  border: 1px solid hsl(201, 100%, 6%);
+  outline: none;
+  border-radius: 5px;
+  color: #fff;
+  font-weight: lighter;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+}
+
+.input-group input:focus {
+  border: 1px solid hsl(201, 100%, 50%);
+}
+
+.login-button {
+  padding: 5px 30px;
+  width: 100%;
+  border-radius: 5px;
+  background: hsla(213, 100%, 50%, 0.827);
+  border: 1px solid hsl(201, 100%, 50%);
+  outline: none;
+  font-size: 1.5em;
+  color: #fff;
+  font-weight: lighter;
+  margin: 20px 0;
+  cursor: pointer;
+  transition: all 0.3s;
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  -ms-transition: all 0.3s;
+  -o-transition: all 0.3s;
+}
+
+.login-button:hover {
+  background-color: hsla(201, 90%, 16%, 0.803);
+}
+
+.login-button:focus {
+  background-color: hsla(201, 100%, 50%, 0.5);
+}
+
+.forget-pasword a{
+  color: rgba(18, 18, 3, 0.85);
+  font-size: 1rem;
+  background-color: rgba(255, 225, 0, 0.708);
+}
+
+
+.forget-pasword a:hover{
+  color: rgba(255, 225, 0, 0.708);
+  font-size: 1rem;
+  background-color: rgba(18, 18, 3, 0.85);
+}
+
+ .home a:hover{
+  color: rgba(6, 151, 64, 0.725);
+  background-color: azure;
+}
+
+.home a{
+  font-size: 1rem;
+  color: rgb(218, 248, 218);
+  background-color: rgb(11, 55, 3);
+}
+
+.ea{
+  font-family: "Henny Penny", cursive;
+  margin: auto;
+	letter-spacing: 0.0015em;
+	font-size: 5rem;
+	text-shadow: 0 1px #8da1ff, -1px 0 #c0cbff, -1px 2px #8da1ff, -2px 1px #c0cbff,
+		-2px 3px #8da1ff, -3px 2px #c0cbff, -3px 4px #8da1ff, -4px 3px #c0cbff,
+		-4px 5px #8da1ff, -5px 4px #c0cbff, -5px 6px #8da1ff, -6px 5px #c0cbff,
+		-6px 7px #8da1ff, -7px 6px #c0cbff, -7px 8px #8da1ff, -8px 7px #c0cbff;
+	text-align: center;
+  margin: 1rem auto;
+  z-index: 500;
+}
+
+@media screen and (max-width: 768px) {
+.ea{
+  font-size: 2rem;
+}
+
+
+.login-title {
+  color: #fff;
+  text-align: center;
+  margin: 0;
+  margin-bottom: 20px;
+  font-size: 2.3em;
+
+
+}
+.login-button{
+font-size: 1.2rem;
+}
+}

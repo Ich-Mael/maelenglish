@@ -1,0 +1,120 @@
+<% layout('layouts/100bacBoilerplate') %>
+<style>
+  .student_basic_info {
+    box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+    padding: 2rem;
+  }
+  .actions {
+    background-color: aliceblue;
+    margin: 3rem 0;
+  }
+
+  label{
+    margin-top: 2rem;
+    color: blue;
+  }
+</style>
+<div class="container">
+  <h3 class="text-center my-3">
+    <%= student.studentBasicInfo.name %> Dashboard |
+    <span class="text-primary"><%= student.class %> <%= student.serie %> </span>
+  </h3>
+
+  <div id="Student_info">
+    <div class="my-3 student_basic_info">
+      <h3><%= student.studentBasicInfo.username %></h3>
+    </div>
+    <div class="actions">
+      <h4 class="text-center py-3">Managing Student Profile</h4>
+      <div class="d-flex justify-content-around" style="padding: 1rem 0">
+        <button
+          class="btn btn-primary"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapse-1"
+          aria-expanded="false"
+          aria-controls=""
+        >
+          Update Student Info
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Updating student info -->
+  <div class="collapse" id="collapse-1">
+    <div class="card card-body">
+      <div class="container col-md-8">
+        <h3 class="text-center mb-5">Updating Student profile</h3>
+
+        <form
+          action="/admindashboard/100bac/studentDashboard/student/<%=student._id%>?_method=PUT"
+          method="POST"
+        >
+          <label class="form-label" for="student_username"
+            >Student username</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            id="student_username"
+            name="student_username"
+            value="<%= student.studentBasicInfo.username %>"
+            required
+          />
+
+          <label class="form-label" for="school">School</label>
+          <input
+            type="text"
+            class="form-control"
+            id="school"
+            name="school"
+            value="<%=student.school%>"
+            required
+          />
+
+        <hr> 
+          <select
+            class="form-select mt-2"
+            id="serie"
+            class="form-control"
+            required
+            name="serie"
+            aria-label="Default select example"
+          >
+            <option selected>Selectionnez la nouvelle serie</option>
+            <option value="A">Serie A</option>
+            <option value="C">Serie C</option>
+            <option value="D">Serie D</option>
+            <option value="G2">Serie G2</option>
+            <option value="F">Serie F</option>
+            <option value="Collège">Collège</option>
+            <option value="Primaire">Primaire</option>
+          </select>
+
+          <select
+            class="form-select mt-2"
+            id="class_title"
+            class="form-control"
+            required
+            name="class"
+            aria-label="Default select example"
+          >
+            <option selected>Selectionnez la classe</option>
+            <option value="Seconde">Seconde</option>
+            <option value="Premiere">Premiere</option>
+            <option value="Terminale">Terminale</option>
+            <option value="Troisieme">Troisieme</option>
+            <option value="F">Quatrieme</option>
+            <option value="Cinquieme">Cinquieme</option>
+            <option value="Sixieme">Sixieme</option>
+          </select>
+
+          <button type="submit" class="btn btn-outline-primary my-3">
+            Update Student
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

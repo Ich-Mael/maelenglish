@@ -1,0 +1,488 @@
+<% layout('layouts/courseBoilerplate') %>
+  <link href="/stylesheets/courses/showModule.css" rel="stylesheet" />
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+    rel="stylesheet" />
+
+  <div data-aos="zoom-out" data-aos-delay="100" data-aos-duration="1800" class="header-wrapper">
+    <div class="bg-img-wrapper">
+      <img class="img-medium" src="<%= course.courseImageUrl %> " alt="" />
+    </div>
+    <div class="banner-wrapper">
+      <div class="d-flex align-items-center flex-column" style="width: 100vw">
+        <h1 class="banner-heading">
+          <%= course.title %>
+        </h1>
+        <!-- Button trigger modal -->
+        <!-- <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal">
+             Voir les autres chapitres
+             </button> -->
+      </div>
+    </div>
+  </div>
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">
+            All chapters
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <ol>
+            <% for(let chapter of course.modules){ %>
+              <li class="module">
+                <a href="/courses/<%= course._id %>/modules/<%=chapter._id%>">
+                  <%= chapter.title %>
+                </a>
+              </li>
+              <% } %>
+          </ol>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+            Quitter
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="module-title-wrapper">
+    Chapter <%= module_number %> : <%= courseModule.title %> <button type="button" class="btn btn-success mx-5"
+          data-bs-toggle="modal" data-bs-target="#exampleModal">
+          Voir les autres chapitres
+        </button>
+  </p>
+
+  <!-- <% if(moduleReveal) { %> -->
+  <!-- Module content -->
+  <section class="container col-md-10 col-lg-8">
+    <!-- Objectif et structuration du module-->
+
+    <div class="my-3">
+      <div class="">
+        <p class="d-flex justify-content-between mt-5">
+          <a class="btn objectives d-block" data-bs-toggle="collapse" href="#objectif" role="button"
+            aria-expanded="false" aria-controls="collapseExample">
+            Learning objectives
+          </a>
+          <a class="btn objectives mx-2 btn-primary" data-bs-toggle="collapse" href="#moreEx" role="button"
+            aria-expanded="false" aria-controls="collapseExample">
+            Content
+          </a>
+          <!--more ressources -->
+          <a class="btn objectives mx-2 btn-primary" data-bs-toggle="collapse" href="#moreRes" role="button"
+            aria-expanded="false" aria-controls="collapseExample">
+            Useful resources
+          </a>
+        </p>
+        <!-- -->
+        <div class="collapse" id="objectif" style="border: 2px solid black
+        ;">
+          <div class="card card-body">
+            <p>
+              <%- courseModule.willLearnModule %>
+            </p>
+          </div>
+        </div>
+
+        <!-- -->
+        <div class="collapse my-3" style="border: 2px solid rgb(4, 46, 160)
+        ; border-radius: 3px;" id="moreEx">
+          <div class="card-body">
+            <p>
+              <%- courseModule.explanationText %>
+            </p>
+          </div>
+        </div>
+
+        <!-- -->
+        <div class="collapse my-3" style="border: 2px solid rgb(2, 87, 23)
+        ;" id="moreRes">
+          <div class="card card-body">
+            <p>
+              <%- courseModule.moreDetails %>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Video lesson -->
+    <h3 class="about-course-heading rok"><i class="fa-solid fa-desktop"></i>
+      <span class="underline-section"> Video lessons</span>
+    </h3>
+    <div class="underline-1"></div>
+
+
+    <section id="features" class="features">
+      <div class="container">
+        <div class="section-title pb-4">
+          <h2 class="week-activity"><i class="fa-solid fs-2 mx-3 fa-chalkboard-user"></i>Activity of the week</h2>
+        </div>
+
+        <ul class="nav nav-tabs row d-flex">
+          <li class="nav-item col-3">
+            <a class="nav-link active show" data-bs-toggle="tab" href="#tab-1">
+              <h4 class="d-lg-block">Grammar</h4>
+            </a>
+          </li>
+          <li class="nav-item col-3">
+            <a class="nav-link" data-bs-toggle="tab" href="#tab-2">
+              <h4 class="d-lg-block">Vocabulary</h4>
+            </a>
+          </li>
+          <li class="nav-item col-3">
+            <a class="nav-link" data-bs-toggle="tab" href="#tab-3">
+              <h4 class="d-lg-block">Pronunciation</h4>
+            </a>
+          </li>
+          <li class="nav-item col-3">
+            <a class="nav-link" data-bs-toggle="tab" href="#tab-4">
+              <h4 class="d-lg-block">Writing</h4>
+            </a>
+          </li>
+        </ul>
+
+        <!-- Video contents -->
+        <div class="tab-content" data-aos="fade-up">
+          <!-- Grammar lesson -->
+          <div class="tab-pane active show" id="tab-1">
+            <div class="video-wrapper">
+              <h3 class="course-video-heading">
+                <span class="underline-section">Watch the grammar lesson and take note</span>
+              </h3>
+              <div class="row">
+                <% for (video of courseModule.videoLinks) {%>
+                  <% if (video.lessonType==="Grammar" ) {%>
+                    <!-- Modal -->
+                    <div class="col-md-6" id="video-<%= courseModule.videoLinks.indexOf(video) %>">
+                      <div class="px-3 mt-3">
+                        <div id="tv-container">
+                          <div id="monitor">
+                            <div class="afrohk-TV">
+                              <h3 class="text-center afrohk-text mb-2 py-0">
+                                <span class="afrohk">Afro</span><span class="tv"> Language <span
+                                    class="lab">Lab</span></span>
+                              </h3>
+                            </div>
+                            <div id="monitorscreen">
+                              <iframe id="vimeo-content" src="<%=video.engCourseLink %>" frameborder="0" width="100%"
+                                height="100%"
+                                allow="accelerometer; autoplay; clipboard-write; fullscreen; encrypted-media; gyroscope; picture-in-picture"
+                                allow="fullscreen" title=""></iframe>
+                            </div>
+                            <p class="lessonTitle">
+                              <%= video.title %>
+                            </p>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                    <%}%>
+                      <%}%>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vocabulary lesson -->
+          <div class="tab-pane" id="tab-2">
+            <div class="video-wrapper">
+              <h3 class="course-video-heading">
+                Watch the Vocabulary lesson and take note
+              </h3>
+
+              <div class="row">
+                <% for (video of courseModule.videoLinks) {%>
+                  <% if (video.lessonType==="Vocabulary" ) {%>
+                    <!-- Modal -->
+                    <div class="col-md-6" id="video-<%= courseModule.videoLinks.indexOf(video) %>">
+                      <div class="px-3 mt-3">
+                        <div id="tv-container">
+                          <div id="monitor">
+                            <div class="afrohk-TV">
+                              <h3 class="text-center afrohk-text mb-2 py-0">
+                                <span class="afrohk">Afro</span><span class="tv"> Language <span
+                                    class="lab">Lab</span></span>
+                              </h3>
+                            </div>
+                            <div id="monitorscreen">
+                              <iframe id="vimeo-content" src="<%=video.engCourseLink %>" frameborder="0" width="100%"
+                                height="100%"
+                                allow="accelerometer; autoplay; clipboard-write; fullscreen; encrypted-media; gyroscope; picture-in-picture"
+                                allow="fullscreen" title=""></iframe>
+                            </div>
+                            <p class="lessonTitle">
+                              <%= video.title %>
+                            </p>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                    <%}%>
+                    <%}%>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pronunciation -->
+          <div class="tab-pane" id="tab-3">
+            <div class="video-wrapper">
+              <h3 class="course-video-heading">
+                Watch the pronunciation lesson and practice with us
+              </h3>
+
+              <div class="row">
+                <% for (video of courseModule.videoLinks) {%>
+                  <% if (video.lessonType==="Pronunciation" ) {%>
+                    <!-- Modal -->
+                    <div class="col-md-6" id="video-<%= courseModule.videoLinks.indexOf(video) %>">
+                      <div class="px-3 mt-3">
+                        <div id="tv-container">
+                          <div id="monitor">
+                            <div class="afrohk-TV">
+                              <h3 class="text-center afrohk-text mb-2 py-0">
+                                <span class="afrohk">Afro</span><span class="tv"> Language <span
+                                    class="lab">Lab</span></span>
+                              </h3>
+                            </div>
+                            <div id="monitorscreen">
+                              <iframe id="vimeo-content" src="<%=video.engCourseLink %>" frameborder="0" width="100%"
+                                height="100%"
+                                allow="accelerometer; autoplay; clipboard-write; fullscreen; encrypted-media; gyroscope; picture-in-picture"
+                                allow="fullscreen" title=""></iframe>
+                            </div>
+                            <p class="lessonTitle">
+                              <%= video.title %>
+                            </p>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                    <%}%>
+                      <%}%>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Writing lesson -->
+          <div class="tab-pane" id="tab-4">
+            <div class="video-wrapper">
+              <h3 class="course-video-heading">
+                Watch the writing lesson and do the writing exercise
+              </h3>
+              <div class="row">
+                <% for (video of courseModule.videoLinks) {%>
+                  <% if (video.lessonType==="Writing" ) {%>
+                    <!-- Modal -->
+                    <div class="col-md-6" id="video-<%= courseModule.videoLinks.indexOf(video) %>">
+                      <div class="px-3 mt-3">
+                        <div id="tv-container">
+                          <div id="monitor">
+                            <div class="afrohk-TV">
+                              <h3 class="text-center afrohk-text mb-2 py-0">
+                                <span class="afrohk">Afro</span><span class="tv"> Language <span
+                                    class="lab">Lab</span></span>
+                              </h3>
+                            </div>
+                            <div id="monitorscreen">
+                              <iframe id="vimeo-content" src="<%=video.engCourseLink %>" frameborder="0" width="100%"
+                                height="100%"
+                                allow="accelerometer; autoplay; clipboard-write; fullscreen; encrypted-media; gyroscope; picture-in-picture"
+                                allow="fullscreen" title=""></iframe>
+                            </div>
+                            <p class="lessonTitle">
+                              <%= video.title %>
+                            </p>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                    <%}%>
+                      <%}%>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Features Section -->
+
+
+    <!-- ASSIGNMENTS -->
+    <div class="my-5">
+      <h3 class="about-course-heading rok"><i class="fa-solid fa-pen-to-square"></i>
+        <span class="underline-section"> Comprehension Exercises</span>
+      </h3>
+      <div class="underline-1"></div>
+      <!-- GRAMMAR -->
+      <div class="assignment-wrapper">
+        <h3 class="assignment-category">
+          Grammar
+        </h3>
+        <div class="row">
+          <% for ( assignment of courseModule.Assignment) {%>
+            <% if( assignment.category==="Grammar" ){%>
+              <div class=" col-md-6 px-2 my-3">
+                <div class="mx-2 assignment-card">
+                  <h1 class="assignment-title">
+                    <%= assignment.title %>
+                  </h1>
+
+                  <div class="pb-2 d-flex justify-content-around ">
+                    <%for (link of assignment.links ){%>
+                      <button class="btn  btn-success"> <a target="_blank" class="fs-6 text-white" href=" <%= link %> ">
+                          Exercise
+                          <%= assignment.links.indexOf(link) + 1 %>
+                        </a>
+                      </button>
+                      <%}%>
+                  </div>
+                </div>
+              </div>
+              <%}%>
+                <%}%>
+        </div>
+      </div>
+
+      <!-- VOCABULARY -->
+      <div class="assignment-wrapper">
+        <h3 class="assignment-category">
+          Vocabulary
+        </h3>
+        <div class="row">
+          <% for ( assignment of courseModule.Assignment) {%>
+            <% if( assignment.category==="Vocabulary" ){%>
+              <div class=" col-lg-4 col-md-6 px-2 my-3">
+                <div class="mx-2 assignment-card">
+                  <h1 class="assignment-title">
+                    <%= assignment.title %>
+                  </h1>
+
+                  <div class="pb-2 d-flex justify-content-around ">
+                    <%for (link of assignment.links ){%>
+                      <button class="btn  btn-secondary"> <a target="_blank" class="fs-6 text-white"
+                          href=" <%= link %> ">
+                          Exercise
+                          <%= assignment.links.indexOf(link) + 1 %>
+                        </a>
+                      </button>
+                      <%}%>
+                  </div>
+                </div>
+              </div>
+              <%}%>
+                <%}%>
+        </div>
+      </div>
+
+      <!-- LISTENING -->
+      <div class="assignment-wrapper">
+        <h3 class="assignment-category">
+          Listening
+        </h3>
+        <div class="row">
+          <% for ( assignment of courseModule.Assignment) {%>
+            <% if( assignment.category==="Listening" ){%>
+              <div class=" col-lg-4 col-md-6 px-2 my-3">
+                <div class="mx-2 assignment-card">
+                  <h1 class="assignment-title">
+                    <%= assignment.title %>
+                  </h1>
+                  <div class="pb-2 d-flex justify-content-around ">
+                    <%for (link of assignment.links ){%>
+                      <button class="btn  btn-secondary"> <a target="_blank" class="fs-6 text-white"
+                          href=" <%= link %> ">
+                          Exercise
+                          <%= assignment.links.indexOf(link) + 1 %>
+                        </a>
+                      </button>
+                      <%}%>
+                  </div>
+                </div>
+              </div>
+              <%}%>
+                <%}%>
+        </div>
+      </div>
+
+      <!-- READING -->
+      <div class="assignment-wrapper">
+        <h3 class="assignment-category">
+          Reading
+        </h3>
+        <div class="row">
+          <% for ( assignment of courseModule.Assignment) {%>
+            <% if( assignment.category==="Reading" ){%>
+              <div class=" col-lg-4 col-md-6 px-2 my-3">
+                <div class="mx-2 assignment-card">
+                  <h1 class="assignment-title">
+                    <%= assignment.title %>
+                  </h1>
+                  <div class="pb-2 d-flex justify-content-around ">
+                    <%for (link of assignment.links ){%>
+                      <button class="btn  btn-secondary"> <a target="_blank" class="fs-6 text-white"
+                          href=" <%= link %> ">
+                          Exercise
+                          <%= assignment.links.indexOf(link) + 1 %>
+                        </a>
+                      </button>
+                      <%}%>
+                  </div>
+                </div>
+              </div>
+              <%}%>
+                <%}%>
+        </div>
+      </div>
+
+
+      <!-- WRITING -->
+      <div class="assignment-wrapper">
+        <h3 class="assignment-category">
+          Writing
+        </h3>
+        <div class="row">
+          <% for ( assignment of courseModule.Assignment) {%>
+            <% if( assignment.category==="Reading" ){%>
+              <div class=" col-lg-4 col-md-6 px-2 my-3">
+                <div class="mx-2 assignment-card">
+                  <h1 class="assignment-title">
+                    <%= assignment.title %>
+                  </h1>
+                  <div class="pb-2 d-flex justify-content-around ">
+                    <%for (link of assignment.links ){%>
+                      <button class="btn  btn-secondary"> <a target="_blank" class="fs-6 text-white"
+                          href=" <%= link %> ">
+                          Exercise
+                          <%= assignment.links.indexOf(link) + 1 %>
+                        </a>
+                      </button>
+                      <%}%>
+                  </div>
+                </div>
+              </div>
+              <%}%>
+                <%}%>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- <% } else { %> -->
+  <section class="not-available container col-10 col-md-6">
+    <p>Ce module sera disponible</p>
+    <p class="module-date">
+      <%= displayRevealDate %>
+    </p>
+  </section>
+  <!-- <% } %> -->

@@ -1,0 +1,584 @@
+<% layout('layouts/main') %>
+
+<% headContent = `
+  <style>
+    /* Ensure user edit page content is not hidden by fixed navbar */
+    #main {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+    }
+    
+    .user-edit-page {
+      padding: 2rem 0 4rem;
+      min-height: calc(100vh - 200px);
+      background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+      margin-top: 80px !important; /* Compensate for fixed navbar */
+    }
+    
+    .page-header {
+      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+      color: white;
+      padding: 2.5rem 2rem;
+      border-radius: 20px;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 40px rgba(93, 6, 186, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .page-header h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .btn-back {
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid white;
+    }
+    
+    .btn-back:hover {
+      background: white;
+      color: #5d06ba;
+      text-decoration: none;
+    }
+    
+    /* User Profile Card */
+    .profile-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      margin-bottom: 2rem;
+    }
+    
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 2px solid #f0f0f0;
+      margin-bottom: 2rem;
+    }
+    
+    .profile-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #5d06ba;
+    }
+    
+    .profile-avatar-placeholder {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2.5rem;
+      font-weight: 700;
+      border: 4px solid #5d06ba;
+    }
+    
+    .profile-info h2 {
+      margin: 0 0 0.5rem 0;
+      color: #2d0370;
+      font-size: 1.75rem;
+    }
+    
+    .profile-info p {
+      margin: 0.25rem 0;
+      color: #666;
+    }
+    
+    .profile-badges {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .badge {
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .badge-role {
+      background: rgba(93, 6, 186, 0.1);
+      color: #5d06ba;
+    }
+    
+    .badge-verified {
+      background: rgba(46, 204, 113, 0.1);
+      color: #2ecc71;
+    }
+    
+    .badge-unverified {
+      background: rgba(241, 196, 15, 0.1);
+      color: #f1c40f;
+    }
+    
+    /* Form Section */
+    .form-section {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    .form-section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #2d0370;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #f0f0f0;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+    
+    .form-group label {
+      font-weight: 600;
+      color: #2d0370;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .form-group label i {
+      color: #5d06ba;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 0.875rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+    
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #5d06ba;
+      box-shadow: 0 0 0 3px rgba(93, 6, 186, 0.1);
+    }
+    
+    .form-group input:disabled {
+      background: #f5f5f5;
+      cursor: not-allowed;
+    }
+    
+    .form-help {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 0.5rem;
+    }
+    
+    /* Checkbox/Radio Styling */
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border: 2px solid #e0e0e0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .checkbox-group:hover {
+      border-color: #5d06ba;
+      background: rgba(93, 6, 186, 0.05);
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+    
+    .checkbox-group label {
+      margin: 0;
+      cursor: pointer;
+      flex: 1;
+    }
+    
+    /* Form Actions */
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      padding-top: 2rem;
+      border-top: 2px solid #f0f0f0;
+      margin-top: 2rem;
+    }
+    
+    .btn {
+      padding: 0.875rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(93, 6, 186, 0.3);
+    }
+    
+    .btn-secondary {
+      background: #e0e0e0;
+      color: #333;
+    }
+    
+    .btn-secondary:hover {
+      background: #d0d0d0;
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .profile-header {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+` %>
+
+<div class="user-edit-page">
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>
+        <i class="bi bi-pencil-square"></i>
+        Modifier l'utilisateur
+      </h1>
+      <a href="/admin/users" class="btn-back">
+        <i class="bi bi-arrow-left"></i>
+        Retour à la liste
+      </a>
+    </div>
+    
+    <!-- Profile Card -->
+    <div class="profile-card">
+      <div class="profile-header">
+        <% if(user.imageUrl && user.imageUrl !== 'https://www.kindpng.com/picc/m/105-1055656_account-user-profile-avatar-avatar-user-profile-icon.png') { %>
+          <img src="<%= user.imageUrl %>" alt="<%= user.name %>" class="profile-avatar">
+        <% } else { %>
+          <div class="profile-avatar-placeholder">
+            <%= user.name.charAt(0).toUpperCase() %><%= user.surname.charAt(0).toUpperCase() %>
+          </div>
+        <% } %>
+        <div class="profile-info">
+          <h2><%= user.name %> <%= user.surname %></h2>
+          <p><i class="bi bi-envelope"></i> <%= user.email %></p>
+          <p><i class="bi bi-at"></i> @<%= user.username %></p>
+          <div class="profile-badges">
+            <span class="badge badge-role">
+              <i class="bi bi-shield-check"></i>
+              <%= user.role === 'admin' ? 'Administrateur' : user.role === 'super-admin' ? 'Super Admin' : user.role === 'user' ? 'Apprenant' : user.role %>
+            </span>
+            <% if(user.isVerified) { %>
+              <span class="badge badge-verified">
+                <i class="bi bi-check-circle"></i>
+                Vérifié
+              </span>
+            <% } else { %>
+              <span class="badge badge-unverified">
+                <i class="bi bi-x-circle"></i>
+                Non vérifié
+              </span>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Edit Form -->
+    <div class="form-section">
+      <h2 class="form-section-title">
+        <i class="bi bi-person-gear"></i>
+        Informations personnelles
+      </h2>
+      
+      <form action="/admin/users/<%= user._id %>?_method=PUT" method="POST">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="name">
+              <i class="bi bi-person"></i>
+              Prénom
+            </label>
+            <input 
+              type="text" 
+              id="name" 
+              name="name" 
+              value="<%= user.name %>"
+              required
+            >
+          </div>
+          
+          <div class="form-group">
+            <label for="surname">
+              <i class="bi bi-person-badge"></i>
+              Nom
+            </label>
+            <input 
+              type="text" 
+              id="surname" 
+              name="surname" 
+              value="<%= user.surname %>"
+              required
+            >
+          </div>
+          
+          <div class="form-group">
+            <label for="username">
+              <i class="bi bi-at"></i>
+              Nom d'utilisateur
+            </label>
+            <input 
+              type="text" 
+              id="username" 
+              name="username" 
+              value="<%= user.username %>"
+              required
+            >
+            <span class="form-help">Le nom d'utilisateur doit être unique</span>
+          </div>
+          
+          <div class="form-group">
+            <label for="email">
+              <i class="bi bi-envelope"></i>
+              Email
+            </label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              value="<%= user.email %>"
+              required
+            >
+            <span class="form-help">L'adresse email doit être unique</span>
+          </div>
+          
+          <div class="form-group">
+            <label for="gender">
+              <i class="bi bi-gender-ambiguous"></i>
+              Genre
+            </label>
+            <select id="gender" name="gender" required>
+              <option value="male" <%= user.gender === 'male' ? 'selected' : '' %>>Homme</option>
+              <option value="female" <%= user.gender === 'female' ? 'selected' : '' %>>Femme</option>
+              <option value="other" <%= user.gender === 'other' ? 'selected' : '' %>>Autre</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="phoneNumber">
+              <i class="bi bi-telephone"></i>
+              Téléphone
+            </label>
+            <input 
+              type="tel" 
+              id="phoneNumber" 
+              name="phoneNumber" 
+              value="<%= user.phoneNumber || '' %>"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label for="role">
+              <i class="bi bi-shield-check"></i>
+              Rôle
+            </label>
+            <select id="role" name="role" required>
+              <option value="user" <%= user.role === 'user' ? 'selected' : '' %>>Apprenant</option>
+              <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>Administrateur</option>
+              <option value="super-admin" <%= user.role === 'super-admin' ? 'selected' : '' %>>Super Admin</option>
+              <option value="account-manager" <%= user.role === 'account-manager' ? 'selected' : '' %>>Gestionnaire de comptes</option>
+            </select>
+            <span class="form-help">Attention : Changer le rôle peut affecter les permissions</span>
+          </div>
+          
+          <div class="form-group">
+            <label for="imageUrl">
+              <i class="bi bi-image"></i>
+              URL de l'image de profil
+            </label>
+            <input 
+              type="url" 
+              id="imageUrl" 
+              name="imageUrl" 
+              value="<%= user.imageUrl || '' %>"
+              placeholder="https://exemple.com/image.jpg"
+            >
+          </div>
+          
+          <div class="form-group full-width">
+            <label for="about">
+              <i class="bi bi-info-circle"></i>
+              À propos
+            </label>
+            <textarea 
+              id="about" 
+              name="about"
+              placeholder="Description de l'utilisateur..."
+            ><%= user.about || '' %></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="englishLevel">
+              <i class="bi bi-translate"></i>
+              Niveau d'anglais
+            </label>
+            <select id="englishLevel" name="englishLevel">
+              <option value="">Non spécifié</option>
+              <option value="beginner" <%= user.englishLevel === 'beginner' ? 'selected' : '' %>>Débutant</option>
+              <option value="intermediate" <%= user.englishLevel === 'intermediate' ? 'selected' : '' %>>Intermédiaire</option>
+              <option value="advanced" <%= user.englishLevel === 'advanced' ? 'selected' : '' %>>Avancé</option>
+              <option value="fluent" <%= user.englishLevel === 'fluent' ? 'selected' : '' %>>Courant</option>
+            </select>
+          </div>
+          
+          <div class="form-group full-width">
+            <div class="checkbox-group">
+              <input 
+                type="checkbox" 
+                id="isVerified" 
+                name="isVerified" 
+                value="true"
+                <%= user.isVerified ? 'checked' : '' %>
+              >
+              <label for="isVerified">
+                <i class="bi bi-check-circle"></i>
+                Compte vérifié
+              </label>
+            </div>
+            <span class="form-help">Cochez cette case pour vérifier le compte de l'utilisateur</span>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <a href="/admin/users" class="btn btn-secondary">
+            <i class="bi bi-x-circle"></i>
+            Annuler
+          </a>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-circle"></i>
+            Enregistrer les modifications
+          </button>
+        </div>
+      </form>
+      
+      <!-- Quick Actions -->
+      <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid #f0f0f0;">
+        <h3 style="color: #2d0370; margin-bottom: 1rem;">Actions rapides</h3>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <form action="/admin/users/<%= user._id %>/verify" method="POST" style="margin: 0;">
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-<%= user.isVerified ? 'x-circle' : 'check-circle' %>"></i>
+              <%= user.isVerified ? 'Désactiver la vérification' : 'Activer la vérification' %>
+            </button>
+          </form>
+          <a href="/user/<%= user._id %>" class="btn btn-secondary">
+            <i class="bi bi-eye"></i>
+            Voir le profil
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

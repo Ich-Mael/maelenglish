@@ -1,0 +1,84 @@
+<% layout('layouts/100bacBoilerplate') %>
+<link rel="preconnect" href="https://fonts.gstatic.com" />
+<link
+  href="https://fonts.googleapis.com/css2?family=Chango&display=swap"
+  rel="stylesheet"
+/>
+<link href="stylesheets/100bac/100bachome.css" rel="stylesheet" />
+
+<!-- Series -->
+<section
+  class="serie d-flex flex-column justify-content-evenly align-items-center"
+>
+  <div class="container align-self-center" style="">
+    <h1 class="ea animated tada">Étudiez autrement</h1>
+  </div>
+  <!-- series  -->
+  <div
+    class="d-flex py-4 justify-content-around w-100"
+    style="z-index: 500; background-color: rgba(0, 0, 0, 0.745)"
+  >
+    <a href="#Serie-A" class="btn btn-primary button-90 d-block"> Serie A</a>
+    <a href="#Serie-D" class="btn btn-primary button-90 d-block"> Serie D</a>
+  </div>
+</section>
+
+<!-- series -->
+<section class="py-5">
+  <h3 class="series-list mb-5">Les series et classes Disponibles</h3>
+
+  <!--Serie A-->
+  <div id="Serie-A" class="container">
+    <h1 class="serie-name">Serie A</h1>
+    <div class="row serie-wrapper py-4">
+      <%if(student.serie === "A"){%> 
+      <% for(let schoolClass of allClassesA) {%>
+      <div class="col-sm-6 col-md-4 col-lg-3 my-3">
+        <div class="card">
+          <div class="card-body d-flex flex-column Justify-content-center">
+            <h5 class="card-title text-center"><%= schoolClass.title %></h5>
+            <button
+              id="serie-d"
+              class="col-12 text-center d-flex align-self-center my-3"
+            >
+              <a class="serie-link" href="/programs/ekalan/kalan/class/<%= schoolClass._id %>"
+                >Entrer<i class="bi bi-box-arrow-in-right"></i
+              ></a>
+            </button>
+          </div>
+        </div>
+      </div>
+      <%}%>
+      <%}else{%>
+        <h3 class="text-center text-danger fst-italic fs-5"> Contenu disponible uniquement pour les élèves de la serie A </h3>
+        <%}%>
+    </div>
+  </div>
+
+  <hr style="height: 2rem; background-color: blue" />
+
+  <!-- serie D -->
+  <div id="Serie-D" class="container">
+    <h1 class="serie-name">Serie D</h1>
+    <div class="row serie-wrapper py-4">
+      <%if(student.serie === "D" ){%> <% for(let schoolClass of allClassesD) {%>
+      <div class="col-sm-6 col-md-4 col-lg-3 my-3">
+        <div class="card">
+          <div class="card-body d-flex flex-column Justify-content-center">
+            <h5 class="card-title text-center"><%= schoolClass.title %></h5>
+            <button
+              id="serie-d"
+              class="col-12 text-center d-flex align-self-center my-3"
+            >
+              <a class="serie-link" href="/programs/ekalan/kalan/class/<%= schoolClass._id %>"
+                >Entrer<i class="bi bi-box-arrow-in-right"></i
+              ></a>
+            </button>
+          </div>
+        </div>
+      </div>
+      <% } %> <% } %>
+    </div>
+  </div>
+</section>
+<!--End Series -->

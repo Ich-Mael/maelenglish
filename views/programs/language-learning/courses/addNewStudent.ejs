@@ -1,0 +1,381 @@
+<% layout('layouts/main') %>
+
+<style>
+  .enrollment-form-container {
+    max-width: 700px;
+    margin: 3rem auto;
+    padding: 2.5rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .form-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .form-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1d1d1f;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-header p {
+    color: #6e6e73;
+    font-size: 1rem;
+  }
+
+  .course-info {
+    background: linear-gradient(135deg, rgba(93, 6, 186, 0.1) 0%, rgba(45, 3, 112, 0.1) 100%);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    border-left: 4px solid #5d06ba;
+  }
+
+  .course-info h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #5d06ba;
+    margin: 0;
+  }
+
+  .form-label {
+    font-weight: 600;
+    color: #1d1d1f;
+    margin-bottom: 0.75rem;
+    display: block;
+  }
+
+  .form-control {
+    border-radius: 8px;
+    border: 2px solid #d2d2d7;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .form-control:focus {
+    border-color: #5d06ba;
+    box-shadow: 0 0 0 3px rgba(93, 6, 186, 0.1);
+    outline: none;
+  }
+
+  .btn-submit {
+    background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+    color: white;
+    padding: 0.875rem 2.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 1.5rem;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(93, 6, 186, 0.4);
+    color: white;
+  }
+
+  .btn-back {
+    background: transparent;
+    color: #5d06ba;
+    border: 2px solid #5d06ba;
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
+  }
+
+  .btn-back:hover {
+    background: #5d06ba;
+    color: white;
+    text-decoration: none;
+  }
+
+  .help-text {
+    font-size: 0.875rem;
+    color: #6e6e73;
+    margin-top: 0.5rem;
+  }
+
+  /* Autocomplete Styles */
+  .autocomplete-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  .username-input {
+    width: 100%;
+  }
+
+  .user-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #5d06ba;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(93, 6, 186, 0.2);
+    display: none;
+    margin-top: -2px;
+  }
+
+  .user-suggestions.show {
+    display: block;
+  }
+
+  .suggestion-item {
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .suggestion-item:hover {
+    background: linear-gradient(135deg, rgba(93, 6, 186, 0.05) 0%, rgba(45, 3, 112, 0.05) 100%);
+  }
+
+  .suggestion-item:last-child {
+    border-bottom: none;
+  }
+
+  .suggestion-item .user-info {
+    flex: 1;
+  }
+
+  .suggestion-item .username {
+    font-weight: 600;
+    color: #5d06ba;
+    font-size: 0.95rem;
+  }
+
+  .suggestion-item .user-details {
+    font-size: 0.85rem;
+    color: #6e6e73;
+    margin-top: 0.25rem;
+  }
+
+  .search-loading {
+    padding: 1rem;
+    text-align: center;
+    color: #6e6e73;
+  }
+
+  .search-loading .spin {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .no-results {
+    padding: 1rem;
+    text-align: center;
+    color: #6e6e73;
+    font-style: italic;
+  }
+</style>
+
+<div class="container">
+  <a href="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/showStudents" class="btn-back">
+    <i class="bi bi-arrow-left"></i>
+    Retour
+  </a>
+
+  <div class="enrollment-form-container">
+    <div class="form-header">
+      <h1>Inscrire un étudiant au cours</h1>
+      <p>Ajoutez un étudiant existant à ce cours</p>
+    </div>
+
+    <div class="course-info">
+      <h3><i class="bi bi-book me-2"></i><%= course.title %></h3>
+    </div>
+
+    <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/addStudent" method="POST">
+      <div class="mb-4">
+        <label class="form-label" for="student">
+          <i class="bi bi-person me-2"></i>Nom d'utilisateur de l'étudiant
+        </label>
+        <div class="autocomplete-wrapper">
+          <input 
+            type="text" 
+            class="form-control username-input" 
+            id="student" 
+            name="student" 
+            placeholder="Recherchez un utilisateur (min. 3 lettres)..."
+            required
+            autocomplete="off"
+          />
+          <div id="user-suggestions" class="user-suggestions"></div>
+        </div>
+        <small class="help-text">Tapez au moins 3 lettres pour voir les suggestions. Les étudiants déjà inscrits ne seront pas affichés.</small>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-4">
+          <label class="form-label" for="startDate">
+            <i class="bi bi-calendar-event me-2"></i>Date de début
+          </label>
+          <input 
+            type="date" 
+            class="form-control" 
+            id="startDate" 
+            name="startDate"
+            required
+          />
+        </div>
+        <div class="col-md-6 mb-4">
+          <label class="form-label" for="endDate">
+            <i class="bi bi-calendar-check me-2"></i>Date de fin
+          </label>
+          <input 
+            type="date" 
+            class="form-control" 
+            id="endDate" 
+            name="endDate"
+            required
+          />
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-submit">
+        <i class="bi bi-person-plus me-2"></i>
+        Inscrire l'étudiant
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // User search autocomplete
+  (function() {
+    const usernameInput = document.getElementById('student');
+    const suggestionsContainer = document.getElementById('user-suggestions');
+    let searchTimeout;
+    let currentSelectedIndex = -1;
+    let searchResults = [];
+    const courseId = '<%= course._id %>';
+
+    if (!usernameInput || !suggestionsContainer) return;
+
+    // Debounced search function
+    function searchUsers(query) {
+      if (query.length < 3) {
+        suggestionsContainer.classList.remove('show');
+        return;
+      }
+
+      // Show loading state
+      suggestionsContainer.innerHTML = '<div class="search-loading"><i class="bi bi-arrow-repeat spin"></i> Recherche...</div>';
+      suggestionsContainer.classList.add('show');
+
+      fetch(`/programs/language-learning/general-english-boost/admindashboard/${courseId}/search-users?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+          searchResults = data.users || [];
+          displaySuggestions(searchResults);
+        })
+        .catch(error => {
+          console.error('Search error:', error);
+          suggestionsContainer.innerHTML = '<div class="no-results">Erreur lors de la recherche</div>';
+        });
+    }
+
+    function displaySuggestions(users) {
+      if (users.length === 0) {
+        suggestionsContainer.innerHTML = '<div class="no-results">Aucun utilisateur trouvé</div>';
+        return;
+      }
+
+      suggestionsContainer.innerHTML = users.map((user, index) => `
+        <div class="suggestion-item" data-index="${index}" data-username="${user.username}">
+          <div class="user-info">
+            <div class="username">@${user.username}</div>
+            <div class="user-details">${user.name} ${user.surname}${user.email ? ' • ' + user.email : ''}</div>
+          </div>
+        </div>
+      `).join('');
+
+      // Add click handlers
+      suggestionsContainer.querySelectorAll('.suggestion-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const username = item.getAttribute('data-username');
+          usernameInput.value = username;
+          suggestionsContainer.classList.remove('show');
+        });
+      });
+    }
+
+    // Input event listener with debouncing
+    usernameInput.addEventListener('input', (e) => {
+      const query = e.target.value.trim();
+      currentSelectedIndex = -1;
+
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        searchUsers(query);
+      }, 300);
+    });
+
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!usernameInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+        suggestionsContainer.classList.remove('show');
+      }
+    });
+
+    // Keyboard navigation
+    usernameInput.addEventListener('keydown', (e) => {
+      if (!suggestionsContainer.classList.contains('show') || searchResults.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        currentSelectedIndex = Math.min(currentSelectedIndex + 1, searchResults.length - 1);
+        updateSelection();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        currentSelectedIndex = Math.max(currentSelectedIndex - 1, -1);
+        updateSelection();
+      } else if (e.key === 'Enter' && currentSelectedIndex >= 0) {
+        e.preventDefault();
+        const selectedUser = searchResults[currentSelectedIndex];
+        usernameInput.value = selectedUser.username;
+        suggestionsContainer.classList.remove('show');
+      } else if (e.key === 'Escape') {
+        suggestionsContainer.classList.remove('show');
+      }
+    });
+
+    function updateSelection() {
+      const items = suggestionsContainer.querySelectorAll('.suggestion-item');
+      items.forEach((item, index) => {
+        if (index === currentSelectedIndex) {
+          item.style.background = 'linear-gradient(135deg, rgba(93, 6, 186, 0.1) 0%, rgba(45, 3, 112, 0.1) 100%)';
+        } else {
+          item.style.background = '';
+        }
+      });
+    }
+  })();
+</script>
+

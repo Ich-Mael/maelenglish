@@ -1,0 +1,294 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  color: #101111;
+  margin: 0;
+  padding: 0;
+}
+
+/* Site Content */
+
+.serie {
+  background: url("https://images.pexels.com/photos/5965617/pexels-photo-5965617.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2");
+  background-size: cover;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-position: center center;
+  position: relative;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  height: 80vh;
+  margin: 0;
+  padding: 0;
+  /* border: 1px solid transparent; */
+}
+
+.serie:efore {
+  content: "";
+  background: #00000097;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to bottom,
+    rgba(33, 89, 178, 0.479),
+    rgba(56, 95, 168, 0.315),
+    #2f3c765d,
+    rgba(9, 29, 116, 0.157)
+  );
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to bottom,
+    rgba(33, 89, 178, 0.479),
+    rgba(56, 95, 168, 0.315),
+    #2f3c765d,
+    rgba(9, 29, 116, 0.157)
+  );
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  /* background: rgba(0, 0, 0, 0.253); */
+  position: absolute;
+  bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+}
+
+.serie-wrapper {
+  border: 2px solid black;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px,    rgba(0, 0, 0, 0.22) 0px 10px 10px;
+  margin: 1rem 3rem;
+  margin-bottom: 2rem;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+}
+
+.serie-name {
+  font-family: "Chango", cursive;
+  color: #133e5a;
+  margin: 0 0 2rem 0;
+}
+
+
+.serie-cards-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.series-list {
+  font-family: "Chango", cursive;
+  /* font-family: "Ultra", serif; */
+  color: rgb(35, 10, 117);
+  font-size: 2rem;
+  margin-top: 3rem;
+  padding: 1rem auto;
+  text-align: center;
+}
+
+.card {
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px,
+    rgba(0, 0, 0, 0.22) 0px 10px 10px;
+}
+
+.card-title {
+  color: #133e5a;
+  text-shadow: 0px 2px 2px rgba(71, 70, 73, 0.4);
+  font-family: "Chango", cursive;
+}
+
+#serie-d {
+  width: fit-content;
+  border-radius: 5px;
+  font-size: 1rem;
+  color: #101111;
+  padding: 1rem auto;
+  border: 2px solid black;
+  background: #56ccf2;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #2f80ed, #56ccf2);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #2f80ed, #56ccf2);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  transition: all 0.4s;
+}
+
+#serie-d:hover {
+  background: #ffffff;
+}
+
+.serie-link {
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  color: #ffffff;
+  font-family: "Chango", cursive;
+}
+
+.serie-link:hover {
+  text-decoration: none;
+  color: #49326a;
+}
+
+.bi-box-arrow-in-right {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.serie-link:hover > .bi-box-arrow-in-right {
+  font-weight: bold;
+  text-decoration: none;
+  color: #31086a;
+}
+
+.start-learning-btn {
+  align-self: center;
+  z-index: 15;
+  padding: 0.5rem 2rem;
+  margin-bottom: 2rem;
+  border-radius: 5px;
+  background-color: rgba(0, 0, 0, 0.432);
+  border: 2px solid rgb(240, 237, 235);
+  text-decoration: none;
+  text-align: center;
+  font-size: 1.2rem;
+  color: rgb(235, 222, 217);
+}
+
+.start-learning-btn:hover {
+  background-color: rgb(255, 255, 255);
+  color: rgb(92, 7, 161);
+  border: 2px solid rgb(118, 6, 192);
+}
+
+/* animation */
+@-webkit-keyframes tada {
+  from {
+    -webkit-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
+  }
+
+  10%,
+  20% {
+    -webkit-transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg);
+    transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg);
+  }
+
+  30%,
+  50%,
+  70%,
+  90% {
+    -webkit-transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
+    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
+  }
+
+  40%,
+  60%,
+  80% {
+    -webkit-transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
+    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
+  }
+
+  to {
+    -webkit-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes tada {
+  from {
+    -webkit-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
+  }
+
+  10%,
+  20% {
+    -webkit-transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg);
+    transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg);
+  }
+
+  30%,
+  50%,
+  70%,
+  90% {
+    -webkit-transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
+    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
+  }
+
+  40%,
+  60%,
+  80% {
+    -webkit-transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
+    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
+  }
+
+  to {
+    -webkit-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+.tada {
+  -webkit-animation-name: tada;
+  animation-name: tada;
+}
+
+.animated {
+  -webkit-animation-duration: 5s;
+  animation-duration: 5s;
+  -webkit-animation-fill-mode: both;
+  animation-iteration-count: 2;
+  animation-fill-mode: both;
+}
+
+@media (max-width: 992px) {
+  html {
+    font-size: 90%;
+  }
+}
+
+@media (max-width: 600px) {
+  serie {
+    height: 50vh;
+  }
+
+  html {
+    font-size: 70%;
+  }
+}
+
+@media (max-width: 350px) {
+  serie {
+    height: 50vh;
+  }
+
+  html {
+    font-size: 65%;
+  }
+}
+
+
+/* CSS */
+.button-90 {
+  color: #fff;
+  padding: 15px 25px;
+  border-radius: 100px;
+  background-color: #4C43CD;
+  background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, 0.23) 0%, transparent 86.18%), radial-gradient(66% 87% at 26% 20%, rgba(255, 255, 255, 0.41) 0%, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%);
+  box-shadow: 2px 19px 31px rgba(0, 0, 0, 0.2);
+  font-weight: bold;
+  font-size: 16px;
+
+  border: 0;
+
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+
+  cursor: pointer;
+}

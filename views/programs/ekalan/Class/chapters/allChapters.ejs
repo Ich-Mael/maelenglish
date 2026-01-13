@@ -1,0 +1,654 @@
+<% layout('layouts/main') %>
+
+<% headContent = `
+<style>
+    #main {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+    }
+    
+    .chapters-page {
+      padding: 2rem 0 4rem;
+      min-height: calc(100vh - 200px);
+      background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+      margin-top: 80px !important;
+    }
+    
+    .page-header {
+      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+      color: white;
+      padding: 2.5rem 2rem;
+      border-radius: 20px;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 40px rgba(93, 6, 186, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .page-header-content {
+      flex: 1;
+    }
+    
+    .page-header h1 {
+      margin: 0 0 0.5rem 0;
+      font-size: 2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .page-header p {
+      margin: 0;
+      opacity: 0.95;
+      font-size: 1.1rem;
+      font-weight: 300;
+    }
+    
+    .class-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .btn-header {
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: white;
+      color: #5d06ba;
+      border: 2px solid white;
+    }
+    
+    .btn-header:hover {
+      background: rgba(255, 255, 255, 0.9);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      text-decoration: none;
+      color: #2d0370;
+    }
+    
+    .btn-header-primary {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .btn-header-primary:hover {
+      background: rgba(255, 255, 255, 0.3);
+      color: white;
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .chapters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    
+    .chapter-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .chapter-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(93, 6, 186, 0.15);
+      border-color: rgba(93, 6, 186, 0.2);
+    }
+    
+    .chapter-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #2d0370;
+      margin: 0 0 1.5rem 0;
+      text-align: center;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .chapter-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: auto;
+    }
+    
+    .btn-chapter-action {
+      padding: 0.875rem 1.25rem;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn-success-action {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    }
+    
+    .btn-success-action:hover {
+      background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+      color: white;
+    }
+    
+    .btn-warning-action {
+      background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+      color: #333;
+      box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+    }
+    
+    .btn-warning-action:hover {
+      background: linear-gradient(135deg, #ff9800 0%, #ffc107 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+      color: #333;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 5rem 2rem;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      grid-column: 1 / -1;
+    }
+    
+    .empty-state i {
+      font-size: 5rem;
+      color: #ccc;
+      margin-bottom: 1.5rem;
+    }
+    
+    .empty-state h3 {
+      color: #333;
+      margin-bottom: 0.75rem;
+      font-size: 1.75rem;
+    }
+    
+    .empty-state p {
+      color: #666;
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+    
+    /* Modal Styles */
+    .modal-header {
+      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+      color: white;
+      border-bottom: none;
+    }
+    
+    .modal-title {
+      color: white;
+      font-weight: 600;
+    }
+    
+    .btn-close-white {
+      filter: brightness(0) invert(1);
+    }
+    
+    .form-group-modal {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-label-modal {
+      display: block;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+    
+    .form-control-modal {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+    
+    .form-control-modal:focus {
+      outline: none;
+      border-color: #5d06ba;
+      box-shadow: 0 0 0 3px rgba(93, 6, 186, 0.1);
+    }
+    
+    .form-select-modal {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      background-color: white;
+      transition: all 0.3s ease;
+    }
+    
+    .form-select-modal:focus {
+      outline: none;
+      border-color: #5d06ba;
+      box-shadow: 0 0 0 3px rgba(93, 6, 186, 0.1);
+    }
+    
+    .btn-modal-submit {
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-modal-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(93, 6, 186, 0.3);
+    }
+    
+    /* Form Sections */
+    .form-section {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background: #f8f9fa;
+      border-radius: 12px;
+      border-left: 4px solid #5d06ba;
+    }
+    
+    .form-section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #2d0370;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .form-section-title i {
+      color: #5d06ba;
+      font-size: 1.2rem;
+    }
+    
+    .field-group-conditional {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .field-group-conditional.show {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { 
+        opacity: 0; 
+        transform: translateY(-10px); 
+      }
+      to { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
+    }
+    
+    .help-text {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 0.5rem;
+      font-style: italic;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    
+    .help-text i {
+      color: #5d06ba;
+      font-size: 0.9rem;
+    }
+    
+    .optgroup-label {
+      font-weight: 600;
+      color: #2d0370;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .chapters-page {
+        padding: 1rem 0 3rem;
+      }
+      
+      .page-header {
+        padding: 2rem 1.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .page-header h1 {
+        font-size: 1.75rem;
+      }
+      
+      .chapters-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      
+      .chapter-actions {
+        gap: 0.5rem;
+      }
+    }
+  </style>
+` %>
+
+<div class="chapters-page">
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-header-content">
+        <h1>
+          <i class="bi bi-journal-bookmark"></i>
+          Liste des chapitres
+        </h1>
+        <p>
+          Chapitres de la matière <strong><%= subject.title %></strong>
+        </p>
+        <span class="class-badge">
+          <i class="bi bi-mortarboard"></i>
+          <%= schoolClass.title %> <%= schoolClass.serie %>
+        </span>
+      </div>
+      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+        <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>/chapter/new" class="btn-header btn-header-primary">
+          <i class="bi bi-plus-circle"></i>
+          Nouveau chapitre
+        </a>
+        <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>" class="btn-header">
+          <i class="bi bi-arrow-left"></i>
+          Retour à la matière
+        </a>
+      </div>
+    </div>
+
+    <!-- Chapters Grid -->
+    <% if (chapters && chapters.length > 0) { %>
+      <div class="chapters-grid">
+        <% chapters.forEach((chapter, index) => { %>
+          <div class="chapter-card">
+            <h3 class="chapter-title">
+              <i class="bi bi-journal-text"></i>
+              <%= chapter.title %>
+            </h3>
+            
+            <div class="chapter-actions">
+              <a 
+                href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>/chapter/<%= chapter._id %>/edit"
+                class="btn-chapter-action btn-success-action"
+                style="text-decoration: none; color: white;"
+              >
+                <i class="bi bi-pencil-square"></i>
+                Éditer le chapitre
+              </a>
+              
+              <button 
+                type="button" 
+                class="btn-chapter-action btn-success-action" 
+                data-bs-toggle="modal"
+                data-bs-target="#videoModal-<%= chapter._id %>"
+              >
+                <i class="bi bi-play-circle"></i>
+                Ajouter un contenu vidéo
+                </button>
+            </div>
+          </div>
+
+          <!-- Modal: Add Video Content -->
+          <div class="modal fade" id="videoModal-<%= chapter._id %>" tabindex="-1" aria-labelledby="videoModalLabel-<%= chapter._id %>" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="videoModalLabel-<%= chapter._id %>">
+                    <i class="bi bi-play-circle me-2"></i>
+                    Ajouter un contenu vidéo
+                  </h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form action="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>/chapter/<%= chapter._id %>/videocontent" method="POST" id="videoForm-<%= chapter._id %>">
+                    
+                    <!-- Section: Informations de base -->
+                    <div class="form-section">
+                      <h4 class="form-section-title">
+                        <i class="bi bi-info-circle"></i>
+                        Informations de base
+                      </h4>
+                      
+                      <div class="form-group-modal">
+                        <label for="video-type-<%= chapter._id %>" class="form-label-modal">
+                          Type de contenu <span style="color: #dc3545;">*</span>
+                        </label>
+                        <select class="form-select-modal" id="video-type-<%= chapter._id %>" name="video[videoType]" required onchange="toggleVideoFields('<%= chapter._id %>')">
+                          <option value="">Sélectionnez le type</option>
+                          <optgroup label="📚 Cours">
+                            <option value="course">Cours</option>
+                            <option value="bonus_profs">Bonus des Profs</option>
+                          </optgroup>
+                          <optgroup label="✏️ Exercices d'apprentissage (Gratuits)">
+                            <option value="starterEx">Exercice de démarrage</option>
+                            <option value="practiceEx">Exercice sans correction</option>
+                            <option value="CIAM_basic">CIAM - Exercice d'apprentissage</option>
+                          </optgroup>
+                          <optgroup label="⭐ Exercices Premium">
+                            <option value="advanceEx">Exercice avancé</option>
+                            <option value="CIAM_Premium">CIAM - Exercice d'approfondissement</option>
+                            <option value="grandeEcole">Exercices Grandes Écoles</option>
+                            <option value="exo_perso">Exercice d'entraînement personnel</option>
+                          </optgroup>
+                          <optgroup label="📋 Examens">
+                            <option value="nationalExam">Examen national</option>
+                            <option value="schoolExam">Examen d'école</option>
+                          </optgroup>
+                        </select>
+                        <div class="help-text">
+                          <i class="bi bi-info-circle"></i>
+                          Le type détermine quels champs supplémentaires seront requis
+                        </div>
+                      </div>
+
+                      <div class="form-group-modal">
+                        <label for="video-title-<%= chapter._id %>" class="form-label-modal">
+                          Titre <span style="color: #dc3545;">*</span>
+                        </label>
+                        <input type="text" class="form-control-modal" id="video-title-<%= chapter._id %>" name="video[title]" required placeholder="Ex: Les fonctions affines - Partie 1" />
+                      </div>
+
+                      <div class="form-group-modal">
+                        <label for="video-link-<%= chapter._id %>" class="form-label-modal">
+                          Lien de la vidéo <span style="color: #dc3545;">*</span>
+                        </label>
+                        <input type="url" class="form-control-modal" id="video-link-<%= chapter._id %>" name="video[videoLink]" required placeholder="https://www.youtube.com/embed/..." />
+                        <div class="help-text">
+                          <i class="bi bi-link-45deg"></i>
+                          Lien d'intégration (embed) de la vidéo
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Section: Pour les exercices (conditionnel) -->
+                    <div class="form-section field-group-conditional" id="exercise-fields-<%= chapter._id %>">
+                      <h4 class="form-section-title">
+                        <i class="bi bi-file-pdf"></i>
+                        Documents pour exercices
+                      </h4>
+                      
+                      <div class="form-group-modal">
+                        <label for="pdf-link-<%= chapter._id %>" class="form-label-modal">
+                          Lien PDF <span style="color: #dc3545;" id="pdf-required-<%= chapter._id %>">*</span>
+                        </label>
+                        <input type="url" class="form-control-modal" id="pdf-link-<%= chapter._id %>" name="video[pdf_Link]" placeholder="https://example.com/exercice.pdf" />
+                        <div class="help-text">
+                          <i class="bi bi-file-earmark-pdf"></i>
+                          Lien vers le PDF de l'exercice (requis pour tous les exercices)
+                        </div>
+                      </div>
+
+                      <div class="form-group-modal">
+                        <label for="correction-link-<%= chapter._id %>" class="form-label-modal">
+                          Lien de la vidéo de correction
+                        </label>
+                        <input type="url" class="form-control-modal" id="correction-link-<%= chapter._id %>" name="video[correctionVideoLink]" placeholder="https://www.youtube.com/embed/..." />
+                        <div class="help-text">
+                          <i class="bi bi-play-circle"></i>
+                          Vidéo explicative de la correction (optionnel mais recommandé)
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Section: Pour les examens (conditionnel) -->
+                    <div class="form-section field-group-conditional" id="exam-fields-<%= chapter._id %>">
+                      <h4 class="form-section-title">
+                        <i class="bi bi-mortarboard"></i>
+                        Informations sur l'examen
+                      </h4>
+                      
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group-modal">
+                            <label for="exam-year-<%= chapter._id %>" class="form-label-modal">Année de l'examen</label>
+                            <input type="text" class="form-control-modal" id="exam-year-<%= chapter._id %>" name="video[examYear]" placeholder="Ex: 2023" />
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group-modal">
+                            <label for="school-<%= chapter._id %>" class="form-label-modal">École</label>
+                            <input type="text" class="form-control-modal" id="school-<%= chapter._id %>" name="video[school]" placeholder="Ex: Lycée Marien N'Gouabi" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group-modal">
+                        <label for="country-<%= chapter._id %>" class="form-label-modal">Pays</label>
+                        <input type="text" class="form-control-modal" id="country-<%= chapter._id %>" name="video[country]" placeholder="Ex: Burkina Faso" />
+                      </div>
+                    </div>
+
+                    <!-- Section: Informations complémentaires (toujours visible) -->
+                    <div class="form-section">
+                      <h4 class="form-section-title">
+                        <i class="bi bi-three-dots"></i>
+                        Informations complémentaires (optionnel)
+                      </h4>
+                      
+                      <div class="form-group-modal">
+                        <label for="video-author-<%= chapter._id %>" class="form-label-modal">Auteur</label>
+                        <input type="text" class="form-control-modal" id="video-author-<%= chapter._id %>" name="video[author]" placeholder="Ex: Prof. Diallo" />
+                      </div>
+
+                      <div class="form-group-modal">
+                        <label for="reference-<%= chapter._id %>" class="form-label-modal">Référence du livre</label>
+                        <input type="text" class="form-control-modal" id="reference-<%= chapter._id %>" name="video[reference]" placeholder="Ex: Mathématiques Terminale D - Edition 2023" />
+                      </div>
+
+                      <div class="form-group-modal">
+                        <label for="other-info-<%= chapter._id %>" class="form-label-modal">Autres informations</label>
+                        <textarea class="form-control-modal" id="other-info-<%= chapter._id %>" name="video[otherInfo]" rows="3" placeholder="Notes supplémentaires..."></textarea>
+        </div>
+      </div>
+
+                    <div class="modal-footer" style="border-top: 1px solid #e0e0e0; padding-top: 1rem; margin-top: 1rem;">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                      <button type="submit" class="btn-modal-submit">
+                        <i class="bi bi-check-circle me-2"></i>
+                        Créer le contenu
+                      </button>
+            </div>
+              </form>
+            </div>
+              </div>
+            </div>
+          </div>
+
+        <% }); %>
+        </div>
+    <% } else { %>
+      <div class="empty-state">
+        <i class="bi bi-journal-bookmark"></i>
+        <h3>Aucun chapitre disponible</h3>
+        <p>Commencez par créer votre premier chapitre pour cette matière.</p>
+        <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>/chapter/new" class="btn-header btn-header-primary">
+          <i class="bi bi-plus-circle"></i>
+          Créer un chapitre
+        </a>
+      </div>
+    <% } %>
+    </div>
+</div>
+
+<script>
+// Fonction globale pour gérer l'affichage conditionnel des champs selon le type de contenu
+function toggleVideoFields(chapterId) {
+  const videoType = document.getElementById('video-type-' + chapterId)?.value;
+  const exerciseFields = document.getElementById('exercise-fields-' + chapterId);
+  const examFields = document.getElementById('exam-fields-' + chapterId);
+  const pdfInput = document.getElementById('pdf-link-' + chapterId);
+  const pdfRequired = document.getElementById('pdf-required-' + chapterId);
+  
+  // Réinitialiser
+  if (exerciseFields) exerciseFields.classList.remove('show');
+  if (examFields) examFields.classList.remove('show');
+  if (pdfInput) {
+    pdfInput.required = false;
+    pdfInput.removeAttribute('required');
+  }
+  if (pdfRequired) pdfRequired.style.display = 'none';
+  
+  if (!videoType) return;
+  
+  // Types qui nécessitent les champs exercices
+  const exerciseTypes = ['starterEx', 'advanceEx', 'nationalExam', 'schoolExam', 
+                         'CIAM_basic', 'CIAM_Premium', 'grandeEcole', 'exo_perso', 'practiceEx'];
+  
+  // Types qui nécessitent les champs examen
+  const examTypes = ['nationalExam', 'schoolExam'];
+  
+  if (exerciseTypes.includes(videoType)) {
+    if (exerciseFields) exerciseFields.classList.add('show');
+    if (pdfInput) {
+      pdfInput.required = true;
+      pdfInput.setAttribute('required', 'required');
+    }
+    if (pdfRequired) pdfRequired.style.display = 'inline';
+  }
+  
+  if (examTypes.includes(videoType)) {
+    if (examFields) examFields.classList.add('show');
+  }
+}
+</script>

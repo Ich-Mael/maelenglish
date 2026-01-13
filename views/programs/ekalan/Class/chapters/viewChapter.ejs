@@ -1,0 +1,445 @@
+<% layout('layouts/main') %>
+
+<% headContent = `
+  <style>
+    #main {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+    }
+    
+    .chapter-page {
+      padding: 0;
+      min-height: calc(100vh - 200px);
+      background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+      margin-top: 80px !important;
+    }
+    
+    /* Hero Banner */
+    .chapter-hero {
+      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+      color: white;
+      padding: 3rem 2rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(93, 6, 186, 0.2);
+    }
+    
+    .chapter-hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 600px;
+      height: 600px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      animation: float 20s infinite ease-in-out;
+    }
+    
+    .chapter-hero::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -5%;
+      width: 400px;
+      height: 400px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 50%;
+      animation: float 25s infinite ease-in-out reverse;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      50% { transform: translate(-30px, -30px) rotate(180deg); }
+    }
+    
+    .chapter-hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .hero-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50px;
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+    
+    .back-button:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: translateX(-5px);
+      color: white;
+      text-decoration: none;
+    }
+    
+    .chapter-title-section {
+      text-align: center;
+    }
+    
+    .subject-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.5rem 1.25rem;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .chapter-title-hero {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0.5rem 0;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+      letter-spacing: -0.5px;
+    }
+    
+    .chapter-number-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.95);
+      color: #2d0370;
+      padding: 0.4rem 1rem;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+    
+    /* Content Section */
+    .content-section {
+      padding: 4rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2d0370;
+      margin-bottom: 2.5rem;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+    
+    .section-title i {
+      font-size: 1.8rem;
+      color: #5d06ba;
+    }
+    
+    /* Course Cards Grid */
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+    
+    .course-card {
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 2px solid transparent;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .course-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 16px 48px rgba(93, 6, 186, 0.2);
+      border-color: rgba(93, 6, 186, 0.2);
+    }
+    
+    .course-card-header {
+      padding: 2rem 2rem 1rem;
+      text-align: center;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .course-part-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+      color: white;
+      padding: 0.5rem 1.25rem;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+    }
+    
+    .course-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #2d0370;
+      margin: 0;
+      line-height: 1.4;
+    }
+    
+    .course-card-body {
+      padding: 1.5rem 2rem 2rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    
+    .btn-watch-course {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(93, 6, 186, 0.3);
+    }
+    
+    .btn-watch-course:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(93, 6, 186, 0.4);
+      color: white;
+      text-decoration: none;
+    }
+    
+    .btn-watch-course i {
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .btn-watch-course:hover i {
+      transform: scale(1.1);
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 5rem 2rem;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      grid-column: 1 / -1;
+    }
+    
+    .empty-state i {
+      font-size: 5rem;
+      color: #ccc;
+      margin-bottom: 1.5rem;
+    }
+    
+    .empty-state h4 {
+      color: #333;
+      margin-bottom: 0.75rem;
+      font-size: 1.75rem;
+    }
+    
+    .empty-state p {
+      color: #666;
+      font-size: 1.1rem;
+    }
+    
+    /* Modal Styles */
+    .modal-header {
+      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+      color: white;
+      border-bottom: none;
+    }
+    
+    .modal-title {
+      color: white;
+      font-weight: 600;
+      font-size: 1.25rem;
+    }
+    
+    .btn-close-white {
+      filter: brightness(0) invert(1);
+    }
+    
+    .modal-video-container {
+      background: #000;
+      border-radius: 12px;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+    
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .chapter-hero {
+        padding: 2rem 1.5rem;
+      }
+      
+      .hero-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .chapter-title-hero {
+        font-size: 2rem;
+      }
+      
+      .content-section {
+        padding: 3rem 1rem;
+      }
+      
+      .courses-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      
+      .section-title {
+        font-size: 1.75rem;
+      }
+    }
+  </style>
+` %>
+
+<div class="chapter-page">
+  <!-- Hero Banner -->
+  <div class="chapter-hero">
+    <div class="chapter-hero-content">
+      <div class="hero-header">
+        <a href="/programs/ekalan/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>" class="back-button">
+          <i class="bi bi-arrow-left"></i>
+          Retour à la matière
+        </a>
+        <div class="chapter-title-section" style="flex: 1;">
+          <div class="subject-badge">
+            <i class="bi bi-mortarboard"></i>
+            <%= subject.title %> - <%= schoolClass.title %> <%= schoolClass.serie %>
+          </div>
+          <h1 class="chapter-title-hero">
+            <%= chapter.title %>
+          </h1>
+          <div class="chapter-number-badge">
+            <i class="bi bi-journal-bookmark"></i>
+            Chapitre <%= chapterNumber || 1 %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Section -->
+  <div class="content-section">
+    <h2 class="section-title">
+      <i class="bi bi-play-circle"></i>
+      Contenu du cours
+    </h2>
+
+    <% if (chapter.content && chapter.content.length > 0) { %>
+      <div class="courses-grid">
+        <% chapter.content.forEach((content, i) => { %>
+          <div class="course-card">
+            <div class="course-card-header">
+              <span class="course-part-badge">
+                Partie <%= i + 1 %>
+              </span>
+              <h3 class="course-title"><%= content.title %></h3>
+            </div>
+            <div class="course-card-body">
+              <a 
+                href="#" 
+                class="btn-watch-course" 
+                data-bs-toggle="modal"
+                data-bs-target="#videoModal<%= content._id %>"
+              >
+                <i class="bi bi-play-circle-fill"></i>
+                Suivre le cours
+              </a>
+            </div>
+          </div>
+
+          <!-- Video Modal -->
+          <div class="modal fade" id="videoModal<%= content._id %>" tabindex="-1" aria-labelledby="videoModalLabel<%= content._id %>" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="videoModalLabel<%= content._id %>">
+                    <i class="bi bi-play-circle me-2"></i>
+                    <%= content.title %>
+                  </h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="modal-video-container">
+                    <div class="video-wrapper">
+                      <iframe 
+                        src="<%= content.videoLink %>" 
+                        frameborder="0"
+                        allow="autoplay; fullscreen; picture-in-picture"
+                        allowfullscreen
+                        title="<%= content.title %>"
+                      ></iframe>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-2"></i>
+                    Fermer
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <i class="bi bi-inbox"></i>
+        <h4>Aucun contenu de cours disponible</h4>
+        <p>Les vidéos de cours seront bientôt ajoutées. Veuillez revenir plus tard.</p>
+      </div>
+    <% } %>
+  </div>
+</div>

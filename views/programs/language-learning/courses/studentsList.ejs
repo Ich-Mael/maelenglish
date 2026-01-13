@@ -1,0 +1,425 @@
+<% layout('layouts/main') %>
+
+<style>
+  :root {
+    --primary-color: #5d06ba;
+    --primary-light: #f3e5f5;
+    --text-dark: #1d1d1f;
+    --text-muted: #6e6e73;
+    --border-color: #e5e5e5;
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  body {
+    background-color: #f8f9fa;
+    font-family: 'Outfit', sans-serif;
+  }
+
+  .admin-container {
+    padding-top: 100px;
+    padding-bottom: 50px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .header-content h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0;
+  }
+
+  .header-content p {
+    color: var(--text-muted);
+    margin: 0;
+    font-size: 0.95rem;
+  }
+
+  .btn-add-student {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 4px 12px rgba(93, 6, 186, 0.2);
+  }
+
+  .btn-add-student:hover {
+    background: #2d0370;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(93, 6, 186, 0.3);
+  }
+
+  .stats-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .stats-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--primary-light);
+    color: var(--primary-color);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+
+  .stats-info h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+  }
+
+  .stats-info p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  /* Table Styles */
+  .table-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .table-header-controls {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .search-wrapper {
+    position: relative;
+    width: 300px;
+  }
+
+  .search-wrapper i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 0.6rem 1rem 0.6rem 2.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+
+  .search-input:focus {
+    border-color: var(--primary-color);
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  .table {
+    width: 100%;
+    margin-bottom: 0;
+    border-collapse: collapse;
+  }
+
+  .table th {
+    background: #fafafa;
+    padding: 1rem 1.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--border-color);
+  }
+
+  .table td {
+    padding: 1.25rem 1.5rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-dark);
+  }
+
+  .table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .table tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+
+  .student-profile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .student-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--primary-light);
+  }
+
+  .student-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .student-name {
+    font-weight: 600;
+    color: var(--text-dark);
+  }
+
+  .student-email {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .badge-level {
+    background: rgba(93, 6, 186, 0.1);
+    color: var(--primary-color);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .date-info {
+    font-size: 0.9rem;
+    color: var(--text-dark);
+  }
+  
+  .date-info small {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+  }
+
+  .action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+    margin-right: 4px;
+    text-decoration: none;
+  }
+
+  .action-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+  }
+  
+  .action-btn.whatsapp:hover {
+      background: #25D366;
+      border-color: #25D366;
+  }
+
+  @media (max-width: 768px) {
+    .header-content {
+      width: 100%;
+      text-align: center;
+    }
+    
+    .btn-add-student {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .search-wrapper {
+        width: 100%;
+    }
+    
+    .table-header-controls {
+        flex-direction: column;
+        gap: 1rem;
+    }
+  }
+</style>
+
+<div class="container admin-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Gestion des Étudiants</h1>
+      <p>Cours : <%= course.title %></p>
+    </div>
+    <a href="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/addStudent" class="btn-add-student">
+      <i class="bi bi-person-plus-fill"></i>
+      Ajouter un étudiant
+    </a>
+  </div>
+
+  <!-- Stats -->
+  <div class="row">
+    <div class="col-md-4">
+      <div class="stats-card">
+        <div class="stats-icon">
+          <i class="bi bi-people-fill"></i>
+        </div>
+        <div class="stats-info">
+          <h3><%= course.students.length %></h3>
+          <p>Étudiants inscrits</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table Card -->
+  <div class="table-card">
+    <div class="table-header-controls">
+      <h5 class="m-0 font-weight-bold text-dark">Liste des inscrits</h5>
+      <div class="search-wrapper">
+        <i class="bi bi-search"></i>
+        <input type="text" id="studentSearch" class="search-input" placeholder="Rechercher un étudiant...">
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col" style="width: 50px;">#</th>
+            <th scope="col">Étudiant</th>
+            <th scope="col">Coordonnées</th>
+            <th scope="col">Niveau</th>
+            <th scope="col">Période</th>
+            <th scope="col" class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="studentsTableBody">
+          <% course.students.forEach((student, index) => { 
+                // Determine enrollment dates for this specific course
+                let enrollmentInfo = { start: null, end: null };
+                if (student.specialProgram && student.specialProgram.length > 0) {
+                    const program = student.specialProgram.find(p => p.courseTitle === course.title) || student.specialProgram[student.specialProgram.length - 1]; // Fallback to last
+                    if (program) {
+                        enrollmentInfo.start = new Date(program.startDate).toLocaleDateString('fr-FR');
+                        enrollmentInfo.end = new Date(program.endDate).toLocaleDateString('fr-FR');
+                    }
+                }
+          %>
+          <tr>
+            <td><%= index + 1 %></td>
+            <td>
+              <div class="student-profile">
+                <img src="<%= student.imageUrl || 'https://www.kindpng.com/picc/m/105-1055656_account-user-profile-avatar-avatar-user-profile-icon.png' %>" 
+                     alt="<%= student.name %>" class="student-avatar">
+                <div class="student-info">
+                  <span class="student-name"><%= student.surname %> <%= student.name %></span>
+                  <span class="student-email"><%= student.username %></span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="d-flex flex-column">
+                <span class="text-dark"><%= student.email %></span>
+                <% if(student.phoneNumber) { %>
+                    <small class="text-muted"><%= student.phoneNumber %></small>
+                <% } %>
+              </div>
+            </td>
+            <td>
+              <% if(student.englishLevel) { %>
+                <span class="badge-level"><%= student.englishLevel %></span>
+              <% } else { %>
+                <span class="text-muted small">-</span>
+              <% } %>
+            </td>
+            <td>
+                <% if(enrollmentInfo.start) { %>
+                    <div class="date-info">
+                        <%= enrollmentInfo.start %> - <%= enrollmentInfo.end %>
+                        <small>Validité</small>
+                    </div>
+                <% } else { %>
+                    <span class="text-muted small">Non défini</span>
+                <% } %>
+            </td>
+            <td class="text-end">
+              <div class="d-flex justify-content-end">
+                  <% if(student.whatsAppLink) { %>
+                    <a href="<%= student.whatsAppLink %>" target="_blank" class="action-btn whatsapp" title="Contacter sur WhatsApp">
+                        <i class="bi bi-whatsapp"></i>
+                    </a>
+                  <% } %>
+                  <a href="/admin/users/<%= student._id %>" class="action-btn" title="Voir le profil">
+                    <i class="bi bi-eye"></i>
+                  </a>
+              </div>
+            </td>
+          </tr>
+          <% }) %>
+          
+          <% if(course.students.length === 0) { %>
+            <tr>
+                <td colspan="6" class="text-center py-5 text-muted">
+                    <i class="bi bi-person-x" style="font-size: 2rem;"></i>
+                    <p class="mt-2">Aucun étudiant inscrit dans ce cours pour le moment.</p>
+                </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Simple Client-Side Search
+  document.getElementById('studentSearch').addEventListener('keyup', function() {
+    const searchValue = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#studentsTableBody tr');
+
+    rows.forEach(row => {
+      const text = row.innerText.toLowerCase();
+      if (text.includes(searchValue)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  });
+</script>

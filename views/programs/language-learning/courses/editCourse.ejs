@@ -1,0 +1,366 @@
+<% layout('layouts/main') %>
+
+<style>
+  :root {
+    --primary-color: #5d06ba;
+    --primary-light: #f3e5f5;
+    --text-dark: #1d1d1f;
+    --text-muted: #6e6e73;
+    --border-color: #e5e5e5;
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  body {
+    background-color: #f8f9fa;
+    font-family: 'Outfit', sans-serif;
+  }
+
+  .admin-container {
+    padding-top: 100px;
+    padding-bottom: 50px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  /* Premium Banner Styles */
+  .edit-course-banner {
+    position: relative;
+    background-image: url('<%= course.courseImageUrl || "/assets/img/hero-bg-1.jpg" %>');
+    background-size: cover;
+    background-position: center;
+    border-radius: 24px;
+    padding: 3rem 2.5rem;
+    margin-bottom: 2.5rem;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(93, 6, 186, 0.15);
+  }
+
+  .banner-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, rgba(93, 6, 186, 0.9) 0%, rgba(45, 3, 112, 0.85) 100%);
+    z-index: 1;
+  }
+  
+  .banner-pattern {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 20%);
+    z-index: 1;
+  }
+
+  .banner-content {
+    position: relative;
+    z-index: 2;
+  }
+  
+  .banner-badge {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      color: #e0aaff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+  }
+
+  .banner-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 0.5rem;
+      line-height: 1.2;
+  }
+  
+  .banner-subtitle {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1.1rem;
+      margin: 0;
+  }
+  
+  .banner-btn {
+      background: white;
+      color: var(--primary-color);
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  
+  .banner-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      background: white;
+      color: var(--primary-dark);
+  }
+
+  .form-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 2rem;
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .form-section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .form-label {
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+  }
+  
+  .form-control, .form-select {
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border-color);
+      font-size: 0.95rem;
+  }
+  
+  .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 4px rgba(93, 6, 186, 0.1);
+  }
+
+  .btn-submit {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 50px;
+    border: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-submit:hover {
+    background: #4a0594;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(93, 6, 186, 0.3);
+    color: white;
+  }
+  
+  .module-section {
+      background: #fdfdfd;
+      border: 2px dashed var(--border-color);
+  }
+  
+  .accordion-button:not(.collapsed) {
+      background-color: var(--primary-light);
+      color: var(--primary-color);
+  }
+  
+  @media (max-width: 768px) {
+      .edit-course-banner {
+          padding: 2rem;
+          text-align: center;
+      }
+      
+      .banner-actions {
+          margin-top: 1.5rem;
+          justify-content: center !important;
+      }
+  }
+</style>
+
+<div class="container admin-container">
+  <!-- Visual Banner -->
+  <div class="edit-course-banner">
+      <div class="banner-overlay"></div>
+      <div class="banner-pattern"></div>
+      <div class="banner-content">
+          <div class="row align-items-end">
+              <div class="col-md-8">
+                  <div class="banner-badge">
+                      <i class="bi bi-pencil-square"></i> Mode Édition
+                  </div>
+                  <h1 class="banner-title"><%= course.title %></h1>
+                  <p class="banner-subtitle">
+                      Modifiez les détails, le planning et le contenu de votre cours.
+                  </p>
+              </div>
+              <div class="col-md-4 d-flex justify-content-end banner-actions">
+                  <a class="banner-btn" href="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules">
+                      <i class="bi bi-collection-play-fill"></i> Gérer les modules
+                  </a>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>?_method=PUT" method="POST">
+    
+    <!-- General Info -->
+    <div class="form-card">
+      <h3 class="form-section-title">
+          <i class="bi bi-info-circle"></i> Informations Générales
+      </h3>
+      <div class="row g-4">
+        <div class="col-md-8">
+          <label class="form-label" for="title">Titre du cours</label>
+          <input class="form-control" type="text" name="course[title]" value="<%= course.title %>" required />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="price">Prix (FCFA)</label>
+          <input class="form-control" type="number" name="course[price]" value="<%= course.price %>" required />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="category">Catégorie</label>
+          <input class="form-control" type="text" name="course[category]" value="<%= course.category %>" />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label" for="course-image">URL de l'image (Bannière)</label>
+            <input class="form-control" type="text" name="course[courseImageUrl]" value="<%= course.courseImageUrl %>" />
+        </div>
+        <div class="col-md-6 d-flex align-items-center">
+            <div class="form-check form-switch mt-4">
+                <input class="form-check-input" type="checkbox" id="isPrivate" name="course[isPrivate]" value="true" <%= course.isPrivate ? 'checked' : '' %>>
+                <label class="form-check-label" for="isPrivate">
+                    <i class="bi bi-eye-slash-fill ms-2"></i> Cours Privé (Masqué du public)
+                </label>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Schedule & Instructors -->
+    <div class="form-card">
+        <h3 class="form-section-title">
+            <i class="bi bi-calendar-event"></i> Planning & Instructeurs
+        </h3>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <label class="form-label" for="session-start">Date de début</label>
+                <% 
+                    let startDateVal = "";
+                    if(course.session && course.session.startDate) {
+                        startDateVal = new Date(course.session.startDate).toISOString().split('T')[0];
+                    }
+                %>
+                <input class="form-control" type="date" name="session[startDate]" value="<%= startDateVal %>" required />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="session-end">Date de fin</label>
+                <% 
+                    let endDateVal = "";
+                    if(course.session && course.session.endDate) {
+                        endDateVal = new Date(course.session.endDate).toISOString().split('T')[0];
+                    }
+                %>
+                <input class="form-control" type="date" name="session[endDate]" value="<%= endDateVal %>" required />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="main-instructor">Instructeur Principal (Username)</label>
+                <input class="form-control" type="text" name="instructors[main]"
+                  value="<%= course.instructors && course.instructors.length > 0 ? course.instructors[0].username : '' %>" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="second-instructor">Instructeur Assistant (Username)</label>
+                <input class="form-control" type="text" name="instructors[assistant]" 
+                    value="<%= course.instructors && course.instructors.length > 1 ? course.instructors[1].username : '' %>" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Descriptions -->
+    <div class="form-card">
+        <h3 class="form-section-title">
+            <i class="bi bi-file-text"></i> Contenu et Description
+        </h3>
+        
+        <div class="mb-4">
+            <label class="form-label" for="description">Description détaillée</label>
+            <textarea class="form-control mytextarea" name="course[description]" id="description" rows="4"><%= course.description %></textarea>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label" for="willLearn">Ce que vous apprendrez (Objectifs)</label>
+            <textarea class="form-control mytextarea" name="course[willLearn]" id="willLearn" rows="4"><%= course.willLearn %></textarea>
+        </div>
+        
+        <div class="mb-4">
+            <label class="form-label" for="requirements">Prérequis</label>
+            <textarea class="form-control mytextarea" name="course[requirements]" id="requirements" rows="3"><%= course.requirements %></textarea>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label" for="syllabusSummary">Résumé du Syllabus</label>
+            <textarea class="form-control mytextarea" name="course[syllabusSummary]" id="syllabusSummary" rows="3"><%= course.syllabusSummary %></textarea>
+        </div>
+    </div>
+
+    <div class="text-center mb-5">
+        <button type="submit" class="btn-submit">
+            <i class="bi bi-save"></i> Enregistrer les modifications
+        </button>
+    </div>
+  </form>
+
+  <!-- Add Module Section -->
+  <div class="form-card module-section">
+      <h3 class="form-section-title text-dark border-0 mb-0 pointer" data-bs-toggle="collapse" data-bs-target="#new-module" aria-expanded="false" style="cursor: pointer;">
+          <span><i class="bi bi-plus-circle text-success"></i> Ajouter un nouveau module</span>
+          <i class="bi bi-chevron-down ms-auto"></i>
+      </h3>
+      
+      <div class="collapse mt-4" id="new-module">
+          <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/module" method="POST">
+             <div class="row g-4 mb-3">
+                 <div class="col-md-8">
+                    <label class="form-label">Titre du module</label>
+                    <input class="form-control" type="text" name="module[title]" required />
+                 </div>
+                 <div class="col-md-4">
+                    <label class="form-label">Date de disponibilité</label>
+                    <input class="form-control" type="date" name="module[revealDate]" required />
+                 </div>
+             </div>
+             
+             <div class="mb-3">
+                 <label class="form-label">Objectifs du module</label>
+                 <textarea class="form-control mytextarea" name="module[willLearnModule]"></textarea>
+             </div>
+             
+             <div class="mb-3">
+                 <label class="form-label">Texte explicatif</label>
+                 <textarea class="form-control mytextarea" name="module[explanationText]"></textarea>
+             </div>
+             
+             <div class="mb-3">
+                 <label class="form-label">Détails supplémentaires</label>
+                 <textarea class="form-control mytextarea" name="module[moreDetails]"></textarea>
+             </div>
+             
+             <div class="text-end">
+                 <button type="submit" class="btn btn-success rounded-pill px-4">
+                     <i class="bi bi-plus-lg"></i> Créer le module
+                 </button>
+             </div>
+          </form>
+      </div>
+  </div>
+</div>

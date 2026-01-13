@@ -1,0 +1,267 @@
+<% layout('layouts/main') %>
+
+<% headContent = `
+<style>
+    #main {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+    }
+    
+    .subjects-page {
+      padding: 2rem 0 4rem;
+      min-height: calc(100vh - 200px);
+      background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+      margin-top: 80px !important;
+    }
+    
+    .page-header {
+      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+      color: white;
+      padding: 2.5rem 2rem;
+      border-radius: 20px;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 40px rgba(93, 6, 186, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .page-header-content {
+      flex: 1;
+    }
+    
+    .page-header h1 {
+      margin: 0 0 0.5rem 0;
+      font-size: 2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .page-header p {
+      margin: 0;
+      opacity: 0.95;
+      font-size: 1.1rem;
+      font-weight: 300;
+    }
+    
+    .class-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .btn-header {
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: white;
+      color: #5d06ba;
+      border: 2px solid white;
+    }
+    
+    .btn-header:hover {
+      background: rgba(255, 255, 255, 0.9);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      text-decoration: none;
+      color: #2d0370;
+    }
+    
+    .subjects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    
+  .subject-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .subject-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(93, 6, 186, 0.15);
+      border-color: rgba(93, 6, 186, 0.2);
+    }
+    
+    .subject-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #2d0370;
+      margin: 0 0 1.5rem 0;
+      text-align: center;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .subject-actions {
+    display: flex;
+    flex-direction: column;
+      gap: 0.75rem;
+      margin-top: auto;
+    }
+    
+    .btn-subject-action {
+      padding: 0.875rem 1.25rem;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+    justify-content: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn-primary-action {
+      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(93, 6, 186, 0.3);
+    }
+    
+    .btn-primary-action:hover {
+      background: linear-gradient(135deg, #2d0370 0%, #5d06ba 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(93, 6, 186, 0.4);
+      color: white;
+      text-decoration: none;
+    }
+    
+    .btn-success-action {
+      background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+    }
+    
+    .btn-success-action:hover {
+      background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+      color: white;
+      text-decoration: none;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    .empty-state-icon {
+      font-size: 4rem;
+      color: #ccc;
+      margin-bottom: 1rem;
+    }
+    
+    .empty-state-text {
+      font-size: 1.25rem;
+      color: #666;
+      margin-bottom: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+      .subjects-page {
+        padding: 1.5rem 0 3rem;
+      }
+      
+      .page-header {
+        padding: 2rem 1.5rem;
+      }
+      
+      .page-header h1 {
+        font-size: 1.75rem;
+      }
+      
+      .subjects-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      
+      .subject-card {
+        padding: 1.5rem;
+      }
+  }
+</style>
+` %>
+
+<div class="subjects-page">
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-header-content">
+        <h1>
+          <i class="bi bi-book-half"></i>
+          Matières
+        </h1>
+        <p>Gestion des matières de la classe</p>
+        <span class="class-badge">
+          <i class="bi bi-mortarboard"></i>
+          <%= schoolClass.title %> - <%= schoolClass.serie %>
+        </span>
+      </div>
+      <a href="/programs/ekalan/kalan/admindashboard/kalan/series_and_classes" class="btn-header">
+        <i class="bi bi-arrow-left"></i>
+        Retour aux classes
+      </a>
+    </div>
+    
+    <% if(subjects && subjects.length > 0) { %>
+      <div class="subjects-grid">
+        <% for(let subject of subjects) {%>
+          <div class="subject-card">
+            <h3 class="subject-title"><%= subject.title %></h3>
+            <div class="subject-actions">
+              <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%=schoolClass._id%>/subject/<%=subject._id%>/chapter/new" class="btn-subject-action btn-primary-action">
+                <i class="bi bi-plus-circle"></i>
+                Ajouter un chapitre
+              </a>
+              <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%=schoolClass._id%>/subject/<%=subject._id%>/chapters" class="btn-subject-action btn-success-action">
+                <i class="bi bi-list-ul"></i>
+                Tous les chapitres
+              </a>
+            </div>
+          </div>
+        <% } %>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <i class="bi bi-inbox"></i>
+        </div>
+        <div class="empty-state-text">
+          Aucune matière trouvée pour cette classe.
+        </div>
+        <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%=schoolClass._id%>/subject/new" class="btn-header">
+          <i class="bi bi-plus-circle"></i>
+          Ajouter une matière
+        </a>
+    </div>
+    <% } %>
+  </div>
+</div>

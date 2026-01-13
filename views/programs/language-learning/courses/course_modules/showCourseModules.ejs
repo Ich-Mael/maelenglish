@@ -1,0 +1,286 @@
+<% layout('layouts/main') %>
+
+<style>
+  :root {
+    --primary-color: #5d06ba;
+    --primary-light: #f3e5f5;
+    --text-dark: #1d1d1f;
+    --text-muted: #6e6e73;
+    --border-color: #e5e5e5;
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  body {
+    background-color: #f8f9fa;
+    font-family: 'Outfit', sans-serif;
+  }
+  
+  .admin-container {
+    padding-top: 100px;
+    padding-bottom: 50px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  /* Banner Styles */
+  .modules-banner {
+    position: relative;
+    background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+    border-radius: 24px;
+    padding: 3rem 2.5rem;
+    margin-bottom: 2.5rem;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(93, 6, 186, 0.2);
+    color: white;
+  }
+  
+  .banner-pattern {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    opacity: 0.1;
+    background-image:  radial-gradient(#ffffff 1px, transparent 1px), radial-gradient(#ffffff 1px, transparent 1px);
+    background-position: 0 0, 25px 25px;
+    background-size: 50px 50px;
+  }
+
+  .banner-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+  
+  .banner-text h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+  }
+  
+  .banner-text p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 1.1rem;
+  }
+
+  .btn-add-module {
+    background: white;
+    color: var(--primary-color);
+    padding: 0.7rem 1.5rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+
+  .btn-add-module:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    background: white;
+    color: #4a0594;
+  }
+
+  /* Module List Styles */
+  .modules-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+  }
+
+  .module-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .module-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+      border-color: rgba(93, 6, 186, 0.1);
+  }
+  
+  .module-info {
+      flex: 1;
+      min-width: 250px;
+  }
+  
+  .module-number {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--primary-color);
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      display: block;
+  }
+  
+  .module-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin: 0;
+  }
+  
+  .module-meta {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+  }
+  
+  .module-actions {
+      display: flex;
+      gap: 0.5rem;
+  }
+  
+  .action-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border-color);
+      color: var(--text-dark);
+      transition: all 0.2s ease;
+      background: white;
+      text-decoration: none;
+  }
+  
+  .action-btn:hover {
+      transform: translateY(-2px);
+  }
+  
+  .btn-view:hover {
+      background: var(--primary-light);
+      color: var(--primary-color);
+      border-color: var(--primary-light);
+  }
+  
+  .btn-edit:hover {
+      background: #e3f2fd;
+      color: #1976d2;
+      border-color: #e3f2fd;
+  }
+  
+  .btn-delete:hover {
+      background: #fee2e2;
+      color: #dc2626;
+      border-color: #fee2e2;
+  }
+  
+  .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: white;
+      border-radius: 24px;
+      border: 2px dashed var(--border-color);
+  }
+  
+  .empty-state i {
+      font-size: 3rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      display: block;
+  }
+  
+  @media (max-width: 768px) {
+      .banner-content {
+          flex-direction: column;
+          text-align: center;
+      }
+      .module-card {
+          flex-direction: column;
+          align-items: flex-start;
+      }
+      .module-actions {
+          width: 100%;
+          justify-content: flex-end;
+          border-top: 1px solid var(--border-color);
+          padding-top: 1rem;
+          margin-top: 0.5rem;
+      }
+  }
+</style>
+
+<div class="container admin-container">
+  <!-- Banner -->
+  <div class="modules-banner">
+      <div class="banner-pattern"></div>
+      <div class="banner-content">
+          <div class="banner-text">
+              <h1>Modules du cours</h1>
+              <p><%= course.title %></p>
+          </div>
+          <a href="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/edit" class="btn-add-module">
+              <i class="bi bi-plus-lg"></i> Créer un module
+          </a>
+      </div>
+  </div>
+
+  <% if(course.modules.length > 0) { %>
+      <div class="modules-list">
+          <% course.modules.forEach((chapter, index) => { %>
+              <div class="module-card">
+                  <div class="module-info">
+                      <span class="module-number">Module <%= index + 1 %></span>
+                      <h3 class="module-title"><%= chapter.title %></h3>
+                      <div class="module-meta">
+                          <% if(chapter.revealDate) { %>
+                              <span>
+                                  <i class="bi bi-calendar-event"></i> 
+                                  <%= new Date(chapter.revealDate).toLocaleDateString('fr-FR') %>
+                              </span>
+                          <% } %>
+                          <% if(chapter.videoLinks) { %>
+                              <span>
+                                  <i class="bi bi-play-circle"></i> <%= chapter.videoLinks.length %> vidéos
+                              </span>
+                          <% } %>
+                      </div>
+                  </div>
+                  
+                  <div class="module-actions">
+                      <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%= chapter._id %>" 
+                         class="action-btn btn-view" title="Voir le contenu">
+                          <i class="bi bi-eye"></i>
+                      </a>
+                      <a href="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= chapter._id %>/edit" 
+                         class="action-btn btn-edit" title="Modifier">
+                          <i class="bi bi-pencil"></i>
+                      </a>
+                      <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= chapter._id %>?_method=DELETE" method="POST" style="margin: 0;">
+                          <button type="submit" class="action-btn btn-delete" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce module ?');">
+                              <i class="bi bi-trash"></i>
+                          </button>
+                      </form>
+                  </div>
+              </div>
+          <% }) %>
+      </div>
+  <% } else { %>
+      <div class="empty-state">
+          <i class="bi bi-collection"></i>
+          <h3>Aucun module pour le moment</h3>
+          <p class="text-muted">Commencez par ajouter du contenu pédagogique à ce cours.</p>
+          <a href="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/edit" class="btn btn-primary rounded-pill mt-3">
+              <i class="bi bi-plus-lg"></i> Ajouter le premier module
+          </a>
+      </div>
+  <% } %>
+</div>

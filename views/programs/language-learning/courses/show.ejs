@@ -1,0 +1,627 @@
+<% layout('layouts/main') %>
+
+<% headContent = `
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #5d06ba;
+      --primary-dark: #2d0370;
+      --secondary-color: #f0f2f5;
+      --text-color: #1d1d1f;
+      --text-muted: #86868b;
+      --card-bg: #ffffff;
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.08);
+      --font-family: 'Outfit', sans-serif;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--secondary-color);
+      color: var(--text-color);
+    }
+
+    .course-page-wrapper {
+      padding-top: 80px; /* Navbar height */
+      min-height: 100vh;
+      background: linear-gradient(180deg, #f5f5f7 0%, #ffffff 100%);
+    }
+
+    /* Modern Hero Section */
+    .course-hero-modern {
+      position: relative;
+      background: linear-gradient(135deg, #10002b 0%, #240046 50%, #3c096c 100%);
+      color: white;
+      padding: 60px 0 80px;
+      overflow: hidden;
+      margin-bottom: -60px; /* Overlap effect */
+    }
+
+    .hero-bg-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('${course.courseImageUrl || "/assets/img/hero-bg-1.jpg"}');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.15;
+      mix-blend-mode: overlay;
+    }
+
+    .hero-pattern {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background-image: radial-gradient(circle at 80% 20%, rgba(123, 44, 191, 0.4) 0%, transparent 40%),
+                        radial-gradient(circle at 20% 80%, rgba(93, 6, 186, 0.4) 0%, transparent 40%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+    }
+
+    .course-badge-modern {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 8px 16px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #e0aaff;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .course-title {
+      font-size: 3rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      background: linear-gradient(to right, #ffffff, #e0aaff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .course-short-desc {
+      font-size: 1.15rem;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.85);
+      margin-bottom: 0;
+      max-width: 700px;
+    }
+
+    /* 2-Column Layout */
+    .course-layout-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 40px;
+      position: relative;
+      z-index: 5;
+    }
+
+    /* Main Content Styling */
+    .section-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 32px;
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .section-header i {
+      font-size: 1.5rem;
+      color: var(--primary-color);
+      background: rgba(93, 6, 186, 0.1);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+    }
+
+    .section-header h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin: 0;
+    }
+
+    /* About & Description */
+    .course-description-text {
+      color: #444;
+      line-height: 1.8;
+      font-size: 1.05rem;
+    }
+
+    /* Checklist Grid for Objectives */
+    .objectives-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .objective-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .objective-item i {
+      color: #38b000;
+      font-size: 1.2rem;
+      margin-top: 2px;
+    }
+    
+    .objective-item span {
+        font-size: 1rem;
+        color: #333;
+    }
+
+    /* Modules List */
+    .module-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .module-item {
+      display: flex;
+      align-items: center;
+      background: #fdfdfd;
+      border: 1px solid #eee;
+      border-radius: var(--radius-md);
+      padding: 20px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .module-item:hover {
+      border-color: var(--primary-color);
+      box-shadow: 0 4px 12px rgba(93, 6, 186, 0.1);
+      transform: translateX(4px);
+    }
+
+    .module-number-badge {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      background: rgba(93, 6, 186, 0.08);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 16px;
+      flex-shrink: 0;
+    }
+
+    .module-info {
+      flex: 1;
+    }
+
+    .module-info h4 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+    
+    .module-info p {
+        margin: 4px 0 0 0;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    .module-arrow {
+      color: var(--primary-color);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .module-item:hover .module-arrow {
+      opacity: 1;
+    }
+
+    /* Instructors */
+    .instructors-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    
+    .instructor-profile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+        background: #f9f9f9;
+        border-radius: var(--radius-md);
+    }
+    
+    .instructor-profile img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 12px;
+        border: 3px solid white;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .instructor-profile h4 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 4px;
+    }
+    
+    .instructor-profile p {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    /* Sticky Sidebar */
+    .course-sidebar-wrapper {
+        position: relative; /* For sticky context */
+    }
+
+    .course-sidebar {
+      position: sticky;
+      top: 100px;
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.1);
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .sidebar-course-img {
+      width: 100%;
+      height: 200px;
+      border-radius: var(--radius-md);
+      object-fit: cover;
+      margin-bottom: 24px;
+      display: none; /* Hidden on desktop as it repeats hero */
+    }
+
+    .price-tag {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin-bottom: 8px;
+    }
+
+    .price-period {
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .cta-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #5d06ba 0%, #3c096c 100%);
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 50px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 24px rgba(93, 6, 186, 0.3);
+      margin: 24px 0;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(93, 6, 186, 0.4);
+      color: white;
+    }
+    
+    .cta-button.disabled {
+        background: #ccc;
+        pointer-events: none;
+        box-shadow: none;
+    }
+
+    .sidebar-meta {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar-meta li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+      color: #555;
+    }
+
+    .sidebar-meta li:last-child {
+      border-bottom: none;
+    }
+
+    .sidebar-meta i {
+      color: var(--primary-color);
+      width: 24px;
+    }
+    
+    .sidebar-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        color: var(--text-color);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .course-layout-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .course-sidebar-wrapper {
+        order: -1; /* Move to top on mobile */
+      }
+      
+      .course-sidebar {
+          position: static;
+          margin-top: -60px; /* Overlap hero */
+          margin-bottom: 30px;
+      }
+      
+      .sidebar-course-img {
+          display: block; /* Show on mobile */
+      }
+      
+      .course-title {
+          font-size: 2.2rem;
+      }
+    }
+  </style>
+` %>
+
+<div class="course-page-wrapper">
+  
+  <!-- Hero Section -->
+  <div class="course-hero-modern">
+    <div class="hero-bg-overlay"></div>
+    <div class="hero-pattern"></div>
+    <div class="container position-relative">
+      <div class="hero-content" data-aos="fade-up">
+        <div class="course-badge-modern">
+          <i class="bi bi-award-fill"></i> General English
+        </div>
+        <h1 class="course-title"><%= course.title %></h1>
+         <% if (course.willLearn) { %>
+            <% // Extract first sentence or use a brief description if available %>
+            <p class="course-short-desc">
+                 Découvrez une expérience d'apprentissage unique conçue pour propulser vos compétences linguistiques vers de nouveaux sommets.
+            </p>
+         <% } %>
+      </div>
+    </div>
+  </div>
+
+  <div class="container pb-5">
+    <div class="course-layout-grid">
+      
+      <!-- Left Column: Main Content -->
+      <div class="main-content">
+        
+        <!-- About Section -->
+        <% if (course.description) { %>
+        <div class="section-card" data-aos="fade-up">
+          <div class="section-header">
+            <i class="bi bi-file-text"></i>
+            <h2>Ce que vous apprendrez</h2>
+          </div>
+          <div class="course-description-text">
+            <%- course.description %>
+          </div>
+        </div>
+        <% } %>
+
+        <!-- Objectives Section -->
+        <% if (course.willLearn) { %>
+        <div class="section-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="section-header">
+            <i class="bi bi-bullseye"></i>
+            <h2>Objectifs du cours</h2>
+          </div>
+          <div class="objectives-grid">
+              <%# Assuming willLearn might contain HTML list, but if raw text we can style %>
+             <div class="course-description-text">
+                 <%- course.willLearn %>
+             </div>
+          </div>
+        </div>
+        <% } %>
+
+        <!-- Requirements -->
+        <% if (course.requirements) { %>
+        <div class="section-card" data-aos="fade-up">
+          <div class="section-header">
+            <i class="bi bi-check2-square"></i>
+            <h2>Prérequis</h2>
+          </div>
+          <div class="course-description-text">
+            <%- course.requirements %>
+          </div>
+        </div>
+        <% } %>
+        
+        <!-- Syllabus / Modules -->
+        <% if (course.modules && course.modules.length > 0) { %>
+        <div class="section-card" data-aos="fade-up">
+          <div class="section-header">
+            <i class="bi bi-collection-play"></i>
+            <h2>Programme du cours (<%= course.modules.length %> modules)</h2>
+          </div>
+          
+          <div class="module-list">
+            <% course.modules.forEach((module, index) => { %>
+                <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%=module._id%>" class="module-item">
+                    <div class="module-number-badge"><%= index + 1 %></div>
+                    <div class="module-info">
+                        <h4><%= module.title %></h4>
+                        <% if(module.willLearnModule) { %>
+                            <p><%= module.willLearnModule.substring(0, 100).replace(/<[^>]*>?/gm, '') + '...' %></p>
+                        <% } %>
+                    </div>
+                    <i class="bi bi-chevron-right module-arrow"></i>
+                </a>
+            <% }) %>
+          </div>
+        </div>
+        <% } %>
+        
+        <!-- Instructors -->
+        <% if (course.instructors && course.instructors.length > 0) { %>
+        <div class="section-card" data-aos="fade-up">
+           <div class="section-header">
+            <i class="bi bi-person-video3"></i>
+            <h2>Vos Instructeurs</h2>
+          </div>
+          <div class="instructors-list">
+              <% for (let instructor of course.instructors) { %>
+                <div class="instructor-profile">
+                     <img src="<%= instructor.imageUrl || 'https://www.kindpng.com/picc/m/105-1055656_account-user-profile-avatar-avatar-user-profile-icon.png' %>" 
+                       alt="<%= instructor.name %>">
+                     <h4><%= instructor.surname %> <%= instructor.name %></h4>
+                     <p>Instructor</p>
+                </div>
+              <% } %>
+          </div>
+        </div>
+        <% } %>
+
+      </div>
+
+      <!-- Right Column: Sticky Sidebar -->
+      <div class="course-sidebar-wrapper">
+        <div class="course-sidebar">
+            <img src="<%= course.courseImageUrl || '/assets/img/hero-bg-1.jpg' %>" alt="Course Preview" class="sidebar-course-img">
+            
+            <% 
+               let isEnrolled = false;
+               if (typeof currentUser !== 'undefined' && course.students) {
+                   isEnrolled = course.students.some(id => id.toString() === currentUser._id.toString());
+               }
+            %>
+
+            <% if(isEnrolled) { %>
+                <div class="mb-4">
+                    <div class="d-flex align-items-center gap-2 text-success mb-2">
+                        <i class="bi bi-check-circle-fill" style="font-size: 1.5rem;"></i>
+                        <span style="font-weight: 700; font-size: 1.2rem;">Vous êtes inscrit</span>
+                    </div>
+                    <p class="text-muted m-0" style="font-size: 0.95rem;">Bon retour ! Prêt à continuer ?</p>
+                </div>
+            <% } else { %>
+                <% if(course.price) { %>
+                    <div class="price-tag"><%= course.price %> FCFA</div>
+                <% } else { %>
+                     <div class="price-tag">Gratuit</div>
+                <% } %>
+            <% } %>
+            
+            <% if(course.modules && course.modules.length > 0) { %>
+                
+                <% if (isEnrolled) { %>
+                   <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%=course.modules[0]._id%>" class="cta-button">
+                        Continuer l'apprentissage <i class="bi bi-arrow-right-circle-fill"></i>
+                   </a>
+                <% } else if (typeof currentUser === 'undefined') { %>
+                   <a href="/programs/language-learning/general-english-boost/enroll-contact" class="cta-button">
+                        S'inscrire au programme <i class="bi bi-arrow-right-circle-fill"></i>
+                   </a>
+                <% } else { %>
+                   <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%=course.modules[0]._id%>" class="cta-button">
+                        Commencer maintenant <i class="bi bi-arrow-right-circle-fill"></i>
+                   </a>
+                <% } %>
+
+            <% } else { %>
+                <a href="#" class="cta-button disabled">
+                    Bientôt disponible
+                </a>
+            <% } %>
+
+            <h5 class="sidebar-title">Ce cours inclut :</h5>
+            <ul class="sidebar-meta">
+                <li>
+                    <i class="bi bi-film"></i>
+                    <span>Accès illimité aux vidéos</span>
+                </li>
+                <li>
+                    <i class="bi bi-phone"></i>
+                    <span>Accès sur mobile et tablette</span>
+                </li>
+                 <% if (typeof start !== 'undefined' && start) { %>
+                <li>
+                    <i class="bi bi-calendar-event"></i>
+                    <span>Début : <%= start %></span>
+                </li>
+                 <% } %>
+                 <% if (typeof end !== 'undefined' && end) { %>
+                <li>
+                    <i class="bi bi-calendar-check"></i>
+                    <span>Fin : <%= end %></span>
+                </li>
+                <% } %>
+                <li>
+                    <i class="bi bi-award"></i>
+                    <span>Certificat de fin de formation</span>
+                </li>
+            </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  AOS.init({
+      duration: 800,
+      once: true
+  });
+</script>
+
