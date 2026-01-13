@@ -6,12 +6,15 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 
   <title>Afro House of Knowledge</title>
-  <meta content="" name="description" />
+  <meta
+    content="Afro House of Knowledge - Plateforme éducative en ligne proposant des formations d'excellence académique, accompagnement scolaire et apprentissage des langues. Le savoir sans barrières. Découvrir, Développer, Devenir."
+    name="description" />
+
   <meta content="" name="keywords" />
 
   <!-- Favicons -->
   <link href="assets/img/afrohk_logo_2.png" rel="icon" />
-
+  <meta property="og:image" content="/assets/img/afrohk_logo_2.png" />
   <!-- Font awesome -->
   <script src="https://kit.fontawesome.com/9ecb022092.js"></script>
 
@@ -46,12 +49,12 @@
       padding: 80px 0;
       background: #ffffff;
     }
-    
+
     .programs-header-modern {
       text-align: center;
       margin-bottom: 60px;
     }
-    
+
     .programs-title-modern {
       font-size: 42px;
       font-weight: 700;
@@ -59,7 +62,7 @@
       margin-bottom: 16px;
       line-height: 1.2;
     }
-    
+
     .programs-subtitle-modern {
       font-size: 20px;
       font-weight: 400;
@@ -67,7 +70,7 @@
       margin: 0;
       line-height: 1.5;
     }
-    
+
     .programs-grid-modern {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -76,7 +79,7 @@
       margin: 0 auto;
       padding: 0 20px;
     }
-    
+
     .program-card-modern {
       background: #ffffff;
       border-radius: 20px;
@@ -88,12 +91,12 @@
       height: 100%;
       cursor: pointer;
     }
-    
+
     .program-card-modern:hover {
       transform: translateY(-8px);
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
     }
-    
+
     .program-card-image {
       position: relative;
       width: 100%;
@@ -101,41 +104,41 @@
       overflow: hidden;
       background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
     }
-    
+
     .program-card-image img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       transition: transform 0.5s ease;
     }
-    
+
     .program-card-modern:hover .program-card-image img {
       transform: scale(1.1);
     }
-    
+
     .program-card-overlay {
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 100%);
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 100%);
     }
-    
+
     .program-card-content {
       padding: 32px 24px;
       flex: 1;
       display: flex;
       flex-direction: column;
     }
-    
+
     .program-card-header {
       display: flex;
       align-items: center;
       gap: 16px;
       margin-bottom: 16px;
     }
-    
+
     .program-card-icon {
       width: 48px;
       height: 48px;
@@ -146,12 +149,12 @@
       justify-content: center;
       flex-shrink: 0;
     }
-    
+
     .program-card-icon i {
       font-size: 24px;
       color: #ffffff;
     }
-    
+
     .program-card-title {
       font-size: 24px;
       font-weight: 700;
@@ -160,7 +163,7 @@
       line-height: 1.3;
       flex: 1;
     }
-    
+
     .program-card-description {
       font-size: 15px;
       font-weight: 400;
@@ -169,8 +172,8 @@
       margin-bottom: 24px;
       flex: 1;
     }
-    
-    
+
+
     .program-card-link {
       display: inline-flex;
       align-items: center;
@@ -189,7 +192,7 @@
       position: relative;
       overflow: hidden;
     }
-    
+
     /* Shine effect */
     .program-card-link::before {
       content: "";
@@ -201,11 +204,11 @@
       background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
       transition: left 0.6s ease;
     }
-    
+
     .program-card-link:hover::before {
       left: 100%;
     }
-    
+
     .program-card-link:hover {
       background: linear-gradient(135deg, #6b1fff 0%, #5d0fd4 100%);
       box-shadow: 0 8px 24px rgba(81, 7, 206, 0.5);
@@ -214,110 +217,110 @@
       color: #fff;
       gap: 12px;
     }
-    
+
     .program-card-link i {
       font-size: 16px;
       transition: transform 0.3s ease;
     }
-    
+
     .program-card-link:hover i {
       transform: translateX(4px);
     }
-    
+
     /* Responsive Design */
     @media (max-width: 992px) {
       .programs-grid-modern {
         grid-template-columns: repeat(2, 1fr);
         gap: 24px;
       }
-      
+
       .programs-title-modern {
         font-size: 36px;
       }
-      
+
       .programs-subtitle-modern {
         font-size: 18px;
       }
     }
-    
+
     @media (max-width: 768px) {
       .programs-section-modern {
         padding: 60px 0;
       }
-      
+
       .programs-header-modern {
         margin-bottom: 40px;
         padding: 0 20px;
       }
-      
+
       .programs-title-modern {
         font-size: 32px;
       }
-      
+
       .programs-subtitle-modern {
         font-size: 16px;
       }
-      
+
       .programs-grid-modern {
         grid-template-columns: 1fr;
         gap: 24px;
         padding: 0 16px;
       }
-      
+
       .program-card-image {
         height: 200px;
       }
-      
+
       .program-card-content {
         padding: 24px 20px;
       }
     }
-    
+
     @media (max-width: 576px) {
       .programs-title-modern {
         font-size: 28px;
       }
-      
+
       .program-card-title {
         font-size: 22px;
       }
-      
+
       .program-card-description {
         font-size: 14px;
       }
     }
-    
+
     /* About Section Mouse Move Animation */
     .about-img-wrapper {
       position: relative;
       perspective: 1000px;
       transform-style: preserve-3d;
     }
-    
+
     .gallery {
       position: relative;
       width: 100%;
       height: 100%;
       transition: transform 0.1s ease-out;
     }
-    
+
     .gallery img {
       transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
       will-change: transform;
     }
-    
+
     .gallery img:nth-child(1) {
       transition-delay: 0s;
     }
-    
+
     .gallery img:nth-child(2) {
       transition-delay: 0.05s;
     }
-    
+
     .gallery img:nth-child(3) {
       transition-delay: 0.1s;
     }
-    
+
     .gallery img:nth-child(4) {
       transition-delay: 0.15s;
     }
@@ -327,158 +330,172 @@
 <body>
   <%-include('./partials/navbar')%>
 
-  <!-- ======= Hero Section ======= -->
-  <%-include('./partials/flash')%>
-  <section id="hero" class="d-flex align-items-center">
-    <!-- Background Carousel -->
-    <div class="hero-carousel">
-      <div class="hero-slide active" style="background-image: url('https://images.pexels.com/photos/6894013/pexels-photo-6894013.jpeg');"></div>
-      <div class="hero-slide" style="background-image: url('https://images.pexels.com/photos/5198239/pexels-photo-5198239.jpeg');"></div>
-      <div class="hero-slide" style="background-image: url('https://images.pexels.com/photos/4624896/pexels-photo-4624896.jpeg');"></div>
-    </div>
-    
-    <div class="container" data-aos="zoom-out" data-aos-delay="100">
-      <div class="row mt-5">
-        <div class="col-xl-9">
-          <h3 class="slogan" id="values-c"  data-aos="fade-down" data-aos-delay="200">
-              <span class="purple">Le savoir <br> sans barrières</span>
-            </h3>
-          <h2 class="hero-slogan" data-aos="fade-up" data-aos-delay="400">
-            Découvrir - Développer - Devenir
-          </h2>
-          <a href="#programs" class="btn-get-started scrollto" data-aos="zoom-in" data-aos-delay="600">
-            Explorer nos Programmes
-          </a>
+    <!-- ======= Hero Section ======= -->
+    <%-include('./partials/flash')%>
+      <section id="hero" class="d-flex align-items-center">
+        <!-- Background Carousel -->
+        <div class="hero-carousel">
+          <div class="hero-slide active"
+            style="background-image: url('https://images.pexels.com/photos/6894013/pexels-photo-6894013.jpeg');"></div>
+          <div class="hero-slide"
+            style="background-image: url('https://images.pexels.com/photos/5198239/pexels-photo-5198239.jpeg');"></div>
+          <div class="hero-slide"
+            style="background-image: url('https://images.pexels.com/photos/4624896/pexels-photo-4624896.jpeg');"></div>
         </div>
-      </div>
-    </div>
-  </section>
-  <!-- End Hero -->
-  
-  <script>
-    // Hero Background Carousel
-    (function() {
-      const slides = document.querySelectorAll('.hero-slide');
-      let currentSlide = 0;
-      
-      function nextSlide() {
-        slides[currentSlide].classList.remove('active');
-        currentSlide = (currentSlide + 1) % slides.length;
-        slides[currentSlide].classList.add('active');
-      }
-      
-      // Change slide every 5 seconds
-      setInterval(nextSlide, 5000);
-    })();
-  </script>
 
-  <main id="main">
-
-
-    <!-- ======= About Section ======= -->
-    <section id="about" class="about section-bg">
-      <div class="container" data-aos="fade-up">
-        <div class="row no-gutters">
-          <div class="content  mt-5 col-lg-7 d-flex align-items-stretch">
-            <div class="content">
-              <h2 class="">À Propos de Nous</h2>
-              <h3 class="values">Vision</h3>
-              <p>
-                Rendre le savoir accessible à tous pour libérer le potentiel africain.
-              </p>
-              <hr />
-              <h3 class="values">Mission</h3>
-              <p>
-                Réduire les inégalités d’accès au savoir et aux compétences en Afrique en développant des solutions d’apprentissage en ligne innovantes, accessibles et adaptées aux réalités africaines.
-              </p>
-
-            </div>
-          </div>
-          <!-- Image -->
-          <div class="content col-lg-5 d-flex justify-content-center align-items-center">
-            <div class="about-modern-gallery">
-              <div class="gallery-grid">
-                <div class="gallery-card card-1">
-                  <img src="https://images.pexels.com/photos/6894013/pexels-photo-6894013.jpeg" alt="Éducation et apprentissage">
-                </div>
-                <div class="gallery-card card-2">
-                  <img src="https://images.pexels.com/photos/27178154/pexels-photo-27178154.jpeg" alt="Apprentissage collaboratif">
-                </div>
-                <div class="gallery-card card-3">
-                  <img src="https://images.pexels.com/photos/7605859/pexels-photo-7605859.jpeg" alt="Étudiants en action">
-                </div>
-                <div class="gallery-card card-4">
-                  <img src="https://images.pexels.com/photos/4260323/pexels-photo-4260323.jpeg" alt="Communauté éducative">
-                </div>
-              </div>
+        <div class="container" data-aos="zoom-out" data-aos-delay="100">
+          <div class="row mt-5">
+            <div class="col-xl-9">
+              <h3 class="slogan" id="values-c" data-aos="fade-down" data-aos-delay="200">
+                <span class="purple">Le savoir <br> sans barrières</span>
+              </h3>
+              <h2 class="hero-slogan" data-aos="fade-up" data-aos-delay="400">
+                Découvrir - Développer - Devenir
+              </h2>
+              <a href="#programs" class="btn-get-started scrollto" data-aos="zoom-in" data-aos-delay="600">
+                Explorer nos Programmes
+              </a>
             </div>
           </div>
         </div>
+      </section>
+      <!-- End Hero -->
 
-        <!-- Our core Values -->
-        <div class="content  d-flex align-items-stretch">
-          <div class="icon-boxes d-flex flex-column justify-content-center">
-            <h3 class="slogan" id="values-c">
-              <span class="purple">Les Valeurs <br> Que Nous Chérissons</span>
-            </h3>
-            <div class="row">
-              <!-- Accessibilité -->
-              <div class="col-md-6 col-lg-6 icon-box" data-aos="fade-up" data-aos-delay="100">
-                <h5 class="values-items"><i class="fa-solid fa-universal-access"></i>Accessibilité</h5>
-                <p>
-                  Nous croyons que l'éducation de qualité doit être accessible à tous, brisant les barrières géographiques et financières.
-                </p>
-              </div>
+      <script>
+        // Hero Background Carousel
+        (function () {
+          const slides = document.querySelectorAll('.hero-slide');
+          let currentSlide = 0;
 
-              <!-- Excellence -->
-              <div class="col-md-6 col-lg-6 icon-box" data-aos="fade-up" data-aos-delay="200">
-                <h5 class="values-items"><i class="fa-solid fa-star"></i> Excellence </h5>
-                <p>
-                  Nous nous engageons à offrir un enseignement rigoureux et des contenus pédagogiques aux standards les plus élevés.
-                </p>
-              </div>
+          function nextSlide() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+          }
 
-              <!-- Équité -->
-              <div class="col-md-6 col-lg-6 icon-box" data-aos="fade-up" data-aos-delay="500">
-                <h5 class="values-items"><i class="fa-solid fa-scale-balanced"></i>Équité</h5>
-                <p>
-                  Nous offrons à chaque apprenant, quelles que soient ses origines, les mêmes opportunités de réussir et de s'épanouir.
-                </p>
-              </div>
+          // Change slide every 5 seconds
+          setInterval(nextSlide, 5000);
+        })();
+      </script>
 
-              <!-- Communauté -->
-              <div class="col-md-6 col-lg-6 icon-box" data-aos="fade-up" data-aos-delay="600">
-                <h5 class="values-items"><i class="fa-solid fa-users"></i>Communauté</h5>
-                <p>
-                  Nous favorisons l'entraide et le partage au sein d'une communauté apprenante solidaire et dynamique.
-                </p>
-              </div>
+      <main id="main">
 
-              <!-- Innovation -->
-              <div class="col-md-6 col-lg-6 icon-box" data-aos="fade-up" data-aos-delay="400">
-                <h5 class="values-items"><i class="fa-solid fa-lightbulb"></i>Innovation</h5>
-                <p>
-                  Nous utilisons les technologies numériques pour créer des expériences d'apprentissage modernes, engageantes et efficaces.
-                </p>
+
+        <!-- ======= About Section ======= -->
+        <section id="about" class="about section-bg">
+          <div class="container" data-aos="fade-up">
+            <div class="row no-gutters">
+              <div class="content  mt-5 col-lg-7 d-flex align-items-stretch">
+                <div class="content">
+                  <h2 class="">À Propos de Nous</h2>
+                  <h3 class="values">Vision</h3>
+                  <p>
+                    Rendre le savoir accessible à tous pour libérer le potentiel africain.
+                  </p>
+                  <hr />
+                  <h3 class="values">Mission</h3>
+                  <p>
+                    Réduire les inégalités d’accès au savoir et aux compétences en Afrique en développant des solutions
+                    d’apprentissage en ligne innovantes, accessibles et adaptées aux réalités africaines.
+                  </p>
+
+                </div>
               </div>
-              
-              <!-- Engagement -->
-              <div class="col-md-6 col-lg-6 icon-box" data-aos="fade-up" data-aos-delay="300">
-                <h5 class="values-items"><i class="fa-solid fa-hand-holding-heart"></i>Engagement</h5>
-                <p>
-                  Nous sommes passionnément dévoués à l'accompagnement et à la réussite de chaque apprenant qui nous fait confiance.
-                </p>
+              <!-- Image -->
+              <div class="content col-lg-5 d-flex justify-content-center align-items-center">
+                <div class="about-modern-gallery">
+                  <div class="gallery-grid">
+                    <div class="gallery-card card-1">
+                      <img src="https://images.pexels.com/photos/6894013/pexels-photo-6894013.jpeg"
+                        alt="Éducation et apprentissage">
+                    </div>
+                    <div class="gallery-card card-2">
+                      <img src="https://images.pexels.com/photos/27178154/pexels-photo-27178154.jpeg"
+                        alt="Apprentissage collaboratif">
+                    </div>
+                    <div class="gallery-card card-3">
+                      <img src="https://images.pexels.com/photos/7605859/pexels-photo-7605859.jpeg"
+                        alt="Étudiants en action">
+                    </div>
+                    <div class="gallery-card card-4">
+                      <img src="https://images.pexels.com/photos/4260323/pexels-photo-4260323.jpeg"
+                        alt="Communauté éducative">
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          <!-- End .content-->
-        </div>
-      </div>
-    </section>
-    <!-- End About Section -->
-    
 
-    <!-- ======= Counts Section ======= 
+            <!-- Our core Values -->
+            <div class="content  d-flex align-items-stretch">
+              <div class="icon-boxes d-flex flex-column justify-content-center">
+                <h3 class="slogan" id="values-c">
+                  <span class="purple">Les Valeurs <br> Que Nous Chérissons</span>
+                </h3>
+                <div class="row">
+                  <!-- Accessibilité -->
+                  <div class="col-md-6 col-lg-6 icon-box" data-aos="fade-up" data-aos-delay="100">
+                    <h5 class="values-items"><i class="fa-solid fa-universal-access"></i>Accessibilité</h5>
+                    <p>
+                      Nous croyons que l'éducation de qualité doit être accessible à tous, brisant les barrières
+                      géographiques et financières.
+                    </p>
+                  </div>
+
+                  <!-- Excellence -->
+                  <div class="col-md-6 col-lg-6 icon-box" data-aos="fade-up" data-aos-delay="200">
+                    <h5 class="values-items"><i class="fa-solid fa-star"></i> Excellence </h5>
+                    <p>
+                      Nous nous engageons à offrir un enseignement rigoureux et des contenus pédagogiques aux standards
+                      les plus élevés.
+                    </p>
+                  </div>
+
+                  <!-- Équité -->
+                  <div class="col-md-6 col-lg-6 icon-box" data-aos="fade-up" data-aos-delay="500">
+                    <h5 class="values-items"><i class="fa-solid fa-scale-balanced"></i>Équité</h5>
+                    <p>
+                      Nous offrons à chaque apprenant, quelles que soient ses origines, les mêmes opportunités de
+                      réussir et de s'épanouir.
+                    </p>
+                  </div>
+
+                  <!-- Communauté -->
+                  <div class="col-md-6 col-lg-6 icon-box" data-aos="fade-up" data-aos-delay="600">
+                    <h5 class="values-items"><i class="fa-solid fa-users"></i>Communauté</h5>
+                    <p>
+                      Nous favorisons l'entraide et le partage au sein d'une communauté apprenante solidaire et
+                      dynamique.
+                    </p>
+                  </div>
+
+                  <!-- Innovation -->
+                  <div class="col-md-6 col-lg-6 icon-box" data-aos="fade-up" data-aos-delay="400">
+                    <h5 class="values-items"><i class="fa-solid fa-lightbulb"></i>Innovation</h5>
+                    <p>
+                      Nous utilisons les technologies numériques pour créer des expériences d'apprentissage modernes,
+                      engageantes et efficaces.
+                    </p>
+                  </div>
+
+                  <!-- Engagement -->
+                  <div class="col-md-6 col-lg-6 icon-box" data-aos="fade-up" data-aos-delay="300">
+                    <h5 class="values-items"><i class="fa-solid fa-hand-holding-heart"></i>Engagement</h5>
+                    <p>
+                      Nous sommes passionnément dévoués à l'accompagnement et à la réussite de chaque apprenant qui nous
+                      fait confiance.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <!-- End .content-->
+            </div>
+          </div>
+        </section>
+        <!-- End About Section -->
+
+
+        <!-- ======= Counts Section ======= 
     <section id="counts" class="counts">
       <div class="container" data-aos="fade-up">
 
@@ -519,418 +536,458 @@
         </div>
 
       </div>
-    </section> -->
-
-    <!-- ======= Focus Section ======= -->
-    <section id="focus" class="focus" style="padding: 60px 0;">
-      <div class="container" data-aos="fade-up">
-        <div class="row justify-content-center text-center">
-          <div class="col-lg-10">
-            <h2 class="fw-bold mb-4" style="color: #2d0370;">Que faisons-nous ?</h2>
-            <p class="lead" style="line-height: 1.8; color: #444;">
-              Nous offrons une <span class="fw-bold" style="color: #5d06ba;">expérience e-learning d'excellence</span> aux élèves, étudiants et professionnels. Nos parcours personnalisés et interactifs sont conçus pour garantir votre <span class="fw-bold" style="color: #5d06ba;">réussite académique et le développement de votre carrière</span>.
-            </p>
-          </div>
-        </div>
-      </div>
     </section>
-    <!-- End Focus Section -->
+    <!-- End Counts Section -->
 
-    <!-- ======= Our Programs ======= -->
-    <section id="programs" class="programs-section-modern">
-      <div class="container">
-        <div class="programs-header-modern" data-aos="fade-up">
-          <h2 class="programs-title-modern">Nos Programmes</h2>
-          <p class="programs-subtitle-modern">Des solutions éducatives complètes adaptées à vos besoins</p>
-        </div>
-
-        <div class="programs-grid-modern">
-          <!-- E-Kalan Program -->
-          <div class="program-card-modern" data-aos="zoom-in" data-aos-delay="100">
-            <div class="program-card-image">
-              <img src="assets/img/mathematics-1.jpg" alt="E-Kalan - Accompagnement scolaire">
-              <div class="program-card-overlay"></div>
+        <!-- ======= Focus Section ======= -->
+        <section id="focus" class="focus" style="padding: 80px 0; background: linear-gradient(rgba(75, 8, 161, 0.85), rgba(42, 5, 112, 0.9)), url('https://images.pexels.com/photos/5212345/pexels-photo-5212345.jpeg') center/cover fixed; position: relative; margin: 0;">
+          <div class="container" data-aos="fade-up">
+            <div class="row justify-content-center text-center">
+              <div class="col-lg-10">
+                <h2 class="fw-bold mb-4" style="color: #ffffff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Que faisons-nous ?</h2>
+                <p class="lead" style="line-height: 1.8; color: #f5f5f5; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+                  Nous offrons une <span class="fw-bold" style="color: #ffffff;">expérience e-learning
+                    d'excellence</span> aux élèves, étudiants et professionnels. Nos parcours personnalisés et
+                  interactifs sont conçus pour garantir votre <span class="fw-bold" style="color: #ffffff;">réussite
+                    académique et le développement de votre carrière</span>.
+                </p>
               </div>
-            <div class="program-card-content">
-              <div class="program-card-header">
-                <div class="program-card-icon">
-                  <i class="bi bi-mortarboard"></i>
-              </div>
-                <h3 class="program-card-title">E-Kalan</h3>
-              </div>
-              <p class="program-card-description">
-                Un accompagnement scolaire d'excellence pour les élèves et étudiants. 
-                Ressources pédagogiques complètes et suivi personnalisé.
-              </p>
-              <a href="/programs/ekalan/kalan" class="program-card-link">
-                Découvrir <i class="bi bi-arrow-right"></i>
-              </a>
             </div>
           </div>
+        </section>
+        <!-- End Focus Section -->
 
-          <!-- English Boost Program -->
-          <div class="program-card-modern" data-aos="zoom-in" data-aos-delay="200">
-            <div class="program-card-image">
-              <img src="https://images.pexels.com/photos/7550542/pexels-photo-7550542.jpeg" alt="English Boost - Apprentissage de l'anglais">
-              <div class="program-card-overlay"></div>
-              </div>
-            <div class="program-card-content">
-              <div class="program-card-header">
-                <div class="program-card-icon">
-                  <i class="bi bi-translate"></i>
-              </div>
-                <h3 class="program-card-title">English Boost</h3>
-            </div>
-              <p class="program-card-description">
-                Maîtrisez l'anglais professionnel et académique. Cours interactifs 
-                pour tous niveaux, conçus pour booster votre carrière.
-              </p>
-              <a href="/programs/language-learning/english4all" class="program-card-link">
-                Découvrir <i class="bi bi-arrow-right"></i>
-              </a>
-          </div>
-        </div>
-        </div>
-      </div>
-    </section>
-    <!-- End Programs Section -->
-
-    <!-- ======= Services Section -->
-    <section id="services" class="services section-bg">
-      <div class="container" data-aos="fade-up">
-        <div class="section-title">
-          <h2>Pourquoi Nous Choisir ?</h2>
-          <h3 class="slogan" id="values-c">
-            <span class="purple">Autonomiser </span> Votre Parcours d'Apprentissage
-          </h3>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            <div class="icon-box" data-aos="fade-up" data-aos-delay="100">
-              <i class="bi bi-people"></i>
-              <h4>Instructeurs Experts</h4>
-              <p>
-                Apprenez auprès d'enseignants qualifiés et de professionnels de l'industrie dévoués à votre réussite académique.
-              </p>
-            </div>
-          </div>
-
-          <div class="col-md-6 mt-4 mt-md-0">
-            <div class="icon-box" data-aos="fade-up" data-aos-delay="200">
-              <i class="bi bi-laptop"></i>
-              <h4>E-Learning Interactif</h4>
-              <p>
-                Engagez-vous avec un contenu numérique de haute qualité, des quiz et des leçons multimédias.
-              </p>
-            </div>
-          </div>
-
-          <div class="col-md-6 mt-4 mt-md-0">
-            <div class="icon-box" data-aos="fade-up" data-aos-delay="300">
-              <i class="bi bi-clock-history"></i>
-              <h4>Emploi du Temps Flexible</h4>
-              <p>
-                Étudiez à votre propre rythme, n'importe quand et n'importe où, avec un accès 24/7 à nos ressources.
-              </p>
-            </div>
-          </div>
-
-          <div class="col-md-6 mt-4 mt-md-0">
-            <div class="icon-box" data-aos="fade-up" data-aos-delay="400">
-              <i class="bi bi-award"></i>
-              <h4>Certification</h4>
-              <p>
-                Obtenez des certificats reconnus (pour English Boost) pour valider vos compétences.
-              </p>
-            </div>
-          </div>
-
-          <div class="col-md-6 mt-4 mt-md-0">
-            <div class="icon-box" data-aos="fade-up" data-aos-delay="500">
-              <i class="bi bi-chat-dots"></i>
-              <h4>Soutien Communautaire</h4>
-              <p>
-                Rejoignez une communauté dynamique d'apprenants pour partager des connaissances et grandir ensemble.
-              </p>
-            </div>
-          </div>
-
-          <div class="col-md-6 mt-4 mt-md-0">
-            <div class="icon-box" data-aos="fade-up" data-aos-delay="600">
-              <i class="bi bi-lightbulb"></i>
-              <h4>Orientation Professionnelle</h4>
-              <p>
-                Recevez un mentorat et des conseils pour vous aider à naviguer dans vos choix éducatifs et professionnels.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- End Services Section -->
-
-    <!-- ======= Clients Section ======= -->
-    <section id="clients" class="clients">
-
-      <div class="container" data-aos="zoom-in">
-         <h3 class="slogan mb-5" id="values-a">
-            <span class="purple">Nos partenaires</span>
-          </h3>
-        <div class="clients-slider swiper">
-          <div class="swiper-wrapper align-items-center">
-            <div class="swiper-slide">
-              <img src="assets/img/clients/all_white bg.jpeg" class="img-fluid" alt="" />
-            </div>
-            <div class="swiper-slide">
-              <img src="assets/img/clients/Afritechka-logo.jpeg" class="img-fluid" alt="" />
-            </div>
-            <div class="swiper-slide">
-              <img src="assets/img/clients/afroeschool.png" class="img-fluid" alt="" />
-            </div>
-          </div>
-          <div class="swiper-pagination"></div>
-        </div>
-      </div>
-    </section>
-    <!-- End Clients Section -->
+        <!-- ======= Our Programs ======= -->
+        <section id="programs" class="programs-section-modern">
+          <div class="container">
+            <div class="programs-header-modern" data-aos="fade-up">
     
-    <!-- ======= Testimonials Section ======= -->
-    <section id="testimonials" class="testimonials section-bg" style="background: #fdfbff;">
-      <div class="container" data-aos="fade-up">
-        <div class="section-title">
-          <h2>Témoignages</h2>
-          <h3 class="slogan mb-5" id="values-a">
-            <span class="purple">Ce qu'ils disent de nous</span>
-          </h3>
-        </div>
-        <div class="testimonials-slider swiper" data-aos="fade-up" data-aos-delay="100">
-          <div class="swiper-wrapper">
+               <h3 class="slogan mb-5" id="values-a">
+              <span class="purple">Nos programmes</span>
+            </h3>
+              <p class="programs-subtitle-modern">Des solutions éducatives complètes adaptées à vos besoins</p>
+            </div>
 
-            <div class="swiper-slide">
-              <div class="testimonial-item p-4 rounded-4 bg-white shadow-sm border border-light h-100 text-center position-relative overflow-hidden">
-                <div class="quote-icon-bg position-absolute" style="top: -10px; left: 20px; font-size: 8rem; color: rgba(93, 6, 186, 0.05); font-family: serif;">"</div>
-                <div class="position-relative z-1 pt-4">
-                    <div class="mb-4 text-warning">
-                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+            <div class="programs-grid-modern">
+              <!-- E-Kalan Program -->
+              <div class="program-card-modern" data-aos="zoom-in" data-aos-delay="100">
+                <div class="program-card-image">
+                  <img src="assets/img/mathematics-1.jpg" alt="E-Kalan - Accompagnement scolaire">
+                  <div class="program-card-overlay"></div>
+                </div>
+                <div class="program-card-content">
+                  <div class="program-card-header">
+                    <div class="program-card-icon">
+                      <i class="bi bi-mortarboard"></i>
                     </div>
-                    <p class="fst-italic text-muted mb-4 fs-5" style="line-height: 1.8;">
-                      "Grâce à Afro HK, j'ai pu étendre mon business au Ghana et au Nigeria. La barrière de la langue n'est plus un obstacle, c'est devenu mon atout majeur."
-                    </p>
-                    <hr class="mx-auto" style="width: 50px; height: 3px; background: #5d06ba; opacity: 1;">
-                    <h3 class="fw-bold mt-3 h5">Jean-Marc K.</h3>
-                    <h4 class="text-secondary small text-uppercase fw-bold">Entrepreneur &amp; CEO</h4>
+                    <h3 class="program-card-title">E-Kalan</h3>
+                  </div>
+                  <p class="program-card-description">
+                    Un accompagnement scolaire d'excellence pour les élèves et étudiants.
+                    Ressources pédagogiques complètes et suivi personnalisé.
+                  </p>
+                  <a href="/programs/ekalan/kalan" class="program-card-link">
+                    Découvrir <i class="bi bi-arrow-right"></i>
+                  </a>
                 </div>
               </div>
-            </div><!-- End testimonial item -->
 
-            <div class="swiper-slide">
-              <div class="testimonial-item p-4 rounded-4 bg-white shadow-sm border border-light h-100 text-center position-relative overflow-hidden">
-                <div class="quote-icon-bg position-absolute" style="top: -10px; left: 20px; font-size: 8rem; color: rgba(93, 6, 186, 0.05); font-family: serif;">"</div>
-                <div class="position-relative z-1 pt-4">
-                    <div class="mb-4 text-warning">
-                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+              <!-- English Boost Program -->
+              <div class="program-card-modern" data-aos="zoom-in" data-aos-delay="200">
+                <div class="program-card-image">
+                  <img src="https://images.pexels.com/photos/7550542/pexels-photo-7550542.jpeg"
+                    alt="English Boost - Apprentissage de l'anglais">
+                  <div class="program-card-overlay"></div>
+                </div>
+                <div class="program-card-content">
+                  <div class="program-card-header">
+                    <div class="program-card-icon">
+                      <i class="bi bi-translate"></i>
                     </div>
-                    <p class="fst-italic text-muted mb-4 fs-5" style="line-height: 1.8;">
-                      "J'ai obtenu ma bourse pour une université américaine. La préparation intensive au TOEFL avec les coachs d'Afro HK a été déterminante pour la réussite de mon dossier."
-                    </p>
-                    <hr class="mx-auto" style="width: 50px; height: 3px; background: #5d06ba; opacity: 1;">
-                    <h3 class="fw-bold mt-3 h5">Awa S.</h3>
-                    <h4 class="text-secondary small text-uppercase fw-bold">Étudiante en International</h4>
+                    <h3 class="program-card-title">English Boost</h3>
+                  </div>
+                  <p class="program-card-description">
+                    Maîtrisez l'anglais professionnel et académique. Cours interactifs
+                    pour tous niveaux, conçus pour booster votre carrière.
+                  </p>
+                  <a href="/programs/language-learning/english4all" class="program-card-link">
+                    Découvrir <i class="bi bi-arrow-right"></i>
+                  </a>
                 </div>
               </div>
-            </div><!-- End testimonial item -->
+            </div>
+          </div>
+        </section>
+        <!-- End Programs Section -->
 
-            <div class="swiper-slide">
-              <div class="testimonial-item p-4 rounded-4 bg-white shadow-sm border border-light h-100 text-center position-relative overflow-hidden">
-                <div class="quote-icon-bg position-absolute" style="top: -10px; left: 20px; font-size: 8rem; color: rgba(93, 6, 186, 0.05); font-family: serif;">"</div>
-                <div class="position-relative z-1 pt-4">
-                    <div class="mb-4 text-warning">
-                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                    </div>
-                    <p class="fst-italic text-muted mb-4 fs-5" style="line-height: 1.8;">
-                      "Ma fille adore ses cours d'anglais le samedi. Elle a pris confiance en elle et ses notes à l'école ont considérablement grimpé. Une pédagogie bienveillante et efficace."
-                    </p>
-                    <hr class="mx-auto" style="width: 50px; height: 3px; background: #5d06ba; opacity: 1;">
-                    <h3 class="fw-bold mt-3 h5">Mariam O.</h3>
-                    <h4 class="text-secondary small text-uppercase fw-bold">Parent d'élève</h4>
+        <!-- ======= Services Section -->
+        <section id="services" class="services section-bg">
+          <div class="container" data-aos="fade-up">
+            <div class="section-title">
+              <h2>Pourquoi Nous Choisir ?</h2>
+              <h3 class="slogan" id="values-c">
+                <span class="purple">Autonomiser </span> Votre Parcours d'Apprentissage
+              </h3>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="icon-box" data-aos="fade-up" data-aos-delay="100">
+                  <i class="bi bi-people"></i>
+                  <h4>Instructeurs Experts</h4>
+                  <p>
+                    Apprenez auprès d'enseignants qualifiés et de professionnels de l'industrie dévoués à votre réussite
+                    académique.
+                  </p>
                 </div>
               </div>
-            </div><!-- End testimonial item -->
 
-            <div class="swiper-slide">
-              <div class="testimonial-item p-4 rounded-4 bg-white shadow-sm border border-light h-100 text-center position-relative overflow-hidden">
-                <div class="quote-icon-bg position-absolute" style="top: -10px; left: 20px; font-size: 8rem; color: rgba(93, 6, 186, 0.05); font-family: serif;">"</div>
-                <div class="position-relative z-1 pt-4">
-                    <div class="mb-4 text-warning">
-                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                    </div>
-                    <p class="fst-italic text-muted mb-4 fs-5" style="line-height: 1.8;">
-                      "En tant que médecin, l'anglais médical était crucial pour ma carrière. Les cours spécialisés m'ont permis de participer à des conférences internationales avec aisance."
-                    </p>
-                    <hr class="mx-auto" style="width: 50px; height: 3px; background: #5d06ba; opacity: 1;">
-                    <h3 class="fw-bold mt-3 h5">Dr. Paul T.</h3>
-                    <h4 class="text-secondary small text-uppercase fw-bold">Médecin Spécialiste</h4>
+              <div class="col-md-6 mt-4 mt-md-0">
+                <div class="icon-box" data-aos="fade-up" data-aos-delay="200">
+                  <i class="bi bi-laptop"></i>
+                  <h4>E-Learning Interactif</h4>
+                  <p>
+                    Engagez-vous avec un contenu numérique de haute qualité, des quiz et des leçons multimédias.
+                  </p>
                 </div>
               </div>
-            </div><!-- End testimonial item -->
 
-            <div class="swiper-slide">
-              <div class="testimonial-item p-4 rounded-4 bg-white shadow-sm border border-light h-100 text-center position-relative overflow-hidden">
-                <div class="quote-icon-bg position-absolute" style="top: -10px; left: 20px; font-size: 8rem; color: rgba(93, 6, 186, 0.05); font-family: serif;">"</div>
-                <div class="position-relative z-1 pt-4">
-                    <div class="mb-4 text-warning">
-                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                    </div>
-                    <p class="fst-italic text-muted mb-4 fs-5" style="line-height: 1.8;">
-                      "Les cours English 4 Kids sont super amusants ! J'apprends en jouant et maintenant je peux regarder mes dessins animés préférés en anglais sans sous-titres."
-                    </p>
-                    <hr class="mx-auto" style="width: 50px; height: 3px; background: #5d06ba; opacity: 1;">
-                    <h3 class="fw-bold mt-3 h5">Sarah K. (10 ans)</h3>
-                    <h4 class="text-secondary small text-uppercase fw-bold">Élève English 4 Kids</h4>
+              <div class="col-md-6 mt-4 mt-md-0">
+                <div class="icon-box" data-aos="fade-up" data-aos-delay="300">
+                  <i class="bi bi-clock-history"></i>
+                  <h4>Emploi du Temps Flexible</h4>
+                  <p>
+                    Étudiez à votre propre rythme, n'importe quand et n'importe où, avec un accès 24/7 à nos ressources.
+                  </p>
                 </div>
               </div>
-            </div><!-- End testimonial item -->
 
-            <div class="swiper-slide">
-              <div class="testimonial-item p-4 rounded-4 bg-white shadow-sm border border-light h-100 text-center position-relative overflow-hidden">
-                <div class="quote-icon-bg position-absolute" style="top: -10px; left: 20px; font-size: 8rem; color: rgba(93, 6, 186, 0.05); font-family: serif;">"</div>
-                <div class="position-relative z-1 pt-4">
-                    <div class="mb-4 text-warning">
-                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                    </div>
-                    <p class="fst-italic text-muted mb-4 fs-5" style="line-height: 1.8;">
-                      "La flexibilité des cours en ligne m'a permis de combiner mes études d'ingénieur et l'apprentissage de l'anglais. Une plateforme intuitive et des profs au top !"
-                    </p>
-                    <hr class="mx-auto" style="width: 50px; height: 3px; background: #5d06ba; opacity: 1;">
-                    <h3 class="fw-bold mt-3 h5">Ibrahim D.</h3>
-                    <h4 class="text-secondary small text-uppercase fw-bold">Étudiant Ingénieur</h4>
+              <div class="col-md-6 mt-4 mt-md-0">
+                <div class="icon-box" data-aos="fade-up" data-aos-delay="400">
+                  <i class="bi bi-award"></i>
+                  <h4>Certification</h4>
+                  <p>
+                    Obtenez des certificats reconnus (pour English Boost) pour valider vos compétences.
+                  </p>
                 </div>
               </div>
-            </div><!-- End testimonial item -->
+
+              <div class="col-md-6 mt-4 mt-md-0">
+                <div class="icon-box" data-aos="fade-up" data-aos-delay="500">
+                  <i class="bi bi-chat-dots"></i>
+                  <h4>Soutien Communautaire</h4>
+                  <p>
+                    Rejoignez une communauté dynamique d'apprenants pour partager des connaissances et grandir ensemble.
+                  </p>
+                </div>
+              </div>
+
+              <div class="col-md-6 mt-4 mt-md-0">
+                <div class="icon-box" data-aos="fade-up" data-aos-delay="600">
+                  <i class="bi bi-lightbulb"></i>
+                  <h4>Orientation Professionnelle</h4>
+                  <p>
+                    Recevez un mentorat et des conseils pour vous aider à naviguer dans vos choix éducatifs et
+                    professionnels.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- End Services Section -->
+
+        <!-- ======= Clients Section ======= -->
+        <section id="clients" class="clients">
+
+          <div class="container" data-aos="zoom-in">
+            <h3 class="slogan mb-5" id="values-a">
+              <span class="purple">Nos partenaires</span>
+            </h3>
+            <div class="clients-slider swiper">
+              <div class="swiper-wrapper align-items-center">
+                <div class="swiper-slide">
+                  <img src="assets/img/clients/all_white bg.jpeg" class="img-fluid" alt="" />
+                </div>
+                <div class="swiper-slide">
+                  <img src="assets/img/clients/Afritechka-logo.jpeg" class="img-fluid" alt="" />
+                </div>
+                <div class="swiper-slide">
+                  <img src="assets/img/clients/afroeschool.png" class="img-fluid" alt="" />
+                </div>
+              </div>
+              <div class="swiper-pagination"></div>
+            </div>
+          </div>
+        </section>
+        <!-- End Clients Section -->
+
+        <!-- ======= Testimonials Section ======= -->
+        <section id="testimonials" class="testimonials section-bg" style="background: #fdfbff;">
+          <div class="container" data-aos="fade-up">
+            <div class="section-title">
+              <h2>Témoignages</h2>
+              <h3 class="slogan mb-5" id="values-a">
+                <span class="purple">Ce qu'ils disent de nous</span>
+              </h3>
+            </div>
+            <div class="testimonials-slider swiper" data-aos="fade-up" data-aos-delay="100">
+              <div class="swiper-wrapper">
+
+                <div class="swiper-slide">
+                  <div
+                    class="testimonial-item p-4 rounded-4 bg-white shadow-sm border border-light h-100 text-center position-relative overflow-hidden">
+                    <div class="quote-icon-bg position-absolute"
+                      style="top: -10px; left: 20px; font-size: 8rem; color: rgba(93, 6, 186, 0.05); font-family: serif;">
+                      "</div>
+                    <div class="position-relative z-1 pt-4">
+                      <div class="mb-4 text-warning">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                          class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                      </div>
+                      <p class="fst-italic text-muted mb-4 fs-5" style="line-height: 1.8;">
+                        "Grâce à Afro HK, j'ai pu étendre mon business au Ghana et au Nigeria. La barrière de la langue
+                        n'est plus un obstacle, c'est devenu mon atout majeur."
+                      </p>
+                      <hr class="mx-auto" style="width: 50px; height: 3px; background: #5d06ba; opacity: 1;">
+                      <h3 class="fw-bold mt-3 h5">Jean-Marc K.</h3>
+                      <h4 class="text-secondary small text-uppercase fw-bold">Entrepreneur &amp; CEO</h4>
+                    </div>
+                  </div>
+                </div><!-- End testimonial item -->
+
+                <div class="swiper-slide">
+                  <div
+                    class="testimonial-item p-4 rounded-4 bg-white shadow-sm border border-light h-100 text-center position-relative overflow-hidden">
+                    <div class="quote-icon-bg position-absolute"
+                      style="top: -10px; left: 20px; font-size: 8rem; color: rgba(93, 6, 186, 0.05); font-family: serif;">
+                      "</div>
+                    <div class="position-relative z-1 pt-4">
+                      <div class="mb-4 text-warning">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                          class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                      </div>
+                      <p class="fst-italic text-muted mb-4 fs-5" style="line-height: 1.8;">
+                        "J'ai obtenu ma bourse pour une université américaine. La préparation intensive au TOEFL avec
+                        les coachs d'Afro HK a été déterminante pour la réussite de mon dossier."
+                      </p>
+                      <hr class="mx-auto" style="width: 50px; height: 3px; background: #5d06ba; opacity: 1;">
+                      <h3 class="fw-bold mt-3 h5">Awa S.</h3>
+                      <h4 class="text-secondary small text-uppercase fw-bold">Étudiante en International</h4>
+                    </div>
+                  </div>
+                </div><!-- End testimonial item -->
+
+                <div class="swiper-slide">
+                  <div
+                    class="testimonial-item p-4 rounded-4 bg-white shadow-sm border border-light h-100 text-center position-relative overflow-hidden">
+                    <div class="quote-icon-bg position-absolute"
+                      style="top: -10px; left: 20px; font-size: 8rem; color: rgba(93, 6, 186, 0.05); font-family: serif;">
+                      "</div>
+                    <div class="position-relative z-1 pt-4">
+                      <div class="mb-4 text-warning">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                          class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                      </div>
+                      <p class="fst-italic text-muted mb-4 fs-5" style="line-height: 1.8;">
+                        "Ma fille adore ses cours d'anglais le samedi. Elle a pris confiance en elle et ses notes à
+                        l'école ont considérablement grimpé. Une pédagogie bienveillante et efficace."
+                      </p>
+                      <hr class="mx-auto" style="width: 50px; height: 3px; background: #5d06ba; opacity: 1;">
+                      <h3 class="fw-bold mt-3 h5">Mariam O.</h3>
+                      <h4 class="text-secondary small text-uppercase fw-bold">Parent d'élève</h4>
+                    </div>
+                  </div>
+                </div><!-- End testimonial item -->
+
+                <div class="swiper-slide">
+                  <div
+                    class="testimonial-item p-4 rounded-4 bg-white shadow-sm border border-light h-100 text-center position-relative overflow-hidden">
+                    <div class="quote-icon-bg position-absolute"
+                      style="top: -10px; left: 20px; font-size: 8rem; color: rgba(93, 6, 186, 0.05); font-family: serif;">
+                      "</div>
+                    <div class="position-relative z-1 pt-4">
+                      <div class="mb-4 text-warning">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                          class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                      </div>
+                      <p class="fst-italic text-muted mb-4 fs-5" style="line-height: 1.8;">
+                        "En tant que médecin, l'anglais médical était crucial pour ma carrière. Les cours spécialisés
+                        m'ont permis de participer à des conférences internationales avec aisance."
+                      </p>
+                      <hr class="mx-auto" style="width: 50px; height: 3px; background: #5d06ba; opacity: 1;">
+                      <h3 class="fw-bold mt-3 h5">Dr. Paul T.</h3>
+                      <h4 class="text-secondary small text-uppercase fw-bold">Médecin Spécialiste</h4>
+                    </div>
+                  </div>
+                </div><!-- End testimonial item -->
+
+                <div class="swiper-slide">
+                  <div
+                    class="testimonial-item p-4 rounded-4 bg-white shadow-sm border border-light h-100 text-center position-relative overflow-hidden">
+                    <div class="quote-icon-bg position-absolute"
+                      style="top: -10px; left: 20px; font-size: 8rem; color: rgba(93, 6, 186, 0.05); font-family: serif;">
+                      "</div>
+                    <div class="position-relative z-1 pt-4">
+                      <div class="mb-4 text-warning">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                          class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                      </div>
+                      <p class="fst-italic text-muted mb-4 fs-5" style="line-height: 1.8;">
+                        "Les cours English 4 Kids sont super amusants ! J'apprends en jouant et maintenant je peux
+                        regarder mes dessins animés préférés en anglais sans sous-titres."
+                      </p>
+                      <hr class="mx-auto" style="width: 50px; height: 3px; background: #5d06ba; opacity: 1;">
+                      <h3 class="fw-bold mt-3 h5">Sarah K. (10 ans)</h3>
+                      <h4 class="text-secondary small text-uppercase fw-bold">Élève English 4 Kids</h4>
+                    </div>
+                  </div>
+                </div><!-- End testimonial item -->
+
+                <div class="swiper-slide">
+                  <div
+                    class="testimonial-item p-4 rounded-4 bg-white shadow-sm border border-light h-100 text-center position-relative overflow-hidden">
+                    <div class="quote-icon-bg position-absolute"
+                      style="top: -10px; left: 20px; font-size: 8rem; color: rgba(93, 6, 186, 0.05); font-family: serif;">
+                      "</div>
+                    <div class="position-relative z-1 pt-4">
+                      <div class="mb-4 text-warning">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                          class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                      </div>
+                      <p class="fst-italic text-muted mb-4 fs-5" style="line-height: 1.8;">
+                        "La flexibilité des cours en ligne m'a permis de combiner mes études d'ingénieur et
+                        l'apprentissage de l'anglais. Une plateforme intuitive et des profs au top !"
+                      </p>
+                      <hr class="mx-auto" style="width: 50px; height: 3px; background: #5d06ba; opacity: 1;">
+                      <h3 class="fw-bold mt-3 h5">Ibrahim D.</h3>
+                      <h4 class="text-secondary small text-uppercase fw-bold">Étudiant Ingénieur</h4>
+                    </div>
+                  </div>
+                </div><!-- End testimonial item -->
+
+              </div>
+              <div class="swiper-pagination"></div>
+            </div>
 
           </div>
-          <div class="swiper-pagination"></div>
-        </div>
-
-      </div>
-    </section>
-    <!-- End Testimonials Section -->
-  <div class="section-title">
+        </section>
+        <!-- End Testimonials Section -->
+        <div class="section-title">
           <h2>Notre Communauté</h2>
           <h3 class="slogan mb-5" id="values-a">
             <span class="purple">Nos activités en images</span>
           </h3>
-      </div>
-    <!-- ======= Reflection Gallery Section ======= -->
-    <section id="gallery" class="reflection-gallery-section">
-    
-      <div class="thumbs">
-        <label><input type="radio" name="gallery-image" id="img1"><span class="thumb-img"></span></label>
-        <label><input type="radio" name="gallery-image" id="img2"><span class="thumb-img"></span></label>
-        <label><input type="radio" name="gallery-image" id="img3"><span class="thumb-img"></span></label>
-        <label><input type="radio" name="gallery-image" id="img4" checked><span class="thumb-img"></span></label>
-        <label><input type="radio" name="gallery-image" id="img5"><span class="thumb-img"></span></label>
-        <label><input type="radio" name="gallery-image" id="img6"><span class="thumb-img"></span></label>
-        <label><input type="radio" name="gallery-image" id="img7"><span class="thumb-img"></span></label>
-        <label><input type="radio" name="gallery-image" id="img8"><span class="thumb-img"></span></label>
-        <label><input type="radio" name="gallery-image" id="img9"><span class="thumb-img"></span></label>
-        <label><input type="radio" name="gallery-image" id="img10"><span class="thumb-img"></span></label>
-        <label><input type="radio" name="gallery-image" id="img11"><span class="thumb-img"></span></label>
-      </div>
-      
-      <!-- Carousel Controls -->
-      <div class="carousel-controls">
-        <button class="carousel-btn prev-btn" aria-label="Previous image">
-          <i class="bi bi-chevron-left"></i>
-        </button>
-        <button class="carousel-btn next-btn" aria-label="Next image">
-          <i class="bi bi-chevron-right"></i>
-        </button>
-      </div>
-      
-      <div class="gallery-container"></div>
-    </section>
-    <!-- End Reflection Gallery Section -->
+        </div>
+        <!-- ======= Reflection Gallery Section ======= -->
+        <section id="gallery" class="reflection-gallery-section">
 
-    <script>
-      // Gallery Carousel Functionality
-      (function() {
-        const totalImages = 11;
-        let currentIndex = 4; // Start at img4 (checked by default)
-        let autoPlayInterval;
+          <div class="thumbs">
+            <label><input type="radio" name="gallery-image" id="img1"><span class="thumb-img"></span></label>
+            <label><input type="radio" name="gallery-image" id="img2"><span class="thumb-img"></span></label>
+            <label><input type="radio" name="gallery-image" id="img3"><span class="thumb-img"></span></label>
+            <label><input type="radio" name="gallery-image" id="img4" checked><span class="thumb-img"></span></label>
+            <label><input type="radio" name="gallery-image" id="img5"><span class="thumb-img"></span></label>
+            <label><input type="radio" name="gallery-image" id="img6"><span class="thumb-img"></span></label>
+            <label><input type="radio" name="gallery-image" id="img7"><span class="thumb-img"></span></label>
+            <label><input type="radio" name="gallery-image" id="img8"><span class="thumb-img"></span></label>
+            <label><input type="radio" name="gallery-image" id="img9"><span class="thumb-img"></span></label>
+            <label><input type="radio" name="gallery-image" id="img10"><span class="thumb-img"></span></label>
+            <label><input type="radio" name="gallery-image" id="img11"><span class="thumb-img"></span></label>
+          </div>
 
-        const prevBtn = document.querySelector('.prev-btn');
-        const nextBtn = document.querySelector('.next-btn');
+          <!-- Carousel Controls -->
+          <div class="carousel-controls">
+            <button class="carousel-btn prev-btn" aria-label="Previous image">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <button class="carousel-btn next-btn" aria-label="Next image">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
 
-        function showImage(index) {
-          // Wrap around
-          if (index < 1) index = totalImages;
-          if (index > totalImages) index = 1;
-          
-          currentIndex = index;
-          
-          // Uncheck all radios
-          for (let i = 1; i <= totalImages; i++) {
-            document.getElementById(`img${i}`).checked = false;
-          }
-          
-          // Check the current radio
-          document.getElementById(`img${currentIndex}`).checked = true;
-        }
+          <div class="gallery-container"></div>
+        </section>
+        <!-- End Reflection Gallery Section -->
 
-        function nextImage() {
-          showImage(currentIndex + 1);
-        }
+        <script>
+          // Gallery Carousel Functionality
+          (function () {
+            const totalImages = 11;
+            let currentIndex = 4; // Start at img4 (checked by default)
+            let autoPlayInterval;
 
-        function prevImage() {
-          showImage(currentIndex - 1);
-        }
+            const prevBtn = document.querySelector('.prev-btn');
+            const nextBtn = document.querySelector('.next-btn');
 
-        function startAutoPlay() {
-          stopAutoPlay(); // Clear any existing interval
-          autoPlayInterval = setInterval(nextImage, 4000); // Change every 4 seconds
-        }
+            function showImage(index) {
+              // Wrap around
+              if (index < 1) index = totalImages;
+              if (index > totalImages) index = 1;
 
-        function stopAutoPlay() {
-          if (autoPlayInterval) {
-            clearInterval(autoPlayInterval);
-          }
-        }
+              currentIndex = index;
 
-        // Event listeners
-        prevBtn.addEventListener('click', () => {
-          prevImage();
-          stopAutoPlay();
-          startAutoPlay(); // Restart timer
-        });
+              // Uncheck all radios
+              for (let i = 1; i <= totalImages; i++) {
+                document.getElementById(`img${i}`).checked = false;
+              }
 
-        nextBtn.addEventListener('click', () => {
-          nextImage();
-          stopAutoPlay();
-          startAutoPlay(); // Restart timer
-        });
+              // Check the current radio
+              document.getElementById(`img${currentIndex}`).checked = true;
+            }
 
-        // Thumbnail click handling
-        document.querySelectorAll('.thumbs label').forEach((label, index) => {
-          label.addEventListener('click', () => {
-            currentIndex = index + 1;
-            stopAutoPlay();
-            startAutoPlay(); // Restart timer
-          });
-        });
+            function nextImage() {
+              showImage(currentIndex + 1);
+            }
 
-        // Start auto-play on load
-        startAutoPlay();
+            function prevImage() {
+              showImage(currentIndex - 1);
+            }
 
-        // Pause on hover
-        const galleryContainer = document.querySelector('.gallery-container');
-        galleryContainer.addEventListener('mouseenter', stopAutoPlay);
-        galleryContainer.addEventListener('mouseleave', startAutoPlay);
-      })();
-    </script>
+            function startAutoPlay() {
+              stopAutoPlay(); // Clear any existing interval
+              autoPlayInterval = setInterval(nextImage, 4000); // Change every 4 seconds
+            }
+
+            function stopAutoPlay() {
+              if (autoPlayInterval) {
+                clearInterval(autoPlayInterval);
+              }
+            }
+
+            // Event listeners
+            prevBtn.addEventListener('click', () => {
+              prevImage();
+              stopAutoPlay();
+              startAutoPlay(); // Restart timer
+            });
+
+            nextBtn.addEventListener('click', () => {
+              nextImage();
+              stopAutoPlay();
+              startAutoPlay(); // Restart timer
+            });
+
+            // Thumbnail click handling
+            document.querySelectorAll('.thumbs label').forEach((label, index) => {
+              label.addEventListener('click', () => {
+                currentIndex = index + 1;
+                stopAutoPlay();
+                startAutoPlay(); // Restart timer
+              });
+            });
+
+            // Start auto-play on load
+            startAutoPlay();
+
+            // Pause on hover
+            const galleryContainer = document.querySelector('.gallery-container');
+            galleryContainer.addEventListener('mouseenter', stopAutoPlay);
+            galleryContainer.addEventListener('mouseleave', startAutoPlay);
+          })();
+        </script>
 
 
-    <!-- ======= Testimonials Section =======
+        <!-- ======= Testimonials Section =======
       <section id="testimonials" class="testimonials">
         <div class="container" data-aos="fade-up">
           <div class="section-title">
@@ -1067,7 +1124,7 @@
       </section>
        End Testimonials Section -->
 
-    <!-- ======= Pricing Section ======= 
+        <!-- ======= Pricing Section ======= 
       <section id="pricing" class="pricing section-bg">
         <div class="container" data-aos="fade-up">
           <div class="section-title">
@@ -1133,7 +1190,7 @@
       </section>
       End Pricing Section -->
 
-    <!-- ======= Frequently Asked Questions Section =======
+        <!-- ======= Frequently Asked Questions Section =======
       <section id="faq" class="faq">
         <div class="container" data-aos="fade-up">
           <div class="section-title">
@@ -1266,7 +1323,7 @@
       </section>
       End Frequently Asked Questions Section -->
 
-    <!-- ======= Team Section ======= 
+        <!-- ======= Team Section ======= 
       <section id="team" class="team section-bg">
         <div class="container" data-aos="fade-up">
           <div class="section-title">
@@ -1371,184 +1428,165 @@
       </section>
       End Team Section -->
 
-    <!-- ======= Contact Section ======= -->
-    <section id="contact" class="contact">
-      <div class="container">
-        <!-- Section Title -->
-        <div class="section-title" data-aos="fade-up">
-          <h2>Contactez-Nous</h2>
-          <p>Nous sommes là pour vous accompagner dans votre parcours d'apprentissage</p>
-        </div>
-
-        <!-- Contact Container -->
-        <div class="contact-container" data-aos="fade-up" data-aos-delay="100">
-          <div class="contact-grid">
-            <!-- Map Section -->
-            <div class="contact-map">
-              <iframe 
-                src="https://maps.google.com/maps?q=12.338531,-1.559718&hl=fr&z=15&output=embed"
-                allowfullscreen
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade">
-              </iframe>
+        <!-- ======= Contact Section ======= -->
+        <section id="contact" class="contact">
+          <div class="container">
+            <!-- Section Title -->
+            <div class="section-title" data-aos="fade-up">
+              <h2>Contactez-Nous</h2>
+              <p>Nous sommes là pour vous accompagner dans votre parcours d'apprentissage</p>
             </div>
 
-            <!-- Form Section -->
-            <div class="contact-form-section">
-              <!-- Motivational Text -->
-              <div class="contact-intro">
-                <p>Une question ? Un projet ? N'hésitez pas à nous écrire, nous vous répondrons dans les plus brefs délais.</p>
-              </div>
-
-              <!-- Contact Form -->
-              <form action="/visitormessage" method="post" class="msg-form">
-                <div class="form-group">
-                  <input 
-                    type="text" 
-                    name="visitor[name]" 
-                    id="name" 
-                    placeholder="Votre nom complet"
-                    required 
-                  />
+            <!-- Contact Container -->
+            <div class="contact-container" data-aos="fade-up" data-aos-delay="100">
+              <div class="contact-grid">
+                <!-- Map Section -->
+                <div class="contact-map">
+                  <iframe src="https://maps.google.com/maps?q=12.338531,-1.559718&hl=fr&z=15&output=embed"
+                    allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                  </iframe>
                 </div>
 
-                <div class="form-group">
-                  <input 
-                    type="email" 
-                    name="visitor[email]" 
-                    id="email" 
-                    placeholder="Votre adresse email"
-                    required 
-                  />
-                </div>
-
-                <div class="form-group">
-                  <textarea 
-                    name="visitor[message]" 
-                    id="message" 
-                    placeholder="Votre message..."
-                    required
-                  ></textarea>
-                </div>
-
-                <button type="submit">Envoyer le Message</button>
-              </form>
-
-              <!-- Contact Info -->
-              <div class="contact-info-grid">
-                <!-- Call -->
-                <div class="contact-info-item">
-                  <div class="icon">
-                    <i class="bx bx-phone-call"></i>
+                <!-- Form Section -->
+                <div class="contact-form-section">
+                  <!-- Motivational Text -->
+                  <div class="contact-intro">
+                    <p>Une question ? Un projet ? N'hésitez pas à nous écrire, nous vous répondrons dans les plus brefs
+                      délais.</p>
                   </div>
-                  <div class="content">
-                    <h4>Téléphone</h4>
-                    <p>+226 67323131</p>
-                  </div>
-                </div>
 
-                <!-- WhatsApp -->
-                <div class="contact-info-item">
-                  <div class="icon">
-                    <i class="bx bxl-whatsapp"></i>
-                  </div>
-                  <div class="content">
-                    <h4>WhatsApp</h4>
-                    <p>+226 53344444</p>
-                  </div>
-                </div>
+                  <!-- Contact Form -->
+                  <form action="/visitormessage" method="post" class="msg-form">
+                    <div class="form-group">
+                      <input type="text" name="visitor[name]" id="name" placeholder="Votre nom complet" required />
+                    </div>
 
-                <!-- Email -->
-                <div class="contact-info-item">
-                  <div class="icon">
-                    <i class="bx bx-envelope"></i>
-                  </div>
-                  <div class="content">
-                    <h4>Email</h4>
-                    <p>contact@afrohk.com</p>
+                    <div class="form-group">
+                      <input type="email" name="visitor[email]" id="email" placeholder="Votre adresse email" required />
+                    </div>
+
+                    <div class="form-group">
+                      <textarea name="visitor[message]" id="message" placeholder="Votre message..." required></textarea>
+                    </div>
+
+                    <button type="submit">Envoyer le Message</button>
+                  </form>
+
+                  <!-- Contact Info -->
+                  <div class="contact-info-grid">
+                    <!-- Call -->
+                    <div class="contact-info-item">
+                      <div class="icon">
+                        <i class="bx bx-phone-call"></i>
+                      </div>
+                      <div class="content">
+                        <h4>Téléphone</h4>
+                        <p>+226 67323131</p>
+                      </div>
+                    </div>
+
+                    <!-- WhatsApp -->
+                    <div class="contact-info-item">
+                      <div class="icon">
+                        <i class="bx bxl-whatsapp"></i>
+                      </div>
+                      <div class="content">
+                        <h4>WhatsApp</h4>
+                        <p>+226 53344444</p>
+                      </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="contact-info-item">
+                      <div class="icon">
+                        <i class="bx bx-envelope"></i>
+                      </div>
+                      <div class="content">
+                        <h4>Email</h4>
+                        <p>contact@afrohk.com</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
-    <!-- End Contact Section -->
-  </main>
-  <!-- End #main -->
+        </section>
+        <!-- End Contact Section -->
+      </main>
+      <!-- End #main -->
 
-  <%- include('partials/footer') %>
+      <%- include('partials/footer') %>
 
-  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
-      class="bi bi-arrow-up-short"></i></a>
+        <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
 
-  <!-- Vendor JS Files -->
-  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
-  <script src="assets/vendor/aos/aos.js"></script>
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
-  <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
-  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
+        <!-- Vendor JS Files -->
+        <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+        <script src="assets/vendor/aos/aos.js"></script>
+        <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+        <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+        <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+        <script src="assets/vendor/php-email-form/validate.js"></script>
 
-  <!-- Template Main JS File -->
-  <script src="assets/js/main.js"></script>
-  
-  <!-- About Section Mouse Move Animation -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const aboutSection = document.querySelector('#about');
-      const gallery = aboutSection?.querySelector('.gallery');
-      const images = gallery?.querySelectorAll('img');
-      
-      if (!gallery || !images || images.length === 0) return;
-      
-      const aboutWrapper = aboutSection.querySelector('.about-img-wrapper');
-      if (!aboutWrapper) return;
-      
-      aboutWrapper.addEventListener('mousemove', function(e) {
-        const rect = aboutWrapper.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        // Calculate center point
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        
-        // Calculate offset from center (normalized to -1 to 1)
-        const offsetX = (x - centerX) / centerX;
-        const offsetY = (y - centerY) / centerY;
-        
-        // Maximum rotation in degrees
-        const maxRotate = 15;
-        const maxTranslate = 20;
-        
-        // Apply 3D rotation to gallery
-        const rotateY = offsetX * maxRotate;
-        const rotateX = -offsetY * maxRotate;
-        gallery.style.transform = `perspective(1000px) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
-        
-        // Apply individual transformations to images for parallax effect
-        images.forEach((img, index) => {
-          const intensity = (index + 1) * 0.3; // Different intensity for each image
-          const translateX = offsetX * maxTranslate * intensity;
-          const translateY = offsetY * maxTranslate * intensity;
-          const scale = 1 + (Math.abs(offsetX) + Math.abs(offsetY)) * 0.05 * intensity;
-          
-          img.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale})`;
-        });
-      });
-      
-      aboutWrapper.addEventListener('mouseleave', function() {
-        // Reset all transforms when mouse leaves
-        gallery.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)';
-        images.forEach(img => {
-          img.style.transform = 'translate3d(0, 0, 0) scale(1)';
-        });
-      });
-    });
-  </script>
+        <!-- Template Main JS File -->
+        <script src="assets/js/main.js"></script>
+
+        <!-- About Section Mouse Move Animation -->
+        <script>
+          document.addEventListener('DOMContentLoaded', function () {
+            const aboutSection = document.querySelector('#about');
+            const gallery = aboutSection?.querySelector('.gallery');
+            const images = gallery?.querySelectorAll('img');
+
+            if (!gallery || !images || images.length === 0) return;
+
+            const aboutWrapper = aboutSection.querySelector('.about-img-wrapper');
+            if (!aboutWrapper) return;
+
+            aboutWrapper.addEventListener('mousemove', function (e) {
+              const rect = aboutWrapper.getBoundingClientRect();
+              const x = e.clientX - rect.left;
+              const y = e.clientY - rect.top;
+
+              // Calculate center point
+              const centerX = rect.width / 2;
+              const centerY = rect.height / 2;
+
+              // Calculate offset from center (normalized to -1 to 1)
+              const offsetX = (x - centerX) / centerX;
+              const offsetY = (y - centerY) / centerY;
+
+              // Maximum rotation in degrees
+              const maxRotate = 15;
+              const maxTranslate = 20;
+
+              // Apply 3D rotation to gallery
+              const rotateY = offsetX * maxRotate;
+              const rotateX = -offsetY * maxRotate;
+              gallery.style.transform = `perspective(1000px) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+
+              // Apply individual transformations to images for parallax effect
+              images.forEach((img, index) => {
+                const intensity = (index + 1) * 0.3; // Different intensity for each image
+                const translateX = offsetX * maxTranslate * intensity;
+                const translateY = offsetY * maxTranslate * intensity;
+                const scale = 1 + (Math.abs(offsetX) + Math.abs(offsetY)) * 0.05 * intensity;
+
+                img.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale})`;
+              });
+            });
+
+            aboutWrapper.addEventListener('mouseleave', function () {
+              // Reset all transforms when mouse leaves
+              gallery.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)';
+              images.forEach(img => {
+                img.style.transform = 'translate3d(0, 0, 0) scale(1)';
+              });
+            });
+          });
+        </script>
 </body>
 
 </html>
