@@ -826,7 +826,6 @@ section {
   top: 0;
   left: 0;
   right: 0;
-  transform: skewY(-3deg);
   transform-origin: top left;
 }
 
