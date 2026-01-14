@@ -1,0 +1,242 @@
+<% layout('layouts/main') %>
+
+<style>
+  :root {
+    --primary-color: #5d06ba;
+    --primary-light: #f3e5f5;
+    --primary-dark: #2d0370;
+    --text-dark: #1d1d1f;
+    --text-muted: #6e6e73;
+    --border-color: #e5e5e5;
+    --card-bg: #ffffff;
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --radius-md: 16px;
+    font-family: 'Outfit', sans-serif;
+  }
+  
+  body {
+    background-color: #f8f9fa;
+    font-family: var(--font-family);
+  }
+
+  .page-header {
+    background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+    color: white;
+    padding: 7rem 0 5rem 0;
+    margin-bottom: -3rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .breadcrumb-item a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .breadcrumb-item.active {
+    color: rgba(255, 255, 255, 0.9);
+  }
+  
+  .page-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .content-wrapper {
+    position: relative;
+    z-index: 2;
+    padding-bottom: 3rem;
+  }
+  
+  .profile-card {
+    background: white;
+    border-radius: var(--radius-md);
+    padding: 2.5rem;
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .profile-cover {
+    height: 120px;
+    background: linear-gradient(135deg, #f3e5f5 0%, #fbd5d5 100%);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 0;
+  }
+  
+  .profile-avatar-wrapper {
+    position: relative;
+    z-index: 1;
+    margin-top: 40px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .profile-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid white;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  }
+  
+  .profile-info {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .profile-name {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0;
+  }
+  
+  .profile-role {
+    display: inline-block;
+    background: var(--primary-light);
+    color: var(--primary-color);
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .info-group {
+    text-align: left;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .info-group:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+  
+  .info-label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  
+  .info-value {
+    color: var(--text-dark);
+    font-weight: 500;
+    font-size: 1.05rem;
+  }
+  
+  .spec-badge {
+    display: inline-block;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    color: #495057;
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+</style>
+
+<!-- Header -->
+<div class="page-header">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-3">
+        <li class="breadcrumb-item"><a href="/programs/language-learning/instructor/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">My Profile</li>
+      </ol>
+    </nav>
+    <h1 class="page-title">
+      Preview Profile
+    </h1>
+  </div>
+</div>
+
+<div class="container content-wrapper">
+  
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="profile-card">
+        <div class="profile-cover"></div>
+        
+        <div class="profile-avatar-wrapper">
+          <img src="<%= instructor.profileImage || instructor.userId.imageUrl || 'https://www.kindpng.com/picc/m/105-1055656_account-user-profile-avatar-avatar-user-profile-icon.png' %>" 
+               alt="<%= instructor.firstName %>" 
+               class="profile-avatar">
+        </div>
+        
+        <div class="profile-info">
+          <h2 class="profile-name"><%= instructor.firstName %> <%= instructor.lastName %></h2>
+          <span class="profile-role">English Coach</span>
+          
+          <div class="row mt-4">
+            <div class="col-md-6">
+              <div class="info-group">
+                <span class="info-label">Email Address</span>
+                <div class="info-value">
+                  <i class="bi bi-envelope me-2 text-muted"></i><%= instructor.email %>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="info-group">
+                <span class="info-label">Member Since</span>
+                <div class="info-value">
+                  <i class="bi bi-calendar3 me-2 text-muted"></i><%= new Date(instructor.createdAt).getFullYear() %>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="info-group">
+            <span class="info-label">Specializations</span>
+            <div class="info-value">
+              <% if (instructor.specializations && instructor.specializations.length > 0) { %>
+                <% instructor.specializations.forEach(spec => { %>
+                  <span class="spec-badge"><%= spec %></span>
+                <% }); %>
+              <% } else { %>
+                <span class="text-muted fst-italic">No specializations added</span>
+              <% } %>
+            </div>
+          </div>
+          
+          <div class="info-group">
+            <span class="info-label">Biography</span>
+            <div class="info-value">
+              <% if (instructor.bio) { %>
+                <%= instructor.bio %>
+              <% } else { %>
+                <span class="text-muted fst-italic">No bio available</span>
+              <% } %>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+      
+      <div class="text-center mt-4">
+        <a href="/programs/language-learning/instructor/dashboard" class="btn btn-outline-secondary">
+          <i class="bi bi-arrow-left me-2"></i> Back to Dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>

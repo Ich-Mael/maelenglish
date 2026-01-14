@@ -348,6 +348,13 @@
               <i class="bi bi-plus-square"></i>
               Assign Course
             </a>
+            
+            <form action="/programs/language-learning/admin/instructors/<%= instructor._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Are you sure? This will delete the instructor profile and revert the user to a regular User role.');" style="width: 100%;">
+              <button type="submit" class="btn-action btn-danger w-100">
+                <i class="bi bi-trash"></i>
+                Delete Profile
+              </button>
+            </form>
           </div>
         </div>
       </div>
@@ -410,7 +417,7 @@
               <div class="course-card">
                 <div class="course-header">
                   <div>
-                    <h5 class="course-title"><%= assignment.courseId.name %></h5>
+                    <h5 class="course-title"><%= assignment.courseId.title %></h5>
                     <p class="course-date">
                       <i class="bi bi-calendar"></i>
                       Assigned: <%= new Date(assignment.assignedDate).toLocaleDateString() %>
@@ -428,7 +435,7 @@
                   </span>
                   <div class="module-badges">
                     <% assignment.modulesAccess.forEach(module => { %>
-                      <span class="module-badge"><%= module.name %></span>
+                      <span class="module-badge"><%= module.title %></span>
                     <% }); %>
                   </div>
                 </div>

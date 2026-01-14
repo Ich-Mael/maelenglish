@@ -148,16 +148,28 @@ router.put('/:id', isAdmin, async (req, res) => {
 });
 
 // Delete instructor
+// Delete instructor and revert user role
 router.delete('/:id', isAdmin, async (req, res) => {
   try {
+    const instructor = await Instructor.findById(req.params.id);
+    
+    if (!instructor) {
+      req.flash('error', 'Instructor not found');
+      return res.redirect('/programs/language-learning/admin/instructors');
+    }
+
+    // Find and update the associated user
+    await User.findByIdAndUpdate(instructor.userId, { role: 'user' });
+
+    // Delete the instructor profile
     await Instructor.findByIdAndDelete(req.params.id);
     
-    req.flash('success', 'Instructor deleted successfully');
-    res.redirect('/admin/instructors');
+    req.flash('success', 'Instructor profile deleted and user role reverted to "user"');
+    res.redirect('/programs/language-learning/admin/instructors');
   } catch (error) {
     console.error('Error deleting instructor:', error);
     req.flash('error', 'An error occurred while deleting instructor');
-    res.redirect('/admin/instructors');
+    res.redirect('/programs/language-learning/admin/instructors');
   }
 });
 

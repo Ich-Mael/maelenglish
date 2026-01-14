@@ -39,6 +39,28 @@ router.get('/dashboard', isInstructor, async (req, res) => {
   }
 });
 
+// View My Profile
+router.get('/profile', isInstructor, async (req, res) => {
+  try {
+    const instructor = await Instructor.findOne({ userId: req.user._id })
+      .populate('userId');
+    
+    if (!instructor) {
+      req.flash('error', 'Instructor profile not found');
+      return res.redirect('/programs/language-learning/instructor/dashboard');
+    }
+    
+    res.render('instructor/profile', {
+      instructor,
+      title: 'My Profile'
+    });
+  } catch (error) {
+    console.error('Error loading profile:', error);
+    req.flash('error', 'An error occurred');
+    res.redirect('/programs/language-learning/instructor/dashboard');
+  }
+});
+
 // My Courses
 router.get('/courses', isInstructor, async (req, res) => {
   try {
@@ -87,7 +109,7 @@ router.get('/courses/:courseId', isInstructor, hasAccessToCourse, async (req, re
     res.render('instructor/course-details', {
       course: courseAssignment.courseId,
       modules: modulesWithResources,
-      title: `Course: ${courseAssignment.courseId.name}`
+      title: `Course: ${courseAssignment.courseId.title}`
     });
   } catch (error) {
     console.error('Error loading course details:', error);
@@ -114,7 +136,7 @@ router.get('/resources/module/:moduleId', isInstructor, hasAccessToModule, async
     res.render('instructor/resources', {
       module,
       resources,
-      title: `Resources: ${module.name}`
+      title: `Resources: ${module.title}`
     });
   } catch (error) {
     console.error('Error loading resources:', error);
