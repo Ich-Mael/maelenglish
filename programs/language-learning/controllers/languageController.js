@@ -11,5 +11,6 @@ module.exports.renderEnglish4Everyone = catchAsync(async (req, res) => {
 });
 
 module.exports.renderPecp = (req, res) => {
-    res.send("Welcome to PECP (Programme d'Entrainement à la Communication Professionnelle)");
+    // res.send("Welcome to PECP (Programme d'Entrainement à la Communication Professionnelle)");
+    res.render("programs/language-learning/pecp/home");
 };
