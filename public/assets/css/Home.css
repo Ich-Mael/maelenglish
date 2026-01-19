@@ -233,13 +233,13 @@ h6 {
 }
 
 @media (max-width: 992px) {
-  #values-c {
+  #values-c, #values-a {
     font-size: 4rem;
   }
 }
 
 @media (max-width: 768px) {
-  #values-c {
+  #values-c, #values-a {
     font-size: 2.5rem;
   }
 }
@@ -1016,6 +1016,9 @@ section {
 @media (max-width: 768px) {
   .about {
     text-align: center;
+  }
+  .about .content {
+    padding: 1rem 1rem;
   }
 }
 
@@ -2639,5 +2642,26 @@ section {
   .gallery-card {
     border-radius: 12px;
     border-width: 2px;
+  }
+}
+
+/*--------------------------------------------------------------
+# Focus Section Typography
+--------------------------------------------------------------*/
+.focus-title {
+  font-size: 3rem;
+}
+
+.focus-text {
+  font-size: 1.4rem;
+}
+
+@media (max-width: 768px) {
+  .focus-title {
+    font-size: 2rem;
+  }
+
+  .focus-text {
+    font-size: 1.1rem;
   }
 }
