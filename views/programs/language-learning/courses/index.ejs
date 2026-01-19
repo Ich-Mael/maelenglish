@@ -156,11 +156,11 @@
   }
 
   .section-header {
-    margin-bottom: 60px;
-    padding: 80px 40px;
-    border-radius: 40px;
+    margin-bottom: 50px;
+    padding: 40px 24px;
+    border-radius: 30px;
     background: linear-gradient(135deg, #ffffff 0%, #fcfaff 100%);
-    box-shadow: 0 20px 60px rgba(93, 6, 186, 0.08);
+    box-shadow: 0 10px 40px rgba(93, 6, 186, 0.08);
     position: relative;
     overflow: hidden;
     
@@ -169,7 +169,7 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    max-width: 1000px;
+    max-width: 900px;
     margin-left: auto;
     margin-right: auto;
     border: 1px solid rgba(255, 255, 255, 0.8);
@@ -435,6 +435,13 @@
       justify-content: center;
     }
   }
+
+  /* Fix scroll position for fixed header */
+  #practical-info,
+  #calendar,
+  #learning-path {
+    scroll-margin-top: 120px;
+  }
 </style>
 
 <!-- 1. Hero Section -->
@@ -445,11 +452,17 @@
       <div class="col-lg-6 hero-content">
         <h1 class="hero-title">Parlez anglais avec aisance et confiance</h1>
         <p class="hero-subtitle">
-          Pour les étudiants ambitieux et les professionnels en action. Maîtrisez la communication courante pour exceller dans vos études, dynamiser votre carrière et vous ouvrir au monde.
+          English Boost, est un programme 100% pratique pour vous aider à parler l'anglais avec aisance. 
+          Pour les étudiants ambitieux et les professionnels en action.
         </p>
-        <a href="#learning-path" class="btn btn-light rounded-pill px-4 py-3 fw-bold shadow-lg text-primary">
-          Commencer l'aventure <i class="bi bi-arrow-down-short ms-1"></i>
-        </a>
+        <div class="d-flex flex-wrap gap-3">
+          <a href="#practical-info" class="btn btn-light rounded-pill px-4 py-3 fw-bold shadow-lg text-primary">
+            Infos Pratiques <i class="bi bi-arrow-down-short ms-1"></i>
+          </a>
+          <a href="#calendar" class="btn btn-outline-light rounded-pill px-4 py-3 fw-bold shadow-lg">
+            Calendrier 2026 <i class="bi bi-calendar-event ms-1"></i>
+          </a>
+        </div>
       </div>
       <div class="col-lg-6 d-none d-lg-block hero-image-pane">
         <img src="/assets/img/hero-english-boost.png" class="img-fluid hero-img" alt="Professionals discussing">
@@ -494,57 +507,274 @@
 <!-- 3. Learning Path (Roadmap) -->
 <div class="path-section-wrapper" id="learning-path">
   <div class="container">
-  <div class="section-header">
-    <div class="header-decoration"></div>
-    <span class="section-badge">Programme D'Excellence</span>
-    <h2 class="section-title">
+  <h2 class="section-title">
       Votre Parcours <br class="d-md-none">
       <span class="text-gradient">Simplifié</span>
     </h2>
-    <p class="section-subtitle">
-      Une approche pédagogique moderne conçue pour des résultats rapides.
-      Commencez dès maintenant votre apprentissage.
-    </p>
-  </div>
 
   <div class="path-list">
     
-    <!-- Level 1: General English Boost 1 -->
+    <!-- Level 1: Beginner -->
     <div class="level-card">
-      <!-- Visual -->
       <div class="level-visual">
-        <img src="/assets/img/english-coaching-v3.png" alt="General English Boost 1">
+          <img src="/assets/img/english-group-v3.png" alt="Niveau Débutant" style="width:100%; height:100%; object-fit:cover;">
       </div>
       
-      <!-- Info -->
       <div class="level-info">
         <span class="level-badge">Niveau 1</span>
-        <h3 class="level-title">General English Boost 1</h3>
+        <h3 class="level-title">Niveau Débutant</h3>
         <p class="level-desc">
-          Le programme fondamental pour transformer votre niveau d'anglais. 
-          Acquérez une base solide, développez votre confiance à l'oral et maîtrisez les structures essentielles pour communiquer efficacement dans le monde professionnel.
+          Posez les bases solides. Apprenez à vous présenter, construire des phrases correctes et tenir des conversations simples de la vie quotidienne avec confiance.
         </p>
         
         <div class="mt-3">
-          <div class="d-flex gap-3 text-muted small">
-            <div><i class="bi bi-clock me-1"></i> 6 Semaines (40h)</div>
-            <div><i class="bi bi-camera-video me-1"></i> En ligne & Présentiel</div>
-            <div><i class="bi bi-award me-1"></i> Certifiant</div>
+          <div class="d-flex flex-wrap gap-3 text-muted small">
+            <div><i class="bi bi-clock me-1"></i> 6 Semaines</div>
+            <div><i class="bi bi-camera-video me-1"></i> 100% Pratique</div>
+            <div><i class="bi bi-check-circle me-1"></i> Essentiels</div>
           </div>
         </div>
       </div>
 
-      <!-- Action -->
       <div class="level-action">
-        <a href="/programs/language-learning/general-english-boost/69584e4bf744983f1e3ed576" class="btn-path">
-          Découvrir le programme <i class="bi bi-arrow-right-short"></i>
-        </a>
+        <span class="status-badge">Fondamental</span>
       </div>
-
     </div>
 
-    <!-- Placeholder for future levels if needed, or keep it clean for now -->
+    <!-- Level 2: Intermediate -->
+    <div class="level-card">
+      <div class="level-visual">
+          <img src="/assets/img/english-coaching-v3.png" alt="Niveau Intermédiaire" style="width:100%; height:100%; object-fit:cover;">
+      </div>
+      
+      <div class="level-info">
+        <span class="level-badge">Niveau 2</span>
+        <h3 class="level-title">Niveau Intermédiaire</h3>
+        <p class="level-desc">
+          Gagnez en fluidité. Enrichissez votre vocabulaire, améliorez votre prononciation et exprimez des idées plus complexes dans des contextes variés.
+        </p>
+        
+        <div class="mt-3">
+          <div class="d-flex flex-wrap gap-3 text-muted small">
+            <div><i class="bi bi-clock me-1"></i> 6 Semaines</div>
+            <div><i class="bi bi-mic me-1"></i> Conversation</div>
+            <div><i class="bi bi-award me-1"></i> Autonomie</div>
+          </div>
+        </div>
+      </div>
+
+       <div class="level-action">
+        <span class="status-badge">Acquisition</span>
+      </div>
+    </div>
     
   </div>
   </div>
 </div>
+
+<!-- 4. Practical Info Section -->
+<section id="practical-info" class="py-5" style="background-color: white;">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold display-6 mb-3">Détails Pratiques</h2>
+      <p class="text-muted fs-5">Tout ce qu'il faut savoir pour démarrer.</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+       
+
+
+       <!-- Card Info 1: Formation -->
+       <div class="col-md-6 col-lg-5">
+         <div class="p-4 rounded-4 border border-light shadow-sm h-100 bg-light">
+           <div class="mb-3 text-primary">
+            <h4 class="fw-bold mb-3"><i class="bi bi-layers-fill fs-3"></i> Structure de la Formation</h4></div>
+           <ul class="list-unstyled text-muted">
+             <li class="mb-2 d-flex align-items-center"><i class="bi bi-check-circle-fill text-success me-2"></i> 2 Niveaux : Débutant et Intermédiaire</li>
+             <li class="mb-2 d-flex align-items-center"><i class="bi bi-clock-fill text-primary me-2"></i> Durée : 6 semaines par niveau</li>
+             <!-- Format moved to standalone row -->
+             <li class="mb-2 d-flex align-items-center"><i class="bi bi-clipboard-check-fill text-warning me-2"></i> Test de niveau obligatoire au début</li>
+           </ul>
+         </div>
+       </div>
+
+       <!-- Card Info 2: Pricing -->
+       <div class="col-md-6 col-lg-5">
+          <div class="p-4 rounded-4 border border-light shadow-sm h-100 bg-light">
+           <div class="mb-3 text-primary">
+           <h4 class="fw-bold mb-3"><i class="bi bi-wallet-fill fs-3"></i> Participation</h4></div>
+           <ul class="list-unstyled text-muted">
+             <li class="mb-2 d-flex align-items-center"><i class="bi bi-cash-stack text-success me-2"></i> Frais de formation : 30.000 FCFA</li>
+             <li class="mb-2 d-flex align-items-center"><i class="bi bi-pie-chart-fill text-info me-2"></i> Possibilité de payer en 2 tranches</li>
+             <li class="mb-2 d-flex align-items-center"><i class="bi bi-ticket-fill text-warning me-2"></i> Inscription : 5.000 FCFA (déductibles)</li>
+           </ul>
+         </div>
+       </div>
+       
+       <!-- Format Banner Relocated -->
+       <div class="col-lg-10 mt-4">
+         <div class="p-4 rounded-4 text-white text-center shadow-sm d-flex flex-column flex-md-row align-items-center justify-content-center gap-3" 
+              style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);">
+           <div class="bg-white bg-opacity-25 p-2 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+              <i class="bi bi-laptop fs-4"></i>
+           </div>
+           <span class="fs-5 fw-bold">En présentiel dans nos 5 centres, ou en ligne sur notre platforme e-learning.</span>
+         </div>
+       </div>
+
+       <!-- Card Info 3: Locations -->
+       <div class="col-lg-10 mt-3">
+          <div class="p-4 rounded-4 border border-light shadow-sm bg-light text-center">
+             <div class="mb-3 text-primary"><i class="bi bi-geo-alt-fill fs-3"></i></div>
+             <h4 class="fw-bold mb-3">Nos 5 Centres à Ouagadougou</h4>
+             <p class="text-muted mb-4">Choisissez le centre le plus proche de vous pour vos cours en présentiel.</p>
+             <div class="d-flex flex-wrap justify-content-center gap-3">
+               <span class="badge bg-white text-dark border p-3 rounded-pill fs-6 shadow-sm"><i class="bi bi-pin-map-fill text-danger me-2"></i> Cissin</span>
+               <span class="badge bg-white text-dark border p-3 rounded-pill fs-6 shadow-sm"><i class="bi bi-pin-map-fill text-danger me-2"></i> Paspanga</span>
+               <span class="badge bg-white text-dark border p-3 rounded-pill fs-6 shadow-sm"><i class="bi bi-pin-map-fill text-danger me-2"></i> Saaba</span>
+               <span class="badge bg-white text-dark border p-3 rounded-pill fs-6 shadow-sm"><i class="bi bi-pin-map-fill text-danger me-2"></i> Trame d'accueil</span>
+               <span class="badge bg-white text-dark border p-3 rounded-pill fs-6 shadow-sm"><i class="bi bi-pin-map-fill text-danger me-2"></i> Tampouy</span>
+             </div>
+          </div>
+       </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- 5. 2026 Calendar Section (Dark Mode) -->
+<section id="calendar" class="py-5 bg-dark text-white" style="background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold display-5 mb-3">Calendrier 2026</h2>
+      <p class="text-secondary fs-5">Planifiez votre année de succès avec nos 6 sessions.</p>
+    </div>
+
+    <div class="row g-4 align-items-start">
+      
+      <!-- Session Dates (Timeline) -->
+      <div class="col-lg-6">
+        <div class="bg-white bg-opacity-10 p-4 rounded-4 shadow-sm h-100 border border-secondary border-opacity-25" style="backdrop-filter: blur(10px);">
+           <h3 class="fw-bold mb-4 text-white"><i class="bi bi-calendar-event me-2 text-primary"></i> Dates des Sessions</h3>
+           
+           <div class="timeline-box">
+             <!-- Session 1 -->
+             <div class="d-flex align-items-center mb-3 pb-3 border-bottom border-light border-opacity-10">
+               <div class="badge bg-primary text-white p-2 rounded-3 me-3">Session 1</div>
+               <div>
+                 <div class="fw-bold text-light">Du 26 Janvier au 7 Mars</div>
+               </div>
+             </div>
+             <!-- Session 2 -->
+             <div class="d-flex align-items-center mb-3 pb-3 border-bottom border-light border-opacity-10">
+               <div class="badge bg-primary p-2 text-white rounded-3 me-3">Session 2</div>
+               <div>
+                 <div class="fw-bold text-light">Du 16 Mars au 25 Avril</div>
+               </div>
+             </div>
+             <!-- Session 3 -->
+             <div class="d-flex align-items-center mb-3 pb-3 border-bottom border-light border-opacity-10">
+               <div class="badge bg-primary p-2 text-white rounded-3 me-3">Session 3</div>
+               <div>
+                 <div class="fw-bold text-light">Du 04 Mai au 13 Juin</div>
+               </div>
+             </div>
+             <!-- Session 4 -->
+             <div class="d-flex align-items-center mb-3 pb-3 border-bottom border-light border-opacity-10">
+               <div class="badge bg-primary p-2 text-white rounded-3 me-3">Session 4</div>
+               <div>
+                 <div class="fw-bold text-light">Du 22 Juin au 31 Juillet</div>
+               </div>
+             </div>
+             <!-- Session 5 -->
+             <div class="d-flex align-items-center mb-3 pb-3 border-bottom border-light border-opacity-10">
+               <div class="badge bg-primary p-2 text-white rounded-3 me-3">Session 5</div>
+               <div>
+                 <div class="fw-bold text-light">Du 10 Août au 21 Septembre</div>
+               </div>
+             </div>
+             <!-- Session 6 -->
+             <div class="d-flex align-items-center">
+               <div class="badge bg-primary p-2 text-white rounded-3 me-3">Session 6</div>
+               <div>
+                 <div class="fw-bold text-light">Du 05 Octobre au 14 Novembre</div>
+               </div>
+             </div>
+           </div>
+           
+           <div class="mt-4">
+               <div class="p-4 rounded-4 border border-secondary border-opacity-25 bg-white bg-opacity-10 text-center h-100 d-flex flex-column justify-content-center" style="backdrop-filter: blur(10px);">
+                  <div class="mb-2">
+                    <i class="bi bi-people-fill fs-3 text-white"></i>
+                  </div>
+                  <h4 class="fw-bold mb-0 text-white">Places Limitées</h4>
+                  <div class="display-1 fw-bold text-white my-2" style="letter-spacing: -2px;">16</div>
+                  <p class="text-white-50 mb-4">Personnes par session en présentiel</p>
+                  <a href="https://wa.me/22667323131?text=Je%20veux%20réserver%20ma%20place%20pour%20English%20Boost" class="btn btn-dark border border-secondary border-opacity-25 rounded-pill fw-bold w-100 py-3 text-white shadow-lg">
+                    Réservez ma place <i class="bi bi-arrow-right-short"></i>
+                  </a>
+               </div>
+           </div>
+        </div>
+      </div>
+
+      <!-- Weekly Schedule -->
+      <div class="col-lg-6">
+        <div class="row g-4">
+          <!-- Level 1 Schedule -->
+          <div class="col-12">
+            <div class="p-4 rounded-4 text-white shadow-lg" style="background: linear-gradient(135deg, #6610f2 0%, #520dc2 100%); border: 1px solid rgba(255,255,255,0.1);">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h3 class="h4 fw-bold mb-0">Niveau 1</h3>
+                <i class="bi bi-1-circle-fill fs-3 opacity-50"></i>
+              </div>
+              <p class="mb-3 opacity-75">Cours du Soir</p>
+              <div class="d-flex align-items-center bg-black bg-opacity-25 p-3 rounded-3">
+                <i class="bi bi-calendar-week h2 mb-0 me-3"></i>
+                <div>
+                  <div class="fw-bold fs-5">Lundi & Mercredi</div>
+                  <div class="small text-white-50">18h30 à 20h30</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Level 2 Schedule -->
+          <div class="col-12">
+            <div class="p-4 rounded-4 text-white shadow-lg" style="background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); border: 1px solid rgba(255,255,255,0.1);">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h3 class="h4 fw-bold mb-0">Niveau 2</h3>
+                <i class="bi bi-2-circle-fill fs-3 opacity-50"></i>
+              </div>
+              <p class="mb-3 opacity-75">Cours du Soir</p>
+               <div class="d-flex align-items-center bg-black bg-opacity-25 p-3 rounded-3">
+                <i class="bi bi-calendar-check h2 mb-0 me-3"></i>
+                <div>
+                  <div class="fw-bold fs-5">Mardi & Jeudi</div>
+                  <div class="small text-white-50">18h30 à 20h30</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Contact Box -->
+           <div class="col-12">
+            <div class="p-4 rounded-4 border border-secondary border-opacity-25 bg-white bg-opacity-10 text-center" style="backdrop-filter: blur(10px);">
+               <h4 class="fw-bold mb-3 text-white">Besoin plus d'infos ?</h4>
+               <div class="d-flex flex-column gap-2">
+                 <a href="https://wa.me/22667323131" class="btn btn-success btn-lg rounded-pill w-100">
+                   <i class="bi bi-whatsapp me-2"></i> +226 67 32 31 31
+                 </a>
+                 <a href="tel:53344444" class="btn btn-outline-light btn-lg rounded-pill w-100">
+                   <i class="bi bi-telephone me-2"></i> +226 53 34 44 44
+                 </a>
+               </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

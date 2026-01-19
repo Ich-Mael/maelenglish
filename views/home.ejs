@@ -324,6 +324,11 @@
     .gallery img:nth-child(4) {
       transition-delay: 0.15s;
     }
+
+    /* Fix for white space below About section */
+    #about.section-bg:before {
+      bottom: 0;
+    }
   </style>
 </head>
 
@@ -872,14 +877,14 @@
           </div>
         </section>
         <!-- End Testimonials Section -->
-        <div class="section-title">
-          <h2>Notre Communauté</h2>
-          <h3 class="slogan mb-5" id="values-a">
-            <span class="purple">Nos activités en images</span>
-          </h3>
-        </div>
         <!-- ======= Reflection Gallery Section ======= -->
         <section id="gallery" class="reflection-gallery-section">
+          <div class="section-title">
+            <h2>Notre Communauté</h2>
+            <h3 class="slogan mb-5" id="values-a">
+              <span class="purple">Nos activités en images</span>
+            </h3>
+          </div>
 
           <div class="thumbs">
             <label><input type="radio" name="gallery-image" id="img1"><span class="thumb-img"></span></label>
