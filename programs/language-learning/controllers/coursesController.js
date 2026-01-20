@@ -17,6 +17,19 @@ module.exports.allCourses = catchAsync(async (req, res) => {
   res.render("programs/language-learning/courses/index", { courses });
 });
 
+module.exports.myCourses = catchAsync(async (req, res) => {
+  let query = { _id: { $in: [] } }; // Default to empty if no courses
+  
+  if (req.user && req.user.coursesTaken && req.user.coursesTaken.length > 0) {
+    query = {
+      _id: { $in: req.user.coursesTaken }
+    };
+  }
+  
+  const courses = await Course.find(query).populate("instructors");
+  res.render("programs/language-learning/courses/my_courses", { courses });
+});
+
 module.exports.allCoursesAdmin = catchAsync(async (req, res) => {
   const courses = await Course.find().populate("instructors");
   res.render("programs/language-learning/courses/admin_show_all", { courses });

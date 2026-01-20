@@ -667,9 +667,9 @@ background: linear-gradient(135deg, #4A00E0, #8E2DE2); /* W3C, IE 10+/ Edge, Fir
              const isEnrolledInBoost = user.coursesTaken.some(course => (course._id || course).toString() === boostCourseId);
           %>
           <% if (isEnrolledInBoost) { %>
-            <a href="/programs/language-learning/general-english-boost/69584e4bf744983f1e3ed576/modules/69585356f744983f1e3ed5ee" class="action-btn">
+            <a href="/programs/language-learning/general-english-boost/my-courses" class="action-btn">
               <i class="bi bi-play-circle-fill"></i>
-              Accéder au cours General English Boost 1
+              Accéder à mes cours (English Boost)
             </a>
           <% } %>
         <% } %>
@@ -743,7 +743,7 @@ background: linear-gradient(135deg, #4A00E0, #8E2DE2); /* W3C, IE 10+/ Edge, Fir
         if (user.isPecpCoach) programs.push({ name: 'PECP (Coach)', icon: 'person-check', route: '/programs/language-learning/pecp', hasDashboard: true });
         if (user.coursesTaken && user.coursesTaken.length > 0) {
           // Link to the General English Boost program page instead of a specific course
-          programs.push({ name: 'English Boost', icon: 'translate', route: '/programs/language-learning/general-english-boost', hasDashboard: true });
+          programs.push({ name: 'English Boost', icon: 'translate', route: '/programs/language-learning/general-english-boost/my-courses', hasDashboard: true });
         }
       %>
       

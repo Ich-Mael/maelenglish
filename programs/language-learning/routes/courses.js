@@ -19,6 +19,9 @@ const {
 // All Courses route for user
 router.get('/', Courses.allCourses);
 
+// My Courses route for enrolled user
+router.get('/my-courses', isLoggedIn, Courses.myCourses);
+
 // All Courses route for admin
 router.get('/admindashboard', isLoggedIn, isVerified, checkRoles("admin"), Courses.allCoursesAdmin);
 
