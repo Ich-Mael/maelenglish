@@ -249,9 +249,10 @@
     <div class="row g-4">
       <% activeCourses.forEach(assignment => { %>
         <% const course = assignment.courseId; %>
+        <% const bgImage = course.image || 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d'; %>
         <div class="col-md-6 col-lg-4">
           <div class="course-card">
-            <div class="course-img" style="background-image: url('<%= course.image || 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d' %>')">
+            <div class="course-img" style="background-image: url('<%= bgImage %>')">
             </div>
             <div class="course-body">
               <h5 class="course-title"><%= course.title %></h5>

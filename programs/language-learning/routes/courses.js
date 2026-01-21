@@ -11,6 +11,9 @@ const {
 const {
     checkCourseOwnership
 } = require('../middlewares/courseController');
+const {
+    checkCourseAccess
+} = require('../middlewares/courseAccess');
 
 /*
  ************************* COURSES ROUTES *******************************************
@@ -38,7 +41,8 @@ router.get('/enroll-contact', (req, res) => {
     res.render('programs/language-learning/contact_enroll');
 });
 
-router.get('/:course_id', Courses.showCourse);
+// Show course content
+router.get('/:course_id', isLoggedIn, checkCourseAccess, Courses.showCourse);
 
 // Edit course
 router.get("/admindashboard/:course_id/edit", isLoggedIn, isVerified, checkRoles("admin"), Courses.editCourse);
@@ -58,6 +62,9 @@ router.get('/admindashboard/:course_id/addStudent', isLoggedIn, isVerified, chec
 // Add student to a course
 router.post('/admindashboard/:course_id/addStudent', isLoggedIn, isVerified, checkRoles("admin"), Courses.addStudentToCourse);
 
+// Update student access dates
+router.post('/admindashboard/:course_id/students/:student_id/access', isLoggedIn, isVerified, checkRoles("admin"), Courses.updateStudentAccess);
+
 // API: Search users for student enrollment
 router.get('/admindashboard/:course_id/search-users', isLoggedIn, isVerified, checkRoles("admin"), Courses.searchUsers);
 
@@ -72,7 +79,7 @@ router.get('/admindashboard/:course_id/modules', isLoggedIn, isVerified, checkRo
 router.post('/admindashboard/:course_id/module', isLoggedIn, isVerified, checkRoles("admin"), CourseModules.createModule);
 
 // Show module content
-router.get('/:course_id/modules/:module_id', isLoggedIn, isVerified, checkCourseOwnership, CourseModules.showModule);
+router.get('/:course_id/modules/:module_id', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, CourseModules.showModule);
 
 // Edit module
 router.get("/admindashboard/:course_id/modules/:module_id/edit", isLoggedIn, isVerified, checkRoles("admin"), CourseModules.editModule);

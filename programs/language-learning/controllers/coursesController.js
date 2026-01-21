@@ -113,6 +113,46 @@ module.exports.showStudents = catchAsync(async(req, res)=>{
   res.render("programs/language-learning/courses/studentsList", { course}); 
 });
 
+module.exports.updateStudentAccess = catchAsync(async (req, res) => {
+    const { course_id, student_id } = req.params;
+    const { startDate, endDate } = req.body;
+
+    const course = await Course.findById(course_id);
+    const student = await User.findById(student_id);
+
+    if (!course || !student) {
+        req.flash('error', 'Course or Student not found.');
+        return res.redirect('back');
+    }
+
+    // Find the enrollment program
+    // We try to match by courseTitle first as that's how it's stored
+    const programIndex = student.specialProgram.findIndex(p => p.courseTitle === course.title);
+
+    if (programIndex !== -1) {
+        // Update existing program
+        student.specialProgram[programIndex].startDate = new Date(startDate);
+        student.specialProgram[programIndex].endDate = new Date(endDate);
+    } else {
+        // Fallback: If not found in specialProgram but is in coursesTaken (legacy), add it now
+        // This effectively "migrates" legacy enrollments to the new system
+        if (student.coursesTaken.includes(course_id)) {
+            student.specialProgram.push({
+                courseTitle: course.title,
+                startDate: new Date(startDate),
+                endDate: new Date(endDate)
+            });
+        } else {
+            req.flash('error', 'Student is not enrolled in this course.');
+            return res.redirect('back');
+        }
+    }
+
+    await student.save();
+    req.flash('success', 'Access dates updated successfully.');
+    res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/showStudents`);
+});
+
 module.exports.deleteCourse = catchAsync(async (req, res) => {
   await Course.findByIdAndDelete(req.params.course_id);
   req.flash("success", "Cours supprimé avec succès");
