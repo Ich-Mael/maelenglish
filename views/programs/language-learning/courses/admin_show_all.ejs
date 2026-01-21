@@ -348,13 +348,19 @@
           <div class="course-card">
             <div class="course-card-header">
               <h3 class="course-card-title"><%= course.title %></h3>
-              <% if (course.instructors && course.instructors.length > 0) { %>
-                <p class="course-card-instructors">
-                  <i class="bi bi-person-circle"></i>
-                  <strong>Instructeur(s):</strong>
-                  <%= course.instructors.map(instructor => `${instructor.surname} ${instructor.name}`).join(', ') %>
-                </p>
-              <% } %>
+                <div class="course-card-instructors-wrapper">
+                  <div class="d-flex align-items-center gap-2 mb-2 text-muted">
+                    <i class="bi bi-person-circle" style="color: #5d06ba;"></i>
+                    <strong style="font-size: 0.95rem;">Instructeur(s):</strong>
+                  </div>
+                  <div class="instructors-list ps-4">
+                    <% course.instructors.forEach(instructor => { %>
+                      <div class="instructor-name mb-1" style="font-size: 0.95rem; color: #4a4a4a;">
+                        <%= instructor.surname %> <%= instructor.name %>
+                      </div>
+                    <% }) %>
+                  </div>
+                </div>
               </div>
             <div class="course-card-body">
               <div class="course-card-actions">

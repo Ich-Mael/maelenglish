@@ -26,7 +26,7 @@ router.get('/dashboard', isInstructor, async (req, res) => {
       isPublished: true
     });
     
-    res.render('instructor/dashboard', {
+    res.render('programs/language-learning/eng_coach/dashboard', {
       instructor,
       activeCourses,
       resourcesCount,
@@ -50,7 +50,7 @@ router.get('/profile', isInstructor, async (req, res) => {
       return res.redirect('/programs/language-learning/instructor/dashboard');
     }
     
-    res.render('instructor/profile', {
+    res.render('programs/language-learning/eng_coach/profile', {
       instructor,
       title: 'My Profile'
     });
@@ -70,7 +70,7 @@ router.get('/courses', isInstructor, async (req, res) => {
     
     const activeCourses = instructor.assignedCourses.filter(c => c.status === 'active');
     
-    res.render('instructor/courses', {
+    res.render('programs/language-learning/eng_coach/courses', {
       instructor,
       courses: activeCourses,
       title: 'My Courses'
@@ -106,7 +106,7 @@ router.get('/courses/:courseId', isInstructor, hasAccessToCourse, async (req, re
       })
     );
     
-    res.render('instructor/course-details', {
+    res.render('programs/language-learning/eng_coach/course-details', {
       course: courseAssignment.courseId,
       modules: modulesWithResources,
       title: `Course: ${courseAssignment.courseId.title}`
@@ -133,7 +133,7 @@ router.get('/resources/module/:moduleId', isInstructor, hasAccessToModule, async
     const Module = require('../models/Module');
     const module = await Module.findById(req.params.moduleId);
     
-    res.render('instructor/resources', {
+    res.render('programs/language-learning/eng_coach/resources', {
       module,
       resources,
       title: `Resources: ${module.title}`
@@ -182,7 +182,7 @@ router.get('/resources/view/:resourceId', isInstructor, async (req, res) => {
     // Increment view count
     await resource.incrementViewCount();
     
-    res.render('instructor/resource-view', {
+    res.render('programs/language-learning/eng_coach/resource-view', {
       resource,
       title: resource.title
     });

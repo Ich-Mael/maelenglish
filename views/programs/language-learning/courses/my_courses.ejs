@@ -176,11 +176,13 @@
   }
 
   .course-title {
-    font-size: 1.35rem;
+    font-size: 1.5rem;
     font-weight: 800;
-    color: #1a0b2e;
-    margin-bottom: 12px;
+    color: #1a0b2e !important;
+    margin-bottom: 24px;
     line-height: 1.3;
+    background: none !important;
+    -webkit-text-fill-color: initial !important;
   }
 
   .course-desc {
@@ -322,9 +324,7 @@
                 <h3 class="course-title"><%= course.title %></h3>
                 
                 <!-- Description Logic: Use Syllabus Summary or Description -->
-                <p class="course-desc">
-                  <%= course.syllabusSummary ? course.syllabusSummary : (course.description ? course.description.replace(/<[^>]*>?/gm, '').substring(0, 100) + '...' : 'Aucune description disponible pour ce cours.') %>
-                </p>
+                <!-- Description Removed as per user request -->
               </div>
 
               <!-- Meta Info -->
