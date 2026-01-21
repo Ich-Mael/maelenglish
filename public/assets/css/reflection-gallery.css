@@ -9,7 +9,7 @@
   min-height: 100vh;
   height: auto;
   overflow: hidden;
-  background: #dbcff3;
+  background: radial-gradient(circle at center, #35125e 0%, #0f021f 100%);
   margin: 0;
   padding: 0;
 }
