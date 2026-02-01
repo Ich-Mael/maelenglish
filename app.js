@@ -11,6 +11,7 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const flash = require("connect-flash-plus");
 const passport = require("passport");
+const useragent = require("express-useragent");
 
 // Import User model for Passport authentication
 const User = require("./shared/models/user");
@@ -40,9 +41,13 @@ app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
+// Trust proxy for correct IP detection (important for device tracking)
+app.set('trust proxy', true);
+
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(useragent.express()); // Parse User-Agent for device tracking
 app.use(methodOverride("_method"));
 
 // Session config

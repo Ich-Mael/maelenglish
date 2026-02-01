@@ -4,6 +4,7 @@ const router = express.Router();
 const User = require("../models/user");
 const catchAsync = require("../utilities/catchAsync");
 const { isLoggedIn, checkRoles } = require("../middlewares/auth");
+const { trackDevice, generateDeviceId } = require("../middlewares/deviceTracker");
 const crypto = require("crypto");
 const Emailer = require("../utilities/sendEmail");
 
@@ -162,7 +163,7 @@ router.get("/login", (req, res) => {
 
 /**
  * POST /login
- * Authentifie l'utilisateur
+ * Authentifie l'utilisateur et track l'appareil
  */
 router.post(
   "/login",
@@ -170,6 +171,7 @@ router.post(
     failureFlash: true,
     failureRedirect: "/login",
   }),
+  trackDevice, // Track device after authentication
   async (req, res) => {
     console.log('[Login POST] After passport.authenticate');
     console.log('[Login POST] req.user:', req.user ? `${req.user.username} (${req.user._id})` : 'null/undefined');
@@ -192,11 +194,29 @@ router.post(
 
 /**
  * GET /logout
- * Déconnecte l'utilisateur
+ * Déconnecte l'utilisateur et désactive l'appareil
  */
 router.get("/logout", async (req, res) => {
   console.log('[Logout] Before logout - req.user:', req.user ? `${req.user.username} (${req.user._id})` : 'null/undefined');
   console.log('[Logout] req.isAuthenticated():', req.isAuthenticated());
+  
+  // Désactiver l'appareil avant la déconnexion
+  if (req.user) {
+    try {
+      const deviceId = generateDeviceId(req);
+      const user = await User.findById(req.user._id);
+      const device = user.devices.find(d => d.deviceId === deviceId);
+      
+      if (device) {
+        device.isActive = false;
+        await user.save();
+        console.log('[Logout] Device deactivated:', deviceId);
+      }
+    } catch (error) {
+      console.error('[Logout] Error updating device on logout:', error);
+    }
+  }
+  
   req.logout((err) => {
     if (err) {
       console.error('[Logout] ERROR:', err);
@@ -612,6 +632,91 @@ router.post("/reset/:token", catchAsync(async (req, res) => {
         });
     });
 }));
+
+// ============================================
+// ADMIN ROUTES - Device Management
+// ============================================
+
+const { isVerified } = require("../middlewares/auth");
+
+/**
+ * GET /admin/users/:id/devices
+ * Affiche les appareils d'un utilisateur (Admin seulement)
+ */
+router.get(
+  "/admin/users/:id/devices",
+  isLoggedIn,
+  isVerified,
+  checkRoles("admin", "super-admin"),
+  catchAsync(async (req, res) => {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      req.flash('error', 'Utilisateur non trouvé');
+      return res.redirect('/admin/users');
+    }
+    
+    res.render('admin/user_devices', {
+      user,
+      devices: user.devices || []
+    });
+  })
+);
+
+/**
+ * POST /admin/users/:id/devices/:deviceId/remove
+ * Retirer un appareil (Admin seulement)
+ */
+router.post(
+  "/admin/users/:id/devices/:deviceId/remove",
+  isLoggedIn,
+  isVerified,
+  checkRoles("admin", "super-admin"),
+  catchAsync(async (req, res) => {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      req.flash('error', 'Utilisateur non trouvé');
+      return res.redirect('/admin/users');
+    }
+    
+    user.devices = user.devices.filter(d => d.deviceId !== req.params.deviceId);
+    await user.save();
+    
+    req.flash('success', 'Appareil retiré avec succès');
+    res.redirect(`/admin/users/${req.params.id}/devices`);
+  })
+);
+
+/**
+ * POST /admin/users/:id/max-devices
+ * Modifier la limite d'appareils (Admin seulement)
+ */
+router.post(
+  "/admin/users/:id/max-devices",
+  isLoggedIn,
+  isVerified,
+  checkRoles("admin", "super-admin"),
+  catchAsync(async (req, res) => {
+    const { maxDevices } = req.body;
+    const user = await User.findById(req.params.id);
+    
+    if (!user) {
+      req.flash('error', 'Utilisateur non trouvé');
+      return res.redirect('/admin/users');
+    }
+    
+    const newMax = parseInt(maxDevices);
+    if (isNaN(newMax) || newMax < 1 || newMax > 10) {
+      req.flash('error', 'La limite doit être entre 1 et 10');
+      return res.redirect(`/admin/users/${req.params.id}/devices`);
+    }
+    
+    user.maxDevices = newMax;
+    await user.save();
+    
+    req.flash('success', `Limite d'appareils mise à jour: ${user.maxDevices}`);
+    res.redirect(`/admin/users/${req.params.id}/devices`);
+  })
+);
 
 module.exports = router;
 

@@ -271,6 +271,45 @@ const userSchema = new Schema({
   resetPasswordExpires: {
     type: Date,
     default: undefined
+  },
+
+  // ============================================
+  // DEVICE TRACKING (Account Sharing Prevention)
+  // ============================================
+  
+  // Device tracking for account sharing prevention
+  devices: [{
+    deviceId: {
+      type: String,
+      required: true
+    },
+    deviceType: {
+      type: String,
+      enum: ['mobile', 'tablet', 'desktop'],
+      required: true
+    },
+    browser: String,
+    os: String,
+    platform: String,
+    userAgent: String,
+    ipAddress: String,
+    lastLogin: {
+      type: Date,
+      default: Date.now
+    },
+    firstSeen: {
+      type: Date,
+      default: Date.now
+    },
+    isActive: {
+      type: Boolean,
+      default: true
+    }
+  }],
+  
+  maxDevices: {
+    type: Number,
+    default: 2 // Limite par défaut de 2 appareils
   }
 }, {
   timestamps: true
