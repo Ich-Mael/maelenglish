@@ -219,28 +219,39 @@ h6 {
 
 #values-a {
   color: rgba(25, 7, 56, 0.774);
-  font-size: 6rem;
+  font-size: 4rem;
   margin-bottom: 1rem;
   text-shadow: 2px 1px 1px white;
+  line-height: 1.2;
 }
 
 
 #values-c {
-  font-size: 6rem;
+  font-size: 4rem;
   color: rgba(255, 255, 255, 0.697);
   margin-bottom: 1rem;
   text-shadow: 2px 1px 1px rgb(22, 7, 7);
+  line-height: 1.4;
 }
 
 @media (max-width: 992px) {
   #values-c, #values-a {
-    font-size: 4rem;
+    font-size: 3.5rem;
+    line-height: 1.2;
   }
 }
 
 @media (max-width: 768px) {
   #values-c, #values-a {
-    font-size: 2.5rem;
+    font-size: 2rem;
+    line-height: 1.3;
+  }
+}
+
+@media (max-width: 480px) {
+  #values-c, #values-a {
+    font-size: 1.5rem;
+    line-height: 1.4;
   }
 }
 
@@ -2598,12 +2609,7 @@ section {
   }
 }
 
-/* Medium devices such as tablets (768px and up) */
-@media only screen and (max-width: 768px) {
-  html {}
 
-
-}
 
 
 /* Small devices such as large phones (640px and up) */
