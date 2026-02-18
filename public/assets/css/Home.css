@@ -218,11 +218,12 @@ h6 {
 
 
 #values-a {
-  color: rgba(25, 7, 56, 0.774);
-  font-size: 4rem;
+  color: rgba(233, 227, 244, 0.774);
+  font-size: 5rem;
   margin-bottom: 1rem;
-  text-shadow: 2px 1px 1px white;
+  text-shadow: 2px 1px 1px rgb(26, 19, 19);
   line-height: 1.2;
+  font-family: var(--font-heading);
 }
 
 
@@ -1022,10 +1023,10 @@ section {
 
 .values {
   font-weight: 900;
-  font-size: 32px;
+  font-size: 4rem;
   letter-spacing: 1px;
   padding: 0 0 0 0;
-  color: rgb(136, 107, 184);
+  color: rgb(204, 183, 239);
   margin-top: 30px;
   text-align: start;
 }
@@ -1039,6 +1040,7 @@ section {
 .about .content p {
   color: rgba(201, 194, 209, 0.717);
   padding: 1rem 0;
+  font-size: 1.2rem;
 
 }
 
