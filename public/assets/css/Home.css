@@ -236,22 +236,22 @@ h6 {
 }
 
 @media (max-width: 992px) {
-  #values-c, #values-a {
-    font-size: 3.5rem;
+  #values-c, #values-a, .values {
+    font-size: 3rem;
     line-height: 1.2;
   }
 }
 
 @media (max-width: 768px) {
-  #values-c, #values-a {
-    font-size: 2rem;
+  #values-c, #values-a, .values {
+    font-size: 2.2rem;
     line-height: 1.3;
   }
 }
 
 @media (max-width: 480px) {
-  #values-c, #values-a {
-    font-size: 1.5rem;
+  #values-c, #values-a, .values {
+    font-size: 1.8rem;
     line-height: 1.4;
   }
 }

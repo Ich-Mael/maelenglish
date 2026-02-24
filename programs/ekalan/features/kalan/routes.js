@@ -43,7 +43,7 @@ router.get(
 router.get(
   "/admindashboard/kalan/series_and_classes",
   isVerified,
-  checkRoles("admin"),
+  checkRoles(["admin", "super-admin"]),
   catchAsync(async (req, res) => {
     const schoolClassesD = await Class.find({
       serie: "D",
@@ -143,12 +143,12 @@ router.get(
 router.post(
   "/admindashboard/kalan/studentDashboard",
   isVerified,
-  checkRoles("admin"),
+  checkRoles(["admin", "super-admin"]),
   catchAsync(BAC.studentDashboard)
 );
 
 // Student dashboard by admin
-router.get("/admindashboard/kalan/studentDashboard/student/:student_id", isVerified, checkRoles("admin"), catchAsync(BAC.showStudentDashboard));
+router.get("/admindashboard/kalan/studentDashboard/student/:student_id", isVerified, checkRoles(["admin", "super-admin"]), catchAsync(BAC.showStudentDashboard));
 
 // ✅ NOUVEAU: Demander l'accès premium (étudiant)
 router.post(
@@ -190,7 +190,7 @@ router.post(
 router.post(
   "/admindashboard/kalan/class/:class_id/subject/:subject_id/givepremiumaccess",
   isVerified,
-  checkRoles("admin"),
+  checkRoles(["admin", "super-admin"]),
   catchAsync(BAC.givePremiumAccess)
 );
 
@@ -207,7 +207,7 @@ router.put(
 // Create a new subject form
 router.get(
   "/admindashboard/kalan/class/:class_id/subject/new",
-  checkRoles("admin"),
+  checkRoles(["admin", "super-admin"]),
   catchAsync(async (req, res) => {
     const schoolClass = await Class.findById(req.params.class_id);
     res.render("programs/ekalan/Class/subjects/newSubject", {
@@ -221,7 +221,7 @@ router.post(
   "/admindashboard/kalan/class/:class_id/subject",
   isLoggedIn,
   isVerified,
-  checkRoles("admin"),
+  checkRoles(["admin", "super-admin"]),
   catchAsync(BAC.addSubject)
 );
 
@@ -237,7 +237,7 @@ router.get(
 // View all subject by admin
 router.get(
   "/admindashboard/kalan/class/:class_id/subjects",
-  checkRoles("admin"),
+  checkRoles(["admin", "super-admin"]),
   catchAsync(BAC.viewAllSubject)
 );
 
@@ -249,7 +249,7 @@ router.get(
 router.get(
   "/admindashboard/kalan/class/:class_id/subject/:subject_id/chapter/new",
   isVerified,
-  checkRoles("admin"),
+  checkRoles(["admin", "super-admin"]),
   catchAsync(async (req, res) => {
     const schoolClass = await Class.findById(req.params.class_id);
     const subject = await Subject.findById(req.params.subject_id);
@@ -264,7 +264,7 @@ router.get(
 router.post(
   "/admindashboard/kalan/class/:class_id/subject/:subject_id/chapter",
   isVerified,
-  checkRoles("admin"),
+  checkRoles(["admin", "super-admin"]),
   catchAsync(BAC.createChapter)
 );
 
@@ -272,7 +272,7 @@ router.post(
 router.get(
   "/admindashboard/kalan/class/:class_id/subject/:subject_id/chapters",
   isVerified,
-  checkRoles("admin"),
+  checkRoles(["admin", "super-admin"]),
   catchAsync(BAC.viewAllChapters)
 );
 
@@ -280,7 +280,7 @@ router.get(
 router.get(
   "/admindashboard/kalan/class/:class_id/subject/:subject_id/chapter/:chapter_id/edit",
   isVerified,
-  checkRoles("admin"),
+  checkRoles(["admin", "super-admin"]),
   catchAsync(BAC.editChapter)
 );
 
@@ -288,7 +288,7 @@ router.get(
 router.put(
   "/admindashboard/kalan/class/:class_id/subject/:subject_id/chapter/:chapter_id",
   isVerified,
-  checkRoles("admin"),
+  checkRoles(["admin", "super-admin"]),
   catchAsync(BAC.updateChapter)
 );
 
@@ -301,7 +301,7 @@ router.get(
   catchAsync(BAC.viewChapter)
 );
 
-//Starter exercises (Free exercises)
+// Starter exercises (Free exercises)
 router.get(
   "/class/:class_id/subject/:subject_id/chapter/:chapter_id/SE",
   isLoggedIn,

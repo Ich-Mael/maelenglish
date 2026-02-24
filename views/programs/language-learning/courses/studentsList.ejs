@@ -536,51 +536,6 @@
   </div>
 </div>
 
-<script>
-  // Simple Client-Side Search
-  document.getElementById('studentSearch').addEventListener('keyup', function() {
-    const searchValue = this.value.toLowerCase();
-    const rows = document.querySelectorAll('#studentsTableBody tr');
-
-    rows.forEach(row => {
-      const text = row.innerText.toLowerCase();
-      if (text.includes(searchValue)) {
-        row.style.display = '';
-      } else {
-        row.style.display = 'none';
-      }
-      });
-    });
-
-  // Access Modal Handling
-  const editAccessModal = document.getElementById('editAccessModal');
-  if (editAccessModal) {
-    editAccessModal.addEventListener('show.bs.modal', event => {
-      // Button that triggered the modal
-      const button = event.relatedTarget;
-      
-      // Extract info from data-bs-* attributes
-      const studentId = button.getAttribute('data-student-id');
-      const studentName = button.getAttribute('data-student-name');
-      const startDate = button.getAttribute('data-start-date');
-      const endDate = button.getAttribute('data-end-date');
-      
-      // Update the modal's content.
-      const modalTitle = editAccessModal.querySelector('.modal-title');
-      const modalBodyInputStart = editAccessModal.querySelector('#startDate');
-      const modalBodyInputEnd = editAccessModal.querySelector('#endDate');
-      const form = editAccessModal.querySelector('#editAccessForm');
-      
-      modalTitle.textContent = `Modifier l'accès pour ${studentName}`;
-      modalBodyInputStart.value = startDate;
-      modalBodyInputEnd.value = endDate;
-      
-      // Update form action
-      form.action = `/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/students/${studentId}/access`;
-    });
-  }
-</script>
-
 <!-- Edit Access Modal -->
 <div class="modal fade" id="editAccessModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -623,6 +578,53 @@
 </div>
 
 <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Simple Client-Side Search
+    const studentSearch = document.getElementById('studentSearch');
+    if (studentSearch) {
+      studentSearch.addEventListener('keyup', function() {
+        const searchValue = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#studentsTableBody tr');
+
+        rows.forEach(row => {
+          const text = row.innerText.toLowerCase();
+          if (text.includes(searchValue)) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      });
+    }
+
+    // Access Modal Handling
+    const editAccessModal = document.getElementById('editAccessModal');
+    if (editAccessModal) {
+      editAccessModal.addEventListener('show.bs.modal', event => {
+        // Button that triggered the modal
+        const button = event.relatedTarget;
+        
+        // Extract info from data-bs-* attributes
+        const studentId = button.getAttribute('data-student-id');
+        const studentName = button.getAttribute('data-student-name');
+        const startDate = button.getAttribute('data-start-date');
+        const endDate = button.getAttribute('data-end-date');
+        
+        // Update the modal's content.
+        const modalTitle = editAccessModal.querySelector('.modal-title');
+        const modalBodyInputStart = editAccessModal.querySelector('#startDate');
+        const modalBodyInputEnd = editAccessModal.querySelector('#endDate');
+        const form = editAccessModal.querySelector('#editAccessForm');
+        
+        modalTitle.textContent = `Modifier l'accès pour ${studentName}`;
+        modalBodyInputStart.value = startDate;
+        modalBodyInputEnd.value = endDate;
+        
+        // Update form action
+        form.action = `/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/students/${studentId}/access`;
+      });
+    }
+
     // Quick Extension Buttons Logic
     document.querySelectorAll('.extend-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -647,4 +649,5 @@
             endDateInput.value = newDateISO;
         });
     });
+  });
 </script>

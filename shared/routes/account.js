@@ -647,7 +647,7 @@ router.get(
   "/admin/users/:id/devices",
   isLoggedIn,
   isVerified,
-  checkRoles("admin", "super-admin"),
+  checkRoles(["admin", "super-admin"]),
   catchAsync(async (req, res) => {
     const user = await User.findById(req.params.id);
     if (!user) {
@@ -670,7 +670,7 @@ router.post(
   "/admin/users/:id/devices/:deviceId/remove",
   isLoggedIn,
   isVerified,
-  checkRoles("admin", "super-admin"),
+  checkRoles(["admin", "super-admin"]),
   catchAsync(async (req, res) => {
     const user = await User.findById(req.params.id);
     if (!user) {
@@ -694,7 +694,7 @@ router.post(
   "/admin/users/:id/max-devices",
   isLoggedIn,
   isVerified,
-  checkRoles("admin", "super-admin"),
+  checkRoles(["admin", "super-admin"]),
   catchAsync(async (req, res) => {
     const { maxDevices } = req.body;
     const user = await User.findById(req.params.id);

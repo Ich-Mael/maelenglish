@@ -26,15 +26,15 @@ router.get('/', Courses.allCourses);
 router.get('/my-courses', isLoggedIn, Courses.myCourses);
 
 // All Courses route for admin
-router.get('/admindashboard', isLoggedIn, isVerified, checkRoles("admin"), Courses.allCoursesAdmin);
+router.get('/admindashboard', isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), Courses.allCoursesAdmin);
 
 // Form for a new course
-router.get('/admindashboard/new', isLoggedIn, isVerified, checkRoles("admin"), (req, res) => {
+router.get('/admindashboard/new', isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), (req, res) => {
     res.render('programs/language-learning/courses/new');
 });
 
 // Creating a new course
-router.post('/admindashboard', isLoggedIn, isVerified, checkRoles("admin"), Courses.createCourse);
+router.post('/admindashboard', isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), Courses.createCourse);
 
 // Show course content
 router.get('/enroll-contact', (req, res) => {
@@ -45,62 +45,63 @@ router.get('/enroll-contact', (req, res) => {
 router.get('/:course_id', isLoggedIn, checkCourseAccess, Courses.showCourse);
 
 // Edit course
-router.get("/admindashboard/:course_id/edit", isLoggedIn, isVerified, checkRoles("admin"), Courses.editCourse);
+router.get("/admindashboard/:course_id/edit", isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), Courses.editCourse);
 
 // Update Course info
-router.put("/admindashboard/:course_id", isLoggedIn, isVerified, checkRoles("admin"), Courses.updateCourse);
+router.put("/admindashboard/:course_id", isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), Courses.updateCourse);
 
 // Delete course
-router.delete("/admindashboard/:course_id", isLoggedIn, isVerified, checkRoles("admin"), Courses.deleteCourse);
+router.get("/admindashboard/:course_id/delete", isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), Courses.deleteCourse); // Fixed: Added delete route if missing or modified
+router.delete("/admindashboard/:course_id", isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), Courses.deleteCourse);
 
 // Show students enrolled in a course
-router.get("/admindashboard/:course_id/showStudents", isLoggedIn, isVerified, checkRoles("admin"), Courses.showStudents);
+router.get("/admindashboard/:course_id/showStudents", isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), Courses.showStudents);
 
 // Form to add a student to a course
-router.get('/admindashboard/:course_id/addStudent', isLoggedIn, isVerified, checkRoles("admin"), Courses.showAddStudentForm);
+router.get('/admindashboard/:course_id/addStudent', isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), Courses.showAddStudentForm);
 
 // Add student to a course
-router.post('/admindashboard/:course_id/addStudent', isLoggedIn, isVerified, checkRoles("admin"), Courses.addStudentToCourse);
+router.post('/admindashboard/:course_id/addStudent', isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), Courses.addStudentToCourse);
 
 // Update student access dates
-router.post('/admindashboard/:course_id/students/:student_id/access', isLoggedIn, isVerified, checkRoles("admin"), Courses.updateStudentAccess);
+router.post('/admindashboard/:course_id/students/:student_id/access', isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), Courses.updateStudentAccess);
 
 // API: Search users for student enrollment
-router.get('/admindashboard/:course_id/search-users', isLoggedIn, isVerified, checkRoles("admin"), Courses.searchUsers);
+router.get('/admindashboard/:course_id/search-users', isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), Courses.searchUsers);
 
 /*
  ************************* MODULE ROUTES *******************************************
  */
 
 // Show all modules of a course
-router.get('/admindashboard/:course_id/modules', isLoggedIn, isVerified, checkRoles('admin'), CourseModules.showCourseModules);
+router.get('/admindashboard/:course_id/modules', isLoggedIn, isVerified, checkRoles(['admin', 'super-admin']), CourseModules.showCourseModules);
 
 // Creating a new module
-router.post('/admindashboard/:course_id/module', isLoggedIn, isVerified, checkRoles("admin"), CourseModules.createModule);
+router.post('/admindashboard/:course_id/module', isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), CourseModules.createModule);
 
 // Show module content
 router.get('/:course_id/modules/:module_id', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, CourseModules.showModule);
 
 // Edit module
-router.get("/admindashboard/:course_id/modules/:module_id/edit", isLoggedIn, isVerified, checkRoles("admin"), CourseModules.editModule);
+router.get("/admindashboard/:course_id/modules/:module_id/edit", isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), CourseModules.editModule);
 
 // Update module
-router.put("/admindashboard/:course_id/modules/:module_id", isLoggedIn, isVerified, checkRoles("admin"), CourseModules.updateModule);
+router.put("/admindashboard/:course_id/modules/:module_id", isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), CourseModules.updateModule);
 
 // Delete module
-router.delete("/admindashboard/:course_id/modules/:module_id", isLoggedIn, isVerified, checkRoles("admin"), CourseModules.deleteModule);
+router.delete("/admindashboard/:course_id/modules/:module_id", isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), CourseModules.deleteModule);
 
 /*
  ************************* PRACTICE EXERCISE ROUTES *******************************************
  */
 
-router.post('/admindashboard/:course_id/modules/:courseModule_id/practice', isLoggedIn, isVerified, checkRoles("admin"), CourseModules.createPractice);
+router.post('/admindashboard/:course_id/modules/:courseModule_id/practice', isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), CourseModules.createPractice);
 
 /*
  ************************* VIDEO LESSON ROUTES *******************************************
  */
 
-router.post('/admindashboard/:course_id/modules/:courseModule_id/engcoursevideo', isLoggedIn, isVerified, checkRoles("admin"), CourseModules.addEngVideoLesson);
+router.post('/admindashboard/:course_id/modules/:courseModule_id/engcoursevideo', isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), CourseModules.addEngVideoLesson);
 
 /*
  ************************* EVALUATION ROUTES *******************************************
@@ -114,10 +115,10 @@ router.get('/:course_id/evaluations/:evaluation', isLoggedIn, isVerified, checkC
  ************************* COACH RESOURCES ROUTES *******************************************
  */
 // Add coach resource to a module
-router.post('/admindashboard/:course_id/modules/:courseModule_id/coach-resource', isLoggedIn, isVerified, checkRoles("admin"), CourseModules.addCoachResource);
+router.post('/admindashboard/:course_id/modules/:courseModule_id/coach-resource', isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), CourseModules.addCoachResource);
 
 // Delete coach resource from a module
-router.delete('/admindashboard/:course_id/modules/:courseModule_id/coach-resource/:resource_id', isLoggedIn, isVerified, checkRoles("admin"), CourseModules.deleteCoachResource);
+router.delete('/admindashboard/:course_id/modules/:courseModule_id/coach-resource/:resource_id', isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), CourseModules.deleteCoachResource);
 
 module.exports = router;
 
