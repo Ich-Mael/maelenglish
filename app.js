@@ -1,5 +1,5 @@
 if (process.env.NODE_ENV !== "production") {
-     require("dotenv").config();
+    require("dotenv").config();
 }
 
 const express = require("express");
@@ -12,6 +12,7 @@ const MongoStore = require("connect-mongo");
 const flash = require("connect-flash-plus");
 const passport = require("passport");
 const useragent = require("express-useragent");
+const cookieParser = require("cookie-parser");
 
 // Import User model for Passport authentication
 const User = require("./shared/models/user");
@@ -32,7 +33,7 @@ mongoose.connect(dbUrl)
     .catch(err => {
         console.log("Connection error:");
         console.log(err);
-});
+    });
 
 const app = express();
 
@@ -47,6 +48,7 @@ app.set('trust proxy', true);
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(cookieParser(process.env.SECRET || 'thisshouldbeabettersecret!')); // Parse cookies needed for device tracking
 app.use(useragent.express()); // Parse User-Agent for device tracking
 app.use(methodOverride("_method"));
 

@@ -101,7 +101,7 @@ const userSchema = new Schema({
   // ============================================
   // KALAN PROGRAM FIELDS (Primary to High School)
   // ============================================
-  
+
   // High School Student (Kalan courses feature)
   isHighSchoolStudent: {
     type: Boolean,
@@ -256,7 +256,7 @@ const userSchema = new Schema({
     type: String,
     default: undefined
   },
-  
+
   activationExpires: {
     type: Date,
     default: undefined
@@ -276,7 +276,7 @@ const userSchema = new Schema({
   // ============================================
   // DEVICE TRACKING (Account Sharing Prevention)
   // ============================================
-  
+
   // Device tracking for account sharing prevention
   devices: [{
     deviceId: {
@@ -287,6 +287,9 @@ const userSchema = new Schema({
       type: String,
       enum: ['mobile', 'tablet', 'desktop'],
       required: true
+    },
+    deviceModel: {
+      type: String
     },
     browser: String,
     os: String,
@@ -306,7 +309,7 @@ const userSchema = new Schema({
       default: true
     }
   }],
-  
+
   maxDevices: {
     type: Number,
     default: 2 // Limite par défaut de 2 appareils

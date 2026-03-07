@@ -360,6 +360,7 @@
           <thead>
             <tr>
               <th>Type</th>
+              <th>Modèle</th>
               <th>Navigateur</th>
               <th>Système d'exploitation</th>
               <th>Adresse IP</th>
@@ -378,6 +379,7 @@
                     <%= device.deviceType %>
                   </span>
                 </td>
+                <td><%= device.deviceModel || 'Unknown' %></td>
                 <td><%= device.browser || 'Unknown' %></td>
                 <td><%= device.os || 'Unknown' %></td>
                 <td><%= device.ipAddress || 'N/A' %></td>
