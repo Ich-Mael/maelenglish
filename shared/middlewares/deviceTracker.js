@@ -91,11 +91,9 @@ async function trackDevice(req, res, next) {
       const activeDevices = user.devices.filter(d => d.isActive).length;
 
       if (activeDevices >= user.maxDevices) {
-        // Bloquer la connexion ou demander de retirer un appareil
-        req.flash('error', `Limite d'appareils atteinte (${user.maxDevices}). Veuillez vous déconnecter d'un autre appareil ou contacter l'administrateur.`);
         req.logout((err) => {
           if (err) return next(err);
-          return res.redirect('/login?deviceLimit=true');
+          return res.redirect('/device-limit-reached');
         });
         return;
       }

@@ -193,6 +193,14 @@ router.post(
 );
 
 /**
+ * GET /device-limit-reached
+ * Affiche la page d'erreur de limite d'appareils atteinte
+ */
+router.get("/device-limit-reached", (req, res) => {
+  res.render("user/device-limit");
+});
+
+/**
  * GET /logout
  * Déconnecte l'utilisateur et désactive l'appareil
  */
