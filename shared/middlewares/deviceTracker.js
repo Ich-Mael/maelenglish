@@ -14,7 +14,7 @@ const { v4: uuidv4 } = require('uuid');
 // Fonction pour récupérer ou générer un ID unique d'appareil via les cookies
 function getOrGenerateDeviceId(req, res) {
   // 1. Check if the browser already has a device cookie
-  let deviceId = req.cookies.device_id;
+  let deviceId = req.cookies?.device_id;
 
   if (!deviceId) {
     // 2. If no cookie exists, generate a new secure UUID
@@ -54,30 +54,33 @@ async function trackDevice(req, res, next) {
       await user.save();
     } else {
       // Nouvel appareil détecté
-      // Extraire les infos avec ua-parser-js (qui retourne un objet sous device: {vendor, model, type})
-      const isMobile = req.useragent.device.type === 'mobile';
-      const isTablet = req.useragent.device.type === 'tablet';
-      // Si ce n'est ni mobile ni tablette, on assume desktop (ua-parser ne renvoie pas 'desktop' explicitement, c'est undéfini pour les PC classiques)
-      const isDesktop = !isMobile && !isTablet && !req.useragent.device.type;
-      const deviceModel = req.useragent.device.model || 'Unknown';
-      const deviceVendor = req.useragent.device.vendor || 'Unknown';
-      const browserInfo = req.useragent.browser.name
-        ? `${req.useragent.browser.name} ${req.useragent.browser.version || ''}`.trim()
+      // Extraire les infos avec ua-parser-js localement car req.useragent est dominé par express-useragent
+      const parser = new UAParser(req.headers['user-agent'] || '');
+      const uaResult = parser.getResult();
+
+      const isMobile = uaResult.device.type === 'mobile';
+      const isTablet = uaResult.device.type === 'tablet';
+      // Si ce n'est ni mobile ni tablette, on assume desktop
+      const isDesktop = !isMobile && !isTablet && !uaResult.device.type;
+      const deviceModel = uaResult.device.model || 'Unknown';
+      const deviceVendor = uaResult.device.vendor || 'Unknown';
+      const browserInfo = uaResult.browser.name
+        ? `${uaResult.browser.name} ${uaResult.browser.version || ''}`.trim()
         : 'Unknown';
 
-      const osInfo = req.useragent.os.name
-        ? `${req.useragent.os.name} ${req.useragent.os.version || ''}`.trim()
+      const osInfo = uaResult.os.name
+        ? `${uaResult.os.name} ${uaResult.os.version || ''}`.trim()
         : 'Unknown';
 
       const deviceInfo = {
         deviceId: deviceId,
         deviceType: isMobile ? 'mobile' :
           isTablet ? 'tablet' : 'desktop',
-        deviceModel: `${deviceVendor} ${deviceModel}`.trim(), // e.g: "Apple iPhone", "Samsung SM-G998B"
+        deviceModel: `${deviceVendor} ${deviceModel}`.trim(),
         browser: browserInfo,
         os: osInfo,
-        platform: req.useragent.os.name || 'Unknown',  // Fallback map pour compatibilité
-        userAgent: req.useragent.ua || req.headers['user-agent'] || '',
+        platform: uaResult.os.name || 'Unknown',
+        userAgent: uaResult.ua || req.headers['user-agent'] || '',
         ipAddress: req.ip || req.connection.remoteAddress || '',
         lastLogin: new Date(),
         firstSeen: new Date(),
