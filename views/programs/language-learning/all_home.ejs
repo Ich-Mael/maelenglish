@@ -1,256 +1,271 @@
 <% layout('layouts/main') %>
 
-  <style>
-    :root {
-      --primary-color: #5d06ba;
-      --primary-light: #f3e5f5; /* Light purple for backgrounds */
-      --primary-dark: #2d0370;
-      --accent-color: #5d06ba; /* Unified accent */
-      --warm-bg: #ffffff; /* Clean white background */
-      --text-dark: #1a1a1a;
-      --text-muted: #666;
-      --radius-xl: 32px;
-      font-family: 'Outfit', sans-serif;
-    }
-    
-    body {
-      background-color: var(--warm-bg);
-      color: var(--text-dark);
-    }
-  
-    /* 1. Hero V3 */
+<style>
+  :root {
+    --primary-color: #5d06ba;
+    --primary-light: #f3e5f5; /* Light purple for backgrounds */
+    --primary-dark: #2d0370;
+    --accent-color: #5d06ba; /* Unified accent */
+    --warm-bg: #ffffff; /* Clean white background */
+    --text-dark: #1a1a1a;
+    --text-muted: #666;
+    --radius-xl: 32px;
+    font-family: "Outfit", sans-serif;
+  }
+
+  body {
+    background-color: var(--warm-bg);
+    color: var(--text-dark);
+  }
+
+  /* 1. Hero V3 */
+  .hero-v3 {
+    padding: 140px 0 100px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-v3-bg {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60%;
+    height: 100%;
+    background:
+      linear-gradient(90deg, var(--warm-bg) 0%, rgba(255, 255, 255, 0) 100%),
+      url("/assets/img/english4all-hero-v3.png");
+    background-size: cover;
+    background-position: center;
+    opacity: 0.15; /* Subtle background texture */
+    z-index: 0;
+    mask-image: linear-gradient(to right, transparent, black);
+    -webkit-mask-image: linear-gradient(to right, transparent, black);
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .badge-premium {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    border: 1px solid rgba(93, 6, 186, 0.2);
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .hero-title-v3 {
+    font-size: 4.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    color: var(--text-dark);
+  }
+
+  .hero-title-v3 span {
+    color: var(--primary-color);
+  }
+
+  .hero-desc {
+    font-size: 1.4rem;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin-bottom: 40px;
+    line-height: 1.6;
+  }
+
+  .hero-image-frame {
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-img-main {
+    border-radius: 40px 0 40px 40px;
+    box-shadow: -20px 20px 0 var(--primary-color);
+    transition: transform 0.4s ease;
+  }
+
+  .hero-img-main:hover {
+    transform: translate(5px, -5px);
+    box-shadow: -15px 15px 0 var(--primary-dark);
+  }
+
+  /* 2. Program Cards V3 */
+  .programs-section {
+    padding: 80px 0;
+  }
+
+  .program-card-v3 {
+    background: white;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+    transition: all 0.4s ease;
+    height: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .program-card-v3:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 60px rgba(93, 6, 186, 0.15);
+  }
+
+  .card-img-wrapper {
+    height: 280px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+
+  .program-card-v3:hover .card-img-wrapper img {
+    transform: scale(1.05);
+  }
+
+  .card-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 24px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    color: white;
+  }
+
+  .program-tag {
+    background: var(--primary-color);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+
+  .program-content {
+    padding: 32px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .program-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 16px;
+    color: var(--text-dark);
+  }
+
+  .program-text {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    flex: 1;
+  }
+
+  .btn-program {
+    width: 100%;
+    padding: 16px;
+    border-radius: 16px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .btn-program.primary {
+    background: var(--primary-color);
+    color: white;
+  }
+
+  .btn-program.primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+  }
+
+  .btn-program.outline {
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+  }
+
+  .btn-program.outline:hover {
+    background: var(--primary-color);
+    color: white;
+  }
+
+  /* 3. Value Props Grid */
+  .values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
+    margin-top: 60px;
+  }
+
+  .value-card {
+    background: white;
+    padding: 32px;
+    border-radius: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .value-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--primary-light);
+    color: var(--primary-color);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 991px) {
     .hero-v3 {
-      padding: 140px 0 100px;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .hero-v3-bg {
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 60%;
-      height: 100%;
-      background: linear-gradient(90deg, var(--warm-bg) 0%, rgba(255,255,255,0) 100%), url('/assets/img/english4all-hero-v3.png');
-      background-size: cover;
-      background-position: center;
-      opacity: 0.15; /* Subtle background texture */
-      z-index: 0;
-      mask-image: linear-gradient(to right, transparent, black);
-      -webkit-mask-image: linear-gradient(to right, transparent, black);
-    }
-  
-    .hero-content {
-      position: relative;
-      z-index: 2;
-    }
-  
-    .badge-premium {
-      background: var(--primary-light);
-      color: var(--primary-dark);
-      border: 1px solid rgba(93, 6, 186, 0.2);
-      padding: 8px 20px;
-      border-radius: 50px;
-      font-weight: 700;
-      text-transform: uppercase;
-      font-size: 0.85rem;
-      letter-spacing: 1px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 24px;
-    }
-  
-    .hero-title-v3 {
-      font-size: 4.5rem;
-      font-weight: 800;
-      line-height: 1.1;
-      margin-bottom: 24px;
-      color: var(--text-dark);
-    }
-    
-    .hero-title-v3 span {
-      color: var(--primary-color);
-    }
-  
-    .hero-desc {
-      font-size: 1.4rem;
-      color: var(--text-muted);
-      max-width: 600px;
-      margin-bottom: 40px;
-      line-height: 1.6;
-    }
-  
-    .hero-image-frame {
-      position: relative;
-      z-index: 2;
-    }
-    
-    .hero-img-main {
-      border-radius: 40px 0 40px 40px;
-      box-shadow: -20px 20px 0 var(--primary-color);
-      transition: transform 0.4s ease;
-    }
-    
-    .hero-img-main:hover {
-      transform: translate(5px, -5px);
-      box-shadow: -15px 15px 0 var(--primary-dark);
-    }
-  
-    /* 2. Program Cards V3 */
-    .programs-section {
-      padding: 80px 0;
-    }
-  
-    .program-card-v3 {
-      background: white;
-      border-radius: var(--radius-xl);
-      overflow: hidden;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.06);
-      transition: all 0.4s ease;
-      height: 100%;
-      border: 1px solid rgba(0,0,0,0.03);
-      display: flex;
-      flex-direction: column;
-    }
-  
-    .program-card-v3:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 20px 60px rgba(93, 6, 186, 0.15);
-    }
-  
-    .card-img-wrapper {
-      height: 280px;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .card-img-wrapper img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.6s ease;
-    }
-    
-    .program-card-v3:hover .card-img-wrapper img {
-      transform: scale(1.05);
-    }
-  
-    .card-overlay {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      padding: 24px;
-      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-      color: white;
-    }
-    
-    .program-tag {
-      background: var(--primary-color);
-      color: white;
-      padding: 4px 12px;
-      border-radius: 4px;
-      font-weight: 700;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      display: inline-block;
-      margin-bottom: 8px;
-    }
-  
-    .program-content {
-      padding: 32px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-  
-    .program-title {
-      font-size: 2rem;
-      font-weight: 800;
-      margin-bottom: 16px;
-      color: var(--text-dark);
-    }
-  
-    .program-text {
-      color: var(--text-muted);
-      font-size: 1.1rem;
-      line-height: 1.6;
-      margin-bottom: 24px;
-      flex: 1;
-    }
-  
-    .btn-program {
-      width: 100%;
-      padding: 16px;
-      border-radius: 16px;
-      font-weight: 700;
+      padding: 100px 0 60px;
       text-align: center;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
     }
-  
-    .btn-program.primary {
-      background: var(--primary-color);
-      color: white;
+    .hero-title-v3 {
+      font-size: 3rem;
     }
-    
-    .btn-program.primary:hover {
-      background: var(--primary-dark);
-      transform: translateY(-2px);
+    .hero-desc {
+      margin: 0 auto 40px;
     }
-    
-    .btn-program.outline {
-      background: transparent;
-      border: 2px solid var(--primary-color);
-      color: var(--primary-color);
+    .hero-v3-bg {
+      width: 100%;
+      opacity: 0.1;
     }
-  
-    .btn-program.outline:hover {
-      background: var(--primary-color);
-      color: white;
-    }
-  
-    /* 3. Value Props Grid */
-    .values-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 30px;
-      margin-top: 60px;
-    }
-    
-    .value-card {
-      background: white;
-      padding: 32px;
-      border-radius: 20px;
-      border: 1px solid rgba(0,0,0,0.05);
-    }
-    
-    .value-icon {
-      width: 60px;
-      height: 60px;
-      background: var(--primary-light);
-      color: var(--primary-color);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
+    .hero-img-main {
+      margin-top: 40px;
       margin-bottom: 20px;
     }
-    
-    @media(max-width: 991px) {
-      .hero-v3 { padding: 100px 0 60px; text-align: center; }
-      .hero-title-v3 { font-size: 3rem; }
-      .hero-desc { margin: 0 auto 40px; }
-      .hero-v3-bg { width: 100%; opacity: 0.1; }
-      .hero-img-main { margin-top: 40px; margin-bottom: 20px; }
-    }
-  </style>
+  }
+</style>
 
 <!-- 1. Hero Section -->
 <section class="hero-v3">
@@ -259,75 +274,181 @@
     <div class="row align-items-center">
       <div class="col-lg-7 hero-content">
         <h1 class="hero-title-v3">
-          Maîtrisez l'Anglais, <br>
-          <span style="background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Ouvrez Vos Horizons.</span>
+          Maîtrisez l'Anglais, <br />
+          <span
+            style="
+              background: linear-gradient(
+                135deg,
+                var(--primary-color),
+                var(--primary-dark)
+              );
+              background-clip: text;
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+            "
+            >Ouvrez Vos Horizons.</span
+          >
         </h1>
         <p class="hero-desc">
-          Maîtrisez l'anglais avec aisance. Que ce soit pour le voyage, les études ou la carrière, notre méthode immersive est conçue pour réaliser toutes vos ambitions.
+          Maîtrisez l'anglais avec aisance. Que ce soit pour le voyage, les
+          études ou la carrière, notre méthode immersive est conçue pour
+          réaliser toutes vos ambitions.
         </p>
         <div class="d-flex flex-wrap gap-3">
-          <a href="#programs" class="btn btn-lg rounded-pill px-4 py-3 fw-bold text-white shadow-lg d-inline-flex align-items-center gap-2" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); border: none;">
+          <a
+            href="#programs"
+            class="btn btn-lg rounded-pill px-4 py-3 fw-bold text-white shadow-lg d-inline-flex align-items-center gap-2"
+            style="
+              background: linear-gradient(
+                135deg,
+                var(--primary-color) 0%,
+                var(--primary-dark) 100%
+              );
+              border: none;
+            "
+          >
             Choisir votre Parcours <i class="bi bi-arrow-down-circle"></i>
           </a>
-          <a href="#testimonials" class="btn btn-lg rounded-pill px-4 py-3 fw-bold shadow-sm d-inline-flex align-items-center gap-2" style="background: white; color: var(--text-dark); border: 1px solid rgba(0,0,0,0.1);">
-            <i class="bi bi-play-circle-fill" style="color: var(--primary-color);"></i> Voir les succès
+          <a
+            href="#testimonials"
+            class="btn btn-lg rounded-pill px-4 py-3 fw-bold shadow-sm d-inline-flex align-items-center gap-2"
+            style="
+              background: white;
+              color: var(--text-dark);
+              border: 1px solid rgba(0, 0, 0, 0.1);
+            "
+          >
+            <i
+              class="bi bi-play-circle-fill"
+              style="color: var(--primary-color)"
+            ></i>
+            Voir les succès
           </a>
         </div>
-        
+
         <div class="mt-5 d-flex align-items-center gap-4">
-           <div class="d-flex align-items-center gap-2">
-             <div class="d-flex">
-               <span class="rounded-circle bg-light border border-white position-relative" style="width: 40px; height: 40px; z-index: 3;"></span>
-               <span class="rounded-circle bg-secondary border border-white position-relative" style="width: 40px; height: 40px; margin-left: -10px; z-index: 2;"></span>
-               <span class="rounded-circle bg-dark border border-white position-relative" style="width: 40px; height: 40px; margin-left: -10px; z-index: 1;"></span>
-             </div>
-             <div class="small fw-bold text-muted">
-               Rejoint par +500 <br>apprenants
-             </div>
-           </div>
+          <div class="d-flex align-items-center gap-2">
+            <div class="d-flex">
+              <span
+                class="rounded-circle bg-light border border-white position-relative"
+                style="width: 40px; height: 40px; z-index: 3"
+              ></span>
+              <span
+                class="rounded-circle bg-secondary border border-white position-relative"
+                style="
+                  width: 40px;
+                  height: 40px;
+                  margin-left: -10px;
+                  z-index: 2;
+                "
+              ></span>
+              <span
+                class="rounded-circle bg-dark border border-white position-relative"
+                style="
+                  width: 40px;
+                  height: 40px;
+                  margin-left: -10px;
+                  z-index: 1;
+                "
+              ></span>
+            </div>
+            <div class="small fw-bold text-muted">
+              Rejoint par +500 <br />apprenants
+            </div>
+          </div>
         </div>
       </div>
-      
+
       <div class="col-lg-5 position-relative">
         <div class="hero-image-frame p-3 position-relative z-2">
-          <img src="/assets/img/english4all-hero-v4.png" class="img-fluid hero-img-main" alt="Engaging Adult Conversation">
-          
+          <img
+            src="/assets/img/english4all-hero-v4.png"
+            class="img-fluid hero-img-main"
+            alt="Engaging Adult Conversation"
+          />
+
           <!-- Floating Badge 1 -->
-          <div class="position-absolute bg-white rounded-4 shadow-lg p-3 d-flex align-items-center gap-3" style="top: 10%; left: -20px; animation: float 3s ease-in-out infinite;">
-            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; color: var(--primary-color);">
+          <div
+            class="position-absolute bg-white rounded-4 shadow-lg p-3 d-flex align-items-center gap-3"
+            style="
+              top: 10%;
+              left: -20px;
+              animation: float 3s ease-in-out infinite;
+            "
+          >
+            <div
+              class="rounded-circle bg-light d-flex align-items-center justify-content-center"
+              style="width: 48px; height: 48px; color: var(--primary-color)"
+            >
               <i class="bi bi-chat-heart-fill fs-4"></i>
             </div>
             <div>
               <div class="fw-bold small">Confiance</div>
-              <div class="text-muted" style="font-size: 0.7rem;">Communication Fluide</div>
+              <div class="text-muted" style="font-size: 0.7rem">
+                Communication Fluide
+              </div>
             </div>
           </div>
-          
+
           <!-- Floating Badge 2 -->
-          <div class="position-absolute bg-white rounded-4 shadow-lg p-3 d-flex align-items-center gap-3" style="bottom: 10%; right: -20px; animation: float 4s ease-in-out infinite reverse;">
-             <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; color: var(--primary-color);">
+          <div
+            class="position-absolute bg-white rounded-4 shadow-lg p-3 d-flex align-items-center gap-3"
+            style="
+              bottom: 10%;
+              right: -20px;
+              animation: float 4s ease-in-out infinite reverse;
+            "
+          >
+            <div
+              class="rounded-circle bg-light d-flex align-items-center justify-content-center"
+              style="width: 48px; height: 48px; color: var(--primary-color)"
+            >
               <i class="bi bi-globe-americas fs-4"></i>
             </div>
             <div>
               <div class="fw-bold small">Opportunités</div>
-              <div class="text-muted" style="font-size: 0.7rem;">Carrière Globale</div>
+              <div class="text-muted" style="font-size: 0.7rem">
+                Carrière Globale
+              </div>
             </div>
           </div>
         </div>
-        
+
         <!-- Decorative Blob -->
-        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="position-absolute" style="top: -20%; right: -20%; width: 140%; height: 140%; z-index: 1; opacity: 0.1; fill: var(--primary-color);">
-          <path transform="translate(100 100)" d="M44.7,-76.4C58.9,-69.2,71.8,-59.1,81.6,-46.6C91.4,-34.1,98.2,-19.2,95.8,-4.2C93.4,10.8,81.8,25.9,71,38.8C60.2,51.7,50.2,62.4,38.4,70.3C26.6,78.2,13.1,83.3,0.3,82.8C-12.5,82.3,-24.9,76.2,-37.2,68.9C-49.5,61.6,-61.6,53.1,-70.8,41.9C-80,30.7,-86.2,16.8,-86.3,2.8C-86.4,-11.2,-80.4,-25.3,-71.4,-37.4C-62.4,-49.5,-50.4,-59.6,-37.7,-67.5C-25,-75.4,-11.6,-81.1,1.9,-84.4C15.4,-87.7,30.5,-73.6,44.7,-76.4Z" />
+        <svg
+          viewBox="0 0 200 200"
+          xmlns="http://www.w3.org/2000/svg"
+          class="position-absolute"
+          style="
+            top: -20%;
+            right: -20%;
+            width: 140%;
+            height: 140%;
+            z-index: 1;
+            opacity: 0.1;
+            fill: var(--primary-color);
+          "
+        >
+          <path
+            transform="translate(100 100)"
+            d="M44.7,-76.4C58.9,-69.2,71.8,-59.1,81.6,-46.6C91.4,-34.1,98.2,-19.2,95.8,-4.2C93.4,10.8,81.8,25.9,71,38.8C60.2,51.7,50.2,62.4,38.4,70.3C26.6,78.2,13.1,83.3,0.3,82.8C-12.5,82.3,-24.9,76.2,-37.2,68.9C-49.5,61.6,-61.6,53.1,-70.8,41.9C-80,30.7,-86.2,16.8,-86.3,2.8C-86.4,-11.2,-80.4,-25.3,-71.4,-37.4C-62.4,-49.5,-50.4,-59.6,-37.7,-67.5C-25,-75.4,-11.6,-81.1,1.9,-84.4C15.4,-87.7,30.5,-73.6,44.7,-76.4Z"
+          />
         </svg>
       </div>
     </div>
   </div>
-  
+
   <style>
     @keyframes float {
-      0% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-      100% { transform: translateY(0px); }
+      0% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+      100% {
+        transform: translateY(0px);
+      }
     }
   </style>
 </section>
@@ -337,16 +458,20 @@
   <div class="container">
     <div class="text-center mb-5">
       <h2 class="fw-bold display-6 mb-3">Deux Voies vers l'Excellence</h2>
-      <p class="text-muted fs-5">Choisissez l'environnement qui correspond à votre style d'apprentissage.</p>
+      <p class="text-muted fs-5">
+        Choisissez l'environnement qui correspond à votre style d'apprentissage.
+      </p>
     </div>
 
     <div class="row g-5 justify-content-center">
-      
       <!-- General Boost (Community) -->
       <div class="col-lg-5">
         <div class="program-card-v3">
           <div class="card-img-wrapper">
-            <img src="/assets/img/english-group-v3.png" alt="Community Learning Joy">
+            <img
+              src="/assets/img/english-group-v3.png"
+              alt="Community Learning Joy"
+            />
             <div class="card-overlay">
               <span class="program-tag">Populaire</span>
             </div>
@@ -354,15 +479,38 @@
           <div class="program-content">
             <h3 class="program-title">General English Boost</h3>
             <p class="program-text">
-              <strong>Boostez votre Anglais maintenant.</strong><br>
-              Ne laissez plus la barrière de la langue freiner vos opportunités. Notre programme intensif vous donne les clés pour parler avec aisance et confiance en 6 semaines.
+              <strong>Boostez votre Anglais maintenant.</strong><br />
+              Ne laissez plus la barrière de la langue freiner vos opportunités.
+              Notre programme intensif vous donne les clés pour parler avec
+              aisance et confiance en 3 mois.
             </p>
             <ul class="list-unstyled mb-4 text-muted">
-              <li class="mb-2"><i class="bi bi-check-circle-fill me-2" style="color: var(--primary-color);"></i> Parlez avec fluidité </li>
-              <li class="mb-2"><i class="bi bi-check-circle-fill me-2" style="color: var(--primary-color);"></i> Méthode pratique et résultats rapides</li>
-              <li class="mb-2"><i class="bi bi-check-circle-fill me-2" style="color: var(--primary-color);"></i> Certificat reconnu pour votre CV</li>
+              <li class="mb-2">
+                <i
+                  class="bi bi-check-circle-fill me-2"
+                  style="color: var(--primary-color)"
+                ></i>
+                Parlez avec fluidité
+              </li>
+              <li class="mb-2">
+                <i
+                  class="bi bi-check-circle-fill me-2"
+                  style="color: var(--primary-color)"
+                ></i>
+                Méthode pratique et résultats rapides
+              </li>
+              <li class="mb-2">
+                <i
+                  class="bi bi-check-circle-fill me-2"
+                  style="color: var(--primary-color)"
+                ></i>
+                Certificat reconnu pour votre CV
+              </li>
             </ul>
-            <a href="/programs/language-learning/general-english-boost" class="btn-program primary">
+            <a
+              href="/programs/language-learning/general-english-boost"
+              class="btn-program primary"
+            >
               Modalités d'inscription
             </a>
           </div>
@@ -373,76 +521,166 @@
       <div class="col-lg-5">
         <div class="program-card-v3">
           <div class="card-img-wrapper">
-             <img src="/assets/img/english-coaching-v3.png" alt="Structured Mentorship">
-             <div class="card-overlay">
-               <span class="program-tag bg-dark">Premium</span>
-             </div>
+            <img
+              src="/assets/img/english-coaching-v3.png"
+              alt="Structured Mentorship"
+            />
+            <div class="card-overlay">
+              <span class="program-tag bg-dark">Premium</span>
+            </div>
           </div>
           <div class="program-content">
             <h3 class="program-title">English Coaching Boost</h3>
             <p class="program-text">
-              <strong>L'Expertise Sur Mesure.</strong><br>
-              Un mentor dédié pour sculpter votre anglais professionnel. Idéal pour les cadres et les objectifs spécifiques à haute valeur.
+              <strong>L'Expertise Sur Mesure.</strong><br />
+              Un mentor dédié pour sculpter votre anglais professionnel. Idéal
+              pour les cadres et les objectifs spécifiques à haute valeur.
             </p>
             <ul class="list-unstyled mb-4 text-muted">
-              <li class="mb-2"><i class="bi bi-check-circle-fill me-2" style="color: var(--primary-color);"></i> 100% Personnalisé</li>
-              <li class="mb-2"><i class="bi bi-check-circle-fill me-2" style="color: var(--primary-color);"></i> Horaires Flexibles</li>
-              <li class="mb-2"><i class="bi bi-check-circle-fill me-2" style="color: var(--primary-color);"></i> Focus Carrière & Business</li>
+              <li class="mb-2">
+                <i
+                  class="bi bi-check-circle-fill me-2"
+                  style="color: var(--primary-color)"
+                ></i>
+                100% Personnalisé
+              </li>
+              <li class="mb-2">
+                <i
+                  class="bi bi-check-circle-fill me-2"
+                  style="color: var(--primary-color)"
+                ></i>
+                Horaires Flexibles
+              </li>
+              <li class="mb-2">
+                <i
+                  class="bi bi-check-circle-fill me-2"
+                  style="color: var(--primary-color)"
+                ></i>
+                Focus Carrière & Business
+              </li>
             </ul>
-            <a href="/programs/language-learning/pecp" class="btn-program primary">
+            <a
+              href="/programs/language-learning/pecp"
+              class="btn-program primary"
+            >
               Découvrir le Coaching
             </a>
           </div>
         </div>
       </div>
-
     </div>
-    
-
   </div>
-  
+
   <!-- 3. Stats Section -->
   <div class="row mt-5 pt-5 justify-content-center">
     <div class="col-lg-10">
-      <div class="bg-white rounded-4 shadow-lg p-5 border-0 position-relative overflow-hidden">
+      <div
+        class="bg-white rounded-4 shadow-lg p-5 border-0 position-relative overflow-hidden"
+      >
         <!-- Decorative bg circle -->
-        <div class="position-absolute top-0 end-0 translate-middle rounded-circle" style="width: 300px; height: 300px; background: var(--primary-light); opacity: 0.4; filter: blur(60px); z-index: 0;"></div>
-        
+        <div
+          class="position-absolute top-0 end-0 translate-middle rounded-circle"
+          style="
+            width: 300px;
+            height: 300px;
+            background: var(--primary-light);
+            opacity: 0.4;
+            filter: blur(60px);
+            z-index: 0;
+          "
+        ></div>
+
         <div class="row text-center position-relative z-1">
           <!-- Stat 1 -->
           <div class="col-md-3 mb-4 mb-md-0 position-relative">
-             <div class="mb-3 d-inline-flex align-items-center justify-content-center rounded-circle transition-hover" style="width: 70px; height: 70px; background: rgba(93, 6, 186, 0.05);">
-                <i class="bi bi-people-fill fs-2" style="color: var(--primary-color);"></i>
-             </div>
-             <div class="display-5 fw-bold mb-2 gradient-text">500+</div>
-             <div class="text-muted small text-uppercase fw-bold letter-spacing-1">Apprenants Actifs</div>
+            <div
+              class="mb-3 d-inline-flex align-items-center justify-content-center rounded-circle transition-hover"
+              style="
+                width: 70px;
+                height: 70px;
+                background: rgba(93, 6, 186, 0.05);
+              "
+            >
+              <i
+                class="bi bi-people-fill fs-2"
+                style="color: var(--primary-color)"
+              ></i>
+            </div>
+            <div class="display-5 fw-bold mb-2 gradient-text">500+</div>
+            <div
+              class="text-muted small text-uppercase fw-bold letter-spacing-1"
+            >
+              Apprenants Actifs
+            </div>
           </div>
-          
+
           <!-- Stat 2 -->
           <div class="col-md-3 mb-4 mb-md-0">
-             <div class="mb-3 d-inline-flex align-items-center justify-content-center rounded-circle transition-hover" style="width: 70px; height: 70px; background: rgba(93, 6, 186, 0.05);">
-                <i class="bi bi-emoji-smile-fill fs-2" style="color: var(--primary-color);"></i>
-             </div>
-             <div class="display-5 fw-bold mb-2 gradient-text">90%</div>
-             <div class="text-muted small text-uppercase fw-bold letter-spacing-1">Satisfaction</div>
+            <div
+              class="mb-3 d-inline-flex align-items-center justify-content-center rounded-circle transition-hover"
+              style="
+                width: 70px;
+                height: 70px;
+                background: rgba(93, 6, 186, 0.05);
+              "
+            >
+              <i
+                class="bi bi-emoji-smile-fill fs-2"
+                style="color: var(--primary-color)"
+              ></i>
+            </div>
+            <div class="display-5 fw-bold mb-2 gradient-text">90%</div>
+            <div
+              class="text-muted small text-uppercase fw-bold letter-spacing-1"
+            >
+              Satisfaction
+            </div>
           </div>
-          
+
           <!-- Stat 3 -->
-           <div class="col-md-3 mb-4 mb-md-0">
-             <div class="mb-3 d-inline-flex align-items-center justify-content-center rounded-circle transition-hover" style="width: 70px; height: 70px; background: rgba(93, 6, 186, 0.05);">
-                <i class="bi bi-globe-americas fs-2" style="color: var(--primary-color);"></i>
-             </div>
-             <div class="display-5 fw-bold mb-2 gradient-text">4+</div>
-             <div class="text-muted small text-uppercase fw-bold letter-spacing-1">Pays Représentés</div>
+          <div class="col-md-3 mb-4 mb-md-0">
+            <div
+              class="mb-3 d-inline-flex align-items-center justify-content-center rounded-circle transition-hover"
+              style="
+                width: 70px;
+                height: 70px;
+                background: rgba(93, 6, 186, 0.05);
+              "
+            >
+              <i
+                class="bi bi-globe-americas fs-2"
+                style="color: var(--primary-color)"
+              ></i>
+            </div>
+            <div class="display-5 fw-bold mb-2 gradient-text">4+</div>
+            <div
+              class="text-muted small text-uppercase fw-bold letter-spacing-1"
+            >
+              Pays Représentés
+            </div>
           </div>
-          
+
           <!-- Stat 4 -->
           <div class="col-md-3">
-             <div class="mb-3 d-inline-flex align-items-center justify-content-center rounded-circle transition-hover" style="width: 70px; height: 70px; background: rgba(93, 6, 186, 0.05);">
-                <i class="bi bi-briefcase-fill fs-2" style="color: var(--primary-color);"></i>
-             </div>
-             <div class="display-5 fw-bold mb-2 gradient-text">10+</div>
-             <div class="text-muted small text-uppercase fw-bold letter-spacing-1">Partenaires</div>
+            <div
+              class="mb-3 d-inline-flex align-items-center justify-content-center rounded-circle transition-hover"
+              style="
+                width: 70px;
+                height: 70px;
+                background: rgba(93, 6, 186, 0.05);
+              "
+            >
+              <i
+                class="bi bi-briefcase-fill fs-2"
+                style="color: var(--primary-color)"
+              ></i>
+            </div>
+            <div class="display-5 fw-bold mb-2 gradient-text">10+</div>
+            <div
+              class="text-muted small text-uppercase fw-bold letter-spacing-1"
+            >
+              Partenaires
+            </div>
           </div>
         </div>
       </div>
@@ -451,7 +689,11 @@
 
   <style>
     .gradient-text {
-      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+      background: linear-gradient(
+        135deg,
+        var(--primary-color) 0%,
+        var(--primary-dark) 100%
+      );
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -460,67 +702,125 @@
       letter-spacing: 1px;
     }
   </style>
-
 </section>
 
 <!-- 4. Key Strengths Section -->
-<section class="py-5" style="background-color: #f8f9fa;">
+<section class="py-5" style="background-color: #f8f9fa">
   <div class="container">
     <div class="text-center mb-5">
       <h2 class="fw-bold display-6 mb-3">Pourquoi Nous ?</h2>
       <p class="text-muted fs-5">L'excellence au service de vos ambitions.</p>
     </div>
-    
-    <div class="row g-4 justify-content-center">
-       <!-- Card 1 -->
-       <div class="col-md-6 col-lg-3">
-         <div class="h-100 bg-white p-4 rounded-4 shadow-sm border border-light text-start transition-hover">
-           <div class="rounded-3 d-inline-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px; background-color: var(--primary-light); color: var(--primary-color);">
-             <i class="bi bi-gem fs-4"></i>
-           </div>
-           <h4 class="fw-bold fs-5 mb-2">Qualité Premium</h4>
-           <p class="text-muted small mb-0 lh-base">Une pédagogie d'excellence adaptée aux standards internationaux pour garantir votre succès.</p>
-         </div>
-       </div>
-       
-       <!-- Card 2 -->
-       <div class="col-md-6 col-lg-3">
-         <div class="h-100 bg-white p-4 rounded-4 shadow-sm border border-light text-start transition-hover">
-           <div class="rounded-3 d-inline-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px; background-color: var(--primary-light); color: var(--primary-color);">
-             <i class="bi bi-people-fill fs-4"></i>
-           </div>
-           <h4 class="fw-bold fs-5 mb-2">Réseau Puissant</h4>
-           <p class="text-muted small mb-0 lh-base">Connectez-vous avec d'autres professionnels ambitieux et élargissez vos opportunités.</p>
-         </div>
-       </div>
-       
-       <!-- Card 3 -->
-       <div class="col-md-6 col-lg-3">
-         <div class="h-100 bg-white p-4 rounded-4 shadow-sm border border-light text-start transition-hover">
-           <div class="rounded-3 d-inline-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px; background-color: var(--primary-light); color: var(--primary-color);">
-             <i class="bi bi-graph-up-arrow fs-4"></i>
-           </div>
-           <h4 class="fw-bold fs-5 mb-2">Impact Réel</h4>
-           <p class="text-muted small mb-0 lh-base">Des résultats concrets pour booster votre carrière et votre confiance immédiatement.</p>
-         </div>
-       </div>
 
-       <!-- Card 4 -->
-       <div class="col-md-6 col-lg-3">
-         <div class="h-100 bg-white p-4 rounded-4 shadow-sm border border-light text-start transition-hover">
-           <div class="rounded-3 d-inline-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px; background-color: var(--primary-light); color: var(--primary-color);">
-             <i class="bi bi-laptop fs-4"></i>
-           </div>
-           <h4 class="fw-bold fs-5 mb-2">100% Flexible</h4>
-           <p class="text-muted small mb-0 lh-base">Apprenez d'où vous voulez, quand vous voulez, avec une plateforme intuitive.</p>
-         </div>
-       </div>
+    <div class="row g-4 justify-content-center">
+      <!-- Card 1 -->
+      <div class="col-md-6 col-lg-3">
+        <div
+          class="h-100 bg-white p-4 rounded-4 shadow-sm border border-light text-start transition-hover"
+        >
+          <div
+            class="rounded-3 d-inline-flex align-items-center justify-content-center mb-3"
+            style="
+              width: 50px;
+              height: 50px;
+              background-color: var(--primary-light);
+              color: var(--primary-color);
+            "
+          >
+            <i class="bi bi-gem fs-4"></i>
+          </div>
+          <h4 class="fw-bold fs-5 mb-2">Qualité Premium</h4>
+          <p class="text-muted small mb-0 lh-base">
+            Une pédagogie d'excellence adaptée aux standards internationaux pour
+            garantir votre succès.
+          </p>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="col-md-6 col-lg-3">
+        <div
+          class="h-100 bg-white p-4 rounded-4 shadow-sm border border-light text-start transition-hover"
+        >
+          <div
+            class="rounded-3 d-inline-flex align-items-center justify-content-center mb-3"
+            style="
+              width: 50px;
+              height: 50px;
+              background-color: var(--primary-light);
+              color: var(--primary-color);
+            "
+          >
+            <i class="bi bi-people-fill fs-4"></i>
+          </div>
+          <h4 class="fw-bold fs-5 mb-2">Réseau Puissant</h4>
+          <p class="text-muted small mb-0 lh-base">
+            Connectez-vous avec d'autres professionnels ambitieux et élargissez
+            vos opportunités.
+          </p>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="col-md-6 col-lg-3">
+        <div
+          class="h-100 bg-white p-4 rounded-4 shadow-sm border border-light text-start transition-hover"
+        >
+          <div
+            class="rounded-3 d-inline-flex align-items-center justify-content-center mb-3"
+            style="
+              width: 50px;
+              height: 50px;
+              background-color: var(--primary-light);
+              color: var(--primary-color);
+            "
+          >
+            <i class="bi bi-graph-up-arrow fs-4"></i>
+          </div>
+          <h4 class="fw-bold fs-5 mb-2">Impact Réel</h4>
+          <p class="text-muted small mb-0 lh-base">
+            Des résultats concrets pour booster votre carrière et votre
+            confiance immédiatement.
+          </p>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="col-md-6 col-lg-3">
+        <div
+          class="h-100 bg-white p-4 rounded-4 shadow-sm border border-light text-start transition-hover"
+        >
+          <div
+            class="rounded-3 d-inline-flex align-items-center justify-content-center mb-3"
+            style="
+              width: 50px;
+              height: 50px;
+              background-color: var(--primary-light);
+              color: var(--primary-color);
+            "
+          >
+            <i class="bi bi-laptop fs-4"></i>
+          </div>
+          <h4 class="fw-bold fs-5 mb-2">100% Flexible</h4>
+          <p class="text-muted small mb-0 lh-base">
+            Apprenez d'où vous voulez, quand vous voulez, avec une plateforme
+            intuitive.
+          </p>
+        </div>
+      </div>
     </div>
   </div>
-  
+
   <style>
-    .transition-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-    .transition-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important; }
+    .transition-hover {
+      transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+    }
+    .transition-hover:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+    }
   </style>
 </section>
 
@@ -529,140 +829,208 @@
   <div class="container py-4">
     <div class="text-center mb-5">
       <h2 class="fw-bold display-6 mb-3 text-white">Des Résultats Concrets</h2>
-      <p class="text-light-muted fs-5">Découvrez les parcours de ceux qui ont transformé leur avenir.</p>
+      <p class="text-light-muted fs-5">
+        Découvrez les parcours de ceux qui ont transformé leur avenir.
+      </p>
     </div>
-    
-    <div class="testimonials-slider swiper" data-aos="fade-up" data-aos-delay="100">
+
+    <div
+      class="testimonials-slider swiper"
+      data-aos="fade-up"
+      data-aos-delay="100"
+    >
       <div class="swiper-wrapper">
         <!-- Testimonial 1 -->
         <div class="swiper-slide">
           <div class="bg-dark-glass p-4 rounded-4 shadow-sm h-100">
-             <div class="mb-3 text-warning">
-               <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-             </div>
-             <p class="text-light-muted fst-italic mb-4">"Grâce au English Coaching Boost, j'ai pu décrocher un poste à l'international. La méthode est incroyablement efficace et pragmatique."</p>
-             <div class="d-flex align-items-center">
-               <div class="rounded-circle bg-white d-flex align-items-center justify-content-center fw-bold text-primary me-3 bg-opacity-10" style="width: 48px; height: 48px; font-size: 1.2rem;">S</div>
-               <div>
-                 <div class="fw-bold text-white">Sarah K.</div>
-                 <div class="small text-light-muted">Directrice Marketing</div>
-               </div>
-             </div>
+            <div class="mb-3 text-warning">
+              <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i
+              ><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i
+              ><i class="bi bi-star-fill"></i>
+            </div>
+            <p class="text-light-muted fst-italic mb-4">
+              "Grâce au English Coaching Boost, j'ai pu décrocher un poste à
+              l'international. La méthode est incroyablement efficace et
+              pragmatique."
+            </p>
+            <div class="d-flex align-items-center">
+              <div
+                class="rounded-circle bg-white d-flex align-items-center justify-content-center fw-bold text-primary me-3 bg-opacity-10"
+                style="width: 48px; height: 48px; font-size: 1.2rem"
+              >
+                S
+              </div>
+              <div>
+                <div class="fw-bold text-white">Sarah K.</div>
+                <div class="small text-light-muted">Directrice Marketing</div>
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- Testimonial 2 -->
         <div class="swiper-slide">
           <div class="bg-dark-glass p-4 rounded-4 shadow-sm h-100">
-             <div class="mb-3 text-warning">
-               <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-             </div>
-             <p class="text-light-muted fst-italic mb-4">"L'ambiance de groupe dans le programme English Boost est géniale. On apprend sans stress, et les progrès sont visibles dès les premières semaines."</p>
-             <div class="d-flex align-items-center">
-               <div class="rounded-circle bg-white d-flex align-items-center justify-content-center fw-bold text-primary me-3 bg-opacity-10" style="width: 48px; height: 48px; font-size: 1.2rem;">M</div>
-               <div>
-                 <div class="fw-bold text-white">Mohamed D.</div>
-                 <div class="small text-light-muted">Ingénieur Logiciel</div>
-               </div>
-             </div>
+            <div class="mb-3 text-warning">
+              <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i
+              ><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i
+              ><i class="bi bi-star-fill"></i>
+            </div>
+            <p class="text-light-muted fst-italic mb-4">
+              "L'ambiance de groupe dans le programme English Boost est géniale.
+              On apprend sans stress, et les progrès sont visibles dès les
+              premières semaines."
+            </p>
+            <div class="d-flex align-items-center">
+              <div
+                class="rounded-circle bg-white d-flex align-items-center justify-content-center fw-bold text-primary me-3 bg-opacity-10"
+                style="width: 48px; height: 48px; font-size: 1.2rem"
+              >
+                M
+              </div>
+              <div>
+                <div class="fw-bold text-white">Mohamed D.</div>
+                <div class="small text-light-muted">Ingénieur Logiciel</div>
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- Testimonial 3 -->
         <div class="swiper-slide">
           <div class="bg-dark-glass p-4 rounded-4 shadow-sm h-100">
-             <div class="mb-3 text-warning">
-               <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-             </div>
-             <p class="text-light-muted fst-italic mb-4">"J'avais peur de parler anglais, mais les mentors m'ont donné confiance. Aujourd'hui, je mène des réunions en anglais sans hésitation."</p>
-             <div class="d-flex align-items-center">
-               <div class="rounded-circle bg-white d-flex align-items-center justify-content-center fw-bold text-primary me-3 bg-opacity-10" style="width: 48px; height: 48px; font-size: 1.2rem;">A</div>
-               <div>
-                 <div class="fw-bold text-white">Aminata T.</div>
-                 <div class="small text-light-muted">Entrepreneur</div>
-               </div>
-             </div>
+            <div class="mb-3 text-warning">
+              <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i
+              ><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i
+              ><i class="bi bi-star-fill"></i>
+            </div>
+            <p class="text-light-muted fst-italic mb-4">
+              "J'avais peur de parler anglais, mais les mentors m'ont donné
+              confiance. Aujourd'hui, je mène des réunions en anglais sans
+              hésitation."
+            </p>
+            <div class="d-flex align-items-center">
+              <div
+                class="rounded-circle bg-white d-flex align-items-center justify-content-center fw-bold text-primary me-3 bg-opacity-10"
+                style="width: 48px; height: 48px; font-size: 1.2rem"
+              >
+                A
+              </div>
+              <div>
+                <div class="fw-bold text-white">Aminata T.</div>
+                <div class="small text-light-muted">Entrepreneur</div>
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- Testimonial 4 -->
         <div class="swiper-slide">
           <div class="bg-dark-glass p-4 rounded-4 shadow-sm h-100">
-             <div class="mb-3 text-warning">
-               <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-             </div>
-             <p class="text-light-muted fst-italic mb-4">"Une formation adaptée aux réalités du business. Mon anglais est maintenant un atout majeur pour mes négociations."</p>
-             <div class="d-flex align-items-center">
-               <div class="rounded-circle bg-white d-flex align-items-center justify-content-center fw-bold text-primary me-3 bg-opacity-10" style="width: 48px; height: 48px; font-size: 1.2rem;">J</div>
-               <div>
-                 <div class="fw-bold text-white">Jean-Marc B.</div>
-                 <div class="small text-light-muted">Consultant Financier</div>
-               </div>
-             </div>
+            <div class="mb-3 text-warning">
+              <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i
+              ><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i
+              ><i class="bi bi-star-fill"></i>
+            </div>
+            <p class="text-light-muted fst-italic mb-4">
+              "Une formation adaptée aux réalités du business. Mon anglais est
+              maintenant un atout majeur pour mes négociations."
+            </p>
+            <div class="d-flex align-items-center">
+              <div
+                class="rounded-circle bg-white d-flex align-items-center justify-content-center fw-bold text-primary me-3 bg-opacity-10"
+                style="width: 48px; height: 48px; font-size: 1.2rem"
+              >
+                J
+              </div>
+              <div>
+                <div class="fw-bold text-white">Jean-Marc B.</div>
+                <div class="small text-light-muted">Consultant Financier</div>
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- Testimonial 5 -->
         <div class="swiper-slide">
           <div class="bg-dark-glass p-4 rounded-4 shadow-sm h-100">
-             <div class="mb-3 text-warning">
-               <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-             </div>
-             <p class="text-light-muted fst-italic mb-4">"J'ai validé mon test TOEFL avec un super score grâce à la préparation intensive. Merci AfroHK pour l'accompagnement !"</p>
-             <div class="d-flex align-items-center">
-               <div class="rounded-circle bg-white d-flex align-items-center justify-content-center fw-bold text-primary me-3 bg-opacity-10" style="width: 48px; height: 48px; font-size: 1.2rem;">F</div>
-               <div>
-                 <div class="fw-bold text-white">Fatou S.</div>
-                 <div class="small text-light-muted">Étudiante Master</div>
-               </div>
-             </div>
+            <div class="mb-3 text-warning">
+              <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i
+              ><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i
+              ><i class="bi bi-star-fill"></i>
+            </div>
+            <p class="text-light-muted fst-italic mb-4">
+              "J'ai validé mon test TOEFL avec un super score grâce à la
+              préparation intensive. Merci AfroHK pour l'accompagnement !"
+            </p>
+            <div class="d-flex align-items-center">
+              <div
+                class="rounded-circle bg-white d-flex align-items-center justify-content-center fw-bold text-primary me-3 bg-opacity-10"
+                style="width: 48px; height: 48px; font-size: 1.2rem"
+              >
+                F
+              </div>
+              <div>
+                <div class="fw-bold text-white">Fatou S.</div>
+                <div class="small text-light-muted">Étudiante Master</div>
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- Testimonial 6 -->
         <div class="swiper-slide">
           <div class="bg-dark-glass p-4 rounded-4 shadow-sm h-100">
-             <div class="mb-3 text-warning">
-               <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-             </div>
-             <p class="text-light-muted fst-italic mb-4">"Les coachs sont très pédagogues et disponibles. J'ai progressé plus vite qu'en deux ans de cours classiques."</p>
-             <div class="d-flex align-items-center">
-               <div class="rounded-circle bg-white d-flex align-items-center justify-content-center fw-bold text-primary me-3 bg-opacity-10" style="width: 48px; height: 48px; font-size: 1.2rem;">E</div>
-               <div>
-                 <div class="fw-bold text-white">Eric O.</div>
-                 <div class="small text-light-muted">Chef de Projet</div>
-               </div>
-             </div>
+            <div class="mb-3 text-warning">
+              <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i
+              ><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i
+              ><i class="bi bi-star-fill"></i>
+            </div>
+            <p class="text-light-muted fst-italic mb-4">
+              "Les coachs sont très pédagogues et disponibles. J'ai progressé
+              plus vite qu'en deux ans de cours classiques."
+            </p>
+            <div class="d-flex align-items-center">
+              <div
+                class="rounded-circle bg-white d-flex align-items-center justify-content-center fw-bold text-primary me-3 bg-opacity-10"
+                style="width: 48px; height: 48px; font-size: 1.2rem"
+              >
+                E
+              </div>
+              <div>
+                <div class="fw-bold text-white">Eric O.</div>
+                <div class="small text-light-muted">Chef de Projet</div>
+              </div>
+            </div>
           </div>
         </div>
-
       </div>
       <div class="swiper-pagination"></div>
     </div>
   </div>
-  
+
   <style>
     /* Dark Theme Testimonials */
     #testimonials {
       background: #000000;
       color: #ffffff;
     }
-    
+
     .bg-dark-glass {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
     }
-    
+
     .text-light-muted {
       color: rgba(255, 255, 255, 0.7) !important;
     }
-    
+
     /* Spacing for pagination below */
     .testimonials-slider {
       padding-bottom: 50px !important;
     }
-    
+
     #testimonials .swiper-pagination {
       bottom: 0 !important;
     }
@@ -672,7 +1040,7 @@
       background: rgba(255, 255, 255, 0.5);
       opacity: 1;
     }
-    
+
     #testimonials .swiper-pagination-bullet-active {
       background: #ffffff;
     }

@@ -312,7 +312,7 @@ const userSchema = new Schema({
 
   maxDevices: {
     type: Number,
-    default: 2 // Limite par défaut de 2 appareils
+    default: 3 // Limite par défaut de 3 appareils
   }
 }, {
   timestamps: true

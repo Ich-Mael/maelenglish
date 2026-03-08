@@ -226,6 +226,14 @@ h6 {
   font-family: var(--font-heading);
 }
 
+#values-b {
+  color: rgba(37, 10, 88, 0.693);
+  font-size: 5rem;
+  margin-bottom: 1rem;
+  text-shadow: 2px 1px 1px rgb(255, 255, 255);
+  line-height: 1.2;
+  font-family: var(--font-heading);
+}
 
 #values-c {
   font-size: 4rem;
@@ -233,6 +241,7 @@ h6 {
   margin-bottom: 1rem;
   text-shadow: 2px 1px 1px rgb(22, 7, 7);
   line-height: 1.4;
+  text-align: center;
 }
 
 @media (max-width: 992px) {
