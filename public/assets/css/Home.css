@@ -14,7 +14,7 @@
   --font-heading: "Outfit", sans-serif;
   --font-body: "Open Sans", sans-serif;
   --font-accent: "Kaushan Script", cursive;
-  
+
   /* Font Weights */
   --fw-light: 300;
   --fw-regular: 400;
@@ -241,25 +241,42 @@ h6 {
   margin-bottom: 1rem;
   text-shadow: 2px 1px 1px rgb(22, 7, 7);
   line-height: 1.4;
-  text-align: center;
+  text-align: start;
 }
 
 @media (max-width: 992px) {
-  #values-c, #values-a, .values {
+
+  #values-c,
+  #values-a,
+  .values {
     font-size: 3rem;
     line-height: 1.2;
   }
 }
 
 @media (max-width: 768px) {
-  #values-c, #values-a, .values {
+
+  #values-c,
+  #values-a,
+  .values {
     font-size: 2.2rem;
     line-height: 1.3;
+  }
+
+  #values-c {
+    color: rgba(255, 255, 255, 0.697);
+    margin-bottom: 1rem;
+    text-shadow: 2px 1px 1px rgb(22, 7, 7);
+    line-height: 1.4;
+    text-align: center;
   }
 }
 
 @media (max-width: 480px) {
-  #values-c, #values-a, .values {
+
+  #values-c,
+  #values-a,
+  .values {
     font-size: 1.8rem;
     line-height: 1.4;
   }
@@ -385,7 +402,8 @@ h6 {
   transition: 0.3s;
 }
 
-.navbar-nav li a:hover, .navbar-nav li a.active {
+.navbar-nav li a:hover,
+.navbar-nav li a.active {
   color: #46078d;
 }
 
@@ -400,6 +418,7 @@ h6 {
   gap: 15px;
   align-items: center;
 }
+
 #header {
   background: #fff;
   transition: all 0.5s;
@@ -606,7 +625,8 @@ h6 {
     display: block;
   }
 
-  .navbar ul, .navbar-nav {
+  .navbar ul,
+  .navbar-nav {
     display: none;
   }
 }
@@ -621,11 +641,13 @@ h6 {
   background: rgba(0, 0, 0, 0.9);
   transition: 0.3s;
   z-index: 999;
-  display: none; /* Hide by default */
+  display: none;
+  /* Hide by default */
 }
 
 .navbar-mobile.active {
-  display: block; /* Show when active */
+  display: block;
+  /* Show when active */
 }
 
 .navbar-mobile .mobile-nav-toggle {
@@ -704,8 +726,9 @@ h6 {
 
 #header:not(.header-scrolled) .navbar a:hover,
 #header:not(.header-scrolled) .navbar .active,
-#header:not(.header-scrolled) .navbar li:hover > a {
-  color: #e0aaff !important; /* Light purple for hover on dark bg */
+#header:not(.header-scrolled) .navbar li:hover>a {
+  color: #e0aaff !important;
+  /* Light purple for hover on dark bg */
 }
 
 /* Scrolled header - ensure dark links on white background */
@@ -715,7 +738,7 @@ h6 {
 
 #header.header-scrolled .navbar a:hover,
 #header.header-scrolled .navbar .active,
-#header.header-scrolled .navbar li:hover > a {
+#header.header-scrolled .navbar li:hover>a {
   color: #5d06ba !important;
 }
 
@@ -733,10 +756,11 @@ h6 {
 }
 
 #header:not(.header-scrolled) .navbar-mobile .mobile-nav-toggle.bi-x {
-  color: #fff !important; /* X icon on dark overlay */
+  color: #fff !important;
+  /* X icon on dark overlay */
 }
 
-.navbar-mobile .dropdown > .dropdown-active {
+.navbar-mobile .dropdown>.dropdown-active {
   display: block;
 }
 
@@ -1118,6 +1142,7 @@ section {
   .about {
     text-align: center;
   }
+
   .about .content {
     padding: 1rem 1rem;
   }
