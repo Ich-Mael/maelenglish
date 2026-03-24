@@ -66,7 +66,8 @@ const sessionConfig = {
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
         maxAge: 1000 * 60 * 60 * 24 * 7
     }
-}
+};
+
 app.use(session(sessionConfig));
 
 // Passport configuration
@@ -106,7 +107,6 @@ app.use('/programs/language-learning', languageLearningRoutes);
 app.all('*', (req, res, next) => {
     res.status(404).send('Page Not Found');
 });
-
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Serving on port ${port}`);

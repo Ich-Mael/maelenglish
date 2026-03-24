@@ -150,6 +150,9 @@
 
 <!-- Mobile Menu Overlay -->
 <div class="navbar-mobile" id="navbar-mobile">
+  <button class="mobile-nav-close" aria-label="Close navigation">
+    <i class="bi bi-x-lg"></i>
+  </button>
   <nav class="navbar-nav">
     <% if(typeof isHomePage !=='undefined' && isHomePage) { %>
       <li><a href="#hero" class="scrollto active">Accueil</a></li>
@@ -188,6 +191,7 @@
   // Mobile menu toggle functionality
   document.addEventListener('DOMContentLoaded', function () {
     const mobileToggle = document.querySelector('.mobile-nav-toggle');
+    const mobileClose = document.querySelector('.mobile-nav-close');
     const mobileMenu = document.querySelector('.navbar-mobile');
     const header = document.querySelector('#header');
 
@@ -197,6 +201,14 @@
         mobileMenu.classList.toggle('active');
         document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
       });
+
+      if (mobileClose) {
+        mobileClose.addEventListener('click', function () {
+          mobileToggle.classList.remove('active');
+          mobileMenu.classList.remove('active');
+          document.body.style.overflow = '';
+        });
+      }
 
       // Close mobile menu when clicking on a link
       const mobileLinks = mobileMenu.querySelectorAll('a');

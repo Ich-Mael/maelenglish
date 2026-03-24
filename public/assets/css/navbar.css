@@ -118,7 +118,7 @@
 }
 
 /* Dropdown indicator */
-.navbar-nav .dropdown > a::before {
+.navbar-nav .dropdown>a::before {
   content: '';
   display: inline-block;
   width: 0;
@@ -131,7 +131,7 @@
   transition: transform 0.3s ease, border-top-color 0.3s ease;
 }
 
-.navbar-nav .dropdown:hover > a::before {
+.navbar-nav .dropdown:hover>a::before {
   transform: rotate(180deg);
   border-top-color: #E03A3C;
 }
@@ -301,12 +301,13 @@
    ====================================== */
 
 @media (min-width: 992px) {
+
   /* Ensure desktop nav is visible */
   .navbar-nav,
   .navbar-cta {
     display: flex !important;
   }
-  
+
   /* Hide mobile elements on desktop */
   .mobile-nav-toggle,
   .navbar-mobile {
@@ -353,28 +354,56 @@
     height: 32px;
   }
 
-/* Mobile Menu Overlay */
-.navbar-mobile {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: #ffffff;
-  z-index: 998;
-  padding: 80px 30px 30px;
-  overflow-y: auto;
-  transition: all 0.3s ease;
-  opacity: 0;
-  visibility: hidden;
-  display: none; /* Hidden by default on all screens */
-}
+  /* Mobile Menu Overlay */
+  .navbar-mobile {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #ffffff;
+    z-index: 998;
+    padding: 80px 30px 30px;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+    display: none;
+    /* Hidden by default on all screens */
+  }
 
-.navbar-mobile.active {
-  opacity: 1;
-  visibility: visible;
-  display: block; /* Show when active */
-}
+  .navbar-mobile .mobile-nav-close {
+    display: flex;
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    background: #f58989;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #111111;
+    font-size: 22px;
+    transition: all 0.3s ease;
+    z-index: 999;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .navbar-mobile .mobile-nav-close:hover {
+    background: #E03A3C;
+    color: #ffffff;
+    transform: rotate(90deg);
+  }
+
+  .navbar-mobile.active {
+    opacity: 1;
+    visibility: visible;
+    display: block;
+    /* Show when active */
+  }
 
   /* Mobile nav links */
   .navbar-mobile .navbar-nav {
@@ -449,11 +478,11 @@
     padding-left: 0;
   }
 
-  .navbar-mobile .dropdown > a::before {
+  .navbar-mobile .dropdown>a::before {
     float: right;
   }
 
-  .navbar-mobile .dropdown.active > a::before {
+  .navbar-mobile .dropdown.active>a::before {
     transform: rotate(180deg);
   }
 }
@@ -494,7 +523,7 @@
   .d-lg-none {
     display: block !important;
   }
-  
+
   .d-lg-block {
     display: none !important;
   }
