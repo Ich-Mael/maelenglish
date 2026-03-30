@@ -37,7 +37,6 @@
   <link href="assets/css/Home.css" rel="stylesheet" />
   <link href="assets/css/navbar.css" rel="stylesheet" />
   <link href="assets/css/hero-redesign.css" rel="stylesheet" />
-  <link href="assets/css/hero-carousel.css" rel="stylesheet" />
   <link href="assets/css/contact-redesign.css" rel="stylesheet" />
   <link href="assets/css/reflection-gallery.css" rel="stylesheet" />
 
@@ -337,15 +336,6 @@
     <!-- ======= Hero Section ======= -->
     <%-include('./partials/flash')%>
       <section id="hero" class="d-flex align-items-center">
-        <!-- Background Carousel -->
-        <div class="hero-carousel">
-          <div class="hero-slide active"
-            style="background-image: url('https://images.pexels.com/photos/6894013/pexels-photo-6894013.jpeg');"></div>
-          <div class="hero-slide"
-            style="background-image: url('https://images.pexels.com/photos/5198239/pexels-photo-5198239.jpeg');"></div>
-          <div class="hero-slide"
-            style="background-image: url('https://images.pexels.com/photos/4624896/pexels-photo-4624896.jpeg');"></div>
-        </div>
 
         <div class="container" data-aos="zoom-out" data-aos-delay="100">
           <div class="row mt-5">
@@ -1783,22 +1773,6 @@
 
         <!-- Template Main JS File -->
         <script src="assets/js/main.js"></script>
-   <script>
-        // Hero Background Carousel
-        (function () {
-          const slides = document.querySelectorAll('.hero-slide');
-          let currentSlide = 0;
-
-          function nextSlide() {
-            slides[currentSlide].classList.remove('active');
-            currentSlide = (currentSlide + 1) % slides.length;
-            slides[currentSlide].classList.add('active');
-          }
-
-          // Change slide every 5 seconds
-          setInterval(nextSlide, 5000);
-        })();
-      </script>
         <!-- About Section Mouse Move Animation -->
         <script>
           document.addEventListener('DOMContentLoaded', function () {
