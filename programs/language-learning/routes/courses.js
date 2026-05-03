@@ -97,11 +97,22 @@ router.delete("/admindashboard/:course_id/modules/:module_id", isLoggedIn, isVer
 
 router.post('/admindashboard/:course_id/modules/:courseModule_id/practice', isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), CourseModules.createPractice);
 
+router.put('/admindashboard/:course_id/modules/:courseModule_id/practice/:practice_id', isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), CourseModules.updatePractice);
+
+router.delete('/admindashboard/:course_id/modules/:courseModule_id/practice/:practice_id', isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), CourseModules.deletePractice);
+
+
 /*
  ************************* VIDEO LESSON ROUTES *******************************************
  */
 
 router.post('/admindashboard/:course_id/modules/:courseModule_id/engcoursevideo', isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), CourseModules.addEngVideoLesson);
+
+router.delete('/admindashboard/:course_id/modules/:courseModule_id/engcoursevideo/:video_id', isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), CourseModules.deleteEngVideoLesson);
+
+router.put('/admindashboard/:course_id/modules/:courseModule_id/engcoursevideo/:video_id', isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), CourseModules.updateEngVideoLesson);
+
+
 
 /*
  ************************* EVALUATION ROUTES *******************************************

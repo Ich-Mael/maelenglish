@@ -298,7 +298,57 @@
             </button>
           </form>
         </div>
+
+        <!-- Existing Videos List -->
+        <% if (courseModule.videoLinks && courseModule.videoLinks.length > 0) { %>
+          <div class="mt-4 border-top pt-3">
+            <h6 class="form-label mb-3">Existing Videos</h6>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th scope="col" style="width: 30%">Title</th>
+                    <th scope="col" style="width: 20%">Type</th>
+                    <th scope="col" style="width: 30%">Link</th>
+                    <th scope="col" style="width: 20%">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% courseModule.videoLinks.forEach(video => { %>
+                    <tr>
+                      <td>
+                        <div class="fw-bold"><%= video.title %></div>
+                      </td>
+                      <td>
+                        <span class="badge bg-light text-dark border"><%= video.lessonType %></span>
+                      </td>
+                      <td>
+                        <div class="text-muted small text-truncate" style="max-width: 200px;">
+                          <%= video.engCourseLink %>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="d-flex gap-2">
+                          <a href="<%= video.engCourseLink %>" target="_blank" class="btn btn-sm btn-outline-primary" title="View Video">
+                            <i class="bi bi-box-arrow-up-right"></i>
+                          </a>
+                          <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editVideoModal<%= video._id %>" title="Edit Video">
+                            <i class="bi bi-pencil"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteVideoModal<%= video._id %>" title="Delete">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        <% } %>
       </div>
+
 
       <!-- Add Practice Card -->
       <div class="card-premium">
@@ -341,8 +391,60 @@
             </button>
           </form>
         </div>
+
+        <!-- Existing Practices List -->
+        <% if (courseModule.Assignment && courseModule.Assignment.length > 0) { %>
+          <div class="mt-4 border-top pt-3">
+            <h6 class="form-label mb-3">Existing Practices</h6>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th scope="col" style="width: 30%">Title</th>
+                    <th scope="col" style="width: 20%">Category</th>
+                    <th scope="col" style="width: 30%">Links</th>
+                    <th scope="col" style="width: 20%">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% courseModule.Assignment.forEach(practice => { %>
+                    <tr>
+                      <td>
+                        <div class="fw-bold"><%= practice.title %></div>
+                      </td>
+                      <td>
+                        <span class="badge bg-light text-dark border"><%= practice.category %></span>
+                      </td>
+                      <td>
+                        <div class="text-muted small text-truncate" style="max-width: 200px;">
+                          <%= (practice.links && practice.links.length > 0) ? practice.links.join(', ') : 'No links' %>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="d-flex gap-2">
+                          <% if (practice.links && practice.links.length > 0) { %>
+                            <a href="<%= practice.links[0] %>" target="_blank" class="btn btn-sm btn-outline-primary" title="View Practice">
+                              <i class="bi bi-box-arrow-up-right"></i>
+                            </a>
+                          <% } %>
+                          <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editPracticeModal<%= practice._id %>" title="Edit Practice">
+                            <i class="bi bi-pencil"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deletePracticeModal<%= practice._id %>" title="Delete">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        <% } %>
       </div>
     </div>
+
 
     <!-- Coach Resources - Full Width Section -->
     <div class="col-12">
@@ -465,3 +567,143 @@
     </div>
   </div>
 </div>
+
+<!-- Edit Video Modals -->
+<% if (courseModule.videoLinks && courseModule.videoLinks.length > 0) { %>
+  <% courseModule.videoLinks.forEach(video => { %>
+    <div class="modal fade" id="editVideoModal<%= video._id %>" tabindex="-1" aria-labelledby="editVideoModalLabel<%= video._id %>" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editVideoModalLabel<%= video._id %>" style="color: var(--text-dark)">Edit Video: <%= video.title %></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/engcoursevideo/<%= video._id %>?_method=PUT" method="POST">
+            <div class="modal-body text-start">
+              <div class="mb-3">
+                <label class="form-label" style="color: var(--text-dark)">Lesson Title</label>
+                <input class="form-control" type="text" name="engVideo[title]" value="<%= video.title %>" required />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label" style="color: var(--text-dark)">Lesson Type</label>
+                <select class="form-select" name="engVideo[lessonType]" required>
+                  <option value="English lesson" <%= video.lessonType === 'English lesson' ? 'selected' : '' %>>English lesson</option>
+                  <option value="Grammar" <%= video.lessonType === 'Grammar' ? 'selected' : '' %>>Grammar</option>
+                  <option value="Vocabulary" <%= video.lessonType === 'Vocabulary' ? 'selected' : '' %>>Vocabulary</option>
+                  <option value="Pronunciation" <%= video.lessonType === 'Pronunciation' ? 'selected' : '' %>>Pronunciation</option>
+                  <option value="Writing" <%= video.lessonType === 'Writing' ? 'selected' : '' %>>Writing</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label" style="color: var(--text-dark)">Thumbnail Image URL</label>
+                <input class="form-control" type="text" name="engVideo[lessonImage]" value="<%= video.lessonImage %>" required />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label" style="color: var(--text-dark)">Video Link (Embed)</label>
+                <input class="form-control" type="text" name="engVideo[engCourseLink]" value="<%= video.engCourseLink %>" required />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%); border: none;">Update Video</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Video Modal -->
+    <div class="modal fade" id="deleteVideoModal<%= video._id %>" tabindex="-1" aria-labelledby="deleteVideoModalLabel<%= video._id %>" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title fw-bold text-danger" id="deleteVideoModalLabel<%= video._id %>">
+              <i class="bi bi-exclamation-triangle-fill"></i> Delete Video
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body py-3 text-start">
+            <p class="mb-0" style="color: var(--text-dark)">Are you sure you want to delete the video <strong class="text-dark">"<%= video.title %>"</strong>? This action cannot be undone.</p>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-sm btn-light border" data-bs-dismiss="modal">Cancel</button>
+            <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/engcoursevideo/<%= video._id %>?_method=DELETE" method="POST" style="display: inline;">
+              <button type="submit" class="btn btn-sm btn-danger px-3">Delete</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% }); %>
+<% } %>
+
+<!-- Edit Practice Modals -->
+<% if (courseModule.Assignment && courseModule.Assignment.length > 0) { %>
+  <% courseModule.Assignment.forEach(practice => { %>
+    <div class="modal fade" id="editPracticeModal<%= practice._id %>" tabindex="-1" aria-labelledby="editPracticeModalLabel<%= practice._id %>" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editPracticeModalLabel<%= practice._id %>" style="color: var(--text-dark)">Edit Practice: <%= practice.title %></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/practice/<%= practice._id %>?_method=PUT" method="POST">
+            <div class="modal-body text-start">
+              <div class="mb-3">
+                <label class="form-label" style="color: var(--text-dark)">Assignment Title</label>
+                <input class="form-control" type="text" name="practice[title]" value="<%= practice.title %>" required />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label" style="color: var(--text-dark)">Category</label>
+                <select class="form-select" name="practice[category]" required>
+                  <option value="English Exercise" <%= practice.category === 'English Exercise' || practice.category === 'English lesson' ? 'selected' : '' %>>English Exercise</option>
+                  <option value="Grammar" <%= practice.category === 'Grammar' ? 'selected' : '' %>>Grammar</option>
+                  <option value="Vocabulary" <%= practice.category === 'Vocabulary' ? 'selected' : '' %>>Vocabulary</option>
+                  <option value="Listening" <%= practice.category === 'Listening' ? 'selected' : '' %>>Listening</option>
+                  <option value="Reading" <%= practice.category === 'Reading' ? 'selected' : '' %>>Reading</option>
+                  <option value="Writing" <%= practice.category === 'Writing' ? 'selected' : '' %>>Writing</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label" style="color: var(--text-dark)">Assignment Links (Comma separated)</label>
+                <input class="form-control" type="text" name="practice[practice_links]" value="<%= (practice.links && practice.links.length > 0) ? practice.links.join(', ') : '' %>" required />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); border: none;">Update Practice</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Practice Modal -->
+    <div class="modal fade" id="deletePracticeModal<%= practice._id %>" tabindex="-1" aria-labelledby="deletePracticeModalLabel<%= practice._id %>" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title fw-bold text-danger" id="deletePracticeModalLabel<%= practice._id %>">
+              <i class="bi bi-exclamation-triangle-fill"></i> Delete Practice
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body py-3 text-start">
+            <p class="mb-0" style="color: var(--text-dark)">Are you sure you want to delete the practice <strong class="text-dark">"<%= practice.title %>"</strong>? This action cannot be undone.</p>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-sm btn-light border" data-bs-dismiss="modal">Cancel</button>
+            <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/practice/<%= practice._id %>?_method=DELETE" method="POST" style="display: inline;">
+              <button type="submit" class="btn btn-sm btn-danger px-3">Delete</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% }); %>
+<% } %>

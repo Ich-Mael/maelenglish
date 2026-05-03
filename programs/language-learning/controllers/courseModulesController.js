@@ -72,7 +72,7 @@ module.exports.showCourseModules = catchAsync(async (req, res) => {
 });
 
 module.exports.editModule = catchAsync(async (req, res) => {
-  const courseModule = await Module.findById(req.params.module_id);
+  const courseModule = await Module.findById(req.params.module_id).populate("videoLinks").populate("Assignment");
   const course = await Course.findById(req.params.course_id);
 
   res.render("programs/language-learning/courses/course_modules/editModule", {
@@ -194,3 +194,74 @@ module.exports.deleteCoachResource = catchAsync(async (req, res) => {
   req.flash("success", "Ressource supprimée avec succès");
   res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${req.params.course_id}/modules/${req.params.courseModule_id}/edit`);
 });
+
+// Delete Video lesson from a module
+module.exports.deleteEngVideoLesson = catchAsync(async (req, res) => {
+  const { course_id, courseModule_id, video_id } = req.params;
+  const courseModule = await Module.findById(courseModule_id);
+
+  if (!courseModule) {
+    req.flash("error", "Module non trouvé");
+    return res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules`);
+  }
+
+  // Remove video ID from module's videoLinks array
+  courseModule.videoLinks = courseModule.videoLinks.filter(
+    id => id.toString() !== video_id
+  );
+  await courseModule.save();
+
+  // Also delete the EngCourseVideo document itself
+  await EngCourseVideo.findByIdAndDelete(video_id);
+
+  req.flash("success", "Vidéo supprimée avec succès");
+  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${courseModule_id}/edit`);
+});
+
+// Update Video lesson in a module
+module.exports.updateEngVideoLesson = catchAsync(async (req, res) => {
+  const { course_id, courseModule_id, video_id } = req.params;
+
+  await EngCourseVideo.findByIdAndUpdate(video_id, req.body.engVideo);
+
+  req.flash("success", "Vidéo mise à jour avec succès");
+  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${courseModule_id}/edit`);
+});
+
+// Update Practice exercise in a module
+module.exports.updatePractice = catchAsync(async (req, res) => {
+  const { course_id, courseModule_id, practice_id } = req.params;
+  const { title, category, practice_links } = req.body.practice;
+
+  const links = practice_links ? practice_links.split(",").map(link => link.trim()) : [];
+
+  await Practice.findByIdAndUpdate(practice_id, { title, category, links });
+
+  req.flash("success", "Exercice de pratique mis à jour avec succès");
+  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${courseModule_id}/edit`);
+});
+
+// Delete Practice exercise from a module
+module.exports.deletePractice = catchAsync(async (req, res) => {
+  const { course_id, courseModule_id, practice_id } = req.params;
+  const courseModule = await Module.findById(courseModule_id);
+
+  if (!courseModule) {
+    req.flash("error", "Module non trouvé");
+    return res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules`);
+  }
+
+  // Remove practice ID from module's Assignment array
+  courseModule.Assignment = courseModule.Assignment.filter(
+    id => id.toString() !== practice_id
+  );
+  await courseModule.save();
+
+  // Also delete the Practice document itself
+  await Practice.findByIdAndDelete(practice_id);
+
+  req.flash("success", "Exercice de pratique supprimé avec succès");
+  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${courseModule_id}/edit`);
+});
+
+
