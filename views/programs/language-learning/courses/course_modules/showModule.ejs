@@ -537,6 +537,17 @@
     });
 </script>
 
+  <!-- Mark as Complete -->
+  <div class="container mb-4">
+    <div class="d-flex justify-content-end">
+      <form action="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%= courseModule._id %>/complete" method="POST">
+        <button type="submit" class="btn btn-success px-4 rounded-pill">
+          <i class="bi bi-check-circle me-2"></i>Marquer comme terminé
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- Side Modal Reuse (unchanged logic) -->
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">

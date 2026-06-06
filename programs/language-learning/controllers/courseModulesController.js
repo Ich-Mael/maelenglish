@@ -72,6 +72,19 @@ module.exports.showModule = catchAsync(async (req, res) => {
   });
 });
 
+module.exports.markComplete = catchAsync(async (req, res) => {
+  const { course_id, module_id } = req.params;
+
+  await StudentProgress.findOneAndUpdate(
+    { userId: req.user._id, courseId: course_id, moduleId: module_id },
+    { $set: { status: 'completed', completedAt: new Date(), lastViewedAt: new Date() } },
+    { upsert: true }
+  );
+
+  req.flash('success', 'Module marqué comme terminé !');
+  res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}`);
+});
+
 module.exports.showCourseModules = catchAsync(async (req, res) => {
   const course = await Course.findById(req.params.course_id).populate(
     "modules"

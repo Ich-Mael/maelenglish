@@ -483,14 +483,33 @@
               <i class="bi bi-shield-check"></i>
               Rôle
             </label>
-            <select id="role" name="role" required>
-              <option value="user" <%= user.role === 'user' ? 'selected' : '' %>>Apprenant</option>
+            <select id="role" name="role" required onchange="toggleInstitutionField(this.value)">
+              <option value="user" <%= user.role === 'user' ? 'selected' : '' %>>Apprenant / Étudiant</option>
+              <option value="institution-admin" <%= user.role === 'institution-admin' ? 'selected' : '' %>>Admin institution partenaire</option>
               <option value="english-coach" <%= user.role === 'english-coach' ? 'selected' : '' %>>English Coach</option>
               <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>Administrateur</option>
               <option value="super-admin" <%= user.role === 'super-admin' ? 'selected' : '' %>>Super Admin</option>
               <option value="account-manager" <%= user.role === 'account-manager' ? 'selected' : '' %>>Gestionnaire de comptes</option>
             </select>
             <span class="form-help">Attention : Changer le rôle peut affecter les permissions</span>
+          </div>
+
+          <div class="form-group" id="institutionField">
+            <label for="institutionId">
+              <i class="bi bi-building"></i>
+              Institution partenaire
+            </label>
+            <select id="institutionId" name="institutionId">
+              <option value="">-- Aucune institution --</option>
+              <% if (typeof institutions !== 'undefined') { %>
+                <% institutions.forEach(inst => { %>
+                  <option value="<%= inst._id %>" <%= user.institutionId && user.institutionId.toString() === inst._id.toString() ? 'selected' : '' %>>
+                    <%= inst.name %>
+                  </option>
+                <% }) %>
+              <% } %>
+            </select>
+            <span class="form-help">Associe cet utilisateur à une institution partenaire.</span>
           </div>
           
           <div class="form-group">
@@ -582,4 +601,14 @@
     </div>
   </div>
 </div>
+
+<script>
+  function toggleInstitutionField(role) {
+    const field = document.getElementById('institutionField');
+    if (field) field.style.display = (role === 'user' || role === 'institution-admin') ? 'block' : 'none';
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    toggleInstitutionField(document.getElementById('role').value);
+  });
+</script>
 

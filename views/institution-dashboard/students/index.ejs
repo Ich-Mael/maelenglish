@@ -10,6 +10,7 @@
   .s-name { font-weight: 600; color: #1a1a2e; margin: 0 0 .1rem; }
   .s-meta { font-size: .8rem; color: #888; margin: 0; }
   .empty-state { text-align: center; padding: 3rem; color: #888; }
+  .badge-inactive-alert { background: #fff3cd; color: #856404; padding: .2rem .6rem; border-radius: 20px; font-size: .72rem; font-weight: 600; }
 </style>` %>
 
 <div class="page-wrapper">
@@ -31,7 +32,10 @@
       </div>
     <% } else { %>
       <p class="text-muted mb-3"><strong><%= studentsWithMeta.length %></strong> étudiant(s)</p>
-      <% studentsWithMeta.forEach(({ student, lastLogin, activeEnrollmentsCount }) => { %>
+      <% studentsWithMeta.forEach(({ student, lastLogin, activeEnrollmentsCount }) => {
+        const INACTIVE_DAYS = 14;
+        const isInactive = !lastLogin || (Date.now() - new Date(lastLogin).getTime()) > INACTIVE_DAYS * 24 * 60 * 60 * 1000;
+      %>
         <div class="student-row">
           <div class="avatar"><%= student.name.charAt(0).toUpperCase() %></div>
           <div class="flex-grow-1 min-width-0">
@@ -50,6 +54,9 @@
               <span class="text-muted" style="font-size:.8rem">Jamais connecté</span>
             <% } %>
           </div>
+          <% if (isInactive && activeEnrollmentsCount > 0) { %>
+            <span class="badge-inactive-alert" title="Aucune connexion depuis plus de <%= 14 %> jours">⚠ Inactif</span>
+          <% } %>
           <span class="badge <%= student.isVerified ? 'bg-success' : 'bg-warning text-dark' %>" style="font-size:.72rem;">
             <%= student.isVerified ? 'Vérifié' : 'Non vérifié' %>
           </span>

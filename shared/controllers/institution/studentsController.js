@@ -1,6 +1,7 @@
 const User = require('../../models/user');
 const { Course } = require('../../models/courses');
 const StudentProgress = require('../../models/studentProgress');
+const Emailer = require('../../utilities/sendEmail');
 const catchAsync = require('../../utilities/catchAsync');
 
 // List all students enrolled in at least one of this institution's assigned courses
@@ -139,6 +140,12 @@ module.exports.enroll = catchAsync(async (req, res) => {
     });
 
     await student.save();
+
+    // Send enrollment notification (fire-and-forget)
+    const enrollment = student.specialProgram[student.specialProgram.length - 1];
+    const loginUrl = `${req.protocol}://${req.get('host')}/login`;
+    new Emailer(student).sendEnrollmentEmail(course.title, enrollment.startDate, enrollment.endDate, loginUrl)
+      .catch(err => console.error('Enrollment email error:', err));
 
     req.flash('success', `${student.name} ${student.surname} inscrit(e) à "${course.title}".`);
     res.redirect(`/institution/dashboard/students/${userId}`);

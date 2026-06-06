@@ -2,6 +2,7 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 const User = require("../models/user");
+const Institution = require("../models/institution");
 const catchAsync = require("../utilities/catchAsync");
 const { isLoggedIn, checkRoles } = require("../middlewares/auth");
 const { trackDevice, getOrGenerateDeviceId } = require("../middlewares/deviceTracker");
@@ -15,9 +16,10 @@ const Emailer = require("../utilities/sendEmail");
  */
 router.get(
   "/admin/users/create",
-  (req, res) => {
-    res.render("admin/create-account");
-  }
+  catchAsync(async (req, res) => {
+    const institutions = await Institution.find({ isActive: true }).select('name _id').sort({ name: 1 });
+    res.render("admin/create-account", { institutions });
+  })
 );
 
 /**
@@ -98,6 +100,16 @@ router.post(
     const activationToken = crypto.randomBytes(32).toString("hex");
     const activationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
 
+    // Resolve institution if provided
+    const institutionId = accountData.institutionId || null;
+    if (institutionId) {
+      const inst = await Institution.findById(institutionId);
+      if (!inst) {
+        req.flash("error", "Institution introuvable.");
+        return res.redirect(req.get("Referrer") || "/");
+      }
+    }
+
     // Create User object
     const user = new User({
       name,
@@ -109,7 +121,8 @@ router.post(
       role: userRole,
       isVerified: adminCount === 0 ? true : false, // Auto-verify first admin
       activationToken,
-      activationExpires
+      activationExpires,
+      institutionId: institutionId || null
     });
 
     // Register user with password (passport-local-mongoose)
@@ -352,16 +365,17 @@ router.get(
   isLoggedIn,
   checkRoles(["admin", "super-admin"]),
   catchAsync(async (req, res) => {
-    const user = await User.findById(req.params.id);
+    const [user, institutions] = await Promise.all([
+      User.findById(req.params.id),
+      Institution.find({ isActive: true }).select('name _id').sort({ name: 1 })
+    ]);
 
     if (!user) {
       req.flash("error", "Utilisateur non trouvé");
       return res.redirect("/admin/users");
     }
 
-    res.render("admin/users/edit", {
-      user
-    });
+    res.render("admin/users/edit", { user, institutions });
   })
 );
 
@@ -374,7 +388,7 @@ router.put(
   isLoggedIn,
   checkRoles(["admin", "super-admin"]),
   catchAsync(async (req, res) => {
-    const { name, surname, username, email, gender, phoneNumber, role, isVerified, imageUrl, about, englishLevel } = req.body;
+    const { name, surname, username, email, gender, phoneNumber, role, isVerified, imageUrl, about, englishLevel, institutionId } = req.body;
 
     const user = await User.findById(req.params.id);
 
@@ -413,6 +427,10 @@ router.put(
     if (imageUrl !== undefined) user.imageUrl = imageUrl;
     if (about !== undefined) user.about = about;
     if (englishLevel !== undefined) user.englishLevel = englishLevel;
+    // institutionId: empty string means "remove", a valid id means "assign"
+    if (institutionId !== undefined) {
+      user.institutionId = institutionId || null;
+    }
 
     await user.save();
 

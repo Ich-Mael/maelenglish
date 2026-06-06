@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription à un cours — AfroHK</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
+        .email-container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .email-header { background: linear-gradient(135deg, #0e7490 0%, #164e63 100%); color: #ffffff; padding: 30px 20px; text-align: center; }
+        .email-header h1 { margin: 0; font-size: 26px; }
+        .email-body { padding: 30px 20px; color: #333333; line-height: 1.6; }
+        .email-body h2 { color: #0e7490; font-size: 20px; margin-top: 0; }
+        .info-box { background-color: #f0fdff; border-left: 4px solid #0e7490; padding: 15px; margin: 20px 0; border-radius: 4px; }
+        .info-box p { margin: 8px 0; }
+        .info-box strong { color: #0e7490; }
+        .btn { display: inline-block; padding: 12px 30px; background: linear-gradient(135deg, #0e7490 0%, #164e63 100%); color: #ffffff; text-decoration: none; border-radius: 50px; margin: 20px 0; font-weight: bold; }
+        .email-footer { background-color: #f8f9fa; padding: 20px; text-align: center; color: #666666; font-size: 14px; }
+        .email-footer a { color: #0e7490; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>📚 Nouvelle inscription</h1>
+        </div>
+
+        <div class="email-body">
+            <h2>Bonjour <%= user.name %> <%= user.surname %> !</h2>
+
+            <p>Vous avez été inscrit(e) à un nouveau cours sur <strong>Afro House of Knowledge</strong>.</p>
+
+            <div class="info-box">
+                <p><strong>Cours :</strong> <%= courseTitle %></p>
+                <p><strong>Début d'accès :</strong> <%= startDate %></p>
+                <p><strong>Fin d'accès :</strong> <%= endDate %></p>
+            </div>
+
+            <p>Connectez-vous à votre espace pour accéder à votre cours.</p>
+
+            <p style="text-align: center;">
+                <a href="<%= loginUrl %>" class="btn">Accéder à mes cours</a>
+            </p>
+
+            <p>Pour toute question, n'hésitez pas à contacter votre institution ou l'équipe AfroHK.</p>
+
+            <p>Cordialement,<br><strong>L'équipe AfroHK</strong></p>
+        </div>
+
+        <div class="email-footer">
+            <p>Afro House of Knowledge — Le savoir sans barrières</p>
+            <p>
+                <a href="https://www.afrohk.com">www.afrohk.com</a> |
+                <a href="mailto:contact@afrohk.com">contact@afrohk.com</a>
+            </p>
+            <p style="font-size: 12px; color: #999;">Cet email a été envoyé automatiquement. Merci de ne pas y répondre directement.</p>
+        </div>
+    </div>
+</body>
+</html>

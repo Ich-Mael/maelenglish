@@ -115,6 +115,38 @@ module.exports = class Emailer {
     await this.newTransport().sendMail(mailOptions);
   }
 
+  async sendEnrollmentEmail(courseTitle, startDate, endDate, loginUrl) {
+    const template = "enrollment";
+    const subject = `Inscription au cours "${courseTitle}" — AfroHK`;
+
+    const data = {
+      user: this.user,
+      courseTitle,
+      startDate: new Date(startDate).toLocaleDateString('fr-FR'),
+      endDate: new Date(endDate).toLocaleDateString('fr-FR'),
+      loginUrl,
+      subject
+    };
+
+    let html;
+    try {
+      html = await ejs.renderFile(path.join(__dirname, "../../views/emails", `${template}.ejs`), data);
+    } catch (err) {
+      console.error('Enrollment email render error:', err);
+      return;
+    }
+
+    const mailOptions = {
+      from: this.from,
+      to: this.to,
+      subject,
+      html,
+      text: htmlToText.convert(html, { wordwrap: 130 }),
+    };
+
+    await this.newTransport().sendMail(mailOptions);
+  }
+
   async sendActivationEmail(password) {
     // Add password to the local scope for the template
     this.password = password;

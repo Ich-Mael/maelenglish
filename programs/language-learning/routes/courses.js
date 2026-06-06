@@ -82,6 +82,9 @@ router.post('/admindashboard/:course_id/module', isLoggedIn, isVerified, checkRo
 // Show module content
 router.get('/:course_id/modules/:module_id', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, CourseModules.showModule);
 
+// Mark module as completed
+router.post('/:course_id/modules/:module_id/complete', isLoggedIn, isVerified, CourseModules.markComplete);
+
 // Edit module
 router.get("/admindashboard/:course_id/modules/:module_id/edit", isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), CourseModules.editModule);
 
