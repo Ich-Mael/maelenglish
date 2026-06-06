@@ -3,24 +3,20 @@ const User = require('../../models/user');
 const StudentProgress = require('../../models/studentProgress');
 const catchAsync = require('../../utilities/catchAsync');
 
-// List assigned courses
+// List assigned courses with enrolled student counts
 module.exports.index = catchAsync(async (req, res) => {
+    const assignedCourses = req.institution.assignedCourses;
+
     const courses = await Course.find({
-        _id: { $in: req.institution.assignedCourses }
+        _id: { $in: assignedCourses }
     }).select('title isActive students modules session').sort({ title: 1 });
 
-    // For each course, count how many institution students are enrolled
-    const institutionStudentIds = await User.find({
-        institutionId: req.institution._id,
-        role: { $ne: 'institution-admin' }
-    }).distinct('_id');
-
-    const coursesWithStats = courses.map(course => {
-        const enrolledCount = (course.students || []).filter(sid =>
-            institutionStudentIds.some(iid => iid.toString() === sid.toString())
-        ).length;
-        return { course, enrolledCount };
-    });
+    // For each course, count students enrolled in it (any student, not filtered by institution)
+    // The course.students array is the source of truth for enrollment
+    const coursesWithStats = courses.map(course => ({
+        course,
+        enrolledCount: (course.students || []).length
+    }));
 
     res.render('institution-dashboard/courses/index', {
         institution: req.institution,
@@ -28,12 +24,13 @@ module.exports.index = catchAsync(async (req, res) => {
     });
 });
 
-// Show one course with all institution students and their progress
+// Show one course with all enrolled students and their progress
 module.exports.show = catchAsync(async (req, res) => {
     const { courseId } = req.params;
+    const assignedCourses = req.institution.assignedCourses;
 
-    // Verify course is assigned
-    const isAssigned = req.institution.assignedCourses.some(id => id.toString() === courseId);
+    // Verify course is assigned to this institution
+    const isAssigned = assignedCourses.some(id => id.toString() === courseId);
     if (!isAssigned) {
         req.flash('error', 'Ce cours n\'est pas assigné à votre institution.');
         return res.redirect('/institution/dashboard/courses');
@@ -45,16 +42,15 @@ module.exports.show = catchAsync(async (req, res) => {
         return res.redirect('/institution/dashboard/courses');
     }
 
-    // Get all institution students
+    // Students = all users enrolled in this specific course
     const students = await User.find({
-        institutionId: req.institution._id,
+        coursesTaken: courseId,
         role: { $ne: 'institution-admin' }
     }).select('name surname username email specialProgram coursesTaken devices').sort({ surname: 1 });
 
-    // Get progress for all institution students in this course
+    // Progress for this course (scoped to courseId only — no institutionId filter)
     const progress = await StudentProgress.find({
-        courseId,
-        institutionId: req.institution._id
+        courseId
     }).populate('moduleId', 'title');
 
     // Build progress lookup: userId -> [moduleProgress]

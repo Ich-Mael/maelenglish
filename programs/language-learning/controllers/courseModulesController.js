@@ -54,14 +54,11 @@ module.exports.showModule = catchAsync(async (req, res) => {
   let moduleReveal = DateUtil.revealTime(courseModule.revealDate);
   let displayRevealDate = DateUtil.localTime(courseModule.revealDate);
 
-  // Track module view for institution progress (fire-and-forget)
+  // Track module view for progress (fire-and-forget)
   if (req.user) {
     StudentProgress.findOneAndUpdate(
       { userId: req.user._id, courseId: course._id, moduleId: courseModule._id },
-      {
-        $set: { lastViewedAt: new Date(), status: 'in_progress' },
-        $setOnInsert: { institutionId: req.user.institutionId || null }
-      },
+      { $set: { lastViewedAt: new Date(), status: 'in_progress' } },
       { upsert: true, new: true }
     ).catch(err => console.error('StudentProgress tracking error:', err));
   }
