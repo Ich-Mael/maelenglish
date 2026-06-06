@@ -1,0 +1,43 @@
+<% layout('layouts/main') %>
+<% headContent = `<style>
+  .page-wrapper{margin-top:80px;padding:2rem 0 4rem}
+  .proj-header{background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;padding:2rem;border-radius:16px;margin-bottom:2rem}
+  .proj-header h1{margin:0 0 .3rem;font-size:1.6rem;font-weight:800}
+  .proj-card{background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.07);padding:1.75rem}
+</style>` %>
+<div class="page-wrapper">
+  <div class="container" style="max-width:760px">
+    <div class="proj-header">
+      <p style="opacity:.7;font-size:.82rem;margin:0 0 .25rem"><%= course.title %></p>
+      <h1><%= course.finalProject.title || 'Projet final' %></h1>
+    </div>
+    <%- include('../../../../partials/flash') %>
+    <div class="proj-card">
+      <% if (course.finalProject.instructions) { %>
+        <div class="mb-4 p-3 bg-light rounded"><%= course.finalProject.instructions %></div>
+      <% } %>
+      <% if (existing && existing.status === 'graded') { %>
+        <div class="alert alert-success">
+          <strong>Note : <%= existing.grade %>/<%= existing.maxScore %></strong>
+          <% if (existing.feedback) { %><p class="mb-0 mt-1"><%= existing.feedback %></p><% } %>
+        </div>
+      <% } else if (existing) { %>
+        <div class="alert alert-info">⏳ Projet soumis — en attente de correction.</div>
+      <% } %>
+      <form action="/programs/language-learning/general-english-boost/<%= course._id %>/final-project/submit" method="POST">
+        <div class="mb-3">
+          <label class="form-label fw-semibold"><%= course.finalProject.submissionType === 'link' ? 'Lien URL de votre projet' : 'Votre projet' %></label>
+          <% if (course.finalProject.submissionType === 'link') { %>
+            <input type="url" name="content" class="form-control" value="<%= existing ? existing.content : '' %>" placeholder="https://..." required>
+          <% } else { %>
+            <textarea name="content" class="form-control" rows="8" required><%= existing ? existing.content : '' %></textarea>
+          <% } %>
+        </div>
+        <div class="d-flex gap-2">
+          <a href="/programs/language-learning/general-english-boost/<%= course._id %>" class="btn btn-outline-secondary">Annuler</a>
+          <button type="submit" class="btn btn-primary px-4"><%= existing ? 'Resoumettre' : 'Soumettre le projet' %></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

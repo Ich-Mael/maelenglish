@@ -364,3 +364,80 @@
       </div>
   </div>
 </div>
+<!-- ── FINAL EXAM ── -->
+<div class="container mb-4" style="max-width:900px;">
+  <div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center" style="background:#eff6ff;">
+      <h5 class="mb-0 fw-bold" style="color:#1e40af;"><i class="bi bi-mortarboard me-2"></i>Examen final</h5>
+      <span class="text-muted small"><%= course.finalExam && course.finalExam.questions && course.finalExam.questions.length > 0 ? course.finalExam.questions.length + ' question(s)' : 'Non configuré' %></span>
+    </div>
+    <div class="card-body">
+      <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/final-exam" method="POST">
+        <div class="row g-2 mb-3">
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Titre</label>
+            <input type="text" name="title" class="form-control form-control-sm" value="<%= course.finalExam && course.finalExam.title ? course.finalExam.title : '' %>" placeholder="Examen final">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold">Score de passage (%)</label>
+            <input type="number" name="passingScore" class="form-control form-control-sm" min="0" max="100" value="<%= course.finalExam && course.finalExam.passingScore != null ? course.finalExam.passingScore : 70 %>">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold">Limite temps (min)</label>
+            <input type="number" name="timeLimit" class="form-control form-control-sm" min="0" value="<%= course.finalExam && course.finalExam.timeLimit != null ? course.finalExam.timeLimit : 0 %>">
+          </div>
+        </div>
+        <div id="feQuestionsContainer">
+          <% if (course.finalExam && course.finalExam.questions && course.finalExam.questions.length > 0) { %>
+            <% course.finalExam.questions.forEach((q, qi) => { %>
+              <div class="question-block border rounded p-3 mb-2 bg-light">
+                <div class="d-flex justify-content-between mb-1"><strong class="small">Q<%= qi+1 %></strong><button type="button" class="btn btn-sm btn-outline-danger py-0 px-1" onclick="this.closest('.question-block').remove()">×</button></div>
+                <input type="text" name="questions[<%= qi %>][text]" class="form-control form-control-sm mb-1" value="<%= q.text %>" placeholder="Question" required>
+                <input type="text" name="questions[<%= qi %>][correctAnswer]" class="form-control form-control-sm mb-1" value="<%= q.correctAnswer %>" placeholder="Valeur correcte">
+                <input type="text" name="questions[<%= qi %>][explanation]" class="form-control form-control-sm mb-2" value="<%= q.explanation || '' %>" placeholder="Explication">
+                <% (q.options || []).forEach((opt, oi) => { %><div class="input-group input-group-sm mb-1"><input type="text" name="questions[<%= qi %>][options][<%= oi %>][text]" class="form-control" value="<%= opt.text %>" placeholder="Option"><input type="text" name="questions[<%= qi %>][options][<%= oi %>][value]" class="form-control" style="max-width:80px" value="<%= opt.value %>" placeholder="val"></div><% }) %>
+              </div>
+            <% }) %>
+          <% } %>
+        </div>
+        <button type="button" class="btn btn-outline-secondary btn-sm mb-3" onclick="addFEQuestion()">+ Question</button>
+        <div><button type="submit" class="btn btn-primary btn-sm px-4">Sauvegarder l'examen</button></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ── FINAL PROJECT ── -->
+<div class="container mb-5" style="max-width:900px;">
+  <div class="card shadow-sm">
+    <div class="card-header" style="background:#fefce8;">
+      <h5 class="mb-0 fw-bold" style="color:#854d0e;"><i class="bi bi-journal-check me-2"></i>Projet final</h5>
+    </div>
+    <div class="card-body">
+      <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/final-project" method="POST">
+        <div class="row g-2 mb-2">
+          <div class="col-md-6"><label class="form-label small fw-semibold">Titre</label><input type="text" name="title" class="form-control form-control-sm" value="<%= course.finalProject && course.finalProject.title ? course.finalProject.title : '' %>" placeholder="Projet final"></div>
+          <div class="col-md-3"><label class="form-label small fw-semibold">Type de rendu</label><select name="submissionType" class="form-select form-select-sm"><option value="text" <%= course.finalProject && course.finalProject.submissionType === 'text' ? 'selected' : '' %>>Texte</option><option value="link" <%= course.finalProject && course.finalProject.submissionType === 'link' ? 'selected' : '' %>>Lien URL</option></select></div>
+          <div class="col-md-3"><label class="form-label small fw-semibold">Note max</label><input type="number" name="maxScore" class="form-control form-control-sm" value="<%= course.finalProject && course.finalProject.maxScore != null ? course.finalProject.maxScore : 100 %>"></div>
+        </div>
+        <div class="mb-2"><label class="form-label small fw-semibold">Consignes</label><textarea name="instructions" class="form-control form-control-sm" rows="3"><%= course.finalProject && course.finalProject.instructions ? course.finalProject.instructions : '' %></textarea></div>
+        <button type="submit" class="btn btn-warning btn-sm px-4">Sauvegarder le projet</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+let feIdx = <%= course.finalExam && course.finalExam.questions ? course.finalExam.questions.length : 0 %>;
+function addFEQuestion() {
+  const idx = feIdx++;
+  document.getElementById('feQuestionsContainer').insertAdjacentHTML('beforeend', `
+    <div class="question-block border rounded p-3 mb-2 bg-light">
+      <div class="d-flex justify-content-between mb-1"><strong class="small">Q${idx+1}</strong><button type="button" class="btn btn-sm btn-outline-danger py-0 px-1" onclick="this.closest('.question-block').remove()">×</button></div>
+      <input type="text" name="questions[${idx}][text]" class="form-control form-control-sm mb-1" placeholder="Question" required>
+      <input type="text" name="questions[${idx}][correctAnswer]" class="form-control form-control-sm mb-1" placeholder="Valeur correcte">
+      <input type="text" name="questions[${idx}][explanation]" class="form-control form-control-sm mb-2" placeholder="Explication">
+      ${[0,1,2,3].map(oi=>`<div class="input-group input-group-sm mb-1"><input type="text" name="questions[${idx}][options][${oi}][text]" class="form-control" placeholder="Option ${oi+1}"><input type="text" name="questions[${idx}][options][${oi}][value]" class="form-control" style="max-width:80px" placeholder="${String.fromCharCode(97+oi)}"></div>`).join('')}
+    </div>`);
+}
+</script>

@@ -106,15 +106,20 @@ module.exports.showCourseModules = catchAsync(async (req, res) => {
 });
 
 module.exports.editModule = catchAsync(async (req, res) => {
+  const Lesson = require('../../../shared/models/lesson');
   const courseModule = await Module.findById(req.params.module_id)
     .populate("videoLinks")
     .populate("Assignment")
     .populate("evaluation");
   const course = await Course.findById(req.params.course_id);
 
+  // Load lessons for the new lesson builder
+  const lessons = await Lesson.find({ moduleId: req.params.module_id }).sort({ order: 1 });
+
   res.render("programs/language-learning/courses/course_modules/editModule", {
     courseModule,
     course,
+    lessons
   });
 });
 
@@ -423,4 +428,66 @@ module.exports.submitEvaluation = catchAsync(async (req, res) => {
 
   req.flash('success', `Évaluation soumise ! Score : ${score}/100 (${correct}/${evaluation.questions.length} bonne(s) réponse(s)).`);
   res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}`);
+});
+
+// ─── MODULE QUIZ (new structured field) ──────────────────────────────────────
+
+module.exports.saveModuleQuiz = catchAsync(async (req, res) => {
+  const { course_id, module_id } = req.params;
+  const { title, passingScore, timeLimit, questions } = req.body;
+
+  const courseModule = await Module.findById(module_id);
+  if (!courseModule) {
+    req.flash('error', 'Module introuvable.');
+    return res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules`);
+  }
+
+  const parsedQuestions = questions
+    ? (Array.isArray(questions) ? questions : [questions]).map(q => ({
+        text:          q.text || '',
+        correctAnswer: q.correctAnswer || '',
+        explanation:   q.explanation || '',
+        options:       (Array.isArray(q.options) ? q.options : []).map((opt, i) => ({
+          id:    String(i),
+          text:  opt.text  || '',
+          value: opt.value || String(i)
+        }))
+      }))
+    : [];
+
+  courseModule.moduleQuiz = {
+    title:        title || 'Quiz du module',
+    passingScore: parseInt(passingScore) || 70,
+    timeLimit:    parseInt(timeLimit)    || 0,
+    questions:    parsedQuestions
+  };
+  await courseModule.save();
+
+  req.flash('success', 'Quiz du module sauvegardé.');
+  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${module_id}/edit`);
+});
+
+// ─── MODULE ASSIGNMENT ────────────────────────────────────────────────────────
+
+module.exports.saveModuleAssignment = catchAsync(async (req, res) => {
+  const { course_id, module_id } = req.params;
+  const { title, instructions, submissionType, maxScore, dueDate } = req.body;
+
+  const courseModule = await Module.findById(module_id);
+  if (!courseModule) {
+    req.flash('error', 'Module introuvable.');
+    return res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules`);
+  }
+
+  courseModule.moduleAssignment = {
+    title:          title || 'Devoir du module',
+    instructions:   instructions || '',
+    submissionType: submissionType || 'text',
+    maxScore:       parseInt(maxScore) || 100,
+    dueDate:        dueDate ? new Date(dueDate) : null
+  };
+  await courseModule.save();
+
+  req.flash('success', 'Devoir du module sauvegardé.');
+  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${module_id}/edit`);
 });

@@ -98,6 +98,32 @@ const courseSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
   }, ],
+
+  // ── NEW: structured course fields ─────────────────────────────────
+  level: {
+    type: String,
+    enum: ['beginner', 'intermediate', 'advanced'],
+    default: 'beginner'
+  },
+
+  finalExam: {
+    title:        { type: String, default: '' },
+    passingScore: { type: Number, default: 70 },
+    timeLimit:    { type: Number, default: 0 }, // minutes, 0 = no limit
+    questions: [{
+      text:          String,
+      options: [{ id: String, text: String, value: String }],
+      correctAnswer: String,
+      explanation:   { type: String, default: '' }
+    }]
+  },
+
+  finalProject: {
+    title:          { type: String, default: '' },
+    instructions:   { type: String, default: '' },
+    submissionType: { type: String, enum: ['text', 'link'], default: 'text' },
+    maxScore:       { type: Number, default: 100 }
+  }
 }, {
   timestamps: true,
 });
@@ -166,7 +192,38 @@ const moduleSchema = new Schema({
       type: Date,
       default: Date.now
     }
-  }]
+  }],
+
+  // ── NEW: structured module fields ──────────────────────────────────
+  order: { type: Number, default: 0 },
+
+  // Lessons (new atomic content units replacing videoLinks + Assignment)
+  lessons: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Lesson'
+  }],
+
+  // Graded quiz at end of module
+  moduleQuiz: {
+    title:        { type: String, default: '' },
+    passingScore: { type: Number, default: 70 },
+    timeLimit:    { type: Number, default: 0 }, // minutes, 0 = no limit
+    questions: [{
+      text:          String,
+      options: [{ id: String, text: String, value: String }],
+      correctAnswer: String,
+      explanation:   { type: String, default: '' }
+    }]
+  },
+
+  // Assignment at end of module (manually graded)
+  moduleAssignment: {
+    title:          { type: String, default: '' },
+    instructions:   { type: String, default: '' },
+    submissionType: { type: String, enum: ['text', 'link'], default: 'text' },
+    maxScore:       { type: Number, default: 100 },
+    dueDate:        { type: Date, default: null }
+  }
 });
 
 /*===================================

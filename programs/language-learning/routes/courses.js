@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const Courses = require('../controllers/coursesController');
 const CourseModules = require('../controllers/courseModulesController');
+const Lessons = require('../controllers/lessonController');
+const StudentLessons = require('../controllers/studentLessonController');
+const Assessments = require('../controllers/studentAssessmentController');
 const catchAsync = require('../../../shared/utilities/catchAsync');
 const {
     isLoggedIn,
@@ -50,6 +53,12 @@ router.get("/admindashboard/:course_id/edit", isLoggedIn, isVerified, checkRoles
 // Update Course info
 router.put("/admindashboard/:course_id", isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), Courses.updateCourse);
 
+// Save final exam
+router.post("/admindashboard/:course_id/final-exam", isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), Courses.saveFinalExam);
+
+// Save final project
+router.post("/admindashboard/:course_id/final-project", isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), Courses.saveFinalProject);
+
 // Delete course
 router.get("/admindashboard/:course_id/delete", isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), Courses.deleteCourse); // Fixed: Added delete route if missing or modified
 router.delete("/admindashboard/:course_id", isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), Courses.deleteCourse);
@@ -79,11 +88,16 @@ router.get('/admindashboard/:course_id/modules', isLoggedIn, isVerified, checkRo
 // Creating a new module
 router.post('/admindashboard/:course_id/module', isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), CourseModules.createModule);
 
-// Show module content
+// Show module content (legacy — kept for backward compat)
 router.get('/:course_id/modules/:module_id', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, CourseModules.showModule);
 
-// Mark module as completed
+// Mark module as completed (legacy)
 router.post('/:course_id/modules/:module_id/complete', isLoggedIn, isVerified, CourseModules.markComplete);
+
+// New structured lesson routes
+router.get('/:course_id/modules/:module_id/overview', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, StudentLessons.showModuleOverview);
+router.get('/:course_id/modules/:module_id/lessons/:lesson_id', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, StudentLessons.showLesson);
+router.post('/:course_id/modules/:module_id/lessons/:lesson_id/complete', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, StudentLessons.completeLesson);
 
 // Edit module
 router.get("/admindashboard/:course_id/modules/:module_id/edit", isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), CourseModules.editModule);
@@ -126,8 +140,54 @@ router.post('/admindashboard/:course_id/modules/:module_id/evaluation', isLogged
 // Admin: delete evaluation from a module
 router.delete('/admindashboard/:course_id/modules/:module_id/evaluation', isLoggedIn, isVerified, checkRoles(['admin', 'super-admin']), CourseModules.deleteEvaluation);
 
-// Student: submit evaluation answers
+// Admin: save module quiz (new structured field)
+router.post('/admindashboard/:course_id/modules/:module_id/module-quiz', isLoggedIn, isVerified, checkRoles(['admin', 'super-admin']), CourseModules.saveModuleQuiz);
+
+// Admin: save module assignment
+router.post('/admindashboard/:course_id/modules/:module_id/assignment', isLoggedIn, isVerified, checkRoles(['admin', 'super-admin']), CourseModules.saveModuleAssignment);
+
+// Student: submit evaluation answers (legacy)
 router.post('/:course_id/modules/:module_id/evaluation/submit', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, CourseModules.submitEvaluation);
+
+// Student: module quiz (new)
+router.get( '/:course_id/modules/:module_id/module-quiz',        isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, Assessments.showModuleQuiz);
+router.post('/:course_id/modules/:module_id/module-quiz/submit', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, Assessments.submitModuleQuiz);
+
+// Student: module assignment
+router.get( '/:course_id/modules/:module_id/assignment',        isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, Assessments.showModuleAssignment);
+router.post('/:course_id/modules/:module_id/assignment/submit', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, Assessments.submitModuleAssignment);
+
+// Student: final exam
+router.get( '/:course_id/final-exam',        isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, Assessments.showFinalExam);
+router.post('/:course_id/final-exam/submit', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, Assessments.submitFinalExam);
+
+// Student: final project
+router.get( '/:course_id/final-project',        isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, Assessments.showFinalProject);
+router.post('/:course_id/final-project/submit', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, Assessments.submitFinalProject);
+
+// Instructor: grading queue
+router.get( '/admindashboard/:course_id/grading',                      isLoggedIn, isVerified, checkRoles(['admin', 'super-admin', 'english-coach', 'instructor']), Assessments.gradingQueue);
+router.post('/admindashboard/:course_id/grading/:submission_id/grade', isLoggedIn, isVerified, checkRoles(['admin', 'super-admin', 'english-coach', 'instructor']), Assessments.gradeSubmission);
+
+/*
+ ************************* LESSON ROUTES *******************************************
+ */
+const adminLesson = [isLoggedIn, isVerified, checkRoles(['admin', 'super-admin'])];
+
+// Create lesson in a module
+router.post('/admindashboard/:course_id/modules/:module_id/lessons', ...adminLesson, Lessons.create);
+
+// Update lesson
+router.put('/admindashboard/:course_id/modules/:module_id/lessons/:lesson_id', ...adminLesson, Lessons.update);
+
+// Delete lesson
+router.delete('/admindashboard/:course_id/modules/:module_id/lessons/:lesson_id', ...adminLesson, Lessons.destroy);
+
+// Reorder lessons (AJAX)
+router.post('/admindashboard/:course_id/modules/:module_id/lessons/reorder', ...adminLesson, Lessons.reorder);
+
+// Save practice quiz questions for a lesson
+router.post('/admindashboard/:course_id/modules/:module_id/lessons/:lesson_id/practice-quiz', ...adminLesson, Lessons.savePracticeQuiz);
 
 /*
  ************************* COACH RESOURCES ROUTES *******************************************

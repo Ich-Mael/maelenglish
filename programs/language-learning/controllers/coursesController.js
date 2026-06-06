@@ -252,3 +252,64 @@ module.exports.searchUsers = catchAsync(async (req, res) => {
   res.json({ users });
 });
 
+
+// ─── FINAL EXAM ───────────────────────────────────────────────────────────────
+
+module.exports.saveFinalExam = catchAsync(async (req, res) => {
+  const { course_id } = req.params;
+  const { title, passingScore, timeLimit, questions } = req.body;
+
+  const course = await Course.findById(course_id);
+  if (!course) {
+    req.flash('error', 'Cours introuvable.');
+    return res.redirect('/programs/language-learning/general-english-boost/admindashboard');
+  }
+
+  const parsedQuestions = questions
+    ? (Array.isArray(questions) ? questions : [questions]).map(q => ({
+        text:          q.text || '',
+        correctAnswer: q.correctAnswer || '',
+        explanation:   q.explanation || '',
+        options:       (Array.isArray(q.options) ? q.options : []).map((opt, i) => ({
+          id:    String(i),
+          text:  opt.text  || '',
+          value: opt.value || String(i)
+        }))
+      }))
+    : [];
+
+  course.finalExam = {
+    title:        title || 'Examen final',
+    passingScore: parseInt(passingScore) || 70,
+    timeLimit:    parseInt(timeLimit)    || 0,
+    questions:    parsedQuestions
+  };
+  await course.save();
+
+  req.flash('success', 'Examen final sauvegardé.');
+  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/edit`);
+});
+
+// ─── FINAL PROJECT ────────────────────────────────────────────────────────────
+
+module.exports.saveFinalProject = catchAsync(async (req, res) => {
+  const { course_id } = req.params;
+  const { title, instructions, submissionType, maxScore } = req.body;
+
+  const course = await Course.findById(course_id);
+  if (!course) {
+    req.flash('error', 'Cours introuvable.');
+    return res.redirect('/programs/language-learning/general-english-boost/admindashboard');
+  }
+
+  course.finalProject = {
+    title:          title || 'Projet final',
+    instructions:   instructions || '',
+    submissionType: submissionType || 'text',
+    maxScore:       parseInt(maxScore) || 100
+  };
+  await course.save();
+
+  req.flash('success', 'Projet final sauvegardé.');
+  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/edit`);
+});

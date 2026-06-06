@@ -707,6 +707,140 @@
     </div>
   <% }); %>
 <% } %>
+<!-- ── LESSON BUILDER ── -->
+<div class="card mt-4 shadow-sm">
+  <div class="card-header d-flex justify-content-between align-items-center" style="background:#f0fdf4;">
+    <h5 class="mb-0 fw-bold" style="color:#166534;"><i class="bi bi-collection-play me-2"></i>Leçons du module</h5>
+    <span class="badge bg-success"><%= typeof lessons !== 'undefined' ? lessons.length : 0 %> leçon(s)</span>
+  </div>
+  <div class="card-body">
+
+    <!-- Existing lessons list -->
+    <div id="lessonList" style="margin-bottom:1.5rem;">
+      <% if (typeof lessons !== 'undefined' && lessons.length > 0) { %>
+        <% lessons.forEach(lesson => { %>
+          <div class="lesson-item d-flex align-items-center gap-3 p-3 mb-2 border rounded" style="background:#fafafa;" data-id="<%= lesson._id %>">
+            <span style="cursor:grab;color:#aaa;font-size:1.2rem;">⠿</span>
+            <span class="badge <%=
+              lesson.type === 'video'         ? 'bg-primary' :
+              lesson.type === 'text'          ? 'bg-secondary' :
+              lesson.type === 'pdf'           ? 'bg-warning text-dark' :
+              'bg-info text-dark' %>" style="font-size:.72rem;min-width:72px;text-align:center;">
+              <%= lesson.type === 'video' ? '▶ Vidéo' : lesson.type === 'text' ? '📄 Texte' : lesson.type === 'pdf' ? '📎 PDF' : '🧩 Quiz' %>
+            </span>
+            <span class="fw-semibold flex-grow-1"><%= lesson.title %></span>
+            <% if (lesson.type === 'video' && lesson.videoDuration) { %>
+              <span class="text-muted small"><%= lesson.videoDuration %> min</span>
+            <% } %>
+            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2"
+              onclick="openEditLesson('<%= lesson._id %>','<%= lesson.type %>','<%= lesson.title.replace(/'/g,\"\\'\"") %>','<%= lesson.description ? lesson.description.replace(/'/g,\"\\'\"") : '' %>','<%= lesson.videoUrl || '' %>','<%= lesson.videoDuration || 0 %>','<%= (lesson.fileUrl||'').replace(/'/g,\"\\'\"") %>','<%= (lesson.fileName||'').replace(/'/g,\"\\'\"") %>')">
+              Modifier
+            </button>
+            <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/lessons/<%= lesson._id %>?_method=DELETE" method="POST" style="margin:0">
+              <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" onclick="return confirm('Supprimer cette leçon ?')">×</button>
+            </form>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <p class="text-muted small mb-3">Aucune leçon pour ce module. Ajoutez-en une ci-dessous.</p>
+      <% } %>
+    </div>
+
+    <!-- Add new lesson form -->
+    <details>
+      <summary class="btn btn-sm btn-outline-success mb-3" style="list-style:none;cursor:pointer;">+ Ajouter une leçon</summary>
+      <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/lessons" method="POST" class="border rounded p-3 mt-2" style="background:#f0fdf4;">
+        <div class="row g-2 mb-2">
+          <div class="col-md-7">
+            <input type="text" name="title" class="form-control form-control-sm" placeholder="Titre de la leçon *" required>
+          </div>
+          <div class="col-md-5">
+            <select name="type" id="newLessonType" class="form-select form-select-sm" onchange="updateNewLessonFields(this.value)" required>
+              <option value="">-- Type --</option>
+              <option value="video">▶ Vidéo</option>
+              <option value="text">📄 Texte</option>
+              <option value="pdf">📎 PDF</option>
+              <option value="practice_quiz">🧩 Quiz de pratique</option>
+            </select>
+          </div>
+        </div>
+        <textarea name="description" class="form-control form-control-sm mb-2" rows="2" placeholder="Description (optionnel)"></textarea>
+        <div id="newLessonVideoFields" style="display:none;" class="row g-2 mb-2">
+          <div class="col-md-9"><input type="url" name="videoUrl" class="form-control form-control-sm" placeholder="URL de la vidéo (YouTube, Vimeo...)"></div>
+          <div class="col-md-3"><input type="number" name="videoDuration" class="form-control form-control-sm" placeholder="Durée (min)"></div>
+        </div>
+        <div id="newLessonPdfFields" style="display:none;" class="row g-2 mb-2">
+          <div class="col-md-8"><input type="url" name="fileUrl" class="form-control form-control-sm" placeholder="URL du fichier PDF"></div>
+          <div class="col-md-4"><input type="text" name="fileName" class="form-control form-control-sm" placeholder="Nom du fichier"></div>
+        </div>
+        <div id="newLessonTextFields" style="display:none;" class="mb-2">
+          <textarea name="content" class="form-control form-control-sm" rows="4" placeholder="Contenu textuel de la leçon (HTML accepté)"></textarea>
+        </div>
+        <p id="newLessonQuizNote" style="display:none;" class="text-muted small mb-2">La leçon sera créée vide. Modifiez-la ensuite pour ajouter des questions.</p>
+        <button type="submit" class="btn btn-success btn-sm px-4">Créer la leçon</button>
+      </form>
+    </details>
+
+    <!-- Edit lesson inline form (hidden until opened) -->
+    <div id="editLessonPanel" style="display:none;" class="border rounded p-3 mt-3" style="background:#fffbeb;">
+      <h6 class="fw-bold mb-3">Modifier la leçon</h6>
+      <form id="editLessonForm" method="POST">
+        <input type="hidden" name="_method" value="PUT">
+        <div class="mb-2"><input type="text" name="title" id="editTitle" class="form-control form-control-sm" placeholder="Titre" required></div>
+        <div class="mb-2"><textarea name="description" id="editDesc" class="form-control form-control-sm" rows="2" placeholder="Description"></textarea></div>
+        <div id="editVideoFields" style="display:none;" class="row g-2 mb-2">
+          <div class="col-md-9"><input type="url" name="videoUrl" id="editVideoUrl" class="form-control form-control-sm" placeholder="URL vidéo"></div>
+          <div class="col-md-3"><input type="number" name="videoDuration" id="editVideoDuration" class="form-control form-control-sm" placeholder="Durée (min)"></div>
+        </div>
+        <div id="editPdfFields" style="display:none;" class="row g-2 mb-2">
+          <div class="col-md-8"><input type="url" name="fileUrl" id="editFileUrl" class="form-control form-control-sm" placeholder="URL PDF"></div>
+          <div class="col-md-4"><input type="text" name="fileName" id="editFileName" class="form-control form-control-sm" placeholder="Nom fichier"></div>
+        </div>
+        <div id="editTextFields" style="display:none;" class="mb-2">
+          <textarea name="content" id="editContent" class="form-control form-control-sm" rows="4" placeholder="Contenu HTML"></textarea>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-warning btn-sm px-4">Enregistrer</button>
+          <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('editLessonPanel').style.display='none'">Annuler</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function updateNewLessonFields(type) {
+  ['Video','Pdf','Text','QuizNote'].forEach(f => document.getElementById('newLesson'+f+'Fields').style.display = 'none');
+  if (type === 'video')          document.getElementById('newLessonVideoFields').style.display = 'flex';
+  else if (type === 'pdf')       document.getElementById('newLessonPdfFields').style.display = 'flex';
+  else if (type === 'text')      document.getElementById('newLessonTextFields').style.display = 'block';
+  else if (type === 'practice_quiz') document.getElementById('newLessonQuizNote').style.display = 'block';
+}
+
+function openEditLesson(id, type, title, desc, videoUrl, videoDuration, fileUrl, fileName) {
+  const form = document.getElementById('editLessonForm');
+  form.action = `/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/lessons/${id}`;
+  document.getElementById('editTitle').value = title;
+  document.getElementById('editDesc').value = desc;
+  ['editVideoFields','editPdfFields','editTextFields'].forEach(f => document.getElementById(f).style.display = 'none');
+  if (type === 'video') {
+    document.getElementById('editVideoFields').style.display = 'flex';
+    document.getElementById('editVideoUrl').value = videoUrl;
+    document.getElementById('editVideoDuration').value = videoDuration;
+  } else if (type === 'pdf') {
+    document.getElementById('editPdfFields').style.display = 'flex';
+    document.getElementById('editFileUrl').value = fileUrl;
+    document.getElementById('editFileName').value = fileName;
+  } else if (type === 'text') {
+    document.getElementById('editTextFields').style.display = 'block';
+  }
+  const panel = document.getElementById('editLessonPanel');
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+
 <!-- ── EVALUATION SECTION ── -->
 <div class="card mt-4 shadow-sm">
   <div class="card-header d-flex justify-content-between align-items-center" style="background:#f8f5ff;">
@@ -781,4 +915,112 @@ function addEvalQuestion() {
     </div>`);
 }
 function removeQuestion(btn) { btn.closest('.question-block').remove(); }
+</script>
+
+<!-- ── MODULE QUIZ (Structured) ── -->
+<div class="card mt-4 shadow-sm">
+  <div class="card-header" style="background:#eff6ff;">
+    <h5 class="mb-0 fw-bold" style="color:#1e40af;"><i class="bi bi-patch-question me-2"></i>Quiz du module (noté)</h5>
+  </div>
+  <div class="card-body">
+    <p class="text-muted small mb-3">Ce quiz est obligatoire pour valider le module. Il remplace le quiz legacy ci-dessus.</p>
+    <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/module-quiz" method="POST">
+      <div class="row g-2 mb-3">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold small">Titre du quiz</label>
+          <input type="text" name="title" class="form-control form-control-sm" value="<%= courseModule.moduleQuiz && courseModule.moduleQuiz.title ? courseModule.moduleQuiz.title : '' %>" placeholder="Ex: Quiz Module 1" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold small">Score de passage (%)</label>
+          <input type="number" name="passingScore" class="form-control form-control-sm" min="0" max="100" value="<%= courseModule.moduleQuiz && courseModule.moduleQuiz.passingScore != null ? courseModule.moduleQuiz.passingScore : 70 %>">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold small">Limite de temps (min, 0=aucune)</label>
+          <input type="number" name="timeLimit" class="form-control form-control-sm" min="0" value="<%= courseModule.moduleQuiz && courseModule.moduleQuiz.timeLimit != null ? courseModule.moduleQuiz.timeLimit : 0 %>">
+        </div>
+      </div>
+      <div id="mqQuestionsContainer">
+        <% if (courseModule.moduleQuiz && courseModule.moduleQuiz.questions && courseModule.moduleQuiz.questions.length > 0) { %>
+          <% courseModule.moduleQuiz.questions.forEach((q, qi) => { %>
+            <div class="question-block border rounded p-3 mb-3 bg-light">
+              <div class="d-flex justify-content-between mb-2">
+                <strong class="small text-secondary">Q<%= qi+1 %></strong>
+                <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1" onclick="this.closest('.question-block').remove()">×</button>
+              </div>
+              <input type="text" name="questions[<%= qi %>][text]" class="form-control form-control-sm mb-1" value="<%= q.text %>" placeholder="Texte de la question" required>
+              <input type="text" name="questions[<%= qi %>][correctAnswer]" class="form-control form-control-sm mb-1" value="<%= q.correctAnswer %>" placeholder="Valeur correcte (ex: b)">
+              <input type="text" name="questions[<%= qi %>][explanation]" class="form-control form-control-sm mb-2" value="<%= q.explanation || '' %>" placeholder="Explication (optionnel)">
+              <% (q.options || []).forEach((opt, oi) => { %>
+                <div class="input-group input-group-sm mb-1">
+                  <input type="text" name="questions[<%= qi %>][options][<%= oi %>][text]" class="form-control" value="<%= opt.text %>" placeholder="Option <%= oi+1 %>">
+                  <input type="text" name="questions[<%= qi %>][options][<%= oi %>][value]" class="form-control" style="max-width:80px" value="<%= opt.value %>" placeholder="val">
+                </div>
+              <% }) %>
+            </div>
+          <% }) %>
+        <% } %>
+      </div>
+      <button type="button" class="btn btn-outline-secondary btn-sm mb-3" onclick="addMQQuestion()">+ Question</button>
+      <div><button type="submit" class="btn btn-primary btn-sm px-4">Sauvegarder le quiz</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- ── MODULE ASSIGNMENT ── -->
+<div class="card mt-4 shadow-sm">
+  <div class="card-header" style="background:#fefce8;">
+    <h5 class="mb-0 fw-bold" style="color:#854d0e;"><i class="bi bi-pencil-square me-2"></i>Devoir du module</h5>
+  </div>
+  <div class="card-body">
+    <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/assignment" method="POST">
+      <div class="row g-2 mb-2">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold small">Titre du devoir</label>
+          <input type="text" name="title" class="form-control form-control-sm" value="<%= courseModule.moduleAssignment && courseModule.moduleAssignment.title ? courseModule.moduleAssignment.title : '' %>" placeholder="Ex: Devoir Module 1">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold small">Type de rendu</label>
+          <select name="submissionType" class="form-select form-select-sm">
+            <option value="text" <%= courseModule.moduleAssignment && courseModule.moduleAssignment.submissionType === 'text' ? 'selected' : '' %>>Texte</option>
+            <option value="link" <%= courseModule.moduleAssignment && courseModule.moduleAssignment.submissionType === 'link' ? 'selected' : '' %>>Lien URL</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-semibold small">Note max</label>
+          <input type="number" name="maxScore" class="form-control form-control-sm" min="1" value="<%= courseModule.moduleAssignment && courseModule.moduleAssignment.maxScore != null ? courseModule.moduleAssignment.maxScore : 100 %>">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold small">Date limite (optionnel)</label>
+          <input type="date" name="dueDate" class="form-control form-control-sm" value="<%= courseModule.moduleAssignment && courseModule.moduleAssignment.dueDate ? new Date(courseModule.moduleAssignment.dueDate).toISOString().split('T')[0] : '' %>">
+        </div>
+      </div>
+      <div class="mb-2">
+        <label class="form-label fw-semibold small">Consignes</label>
+        <textarea name="instructions" class="form-control form-control-sm" rows="3" placeholder="Décrivez ce que les étudiants doivent faire..."><%= courseModule.moduleAssignment && courseModule.moduleAssignment.instructions ? courseModule.moduleAssignment.instructions : '' %></textarea>
+      </div>
+      <button type="submit" class="btn btn-warning btn-sm px-4">Sauvegarder le devoir</button>
+    </form>
+  </div>
+</div>
+
+<script>
+let mqIdx = <%= courseModule.moduleQuiz && courseModule.moduleQuiz.questions ? courseModule.moduleQuiz.questions.length : 0 %>;
+function addMQQuestion() {
+  const idx = mqIdx++;
+  document.getElementById('mqQuestionsContainer').insertAdjacentHTML('beforeend', `
+    <div class="question-block border rounded p-3 mb-3 bg-light">
+      <div class="d-flex justify-content-between mb-2">
+        <strong class="small text-secondary">Q${idx+1}</strong>
+        <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1" onclick="this.closest('.question-block').remove()">×</button>
+      </div>
+      <input type="text" name="questions[${idx}][text]" class="form-control form-control-sm mb-1" placeholder="Texte de la question" required>
+      <input type="text" name="questions[${idx}][correctAnswer]" class="form-control form-control-sm mb-1" placeholder="Valeur correcte (ex: b)">
+      <input type="text" name="questions[${idx}][explanation]" class="form-control form-control-sm mb-2" placeholder="Explication (optionnel)">
+      ${[0,1,2,3].map(oi => `
+        <div class="input-group input-group-sm mb-1">
+          <input type="text" name="questions[${idx}][options][${oi}][text]" class="form-control" placeholder="Option ${oi+1}">
+          <input type="text" name="questions[${idx}][options][${oi}][value]" class="form-control" style="max-width:80px" placeholder="${String.fromCharCode(97+oi)}">
+        </div>`).join('')}
+    </div>`);
+}
 </script>
