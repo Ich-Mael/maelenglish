@@ -1,5 +1,6 @@
 const UAParser = require('ua-parser-js');
 const crypto = require('crypto');
+const User = require('../models/user');
 
 // Middleware pour parser le User-Agent
 const parseUserAgent = (req, res, next) => {
@@ -9,8 +10,6 @@ const parseUserAgent = (req, res, next) => {
   next();
 };
 
-const { v4: uuidv4 } = require('uuid');
-
 // Fonction pour récupérer ou générer un ID unique d'appareil via les cookies
 function getOrGenerateDeviceId(req, res) {
   // 1. Check if the browser already has a device cookie
@@ -18,7 +17,7 @@ function getOrGenerateDeviceId(req, res) {
 
   if (!deviceId) {
     // 2. If no cookie exists, generate a new secure UUID
-    deviceId = uuidv4();
+    deviceId = crypto.randomUUID();
 
     // 3. Set a long-lived HTTP-only cookie on the user's browser (e.g., 10 years)
     res.cookie('device_id', deviceId, {
@@ -39,7 +38,6 @@ async function trackDevice(req, res, next) {
   }
 
   try {
-    const User = require('../models/user');
     const deviceId = getOrGenerateDeviceId(req, res);
 
     // Vérifier si l'appareil existe déjà
