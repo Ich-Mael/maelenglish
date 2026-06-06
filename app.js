@@ -40,6 +40,7 @@ const languageLearningRoutes = require("./programs/language-learning");
 // Import shared routes
 const accountRoutes = require("./shared/routes/account");
 const adminInstitutionRoutes = require("./shared/routes/adminInstitutions");
+const adminCourseRoutes = require("./shared/routes/adminCourses");
 const institutionDashboardRoutes = require("./shared/routes/institutionDashboard");
 
 // Database connection
@@ -141,6 +142,7 @@ app.get('/', (req, res) => {
 // Mount Shared Routes
 app.use('/', accountRoutes);
 app.use('/admin/institutions', adminInstitutionRoutes);
+app.use('/admin/courses', adminCourseRoutes);
 app.use('/institution', institutionDashboardRoutes);
 
 // Mount Program Routes

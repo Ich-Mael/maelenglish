@@ -100,6 +100,15 @@ const courseSchema = new Schema({
   }, ],
 
   // ── NEW: structured course fields ─────────────────────────────────
+
+  // Who manages this course — used to separate admin-created courses
+  // from program-specific ones (English Boost, PECP, etc.)
+  source: {
+    type: String,
+    enum: ['admin', 'english-boost', 'pecp', 'english4all', 'english4everyone'],
+    default: 'admin'
+  },
+
   level: {
     type: String,
     enum: ['beginner', 'intermediate', 'advanced'],

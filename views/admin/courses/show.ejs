@@ -1,0 +1,163 @@
+<% layout('layouts/main') %>
+
+<% headContent = `<style>
+  .page-wrapper { margin-top: 80px; padding: 2rem 0 4rem; }
+  .page-header { background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%); color: white; padding: 2rem; border-radius: 16px; margin-bottom: 2rem; }
+  .page-header h1 { margin: 0 0 .3rem; font-size: 1.8rem; font-weight: 700; }
+  .card-section { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07); padding: 1.75rem; margin-bottom: 1.5rem; }
+  .card-section h2 { font-size: 1rem; font-weight: 700; color: #5d06ba; margin: 0 0 1rem; padding-bottom: .75rem; border-bottom: 2px solid #ede8f8; display: flex; justify-content: space-between; align-items: center; }
+  .stat-box { background: #f8f5ff; border-radius: 12px; padding: 1rem; text-align: center; }
+  .stat-box .num { font-size: 2rem; font-weight: 800; color: #5d06ba; }
+  .stat-box .lbl { font-size: .8rem; color: #666; }
+  .module-row { display: flex; align-items: center; gap: .75rem; padding: .75rem 0; border-bottom: 1px solid #f0f0f0; }
+  .module-row:last-child { border-bottom: none; }
+  .badge-active { background: #d1fae5; color: #065f46; padding: .15rem .55rem; border-radius: 20px; font-size: .75rem; font-weight: 600; }
+  .badge-draft  { background: #f3f4f6; color: #6b7280; padding: .15rem .55rem; border-radius: 20px; font-size: .75rem; font-weight: 600; }
+  .level-badge  { background: #ede8f8; color: #5d06ba; padding: .15rem .55rem; border-radius: 20px; font-size: .72rem; font-weight: 600; text-transform: capitalize; }
+</style>` %>
+
+<div class="page-wrapper">
+  <div class="container">
+    <div class="page-header">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+        <div>
+          <h1><%= course.title %></h1>
+          <div class="d-flex gap-2 mt-1 flex-wrap">
+            <span class="level-badge"><%= course.level || 'beginner' %></span>
+            <span class="<%= course.isActive ? 'badge-active' : 'badge-draft' %>">
+              <%= course.isActive ? 'Actif' : 'Brouillon' %>
+            </span>
+            <% if (course.isPrivate) { %><span style="background:rgba(255,255,255,.2);color:#fff;padding:.15rem .55rem;border-radius:20px;font-size:.72rem;">Privé</span><% } %>
+          </div>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="/admin/courses/<%= course._id %>/edit" class="btn btn-light btn-sm">Modifier</a>
+          <form action="/admin/courses/<%= course._id %>/toggle" method="POST" style="display:inline">
+            <button type="submit" class="btn btn-sm <%= course.isActive ? 'btn-outline-warning' : 'btn-outline-success' %>">
+              <%= course.isActive ? 'Désactiver' : 'Activer' %>
+            </button>
+          </form>
+          <a href="/admin/courses" class="btn btn-light btn-sm">← Liste</a>
+        </div>
+      </div>
+    </div>
+
+    <%- include('../../partials/flash') %>
+
+    <div class="row g-3 mb-3">
+      <div class="col-4"><div class="stat-box"><div class="num"><%= modulesWithCounts.length %></div><div class="lbl">Modules</div></div></div>
+      <div class="col-4"><div class="stat-box"><div class="num"><%= studentCount %></div><div class="lbl">Étudiants</div></div></div>
+      <div class="col-4"><div class="stat-box"><div class="num"><%= assignedInstitutions.length %></div><div class="lbl">Institutions</div></div></div>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-7">
+
+        <!-- Modules -->
+        <div class="card-section">
+          <h2>Modules</h2>
+          <% if (modulesWithCounts.length === 0) { %>
+            <p class="text-muted small mb-3">Aucun module. Ajoutez-en un ci-dessous.</p>
+          <% } else { %>
+            <% modulesWithCounts.forEach(({ module: mod, lessonCount }) => { %>
+              <div class="module-row">
+                <div class="fw-semibold small" style="min-width:24px;color:#999;"><%= mod.order || '—' %></div>
+                <div class="flex-grow-1">
+                  <div class="fw-semibold"><%= mod.title %></div>
+                  <div class="text-muted" style="font-size:.78rem;">
+                    <%= lessonCount %> leçon(s)
+                    <% if (mod.moduleQuiz && mod.moduleQuiz.questions && mod.moduleQuiz.questions.length > 0) { %> · Quiz ✓<% } %>
+                    <% if (mod.moduleAssignment && mod.moduleAssignment.title) { %> · Devoir ✓<% } %>
+                  </div>
+                </div>
+                <a href="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= mod._id %>/edit"
+                   class="btn btn-sm btn-outline-primary py-0 px-2">Éditer</a>
+              </div>
+            <% }) %>
+          <% } %>
+
+          <!-- Add module form -->
+          <details class="mt-3">
+            <summary class="btn btn-sm btn-outline-success" style="list-style:none;cursor:pointer;">+ Ajouter un module</summary>
+            <form action="/admin/courses/<%= course._id %>/modules" method="POST" class="mt-2 p-3 border rounded bg-light">
+              <div class="row g-2">
+                <div class="col-12">
+                  <input type="text" name="title" class="form-control form-control-sm" placeholder="Titre du module *" required>
+                </div>
+                <div class="col-12">
+                  <textarea name="willLearnModule" class="form-control form-control-sm" rows="2" placeholder="Ce que l'étudiant apprendra dans ce module *" required></textarea>
+                </div>
+                <div class="col-md-3">
+                  <input type="number" name="order" class="form-control form-control-sm" placeholder="Ordre" min="1" value="<%= modulesWithCounts.length + 1 %>">
+                </div>
+                <div class="col-md-9">
+                  <button type="submit" class="btn btn-success btn-sm px-4">Créer le module →</button>
+                  <span class="text-muted small ms-2">(Vous serez redirigé vers l'éditeur de module)</span>
+                </div>
+              </div>
+            </form>
+          </details>
+        </div>
+
+        <!-- Course info -->
+        <div class="card-section">
+          <h2>Informations</h2>
+          <table class="table table-sm table-borderless mb-0">
+            <tbody>
+              <tr><td class="text-muted" style="width:35%">Prix</td><td><strong><%= course.price ? course.price.toLocaleString('fr-FR') + ' FCFA' : 'Gratuit' %></strong></td></tr>
+              <% if (course.willLearn) { %><tr><td class="text-muted">Objectifs</td><td><%= course.willLearn %></td></tr><% } %>
+              <% if (course.requirements) { %><tr><td class="text-muted">Prérequis</td><td><%= course.requirements %></td></tr><% } %>
+              <% if (course.syllabusSummary) { %><tr><td class="text-muted">Syllabus</td><td><%= course.syllabusSummary %></td></tr><% } %>
+              <tr><td class="text-muted">Créé le</td><td><%= course.createdAt.toLocaleDateString('fr-FR') %></td></tr>
+              <% if (course.finalExam && course.finalExam.questions && course.finalExam.questions.length > 0) { %>
+                <tr><td class="text-muted">Examen final</td><td>✓ <%= course.finalExam.questions.length %> question(s)</td></tr>
+              <% } %>
+              <% if (course.finalProject && course.finalProject.title) { %>
+                <tr><td class="text-muted">Projet final</td><td>✓ <%= course.finalProject.title %></td></tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <div class="col-md-5">
+
+        <!-- Assigned institutions -->
+        <div class="card-section">
+          <h2>Institutions assignées</h2>
+          <% if (assignedInstitutions.length === 0) { %>
+            <p class="text-muted small">Ce cours n'est assigné à aucune institution.</p>
+            <a href="/admin/institutions" class="btn btn-sm btn-outline-primary">Gérer les institutions</a>
+          <% } else { %>
+            <% assignedInstitutions.forEach(inst => { %>
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="flex-grow-1 fw-semibold small"><%= inst.name %></span>
+                <span class="badge <%= inst.isActive ? 'bg-success' : 'bg-secondary' %> bg-opacity-10 text-<%= inst.isActive ? 'success' : 'secondary' %>" style="font-size:.7rem;"><%= inst.isActive ? 'Active' : 'Inactive' %></span>
+                <a href="/admin/institutions/<%= inst._id %>" class="btn btn-sm btn-outline-secondary py-0 px-2">→</a>
+              </div>
+            <% }) %>
+          <% } %>
+        </div>
+
+        <!-- Description -->
+        <% if (course.description) { %>
+        <div class="card-section">
+          <h2>Description</h2>
+          <p class="text-muted small mb-0"><%= course.description %></p>
+        </div>
+        <% } %>
+
+        <!-- Danger zone -->
+        <div class="card-section" style="border: 1px solid #fee2e2;">
+          <h2 style="color:#dc2626;border-color:#fecaca;">Zone de danger</h2>
+          <form action="/admin/courses/<%= course._id %>?_method=DELETE" method="POST"
+                onsubmit="return confirm('Supprimer définitivement ce cours et tous ses modules ? Cette action est irréversible.')">
+            <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer ce cours</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -49,7 +49,7 @@ module.exports.createCourse = catchAsync(async (req, res) => {
       return res.redirect("/programs/language-learning/general-english-boost/admindashboard/new");
     }
 
-    const course = new Course(req.body.course);
+    const course = new Course({ ...req.body.course, source: 'english-boost' });
     const instructorsList = req.body.instructors;
 
     if (instructorsList) {

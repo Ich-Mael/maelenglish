@@ -132,9 +132,10 @@ router.get('/:id', ...adminOnly, catchAsync(async (req, res) => {
 
     const studentCount = await User.countDocuments({ institutionId: institution._id, role: 'user' });
 
-    // Courses not yet assigned to this institution
+    // Only admin-managed courses can be assigned to institutions
     const assignedIds = institution.assignedCourses.map(c => c._id);
     const availableCourses = await Course.find({
+        source: 'admin',
         isActive: true,
         _id: { $nin: assignedIds }
     }).select('title').sort({ title: 1 });
