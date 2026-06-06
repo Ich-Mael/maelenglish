@@ -1,0 +1,58 @@
+<% layout('layouts/main') %>
+
+<% headContent = `<style>
+  .page-wrapper { margin-top: 80px; padding: 2rem 0 4rem; }
+  .page-header { background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%); color: white; padding: 2rem; border-radius: 16px; margin-bottom: 2rem; }
+  .page-header h1 { margin: 0; font-size: 1.8rem; font-weight: 700; }
+  .form-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07); padding: 2rem; }
+  .form-label { font-weight: 600; font-size: .9rem; }
+</style>` %>
+
+<div class="page-wrapper">
+  <div class="container" style="max-width:700px">
+    <div class="page-header">
+      <h1>Modifier : <%= institution.name %></h1>
+    </div>
+
+    <%- include('../../partials/flash') %>
+
+    <div class="form-card">
+      <form action="/admin/institutions/<%= institution._id %>?_method=PUT" method="POST">
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label">Nom de l'institution</label>
+            <input type="text" name="name" class="form-control" value="<%= institution.name %>" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Email de contact</label>
+            <input type="email" name="contactEmail" class="form-control" value="<%= institution.contactEmail || '' %>">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Téléphone</label>
+            <input type="text" name="phone" class="form-control" value="<%= institution.phone || '' %>">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Ville</label>
+            <input type="text" name="city" class="form-control" value="<%= institution.city || '' %>">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Pays</label>
+            <input type="text" name="country" class="form-control" value="<%= institution.country || 'Burkina Faso' %>">
+          </div>
+          <div class="col-12">
+            <label class="form-label">URL du logo</label>
+            <input type="url" name="logoUrl" class="form-control" value="<%= institution.logoUrl || '' %>" placeholder="https://...">
+          </div>
+          <div class="col-12">
+            <label class="form-label">Description</label>
+            <textarea name="description" class="form-control" rows="3"><%= institution.description || '' %></textarea>
+          </div>
+        </div>
+        <div class="d-flex gap-2 justify-content-end mt-4">
+          <a href="/admin/institutions/<%= institution._id %>" class="btn btn-outline-secondary">Annuler</a>
+          <button type="submit" class="btn btn-primary px-4">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

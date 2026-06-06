@@ -1,0 +1,58 @@
+<% layout('layouts/main') %>
+
+<% headContent = `<style>
+  .page-wrapper { margin-top: 80px; padding: 2rem 0 4rem; }
+  .page-header { background: linear-gradient(135deg, #0e7490 0%, #164e63 100%); color: white; padding: 2rem; border-radius: 16px; margin-bottom: 2rem; }
+  .page-header h1 { margin: 0; font-size: 1.8rem; font-weight: 700; }
+  .course-card { background: #fff; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,.06); padding: 1.5rem; transition: box-shadow .2s; }
+  .course-card:hover { box-shadow: 0 4px 16px rgba(14,116,144,.14); }
+  .course-card h3 { font-size: 1.05rem; font-weight: 700; color: #1a1a2e; margin: 0 0 .5rem; }
+  .stat-pill { background: #e0f2f7; color: #0e7490; padding: .2rem .75rem; border-radius: 20px; font-size: .8rem; font-weight: 600; display: inline-block; }
+  .empty-state { text-align: center; padding: 3rem; color: #888; }
+</style>` %>
+
+<div class="page-wrapper">
+  <div class="container">
+    <div class="page-header">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <h1>Cours assignés — <%= institution.name %></h1>
+        <a href="/institution/dashboard" class="btn btn-light btn-sm">← Tableau de bord</a>
+      </div>
+    </div>
+
+    <%- include('../../partials/flash') %>
+
+    <% if (coursesWithStats.length === 0) { %>
+      <div class="empty-state">
+        <p style="font-size:3rem">📚</p>
+        <p>Aucun cours assigné pour l'instant.</p>
+        <p class="text-muted small">Contactez l'équipe AfroHK pour assigner des cours à votre institution.</p>
+      </div>
+    <% } else { %>
+      <div class="row g-3">
+        <% coursesWithStats.forEach(({ course, enrolledCount }) => { %>
+          <div class="col-md-6 col-lg-4">
+            <div class="course-card h-100 d-flex flex-column">
+              <h3><%= course.title %></h3>
+              <div class="d-flex gap-2 flex-wrap mt-1 mb-3">
+                <span class="stat-pill"><%= enrolledCount %> étudiant(s) inscrit(s)</span>
+                <% if (!course.isActive) { %>
+                  <span class="badge bg-secondary">Inactif</span>
+                <% } %>
+              </div>
+              <% if (course.session && course.session.startDate) { %>
+                <p class="text-muted small mb-3">
+                  Session : <%= new Date(course.session.startDate).toLocaleDateString('fr-FR') %>
+                  → <%= course.session.endDate ? new Date(course.session.endDate).toLocaleDateString('fr-FR') : '…' %>
+                </p>
+              <% } %>
+              <div class="mt-auto">
+                <a href="/institution/dashboard/courses/<%= course._id %>" class="btn btn-sm btn-outline-primary w-100">Voir la progression</a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</div>

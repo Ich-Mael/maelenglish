@@ -7,6 +7,7 @@ const {
   Grade
 } = require("../../../shared/models/courses");
 const User = require("../../../shared/models/user");
+const StudentProgress = require("../../../shared/models/studentProgress");
 const DateUtil = require("../../../shared/utilities/date");
 const catchAsync = require("../../../shared/utilities/catchAsync");
 
@@ -52,7 +53,19 @@ module.exports.showModule = catchAsync(async (req, res) => {
 
   let moduleReveal = DateUtil.revealTime(courseModule.revealDate);
   let displayRevealDate = DateUtil.localTime(courseModule.revealDate);
-  
+
+  // Track module view for institution progress (fire-and-forget)
+  if (req.user) {
+    StudentProgress.findOneAndUpdate(
+      { userId: req.user._id, courseId: course._id, moduleId: courseModule._id },
+      {
+        $set: { lastViewedAt: new Date(), status: 'in_progress' },
+        $setOnInsert: { institutionId: req.user.institutionId || null }
+      },
+      { upsert: true, new: true }
+    ).catch(err => console.error('StudentProgress tracking error:', err));
+  }
+
   res.render("programs/language-learning/courses/course_modules/showModule", {
     courseModule,
     course,

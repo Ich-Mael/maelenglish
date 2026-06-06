@@ -1,0 +1,161 @@
+<% layout('layouts/main') %>
+
+<% headContent = `<style>
+  .page-wrapper { margin-top: 80px; padding: 2rem 0 4rem; }
+  .page-header { background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%); color: white; padding: 2rem; border-radius: 16px; margin-bottom: 2rem; }
+  .page-header h1 { margin: 0 0 .25rem; font-size: 1.8rem; font-weight: 700; }
+  .card-section { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07); padding: 1.75rem; margin-bottom: 1.5rem; }
+  .card-section h2 { font-size: 1rem; font-weight: 700; color: #5d06ba; margin: 0 0 1.25rem; padding-bottom: .75rem; border-bottom: 2px solid #ede8f8; display: flex; justify-content: space-between; align-items: center; }
+  .stat-box { background: #f8f5ff; border-radius: 12px; padding: 1rem; text-align: center; }
+  .stat-box .num { font-size: 2rem; font-weight: 800; color: #5d06ba; }
+  .stat-box .lbl { font-size: .8rem; color: #666; }
+  .course-row { display: flex; align-items: center; padding: .6rem 0; border-bottom: 1px solid #f0f0f0; gap: .75rem; }
+  .course-row:last-child { border-bottom: none; }
+  .admin-row { display: flex; align-items: center; padding: .5rem 0; border-bottom: 1px solid #f0f0f0; gap: .75rem; }
+  .admin-row:last-child { border-bottom: none; }
+  .badge-active { background: #d1fae5; color: #065f46; padding: .2rem .6rem; border-radius: 20px; font-size: .78rem; font-weight: 600; }
+  .badge-inactive { background: #fee2e2; color: #991b1b; padding: .2rem .6rem; border-radius: 20px; font-size: .78rem; font-weight: 600; }
+</style>` %>
+
+<div class="page-wrapper">
+  <div class="container">
+    <div class="page-header">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-3">
+          <% if (institution.logoUrl) { %>
+            <img src="<%= institution.logoUrl %>" alt="logo" style="width:56px;height:56px;border-radius:12px;object-fit:cover;background:#fff;">
+          <% } %>
+          <div>
+            <h1><%= institution.name %></h1>
+            <p style="opacity:.85;margin:0"><%= institution.city %><% if (institution.city) { %>, <% } %><%= institution.country %></p>
+          </div>
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+          <span class="<%= institution.isActive ? 'badge-active' : 'badge-inactive' %>">
+            <%= institution.isActive ? 'Active' : 'Inactive' %>
+          </span>
+          <a href="/admin/institutions/<%= institution._id %>/edit" class="btn btn-light btn-sm">Modifier</a>
+          <form action="/admin/institutions/<%= institution._id %>/toggle?_method=POST" method="POST" style="display:inline">
+            <button type="submit" class="btn btn-sm <%= institution.isActive ? 'btn-outline-danger' : 'btn-outline-success' %>">
+              <%= institution.isActive ? 'Désactiver' : 'Activer' %>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <%- include('../../partials/flash') %>
+
+    <div class="row g-3 mb-3">
+      <div class="col-4">
+        <div class="stat-box">
+          <div class="num"><%= institution.assignedCourses.length %></div>
+          <div class="lbl">Cours assignés</div>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="stat-box">
+          <div class="num"><%= studentCount %></div>
+          <div class="lbl">Étudiants</div>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="stat-box">
+          <div class="num"><%= institution.admins.length %></div>
+          <div class="lbl">Admins</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-7">
+
+        <!-- Assigned Courses -->
+        <div class="card-section">
+          <h2>
+            Cours assignés
+            <a href="/admin/institutions" style="font-size:.8rem;font-weight:500;color:#5d06ba;text-decoration:none"></a>
+          </h2>
+          <% if (institution.assignedCourses.length === 0) { %>
+            <p class="text-muted small">Aucun cours assigné.</p>
+          <% } else { %>
+            <% institution.assignedCourses.forEach(course => { %>
+              <div class="course-row">
+                <span class="flex-grow-1 fw-semibold"><%= course.title %></span>
+                <span class="badge <%= course.isActive ? 'bg-success' : 'bg-secondary' %> bg-opacity-10 text-<%= course.isActive ? 'success' : 'secondary' %>" style="font-size:.75rem;">
+                  <%= course.isActive ? 'Actif' : 'Inactif' %>
+                </span>
+                <form action="/admin/institutions/<%= institution._id %>/courses/<%= course._id %>?_method=DELETE" method="POST" style="display:inline">
+                  <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" onclick="return confirm('Retirer ce cours ?')">×</button>
+                </form>
+              </div>
+            <% }) %>
+          <% } %>
+
+          <% if (availableCourses.length > 0) { %>
+            <form action="/admin/institutions/<%= institution._id %>/courses" method="POST" class="d-flex gap-2 mt-3">
+              <select name="courseId" class="form-select form-select-sm">
+                <option value="">-- Assigner un cours --</option>
+                <% availableCourses.forEach(c => { %>
+                  <option value="<%= c._id %>"><%= c.title %></option>
+                <% }) %>
+              </select>
+              <button type="submit" class="btn btn-sm btn-primary px-3">Assigner</button>
+            </form>
+          <% } %>
+        </div>
+
+        <!-- Institution info -->
+        <div class="card-section">
+          <h2>Informations</h2>
+          <table class="table table-sm table-borderless mb-0">
+            <tbody>
+              <tr><td class="text-muted" style="width:35%">Email contact</td><td><%= institution.contactEmail || '—' %></td></tr>
+              <tr><td class="text-muted">Téléphone</td><td><%= institution.phone || '—' %></td></tr>
+              <tr><td class="text-muted">Slug</td><td><code><%= institution.slug %></code></td></tr>
+              <tr><td class="text-muted">Créée le</td><td><%= institution.createdAt.toLocaleDateString('fr-FR') %></td></tr>
+              <% if (institution.description) { %>
+                <tr><td class="text-muted">Description</td><td><%= institution.description %></td></tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <div class="col-md-5">
+        <!-- Admins -->
+        <div class="card-section">
+          <h2>Administrateurs</h2>
+          <% if (institution.admins.length === 0) { %>
+            <p class="text-muted small">Aucun administrateur.</p>
+          <% } else { %>
+            <% institution.admins.forEach(admin => { %>
+              <div class="admin-row">
+                <div class="flex-grow-1">
+                  <div class="fw-semibold"><%= admin.name %> <%= admin.surname %></div>
+                  <div class="text-muted small"><%= admin.email %></div>
+                </div>
+                <span class="badge <%= admin.isVerified ? 'bg-success' : 'bg-warning text-dark' %>" style="font-size:.72rem;">
+                  <%= admin.isVerified ? 'Vérifié' : 'En attente' %>
+                </span>
+                <a href="/admin/users/<%= admin._id %>/edit" class="btn btn-sm btn-outline-secondary ms-1 py-0 px-2">✎</a>
+              </div>
+            <% }) %>
+          <% } %>
+        </div>
+
+        <!-- Students quick link -->
+        <div class="card-section">
+          <h2>Étudiants</h2>
+          <p class="mb-2"><strong><%= studentCount %></strong> étudiant(s) rattaché(s) à cette institution.</p>
+          <a href="/admin/users?institutionId=<%= institution._id %>" class="btn btn-sm btn-outline-primary">Voir les étudiants</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-2">
+      <a href="/admin/institutions" class="btn btn-outline-secondary btn-sm">← Retour à la liste</a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,61 @@
+<% layout('layouts/main') %>
+
+<% headContent = `<style>
+  .page-wrapper { margin-top: 80px; padding: 2rem 0 4rem; }
+  .page-header { background: linear-gradient(135deg, #0e7490 0%, #164e63 100%); color: white; padding: 2rem; border-radius: 16px; margin-bottom: 2rem; }
+  .page-header h1 { margin: 0; font-size: 1.8rem; font-weight: 700; }
+  .student-row { background: #fff; border-radius: 12px; box-shadow: 0 1px 6px rgba(0,0,0,.06); padding: 1rem 1.25rem; margin-bottom: .75rem; display: flex; align-items: center; gap: 1rem; transition: box-shadow .2s; }
+  .student-row:hover { box-shadow: 0 3px 12px rgba(14,116,144,.12); }
+  .avatar { width: 42px; height: 42px; border-radius: 50%; background: #e0f2f7; color: #0e7490; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; flex-shrink: 0; }
+  .s-name { font-weight: 600; color: #1a1a2e; margin: 0 0 .1rem; }
+  .s-meta { font-size: .8rem; color: #888; margin: 0; }
+  .empty-state { text-align: center; padding: 3rem; color: #888; }
+</style>` %>
+
+<div class="page-wrapper">
+  <div class="container">
+    <div class="page-header">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <h1>Étudiants — <%= institution.name %></h1>
+        <a href="/institution/dashboard" class="btn btn-light btn-sm">← Tableau de bord</a>
+      </div>
+    </div>
+
+    <%- include('../../partials/flash') %>
+
+    <% if (studentsWithMeta.length === 0) { %>
+      <div class="empty-state">
+        <p style="font-size:3rem">👥</p>
+        <p>Aucun étudiant pour l'instant.</p>
+        <p class="text-muted small">Les étudiants sont créés par l'équipe AfroHK et rattachés à votre institution.</p>
+      </div>
+    <% } else { %>
+      <p class="text-muted mb-3"><strong><%= studentsWithMeta.length %></strong> étudiant(s)</p>
+      <% studentsWithMeta.forEach(({ student, lastLogin, activeEnrollmentsCount }) => { %>
+        <div class="student-row">
+          <div class="avatar"><%= student.name.charAt(0).toUpperCase() %></div>
+          <div class="flex-grow-1 min-width-0">
+            <p class="s-name"><%= student.surname %> <%= student.name %></p>
+            <p class="s-meta"><%= student.email %> &nbsp;·&nbsp; @<%= student.username %></p>
+          </div>
+          <div class="text-center d-none d-md-block" style="min-width:110px">
+            <div class="fw-semibold text-primary"><%= activeEnrollmentsCount %></div>
+            <div class="text-muted" style="font-size:.75rem">inscriptions actives</div>
+          </div>
+          <div class="text-center d-none d-md-block" style="min-width:120px">
+            <% if (lastLogin) { %>
+              <div style="font-size:.8rem;color:#555"><%= new Date(lastLogin).toLocaleDateString('fr-FR') %></div>
+              <div class="text-muted" style="font-size:.72rem">dernière connexion</div>
+            <% } else { %>
+              <span class="text-muted" style="font-size:.8rem">Jamais connecté</span>
+            <% } %>
+          </div>
+          <span class="badge <%= student.isVerified ? 'bg-success' : 'bg-warning text-dark' %>" style="font-size:.72rem;">
+            <%= student.isVerified ? 'Vérifié' : 'Non vérifié' %>
+          </span>
+          <a href="/institution/dashboard/students/<%= student._id %>" class="btn btn-sm btn-outline-primary ms-1">Voir</a>
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+</div>

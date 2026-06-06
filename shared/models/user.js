@@ -28,12 +28,6 @@ const userSchema = new Schema({
     unique: true,
   },
 
-  defP: {
-    type: String,
-    trim: true,
-    required: false, // Not stored, only used for password confirmation in forms
-  },
-
   gender: {
     type: String,
     required: true,
@@ -68,7 +62,15 @@ const userSchema = new Schema({
       "english-coach",
       "student_manager",
       "englishClub-boardMember",
+      "institution-admin",
     ],
+  },
+
+  // Partner institution this user belongs to (null = AfrohK direct user)
+  institutionId: {
+    type: Schema.Types.ObjectId,
+    ref: "Institution",
+    default: null
   },
 
   isVerified: {

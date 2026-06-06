@@ -1,0 +1,102 @@
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
+function generateSlug(name) {
+    return name
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
+}
+
+const institutionSchema = new Schema({
+    name: {
+        type: String,
+        required: true,
+        trim: true
+    },
+
+    slug: {
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true,
+        trim: true
+    },
+
+    description: {
+        type: String,
+        trim: true,
+        default: ''
+    },
+
+    logoUrl: {
+        type: String,
+        trim: true,
+        default: ''
+    },
+
+    contactEmail: {
+        type: String,
+        trim: true,
+        lowercase: true
+    },
+
+    phone: {
+        type: String,
+        trim: true
+    },
+
+    city: {
+        type: String,
+        trim: true,
+        default: ''
+    },
+
+    country: {
+        type: String,
+        trim: true,
+        default: 'Burkina Faso'
+    },
+
+    isActive: {
+        type: Boolean,
+        default: true
+    },
+
+    // AfrohK admin who created this institution
+    createdBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+
+    // Users with institution-admin role for this institution
+    admins: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+
+    // Courses AfrohK has enabled for this institution's students
+    assignedCourses: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Course'
+    }]
+}, {
+    timestamps: true
+});
+
+// Auto-generate slug from name if not provided
+institutionSchema.pre('validate', function (next) {
+    if (!this.slug && this.name) {
+        this.slug = generateSlug(this.name);
+    }
+    next();
+});
+
+institutionSchema.statics.generateSlug = generateSlug;
+
+const Institution = mongoose.model('Institution', institutionSchema);
+
+module.exports = Institution;

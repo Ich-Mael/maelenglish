@@ -1,0 +1,124 @@
+<% layout('layouts/main') %>
+
+<% headContent = `<style>
+  .page-wrapper { margin-top: 80px; padding: 2rem 0 4rem; }
+  .page-header { background: linear-gradient(135deg, #0e7490 0%, #164e63 100%); color: white; padding: 2rem; border-radius: 16px; margin-bottom: 2rem; }
+  .page-header h1 { margin: 0 0 .3rem; font-size: 1.8rem; font-weight: 700; }
+  .page-header p { margin: 0; opacity: .85; }
+  .table-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07); overflow: hidden; }
+  .table-card table { margin: 0; }
+  .table-card thead th { background: #f0fdff; color: #0e7490; font-size: .82rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; border-bottom: 2px solid #bae6fd; }
+  .progress-bar-custom { height: 7px; border-radius: 4px; background: #e2e8f0; overflow: hidden; min-width: 80px; }
+  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #0e7490, #06b6d4); border-radius: 4px; }
+  .status-enrolled { color: #065f46; background: #d1fae5; padding: .15rem .55rem; border-radius: 20px; font-size: .75rem; font-weight: 600; }
+  .status-expired { color: #991b1b; background: #fee2e2; padding: .15rem .55rem; border-radius: 20px; font-size: .75rem; font-weight: 600; }
+  .status-none { color: #6b7280; background: #f3f4f6; padding: .15rem .55rem; border-radius: 20px; font-size: .75rem; font-weight: 600; }
+  .summary-row { display: flex; gap: 2rem; background: #f0fdff; border-radius: 12px; padding: .75rem 1.25rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .summary-item { text-align: center; }
+  .summary-item .num { font-size: 1.5rem; font-weight: 800; color: #0e7490; }
+  .summary-item .lbl { font-size: .75rem; color: #555; }
+</style>` %>
+
+<div class="page-wrapper">
+  <div class="container">
+    <div class="page-header">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+        <div>
+          <h1><%= course.title %></h1>
+          <p>Progression de vos étudiants · <%= institution.name %></p>
+        </div>
+        <a href="/institution/dashboard/courses" class="btn btn-light btn-sm">← Cours</a>
+      </div>
+    </div>
+
+    <%- include('../../partials/flash') %>
+
+    <%
+      const enrolledCount = studentsData.filter(s => s.isEnrolled).length;
+      const activeCount = studentsData.filter(s => {
+        if (!s.isEnrolled || !s.enrollment) return false;
+        return !s.enrollment.endDate || new Date(s.enrollment.endDate) >= new Date();
+      }).length;
+      const avgProgress = studentsData.filter(s => s.isEnrolled && s.totalModules > 0).length > 0
+        ? Math.round(studentsData.filter(s => s.isEnrolled && s.totalModules > 0)
+            .reduce((sum, s) => sum + (s.completedModules / s.totalModules * 100), 0)
+            / studentsData.filter(s => s.isEnrolled && s.totalModules > 0).length)
+        : 0;
+    %>
+
+    <div class="summary-row">
+      <div class="summary-item"><div class="num"><%= studentsData.length %></div><div class="lbl">Étudiants</div></div>
+      <div class="summary-item"><div class="num"><%= enrolledCount %></div><div class="lbl">Inscrits</div></div>
+      <div class="summary-item"><div class="num"><%= activeCount %></div><div class="lbl">Accès actif</div></div>
+      <div class="summary-item"><div class="num"><%= avgProgress %>%</div><div class="lbl">Progression moy.</div></div>
+      <div class="summary-item"><div class="num"><%= course.modules ? course.modules.length : 0 %></div><div class="lbl">Modules</div></div>
+    </div>
+
+    <div class="table-card">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Étudiant</th>
+            <th>Statut</th>
+            <th>Accès jusqu'au</th>
+            <th>Progression</th>
+            <th>Dernière activité</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% studentsData.forEach(({ student, isEnrolled, enrollment, completedModules, totalModules, lastActivity }) => {
+            const now = new Date();
+            const isExpired = enrollment && enrollment.endDate && new Date(enrollment.endDate) < now;
+            const pct = totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0;
+          %>
+            <tr>
+              <td>
+                <div class="fw-semibold"><%= student.surname %> <%= student.name %></div>
+                <div class="text-muted" style="font-size:.78rem">@<%= student.username %></div>
+              </td>
+              <td>
+                <% if (!isEnrolled) { %>
+                  <span class="status-none">Non inscrit</span>
+                <% } else if (isExpired) { %>
+                  <span class="status-expired">Expiré</span>
+                <% } else { %>
+                  <span class="status-enrolled">Actif</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (enrollment && enrollment.endDate) { %>
+                  <span style="font-size:.83rem"><%= new Date(enrollment.endDate).toLocaleDateString('fr-FR') %></span>
+                <% } else { %>
+                  <span class="text-muted">—</span>
+                <% } %>
+              </td>
+              <td style="min-width:140px">
+                <% if (isEnrolled && totalModules > 0) { %>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="progress-bar-custom flex-grow-1">
+                      <div class="progress-bar-fill" style="width:<%= pct %>%"></div>
+                    </div>
+                    <span style="font-size:.78rem;color:#555;white-space:nowrap"><%= completedModules %>/<%= totalModules %></span>
+                  </div>
+                <% } else { %>
+                  <span class="text-muted small">—</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (lastActivity) { %>
+                  <span style="font-size:.82rem"><%= new Date(lastActivity).toLocaleDateString('fr-FR') %></span>
+                <% } else { %>
+                  <span class="text-muted small">—</span>
+                <% } %>
+              </td>
+              <td>
+                <a href="/institution/dashboard/students/<%= student._id %>" class="btn btn-sm btn-outline-primary py-0 px-2">Voir</a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

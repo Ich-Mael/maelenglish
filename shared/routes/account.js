@@ -156,8 +156,6 @@ router.post(
  * Affiche la page de connexion
  */
 router.get("/login", (req, res) => {
-  console.log('[Login GET] req.user:', req.user ? `${req.user.username} (${req.user._id})` : 'null/undefined');
-  console.log('[Login GET] req.isAuthenticated():', req.isAuthenticated());
   res.render("user/login");
 });
 
@@ -167,27 +165,16 @@ router.get("/login", (req, res) => {
  */
 router.post(
   "/login",
+  (req, res, next) => req.app.get('authLimiter')(req, res, next),
   passport.authenticate("local", {
     failureFlash: true,
     failureRedirect: "/login",
   }),
-  trackDevice, // Track device after authentication
-  async (req, res) => {
-    console.log('[Login POST] After passport.authenticate');
-    console.log('[Login POST] req.user:', req.user ? `${req.user.username} (${req.user._id})` : 'null/undefined');
-    console.log('[Login POST] req.isAuthenticated():', req.isAuthenticated());
-    console.log('[Login POST] req.session:', req.session ? 'session exists' : 'no session');
-
-    if (!req.user) {
-      console.error('[Login POST] ERROR: req.user is null/undefined after authentication!');
-      req.flash("error", "Erreur d'authentification");
-      return res.redirect("/login");
-    }
-
+  trackDevice,
+  (req, res) => {
     req.flash("success", `Content de vous revoir ${req.user.username}`);
     const redirectUrl = req.session.returnTo || "/";
     delete req.session.returnTo;
-    console.log('[Login POST] Redirecting to:', redirectUrl);
     res.redirect(redirectUrl);
   }
 );
@@ -205,20 +192,14 @@ router.get("/device-limit-reached", (req, res) => {
  * Déconnecte l'utilisateur et désactive l'appareil
  */
 router.get("/logout", async (req, res) => {
-  console.log('[Logout] Before logout - req.user:', req.user ? `${req.user.username} (${req.user._id})` : 'null/undefined');
-  console.log('[Logout] req.isAuthenticated():', req.isAuthenticated());
-
-  // Désactiver l'appareil avant la déconnexion
   if (req.user) {
     try {
       const deviceId = getOrGenerateDeviceId(req, res);
       const user = await User.findById(req.user._id);
       const device = user.devices.find(d => d.deviceId === deviceId);
-
       if (device) {
         device.isActive = false;
         await user.save();
-        console.log('[Logout] Device deactivated:', deviceId);
       }
     } catch (error) {
       console.error('[Logout] Error updating device on logout:', error);
@@ -227,11 +208,9 @@ router.get("/logout", async (req, res) => {
 
   req.logout((err) => {
     if (err) {
-      console.error('[Logout] ERROR:', err);
       req.flash("error", "Erreur lors de la déconnexion");
       return res.redirect(req.get("Referrer") || "/");
     }
-    console.log('[Logout] After logout - req.user:', req.user ? `${req.user.username} (${req.user._id})` : 'null/undefined');
     req.flash("success", "Vous avez été déconnecté avec succès");
     res.redirect("/");
   });
@@ -255,6 +234,11 @@ router.get(
     // Check if user is admin or super-admin
     if (user.role === "admin" || user.role === "super-admin") {
       return res.redirect("/admin/dashboard");
+    }
+
+    // Institution admins go to their institution dashboard
+    if (user.role === "institution-admin") {
+      return res.redirect("/institution/dashboard");
     }
 
     // For all other roles (user, learner, etc.), redirect to learner dashboard
@@ -544,7 +528,7 @@ router.get("/forgot-password", (req, res) => {
  * POST /forgot-password
  * Traite la demande de réinitialisation (envoi email)
  */
-router.post("/forgot-password", catchAsync(async (req, res) => {
+router.post("/forgot-password", (req, res, next) => req.app.get('authLimiter')(req, res, next), catchAsync(async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email: email.toLowerCase() });
 
@@ -615,14 +599,10 @@ router.post("/reset/:token", catchAsync(async (req, res) => {
     return res.redirect("back");
   }
 
-  // Set new password (passport-local-mongoose method)
   await user.setPassword(req.body.password);
 
   user.resetPasswordToken = undefined;
   user.resetPasswordExpires = undefined;
-
-  // Update confirmation field just in case logic relies on it elsewhere
-  user.defP = req.body.password;
 
   await user.save();
 
