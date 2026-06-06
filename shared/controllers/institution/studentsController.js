@@ -1,5 +1,5 @@
 const User = require('../../models/user');
-const { Course } = require('../../models/courses');
+const { Course, Module, Evaluation } = require('../../models/courses');
 const StudentProgress = require('../../models/studentProgress');
 const Emailer = require('../../utilities/sendEmail');
 const catchAsync = require('../../utilities/catchAsync');
@@ -8,16 +8,18 @@ const catchAsync = require('../../utilities/catchAsync');
 module.exports.index = catchAsync(async (req, res) => {
     const assignedCourses = req.institution.assignedCourses;
 
-    const students = await User.find({
-        coursesTaken: { $in: assignedCourses },
-        role: { $ne: 'institution-admin' }
-    }).select('name surname username email isVerified specialProgram coursesTaken devices').sort({ surname: 1, name: 1 });
+    const [students, assignedCourseDetails] = await Promise.all([
+        User.find({
+            coursesTaken: { $in: assignedCourses },
+            role: { $ne: 'institution-admin' }
+        }).select('name surname username email isVerified specialProgram coursesTaken devices').sort({ surname: 1, name: 1 }),
+        Course.find({ _id: { $in: assignedCourses } }).select('title _id')
+    ]);
 
     const studentsWithMeta = students.map(s => {
         const lastLogin = s.devices && s.devices.length > 0
             ? s.devices.reduce((latest, d) => d.lastLogin > latest ? d.lastLogin : latest, s.devices[0].lastLogin)
             : null;
-        // Count active enrollments only for this institution's courses
         const activeEnrollments = (s.specialProgram || []).filter(p =>
             p.endDate && new Date(p.endDate) >= new Date()
         );
@@ -26,7 +28,8 @@ module.exports.index = catchAsync(async (req, res) => {
 
     res.render('institution-dashboard/students/index', {
         institution: req.institution,
-        studentsWithMeta
+        studentsWithMeta,
+        assignedCourseDetails
     });
 });
 
@@ -62,6 +65,29 @@ module.exports.show = catchAsync(async (req, res) => {
         progressByCourse[cid].push(p);
     });
 
+    // Fetch evaluations for all modules across assigned courses to get grades
+    const allModuleIds = courses.reduce((ids, c) => ids.concat(c.modules || []), []);
+    const evaluations = await Evaluation.find({
+        'studentGrades.studentId': student._id
+    }).select('studentGrades');
+
+    // Build grade lookup: evaluationId -> studentGrade
+    const gradeByEval = {};
+    evaluations.forEach(ev => {
+        const g = ev.studentGrades.find(g => g.studentId.toString() === student._id.toString());
+        if (g) gradeByEval[ev._id.toString()] = g;
+    });
+
+    // Fetch modules with evaluation refs for grade mapping
+    const moduleDocs = await Module.find({ _id: { $in: allModuleIds } }).select('title evaluation');
+    const moduleGradeMap = {};
+    moduleDocs.forEach(m => {
+        if (m.evaluation) {
+            const g = gradeByEval[m.evaluation.toString()];
+            if (g) moduleGradeMap[m._id.toString()] = g.score;
+        }
+    });
+
     const enrollmentStatus = courses.map(course => {
         const enrollment = (student.specialProgram || []).find(p => p.courseTitle === course.title);
         const isEnrolled = (student.coursesTaken || []).some(id => {
@@ -71,6 +97,10 @@ module.exports.show = catchAsync(async (req, res) => {
         const modules = progressByCourse[course._id.toString()] || [];
         const completedModules = modules.filter(m => m.status === 'completed').length;
 
+        // Average grade across modules that have evaluations in this course
+        const grades = (course.modules || []).map(mid => moduleGradeMap[mid.toString()]).filter(s => s !== undefined);
+        const avgGrade = grades.length > 0 ? Math.round(grades.reduce((a, b) => a + b, 0) / grades.length) : null;
+
         return {
             course,
             isEnrolled,
@@ -79,7 +109,8 @@ module.exports.show = catchAsync(async (req, res) => {
             totalModules: course.modules ? course.modules.length : 0,
             lastViewedAt: modules.length > 0
                 ? modules.reduce((latest, m) => m.lastViewedAt > latest ? m.lastViewedAt : latest, modules[0].lastViewedAt)
-                : null
+                : null,
+            avgGrade
         };
     });
 
@@ -149,6 +180,66 @@ module.exports.enroll = catchAsync(async (req, res) => {
 
     req.flash('success', `${student.name} ${student.surname} inscrit(e) à "${course.title}".`);
     res.redirect(`/institution/dashboard/students/${userId}`);
+});
+
+// Bulk enroll multiple students in a course
+module.exports.enrollBulk = catchAsync(async (req, res) => {
+    const { courseId, startDate, endDate, studentIds } = req.body;
+
+    // Verify course is assigned to this institution
+    const isAssigned = req.institution.assignedCourses.some(id => id.toString() === courseId);
+    if (!isAssigned) {
+        req.flash('error', 'Ce cours n\'est pas assigné à votre institution.');
+        return res.redirect('/institution/dashboard/students');
+    }
+
+    const ids = Array.isArray(studentIds) ? studentIds : studentIds ? [studentIds] : [];
+    if (ids.length === 0) {
+        req.flash('error', 'Sélectionnez au moins un étudiant.');
+        return res.redirect('/institution/dashboard/students');
+    }
+
+    const course = await Course.findById(courseId);
+    if (!course) {
+        req.flash('error', 'Cours introuvable.');
+        return res.redirect('/institution/dashboard/students');
+    }
+
+    const start = startDate ? new Date(startDate) : new Date();
+    const end = endDate ? new Date(endDate) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+    let enrolled = 0;
+    let skipped = 0;
+
+    for (const userId of ids) {
+        const student = await User.findById(userId);
+        if (!student) { skipped++; continue; }
+
+        // Skip already enrolled
+        if ((student.coursesTaken || []).some(id => id.toString() === courseId)) {
+            skipped++;
+            continue;
+        }
+
+        course.students.push(student._id);
+        if (!student.coursesTaken) student.coursesTaken = [];
+        student.coursesTaken.push(course._id);
+        if (!student.specialProgram) student.specialProgram = [];
+        student.specialProgram.push({ courseTitle: course.title, startDate: start, endDate: end });
+        await student.save();
+
+        // Fire-and-forget enrollment email
+        const loginUrl = `${req.protocol}://${req.get('host')}/login`;
+        new Emailer(student).sendEnrollmentEmail(course.title, start, end, loginUrl)
+            .catch(err => console.error('Bulk enrollment email error:', err));
+
+        enrolled++;
+    }
+
+    await course.save();
+
+    req.flash('success', `${enrolled} étudiant(s) inscrit(s) à "${course.title}"${skipped > 0 ? ` (${skipped} déjà inscrit(s) ou introuvable(s))` : ''}.`);
+    res.redirect('/institution/dashboard/students');
 });
 
 // Unenroll a student from one of this institution's assigned courses

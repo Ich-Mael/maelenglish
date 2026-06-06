@@ -268,19 +268,53 @@ router.get(
   isLoggedIn,
   checkRoles(["admin", "super-admin"]),
   catchAsync(async (req, res) => {
-    // Get statistics for dashboard
-    const totalUsers = await User.countDocuments();
-    const totalAdmins = await User.countDocuments({ role: { $in: ["admin", "super-admin"] } });
-    const totalLearners = await User.countDocuments({ role: "user" });
-    const verifiedUsers = await User.countDocuments({ isVerified: true });
+    const { Course } = require('../models/courses');
+
+    const [
+      totalUsers, totalAdmins, totalLearners, verifiedUsers,
+      institutions, totalInstitutionStudents
+    ] = await Promise.all([
+      User.countDocuments(),
+      User.countDocuments({ role: { $in: ["admin", "super-admin"] } }),
+      User.countDocuments({ role: "user" }),
+      User.countDocuments({ isVerified: true }),
+      Institution.find({ isActive: true })
+        .select('name assignedCourses')
+        .sort({ name: 1 }),
+      User.countDocuments({ institutionId: { $ne: null } })
+    ]);
+
+    // Per-institution: count enrolled students (users with coursesTaken intersecting assignedCourses)
+    const institutionStats = await Promise.all(institutions.map(async inst => {
+      const studentCount = inst.assignedCourses.length > 0
+        ? await User.countDocuments({ coursesTaken: { $in: inst.assignedCourses } })
+        : 0;
+      return { institution: inst, studentCount };
+    }));
+
+    // Enrollments in the last 6 months (monthly buckets via specialProgram.startDate)
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const recentEnrollments = await User.aggregate([
+      { $unwind: '$specialProgram' },
+      { $match: { 'specialProgram.startDate': { $gte: sixMonthsAgo } } },
+      { $group: {
+          _id: {
+            year: { $year: '$specialProgram.startDate' },
+            month: { $month: '$specialProgram.startDate' }
+          },
+          count: { $sum: 1 }
+      }},
+      { $sort: { '_id.year': 1, '_id.month': 1 } }
+    ]);
 
     res.render("admin/dashboard", {
-      stats: {
-        totalUsers,
-        totalAdmins,
-        totalLearners,
-        verifiedUsers,
-      }
+      stats: { totalUsers, totalAdmins, totalLearners, verifiedUsers },
+      institutionStats,
+      recentEnrollments,
+      totalInstitutions: institutions.length,
+      totalInstitutionStudents
     });
   })
 );

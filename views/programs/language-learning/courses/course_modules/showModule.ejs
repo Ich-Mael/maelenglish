@@ -537,6 +537,46 @@
     });
 </script>
 
+  <!-- Evaluation Section -->
+  <% if (courseModule.evaluation && courseModule.evaluation.questions.length > 0) { %>
+  <div class="container mb-4">
+    <div style="background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.07);padding:2rem;">
+      <h4 class="fw-bold mb-1"><i class="bi bi-clipboard-check text-primary me-2"></i>Évaluation du module</h4>
+      <p class="text-muted small mb-3"><%= courseModule.evaluation.title %> · <%= courseModule.evaluation.questions.length %> question(s)</p>
+
+      <% if (myGrade) { %>
+        <!-- Already submitted -->
+        <div class="alert alert-success d-flex align-items-center gap-3" role="alert">
+          <i class="bi bi-check-circle-fill fs-4"></i>
+          <div>
+            <strong>Score : <%= myGrade.score %>/100</strong> —
+            <%= Math.round(myGrade.score / 100 * courseModule.evaluation.questions.length) %>/<%= courseModule.evaluation.questions.length %> bonne(s) réponse(s)
+            <span class="text-muted small ms-2">soumis le <%= new Date(myGrade.submittedAt).toLocaleDateString('fr-FR') %></span>
+          </div>
+        </div>
+      <% } else { %>
+        <!-- Evaluation form -->
+        <form action="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%= courseModule._id %>/evaluation/submit" method="POST">
+          <% courseModule.evaluation.questions.forEach((q, idx) => { %>
+            <div class="mb-4 p-3" style="background:#f8f9fa;border-radius:10px;">
+              <p class="fw-semibold mb-2"><%= idx + 1 %>. <%= q.Question_text %></p>
+              <% q.options.forEach(opt => { %>
+                <div class="form-check mb-1">
+                  <input class="form-check-input" type="radio" name="answers[<%= idx %>]" value="<%= opt.value %>" id="opt_<%= idx %>_<%= opt.id %>" required>
+                  <label class="form-check-label" for="opt_<%= idx %>_<%= opt.id %>"><%= opt.text %></label>
+                </div>
+              <% }) %>
+            </div>
+          <% }) %>
+          <button type="submit" class="btn btn-primary px-4 rounded-pill">
+            <i class="bi bi-send me-2"></i>Soumettre l'évaluation
+          </button>
+        </form>
+      <% } %>
+    </div>
+  </div>
+  <% } %>
+
   <!-- Mark as Complete -->
   <div class="container mb-4">
     <div class="d-flex justify-content-end">

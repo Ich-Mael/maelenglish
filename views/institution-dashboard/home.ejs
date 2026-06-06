@@ -1,16 +1,18 @@
 <% layout('layouts/main') %>
 
+<% const brandColor = typeof institutionColor !== 'undefined' ? institutionColor : '#0e7490'; %>
 <% headContent = `<style>
+  :root { --brand: ${brandColor}; }
   .page-wrapper { margin-top: 80px; padding: 2rem 0 4rem; min-height: calc(100vh - 200px); }
-  .page-header { background: linear-gradient(135deg, #0e7490 0%, #164e63 100%); color: white; padding: 2.5rem 2rem; border-radius: 20px; margin-bottom: 2rem; }
+  .page-header { background: linear-gradient(135deg, var(--brand) 0%, color-mix(in srgb, var(--brand) 70%, #000) 100%); color: white; padding: 2.5rem 2rem; border-radius: 20px; margin-bottom: 2rem; }
   .page-header h1 { margin: 0 0 .3rem; font-size: 2rem; font-weight: 800; }
   .page-header p { margin: 0; opacity: .85; }
   .stat-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07); padding: 1.75rem; text-align: center; }
-  .stat-card .num { font-size: 2.5rem; font-weight: 800; color: #0e7490; }
+  .stat-card .num { font-size: 2.5rem; font-weight: 800; color: var(--brand); }
   .stat-card .lbl { color: #555; font-size: .9rem; margin-top: .25rem; }
-  .nav-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07); padding: 1.5rem; text-decoration: none; color: inherit; display: block; transition: box-shadow .2s, transform .2s; border-left: 4px solid #0e7490; }
-  .nav-card:hover { box-shadow: 0 6px 20px rgba(14,116,144,.18); transform: translateY(-2px); color: inherit; }
-  .nav-card h3 { font-size: 1.05rem; font-weight: 700; margin: 0 0 .3rem; color: #0e7490; }
+  .nav-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07); padding: 1.5rem; text-decoration: none; color: inherit; display: block; transition: box-shadow .2s, transform .2s; border-left: 4px solid var(--brand); }
+  .nav-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,.15); transform: translateY(-2px); color: inherit; }
+  .nav-card h3 { font-size: 1.05rem; font-weight: 700; margin: 0 0 .3rem; color: var(--brand); }
   .nav-card p { font-size: .85rem; color: #666; margin: 0; }
 </style>` %>
 

@@ -201,18 +201,28 @@ const evaluationSchema = new Schema({
 
   questions: [{
     Question_text: String,
-    Question_response: String,
+    Question_response: String, // correct answer value
     options: [{
-      id: String, //or number
+      id: String,
       text: String,
       value: String,
-    }, ],
-  }, ],
+    }],
+  }],
+
+  // Per-student results (replaces the single grade ref)
+  studentGrades: [{
+    studentId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    score: { type: Number, default: 0 },      // 0–100
+    answers: [String],                         // submitted answer values
+    submittedAt: { type: Date, default: Date.now }
+  }],
+
+  // Legacy single-grade ref (kept for backward compat)
   grade: {
     type: Schema.Types.ObjectId,
     ref: "Grade",
   },
-});
+}, { timestamps: true });
 
 /*===================================
           Grade 

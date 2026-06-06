@@ -120,10 +120,14 @@ router.put('/admindashboard/:course_id/modules/:courseModule_id/engcoursevideo/:
 /*
  ************************* EVALUATION ROUTES *******************************************
  */
-// Evaluation routes (placeholder for future implementation)
-router.get('/:course_id/evaluations/:evaluation', isLoggedIn, isVerified, checkCourseOwnership, catchAsync(async (req, res) => {
-    res.send("Evaluation page - To be implemented");
-}));
+// Admin: create or update evaluation for a module
+router.post('/admindashboard/:course_id/modules/:module_id/evaluation', isLoggedIn, isVerified, checkRoles(['admin', 'super-admin']), CourseModules.saveEvaluation);
+
+// Admin: delete evaluation from a module
+router.delete('/admindashboard/:course_id/modules/:module_id/evaluation', isLoggedIn, isVerified, checkRoles(['admin', 'super-admin']), CourseModules.deleteEvaluation);
+
+// Student: submit evaluation answers
+router.post('/:course_id/modules/:module_id/evaluation/submit', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, CourseModules.submitEvaluation);
 
 /*
  ************************* COACH RESOURCES ROUTES *******************************************

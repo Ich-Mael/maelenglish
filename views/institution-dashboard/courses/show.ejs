@@ -27,7 +27,12 @@
           <h1><%= course.title %></h1>
           <p>Progression de vos étudiants · <%= institution.name %></p>
         </div>
-        <a href="/institution/dashboard/courses" class="btn btn-light btn-sm">← Cours</a>
+        <div class="d-flex gap-2">
+          <a href="/institution/dashboard/courses/<%= course._id %>/export.csv" class="btn btn-light btn-sm">
+            ⬇ Export CSV
+          </a>
+          <a href="/institution/dashboard/courses" class="btn btn-light btn-sm">← Cours</a>
+        </div>
       </div>
     </div>
 

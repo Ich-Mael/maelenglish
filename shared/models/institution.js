@@ -65,6 +65,13 @@ const institutionSchema = new Schema({
         default: true
     },
 
+    // Branding
+    primaryColor: {
+        type: String,
+        trim: true,
+        default: '#0e7490'
+    },
+
     // AfrohK admin who created this institution
     createdBy: {
         type: Schema.Types.ObjectId,

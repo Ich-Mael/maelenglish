@@ -386,6 +386,56 @@
       </div>
     </div>
     
+    <!-- Institution Analytics -->
+    <% if (typeof institutionStats !== 'undefined' && institutionStats.length > 0) { %>
+    <div style="margin:2rem 0;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.07);padding:1.75rem;">
+      <h2 style="font-size:1.1rem;font-weight:700;color:#5d06ba;margin:0 0 1.25rem;padding-bottom:.75rem;border-bottom:2px solid #ede8f8;display:flex;justify-content:space-between;align-items:center;">
+        <span><i class="bi bi-building me-2"></i>Institutions partenaires</span>
+        <span style="font-size:.85rem;font-weight:500;color:#888;"><%= totalInstitutions %> active(s) · <%= totalInstitutionStudents %> étudiant(s) rattaché(s)</span>
+      </h2>
+      <div style="overflow-x:auto;">
+        <table class="table table-sm table-hover align-middle mb-0">
+          <thead style="font-size:.8rem;text-transform:uppercase;color:#888;">
+            <tr>
+              <th>Institution</th>
+              <th>Cours assignés</th>
+              <th>Étudiants inscrits</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% institutionStats.forEach(({ institution, studentCount }) => { %>
+              <tr>
+                <td class="fw-semibold"><%= institution.name %></td>
+                <td><%= institution.assignedCourses.length %></td>
+                <td>
+                  <span style="background:#ede8f8;color:#5d06ba;padding:.15rem .6rem;border-radius:20px;font-size:.8rem;font-weight:600;">
+                    <%= studentCount %>
+                  </span>
+                </td>
+                <td><a href="/admin/institutions/<%= institution._id %>" class="btn btn-sm btn-outline-primary py-0 px-2">Voir</a></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <% if (recentEnrollments && recentEnrollments.length > 0) { %>
+        <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid #f0f0f0;">
+          <p style="font-size:.85rem;font-weight:600;color:#555;margin-bottom:.5rem;">Inscriptions — 6 derniers mois</p>
+          <div style="display:flex;gap:.5rem;align-items:flex-end;height:60px;">
+            <% const maxCount = Math.max(...recentEnrollments.map(e => e.count), 1); %>
+            <% recentEnrollments.forEach(e => { %>
+              <div title="<%= e._id.month %>/<%= e._id.year %> : <%= e.count %> inscription(s)"
+                   style="flex:1;background:#5d06ba;border-radius:4px 4px 0 0;height:<%= Math.round((e.count / maxCount) * 100) %>%;min-height:4px;opacity:.75;transition:opacity .2s;"
+                   onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.75">
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      <% } %>
+    </div>
+    <% } %>
+
     <!-- Quick Actions -->
     <div class="quick-actions">
       <h2 class="section-title">

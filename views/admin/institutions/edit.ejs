@@ -43,6 +43,14 @@
             <label class="form-label">URL du logo</label>
             <input type="url" name="logoUrl" class="form-control" value="<%= institution.logoUrl || '' %>" placeholder="https://...">
           </div>
+          <div class="col-md-6">
+            <label class="form-label">Couleur principale</label>
+            <div class="d-flex align-items-center gap-2">
+              <input type="color" name="primaryColor" class="form-control form-control-color" value="<%= institution.primaryColor || '#0e7490' %>" style="width:60px;height:38px;">
+              <input type="text" name="primaryColorHex" class="form-control form-control-sm" value="<%= institution.primaryColor || '#0e7490' %>" placeholder="#0e7490" style="max-width:120px;" oninput="document.querySelector('[name=primaryColor]').value=this.value">
+            </div>
+            <small class="text-muted">Couleur utilisée sur le tableau de bord de l'institution.</small>
+          </div>
           <div class="col-12">
             <label class="form-label">Description</label>
             <textarea name="description" class="form-control" rows="3"><%= institution.description || '' %></textarea>

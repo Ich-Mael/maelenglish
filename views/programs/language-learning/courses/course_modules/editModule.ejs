@@ -707,3 +707,78 @@
     </div>
   <% }); %>
 <% } %>
+<!-- ── EVALUATION SECTION ── -->
+<div class="card mt-4 shadow-sm">
+  <div class="card-header d-flex justify-content-between align-items-center" style="background:#f8f5ff;">
+    <h5 class="mb-0 fw-bold" style="color:#5d06ba;"><i class="bi bi-clipboard-check me-2"></i>Évaluation du module</h5>
+    <% if (courseModule.evaluation) { %>
+      <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/evaluation?_method=DELETE" method="POST" style="display:inline">
+        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Supprimer cette évaluation ?')">Supprimer</button>
+      </form>
+    <% } %>
+  </div>
+  <div class="card-body">
+    <% if (courseModule.evaluation) { %>
+      <p class="text-muted small mb-3">
+        <strong><%= courseModule.evaluation.title %></strong> ·
+        <%= courseModule.evaluation.questions.length %> question(s) ·
+        <%= courseModule.evaluation.studentGrades ? courseModule.evaluation.studentGrades.length : 0 %> soumission(s)
+      </p>
+    <% } else { %>
+      <p class="text-muted small mb-3">Aucune évaluation pour ce module. Créez-en une ci-dessous.</p>
+    <% } %>
+
+    <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/evaluation" method="POST">
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Titre de l'évaluation</label>
+        <input type="text" name="title" class="form-control" value="<%= courseModule.evaluation ? courseModule.evaluation.title : '' %>" placeholder="Ex: Quiz Module 1" required>
+      </div>
+      <div id="questionsContainer">
+        <% if (courseModule.evaluation && courseModule.evaluation.questions.length > 0) { %>
+          <% courseModule.evaluation.questions.forEach((q, qi) => { %>
+            <div class="question-block border rounded p-3 mb-3 bg-light">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <strong class="small text-secondary">Question <%= qi + 1 %></strong>
+                <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1" onclick="removeQuestion(this)">×</button>
+              </div>
+              <input type="text" name="questions[<%= qi %>][Question_text]" class="form-control form-control-sm mb-2" value="<%= q.Question_text %>" placeholder="Texte de la question" required>
+              <input type="text" name="questions[<%= qi %>][Question_response]" class="form-control form-control-sm mb-2" value="<%= q.Question_response %>" placeholder="Valeur correcte (ex: b)" required>
+              <% q.options.forEach((opt, oi) => { %>
+                <div class="input-group input-group-sm mb-1">
+                  <input type="text" name="questions[<%= qi %>][options][<%= oi %>][text]" class="form-control" value="<%= opt.text %>" placeholder="Texte option">
+                  <input type="text" name="questions[<%= qi %>][options][<%= oi %>][value]" class="form-control" style="max-width:80px" value="<%= opt.value %>" placeholder="valeur">
+                </div>
+              <% }) %>
+            </div>
+          <% }) %>
+        <% } %>
+      </div>
+      <button type="button" class="btn btn-outline-secondary btn-sm mb-3" onclick="addEvalQuestion()">+ Ajouter une question</button>
+      <div>
+        <button type="submit" class="btn btn-primary px-4"><%= courseModule.evaluation ? 'Mettre à jour' : 'Créer l\'évaluation' %></button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+let evalQIdx = <%= courseModule.evaluation ? courseModule.evaluation.questions.length : 0 %>;
+function addEvalQuestion() {
+  const idx = evalQIdx++;
+  document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', `
+    <div class="question-block border rounded p-3 mb-3 bg-light">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <strong class="small text-secondary">Question ${idx + 1}</strong>
+        <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1" onclick="removeQuestion(this)">×</button>
+      </div>
+      <input type="text" name="questions[${idx}][Question_text]" class="form-control form-control-sm mb-2" placeholder="Texte de la question" required>
+      <input type="text" name="questions[${idx}][Question_response]" class="form-control form-control-sm mb-2" placeholder="Valeur correcte (ex: b)" required>
+      ${[0,1,2,3].map(oi => `
+        <div class="input-group input-group-sm mb-1">
+          <input type="text" name="questions[${idx}][options][${oi}][text]" class="form-control" placeholder="Option ${oi+1}">
+          <input type="text" name="questions[${idx}][options][${oi}][value]" class="form-control" style="max-width:80px" placeholder="${String.fromCharCode(97+oi)}">
+        </div>`).join('')}
+    </div>`);
+}
+function removeQuestion(btn) { btn.closest('.question-block').remove(); }
+</script>

@@ -55,6 +55,8 @@ module.exports.loadInstitution = async (req, res, next) => {
         }
 
         req.institution = institution;
+        // Expose brand color to all institution dashboard views
+        res.locals.institutionColor = institution.primaryColor || '#0e7490';
         next();
     } catch (err) {
         next(err);

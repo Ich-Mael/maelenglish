@@ -153,7 +153,7 @@ router.get('/:id/edit', ...adminOnly, catchAsync(async (req, res) => {
 }));
 
 router.put('/:id', ...adminOnly, catchAsync(async (req, res) => {
-    const { name, description, contactEmail, phone, city, country, logoUrl } = req.body;
+    const { name, description, contactEmail, phone, city, country, logoUrl, primaryColor, primaryColorHex } = req.body;
     const institution = await Institution.findById(req.params.id);
     if (!institution) {
         req.flash('error', 'Institution introuvable.');
@@ -167,6 +167,8 @@ router.put('/:id', ...adminOnly, catchAsync(async (req, res) => {
     if (city !== undefined) institution.city = city;
     if (country) institution.country = country;
     if (logoUrl !== undefined) institution.logoUrl = logoUrl;
+    const color = primaryColorHex || primaryColor;
+    if (color && /^#[0-9a-fA-F]{6}$/.test(color)) institution.primaryColor = color;
 
     await institution.save();
     req.flash('success', 'Institution mise à jour avec succès.');

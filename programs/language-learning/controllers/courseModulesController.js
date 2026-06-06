@@ -44,7 +44,8 @@ module.exports.createModule = catchAsync(async (req, res) => {
 module.exports.showModule = catchAsync(async (req, res) => {
   const courseModule = await Module.findById(req.params.module_id)
     .populate("Assignment")
-    .populate("videoLinks");
+    .populate("videoLinks")
+    .populate("evaluation");
   let course = await Course.findById(req.params.course_id);
 
   const module_number = course.modules.indexOf(req.params.module_id) + 1;
@@ -63,12 +64,22 @@ module.exports.showModule = catchAsync(async (req, res) => {
     ).catch(err => console.error('StudentProgress tracking error:', err));
   }
 
+  // Find this student's grade if evaluation exists
+  let myGrade = null;
+  if (req.user && courseModule.evaluation) {
+    const found = courseModule.evaluation.studentGrades.find(
+      g => g.studentId.toString() === req.user._id.toString()
+    );
+    if (found) myGrade = found;
+  }
+
   res.render("programs/language-learning/courses/course_modules/showModule", {
     courseModule,
     course,
     module_number,
     moduleReveal,
     displayRevealDate,
+    myGrade
   });
 });
 
@@ -95,7 +106,10 @@ module.exports.showCourseModules = catchAsync(async (req, res) => {
 });
 
 module.exports.editModule = catchAsync(async (req, res) => {
-  const courseModule = await Module.findById(req.params.module_id).populate("videoLinks").populate("Assignment");
+  const courseModule = await Module.findById(req.params.module_id)
+    .populate("videoLinks")
+    .populate("Assignment")
+    .populate("evaluation");
   const course = await Course.findById(req.params.course_id);
 
   res.render("programs/language-learning/courses/course_modules/editModule", {
@@ -288,3 +302,125 @@ module.exports.deletePractice = catchAsync(async (req, res) => {
 });
 
 
+
+// ─── EVALUATION ───────────────────────────────────────────────────────────────
+
+// Admin: create or replace the evaluation for a module
+module.exports.saveEvaluation = catchAsync(async (req, res) => {
+  const { course_id, module_id } = req.params;
+  const { title, questions } = req.body;
+
+  const courseModule = await Module.findById(module_id);
+  if (!courseModule) {
+    req.flash('error', 'Module introuvable.');
+    return res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules`);
+  }
+
+  // Parse questions — each has Question_text, Question_response, and options[]
+  const parsedQuestions = (Array.isArray(questions) ? questions : [questions]).map(q => ({
+    Question_text: q.Question_text,
+    Question_response: q.Question_response,
+    options: (Array.isArray(q.options) ? q.options : [q.options]).map((opt, i) => ({
+      id: String(i),
+      text: opt.text,
+      value: opt.value
+    }))
+  }));
+
+  if (courseModule.evaluation) {
+    // Update existing evaluation
+    await Evaluation.findByIdAndUpdate(courseModule.evaluation, {
+      title: title || 'Évaluation',
+      questions: parsedQuestions
+    });
+    req.flash('success', 'Évaluation mise à jour.');
+  } else {
+    // Create new evaluation
+    const evaluation = await Evaluation.create({
+      title: title || 'Évaluation',
+      questions: parsedQuestions
+    });
+    courseModule.evaluation = evaluation._id;
+    await courseModule.save();
+    req.flash('success', 'Évaluation créée.');
+  }
+
+  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${module_id}/edit`);
+});
+
+// Admin: remove evaluation from a module
+module.exports.deleteEvaluation = catchAsync(async (req, res) => {
+  const { course_id, module_id } = req.params;
+
+  const courseModule = await Module.findById(module_id);
+  if (!courseModule) {
+    req.flash('error', 'Module introuvable.');
+    return res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules`);
+  }
+
+  if (courseModule.evaluation) {
+    await Evaluation.findByIdAndDelete(courseModule.evaluation);
+    courseModule.evaluation = undefined;
+    await courseModule.save();
+    req.flash('success', 'Évaluation supprimée.');
+  }
+
+  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${module_id}/edit`);
+});
+
+// Student: submit evaluation answers
+module.exports.submitEvaluation = catchAsync(async (req, res) => {
+  const { course_id, module_id } = req.params;
+
+  const courseModule = await Module.findById(module_id).populate('evaluation');
+  if (!courseModule || !courseModule.evaluation) {
+    req.flash('error', 'Évaluation introuvable.');
+    return res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}`);
+  }
+
+  const evaluation = courseModule.evaluation;
+
+  // Check if student already submitted
+  const alreadySubmitted = evaluation.studentGrades.some(
+    g => g.studentId.toString() === req.user._id.toString()
+  );
+  if (alreadySubmitted) {
+    req.flash('error', 'Vous avez déjà soumis cette évaluation.');
+    return res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}`);
+  }
+
+  // Grade the answers
+  const answers = req.body.answers || {};
+  let correct = 0;
+  const submittedAnswers = [];
+
+  evaluation.questions.forEach((q, idx) => {
+    const submitted = answers[String(idx)] || '';
+    submittedAnswers.push(submitted);
+    if (submitted === q.Question_response) correct++;
+  });
+
+  const score = evaluation.questions.length > 0
+    ? Math.round((correct / evaluation.questions.length) * 100)
+    : 0;
+
+  evaluation.studentGrades.push({
+    studentId: req.user._id,
+    score,
+    answers: submittedAnswers,
+    submittedAt: new Date()
+  });
+  await evaluation.save();
+
+  // Also update StudentProgress to completed if score >= 50
+  if (score >= 50) {
+    StudentProgress.findOneAndUpdate(
+      { userId: req.user._id, courseId: course_id, moduleId: module_id },
+      { $set: { status: 'completed', completedAt: new Date(), lastViewedAt: new Date() } },
+      { upsert: true }
+    ).catch(err => console.error('StudentProgress update error:', err));
+  }
+
+  req.flash('success', `Évaluation soumise ! Score : ${score}/100 (${correct}/${evaluation.questions.length} bonne(s) réponse(s)).`);
+  res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}`);
+});
