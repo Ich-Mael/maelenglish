@@ -2,6 +2,20 @@ if (process.env.NODE_ENV !== "production") {
     require("dotenv").config();
 }
 
+// Warn about missing critical env vars at startup
+const REQUIRED_ENV = ['APP_DB', 'SECRET'];
+const RECOMMENDED_ENV = ['APP_URL', 'EMAIL_HOST', 'EMAIL_USERNAME', 'EMAIL_PASSWORD', 'EMAIL_FROM'];
+const missingRequired = REQUIRED_ENV.filter(k => !process.env[k]);
+const missingRecommended = RECOMMENDED_ENV.filter(k => !process.env[k]);
+if (missingRequired.length) {
+    console.error(`[ENV] CRITICAL: missing required env vars: ${missingRequired.join(', ')}`);
+    process.exit(1);
+}
+if (missingRecommended.length) {
+    console.warn(`[ENV] WARNING: missing recommended env vars: ${missingRecommended.join(', ')}`);
+    console.warn('[ENV] Emails will not send and base URLs may be wrong without these set.');
+}
+
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");

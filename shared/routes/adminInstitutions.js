@@ -8,6 +8,7 @@ const { Course } = require('../models/courses');
 const catchAsync = require('../utilities/catchAsync');
 const { isLoggedIn, checkRoles } = require('../middlewares/auth');
 const Emailer = require('../utilities/sendEmail');
+const { getBaseUrl } = require('../utilities/url');
 
 const adminOnly = [isLoggedIn, checkRoles(['admin', 'super-admin'])];
 
@@ -106,7 +107,7 @@ router.post('/', ...adminOnly, catchAsync(async (req, res) => {
 
     // Send activation email
     try {
-        const activationUrl = `${req.protocol}://${req.get('host')}/user/activate/${activationToken}`;
+        const activationUrl = `${getBaseUrl(req)}/user/activate/${activationToken}`;
         await new Emailer(adminUser, activationUrl).sendActivationEmail(password);
         req.flash('success', `Institution "${institution.name}" créée. Email d'activation envoyé à ${adminEmail}.`);
     } catch (err) {

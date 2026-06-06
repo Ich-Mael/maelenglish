@@ -8,6 +8,7 @@ const { isLoggedIn, checkRoles } = require("../middlewares/auth");
 const { trackDevice, getOrGenerateDeviceId } = require("../middlewares/deviceTracker");
 const crypto = require("crypto");
 const Emailer = require("../utilities/sendEmail");
+const { getBaseUrl } = require("../utilities/url");
 
 /**
  * GET /admin/users/create
@@ -132,7 +133,7 @@ router.post(
     if (adminCount > 0) {
       try {
         // Construct activation URL
-        const activationUrl = `${req.protocol}://${req.get("host")}/user/activate/${activationToken}`;
+        const activationUrl = `${getBaseUrl(req)}/user/activate/${activationToken}`;
 
         await new Emailer(user, activationUrl).sendActivationEmail(password);
 
@@ -336,34 +337,32 @@ router.get(
     const roleFilter = req.query.role || null;
     const verifiedFilter = req.query.verified !== undefined ? req.query.verified === 'true' : null;
     const searchQuery = req.query.search || '';
+    const institutionFilter = req.query.institutionId || null;
 
     // Construction de la query
     let query = {};
 
-    if (roleFilter) {
-      query.role = roleFilter;
-    }
-
-    if (verifiedFilter !== null) {
-      query.isVerified = verifiedFilter;
-    }
+    if (roleFilter) query.role = roleFilter;
+    if (verifiedFilter !== null) query.isVerified = verifiedFilter;
+    if (institutionFilter) query.institutionId = institutionFilter;
 
     if (searchQuery) {
       query.$or = [
-        { name: { $regex: searchQuery, $options: 'i' } },
-        { surname: { $regex: searchQuery, $options: 'i' } },
+        { name:     { $regex: searchQuery, $options: 'i' } },
+        { surname:  { $regex: searchQuery, $options: 'i' } },
         { username: { $regex: searchQuery, $options: 'i' } },
-        { email: { $regex: searchQuery, $options: 'i' } }
+        { email:    { $regex: searchQuery, $options: 'i' } }
       ];
     }
 
-    // Récupération des utilisateurs
-    const users = await User.find(query)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+    // Récupération des utilisateurs + institution name if filtered
+    const [users, totalUsers, allInstitutions, activeInstitution] = await Promise.all([
+      User.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      User.countDocuments(query),
+      Institution.find({ isActive: true }).select('name _id').sort({ name: 1 }),
+      institutionFilter ? Institution.findById(institutionFilter).select('name') : Promise.resolve(null)
+    ]);
 
-    const totalUsers = await User.countDocuments(query);
     const totalPages = Math.ceil(totalUsers / limit);
 
     // Statistiques pour les filtres
@@ -381,10 +380,13 @@ router.get(
       totalPages,
       totalUsers,
       stats,
+      allInstitutions,
+      activeInstitution,
       filters: {
         role: roleFilter,
         verified: verifiedFilter,
-        search: searchQuery
+        search: searchQuery,
+        institutionId: institutionFilter
       }
     });
   })
@@ -597,7 +599,7 @@ router.post("/forgot-password", (req, res, next) => req.app.get('authLimiter')(r
   await user.save();
 
   // Send email
-  const resetUrl = `${req.protocol}://${req.get("host")}/reset/${token}`;
+  const resetUrl = `${getBaseUrl(req)}/reset/${token}`;
 
   try {
     await new Emailer(user).sendPasswordReset(resetUrl);

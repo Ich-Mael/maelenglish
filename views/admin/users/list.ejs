@@ -520,6 +520,7 @@
               <option value="user" <%= typeof filters !== 'undefined' && filters.role === 'user' ? 'selected' : '' %>>Apprenant</option>
               <option value="admin" <%= typeof filters !== 'undefined' && filters.role === 'admin' ? 'selected' : '' %>>Administrateur</option>
               <option value="super-admin" <%= typeof filters !== 'undefined' && filters.role === 'super-admin' ? 'selected' : '' %>>Super Admin</option>
+              <option value="institution-admin" <%= typeof filters !== 'undefined' && filters.role === 'institution-admin' ? 'selected' : '' %>>Admin institution</option>
               <option value="account-manager" <%= typeof filters !== 'undefined' && filters.role === 'account-manager' ? 'selected' : '' %>>Gestionnaire de comptes</option>
             </select>
           </div>
@@ -532,7 +533,25 @@
               <option value="false" <%= typeof filters !== 'undefined' && filters.verified === false ? 'selected' : '' %>>Non vérifiés</option>
             </select>
           </div>
+
+          <div class="filter-group">
+            <label>Institution partenaire</label>
+            <select name="institutionId">
+              <option value="">Toutes les institutions</option>
+              <% if (typeof allInstitutions !== 'undefined') { allInstitutions.forEach(inst => { %>
+                <option value="<%= inst._id %>" <%= typeof filters !== 'undefined' && filters.institutionId === inst._id.toString() ? 'selected' : '' %>>
+                  <%= inst.name %>
+                </option>
+              <% }) } %>
+            </select>
+          </div>
         </div>
+
+        <% if (typeof activeInstitution !== 'undefined' && activeInstitution) { %>
+          <div style="background:#ede8f8;color:#5d06ba;padding:.5rem 1rem;border-radius:8px;font-size:.875rem;font-weight:600;margin-bottom:.75rem;">
+            <i class="bi bi-building me-1"></i>Filtré par institution : <%= activeInstitution.name %>
+          </div>
+        <% } %>
         
         <div class="filter-actions">
           <button type="submit" class="btn-filter btn-filter-primary">
