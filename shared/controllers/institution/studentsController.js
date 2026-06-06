@@ -33,6 +33,47 @@ module.exports.index = catchAsync(async (req, res) => {
     });
 });
 
+// Search any AfrohK user by name / username / email (JSON API for live search)
+module.exports.search = catchAsync(async (req, res) => {
+    const q = (req.query.q || '').trim();
+
+    if (q.length < 2) return res.json({ users: [] });
+
+    const assignedCourses = req.institution.assignedCourses;
+
+    // Already enrolled: users who have taken at least one institution course
+    const enrolledIds = await User.find({
+        coursesTaken: { $in: assignedCourses }
+    }).distinct('_id');
+
+    const users = await User.find({
+        $or: [
+            { username: { $regex: q, $options: 'i' } },
+            { name:     { $regex: q, $options: 'i' } },
+            { surname:  { $regex: q, $options: 'i' } },
+            { email:    { $regex: q, $options: 'i' } }
+        ],
+        role: { $nin: ['admin', 'super-admin', 'institution-admin'] }
+    })
+    .select('username name surname email isVerified')
+    .limit(10)
+    .sort({ surname: 1, name: 1 });
+
+    const enrolledSet = new Set(enrolledIds.map(id => id.toString()));
+
+    res.json({
+        users: users.map(u => ({
+            _id:        u._id,
+            username:   u.username,
+            name:       u.name,
+            surname:    u.surname,
+            email:      u.email,
+            isVerified: u.isVerified,
+            enrolled:   enrolledSet.has(u._id.toString())
+        }))
+    });
+});
+
 // Show one student's progress across this institution's assigned courses
 module.exports.show = catchAsync(async (req, res) => {
     const assignedCourses = req.institution.assignedCourses;

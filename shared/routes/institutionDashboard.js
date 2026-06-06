@@ -19,6 +19,7 @@ router.get('/dashboard/courses/:courseId/export.csv', Courses.exportCsv);
 
 // ─── STUDENTS ─────────────────────────────────────────────────────────────────
 router.get('/dashboard/students', Students.index);
+router.get('/dashboard/students/search', Students.search);  // must be before /:userId
 router.get('/dashboard/students/:userId', Students.show);
 
 // Enroll student in a course

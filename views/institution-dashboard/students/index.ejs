@@ -15,6 +15,17 @@
   .bulk-panel.visible { display: block; }
   .bulk-toolbar { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
   #selectedCount { font-weight: 700; color: #0e7490; }
+  /* Search panel */
+  .search-panel { background: #fff; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,.07); padding: 1.5rem; margin-bottom: 1.5rem; }
+  .search-panel h3 { font-size: 1rem; font-weight: 700; color: #0e7490; margin: 0 0 1rem; }
+  .search-results { margin-top: .75rem; border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; display: none; }
+  .search-result-row { display: flex; align-items: center; gap: 1rem; padding: .75rem 1rem; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: background .15s; }
+  .search-result-row:last-child { border-bottom: none; }
+  .search-result-row:hover { background: #f0fdff; }
+  .search-result-row.selected { background: #e0f2f7; }
+  .enroll-form { background: #f8f9fa; border-radius: 10px; padding: 1rem; margin-top: .75rem; display: none; }
+  .enroll-form.visible { display: block; }
+  .enrolled-tag { background: #d1fae5; color: #065f46; padding: .1rem .5rem; border-radius: 20px; font-size: .72rem; font-weight: 600; }
 </style>` %>
 
 <div class="page-wrapper">
@@ -27,6 +38,44 @@
     </div>
 
     <%- include('../../partials/flash') %>
+
+    <!-- ── STUDENT SEARCH ── -->
+    <% if (institution.assignedCourses && institution.assignedCourses.length > 0) { %>
+    <div class="search-panel">
+      <h3>➕ Ajouter un étudiant</h3>
+      <div>
+        <input type="text" id="studentSearch" class="form-control" placeholder="Rechercher par nom, prénom, username ou email…" autocomplete="off">
+        <div class="search-results" id="searchResults"></div>
+      </div>
+
+      <!-- Enroll form — revealed after selecting a user -->
+      <form class="enroll-form" id="enrollForm" method="POST">
+        <p class="mb-2 fw-semibold" id="selectedName"></p>
+        <div class="row g-2 align-items-end">
+          <div class="col-md-5">
+            <label class="form-label mb-1" style="font-size:.82rem">Cours</label>
+            <select name="courseId" class="form-select form-select-sm" required>
+              <option value="">-- Choisir un cours --</option>
+              <% (typeof assignedCourseDetails !== 'undefined' ? assignedCourseDetails : []).forEach(c => { %>
+                <option value="<%= c._id %>"><%= c.title %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label mb-1" style="font-size:.82rem">Début</label>
+            <input type="date" name="startDate" class="form-control form-control-sm" value="<%= new Date().toISOString().split('T')[0] %>">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label mb-1" style="font-size:.82rem">Fin</label>
+            <input type="date" name="endDate" class="form-control form-control-sm">
+          </div>
+          <div class="col-md-1">
+            <button type="submit" class="btn btn-primary btn-sm w-100">OK</button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <% } %>
 
     <% if (studentsWithMeta.length > 0 && institution.assignedCourses && institution.assignedCourses.length > 0) { %>
     <form action="/institution/dashboard/enroll-bulk" method="POST" id="bulkForm">
@@ -121,4 +170,78 @@ function clearSelection() {
   if (sa) sa.checked = false;
   updateBulkPanel();
 }
+
+// ── Student search ──
+(function() {
+  const input     = document.getElementById('studentSearch');
+  const results   = document.getElementById('searchResults');
+  const enrollForm = document.getElementById('enrollForm');
+  const selectedName = document.getElementById('selectedName');
+  if (!input) return;
+
+  let debounce;
+  input.addEventListener('input', function() {
+    clearTimeout(debounce);
+    const q = this.value.trim();
+    if (q.length < 2) { results.style.display = 'none'; results.innerHTML = ''; return; }
+    debounce = setTimeout(() => fetchUsers(q), 280);
+  });
+
+  async function fetchUsers(q) {
+    const res = await fetch('/institution/dashboard/students/search?q=' + encodeURIComponent(q));
+    const data = await res.json();
+    renderResults(data.users);
+  }
+
+  function renderResults(users) {
+    if (!users.length) {
+      results.innerHTML = '<div style="padding:.75rem 1rem;color:#888;font-size:.875rem;">Aucun résultat.</div>';
+      results.style.display = 'block';
+      return;
+    }
+    results.innerHTML = users.map(u => `
+      <div class="search-result-row" data-id="${u._id}" data-name="${u.name} ${u.surname} (@${u.username})">
+        <div style="width:36px;height:36px;border-radius:50%;background:#e0f2f7;color:#0e7490;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">
+          ${u.name.charAt(0).toUpperCase()}
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:600;font-size:.9rem;">${u.surname} ${u.name}</div>
+          <div style="font-size:.78rem;color:#888;">@${u.username} · ${u.email}</div>
+        </div>
+        ${u.enrolled ? '<span class="enrolled-tag">Déjà inscrit</span>' : ''}
+        ${!u.isVerified ? '<span style="background:#fef3c7;color:#92400e;padding:.1rem .5rem;border-radius:20px;font-size:.72rem;font-weight:600;">Non vérifié</span>' : ''}
+      </div>`).join('');
+    results.style.display = 'block';
+
+    results.querySelectorAll('.search-result-row').forEach(row => {
+      row.addEventListener('click', function() {
+        results.querySelectorAll('.search-result-row').forEach(r => r.classList.remove('selected'));
+        this.classList.add('selected');
+        const userId = this.dataset.id;
+        const name   = this.dataset.name;
+        enrollForm.action = '/institution/dashboard/students/' + userId + '/enroll';
+        selectedName.textContent = '👤 ' + name;
+        enrollForm.classList.add('visible');
+        enrollForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+    });
+  }
+
+  // Hide results when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!input.contains(e.target) && !results.contains(e.target)) {
+      results.style.display = 'none';
+    }
+  });
+
+  // Reset search after successful enroll
+  enrollForm && enrollForm.addEventListener('submit', function() {
+    setTimeout(() => {
+      input.value = '';
+      results.style.display = 'none';
+      results.innerHTML = '';
+      enrollForm.classList.remove('visible');
+    }, 100);
+  });
+})();
 </script>
