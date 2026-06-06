@@ -1,605 +1,389 @@
 <% layout('layouts/main') %>
 
-<% headContent = `
-  <style>
-    /* Ensure admin dashboard content is not hidden by fixed navbar */
-    #main {
-      margin-top: 0 !important;
-      padding-top: 0 !important;
-    }
-    
-    .admin-dashboard {
-      padding: 2rem 0 4rem;
-      min-height: calc(100vh - 200px);
-      background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
-      margin-top: 80px !important; /* Compensate for fixed navbar */
-    }
-    
-    /* Page Header (E-Kalan style) */
-    .page-header {
-      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
-      color: white;
-      padding: 2.5rem 2rem;
-      border-radius: 20px;
-      margin-bottom: 2rem;
-      box-shadow: 0 10px 40px rgba(93, 6, 186, 0.3);
-    }
-    
-    .page-header h1 {
-      margin: 0 0 0.5rem 0;
-      font-size: 2rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-    
-    .page-header p {
-      margin: 0;
-      opacity: 0.95;
-      font-size: 1.1rem;
-      font-weight: 300;
-    }
-    
-    .page-header .role-badge {
-      display: inline-block;
-      background: rgba(255, 255, 255, 0.2);
-      padding: 0.5rem 1rem;
-      border-radius: 50px;
-      font-size: 0.9rem;
-      margin-top: 1rem;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-    
-    /* Stats Grid (E-Kalan style) */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-    
-    .stat-card {
-      background: white;
-      border-radius: 16px;
-      padding: 1.5rem;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      border-left: 4px solid #5d06ba;
-      transition: all 0.3s ease;
-    }
-    
-    .stat-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 30px rgba(93, 6, 186, 0.15);
-    }
-    
-    .stat-card.users { border-left-color: #5d06ba; }
-    .stat-card.admins { border-left-color: #e74c3c; }
-    .stat-card.learners { border-left-color: #3498db; }
-    .stat-card.verified { border-left-color: #2ecc71; }
-    
-    .stat-value {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #2d0370;
-      margin: 0;
-    }
-    
-    .stat-label {
-      color: #666;
-      font-size: 0.9rem;
-      margin: 0.5rem 0 0 0;
-      font-weight: 500;
-    }
-    
-    /* Quick Actions */
-    .quick-actions {
-      margin-bottom: 3rem;
-    }
-    
-    .section-title {
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: #2d0370;
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    
-    .section-title i {
-      font-size: 1.5rem;
-    }
-    
-    .actions-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1rem;
-    }
-    
-    .action-card {
-      background: white;
-      border-radius: 12px;
-      padding: 1.25rem;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      text-decoration: none;
-      display: block;
-      border: 2px solid transparent;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .action-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 4px;
-      background: linear-gradient(90deg, #5d06ba 0%, #2d0370 100%);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.3s ease;
-    }
-    
-    .action-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 40px rgba(93, 6, 186, 0.2);
-      border-color: #5d06ba;
-      text-decoration: none;
-    }
-    
-    .action-card:hover::before {
-      transform: scaleX(1);
-    }
-    
-    .action-icon {
-      width: 50px;
-      height: 50px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      color: white;
-      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
-      margin-bottom: 1rem;
-      transition: transform 0.3s ease;
-    }
-    
-    .action-card:hover .action-icon {
-      transform: scale(1.1) rotate(5deg);
-    }
-    
-    .action-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #2d0370;
-      margin: 0 0 0.5rem 0;
-      line-height: 1.3;
-    }
-    
-    .action-description {
-      color: #666;
-      font-size: 0.85rem;
-      line-height: 1.5;
-      margin: 0 0 0.75rem 0;
-    }
-    
-    .action-link {
-      color: #5d06ba;
-      font-weight: 600;
-      font-size: 0.85rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      transition: gap 0.3s ease;
-    }
-    
-    .action-card:hover .action-link {
-      gap: 0.75rem;
-    }
-    
-    .action-link i {
-      transition: transform 0.3s ease;
-    }
-    
-    .action-card:hover .action-link i {
-      transform: translateX(5px);
-    }
-    
-    /* Programs Section */
-    .programs-section {
-      margin-bottom: 3rem;
-    }
-    
-    .program-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-    }
-    
-    .program-card {
-      background: white;
-      border-radius: 16px;
-      padding: 2rem;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      border: 2px solid #e8e8e8;
-      transition: all 0.3s ease;
-    }
-    
-    .program-card:hover {
-      border-color: #5d06ba;
-      box-shadow: 0 8px 30px rgba(93, 6, 186, 0.15);
-      transform: translateY(-3px);
-    }
-    
-    .program-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-      padding-bottom: 1rem;
-      border-bottom: 2px solid #f0f0f0;
-    }
-    
-    .program-icon {
-      width: 50px;
-      height: 50px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
-      color: white;
-    }
-    
-    .program-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #2d0370;
-      margin: 0;
-    }
-    
-    .program-links {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-    
-    .program-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: #5d06ba;
-      text-decoration: none;
-      font-weight: 500;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-      background: rgba(93, 6, 186, 0.05);
-    }
-    
-    .program-link:hover {
-      background: rgba(93, 6, 186, 0.1);
-      color: #2d0370;
-      text-decoration: none;
-      transform: translateX(5px);
-    }
-    
-    /* Coming Soon Badge */
-    .coming-soon {
-      display: inline-block;
-      background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
-      color: white;
-      padding: 0.25rem 0.75rem;
-      border-radius: 50px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      margin-left: 0.5rem;
-      opacity: 0.8;
-    }
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-      .page-header {
-        padding: 2rem 1.5rem;
-      }
-      
-      .page-header h1 {
-        font-size: 1.75rem;
-      }
-      
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .actions-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
-      }
-      
-      .action-card {
-        padding: 1rem;
-      }
-      
-      .action-icon {
-        width: 45px;
-        height: 45px;
-        font-size: 1.3rem;
-        margin-bottom: 0.75rem;
-      }
-      
-      .action-title {
-        font-size: 1rem;
-      }
-      
-      .action-description {
-        font-size: 0.8rem;
-      }
-      
-      .program-cards {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
-` %>
+<% headContent = `<style>
+  :root {
+    --purple: #5d06ba;
+    --purple-dark: #2d0370;
+    --purple-light: #ede8f8;
+    --teal: #0e7490;
+    --teal-dark: #164e63;
+    --teal-light: #e0f2f7;
+  }
 
-<div class="admin-dashboard">
+  .admin-wrap {
+    margin-top: 80px;
+    padding: 2rem 0 5rem;
+    background: #f5f4f8;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .dash-header {
+    background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%);
+    color: #fff;
+    border-radius: 20px;
+    padding: 2.25rem 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    box-shadow: 0 8px 32px rgba(93,6,186,.25);
+  }
+  .dash-header h1 { margin: 0; font-size: 1.9rem; font-weight: 800; display: flex; align-items: center; gap: .75rem; }
+  .dash-header p  { margin: .3rem 0 0; opacity: .85; font-size: 1rem; }
+  .role-pill {
+    background: rgba(255,255,255,.18);
+    border: 1px solid rgba(255,255,255,.3);
+    padding: .35rem 1rem;
+    border-radius: 50px;
+    font-size: .85rem;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+    white-space: nowrap;
+  }
+
+  /* ── Stat cards ── */
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .stat-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    border-left: 4px solid var(--purple);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .stat-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,.1); }
+  .stat-card.c-red    { border-left-color: #ef4444; }
+  .stat-card.c-blue   { border-left-color: #3b82f6; }
+  .stat-card.c-green  { border-left-color: #22c55e; }
+  .stat-card.c-teal   { border-left-color: var(--teal); }
+  .stat-card.c-orange { border-left-color: #f59e0b; }
+  .stat-num   { font-size: 2rem; font-weight: 800; color: var(--purple-dark); margin: 0; line-height: 1; }
+  .stat-card.c-teal .stat-num { color: var(--teal-dark); }
+  .stat-label { font-size: .8rem; color: #777; margin: .4rem 0 0; font-weight: 500; }
+
+  /* ── Section headers ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--purple-dark);
+    margin: 0 0 1rem;
+  }
+  .section-header .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--purple);
+    flex-shrink: 0;
+  }
+  .section-header.teal-theme { color: var(--teal-dark); }
+  .section-header.teal-theme .dot { background: var(--teal); }
+
+  /* ── Quick action cards ── */
+  .action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2.5rem; }
+  .action-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: 2px solid transparent;
+    transition: all .2s;
+  }
+  .action-card:hover { border-color: var(--purple); box-shadow: 0 6px 20px rgba(93,6,186,.14); transform: translateY(-2px); color: inherit; text-decoration: none; }
+  .action-icon {
+    width: 46px; height: 46px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; color: #fff; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%);
+  }
+  .action-icon.teal { background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%); }
+  .action-title { font-weight: 700; font-size: .95rem; color: var(--purple-dark); margin: 0 0 .15rem; }
+  .action-sub   { font-size: .78rem; color: #888; margin: 0; }
+
+  /* ── Program section panels ── */
+  .prog-section {
+    background: #fff;
+    border-radius: 18px;
+    padding: 1.75rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    margin-bottom: 2rem;
+  }
+  .prog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1.25rem; }
+  .prog-card {
+    border: 2px solid #f0edf8;
+    border-radius: 14px;
+    padding: 1.25rem;
+    transition: all .2s;
+  }
+  .prog-card:hover { border-color: var(--purple); background: #faf8ff; }
+  .prog-card.teal-card { border-color: #cce8ef; }
+  .prog-card.teal-card:hover { border-color: var(--teal); background: #f0fbfe; }
+  .prog-card-header {
+    display: flex; align-items: center; gap: .75rem;
+    margin-bottom: 1rem; padding-bottom: .75rem;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .prog-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; color: #fff; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%);
+  }
+  .prog-icon.teal { background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%); }
+  .prog-name { font-weight: 700; font-size: 1rem; color: var(--purple-dark); margin: 0; }
+  .prog-name.teal { color: var(--teal-dark); }
+  .prog-links { display: flex; flex-direction: column; gap: .4rem; }
+  .prog-link {
+    display: flex; align-items: center; gap: .5rem;
+    color: var(--purple); text-decoration: none;
+    font-size: .875rem; font-weight: 500;
+    padding: .4rem .65rem;
+    border-radius: 7px;
+    transition: all .15s;
+  }
+  .prog-link:hover { background: var(--purple-light); color: var(--purple-dark); text-decoration: none; }
+  .prog-link.teal-link { color: var(--teal); }
+  .prog-link.teal-link:hover { background: var(--teal-light); color: var(--teal-dark); }
+
+  /* ── Institution analytics table ── */
+  .inst-table-wrap { margin-top: 1.25rem; overflow-x: auto; border-radius: 10px; border: 1px solid #e5e7eb; }
+  .inst-table-wrap table { margin: 0; font-size: .875rem; }
+  .inst-table-wrap thead th { background: #f0fbfe; color: var(--teal-dark); font-weight: 700; font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; border-bottom: 2px solid #bae6fd; }
+  .inst-count-pill { background: var(--teal-light); color: var(--teal-dark); padding: .15rem .6rem; border-radius: 20px; font-size: .8rem; font-weight: 600; }
+
+  /* ── Mini bar chart ── */
+  .mini-chart { display: flex; gap: .35rem; align-items: flex-end; height: 56px; margin-top: 1rem; padding: 0 .25rem; }
+  .mini-bar {
+    flex: 1;
+    background: var(--teal);
+    border-radius: 3px 3px 0 0;
+    min-height: 4px;
+    opacity: .65;
+    transition: opacity .2s;
+    cursor: default;
+  }
+  .mini-bar:hover { opacity: 1; }
+  .chart-label { font-size: .72rem; color: #888; margin-top: .3rem; font-weight: 500; }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .dash-header { flex-direction: column; align-items: flex-start; }
+    .dash-header h1 { font-size: 1.5rem; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .action-grid { grid-template-columns: 1fr 1fr; }
+    .prog-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .stats-row { grid-template-columns: 1fr; }
+    .action-grid { grid-template-columns: 1fr; }
+  }
+</style>` %>
+
+<div class="admin-wrap">
   <div class="container">
-    <!-- Page Header (E-Kalan style) -->
-    <div class="page-header">
-      <h1>
-        <i class="bi bi-speedometer2"></i>
-        Dashboard Administrateur
-      </h1>
-      <p>Bienvenue, <strong><%= currentUser.name %> <%= currentUser.surname %></strong></p>
-      <span class="role-badge">
-        <i class="bi bi-shield-check"></i>
+
+    <!-- Header -->
+    <div class="dash-header">
+      <div>
+        <h1><i class="bi bi-speedometer2"></i> Tableau de bord</h1>
+        <p>Bienvenue, <strong><%= currentUser.name %> <%= currentUser.surname %></strong></p>
+      </div>
+      <span class="role-pill">
+        <i class="bi bi-shield-check me-1"></i>
         <%= currentUser.role === 'super-admin' ? 'Super Administrateur' : 'Administrateur' %>
       </span>
     </div>
-    
-    <!-- Statistics Cards (E-Kalan style) -->
-    <div class="stats-grid">
-      <div class="stat-card users">
-        <p class="stat-value"><%= typeof stats !== 'undefined' ? stats.totalUsers : '0' %></p>
-        <p class="stat-label">Total Utilisateurs</p>
+
+    <%- include('../partials/flash') %>
+
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <p class="stat-num"><%= typeof stats !== 'undefined' ? stats.totalUsers : 0 %></p>
+        <p class="stat-label">Total utilisateurs</p>
       </div>
-      
-      <div class="stat-card admins">
-        <p class="stat-value"><%= typeof stats !== 'undefined' ? stats.totalAdmins : '0' %></p>
+      <div class="stat-card c-red">
+        <p class="stat-num"><%= typeof stats !== 'undefined' ? stats.totalAdmins : 0 %></p>
         <p class="stat-label">Administrateurs</p>
       </div>
-      
-      <div class="stat-card learners">
-        <p class="stat-value"><%= typeof stats !== 'undefined' ? stats.totalLearners : '0' %></p>
+      <div class="stat-card c-blue">
+        <p class="stat-num"><%= typeof stats !== 'undefined' ? stats.totalLearners : 0 %></p>
         <p class="stat-label">Apprenants</p>
       </div>
-      
-      <div class="stat-card verified">
-        <p class="stat-value"><%= typeof stats !== 'undefined' ? stats.verifiedUsers : '0' %></p>
-        <p class="stat-label">Comptes Vérifiés</p>
+      <div class="stat-card c-green">
+        <p class="stat-num"><%= typeof stats !== 'undefined' ? stats.verifiedUsers : 0 %></p>
+        <p class="stat-label">Comptes vérifiés</p>
+      </div>
+      <div class="stat-card c-teal">
+        <p class="stat-num"><%= typeof totalInstitutions !== 'undefined' ? totalInstitutions : 0 %></p>
+        <p class="stat-label">Institutions actives</p>
+      </div>
+      <div class="stat-card c-orange">
+        <p class="stat-num"><%= typeof totalInstitutionStudents !== 'undefined' ? totalInstitutionStudents : 0 %></p>
+        <p class="stat-label">Étudiants institutions</p>
       </div>
     </div>
-    
-    <!-- Institution Analytics -->
-    <% if (typeof institutionStats !== 'undefined' && institutionStats.length > 0) { %>
-    <div style="margin:2rem 0;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.07);padding:1.75rem;">
-      <h2 style="font-size:1.1rem;font-weight:700;color:#5d06ba;margin:0 0 1.25rem;padding-bottom:.75rem;border-bottom:2px solid #ede8f8;display:flex;justify-content:space-between;align-items:center;">
-        <span><i class="bi bi-building me-2"></i>Institutions partenaires</span>
-        <span style="font-size:.85rem;font-weight:500;color:#888;"><%= totalInstitutions %> active(s) · <%= totalInstitutionStudents %> étudiant(s) rattaché(s)</span>
-      </h2>
-      <div style="overflow-x:auto;">
-        <table class="table table-sm table-hover align-middle mb-0">
-          <thead style="font-size:.8rem;text-transform:uppercase;color:#888;">
-            <tr>
-              <th>Institution</th>
-              <th>Cours assignés</th>
-              <th>Étudiants inscrits</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <% institutionStats.forEach(({ institution, studentCount }) => { %>
-              <tr>
-                <td class="fw-semibold"><%= institution.name %></td>
-                <td><%= institution.assignedCourses.length %></td>
-                <td>
-                  <span style="background:#ede8f8;color:#5d06ba;padding:.15rem .6rem;border-radius:20px;font-size:.8rem;font-weight:600;">
-                    <%= studentCount %>
-                  </span>
-                </td>
-                <td><a href="/admin/institutions/<%= institution._id %>" class="btn btn-sm btn-outline-primary py-0 px-2">Voir</a></td>
-              </tr>
-            <% }) %>
-          </tbody>
-        </table>
-      </div>
-      <% if (recentEnrollments && recentEnrollments.length > 0) { %>
-        <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid #f0f0f0;">
-          <p style="font-size:.85rem;font-weight:600;color:#555;margin-bottom:.5rem;">Inscriptions — 6 derniers mois</p>
-          <div style="display:flex;gap:.5rem;align-items:flex-end;height:60px;">
-            <% const maxCount = Math.max(...recentEnrollments.map(e => e.count), 1); %>
-            <% recentEnrollments.forEach(e => { %>
-              <div title="<%= e._id.month %>/<%= e._id.year %> : <%= e.count %> inscription(s)"
-                   style="flex:1;background:#5d06ba;border-radius:4px 4px 0 0;height:<%= Math.round((e.count / maxCount) * 100) %>%;min-height:4px;opacity:.75;transition:opacity .2s;"
-                   onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.75">
-              </div>
-            <% }) %>
+
+    <!-- Quick actions -->
+    <div class="section-header"><span class="dot"></span>Actions rapides</div>
+    <div class="action-grid" style="margin-bottom:2.5rem;">
+      <a href="/admin/users/create" class="action-card">
+        <div class="action-icon"><i class="bi bi-person-plus"></i></div>
+        <div><p class="action-title">Créer un compte</p><p class="action-sub">Admin, apprenant, institution…</p></div>
+      </a>
+      <a href="/admin/users" class="action-card">
+        <div class="action-icon"><i class="bi bi-people"></i></div>
+        <div><p class="action-title">Gérer les utilisateurs</p><p class="action-sub">Voir, modifier, vérifier</p></div>
+      </a>
+      <a href="/admin/courses/new" class="action-card">
+        <div class="action-icon teal"><i class="bi bi-plus-circle"></i></div>
+        <div><p class="action-title">Nouveau cours</p><p class="action-sub">Pour les institutions partenaires</p></div>
+      </a>
+      <a href="/admin/institutions/new" class="action-card">
+        <div class="action-icon teal"><i class="bi bi-building-add"></i></div>
+        <div><p class="action-title">Nouvelle institution</p><p class="action-sub">Créer un partenaire</p></div>
+      </a>
+    </div>
+
+    <!-- ── AfroHK Programs ── -->
+    <div class="prog-section">
+      <div class="section-header"><span class="dot"></span>Programmes AfroHK</div>
+      <div class="prog-grid">
+
+        <!-- E-Kalan -->
+        <div class="prog-card">
+          <div class="prog-card-header">
+            <div class="prog-icon"><i class="bi bi-mortarboard"></i></div>
+            <h3 class="prog-name">E-Kalan</h3>
+          </div>
+          <div class="prog-links">
+            <a href="/programs/ekalan/kalan/admindashboard/kalan/series_and_classes" class="prog-link"><i class="bi bi-book"></i> Classes et séries</a>
+            <a href="/programs/ekalan/kalan/admindashboard/kalan/students" class="prog-link"><i class="bi bi-people"></i> Étudiants</a>
+            <a href="/programs/ekalan/kalan/admindashboard/kalan/premium-requests" class="prog-link"><i class="bi bi-star"></i> Demandes premium</a>
           </div>
         </div>
+
+        <!-- Language Learning -->
+        <div class="prog-card">
+          <div class="prog-card-header">
+            <div class="prog-icon"><i class="bi bi-translate"></i></div>
+            <h3 class="prog-name">English Boost</h3>
+          </div>
+          <div class="prog-links">
+            <a href="/programs/language-learning/general-english-boost/admindashboard" class="prog-link"><i class="bi bi-list-ul"></i> Cours</a>
+            <a href="/programs/language-learning/general-english-boost/admindashboard/new" class="prog-link"><i class="bi bi-plus-circle"></i> Nouveau cours</a>
+            <a href="/programs/language-learning/admin/instructors" class="prog-link"><i class="bi bi-person-badge"></i> Instructeurs</a>
+            <a href="/programs/language-learning/pecp" class="prog-link"><i class="bi bi-person-lines-fill"></i> PECP</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Institution Program ── -->
+    <div class="prog-section" style="border-left: 4px solid var(--teal);">
+      <div class="section-header teal-theme"><span class="dot"></span>Programme Institutions Partenaires</div>
+      <p class="text-muted small mb-0" style="margin-top:-.5rem;margin-bottom:1rem;">Cours créés par AfroHK et déployés via les institutions partenaires.</p>
+
+      <div class="prog-grid">
+
+        <!-- Cours institutions -->
+        <div class="prog-card teal-card">
+          <div class="prog-card-header">
+            <div class="prog-icon teal"><i class="bi bi-book-half"></i></div>
+            <h3 class="prog-name teal">Cours</h3>
+          </div>
+          <div class="prog-links">
+            <a href="/admin/courses" class="prog-link teal-link"><i class="bi bi-list-ul"></i> Tous les cours</a>
+            <a href="/admin/courses/new" class="prog-link teal-link"><i class="bi bi-plus-circle"></i> Créer un cours</a>
+          </div>
+        </div>
+
+        <!-- Institutions -->
+        <div class="prog-card teal-card">
+          <div class="prog-card-header">
+            <div class="prog-icon teal"><i class="bi bi-building"></i></div>
+            <h3 class="prog-name teal">Institutions</h3>
+          </div>
+          <div class="prog-links">
+            <a href="/admin/institutions" class="prog-link teal-link"><i class="bi bi-list-ul"></i> Toutes les institutions</a>
+            <a href="/admin/institutions/new" class="prog-link teal-link"><i class="bi bi-plus-circle"></i> Créer une institution</a>
+          </div>
+        </div>
+
+        <!-- Users / Students -->
+        <div class="prog-card teal-card">
+          <div class="prog-card-header">
+            <div class="prog-icon teal"><i class="bi bi-person-vcard"></i></div>
+            <h3 class="prog-name teal">Comptes</h3>
+          </div>
+          <div class="prog-links">
+            <a href="/admin/users?role=institution-admin" class="prog-link teal-link"><i class="bi bi-shield-person"></i> Admins institutions</a>
+            <a href="/admin/users/create" class="prog-link teal-link"><i class="bi bi-person-plus"></i> Créer un compte</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Institution analytics -->
+      <% if (typeof institutionStats !== 'undefined' && institutionStats.length > 0) { %>
+      <div style="margin-top:1.75rem;padding-top:1.5rem;border-top:1px solid #e0f2f7;">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+          <span class="section-header teal-theme mb-0" style="font-size:1rem;"><span class="dot"></span>Activité des institutions</span>
+          <span class="text-muted small"><%= totalInstitutions %> institution(s) · <%= totalInstitutionStudents %> étudiant(s)</span>
+        </div>
+
+        <div class="inst-table-wrap">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Institution</th>
+                <th>Cours assignés</th>
+                <th>Étudiants</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% institutionStats.forEach(({ institution, studentCount }) => { %>
+                <tr>
+                  <td class="fw-semibold"><%= institution.name %></td>
+                  <td><%= institution.assignedCourses.length %></td>
+                  <td><span class="inst-count-pill"><%= studentCount %></span></td>
+                  <td><a href="/admin/institutions/<%= institution._id %>" class="btn btn-sm btn-outline-primary py-0 px-2">Voir</a></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+
+        <% if (recentEnrollments && recentEnrollments.length > 0) { %>
+          <div style="margin-top:1.25rem;">
+            <p class="chart-label">Inscriptions — 6 derniers mois</p>
+            <div class="mini-chart">
+              <% const maxCount = Math.max(...recentEnrollments.map(e => e.count), 1); %>
+              <% const monthNames = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc']; %>
+              <% recentEnrollments.forEach(e => { %>
+                <div style="display:flex;flex-direction:column;align-items:center;flex:1;gap:.25rem;">
+                  <div class="mini-bar"
+                       style="width:100%;height:<%= Math.round((e.count / maxCount) * 100) %>%;"
+                       title="<%= monthNames[e._id.month - 1] %> <%= e._id.year %> : <%= e.count %>"></div>
+                  <span style="font-size:.65rem;color:#aaa;"><%= monthNames[e._id.month - 1] %></span>
+                </div>
+              <% }) %>
+            </div>
+          </div>
+        <% } %>
+      </div>
       <% } %>
     </div>
-    <% } %>
 
-    <!-- Quick Actions -->
-    <div class="quick-actions">
-      <h2 class="section-title">
-        <i class="bi bi-lightning-charge"></i>
-        Actions Rapides
-      </h2>
-      <div class="actions-grid">
-        <a href="/admin/users/create" class="action-card">
-          <div class="action-icon">
-            <i class="bi bi-person-plus"></i>
-          </div>
-          <h3 class="action-title">Créer un Compte</h3>
-          <p class="action-description">
-            Ajouter un nouvel utilisateur à la plateforme (admin, apprenant, etc.)
-          </p>
-          <span class="action-link">
-            Accéder <i class="bi bi-arrow-right"></i>
-          </span>
-        </a>
-        
-        <a href="/admin/users" class="action-card">
-          <div class="action-icon">
-            <i class="bi bi-list-ul"></i>
-          </div>
-          <h3 class="action-title">Gérer les Utilisateurs</h3>
-          <p class="action-description">
-            Voir, modifier et gérer tous les comptes utilisateurs
-          </p>
-          <span class="action-link">
-            Accéder <i class="bi bi-arrow-right"></i>
-          </span>
-        </a>
-        
-        <a href="#" class="action-card" onclick="return false;" style="opacity: 0.7; cursor: not-allowed;">
-          <div class="action-icon" style="background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);">
-            <i class="bi bi-graph-up"></i>
-          </div>
-          <h3 class="action-title">Statistiques Détaillées<span class="coming-soon">Bientôt</span></h3>
-          <p class="action-description">
-            Consulter les rapports et analyses détaillées de la plateforme
-          </p>
-          <span class="action-link">
-            Bientôt disponible <i class="bi bi-arrow-right"></i>
-          </span>
-        </a>
-        
-        <a href="#" class="action-card" onclick="return false;" style="opacity: 0.7; cursor: not-allowed;">
-          <div class="action-icon" style="background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);">
-            <i class="bi bi-gear"></i>
-          </div>
-          <h3 class="action-title">Paramètres<span class="coming-soon">Bientôt</span></h3>
-          <p class="action-description">
-            Configurer les paramètres généraux de la plateforme
-          </p>
-          <span class="action-link">
-            Bientôt disponible <i class="bi bi-arrow-right"></i>
-          </span>
-        </a>
-      </div>
-    </div>
-    
-    <!-- Programs Management -->
-    <div class="programs-section">
-      <h2 class="section-title">
-        <i class="bi bi-grid"></i>
-        Gestion des Programmes
-      </h2>
-      <div class="program-cards">
-        <!-- E-Kalan Program -->
-        <div class="program-card">
-          <div class="program-header">
-            <div class="program-icon">
-              <i class="bi bi-mortarboard"></i>
-            </div>
-            <h3 class="program-title">E-Kalan</h3>
-          </div>
-          <div class="program-links">
-            <a href="/programs/ekalan/kalan/admindashboard/kalan/premium-requests" class="program-link">
-              <i class="bi bi-star"></i>
-              Demandes d'accès premium
-            </a>
-            <a href="/programs/ekalan/kalan/admindashboard/kalan/students" class="program-link">
-              <i class="bi bi-people"></i>
-              Gérer les étudiants
-            </a>
-            <a href="/programs/ekalan/kalan/admindashboard/kalan/series_and_classes" class="program-link">
-              <i class="bi bi-book"></i>
-              Classes et séries
-            </a>
-            <a href="/programs/ekalan/kalan/admindashboard/kalan/students" class="program-link">
-              <i class="bi bi-list-check"></i>
-              Voir tous les étudiants
-            </a>
-          </div>
-        </div>
-        
-        <!-- Language Learning Program -->
-        <div class="program-card">
-          <div class="program-header">
-            <div class="program-icon">
-              <i class="bi bi-translate"></i>
-            </div>
-            <h3 class="program-title">Language Learning</h3>
-          </div>
-          <div class="program-links">
-            <a href="/programs/language-learning/general-english-boost/admindashboard" class="program-link">
-              <i class="bi bi-book"></i>
-              Gérer les cours
-            </a>
-            <a href="/programs/language-learning/general-english-boost/admindashboard/new" class="program-link">
-              <i class="bi bi-plus-circle"></i>
-              Créer un nouveau cours
-            </a>
-            <a href="/programs/language-learning/admin/instructors" class="program-link">
-              <i class="bi bi-person-badge"></i>
-              Gérer les instructeurs
-            </a>
-            <a href="/programs/language-learning/pecp" class="program-link">
-              <i class="bi bi-people"></i>
-              Personal English Coaching Boost
-            </a>
-          </div>
-        </div>
-
-        <!-- Cours pour institutions -->
-        <div class="program-card">
-          <div class="program-header">
-            <div class="program-icon">
-              <i class="bi bi-book-half"></i>
-            </div>
-            <h3 class="program-title">Cours (institutions)</h3>
-          </div>
-          <div class="program-links">
-            <a href="/admin/courses" class="program-link">
-              <i class="bi bi-list-ul"></i>
-              Voir tous les cours
-            </a>
-            <a href="/admin/courses/new" class="program-link">
-              <i class="bi bi-plus-circle"></i>
-              Créer un cours
-            </a>
-          </div>
-        </div>
-
-        <!-- Institutions partenaires -->
-        <div class="program-card">
-          <div class="program-header">
-            <div class="program-icon">
-              <i class="bi bi-building"></i>
-            </div>
-            <h3 class="program-title">Institutions partenaires</h3>
-          </div>
-          <div class="program-links">
-            <a href="/admin/institutions" class="program-link">
-              <i class="bi bi-list-ul"></i>
-              Voir toutes les institutions
-            </a>
-            <a href="/admin/institutions/new" class="program-link">
-              <i class="bi bi-plus-circle"></i>
-              Créer une institution
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
