@@ -4,7 +4,7 @@
   "description": "Afro House of Knowledge learning platform - Modular Monolith",
   "main": "app.js",
   "engines": {
-    "node": ">=20.0.0",
+    "node": "20.x",
     "npm": ">=10.0.0"
   },
   "scripts": {
@@ -24,6 +24,8 @@
   },
   "homepage": "https://github.com/Ich-Mael/ahk#readme",
   "dependencies": {
+    "express-rate-limit": "^7.0.0",
+    "helmet": "^8.0.0",
     "@sendgrid/mail": "^8.1.0",
     "connect-flash-plus": "^0.2.1",
     "connect-mongo": "^5.1.0",
