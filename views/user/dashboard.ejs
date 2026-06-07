@@ -741,10 +741,7 @@ background: linear-gradient(135deg, #4A00E0, #8E2DE2); /* W3C, IE 10+/ Edge, Fir
         if (user.isClubMember) programs.push({ name: 'English4All', icon: 'translate', route: '/programs/language-learning/english4all', hasDashboard: false });
         if (user.isPecpStudent) programs.push({ name: 'PECP (Étudiant)', icon: 'book', route: '/programs/language-learning/pecp', hasDashboard: true });
         if (user.isPecpCoach) programs.push({ name: 'PECP (Coach)', icon: 'person-check', route: '/programs/language-learning/pecp', hasDashboard: true });
-        if (user.coursesTaken && user.coursesTaken.length > 0) {
-          // Link to the General English Boost program page instead of a specific course
-          programs.push({ name: 'English Boost', icon: 'translate', route: '/programs/language-learning/general-english-boost/my-courses', hasDashboard: true });
-        }
+        // Individual enrolled courses are shown separately below
       %>
       
       <% if (programs.length > 0) { %>
@@ -786,6 +783,43 @@ background: linear-gradient(135deg, #4A00E0, #8E2DE2); /* W3C, IE 10+/ Edge, Fir
         </div>
       <% } %>
     </div>
+
+    <!-- Institution Portals -->
+    <% if (typeof institutionCards !== 'undefined' && institutionCards.length > 0) { %>
+    <div class="programs-section" style="margin-top:2rem;">
+      <h2 class="section-title">
+        <i class="bi bi-building"></i>
+        Mes Institutions
+      </h2>
+      <div class="programs-grid">
+        <% institutionCards.forEach(inst => { %>
+          <div class="program-card" style="border-top: 3px solid <%= inst.primaryColor || '#0e7490' %>;">
+            <div class="program-header">
+              <div class="program-icon" style="background: color-mix(in srgb, <%= inst.primaryColor || '#0e7490' %> 15%, #fff); color: <%= inst.primaryColor || '#0e7490' %>;">
+                <% if (inst.logoUrl) { %>
+                  <img src="<%= inst.logoUrl %>" alt="" style="width:28px;height:28px;object-fit:cover;border-radius:6px;">
+                <% } else { %>
+                  <i class="bi bi-building"></i>
+                <% } %>
+              </div>
+              <h3 class="program-title"><%= inst.name %></h3>
+            </div>
+            <div class="program-status">
+              <p><i class="bi bi-check-circle"></i> Portail actif</p>
+            </div>
+            <div class="program-actions">
+              <a href="/institution/<%= inst._id %>/portal"
+                 class="btn-program btn-program-primary"
+                 style="background: <%= inst.primaryColor || '#0e7490' %>;">
+                <i class="bi bi-box-arrow-in-right"></i>
+                Accéder au portail
+              </a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+    <% } %>
 
     <!-- Account Info -->
     <div class="account-info-card">

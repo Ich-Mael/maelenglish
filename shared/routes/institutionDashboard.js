@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 
 const { isInstitutionAdmin, loadInstitution } = require('../middlewares/institutionAuth');
-const Dashboard = require('../controllers/institution/dashboardController');
-const Students = require('../controllers/institution/studentsController');
-const Courses = require('../controllers/institution/coursesController');
+const Dashboard       = require('../controllers/institution/dashboardController');
+const Students        = require('../controllers/institution/studentsController');
+const Courses         = require('../controllers/institution/coursesController');
+const Announcements   = require('../controllers/institution/announcementsController');
 
 // All routes require institution-admin role + loaded institution
 router.use(isInstitutionAdmin, loadInstitution);
@@ -30,5 +31,11 @@ router.post('/dashboard/enroll-bulk', Students.enrollBulk);
 
 // Unenroll student from a course
 router.delete('/dashboard/students/:userId/courses/:courseId', Students.unenroll);
+
+// ─── ANNOUNCEMENTS ────────────────────────────────────────────────────────────
+router.get('/dashboard/announcements',                           Announcements.index);
+router.post('/dashboard/announcements',                          Announcements.create);
+router.post('/dashboard/announcements/:id/pin',                  Announcements.togglePin);
+router.delete('/dashboard/announcements/:id',                    Announcements.destroy);
 
 module.exports = router;

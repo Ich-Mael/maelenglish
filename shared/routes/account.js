@@ -516,6 +516,7 @@ router.get(
     const Lesson = require('../models/lesson');
     const QuizAttempt = require('../models/quizAttempt');
     const AssignmentSubmission = require('../models/assignmentSubmission');
+    const Institution = require('../models/institution');
 
     const user = await User.findById(req.params.id)
       .populate('coursesTaken')
@@ -577,10 +578,21 @@ router.get(
       }
     }
 
+    // Find institutions the student is enrolled in (for institution portal cards)
+    let institutionCards = [];
+    if (user.coursesTaken && user.coursesTaken.length > 0) {
+      const courseIds = user.coursesTaken.map(c => c._id || c);
+      institutionCards = await Institution.find({
+        assignedCourses: { $in: courseIds },
+        isActive: true
+      }).select('name logoUrl primaryColor slug _id');
+    }
+
     res.render("user/dashboard", {
       user,
       studentClassId,
-      courseProgressMap
+      courseProgressMap,
+      institutionCards
     });
   })
 );

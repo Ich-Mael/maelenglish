@@ -1,0 +1,132 @@
+<% layout('layouts/main') %>
+
+<% headContent = `<style>
+  :root { --brand: <%= institutionColor || '#0e7490' %>; }
+  .page-wrapper { margin-top: 80px; padding: 2.5rem 0 5rem; background: #f8fafc; min-height: 100vh; }
+  .page-header { background: linear-gradient(135deg, color-mix(in srgb,var(--brand) 80%,#000) 0%, var(--brand) 100%); color: white; padding: 2rem; border-radius: 18px; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+  .page-header h1 { margin: 0; font-size: 1.7rem; font-weight: 800; }
+  .page-header p  { margin: 0; opacity: .85; }
+  .layout-grid { display: grid; grid-template-columns: 1fr 380px; gap: 2rem; }
+  @media(max-width:860px){ .layout-grid{ grid-template-columns:1fr; } }
+  .section-card { background: #fff; border-radius: 18px; box-shadow: 0 2px 14px rgba(0,0,0,.07); padding: 1.75rem; margin-bottom: 1.5rem; }
+  .section-card h2 { font-size: 1rem; font-weight: 700; color: #1e293b; margin: 0 0 1.25rem; padding-bottom: .75rem; border-bottom: 2px solid #f1f5f9; }
+
+  /* Announcement list */
+  .ann-row { display: flex; align-items: flex-start; gap: 1rem; padding: 1.1rem 0; border-bottom: 1px solid #f1f5f9; }
+  .ann-row:last-child { border-bottom: none; }
+  .ann-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+  .icon-info       { background: #dbeafe; } .icon-discount   { background: #dcfce7; }
+  .icon-new_course { background: #f3e8ff; } .icon-event      { background: #ffedd5; }
+  .icon-reminder   { background: #fef9c3; }
+  .ann-content { flex: 1; }
+  .ann-title { font-weight: 700; color: #1e293b; font-size: .95rem; margin: 0 0 .2rem; }
+  .ann-body  { font-size: .85rem; color: #64748b; margin: 0 0 .4rem; line-height: 1.55; }
+  .ann-meta  { font-size: .75rem; color: #94a3b8; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+  .type-badge { font-size: .7rem; font-weight: 700; text-transform: uppercase; padding: .15rem .55rem; border-radius: 20px; }
+  .type-info       { background: #dbeafe; color: #1e40af; }
+  .type-discount   { background: #dcfce7; color: #166534; }
+  .type-new_course { background: #f3e8ff; color: #6d28d9; }
+  .type-event      { background: #ffedd5; color: #c2410c; }
+  .type-reminder   { background: #fef9c3; color: #854d0e; }
+
+  /* Form */
+  .form-label { font-size: .85rem; font-weight: 600; color: #374151; margin-bottom: .35rem; }
+  .form-control, .form-select { border-radius: 10px; border: 1.5px solid #e2e8f0; padding: .7rem .9rem; font-size: .9rem; }
+  .form-control:focus, .form-select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 20%, #fff); outline: none; }
+  .btn-publish { background: var(--brand); color: #fff; border: none; padding: .8rem 1.6rem; border-radius: 12px; font-weight: 700; font-size: .9rem; cursor: pointer; width: 100%; transition: opacity .2s; }
+  .btn-publish:hover { opacity: .88; }
+  .btn-icon { background: none; border: none; cursor: pointer; padding: .3rem .5rem; border-radius: 6px; font-size: .9rem; transition: background .15s; }
+  .btn-icon:hover { background: #f1f5f9; }
+</style>` %>
+
+<div class="page-wrapper">
+  <div class="container">
+    <div class="page-header">
+      <div>
+        <h1>📢 Annonces</h1>
+        <p><%= institution.name %></p>
+      </div>
+      <a href="/institution/dashboard" class="btn btn-light btn-sm">← Dashboard</a>
+    </div>
+
+    <%- include('../partials/flash') %>
+
+    <div class="layout-grid">
+
+      <!-- Left: existing announcements -->
+      <div class="section-card">
+        <h2>Annonces publiées (<%= announcements.length %>)</h2>
+        <% if (announcements.length === 0) { %>
+          <p class="text-muted small mb-0">Aucune annonce. Créez-en une ci-contre.</p>
+        <% } else { %>
+          <% const typeIcons  = { info:'ℹ️', discount:'🏷️', new_course:'🎓', event:'📅', reminder:'⏰' }; %>
+          <% const typeLabels = { info:'Info', discount:'Promo', new_course:'Nouveau cours', event:'Événement', reminder:'Rappel' }; %>
+          <% announcements.forEach(ann => { %>
+            <div class="ann-row">
+              <div class="ann-icon icon-<%= ann.type %>"><%= typeIcons[ann.type] || 'ℹ️' %></div>
+              <div class="ann-content">
+                <p class="ann-title">
+                  <% if (ann.isPinned) { %><span style="font-size:.85rem;margin-right:.3rem;">📌</span><% } %>
+                  <%= ann.title %>
+                </p>
+                <p class="ann-body"><%= ann.body %></p>
+                <div class="ann-meta">
+                  <span class="type-badge type-<%= ann.type %>"><%= typeLabels[ann.type] %></span>
+                  <span><%= new Date(ann.createdAt).toLocaleDateString('fr-FR', {day:'numeric',month:'short',year:'numeric'}) %></span>
+                </div>
+              </div>
+              <div class="d-flex gap-1 flex-shrink-0">
+                <!-- Pin toggle -->
+                <form action="/institution/dashboard/announcements/<%= ann._id %>/pin" method="POST">
+                  <button class="btn-icon" title="<%= ann.isPinned ? 'Désépingler' : 'Épingler' %>">
+                    <%= ann.isPinned ? '📍' : '📌' %>
+                  </button>
+                </form>
+                <!-- Delete -->
+                <form action="/institution/dashboard/announcements/<%= ann._id %>?_method=DELETE" method="POST"
+                      onsubmit="return confirm('Supprimer cette annonce ?')">
+                  <button class="btn-icon" title="Supprimer" style="color:#dc2626;">🗑</button>
+                </form>
+              </div>
+            </div>
+          <% }) %>
+        <% } %>
+      </div>
+
+      <!-- Right: create form -->
+      <div>
+        <div class="section-card">
+          <h2>Nouvelle annonce</h2>
+          <form action="/institution/dashboard/announcements" method="POST">
+            <div class="mb-3">
+              <label class="form-label">Titre *</label>
+              <input type="text" name="title" class="form-control" placeholder="Ex: Nouveau cours disponible !" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Contenu *</label>
+              <textarea name="body" class="form-control" rows="5" placeholder="Détails de l'annonce..." required></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Type</label>
+              <select name="type" class="form-select">
+                <option value="info">ℹ️ Information</option>
+                <option value="new_course">🎓 Nouveau cours</option>
+                <option value="discount">🏷️ Promotion / Réduction</option>
+                <option value="event">📅 Événement</option>
+                <option value="reminder">⏰ Rappel</option>
+              </select>
+            </div>
+            <div class="mb-4 form-check">
+              <input type="checkbox" name="isPinned" id="isPinned" class="form-check-input" value="on">
+              <label class="form-check-label" for="isPinned" style="font-size:.88rem;">
+                📌 Épingler cette annonce (apparaît en haut)
+              </label>
+            </div>
+            <button type="submit" class="btn-publish">Publier l'annonce</button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

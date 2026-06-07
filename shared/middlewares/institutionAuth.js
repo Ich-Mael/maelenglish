@@ -66,32 +66,72 @@ module.exports.loadInstitution = async (req, res, next) => {
 
 // ─── STUDENT PORTAL MIDDLEWARE ────────────────────────────────────────────────
 
-// Passes if the logged-in user belongs to an institution (regular student)
+// Requires authentication only — institution access is validated by loadStudentInstitution
+// or loadPortalInstitution depending on the route.
 module.exports.isInstitutionStudent = (req, res, next) => {
     if (!req.isAuthenticated()) {
         req.session.returnTo = req.originalUrl;
         req.flash('error', 'Vous devez d\'abord vous connecter.');
         return res.redirect('/login');
     }
-    if (!req.user.institutionId) {
-        req.flash('error', 'Accès réservé aux étudiants d\'une institution.');
-        return res.redirect('/dashboard');
-    }
     return next();
 };
 
-// Loads the student's institution into req.institution and sets institutionColor local
+// Loads the institution for /institution/learn/ routes.
+// Tries user.institutionId first, then derives from enrolled courses.
 module.exports.loadStudentInstitution = async (req, res, next) => {
     try {
-        const institution = await Institution.findById(req.user.institutionId);
+        let institution;
+
+        if (req.user.institutionId) {
+            institution = await Institution.findById(req.user.institutionId);
+        }
+
+        // Derive from enrolled courses if institutionId not set
         if (!institution) {
-            req.flash('error', 'Institution introuvable.');
+            const courseIds = (req.user.coursesTaken || []).map(id => id._id || id);
+            institution = await Institution.findOne({
+                assignedCourses: { $in: courseIds },
+                isActive: true
+            });
+        }
+
+        if (!institution) {
+            req.flash('error', 'Aucune institution associée à vos cours.');
             return res.redirect('/dashboard');
         }
         if (!institution.isActive) {
             req.flash('error', 'Votre institution a été désactivée. Contactez AfroHK.');
             return res.redirect('/dashboard');
         }
+
+        req.institution = institution;
+        res.locals.institutionColor = institution.primaryColor || '#0e7490';
+        next();
+    } catch (err) {
+        next(err);
+    }
+};
+
+// Loads institution for /institution/:institutionId/portal.
+// Verifies the student is enrolled in at least one course from that institution.
+module.exports.loadPortalInstitution = async (req, res, next) => {
+    try {
+        const institution = await Institution.findById(req.params.institutionId);
+        if (!institution || !institution.isActive) {
+            req.flash('error', 'Portail introuvable.');
+            return res.redirect('/dashboard');
+        }
+
+        const courseIds   = (req.user.coursesTaken || []).map(id => (id._id || id).toString());
+        const assignedIds = institution.assignedCourses.map(id => id.toString());
+        const hasAccess   = assignedIds.some(id => courseIds.includes(id));
+
+        if (!hasAccess) {
+            req.flash('error', 'Vous n\'avez pas accès à ce portail.');
+            return res.redirect('/dashboard');
+        }
+
         req.institution = institution;
         res.locals.institutionColor = institution.primaryColor || '#0e7490';
         next();
