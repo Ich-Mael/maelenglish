@@ -1,7 +1,10 @@
 const crypto = require('crypto');
 const User = require('../../models/user');
-const { Course, Module, Evaluation } = require('../../models/courses');
-const StudentProgress = require('../../models/studentProgress');
+const { Course } = require('../../models/courses');
+const LessonProgress = require('../../models/lessonProgress');
+const Lesson = require('../../models/lesson');
+const QuizAttempt = require('../../models/quizAttempt');
+const AssignmentSubmission = require('../../models/assignmentSubmission');
 const Emailer = require('../../utilities/sendEmail');
 const { getBaseUrl } = require('../../utilities/url');
 const catchAsync = require('../../utilities/catchAsync');
@@ -91,65 +94,59 @@ module.exports.show = catchAsync(async (req, res) => {
         _id: { $in: assignedCourses }
     }).select('title isActive modules');
 
-    // Progress scoped to this institution's courses only
-    const progress = await StudentProgress.find({
-        userId: student._id,
-        courseId: { $in: assignedCourses }
-    }).populate('moduleId', 'title').populate('courseId', 'title');
+    const courseObjectIds = courses.map(c => c._id);
 
-    const progressByCourse = {};
-    progress.forEach(p => {
-        const cid = p.courseId._id.toString();
-        if (!progressByCourse[cid]) progressByCourse[cid] = [];
-        progressByCourse[cid].push(p);
-    });
+    const [lessonProgress, lessonCounts, passedQuizzes, pendingAssignments] = await Promise.all([
+        LessonProgress.find({ userId: student._id, courseId: { $in: courseObjectIds }, status: 'completed' }),
+        Lesson.aggregate([
+            { $match: { courseId: { $in: courseObjectIds }, isActive: true } },
+            { $group: { _id: '$courseId', count: { $sum: 1 } } }
+        ]),
+        QuizAttempt.aggregate([
+            { $match: { userId: student._id, courseId: { $in: courseObjectIds }, passed: true, quizType: 'module_quiz' } },
+            { $group: { _id: '$courseId', count: { $sum: 1 } } }
+        ]),
+        AssignmentSubmission.aggregate([
+            { $match: { userId: student._id, courseId: { $in: courseObjectIds }, status: 'pending' } },
+            { $group: { _id: '$courseId', count: { $sum: 1 } } }
+        ])
+    ]);
 
-    // Fetch evaluations for all modules across assigned courses to get grades
-    const allModuleIds = courses.reduce((ids, c) => ids.concat(c.modules || []), []);
-    const evaluations = await Evaluation.find({
-        'studentGrades.studentId': student._id
-    }).select('studentGrades');
-
-    // Build grade lookup: evaluationId -> studentGrade
-    const gradeByEval = {};
-    evaluations.forEach(ev => {
-        const g = ev.studentGrades.find(g => g.studentId.toString() === student._id.toString());
-        if (g) gradeByEval[ev._id.toString()] = g;
-    });
-
-    // Fetch modules with evaluation refs for grade mapping
-    const moduleDocs = await Module.find({ _id: { $in: allModuleIds } }).select('title evaluation');
-    const moduleGradeMap = {};
-    moduleDocs.forEach(m => {
-        if (m.evaluation) {
-            const g = gradeByEval[m.evaluation.toString()];
-            if (g) moduleGradeMap[m._id.toString()] = g.score;
+    // Build per-course lookup maps
+    const completedByCourse = {};
+    const lastActivityByCourse = {};
+    lessonProgress.forEach(p => {
+        const cid = p.courseId.toString();
+        completedByCourse[cid] = (completedByCourse[cid] || 0) + 1;
+        const ts = p.completedAt || p.updatedAt;
+        if (ts && (!lastActivityByCourse[cid] || ts > lastActivityByCourse[cid])) {
+            lastActivityByCourse[cid] = ts;
         }
     });
+    const totalByCourse    = Object.fromEntries(lessonCounts.map(r => [r._id.toString(), r.count]));
+    const passedQuizMap    = Object.fromEntries(passedQuizzes.map(r => [r._id.toString(), r.count]));
+    const pendingAssignMap = Object.fromEntries(pendingAssignments.map(r => [r._id.toString(), r.count]));
 
     const enrollmentStatus = courses.map(course => {
+        const cid        = course._id.toString();
         const enrollment = (student.specialProgram || []).find(p => p.courseTitle === course.title);
         const isEnrolled = (student.coursesTaken || []).some(id => {
             const idStr = id._id ? id._id.toString() : id.toString();
-            return idStr === course._id.toString();
+            return idStr === cid;
         });
-        const modules = progressByCourse[course._id.toString()] || [];
-        const completedModules = modules.filter(m => m.status === 'completed').length;
-
-        // Average grade across modules that have evaluations in this course
-        const grades = (course.modules || []).map(mid => moduleGradeMap[mid.toString()]).filter(s => s !== undefined);
-        const avgGrade = grades.length > 0 ? Math.round(grades.reduce((a, b) => a + b, 0) / grades.length) : null;
+        const completed = completedByCourse[cid] || 0;
+        const total     = totalByCourse[cid]     || 0;
 
         return {
             course,
             isEnrolled,
             enrollment,
-            completedModules,
-            totalModules: course.modules ? course.modules.length : 0,
-            lastViewedAt: modules.length > 0
-                ? modules.reduce((latest, m) => m.lastViewedAt > latest ? m.lastViewedAt : latest, modules[0].lastViewedAt)
-                : null,
-            avgGrade
+            completedModules:    completed,
+            totalModules:        total,
+            passedQuizzes:       passedQuizMap[cid]    || 0,
+            pendingAssignments:  pendingAssignMap[cid] || 0,
+            lastActivity:        lastActivityByCourse[cid] || null,
+            pct: total > 0 ? Math.round((completed / total) * 100) : 0
         };
     });
 
