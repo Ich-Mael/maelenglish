@@ -10,8 +10,8 @@ module.exports.isLoggedIn = (req, res, next) => {
 module.exports.isVerified = (req, res, next) => {
     if (!req.user) return res.redirect('/login');
     // Admins bypass the email-verification requirement
-    const role = req.user.role;
-    if (role === 'admin' || role === 'super-admin' || role === 'institution-admin') return next();
+    const userRoles = Array.isArray(req.user.roles) ? req.user.roles : [req.user.role];
+    if (userRoles.includes('admin') || userRoles.includes('super-admin') || userRoles.includes('institution-admin')) return next();
     if (req.user.isVerified) return next();
     return res.redirect('/user/send-verification-email');
 };
@@ -21,7 +21,9 @@ module.exports.isAdmin = (req, res, next) => {
         req.flash('error', 'Vous devez d\'abord vous connecter!');
         return res.redirect('/login');
     }
-    if (req.user.role === 'admin' || req.user.role === 'super-admin') {
+    // Handle both singular 'role' and plural 'roles' array
+    const userRoles = Array.isArray(req.user.roles) ? req.user.roles : [req.user.role];
+    if (userRoles.includes('admin') || userRoles.includes('super-admin')) {
         return next();
     }
     req.flash('error', 'Vous n\'avez pas les permissions nécessaires');
@@ -33,7 +35,10 @@ module.exports.checkRoles = roles => (req, res, next) => {
         req.flash('error', 'Vous devez d\'abord vous connecter!');
         return res.redirect('/login');
     }
-    if (!roles.includes(req.user.role)) {
+    // Handle both singular 'role' and plural 'roles' array
+    const userRoles = Array.isArray(req.user.roles) ? req.user.roles : [req.user.role];
+    const hasRequiredRole = userRoles.some(role => roles.includes(role));
+    if (!hasRequiredRole) {
         return res.render('noAccess');
     }
     next();

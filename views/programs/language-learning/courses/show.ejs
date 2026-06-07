@@ -496,7 +496,7 @@
           
           <div class="module-list">
             <% course.modules.forEach((module, index) => { %>
-                <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%=module._id%>" class="module-item">
+                <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%=module._id%>/overview" class="module-item">
                     <div class="module-number-badge"><%= index + 1 %></div>
                     <div class="module-info">
                         <h4><%= module.title %></h4>
@@ -564,7 +564,7 @@
             <% if(course.modules && course.modules.length > 0) { %>
                 
                 <% if (isEnrolled) { %>
-                   <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%=course.modules[0]._id%>" class="cta-button">
+                   <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%=course.modules[0]._id%>/overview" class="cta-button">
                         Continuer l'apprentissage <i class="bi bi-arrow-right-circle-fill"></i>
                    </a>
                 <% } else if (typeof currentUser === 'undefined') { %>
@@ -572,7 +572,7 @@
                         S'inscrire au programme <i class="bi bi-arrow-right-circle-fill"></i>
                    </a>
                 <% } else { %>
-                   <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%=course.modules[0]._id%>" class="cta-button">
+                   <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%=course.modules[0]._id%>/overview" class="cta-button">
                         Commencer maintenant <i class="bi bi-arrow-right-circle-fill"></i>
                    </a>
                 <% } %>
@@ -581,6 +581,21 @@
                 <a href="#" class="cta-button disabled">
                     Bientôt disponible
                 </a>
+            <% } %>
+
+            <% if (isEnrolled) { %>
+              <% if (course.finalExam && course.finalExam.questions && course.finalExam.questions.length > 0) { %>
+                <a href="/programs/language-learning/general-english-boost/<%= course._id %>/final-exam"
+                   class="cta-button" style="background:linear-gradient(135deg,#065f46,#047857);margin-bottom:.5rem;">
+                  Examen final <i class="bi bi-clipboard-check-fill"></i>
+                </a>
+              <% } %>
+              <% if (course.finalProject && course.finalProject.title) { %>
+                <a href="/programs/language-learning/general-english-boost/<%= course._id %>/final-project"
+                   class="cta-button" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);margin-bottom:.5rem;">
+                  Projet final <i class="bi bi-journal-check"></i>
+                </a>
+              <% } %>
             <% } %>
 
             <h5 class="sidebar-title">Ce cours inclut :</h5>

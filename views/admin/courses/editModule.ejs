@@ -91,17 +91,21 @@
             <% if (lesson.type === 'video' && lesson.videoDuration) { %>
               <span class="text-muted small"><%= lesson.videoDuration %> min</span>
             <% } %>
-            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2"
-              data-edit-id="<%= lesson._id %>"
-              data-type="<%= lesson.type %>"
-              data-title="<%= lesson.title.replace(/"/g, '&quot;') %>"
-              data-desc="<%= (lesson.description||'').replace(/"/g,'&quot;') %>"
-              data-videourl="<%= lesson.videoUrl || '' %>"
-              data-dur="<%= lesson.videoDuration || 0 %>"
-              data-fileurl="<%= (lesson.fileUrl||'').replace(/"/g,'&quot;') %>"
-              data-filename="<%= (lesson.fileName||'').replace(/"/g,'&quot;') %>">
-              Modifier
-            </button>
+            <% if (lesson.type === 'practice_quiz') { %>
+              <a href="/admin/courses/<%= course._id %>/modules/<%= courseModule._id %>/lessons/<%= lesson._id %>/quiz" class="btn btn-sm btn-outline-secondary py-0 px-2">Éditer le quiz</a>
+            <% } else { %>
+              <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2"
+                data-edit-id="<%= lesson._id %>"
+                data-type="<%= lesson.type %>"
+                data-title="<%= lesson.title.replace(/"/g, '&quot;') %>"
+                data-desc="<%= (lesson.description||'').replace(/"/g,'&quot;') %>"
+                data-videourl="<%= lesson.videoUrl || '' %>"
+                data-dur="<%= lesson.videoDuration || 0 %>"
+                data-fileurl="<%= (lesson.fileUrl||'').replace(/"/g,'&quot;') %>"
+                data-filename="<%= (lesson.fileName||'').replace(/"/g,'&quot;') %>">
+                Modifier
+              </button>
+            <% } %>
             <form action="/admin/courses/<%= course._id %>/modules/<%= courseModule._id %>/lessons/<%= lesson._id %>?_method=DELETE"
                   method="POST" style="margin:0"
                   onsubmit="return confirm('Supprimer cette leçon ?')">
@@ -258,6 +262,12 @@
           <textarea name="instructions" class="form-control" rows="4"
                     placeholder="Décrivez ce que les étudiants doivent faire..."><%= courseModule.moduleAssignment && courseModule.moduleAssignment.instructions ? courseModule.moduleAssignment.instructions : '' %></textarea>
         </div>
+        <div class="mb-3">
+          <label class="form-label">Date limite (optionnel)</label>
+          <input type="date" class="form-control" name="dueDate"
+            value="<%= courseModule.moduleAssignment && courseModule.moduleAssignment.dueDate
+              ? new Date(courseModule.moduleAssignment.dueDate).toISOString().split('T')[0] : '' %>">
+        </div>
         <button type="submit" class="btn-save">Sauvegarder le devoir</button>
       </form>
     </div>
@@ -284,7 +294,10 @@ document.getElementById('lessonList').addEventListener('click', e => {
   if (!btn) return;
   const { editId, type, title, desc, videourl, dur, fileurl, filename } = btn.dataset;
   const form = document.getElementById('editForm');
-  form.action = '/admin/courses/<%- course._id %>/modules/<%- courseModule._id %>/lessons/' + editId;
+  const formAction = '/admin/courses/<%- course._id %>/modules/<%- courseModule._id %>/lessons/' + editId;
+  form.action = formAction;
+  console.log('[EDIT LESSON] Button clicked - lessonId:', editId, 'type:', type);
+  console.log('[EDIT LESSON] Form action set to:', formAction);
   document.getElementById('eTitle').value = title;
   document.getElementById('eDesc').value  = desc;
   ['eVideo','ePdf','eText'].forEach(id => document.getElementById(id).style.display = 'none');
@@ -302,6 +315,33 @@ document.getElementById('lessonList').addEventListener('click', e => {
   const panel = document.getElementById('editPanel');
   panel.style.display = 'block';
   panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+});
+
+// ── Edit form submission ──
+document.getElementById('editForm').addEventListener('submit', e => {
+  const form = e.target;
+  console.log('═══════════════════════════════════════════════');
+  console.log('[FORM SUBMIT] Form submission started');
+  console.log('[FORM SUBMIT] Action:', form.action);
+  console.log('[FORM SUBMIT] Method:', form.method);
+  console.log('[FORM SUBMIT] _method hidden field:', form.querySelector('input[name="_method"]').value);
+  console.log('[FORM SUBMIT] Title field value:', document.getElementById('eTitle').value);
+  console.log('[FORM SUBMIT] Description field value:', document.getElementById('eDesc').value);
+
+  const videoUrl = document.getElementById('eVideoUrl');
+  if (videoUrl && videoUrl.style.display !== 'none') {
+    console.log('[FORM SUBMIT] VideoUrl field value:', videoUrl.value);
+    console.log('[FORM SUBMIT] VideoDuration field value:', document.getElementById('eVideoDur').value);
+  }
+
+  console.log('[FORM SUBMIT] Form data being sent...');
+  console.log('═══════════════════════════════════════════════');
+
+  // Log all form data
+  const formData = new FormData(form);
+  for (let [key, value] of formData.entries()) {
+    console.log(`[FORM DATA] ${key}: ${value}`);
+  }
 });
 
 // ── Lesson drag-and-drop ──

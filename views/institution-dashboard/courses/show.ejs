@@ -56,7 +56,7 @@
       <div class="summary-item"><div class="num"><%= enrolledCount %></div><div class="lbl">Inscrits</div></div>
       <div class="summary-item"><div class="num"><%= activeCount %></div><div class="lbl">Accès actif</div></div>
       <div class="summary-item"><div class="num"><%= avgProgress %>%</div><div class="lbl">Progression moy.</div></div>
-      <div class="summary-item"><div class="num"><%= course.modules ? course.modules.length : 0 %></div><div class="lbl">Modules</div></div>
+      <div class="summary-item"><div class="num"><%= studentsData[0] ? studentsData[0].totalModules : 0 %></div><div class="lbl">Leçons</div></div>
     </div>
 
     <div class="table-card">
@@ -104,7 +104,7 @@
                     <div class="progress-bar-custom flex-grow-1">
                       <div class="progress-bar-fill" style="width:<%= pct %>%"></div>
                     </div>
-                    <span style="font-size:.78rem;color:#555;white-space:nowrap"><%= completedModules %>/<%= totalModules %></span>
+                    <span style="font-size:.78rem;color:#555;white-space:nowrap"><%= completedModules %> leç/<%= totalModules %></span>
                   </div>
                 <% } else { %>
                   <span class="text-muted small">—</span>

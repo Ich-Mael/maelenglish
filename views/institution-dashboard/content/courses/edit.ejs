@@ -1,0 +1,67 @@
+<% layout('layouts/main') %>
+
+<% headContent = `<style>
+  .page-wrapper { margin-top: 80px; padding: 2rem 0 5rem; background: #f8fafc; }
+  .page-header { background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%); color: white; padding: 1.75rem 2rem; border-radius: 16px; margin-bottom: 2rem; }
+  .page-header h1 { margin: 0 0 .25rem; font-size: 1.6rem; font-weight: 800; }
+  .page-header p { margin: 0; opacity: .8; font-size: .9rem; }
+  .section-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07); padding: 1.75rem; margin-bottom: 1.5rem; }
+  .section-card h2 { font-size: 1rem; font-weight: 700; color: #2d0370; margin: 0 0 1.25rem; padding-bottom: .75rem; border-bottom: 2px solid #ede8f8; }
+  .form-label { font-size: .85rem; font-weight: 600; color: #374151; }
+  .form-control, .form-check-input { border-radius: 10px; border: 1.5px solid #e2e8f0; font-size: .9rem; }
+  .form-control { padding: .6rem .9rem; }
+  .form-control:focus, .form-check-input:focus { border-color: #5d06ba; box-shadow: 0 0 0 3px rgba(93,6,186,.15); outline: none; }
+  .btn-save { background: #5d06ba; color: #fff; border: none; padding: .7rem 1.75rem; border-radius: 10px; font-weight: 700; font-size: .9rem; cursor: pointer; }
+  .btn-save:hover { background: #4a0594; }
+  .btn-cancel { background: #f3f4f6; color: #374151; border: 1px solid #e2e8f0; padding: .7rem 1.75rem; border-radius: 10px; font-weight: 700; font-size: .9rem; cursor: pointer; text-decoration: none; display: inline-block; }
+  .btn-cancel:hover { background: #e5e7eb; }
+</style>` %>
+
+<div class="page-wrapper">
+  <div class="container" style="max-width:600px;">
+
+    <div class="page-header">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+        <div>
+          <h1>✏️ Modifier le cours</h1>
+          <p><%= course.title %></p>
+        </div>
+        <a href="/institution/dashboard/content/courses/<%= course._id %>" class="btn btn-light btn-sm">← Voir le cours</a>
+      </div>
+    </div>
+
+    <%- include('../../../partials/flash') %>
+
+    <div class="section-card">
+      <form action="/institution/dashboard/content/courses/<%= course._id %>?_method=PUT" method="POST">
+        <div class="mb-3">
+          <label class="form-label">Titre du cours *</label>
+          <input type="text" name="title" class="form-control" value="<%= course.title %>" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Description</label>
+          <textarea name="description" class="form-control" rows="4"><%= course.description || '' %></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Image (URL)</label>
+          <input type="url" name="imageUrl" class="form-control" value="<%= course.imageUrl || '' %>">
+        </div>
+
+        <div class="mb-3 form-check">
+          <input type="checkbox" class="form-check-input" id="isActive" name="isActive" <%= course.isActive ? 'checked' : '' %>>
+          <label class="form-check-label" for="isActive">
+            Cours actif (visible pour les étudiants)
+          </label>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn-save">Enregistrer les modifications</button>
+          <a href="/institution/dashboard/content/courses/<%= course._id %>" class="btn-cancel">Annuler</a>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>

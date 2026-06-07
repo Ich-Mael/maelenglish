@@ -1,0 +1,153 @@
+<% layout('layouts/main') %>
+
+<% headContent = `<style>
+  .page-wrapper { margin-top: 80px; padding: 2rem 0 5rem; background: #f8fafc; }
+  .page-header { background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%); color: white; padding: 1.75rem 2rem; border-radius: 16px; margin-bottom: 2rem; }
+  .page-header h1 { margin: 0 0 .25rem; font-size: 1.6rem; font-weight: 800; }
+  .page-header p { margin: 0; opacity: .8; font-size: .9rem; }
+  .section-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07); padding: 1.75rem; margin-bottom: 1.5rem; }
+  .section-card h2 { font-size: 1rem; font-weight: 700; color: #2d0370; margin: 0 0 1.25rem; padding-bottom: .75rem; border-bottom: 2px solid #ede8f8; }
+  .module-item { display: flex; align-items: center; justify-content: space-between; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: .75rem; background: #fafafa; }
+  .module-info { flex-grow: 1; }
+  .module-title { font-weight: 700; color: #1d1d1f; margin-bottom: .25rem; }
+  .module-meta { font-size: .85rem; color: #6b7280; }
+  .btn-new { background: #5d06ba; color: #fff; border: none; padding: .7rem 1.75rem; border-radius: 10px; font-weight: 700; font-size: .9rem; cursor: pointer; }
+  .btn-new:hover { background: #4a0594; }
+  .btn-small { padding: .4rem .8rem; font-size: .8rem; border-radius: 6px; text-decoration: none; display: inline-block; }
+  .btn-outline-secondary { border: 1px solid #e2e8f0; background: #fff; color: #374151; }
+  .btn-outline-secondary:hover { background: #f3f4f6; }
+  .btn-outline-danger { border: 1px solid #fca5a5; background: #fff; color: #dc2626; }
+  .btn-outline-danger:hover { background: #fef2f2; }
+  .empty-state { text-align: center; padding: 2rem; color: #6b7280; }
+  .badge { display: inline-block; padding: .25rem .75rem; border-radius: 20px; font-size: .75rem; font-weight: 600; background: #dcfce7; color: #166534; }
+</style>` %>
+
+<div class="page-wrapper">
+  <div class="container" style="max-width:900px;">
+
+    <div class="page-header">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+        <div>
+          <p style="opacity:.7;font-size:.82rem;margin:0 0 .2rem;">Détails du cours</p>
+          <h1><%= course.title %></h1>
+          <p><span class="badge"><%= course.isActive ? '✓ Actif' : '● Brouillon' %></span></p>
+        </div>
+        <div class="d-flex gap-2">
+          <a href="/institution/dashboard/content/courses/<%= course._id %>/edit" class="btn btn-light btn-sm">Modifier</a>
+          <a href="/institution/dashboard/content" class="btn btn-light btn-sm">← Tous les cours</a>
+        </div>
+      </div>
+    </div>
+
+    <%- include('../../../partials/flash') %>
+
+    <!-- Course info -->
+    <div class="section-card">
+      <h2>📋 Informations du cours</h2>
+      <% if (course.description) { %>
+        <p><strong>Description:</strong> <%= course.description %></p>
+      <% } %>
+      <% if (course.imageUrl) { %>
+        <p><strong>Image:</strong> <a href="<%= course.imageUrl %>" target="_blank"><%= course.imageUrl %></a></p>
+      <% } %>
+    </div>
+
+    <!-- Modules -->
+    <div class="section-card">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 style="margin: 0;">📚 Modules (<%= course.modules ? course.modules.length : 0 %>)</h2>
+        <form action="/institution/dashboard/content/courses/<%= course._id %>/modules" method="POST" class="d-inline" style="margin: 0;">
+          <input type="text" name="title" placeholder="Titre du module" style="padding: .4rem .6rem; border-radius: 6px; border: 1px solid #e2e8f0; font-size: .85rem;" required>
+          <button type="submit" class="btn-new" style="padding: .4rem 1rem; font-size: .85rem;">Ajouter</button>
+        </form>
+      </div>
+
+      <% if (!course.modules || course.modules.length === 0) { %>
+        <div class="empty-state">
+          <p>Aucun module. Créez-en un ci-dessus.</p>
+        </div>
+      <% } else { %>
+        <% course.modules.forEach((mod, idx) => { %>
+          <div class="module-item">
+            <div class="module-info">
+              <div class="module-title"><%= idx + 1 %>. <%= mod.title %></div>
+              <div class="module-meta">
+                <%= mod.lessons ? mod.lessons.length : 0 %> leçon<%= (mod.lessons && mod.lessons.length !== 1) ? 's' : '' %>
+                <% if (mod.quiz) { %><span style="margin-left: .5rem;">✓ Quiz</span><% } %>
+                <% if (mod.assignment) { %><span style="margin-left: .5rem;">✓ Devoir</span><% } %>
+              </div>
+            </div>
+            <div class="d-flex gap-1">
+              <a href="/institution/dashboard/content/courses/<%= course._id %>/modules/<%= mod._id %>/edit" class="btn-small btn-outline-secondary">Éditer</a>
+              <form action="/institution/dashboard/content/courses/<%= course._id %>/modules/<%= mod._id %>?_method=DELETE" method="POST" style="display: inline;"
+                    onsubmit="return confirm('Supprimer ce module ? Cela supprimera toutes ses leçons.')">
+                <button type="submit" class="btn-small btn-outline-danger">Supprimer</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+
+    <!-- Final exam -->
+    <div class="section-card">
+      <h2>📝 Examen final</h2>
+      <% if (course.finalExam && course.finalExam.questions && course.finalExam.questions.length > 0) { %>
+        <p><strong><%= course.finalExam.title %></strong> — <%= course.finalExam.questions.length %> questions</p>
+        <a href="#" class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('examForm').style.display = document.getElementById('examForm').style.display === 'none' ? 'block' : 'none'; return false;">Modifier</a>
+      <% } else { %>
+        <p class="text-muted">Aucun examen final configuré.</p>
+      <% } %>
+      <form id="examForm" action="/institution/dashboard/content/courses/<%= course._id %>/final-exam" method="POST" style="margin-top: 1rem; display: <%= (course.finalExam && course.finalExam.questions && course.finalExam.questions.length > 0) ? 'none' : 'block' %>;">
+        <div class="row g-2 mb-2">
+          <div class="col-md-6">
+            <input type="text" name="title" class="form-control form-control-sm" placeholder="Titre (ex: Examen final)" value="<%= course.finalExam && course.finalExam.title ? course.finalExam.title : '' %>">
+          </div>
+          <div class="col-md-3">
+            <input type="number" name="passingScore" class="form-control form-control-sm" min="0" max="100" placeholder="Score requis (%)" value="<%= course.finalExam && course.finalExam.passingScore ? course.finalExam.passingScore : 70 %>">
+          </div>
+          <div class="col-md-3">
+            <input type="number" name="timeLimit" class="form-control form-control-sm" min="0" placeholder="Limite temps (min, 0=aucune)" value="<%= course.finalExam && course.finalExam.timeLimit ? course.finalExam.timeLimit : 0 %>">
+          </div>
+        </div>
+        <p class="text-muted small mb-2">Les questions seront ajoutées via un formulaire dédié après création.</p>
+        <button type="submit" class="btn btn-sm btn-success">Créer examen final</button>
+      </form>
+    </div>
+
+    <!-- Final project -->
+    <div class="section-card">
+      <h2>🎯 Projet final</h2>
+      <% if (course.finalProject && course.finalProject.title) { %>
+        <p><strong><%= course.finalProject.title %></strong></p>
+        <a href="#" class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('projectForm').style.display = document.getElementById('projectForm').style.display === 'none' ? 'block' : 'none'; return false;">Modifier</a>
+      <% } else { %>
+        <p class="text-muted">Aucun projet final configuré.</p>
+      <% } %>
+      <form id="projectForm" action="/institution/dashboard/content/courses/<%= course._id %>/final-project" method="POST" style="margin-top: 1rem; display: <%= (course.finalProject && course.finalProject.title) ? 'none' : 'block' %>;">
+        <div class="mb-2">
+          <input type="text" name="title" class="form-control form-control-sm" placeholder="Titre du projet" value="<%= course.finalProject && course.finalProject.title ? course.finalProject.title : '' %>">
+        </div>
+        <div class="mb-2">
+          <textarea name="instructions" class="form-control form-control-sm" rows="3" placeholder="Instructions pour les étudiants"><%= course.finalProject && course.finalProject.instructions ? course.finalProject.instructions : '' %></textarea>
+        </div>
+        <div class="row g-2 mb-2">
+          <div class="col-md-4">
+            <select name="submissionType" class="form-select form-select-sm">
+              <option value="text" <%= (!course.finalProject || course.finalProject.submissionType === 'text') ? 'selected' : '' %>>Texte</option>
+              <option value="link" <%= (course.finalProject && course.finalProject.submissionType === 'link') ? 'selected' : '' %>>Lien URL</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <input type="number" name="maxScore" class="form-control form-control-sm" min="1" placeholder="Score max" value="<%= course.finalProject && course.finalProject.maxScore ? course.finalProject.maxScore : 100 %>">
+          </div>
+          <div class="col-md-4">
+            <input type="date" name="dueDate" class="form-control form-control-sm" value="<%= course.finalProject && course.finalProject.dueDate ? new Date(course.finalProject.dueDate).toISOString().split('T')[0] : '' %>">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-sm btn-success">Créer projet final</button>
+      </form>
+    </div>
+
+  </div>
+</div>

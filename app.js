@@ -36,6 +36,7 @@ const User = require("./shared/models/user");
 // Import program routes
 const eKalanRoutes = require("./programs/ekalan");
 const languageLearningRoutes = require("./programs/language-learning");
+const institutionProgram = require("./programs/institution");
 
 // Import shared routes
 const accountRoutes = require("./shared/routes/account");
@@ -150,6 +151,7 @@ app.use('/institution', institutionStudentRoutes);
 // Mount Program Routes
 app.use('/programs/ekalan', eKalanRoutes);
 app.use('/programs/language-learning', languageLearningRoutes);
+app.use('/institution', institutionProgram);
 
 // Export rate limiter for use in routes
 app.set('authLimiter', authLimiter);

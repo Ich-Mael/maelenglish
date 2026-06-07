@@ -28,6 +28,13 @@ Each program is a self-contained Express router mounted in `app.js`:
   - Legacy: `Course → Module → (Practice | EngCourseVideo)` from `shared/models/courses.js`
   - Modern: `Course → Module → Lesson` with `Lesson` types `video | text | pdf | practice_quiz` from `programs/language-learning/models/` (supports `LessonProgress`, `QuizAttempt`, `AssignmentSubmission`)
 
+- **`programs/institution`** — Standalone course system for institution-managed content. Mounted at `/institution`. Fully independent models (`InstitutionCourse`, `InstitutionModule`, `InstitutionLesson`, etc.) and routes:
+  - Admin: `/institution/dashboard/content/` — institution admins author and manage courses, modules, lessons, quizzes, assignments, final exams, and final projects
+  - Student: `/institution/learn/` — students browse enrolled courses, view lessons, take quizzes/assignments, and submit final exams/projects
+  - Auth: Uses `isInstitutionAdmin` + `loadInstitution` (admin) and `isInstitutionStudent` + `loadStudentInstitution` (student) from shared middleware
+  - Enrollment: `InstitutionEnrollment` model (not embedded in User) with date windows and status tracking
+  - Progress: `InstitutionLessonProgress`, `InstitutionQuizAttempt`, `InstitutionAssignmentSubmission`, `InstitutionFinalExamAttempt`, `InstitutionFinalProjectSubmission` models track student activity
+
 ### Shared core (`shared/`)
 - `shared/models/user.js` — Single User model used across all programs. Carries program-specific flags (`isHighSchoolStudent`, `isClubMember`, `isPecpStudent`, `isVip`, etc.) and an embedded `specialProgram[]` array storing course enrollment with start/end dates.
 - `shared/models/courses.js` — Course, Module, Practice, EngCourseVideo, Evaluation, Grade models (used by language-learning legacy structure).

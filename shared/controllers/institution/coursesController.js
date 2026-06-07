@@ -1,6 +1,7 @@
 const { Course, Module } = require('../../models/courses');
 const User = require('../../models/user');
-const StudentProgress = require('../../models/studentProgress');
+const LessonProgress = require('../../models/lessonProgress');
+const Lesson = require('../../models/lesson');
 const catchAsync = require('../../utilities/catchAsync');
 
 // List assigned courses with enrolled student counts
@@ -43,16 +44,23 @@ module.exports.exportCsv = catchAsync(async (req, res) => {
         role: { $ne: 'institution-admin' }
     }).select('name surname username email specialProgram devices').sort({ surname: 1 });
 
-    const progress = await StudentProgress.find({ courseId }).populate('moduleId', 'title');
+    const [progress, lessonCount] = await Promise.all([
+        LessonProgress.find({ courseId }),
+        Lesson.countDocuments({ courseId })
+    ]);
 
     const progressByUser = {};
     progress.forEach(p => {
         const uid = p.userId.toString();
-        if (!progressByUser[uid]) progressByUser[uid] = [];
-        progressByUser[uid].push(p);
+        if (!progressByUser[uid]) progressByUser[uid] = { completed: 0, lastActivity: null };
+        if (p.status === 'completed') progressByUser[uid].completed++;
+        const ts = p.completedAt || p.updatedAt;
+        if (ts && (!progressByUser[uid].lastActivity || ts > progressByUser[uid].lastActivity)) {
+            progressByUser[uid].lastActivity = ts;
+        }
     });
 
-    const moduleCount = course.modules.length;
+    const moduleCount = lessonCount;
 
     // Build CSV rows
     const escape = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
@@ -60,19 +68,17 @@ module.exports.exportCsv = catchAsync(async (req, res) => {
     const headers = [
         'Nom', 'Prénom', 'Nom utilisateur', 'Email',
         'Date début', 'Date fin', 'Statut accès',
-        'Modules complétés', 'Total modules', 'Progression (%)',
+        'Leçons complétées', 'Total leçons', 'Progression (%)',
         'Dernière activité', 'Dernière connexion'
     ];
 
     const now = new Date();
     const rows = students.map(student => {
         const enrollment = (student.specialProgram || []).find(p => p.courseTitle === course.title);
-        const modules = progressByUser[student._id.toString()] || [];
-        const completed = modules.filter(m => m.status === 'completed').length;
+        const pData = progressByUser[student._id.toString()] || { completed: 0, lastActivity: null };
+        const completed = pData.completed;
         const pct = moduleCount > 0 ? Math.round((completed / moduleCount) * 100) : 0;
-        const lastActivity = modules.length > 0
-            ? modules.reduce((l, m) => m.lastViewedAt > l ? m.lastViewedAt : l, modules[0].lastViewedAt)
-            : null;
+        const lastActivity = pData.lastActivity;
         const lastLogin = student.devices && student.devices.length > 0
             ? student.devices.reduce((l, d) => d.lastLogin > l ? d.lastLogin : l, student.devices[0].lastLogin)
             : null;
@@ -129,32 +135,32 @@ module.exports.show = catchAsync(async (req, res) => {
         role: { $ne: 'institution-admin' }
     }).select('name surname username email specialProgram coursesTaken devices').sort({ surname: 1 });
 
-    // Progress for this course (scoped to courseId only — no institutionId filter)
-    const progress = await StudentProgress.find({
-        courseId
-    }).populate('moduleId', 'title');
+    const [progress, totalLessons] = await Promise.all([
+        LessonProgress.find({ courseId }),
+        Lesson.countDocuments({ courseId })
+    ]);
 
-    // Build progress lookup: userId -> [moduleProgress]
+    // Build lookup: userId -> { completed, lastActivity }
     const progressByUser = {};
     progress.forEach(p => {
         const uid = p.userId.toString();
-        if (!progressByUser[uid]) progressByUser[uid] = [];
-        progressByUser[uid].push(p);
+        if (!progressByUser[uid]) progressByUser[uid] = { completed: 0, lastActivity: null };
+        if (p.status === 'completed') progressByUser[uid].completed++;
+        const ts = p.completedAt || p.updatedAt;
+        if (ts && (!progressByUser[uid].lastActivity || ts > progressByUser[uid].lastActivity)) {
+            progressByUser[uid].lastActivity = ts;
+        }
     });
 
     const studentsData = students.map(student => {
         const isEnrolled = (student.coursesTaken || []).some(id => id.toString() === courseId);
         const enrollment = (student.specialProgram || []).find(p => p.courseTitle === course.title);
-        const modules = progressByUser[student._id.toString()] || [];
-        const completedModules = modules.filter(m => m.status === 'completed').length;
-        const lastActivity = modules.length > 0
-            ? modules.reduce((latest, m) => m.lastViewedAt > latest ? m.lastViewedAt : latest, modules[0].lastViewedAt)
-            : null;
+        const pData = progressByUser[student._id.toString()] || { completed: 0, lastActivity: null };
         const lastLogin = student.devices && student.devices.length > 0
             ? student.devices.reduce((latest, d) => d.lastLogin > latest ? d.lastLogin : latest, student.devices[0].lastLogin)
             : null;
 
-        return { student, isEnrolled, enrollment, completedModules, totalModules: course.modules.length, lastActivity, lastLogin };
+        return { student, isEnrolled, enrollment, completedModules: pData.completed, totalModules: totalLessons, lastActivity: pData.lastActivity, lastLogin };
     });
 
     res.render('institution-dashboard/courses/show', {

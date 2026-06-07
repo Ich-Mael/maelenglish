@@ -228,6 +228,10 @@ router.post('/:courseId/modules/:moduleId/lessons',         ...adminOnly, Module
 router.put('/:courseId/modules/:moduleId/lessons/:lessonId',...adminOnly, ModuleCtrl.updateLesson);
 router.delete('/:courseId/modules/:moduleId/lessons/:lessonId', ...adminOnly, ModuleCtrl.destroyLesson);
 
+// ─── LESSON PRACTICE QUIZ ─────────────────────────────────────────────────────
+router.get('/:courseId/modules/:moduleId/lessons/:lessonId/quiz',  ...adminOnly, ModuleCtrl.getPracticeQuizEditor);
+router.post('/:courseId/modules/:moduleId/lessons/:lessonId/quiz', ...adminOnly, ModuleCtrl.savePracticeQuiz);
+
 // ─── MODULE QUIZ + ASSIGNMENT ─────────────────────────────────────────────────
 router.post('/:courseId/modules/:moduleId/quiz',        ...adminOnly, ModuleCtrl.saveQuiz);
 router.post('/:courseId/modules/:moduleId/assignment',  ...adminOnly, ModuleCtrl.saveAssignment);

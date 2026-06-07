@@ -205,3 +205,54 @@ module.exports.saveAssignment = catchAsync(async (req, res) => {
     req.flash('success', 'Devoir sauvegardé.');
     res.redirect(base(courseId, moduleId));
 });
+
+// ─── LESSON PRACTICE QUIZ EDITOR ──────────────────────────────────────────────
+
+module.exports.getPracticeQuizEditor = catchAsync(async (req, res) => {
+    const { courseId, moduleId, lessonId } = req.params;
+    const [course, courseModule, lesson] = await Promise.all([
+        Course.findById(courseId),
+        Module.findById(moduleId),
+        Lesson.findOne({ _id: lessonId, moduleId })
+    ]);
+
+    if (!course || !courseModule || !lesson) {
+        req.flash('error', 'Cours, module ou leçon introuvable.');
+        return res.redirect(`/admin/courses/${courseId}`);
+    }
+
+    if (lesson.type !== 'practice_quiz') {
+        req.flash('error', 'Cette leçon n\'est pas un quiz de pratique.');
+        return res.redirect(`/admin/courses/${courseId}/modules/${moduleId}/edit`);
+    }
+
+    res.render('admin/courses/editPracticeQuiz', { course, courseModule, lesson });
+});
+
+// ─── LESSON PRACTICE QUIZ SAVE ────────────────────────────────────────────────
+
+module.exports.savePracticeQuiz = catchAsync(async (req, res) => {
+    const { courseId, moduleId, lessonId } = req.params;
+    const { questions } = req.body;
+
+    const lesson = await Lesson.findOne({ _id: lessonId, moduleId });
+    if (!lesson) {
+        req.flash('error', 'Leçon introuvable.');
+        return res.redirect(`/admin/courses/${courseId}/modules/${moduleId}/edit`);
+    }
+
+    const parsedQuestions = Object.values(questions || {}).map(q => ({
+        text:          q.text,
+        options:       Object.values(q.options || {}).map(o => ({ text: o.text, value: o.value })),
+        correctAnswer: q.correctAnswer,
+        explanation:   q.explanation || ''
+    })).filter(q => q.text);
+
+    lesson.practiceQuiz = {
+        questions: parsedQuestions
+    };
+
+    await lesson.save();
+    req.flash('success', 'Quiz de pratique sauvegardé.');
+    res.redirect(`/admin/courses/${courseId}/modules/${moduleId}/edit`);
+});
