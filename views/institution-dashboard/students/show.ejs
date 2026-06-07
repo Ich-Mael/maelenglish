@@ -14,6 +14,11 @@
   .status-enrolled { color: #065f46; background: #d1fae5; padding: .2rem .7rem; border-radius: 20px; font-size: .78rem; font-weight: 600; }
   .status-not-enrolled { color: #6b7280; background: #f3f4f6; padding: .2rem .7rem; border-radius: 20px; font-size: .78rem; font-weight: 600; }
   .status-expired { color: #991b1b; background: #fee2e2; padding: .2rem .7rem; border-radius: 20px; font-size: .78rem; font-weight: 600; }
+  .btn-edit-dates { display: inline-flex; align-items: center; gap: .3rem; background: #f0fdff; border: 1px solid #0e7490; color: #0e7490; border-radius: 20px; padding: .15rem .65rem; font-size: .75rem; font-weight: 600; cursor: pointer; transition: background .15s; }
+  .btn-edit-dates:hover { background: #cffafe; }
+  .date-edit-form { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem; margin-top: .75rem; }
+  .date-edit-form .form-control-sm { border-radius: 8px; border: 1.5px solid #e2e8f0; font-size: .85rem; }
+  .date-edit-form .form-control-sm:focus { border-color: #0e7490; box-shadow: 0 0 0 3px rgba(14,116,144,.15); outline: none; }
 </style>` %>
 
 <div class="page-wrapper">
@@ -105,35 +110,46 @@
                   <%
                     const startISO = enrollment.startDate ? new Date(enrollment.startDate).toISOString().split('T')[0] : '';
                     const endISO   = enrollment.endDate   ? new Date(enrollment.endDate).toISOString().split('T')[0]   : '';
-                    const editId   = 'edit-' + course._id;
+                    const cid      = course._id.toString();
                   %>
-                  <div class="text-muted small mb-2">
-                    Du <%= enrollment.startDate ? new Date(enrollment.startDate).toLocaleDateString('fr-FR') : '—' %>
-                    au <%= enrollment.endDate   ? new Date(enrollment.endDate).toLocaleDateString('fr-FR')   : '—' %>
-                    <% if (lastActivity) { %>&nbsp;·&nbsp; Dernière activité : <%= new Date(lastActivity).toLocaleDateString('fr-FR') %><% } %>
-                    <button type="button"
-                            onclick="document.getElementById('<%= editId %>').classList.toggle('d-none')"
-                            class="btn btn-link btn-sm py-0 px-1" style="font-size:.75rem;vertical-align:baseline;">
-                      ✎ Modifier
+                  <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+                    <span class="text-muted small">
+                      <i class="bi bi-calendar3"></i>
+                      <%= enrollment.startDate ? new Date(enrollment.startDate).toLocaleDateString('fr-FR') : '—' %>
+                      → <%= enrollment.endDate ? new Date(enrollment.endDate).toLocaleDateString('fr-FR') : '—' %>
+                    </span>
+                    <% if (lastActivity) { %>
+                      <span class="text-muted small">· Activité : <%= new Date(lastActivity).toLocaleDateString('fr-FR') %></span>
+                    <% } %>
+                    <button type="button" class="btn-edit-dates" data-target="date-form-<%= cid %>">
+                      <i class="bi bi-pencil" style="font-size:.7rem;"></i> Modifier les dates
                     </button>
                   </div>
 
                   <!-- Inline date edit form (hidden by default) -->
-                  <div id="<%= editId %>" class="d-none mb-2 p-2" style="background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;">
-                    <form action="/institution/dashboard/students/<%= student._id %>/courses/<%= course._id %>?_method=PUT" method="POST"
-                          class="d-flex gap-2 flex-wrap align-items-end">
-                      <div>
-                        <label class="form-label mb-0" style="font-size:.78rem;">Début</label>
-                        <input type="date" name="startDate" class="form-control form-control-sm" value="<%= startISO %>">
+                  <div id="date-form-<%= cid %>" class="date-edit-form d-none mb-2">
+                    <p class="small fw-semibold mb-2" style="color:#0e7490;">
+                      <i class="bi bi-pencil-square me-1"></i>Modifier les dates d'accès
+                    </p>
+                    <form action="/institution/dashboard/students/<%= student._id %>/courses/<%= course._id %>?_method=PUT" method="POST">
+                      <div class="d-flex gap-2 flex-wrap align-items-end">
+                        <div>
+                          <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;">Date de début</label>
+                          <input type="date" name="startDate" class="form-control form-control-sm" value="<%= startISO %>">
+                        </div>
+                        <div>
+                          <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;">Date de fin</label>
+                          <input type="date" name="endDate" class="form-control form-control-sm" value="<%= endISO %>">
+                        </div>
+                        <div class="d-flex gap-1">
+                          <button type="submit" class="btn btn-sm btn-primary px-3">
+                            <i class="bi bi-check-lg me-1"></i>Enregistrer
+                          </button>
+                          <button type="button" class="btn btn-sm btn-outline-secondary" data-close="date-form-<%= cid %>">
+                            Annuler
+                          </button>
+                        </div>
                       </div>
-                      <div>
-                        <label class="form-label mb-0" style="font-size:.78rem;">Fin</label>
-                        <input type="date" name="endDate" class="form-control form-control-sm" value="<%= endISO %>">
-                      </div>
-                      <button type="submit" class="btn btn-sm btn-primary">Enregistrer</button>
-                      <button type="button"
-                              onclick="document.getElementById('<%= editId %>').classList.add('d-none')"
-                              class="btn btn-sm btn-outline-secondary">Annuler</button>
                     </form>
                   </div>
 
@@ -179,3 +195,20 @@
     </div>
   </div>
 </div>
+
+<script>
+  // Toggle date-edit panels via data-target / data-close attributes
+  document.addEventListener('click', function (e) {
+    const btn = e.target.closest('[data-target]');
+    if (btn) {
+      const panel = document.getElementById(btn.dataset.target);
+      if (panel) panel.classList.toggle('d-none');
+      return;
+    }
+    const close = e.target.closest('[data-close]');
+    if (close) {
+      const panel = document.getElementById(close.dataset.close);
+      if (panel) panel.classList.add('d-none');
+    }
+  });
+</script>
