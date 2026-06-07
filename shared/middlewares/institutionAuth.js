@@ -9,8 +9,9 @@ module.exports.isInstitutionAdmin = (req, res, next) => {
         return res.redirect('/login');
     }
 
-    const role = req.user.role;
-    if (role === 'institution-admin' || role === 'admin' || role === 'super-admin') {
+    // Handle both singular 'role' and plural 'roles' array
+    const userRoles = Array.isArray(req.user.roles) ? req.user.roles : [req.user.role];
+    if (userRoles.includes('institution-admin') || userRoles.includes('admin') || userRoles.includes('super-admin')) {
         return next();
     }
 

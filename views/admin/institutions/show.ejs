@@ -154,6 +154,13 @@
           <p class="mb-2"><strong><%= studentCount %></strong> étudiant(s) rattaché(s) à cette institution.</p>
           <a href="/admin/users?institutionId=<%= institution._id %>" class="btn btn-sm btn-outline-primary">Voir les étudiants</a>
         </div>
+
+        <!-- Institution Courses -->
+        <div class="card-section">
+          <h2>📚 Cours de l'institution</h2>
+          <p class="small text-muted mb-2">Créez et gérez les cours propres à cette institution.</p>
+          <a href="/institution/dashboard/content?institutionId=<%= institution._id %>" class="btn btn-sm btn-outline-primary">Gérer les cours</a>
+        </div>
       </div>
     </div>
 
