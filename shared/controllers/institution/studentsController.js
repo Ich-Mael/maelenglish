@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const User = require('../../models/user');
 const { Course, Module, Evaluation } = require('../../models/courses');
 const StudentProgress = require('../../models/studentProgress');
@@ -314,4 +315,44 @@ module.exports.unenroll = catchAsync(async (req, res) => {
 
     req.flash('success', `${student.name} ${student.surname} désinscrit(e) de "${course.title}".`);
     res.redirect(`/institution/dashboard/students/${userId}`);
+});
+
+// Resend activation email with a fresh token and new temporary password
+module.exports.resendActivation = catchAsync(async (req, res) => {
+    const student = await User.findById(req.params.userId);
+
+    if (!student) {
+        req.flash('error', 'Étudiant introuvable.');
+        return res.redirect('/institution/dashboard/students');
+    }
+
+    if (student.isVerified) {
+        req.flash('error', 'Ce compte est déjà activé.');
+        return res.redirect(`/institution/dashboard/students/${req.params.userId}`);
+    }
+
+    // Generate fresh token (48h) and new temporary password
+    const activationToken   = crypto.randomBytes(32).toString('hex');
+    const activationExpires = Date.now() + 48 * 60 * 60 * 1000;
+
+    const charset     = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#';
+    let newPassword   = '';
+    for (let i = 0; i < 10; i++) newPassword += charset.charAt(Math.floor(Math.random() * charset.length));
+    newPassword += 'A1a';
+
+    student.activationToken   = activationToken;
+    student.activationExpires = activationExpires;
+    await student.setPassword(newPassword);
+    await student.save();
+
+    try {
+        const activationUrl = `${getBaseUrl(req)}/user/activate/${activationToken}`;
+        await new Emailer(student, activationUrl).sendActivationEmail(newPassword);
+        req.flash('success', `Email d'activation renvoyé à ${student.email}.`);
+    } catch (err) {
+        console.error('Resend activation email error:', err);
+        req.flash('warning', `Email non envoyé. Nouveau mot de passe temporaire : ${newPassword}`);
+    }
+
+    res.redirect(`/institution/dashboard/students/${req.params.userId}`);
 });

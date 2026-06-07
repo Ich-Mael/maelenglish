@@ -32,6 +32,9 @@ router.post('/dashboard/enroll-bulk', Students.enrollBulk);
 // Unenroll student from a course
 router.delete('/dashboard/students/:userId/courses/:courseId', Students.unenroll);
 
+// Resend activation email to unverified student
+router.post('/dashboard/students/:userId/resend-activation', Students.resendActivation);
+
 // ─── ANNOUNCEMENTS ────────────────────────────────────────────────────────────
 router.get('/dashboard/announcements',                           Announcements.index);
 router.post('/dashboard/announcements',                          Announcements.create);
