@@ -6,6 +6,7 @@ const Lesson = require('../models/lesson');
 const Institution = require('../models/institution');
 const catchAsync = require('../utilities/catchAsync');
 const { isLoggedIn, checkRoles } = require('../middlewares/auth');
+const ModuleCtrl = require('../controllers/admin/moduleController');
 
 const adminOnly = [isLoggedIn, checkRoles(['admin', 'super-admin'])];
 
@@ -206,8 +207,29 @@ router.post('/:id/modules', ...adminOnly, catchAsync(async (req, res) => {
     await course.save();
 
     req.flash('success', `Module "${mod.title}" créé.`);
-    // Link to existing lesson builder
-    res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course._id}/modules/${mod._id}/edit`);
+    res.redirect(`/admin/courses/${course._id}/modules/${mod._id}/edit`);
 }));
+
+// ─── MODULE REORDER ───────────────────────────────────────────────────────────
+router.post('/:courseId/modules/reorder', ...adminOnly, catchAsync(async (req, res) => {
+    const orderedIds = (req.body.orderedIds || '').split(',').filter(Boolean);
+    await Course.findByIdAndUpdate(req.params.courseId, { modules: orderedIds });
+    res.json({ ok: true });
+}));
+
+// ─── MODULE EDIT / UPDATE / DELETE ───────────────────────────────────────────
+router.get('/:courseId/modules/:moduleId/edit',         ...adminOnly, ModuleCtrl.edit);
+router.put('/:courseId/modules/:moduleId',              ...adminOnly, ModuleCtrl.update);
+router.delete('/:courseId/modules/:moduleId',           ...adminOnly, ModuleCtrl.destroy);
+
+// ─── LESSON CRUD + REORDER ────────────────────────────────────────────────────
+router.post('/:courseId/modules/:moduleId/lessons/reorder', ...adminOnly, ModuleCtrl.reorderLessons);
+router.post('/:courseId/modules/:moduleId/lessons',         ...adminOnly, ModuleCtrl.createLesson);
+router.put('/:courseId/modules/:moduleId/lessons/:lessonId',...adminOnly, ModuleCtrl.updateLesson);
+router.delete('/:courseId/modules/:moduleId/lessons/:lessonId', ...adminOnly, ModuleCtrl.destroyLesson);
+
+// ─── MODULE QUIZ + ASSIGNMENT ─────────────────────────────────────────────────
+router.post('/:courseId/modules/:moduleId/quiz',        ...adminOnly, ModuleCtrl.saveQuiz);
+router.post('/:courseId/modules/:moduleId/assignment',  ...adminOnly, ModuleCtrl.saveAssignment);
 
 module.exports = router;
