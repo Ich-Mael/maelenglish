@@ -79,14 +79,10 @@ module.exports.search = catchAsync(async (req, res) => {
 module.exports.show = catchAsync(async (req, res) => {
     const assignedCourses = req.institution.assignedCourses;
 
-    // Student must be enrolled in at least one of this institution's courses
-    const student = await User.findOne({
-        _id: req.params.userId,
-        coursesTaken: { $in: assignedCourses }
-    }).populate('coursesTaken');
+    const student = await User.findById(req.params.userId).populate('coursesTaken');
 
     if (!student) {
-        req.flash('error', 'Étudiant introuvable ou non inscrit à vos cours.');
+        req.flash('error', 'Étudiant introuvable.');
         return res.redirect('/institution/dashboard/students');
     }
 
