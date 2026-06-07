@@ -85,6 +85,9 @@ router.get('/admindashboard/:course_id/search-users', isLoggedIn, isVerified, ch
 // Show all modules of a course
 router.get('/admindashboard/:course_id/modules', isLoggedIn, isVerified, checkRoles(['admin', 'super-admin']), CourseModules.showCourseModules);
 
+// Reorder modules (must be before /:module_id routes)
+router.post('/admindashboard/:course_id/modules/reorder', isLoggedIn, isVerified, checkRoles(['admin', 'super-admin']), CourseModules.reorderModules);
+
 // Creating a new module
 router.post('/admindashboard/:course_id/module', isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), CourseModules.createModule);
 

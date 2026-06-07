@@ -147,6 +147,39 @@
       display: flex;
       gap: 0.5rem;
   }
+
+  .drag-handle {
+      cursor: grab;
+      color: #cbd5e1;
+      padding: 0 6px;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      transition: color .15s;
+  }
+  .drag-handle:active { cursor: grabbing; }
+  .module-card:hover .drag-handle { color: #94a3b8; }
+  .module-card.drag-over { border: 2px dashed var(--primary-color); background: rgba(93,6,186,.04); }
+  .module-card.dragging  { opacity: .4; }
+  #save-order-btn {
+      display: none;
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--primary-color);
+      color: #fff;
+      border: none;
+      padding: .75rem 1.5rem;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: .95rem;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(93,6,186,.35);
+      z-index: 999;
+      gap: .5rem;
+      align-items: center;
+  }
+  #save-order-btn.visible { display: flex; }
   
   .action-btn {
       width: 40px;
@@ -234,16 +267,22 @@
   </div>
 
   <% if(course.modules.length > 0) { %>
-      <div class="modules-list">
+      <p class="text-muted small mb-2" style="text-align:center;">
+          <i class="bi bi-grip-vertical"></i> Glissez les modules pour les réorganiser
+      </p>
+      <div class="modules-list" id="modules-list">
           <% course.modules.forEach((chapter, index) => { %>
-              <div class="module-card">
+              <div class="module-card" draggable="true" data-id="<%= chapter._id %>">
+                  <span class="drag-handle" title="Réorganiser">
+                      <i class="bi bi-grip-vertical"></i>
+                  </span>
                   <div class="module-info">
-                      <span class="module-number">Module <%= index + 1 %></span>
+                      <span class="module-number">Module <span class="module-index"><%= index + 1 %></span></span>
                       <h3 class="module-title"><%= chapter.title %></h3>
                       <div class="module-meta">
                           <% if(chapter.revealDate) { %>
                               <span>
-                                  <i class="bi bi-calendar-event"></i> 
+                                  <i class="bi bi-calendar-event"></i>
                                   <%= new Date(chapter.revealDate).toLocaleDateString('fr-FR') %>
                               </span>
                           <% } %>
@@ -254,13 +293,13 @@
                           <% } %>
                       </div>
                   </div>
-                  
+
                   <div class="module-actions">
-                      <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%= chapter._id %>" 
+                      <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%= chapter._id %>"
                          class="action-btn btn-view" title="Voir le contenu">
                           <i class="bi bi-eye"></i>
                       </a>
-                      <a href="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= chapter._id %>/edit" 
+                      <a href="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= chapter._id %>/edit"
                          class="action-btn btn-edit" title="Modifier">
                           <i class="bi bi-pencil"></i>
                       </a>
@@ -273,6 +312,11 @@
               </div>
           <% }) %>
       </div>
+
+      <!-- Floating save button (appears after dragging) -->
+      <button id="save-order-btn" onclick="saveOrder()">
+          <i class="bi bi-check-lg"></i> Enregistrer l'ordre
+      </button>
   <% } else { %>
       <div class="empty-state">
           <i class="bi bi-collection"></i>
@@ -284,3 +328,70 @@
       </div>
   <% } %>
 </div>
+
+<script>
+(function () {
+  const list    = document.getElementById('modules-list');
+  const saveBtn = document.getElementById('save-order-btn');
+  if (!list) return;
+
+  let dragged   = null;
+  let orderChanged = false;
+
+  list.addEventListener('dragstart', e => {
+    dragged = e.target.closest('.module-card');
+    if (!dragged) return;
+    setTimeout(() => dragged.classList.add('dragging'), 0);
+  });
+
+  list.addEventListener('dragend', () => {
+    if (dragged) dragged.classList.remove('dragging');
+    list.querySelectorAll('.module-card').forEach(c => c.classList.remove('drag-over'));
+    dragged = null;
+    if (orderChanged) saveBtn.classList.add('visible');
+  });
+
+  list.addEventListener('dragover', e => {
+    e.preventDefault();
+    const target = e.target.closest('.module-card');
+    if (!target || target === dragged) return;
+
+    list.querySelectorAll('.module-card').forEach(c => c.classList.remove('drag-over'));
+    target.classList.add('drag-over');
+
+    const rect  = target.getBoundingClientRect();
+    const after = e.clientY > rect.top + rect.height / 2;
+    list.insertBefore(dragged, after ? target.nextSibling : target);
+    orderChanged = true;
+
+    // Renumber visible badges
+    list.querySelectorAll('.module-index').forEach((el, i) => el.textContent = i + 1);
+  });
+
+  list.addEventListener('dragenter', e => e.preventDefault());
+
+  window.saveOrder = function () {
+    const ids = Array.from(list.querySelectorAll('.module-card')).map(c => c.dataset.id).join(',');
+    saveBtn.textContent = 'Enregistrement…';
+    saveBtn.disabled    = true;
+
+    fetch('/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/reorder', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body:    'orderedIds=' + encodeURIComponent(ids)
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.ok) {
+        saveBtn.innerHTML = '<i class="bi bi-check-lg"></i> Enregistré !';
+        orderChanged = false;
+        setTimeout(() => { saveBtn.classList.remove('visible'); saveBtn.innerHTML = '<i class="bi bi-check-lg"></i> Enregistrer l\'ordre'; saveBtn.disabled = false; }, 1500);
+      }
+    })
+    .catch(() => {
+      saveBtn.textContent = 'Erreur — réessayer';
+      saveBtn.disabled = false;
+    });
+  };
+}());
+</script>

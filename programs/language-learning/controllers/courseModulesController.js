@@ -491,3 +491,15 @@ module.exports.saveModuleAssignment = catchAsync(async (req, res) => {
   req.flash('success', 'Devoir du module sauvegardé.');
   res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${module_id}/edit`);
 });
+
+
+// ─── REORDER MODULES ──────────────────────────────────────────────────────────
+
+module.exports.reorderModules = catchAsync(async (req, res) => {
+    const { course_id } = req.params;
+    const orderedIds = (req.body.orderedIds || '').split(',').filter(Boolean);
+
+    await Course.findByIdAndUpdate(course_id, { modules: orderedIds });
+
+    res.json({ ok: true });
+});
