@@ -62,7 +62,7 @@
           <div class="col-md-4">
             <label class="form-label">Date de disponibilité</label>
             <input type="date" name="revealDate" class="form-control"
-                   value="<%= courseModule.revealDate ? new Date(courseModule.revealDate).toISOString().split('T')[0] : '' %>">
+                   value="<% const rd = courseModule.revealDate ? new Date(courseModule.revealDate) : null; %><%= rd && !isNaN(rd) ? rd.toISOString().split('T')[0] : '' %>">
           </div>
         </div>
         <div class="mb-3">

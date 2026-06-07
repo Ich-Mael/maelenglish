@@ -156,13 +156,11 @@ app.set('authLimiter', authLimiter);
 
 // 404 handler
 app.all('*', (req, res) => {
-    console.log('[404] No route matched:', req.method, req.originalUrl);
     res.status(404).render('noAccess', { message: 'Page introuvable' });
 });
 
 // Global error handler
 app.use((err, req, res, next) => {
-    console.error('[ERROR HANDLER]', req.method, req.originalUrl, '—', err.message);
     console.error(err.stack);
     const statusCode = err.statusCode || 500;
     const message = err.message || 'Une erreur est survenue';

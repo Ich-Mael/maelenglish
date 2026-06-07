@@ -33,9 +33,7 @@ module.exports.checkRoles = roles => (req, res, next) => {
         req.flash('error', 'Vous devez d\'abord vous connecter!');
         return res.redirect('/login');
     }
-    console.log('[checkRoles] path:', req.path, '| user role:', req.user.role, '| allowed:', roles);
     if (!roles.includes(req.user.role)) {
-        console.log('[checkRoles] DENIED — role not in list');
         return res.render('noAccess');
     }
     next();

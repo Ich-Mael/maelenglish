@@ -9,25 +9,18 @@ const base = (courseId, moduleId) =>
 
 module.exports.edit = catchAsync(async (req, res) => {
     const { courseId, moduleId } = req.params;
-    console.log('[ModuleCtrl.edit] reached — courseId:', courseId, 'moduleId:', moduleId);
-    console.log('[ModuleCtrl.edit] user:', req.user ? `${req.user.username} (role: ${req.user.role})` : 'NOT LOGGED IN');
-
     const [course, courseModule, lessons] = await Promise.all([
         Course.findById(courseId),
         Module.findById(moduleId),
         Lesson.find({ moduleId }).sort({ order: 1 })
     ]);
 
-    console.log('[ModuleCtrl.edit] course found:', !!course, '| module found:', !!courseModule, '| lessons:', lessons.length);
-
     if (!courseModule || !course) {
         req.flash('error', 'Module ou cours introuvable.');
         return res.redirect(`/admin/courses/${courseId}`);
     }
 
-    console.log('[ModuleCtrl.edit] rendering view...');
     res.render('admin/courses/editModule', { course, courseModule, lessons });
-    console.log('[ModuleCtrl.edit] render called successfully');
 });
 
 // ─── MODULE UPDATE ────────────────────────────────────────────────────────────
