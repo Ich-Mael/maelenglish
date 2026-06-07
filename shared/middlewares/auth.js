@@ -8,11 +8,12 @@ module.exports.isLoggedIn = (req, res, next) => {
 };
 
 module.exports.isVerified = (req, res, next) => {
-    if (req.user.isVerified) {
-        next();
-    } else {
-        return res.redirect('/user/send-verification-email');
-    }
+    if (!req.user) return res.redirect('/login');
+    // Admins bypass the email-verification requirement
+    const role = req.user.role;
+    if (role === 'admin' || role === 'super-admin' || role === 'institution-admin') return next();
+    if (req.user.isVerified) return next();
+    return res.redirect('/user/send-verification-email');
 };
 
 module.exports.isAdmin = (req, res, next) => {
@@ -27,10 +28,16 @@ module.exports.isAdmin = (req, res, next) => {
     res.redirect('/');
 };
 
-module.exports.checkRoles = roles => (req, res, next) =>
-    !roles.includes(req.user.role) ?
-    res.render('noAccess') :
+module.exports.checkRoles = roles => (req, res, next) => {
+    if (!req.isAuthenticated()) {
+        req.flash('error', 'Vous devez d\'abord vous connecter!');
+        return res.redirect('/login');
+    }
+    if (!roles.includes(req.user.role)) {
+        return res.render('noAccess');
+    }
     next();
+};
 
 module.exports.profileOwner = id => (req, res, next) => {
     if ((req.user._id !== id)) {
