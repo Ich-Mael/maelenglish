@@ -314,6 +314,42 @@ module.exports.unenroll = catchAsync(async (req, res) => {
     res.redirect(`/institution/dashboard/students/${userId}`);
 });
 
+// Update enrollment dates for an already-enrolled student
+module.exports.updateEnrollment = catchAsync(async (req, res) => {
+    const { userId, courseId } = req.params;
+    const { startDate, endDate } = req.body;
+
+    const isAssigned = req.institution.assignedCourses.some(id => id.toString() === courseId);
+    if (!isAssigned) {
+        req.flash('error', 'Ce cours n\'est pas assigné à votre institution.');
+        return res.redirect(`/institution/dashboard/students/${userId}`);
+    }
+
+    const [student, course] = await Promise.all([
+        User.findById(userId),
+        Course.findById(courseId).select('title')
+    ]);
+
+    if (!student) {
+        req.flash('error', 'Étudiant introuvable.');
+        return res.redirect('/institution/dashboard/students');
+    }
+
+    const entry = (student.specialProgram || []).find(p => p.courseTitle === course.title);
+    if (!entry) {
+        req.flash('error', 'Cet étudiant n\'est pas inscrit à ce cours.');
+        return res.redirect(`/institution/dashboard/students/${userId}`);
+    }
+
+    if (startDate) entry.startDate = new Date(startDate);
+    if (endDate)   entry.endDate   = new Date(endDate);
+    student.markModified('specialProgram');
+    await student.save();
+
+    req.flash('success', 'Dates d\'accès mises à jour.');
+    res.redirect(`/institution/dashboard/students/${userId}`);
+});
+
 // Resend activation email with a fresh token and new temporary password
 module.exports.resendActivation = catchAsync(async (req, res) => {
     const student = await User.findById(req.params.userId);

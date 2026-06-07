@@ -102,11 +102,41 @@
                 </div>
 
                 <% if (isEnrolled && enrollment) { %>
+                  <%
+                    const startISO = enrollment.startDate ? new Date(enrollment.startDate).toISOString().split('T')[0] : '';
+                    const endISO   = enrollment.endDate   ? new Date(enrollment.endDate).toISOString().split('T')[0]   : '';
+                    const editId   = 'edit-' + course._id;
+                  %>
                   <div class="text-muted small mb-2">
-                    Du <%= new Date(enrollment.startDate).toLocaleDateString('fr-FR') %>
-                    au <%= new Date(enrollment.endDate).toLocaleDateString('fr-FR') %>
+                    Du <%= enrollment.startDate ? new Date(enrollment.startDate).toLocaleDateString('fr-FR') : '—' %>
+                    au <%= enrollment.endDate   ? new Date(enrollment.endDate).toLocaleDateString('fr-FR')   : '—' %>
                     <% if (lastActivity) { %>&nbsp;·&nbsp; Dernière activité : <%= new Date(lastActivity).toLocaleDateString('fr-FR') %><% } %>
+                    <button type="button"
+                            onclick="document.getElementById('<%= editId %>').classList.toggle('d-none')"
+                            class="btn btn-link btn-sm py-0 px-1" style="font-size:.75rem;vertical-align:baseline;">
+                      ✎ Modifier
+                    </button>
                   </div>
+
+                  <!-- Inline date edit form (hidden by default) -->
+                  <div id="<%= editId %>" class="d-none mb-2 p-2" style="background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;">
+                    <form action="/institution/dashboard/students/<%= student._id %>/courses/<%= course._id %>?_method=PUT" method="POST"
+                          class="d-flex gap-2 flex-wrap align-items-end">
+                      <div>
+                        <label class="form-label mb-0" style="font-size:.78rem;">Début</label>
+                        <input type="date" name="startDate" class="form-control form-control-sm" value="<%= startISO %>">
+                      </div>
+                      <div>
+                        <label class="form-label mb-0" style="font-size:.78rem;">Fin</label>
+                        <input type="date" name="endDate" class="form-control form-control-sm" value="<%= endISO %>">
+                      </div>
+                      <button type="submit" class="btn btn-sm btn-primary">Enregistrer</button>
+                      <button type="button"
+                              onclick="document.getElementById('<%= editId %>').classList.add('d-none')"
+                              class="btn btn-sm btn-outline-secondary">Annuler</button>
+                    </form>
+                  </div>
+
                   <% if (totalModules > 0) { %>
                     <div class="d-flex align-items-center gap-2 mb-2">
                       <div class="progress-bar-custom flex-grow-1">

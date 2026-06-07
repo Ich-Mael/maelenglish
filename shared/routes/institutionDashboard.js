@@ -29,6 +29,9 @@ router.post('/dashboard/students/:userId/enroll', Students.enroll);
 // Bulk enroll multiple students in a course
 router.post('/dashboard/enroll-bulk', Students.enrollBulk);
 
+// Update enrollment dates
+router.put('/dashboard/students/:userId/courses/:courseId', Students.updateEnrollment);
+
 // Unenroll student from a course
 router.delete('/dashboard/students/:userId/courses/:courseId', Students.unenroll);
 
