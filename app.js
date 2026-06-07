@@ -42,6 +42,7 @@ const accountRoutes = require("./shared/routes/account");
 const adminInstitutionRoutes = require("./shared/routes/adminInstitutions");
 const adminCourseRoutes = require("./shared/routes/adminCourses");
 const institutionDashboardRoutes = require("./shared/routes/institutionDashboard");
+const institutionStudentRoutes  = require("./shared/routes/institutionStudent");
 
 // Database connection
 const dbUrl = process.env.APP_DB || 'mongodb://localhost:27017/afrohk';
@@ -144,6 +145,7 @@ app.use('/', accountRoutes);
 app.use('/admin/institutions', adminInstitutionRoutes);
 app.use('/admin/courses', adminCourseRoutes);
 app.use('/institution', institutionDashboardRoutes);
+app.use('/institution', institutionStudentRoutes);
 
 // Mount Program Routes
 app.use('/programs/ekalan', eKalanRoutes);

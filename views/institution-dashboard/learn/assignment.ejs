@@ -1,0 +1,105 @@
+<% layout('layouts/main') %>
+<% const isFinal = assignmentType === 'final_project'; %>
+
+<% headContent = `<style>
+  :root { --brand: <%= institutionColor %>; }
+  .page-wrapper { margin-top: 80px; padding: 2rem 0 4rem; background: #f8fafc; }
+  .assign-header { background: linear-gradient(135deg, color-mix(in srgb, var(--brand) 85%, #000) 0%, var(--brand) 100%); color: white; padding: 2rem; border-radius: 18px; margin-bottom: 1.75rem; }
+  .assign-header h1 { margin: 0 0 .3rem; font-size: 1.6rem; font-weight: 800; }
+  .assign-header p  { margin: 0; opacity: .8; }
+  .card-section { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07); padding: 1.75rem; margin-bottom: 1.25rem; }
+  .card-section h2 { font-size: 1rem; font-weight: 700; color: #1e293b; margin: 0 0 1rem; padding-bottom: .65rem; border-bottom: 2px solid #f1f5f9; }
+  textarea.form-control { border-radius: 12px; border: 1.5px solid #e2e8f0; padding: .85rem 1rem; font-size: .95rem; }
+  textarea.form-control:focus { border-color: var(--brand); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 20%, #fff); outline: none; }
+  .btn-submit { background: var(--brand); color: #fff; border: none; padding: .85rem 2rem; border-radius: 12px; font-weight: 700; font-size: .95rem; cursor: pointer; transition: opacity .2s; }
+  .btn-submit:hover { opacity: .88; }
+  .status-badge { padding: .25rem .75rem; border-radius: 20px; font-size: .8rem; font-weight: 600; }
+  .badge-pending  { background: #fef9c3; color: #854d0e; }
+  .badge-graded   { background: #d1fae5; color: #065f46; }
+  .badge-returned { background: #dbeafe; color: #1e40af; }
+</style>` %>
+
+<div class="page-wrapper">
+  <div class="container" style="max-width:760px;">
+
+    <div class="assign-header">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+        <div>
+          <p style="opacity:.7;font-size:.82rem;margin:0 0 .2rem;">
+            <%= course.title %>
+            <% if (!isFinal && courseModule) { %> › <%= courseModule.title %><% } %>
+          </p>
+          <h1><%= title %></h1>
+          <p><%= isFinal ? 'Projet final du cours' : 'Devoir du module' %></p>
+        </div>
+        <a href="<%= backUrl %>" class="btn btn-light btn-sm">← Retour</a>
+      </div>
+    </div>
+
+    <%- include('../../partials/flash') %>
+
+    <% if (instructions) { %>
+    <div class="card-section">
+      <h2>📋 Consignes</h2>
+      <div style="color:#475569;line-height:1.7;"><%- instructions %></div>
+    </div>
+    <% } %>
+
+    <% if (existing) { %>
+      <!-- Existing submission -->
+      <div class="card-section">
+        <h2>📤 Votre soumission</h2>
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <span class="status-badge badge-<%= existing.status %>">
+            <% if (existing.status === 'graded') { %>✓ Noté : <%= existing.grade %>/<%= existing.maxScore %>
+            <% } else if (existing.status === 'returned') { %>↩ Retourné
+            <% } else { %>⏳ En attente de correction<% } %>
+          </span>
+        </div>
+
+        <div style="background:#f8fafc;border-radius:10px;padding:1rem;border:1px solid #e2e8f0;color:#334155;white-space:pre-wrap;word-break:break-word;">
+          <% if (submissionType === 'link') { %>
+            <a href="<%= existing.content %>" target="_blank" style="color:var(--brand)"><%= existing.content %></a>
+          <% } else { %>
+            <%= existing.content %>
+          <% } %>
+        </div>
+
+        <% if (existing.feedback) { %>
+          <div class="mt-3 p-3" style="background:#eff6ff;border-radius:10px;border:1px solid #bfdbfe;">
+            <strong style="color:#1e40af;">Feedback de l'instructeur :</strong>
+            <p class="mb-0 mt-1" style="color:#1e40af;"><%= existing.feedback %></p>
+          </div>
+        <% } %>
+
+        <% if (existing.status !== 'graded') { %>
+          <hr class="my-4">
+          <h2>🔄 Modifier la soumission</h2>
+        <% } %>
+      </div>
+    <% } %>
+
+    <% if (!existing || existing.status !== 'graded') { %>
+    <div class="card-section">
+      <h2><%= existing ? 'Modifier' : 'Soumettre' %> votre travail</h2>
+      <form action="<%= submitUrl %>" method="POST">
+        <% if (submissionType === 'link') { %>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Lien vers votre travail</label>
+            <input type="url" name="content" class="form-control" placeholder="https://..." value="<%= existing ? existing.content : '' %>" required style="border-radius:12px;border:1.5px solid #e2e8f0;padding:.85rem 1rem;">
+          </div>
+        <% } else { %>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Votre réponse</label>
+            <textarea name="content" class="form-control" rows="8" placeholder="Rédigez votre réponse ici..." required><%= existing ? existing.content : '' %></textarea>
+          </div>
+        <% } %>
+        <button type="submit" class="btn-submit">
+          <i class="bi bi-send me-2"></i><%= existing ? 'Mettre à jour' : 'Soumettre' %>
+        </button>
+      </form>
+    </div>
+    <% } %>
+
+  </div>
+</div>

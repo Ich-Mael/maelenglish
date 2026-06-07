@@ -1,4 +1,5 @@
 const Institution = require('../models/institution');
+const { Course } = require('../models/courses');
 
 // Passes if user is institution-admin (or global admin who can access everything)
 module.exports.isInstitutionAdmin = (req, res, next) => {
@@ -57,6 +58,86 @@ module.exports.loadInstitution = async (req, res, next) => {
         req.institution = institution;
         // Expose brand color to all institution dashboard views
         res.locals.institutionColor = institution.primaryColor || '#0e7490';
+        next();
+    } catch (err) {
+        next(err);
+    }
+};
+
+// ─── STUDENT PORTAL MIDDLEWARE ────────────────────────────────────────────────
+
+// Passes if the logged-in user belongs to an institution (regular student)
+module.exports.isInstitutionStudent = (req, res, next) => {
+    if (!req.isAuthenticated()) {
+        req.session.returnTo = req.originalUrl;
+        req.flash('error', 'Vous devez d\'abord vous connecter.');
+        return res.redirect('/login');
+    }
+    if (!req.user.institutionId) {
+        req.flash('error', 'Accès réservé aux étudiants d\'une institution.');
+        return res.redirect('/dashboard');
+    }
+    return next();
+};
+
+// Loads the student's institution into req.institution and sets institutionColor local
+module.exports.loadStudentInstitution = async (req, res, next) => {
+    try {
+        const institution = await Institution.findById(req.user.institutionId);
+        if (!institution) {
+            req.flash('error', 'Institution introuvable.');
+            return res.redirect('/dashboard');
+        }
+        if (!institution.isActive) {
+            req.flash('error', 'Votre institution a été désactivée. Contactez AfroHK.');
+            return res.redirect('/dashboard');
+        }
+        req.institution = institution;
+        res.locals.institutionColor = institution.primaryColor || '#0e7490';
+        next();
+    } catch (err) {
+        next(err);
+    }
+};
+
+// Verifies the student has active enrollment in the requested course
+// Requires req.institution to be set (run loadStudentInstitution first)
+// Sets req.course on success
+module.exports.checkInstitutionCourseAccess = async (req, res, next) => {
+    try {
+        const { courseId } = req.params;
+        const assignedCourses = req.institution.assignedCourses || [];
+
+        const isAssigned = assignedCourses.some(id => id.toString() === courseId);
+        if (!isAssigned) {
+            req.flash('error', 'Ce cours n\'est pas disponible dans votre institution.');
+            return res.redirect('/institution/learn/courses');
+        }
+
+        const course = await Course.findById(courseId).populate('modules', 'title order moduleQuiz moduleAssignment');
+        if (!course) {
+            req.flash('error', 'Cours introuvable.');
+            return res.redirect('/institution/learn/courses');
+        }
+
+        const enrollment = (req.user.specialProgram || []).find(p => p.courseTitle === course.title);
+        if (!enrollment) {
+            req.flash('error', 'Vous n\'êtes pas inscrit à ce cours.');
+            return res.redirect('/institution/learn/courses');
+        }
+
+        const now = new Date();
+        if (enrollment.startDate && new Date(enrollment.startDate) > now) {
+            req.flash('error', 'Ce cours n\'est pas encore disponible.');
+            return res.redirect('/institution/learn/courses');
+        }
+        if (enrollment.endDate && new Date(enrollment.endDate) < now) {
+            req.flash('error', 'Votre accès à ce cours a expiré. Contactez votre institution.');
+            return res.redirect('/institution/learn/courses');
+        }
+
+        req.course = course;
+        req.enrollment = enrollment;
         next();
     } catch (err) {
         next(err);

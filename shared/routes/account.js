@@ -255,6 +255,11 @@ router.get(
       return res.redirect("/institution/dashboard");
     }
 
+    // Institution students go to their dedicated learning portal
+    if (user.institutionId) {
+      return res.redirect("/institution/learn/courses");
+    }
+
     // For all other roles (user, learner, etc.), redirect to learner dashboard
     return res.redirect(`/user/${user._id}`);
   })
@@ -507,9 +512,14 @@ router.get(
   "/user/:id",
   isLoggedIn,
   catchAsync(async (req, res) => {
+    const LessonProgress = require('../models/lessonProgress');
+    const Lesson = require('../models/lesson');
+    const QuizAttempt = require('../models/quizAttempt');
+    const AssignmentSubmission = require('../models/assignmentSubmission');
+
     const user = await User.findById(req.params.id)
-      .populate('coursesTaken') // Populate courses for General English Boost
-      .populate('coursesGiven'); // Populate courses given (instructor)
+      .populate('coursesTaken')
+      .populate('coursesGiven');
 
     if (!user) {
       req.flash("error", "Utilisateur non trouvé");
@@ -526,9 +536,51 @@ router.get(
       }
     }
 
+    // Build lesson progress map for enrolled courses
+    const courseProgressMap = {};
+    if (user.coursesTaken && user.coursesTaken.length > 0) {
+      const courseIds = user.coursesTaken.map(c => c._id || c);
+
+      const [completedByCoure, totalByCoure, passedQuizzes] = await Promise.all([
+        // Completed lessons grouped by course
+        LessonProgress.aggregate([
+          { $match: { userId: user._id, courseId: { $in: courseIds }, status: 'completed' } },
+          { $group: { _id: '$courseId', count: { $sum: 1 } } }
+        ]),
+        // Total lessons grouped by course
+        Lesson.aggregate([
+          { $match: { courseId: { $in: courseIds }, isActive: true } },
+          { $group: { _id: '$courseId', count: { $sum: 1 } } }
+        ]),
+        // Passed module quizzes
+        QuizAttempt.aggregate([
+          { $match: { userId: user._id, courseId: { $in: courseIds }, passed: true, quizType: 'module_quiz' } },
+          { $group: { _id: '$courseId', count: { $sum: 1 } } }
+        ])
+      ]);
+
+      // Index by courseId string
+      const completedMap = Object.fromEntries(completedByCoure.map(r => [r._id.toString(), r.count]));
+      const totalMap     = Object.fromEntries(totalByCoure.map(r => [r._id.toString(), r.count]));
+      const quizMap      = Object.fromEntries(passedQuizzes.map(r => [r._id.toString(), r.count]));
+
+      for (const course of user.coursesTaken) {
+        const cid = (course._id || course).toString();
+        const completed = completedMap[cid] || 0;
+        const total     = totalMap[cid]     || 0;
+        courseProgressMap[cid] = {
+          completedLessons: completed,
+          totalLessons:     total,
+          passedQuizzes:    quizMap[cid] || 0,
+          pct: total > 0 ? Math.round((completed / total) * 100) : 0
+        };
+      }
+    }
+
     res.render("user/dashboard", {
       user,
-      studentClassId, // Passer l'ID de la classe au template
+      studentClassId,
+      courseProgressMap
     });
   })
 );
