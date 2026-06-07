@@ -284,7 +284,7 @@ document.getElementById('lessonList').addEventListener('click', e => {
   if (!btn) return;
   const { editId, type, title, desc, videourl, dur, fileurl, filename } = btn.dataset;
   const form = document.getElementById('editForm');
-  form.action = `/admin/courses/<%= course._id %>/modules/<%= courseModule._id %>/lessons/${editId}`;
+  form.action = '/admin/courses/<%- course._id %>/modules/<%- courseModule._id %>/lessons/' + editId;
   document.getElementById('eTitle').value = title;
   document.getElementById('eDesc').value  = desc;
   ['eVideo','ePdf','eText'].forEach(id => document.getElementById(id).style.display = 'none');
@@ -333,11 +333,11 @@ function saveLessonOrder() {
   const ids = Array.from(list.querySelectorAll('.lesson-item')).map(el => el.dataset.id).join(',');
   const btn = document.getElementById('save-order-btn');
   btn.textContent = 'Enregistrement…';
-  fetch('/admin/courses/<%= course._id %>/modules/<%= courseModule._id %>/lessons/reorder', {
+  fetch('/admin/courses/<%- course._id %>/modules/<%- courseModule._id %>/lessons/reorder', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body:    'orderedIds=' + encodeURIComponent(ids)
-  }).then(r => r.json()).then(() => {
+  }).then(r => r.json()).then(function() {
     btn.textContent = '✓ Enregistré';
     lessonOrderChanged = false;
     setTimeout(() => { btn.style.display = 'none'; btn.textContent = '⠿ Enregistrer l\'ordre'; }, 1500);
@@ -347,23 +347,27 @@ function saveLessonOrder() {
 // ── Quiz question builder ──
 let qIdx = <%= courseModule.moduleQuiz && courseModule.moduleQuiz.questions ? courseModule.moduleQuiz.questions.length : 0 %>;
 function addQuestion() {
-  const idx = qIdx++;
-  document.getElementById('quizQuestions').insertAdjacentHTML('beforeend', `
-    <div class="question-block">
-      <div class="d-flex justify-content-between mb-2">
-        <strong class="small text-muted">Question ${idx + 1}</strong>
-        <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1" onclick="this.closest('.question-block').remove()">×</button>
-      </div>
-      <input type="text" name="questions[${idx}][text]" class="form-control form-control-sm mb-2" placeholder="Texte de la question" required>
-      ${[0,1,2,3].map(oi => `
-        <div class="row g-1 mb-1">
-          <div class="col-8"><input type="text" name="questions[${idx}][options][${oi}][text]" class="form-control form-control-sm" placeholder="Option ${oi+1}"></div>
-          <div class="col-4"><input type="text" name="questions[${idx}][options][${oi}][value]" class="form-control form-control-sm" placeholder="${String.fromCharCode(97+oi)}"></div>
-        </div>`).join('')}
-      <div class="row g-2 mt-1">
-        <div class="col-md-4"><input type="text" name="questions[${idx}][correctAnswer]" class="form-control form-control-sm" placeholder="Bonne réponse (ex: b)"></div>
-        <div class="col-md-8"><input type="text" name="questions[${idx}][explanation]" class="form-control form-control-sm" placeholder="Explication (optionnel)"></div>
-      </div>
-    </div>`);
+  var idx = qIdx++;
+  var opts = '';
+  var letters = ['a','b','c','d'];
+  for (var oi = 0; oi < 4; oi++) {
+    opts += '<div class="row g-1 mb-1">' +
+      '<div class="col-8"><input type="text" name="questions[' + idx + '][options][' + oi + '][text]" class="form-control form-control-sm" placeholder="Option ' + (oi+1) + '"></div>' +
+      '<div class="col-4"><input type="text" name="questions[' + idx + '][options][' + oi + '][value]" class="form-control form-control-sm" placeholder="' + letters[oi] + '"></div>' +
+      '</div>';
+  }
+  var html = '<div class="question-block">' +
+    '<div class="d-flex justify-content-between mb-2">' +
+      '<strong class="small text-muted">Question ' + (idx + 1) + '</strong>' +
+      '<button type="button" class="btn btn-sm btn-outline-danger py-0 px-1" onclick="this.closest(\'.question-block\').remove()">×</button>' +
+    '</div>' +
+    '<input type="text" name="questions[' + idx + '][text]" class="form-control form-control-sm mb-2" placeholder="Texte de la question" required>' +
+    opts +
+    '<div class="row g-2 mt-1">' +
+      '<div class="col-md-4"><input type="text" name="questions[' + idx + '][correctAnswer]" class="form-control form-control-sm" placeholder="Bonne réponse (ex: b)"></div>' +
+      '<div class="col-md-8"><input type="text" name="questions[' + idx + '][explanation]" class="form-control form-control-sm" placeholder="Explication (optionnel)"></div>' +
+    '</div>' +
+  '</div>';
+  document.getElementById('quizQuestions').insertAdjacentHTML('beforeend', html);
 }
 </script>
