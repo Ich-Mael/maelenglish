@@ -99,11 +99,11 @@
                 <div class="video-loader" id="vloader">
                   <div class="spin"></div>
                 </div>
-                <iframe src="<%- embed %>"
+                <iframe id="vframe"
+                        src="<%- embed %>"
                         allowfullscreen
                         allow="autoplay; fullscreen; picture-in-picture"
-                        title="<%= lesson.title %>"
-                        onload="const l=document.getElementById('vloader');l.style.opacity='0';setTimeout(()=>l.remove(),400)">
+                        title="<%= lesson.title %>">
                 </iframe>
               </div>
               <div class="video-meta">
@@ -191,6 +191,20 @@
 </div>
 
 <script>
+(function () {
+  var iframe = document.getElementById('vframe');
+  var loader = document.getElementById('vloader');
+  if (iframe && loader) {
+    function dismissLoader() {
+      loader.style.opacity = '0';
+      setTimeout(function () { if (loader.parentNode) loader.parentNode.removeChild(loader); }, 400);
+    }
+    iframe.addEventListener('load', dismissLoader);
+    // Fallback: remove spinner after 8 s so a 403/network error doesn't leave it stuck
+    setTimeout(dismissLoader, 8000);
+  }
+})();
+
 function selectOpt(el, qi, value, correct, explanation) {
   el.closest('#pq_' + qi).querySelectorAll('.practice-opt').forEach(o => {
     o.classList.remove('selected','correct','wrong');
