@@ -136,7 +136,7 @@ module.exports.moduleOverview = catchAsync(async (req, res) => {
         unlocked: idx === 0 || completedIds.has(lessons[idx - 1]._id.toString())
     }));
 
-    const allLessonsDone = lessons.length > 0 && lessons.every(l => completedIds.has(l._id.toString()));
+    const allLessonsDone = lessons.length === 0 || lessons.every(l => completedIds.has(l._id.toString()));
 
     const [quizAttempt, assignmentSubmission] = await Promise.all([
         InstitutionQuizAttempt.findOne({ userId: req.user._id, moduleId }).sort({ createdAt: -1 }).lean(),

@@ -108,7 +108,7 @@
       <% } else if (assignmentSubmission) { %>
         <span class="status-badge <%= assignmentSubmission.status === 'graded' ? 'badge-passed' : 'badge-submitted' %>">
           <%= assignmentSubmission.status === 'graded'
-              ? `Note : ${assignmentSubmission.grade}/${assignmentSubmission.maxScore}`
+              ? `Note : ${assignmentSubmission.grade}/${courseModule.assignment.maxScore || 100}`
               : '⏳ En attente de correction' %>
         </span>
         <% if (assignmentSubmission.feedback) { %>
