@@ -115,7 +115,7 @@
           <p class="mt-2 small text-muted mb-0"><strong>Feedback :</strong> <%= assignmentSubmission.feedback %></p>
         <% } %>
       <% } else { %>
-        <p class="text-muted small mb-2"><%= courseModule.assignment.instructions %></p>
+        <div class="text-muted small mb-2" style="line-height:1.6;"><%- courseModule.assignment.instructions %></div>
         <a href="/institution/learn/courses/<%= course._id %>/modules/<%= courseModule._id %>/assignment" class="btn-action btn-primary-brand">
           Remettre le devoir
         </a>

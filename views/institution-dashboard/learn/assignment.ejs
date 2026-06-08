@@ -57,11 +57,11 @@
           </span>
         </div>
 
-        <div style="background:#f8fafc;border-radius:10px;padding:1rem;border:1px solid #e2e8f0;color:#334155;white-space:pre-wrap;word-break:break-word;">
+        <div style="background:#f8fafc;border-radius:10px;padding:1rem;border:1px solid #e2e8f0;color:#334155;word-break:break-word;line-height:1.7;">
           <% if (submissionType === 'link') { %>
             <a href="<%= existing.content %>" target="_blank" style="color:var(--brand)"><%= existing.content %></a>
           <% } else { %>
-            <%= existing.content %>
+            <%- existing.content %>
           <% } %>
         </div>
 
@@ -82,7 +82,7 @@
     <% if (!existing || existing.status !== 'graded') { %>
     <div class="card-section">
       <h2><%= existing ? 'Modifier' : 'Soumettre' %> votre travail</h2>
-      <form action="<%= submitUrl %>" method="POST">
+      <form id="assignmentForm" action="<%= submitUrl %>" method="POST">
         <% if (submissionType === 'link') { %>
           <div class="mb-3">
             <label class="form-label fw-semibold">Lien vers votre travail</label>
@@ -91,10 +91,10 @@
         <% } else { %>
           <div class="mb-3">
             <label class="form-label fw-semibold">Votre réponse</label>
-            <textarea name="content" class="form-control" rows="8" placeholder="Rédigez votre réponse ici..." required><%= existing ? existing.content : '' %></textarea>
+            <textarea name="content" id="assignmentContent" class="institution-rte"><%- existing ? existing.content : '' %></textarea>
           </div>
         <% } %>
-        <button type="submit" class="btn-submit">
+        <button type="submit" class="btn-submit mt-2">
           <i class="bi bi-send me-2"></i><%= existing ? 'Mettre à jour' : 'Soumettre' %>
         </button>
       </form>
@@ -103,3 +103,12 @@
 
   </div>
 </div>
+
+<script>
+var form = document.getElementById('assignmentForm');
+if (form) {
+  form.addEventListener('submit', function () {
+    if (typeof hugerte !== 'undefined') hugerte.triggerSave();
+  });
+}
+</script>

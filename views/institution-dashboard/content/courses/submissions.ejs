@@ -92,7 +92,7 @@
                   <% if (sub.submissionType === 'link') { %>
                     <a href="<%= sub.content %>" target="_blank" rel="noopener" style="color:#5d06ba;word-break:break-all;"><%= sub.content %></a>
                   <% } else { %>
-                    <%= sub.content %>
+                    <%- sub.content %>
                   <% } %>
                 </div>
 
