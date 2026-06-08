@@ -2,22 +2,35 @@ const { InstitutionCourse } = require('../../models');
 const catchAsync = require('../../../../shared/utilities/catchAsync');
 
 module.exports.index = catchAsync(async (req, res) => {
+    if (!req.institution) {
+        req.flash('error', 'Veuillez sélectionner une institution depuis la liste des institutions.');
+        return res.redirect('/admin/institutions');
+    }
     const courses = await InstitutionCourse.find({ institutionId: req.institution._id })
         .select('title isActive modules createdAt')
         .sort({ createdAt: -1 });
-    res.render('institution-dashboard/content/courses/index', { courses });
+    res.render('institution-dashboard/content/courses/index', { courses, institution: req.institution });
 });
 
 module.exports.new = catchAsync(async (req, res) => {
-    res.render('institution-dashboard/content/courses/new');
+    if (!req.institution) {
+        req.flash('error', 'Veuillez sélectionner une institution depuis la liste des institutions.');
+        return res.redirect('/admin/institutions');
+    }
+    res.render('institution-dashboard/content/courses/new', { institution: req.institution });
 });
 
 module.exports.create = catchAsync(async (req, res) => {
-    const { title, description, imageUrl } = req.body;
+    if (!req.institution) {
+        req.flash('error', 'Aucune institution sélectionnée.');
+        return res.redirect('/admin/institutions');
+    }
+    const { title, description, prerequisites, imageUrl } = req.body;
     const course = await InstitutionCourse.create({
         institutionId: req.institution._id,
         title: title.trim(),
         description: description || '',
+        prerequisites: prerequisites || '',
         imageUrl: imageUrl || '',
         createdBy: req.user._id
     });
@@ -54,7 +67,7 @@ module.exports.edit = catchAsync(async (req, res) => {
 });
 
 module.exports.update = catchAsync(async (req, res) => {
-    const { title, description, imageUrl, isActive } = req.body;
+    const { title, description, prerequisites, imageUrl, isActive } = req.body;
     const course = await InstitutionCourse.findOne({
         _id: req.params.id,
         institutionId: req.institution._id
@@ -67,6 +80,7 @@ module.exports.update = catchAsync(async (req, res) => {
 
     if (title) course.title = title.trim();
     if (description !== undefined) course.description = description;
+    if (prerequisites !== undefined) course.prerequisites = prerequisites;
     if (imageUrl !== undefined) course.imageUrl = imageUrl;
     course.isActive = isActive === 'on' || isActive === 'true';
 

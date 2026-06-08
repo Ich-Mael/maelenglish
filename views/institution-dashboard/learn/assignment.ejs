@@ -1,8 +1,8 @@
-<% layout('layouts/main') %>
+<% layout('layouts/institutionBoilerplate') %>
 <% const isFinal = assignmentType === 'final_project'; %>
 
 <% headContent = `<style>
-  :root { --brand: <%= institutionColor %>; }
+  :root { --brand: ${institutionColor}; }
   .page-wrapper { margin-top: 80px; padding: 2rem 0 4rem; background: #f8fafc; }
   .assign-header { background: linear-gradient(135deg, color-mix(in srgb, var(--brand) 85%, #000) 0%, var(--brand) 100%); color: white; padding: 2rem; border-radius: 18px; margin-bottom: 1.75rem; }
   .assign-header h1 { margin: 0 0 .3rem; font-size: 1.6rem; font-weight: 800; }

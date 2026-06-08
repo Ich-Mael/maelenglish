@@ -41,7 +41,6 @@ const institutionProgram = require("./programs/institution");
 // Import shared routes
 const accountRoutes = require("./shared/routes/account");
 const adminInstitutionRoutes = require("./shared/routes/adminInstitutions");
-const adminCourseRoutes = require("./shared/routes/adminCourses");
 const institutionDashboardRoutes = require("./shared/routes/institutionDashboard");
 const institutionStudentRoutes  = require("./shared/routes/institutionStudent");
 
@@ -144,7 +143,6 @@ app.get('/', (req, res) => {
 // Mount Shared Routes
 app.use('/', accountRoutes);
 app.use('/admin/institutions', adminInstitutionRoutes);
-app.use('/admin/courses', adminCourseRoutes);
 app.use('/institution', institutionDashboardRoutes);
 app.use('/institution', institutionStudentRoutes);
 
@@ -158,7 +156,7 @@ app.set('authLimiter', authLimiter);
 
 // 404 handler
 app.all('*', (req, res) => {
-    res.status(404).render('noAccess', { message: 'Page introuvable' });
+    res.status(404).render('noAccess', { statusCode: 404, message: 'Page introuvable' });
 });
 
 // Global error handler
@@ -166,7 +164,7 @@ app.use((err, req, res, next) => {
     console.error(err.stack);
     const statusCode = err.statusCode || 500;
     const message = err.message || 'Une erreur est survenue';
-    res.status(statusCode).render('noAccess', { message });
+    res.status(statusCode).render('noAccess', { statusCode, message });
 });
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

@@ -255,11 +255,6 @@ router.get(
       return res.redirect("/institution/dashboard");
     }
 
-    // Institution students go to their dedicated learning portal
-    if (user.institutionId) {
-      return res.redirect("/institution/learn/courses");
-    }
-
     // For all other roles (user, learner, etc.), redirect to learner dashboard
     return res.redirect(`/user/${user._id}`);
   })
@@ -274,7 +269,7 @@ router.get(
   isLoggedIn,
   checkRoles(["admin", "super-admin"]),
   catchAsync(async (req, res) => {
-    const { Course } = require('../models/courses');
+    const { InstitutionEnrollment, InstitutionCourse } = require('../../programs/institution/models');
 
     const [
       totalUsers, totalAdmins, totalLearners, verifiedUsers,
@@ -284,31 +279,43 @@ router.get(
       User.countDocuments({ role: { $in: ["admin", "super-admin"] } }),
       User.countDocuments({ role: "user" }),
       User.countDocuments({ isVerified: true }),
-      Institution.find({ isActive: true })
-        .select('name assignedCourses')
-        .sort({ name: 1 }),
+      Institution.find({ isActive: true }).select('name').sort({ name: 1 }),
       User.countDocuments({ institutionId: { $ne: null } })
     ]);
 
-    // Per-institution: count enrolled students (users with coursesTaken intersecting assignedCourses)
-    const institutionStats = await Promise.all(institutions.map(async inst => {
-      const studentCount = inst.assignedCourses.length > 0
-        ? await User.countDocuments({ coursesTaken: { $in: inst.assignedCourses } })
-        : 0;
-      return { institution: inst, studentCount };
+    const institutionIds = institutions.map(i => i._id);
+
+    // Per-institution: count enrolled students and courses
+    const [enrollmentCounts, courseCounts] = await Promise.all([
+      InstitutionEnrollment.aggregate([
+        { $match: { institutionId: { $in: institutionIds } } },
+        { $group: { _id: '$institutionId', count: { $sum: 1 } } }
+      ]),
+      InstitutionCourse.aggregate([
+        { $match: { institutionId: { $in: institutionIds } } },
+        { $group: { _id: '$institutionId', count: { $sum: 1 } } }
+      ])
+    ]);
+
+    const enrollCountMap = Object.fromEntries(enrollmentCounts.map(r => [r._id.toString(), r.count]));
+    const courseCountMap  = Object.fromEntries(courseCounts.map(r => [r._id.toString(), r.count]));
+
+    const institutionStats = institutions.map(inst => ({
+      institution:  inst,
+      studentCount: enrollCountMap[inst._id.toString()] || 0,
+      courseCount:  courseCountMap[inst._id.toString()]  || 0
     }));
 
-    // Enrollments in the last 6 months (monthly buckets via specialProgram.startDate)
+    // Enrollments in the last 6 months (monthly buckets via InstitutionEnrollment.createdAt)
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
-    const recentEnrollments = await User.aggregate([
-      { $unwind: '$specialProgram' },
-      { $match: { 'specialProgram.startDate': { $gte: sixMonthsAgo } } },
+    const recentEnrollments = await InstitutionEnrollment.aggregate([
+      { $match: { createdAt: { $gte: sixMonthsAgo } } },
       { $group: {
           _id: {
-            year: { $year: '$specialProgram.startDate' },
-            month: { $month: '$specialProgram.startDate' }
+            year:  { $year:  '$createdAt' },
+            month: { $month: '$createdAt' }
           },
           count: { $sum: 1 }
       }},
@@ -516,7 +523,6 @@ router.get(
     const Lesson = require('../models/lesson');
     const QuizAttempt = require('../models/quizAttempt');
     const AssignmentSubmission = require('../models/assignmentSubmission');
-    const Institution = require('../models/institution');
 
     const user = await User.findById(req.params.id)
       .populate('coursesTaken')
@@ -578,21 +584,18 @@ router.get(
       }
     }
 
-    // Find institutions the student is enrolled in (for institution portal cards)
-    let institutionCards = [];
-    if (user.coursesTaken && user.coursesTaken.length > 0) {
-      const courseIds = user.coursesTaken.map(c => c._id || c);
-      institutionCards = await Institution.find({
-        assignedCourses: { $in: courseIds },
-        isActive: true
-      }).select('name logoUrl primaryColor slug _id');
-    }
+    // Institution course enrollments
+    const { InstitutionEnrollment } = require('../../programs/institution/models');
+    const institutionEnrollments = await InstitutionEnrollment.find({ userId: user._id })
+      .populate('courseId', 'title isActive imageUrl')
+      .populate('institutionId', 'name logoUrl primaryColor _id')
+      .sort({ createdAt: -1 });
 
     res.render("user/dashboard", {
       user,
       studentClassId,
       courseProgressMap,
-      institutionCards
+      institutionEnrollments
     });
   })
 );

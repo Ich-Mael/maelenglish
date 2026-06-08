@@ -49,8 +49,8 @@
     <div class="row g-3 mb-3">
       <div class="col-4">
         <div class="stat-box">
-          <div class="num"><%= institution.assignedCourses.length %></div>
-          <div class="lbl">Cours assignés</div>
+          <div class="num"><%= courseCount %></div>
+          <div class="lbl">Cours créés</div>
         </div>
       </div>
       <div class="col-4">
@@ -70,42 +70,15 @@
     <div class="row g-3">
       <div class="col-md-7">
 
-        <!-- Assigned Courses -->
+        <!-- Institution Courses -->
         <div class="card-section">
-          <h2>
-            Cours assignés
-            <a href="/admin/institutions" style="font-size:.8rem;font-weight:500;color:#5d06ba;text-decoration:none"></a>
-          </h2>
-          <% if (institution.assignedCourses.length === 0) { %>
-            <p class="text-muted small">Aucun cours assigné.</p>
-          <% } else { %>
-            <% institution.assignedCourses.forEach(course => { %>
-              <div class="course-row">
-                <span class="flex-grow-1 fw-semibold"><%= course.title %></span>
-                <span class="badge <%= course.isActive ? 'bg-success' : 'bg-secondary' %> bg-opacity-10 text-<%= course.isActive ? 'success' : 'secondary' %>" style="font-size:.75rem;">
-                  <%= course.isActive ? 'Actif' : 'Inactif' %>
-                </span>
-                <form action="/admin/institutions/<%= institution._id %>/courses/<%= course._id %>?_method=DELETE" method="POST" style="display:inline">
-                  <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" onclick="return confirm('Retirer ce cours ?')">×</button>
-                </form>
-              </div>
-            <% }) %>
-          <% } %>
-
-          <form action="/admin/institutions/<%= institution._id %>/courses" method="POST" class="d-flex gap-2 mt-3">
-            <select name="courseId" class="form-select form-select-sm" required>
-              <option value="">-- Assigner un cours --</option>
-              <% availableCourses.forEach(c => { %>
-                <option value="<%= c._id %>"><%= c.title %><%= !c.isActive ? ' (inactif)' : '' %></option>
-              <% }) %>
-            </select>
-            <button type="submit" class="btn btn-sm btn-primary px-3" <%= availableCourses.length === 0 ? 'disabled' : '' %>>
-              Assigner
-            </button>
-          </form>
-          <% if (availableCourses.length === 0) { %>
-            <p class="text-muted small mt-2 mb-0">Tous les cours sont déjà assignés à cette institution.</p>
-          <% } %>
+          <h2>Cours de l'institution</h2>
+          <p class="mb-3">
+            <strong><%= courseCount %></strong> cours créé<%= courseCount !== 1 ? 's' : '' %> par l'administrateur de l'institution.
+          </p>
+          <a href="/institution/dashboard/content?institutionId=<%= institution._id %>" class="btn btn-sm btn-outline-primary">
+            Gérer les cours
+          </a>
         </div>
 
         <!-- Institution info -->
@@ -155,12 +128,6 @@
           <a href="/admin/users?institutionId=<%= institution._id %>" class="btn btn-sm btn-outline-primary">Voir les étudiants</a>
         </div>
 
-        <!-- Institution Courses -->
-        <div class="card-section">
-          <h2>📚 Cours de l'institution</h2>
-          <p class="small text-muted mb-2">Créez et gérez les cours propres à cette institution.</p>
-          <a href="/institution/dashboard/content?institutionId=<%= institution._id %>" class="btn btn-sm btn-outline-primary">Gérer les cours</a>
-        </div>
       </div>
     </div>
 

@@ -85,11 +85,6 @@ const institutionSchema = new Schema({
         ref: 'User'
     }],
 
-    // Courses AfrohK has enabled for this institution's students
-    assignedCourses: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Course'
-    }]
 }, {
     timestamps: true
 });

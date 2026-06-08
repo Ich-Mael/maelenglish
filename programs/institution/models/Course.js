@@ -13,6 +13,7 @@ const institutionCourseSchema = new mongoose.Schema(
             required: true
         },
         description: String,
+        prerequisites: String,
         imageUrl: String,
         isActive: {
             type: Boolean,

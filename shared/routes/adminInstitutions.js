@@ -4,7 +4,7 @@ const crypto = require('crypto');
 
 const Institution = require('../models/institution');
 const User = require('../models/user');
-const { Course } = require('../models/courses');
+const { InstitutionCourse } = require('../../programs/institution/models');
 const catchAsync = require('../utilities/catchAsync');
 const { isLoggedIn, checkRoles } = require('../middlewares/auth');
 const Emailer = require('../utilities/sendEmail');
@@ -29,8 +29,7 @@ router.get('/', ...adminOnly, catchAsync(async (req, res) => {
 // ─── NEW FORM ────────────────────────────────────────────────────────────────
 
 router.get('/new', ...adminOnly, catchAsync(async (req, res) => {
-    const courses = await Course.find({ isActive: true }).select('title').sort({ title: 1 });
-    res.render('admin/institutions/new', { courses });
+    res.render('admin/institutions/new');
 }));
 
 // ─── CREATE ──────────────────────────────────────────────────────────────────
@@ -122,22 +121,19 @@ router.post('/', ...adminOnly, catchAsync(async (req, res) => {
 
 router.get('/:id', ...adminOnly, catchAsync(async (req, res) => {
     const institution = await Institution.findById(req.params.id)
-        .populate('admins', 'name surname email username isVerified')
-        .populate('assignedCourses', 'title isActive');
+        .populate('admins', 'name surname email username isVerified');
 
     if (!institution) {
         req.flash('error', 'Institution introuvable.');
         return res.redirect('/admin/institutions');
     }
 
-    const studentCount = await User.countDocuments({ institutionId: institution._id, role: 'user' });
+    const [studentCount, courseCount] = await Promise.all([
+        User.countDocuments({ institutionId: institution._id, role: 'user' }),
+        InstitutionCourse.countDocuments({ institutionId: institution._id })
+    ]);
 
-    const assignedIds = institution.assignedCourses.map(c => c._id);
-    const availableCourses = await Course.find({
-        _id: { $nin: assignedIds }
-    }).select('title isActive').sort({ title: 1 });
-
-    res.render('admin/institutions/show', { institution, studentCount, availableCourses });
+    res.render('admin/institutions/show', { institution, studentCount, courseCount });
 }));
 
 // ─── EDIT ─────────────────────────────────────────────────────────────────────
@@ -171,49 +167,6 @@ router.put('/:id', ...adminOnly, catchAsync(async (req, res) => {
 
     await institution.save();
     req.flash('success', 'Institution mise à jour avec succès.');
-    res.redirect(`/admin/institutions/${institution._id}`);
-}));
-
-// ─── ASSIGN COURSE ────────────────────────────────────────────────────────────
-
-router.post('/:id/courses', ...adminOnly, catchAsync(async (req, res) => {
-    const { courseId } = req.body;
-    const institution = await Institution.findById(req.params.id);
-    if (!institution) {
-        req.flash('error', 'Institution introuvable.');
-        return res.redirect('/admin/institutions');
-    }
-
-    if (!courseId) {
-        req.flash('error', 'Veuillez sélectionner un cours.');
-        return res.redirect(`/admin/institutions/${req.params.id}`);
-    }
-
-    if (!institution.assignedCourses.includes(courseId)) {
-        institution.assignedCourses.push(courseId);
-        await institution.save();
-        req.flash('success', 'Cours assigné avec succès.');
-    } else {
-        req.flash('error', 'Ce cours est déjà assigné à cette institution.');
-    }
-
-    res.redirect(`/admin/institutions/${institution._id}`);
-}));
-
-// ─── UNASSIGN COURSE ──────────────────────────────────────────────────────────
-
-router.delete('/:id/courses/:courseId', ...adminOnly, catchAsync(async (req, res) => {
-    const institution = await Institution.findById(req.params.id);
-    if (!institution) {
-        req.flash('error', 'Institution introuvable.');
-        return res.redirect('/admin/institutions');
-    }
-
-    institution.assignedCourses = institution.assignedCourses.filter(
-        c => c.toString() !== req.params.courseId
-    );
-    await institution.save();
-    req.flash('success', 'Cours retiré de l\'institution.');
     res.redirect(`/admin/institutions/${institution._id}`);
 }));
 

@@ -1,4 +1,4 @@
-<% layout('layouts/main') %>
+<% layout('layouts/institutionBoilerplate') %>
 
 <% headContent = `<style>
   .page-wrapper { margin-top: 80px; padding: 2rem 0 5rem; background: #f8fafc; }
@@ -15,10 +15,11 @@
   .btn-save:hover { background: #4a0594; }
   .btn-cancel { background: #f3f4f6; color: #374151; border: 1px solid #e2e8f0; padding: .7rem 1.75rem; border-radius: 10px; font-weight: 700; font-size: .9rem; cursor: pointer; text-decoration: none; display: inline-block; }
   .btn-cancel:hover { background: #e5e7eb; }
+  .field-hint { font-size: .78rem; color: #9ca3af; margin-top: .25rem; }
 </style>` %>
 
 <div class="page-wrapper">
-  <div class="container" style="max-width:600px;">
+  <div class="container" style="max-width:860px;">
 
     <div class="page-header">
       <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
@@ -33,26 +34,34 @@
     <%- include('../../../partials/flash') %>
 
     <div class="section-card">
-      <form action="/institution/dashboard/content/courses/<%= course._id %>?_method=PUT" method="POST">
-        <div class="mb-3">
+      <form id="editForm" action="/institution/dashboard/content/courses/<%= course._id %>?_method=PUT" method="POST">
+
+        <div class="mb-4">
           <label class="form-label">Titre du cours *</label>
           <input type="text" name="title" class="form-control" value="<%= course.title %>" required>
         </div>
 
-        <div class="mb-3">
+        <div class="mb-4">
           <label class="form-label">Description</label>
-          <textarea name="description" class="form-control" rows="4"><%= course.description || '' %></textarea>
+          <textarea id="courseDesc" name="description" class="form-control" rows="4"><%= course.description || '' %></textarea>
+          <p class="field-hint">Présentez le contenu, les objectifs et la valeur du cours.</p>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">Image (URL)</label>
-          <input type="url" name="imageUrl" class="form-control" value="<%= course.imageUrl || '' %>">
+        <div class="mb-4">
+          <label class="form-label">Prérequis</label>
+          <textarea id="coursePrereqs" name="prerequisites" class="form-control" rows="3"><%= course.prerequisites || '' %></textarea>
+          <p class="field-hint">Listez les connaissances ou compétences nécessaires avant de suivre ce cours.</p>
         </div>
 
-        <div class="mb-3 form-check">
+        <div class="mb-4">
+          <label class="form-label">Image de couverture (URL)</label>
+          <input type="url" name="imageUrl" class="form-control" value="<%= course.imageUrl || '' %>" placeholder="https://example.com/image.jpg">
+        </div>
+
+        <div class="mb-4 form-check">
           <input type="checkbox" class="form-check-input" id="isActive" name="isActive" <%= course.isActive ? 'checked' : '' %>>
-          <label class="form-check-label" for="isActive">
-            Cours actif (visible pour les étudiants)
+          <label class="form-check-label" for="isActive" style="font-size:.9rem;">
+            Cours actif <span class="text-muted" style="font-weight:400;">(visible pour les étudiants inscrits)</span>
           </label>
         </div>
 
@@ -65,3 +74,15 @@
 
   </div>
 </div>
+
+<script>
+hugerte.init({ ...window.RTECONFIG, selector: '#courseDesc', height: 240 });
+hugerte.init({ ...window.RTECONFIG, selector: '#coursePrereqs', height: 180 });
+
+document.getElementById('editForm').addEventListener('submit', function() {
+  ['courseDesc', 'coursePrereqs'].forEach(function(id) {
+    var ed = window.hugerte && window.hugerte.get(id);
+    if (ed) document.getElementById(id).value = ed.getContent();
+  });
+});
+</script>

@@ -1,9 +1,9 @@
-<% layout('layouts/main') %>
+<% layout('layouts/institutionBoilerplate') %>
 <% const quiz     = quizType === 'final_exam' ? course.finalExam : courseModule.moduleQuiz; %>
 <% const isFinal  = quizType === 'final_exam'; %>
 
 <% headContent = `<style>
-  :root { --brand: <%= institutionColor %>; }
+  :root { --brand: ${institutionColor}; }
   .page-wrapper { margin-top: 80px; padding: 2rem 0 4rem; background: #f8fafc; }
   .quiz-header { background: linear-gradient(135deg, color-mix(in srgb, var(--brand) 85%, #000) 0%, var(--brand) 100%); color: white; padding: 2rem; border-radius: 18px; margin-bottom: 1.75rem; }
   .quiz-header h1 { margin: 0 0 .3rem; font-size: 1.6rem; font-weight: 800; }

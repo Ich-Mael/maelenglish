@@ -1,5 +1,5 @@
 const Institution = require('../models/institution');
-const { Course } = require('../models/courses');
+const { InstitutionEnrollment, InstitutionCourse } = require('../../programs/institution/models');
 
 // Passes if user is institution-admin (or global admin who can access everything)
 module.exports.isInstitutionAdmin = (req, res, next) => {
@@ -25,15 +25,25 @@ module.exports.loadInstitution = async (req, res, next) => {
     try {
         const role = req.user.role;
 
-        // Global admins may pass institutionId as a route param or query param
+        // Global admins may pass institutionId as a route param, query param, body field,
+        // or fall back to a session-persisted value so navigation between pages doesn't
+        // lose institution context.
         if (role === 'admin' || role === 'super-admin') {
-            const id = req.params.institutionId || req.query.institutionId;
+            const id = req.params.institutionId
+                || req.query.institutionId
+                || (req.body && req.body.institutionId)
+                || req.session.activeInstitutionId;
+
             if (id) {
                 req.institution = await Institution.findById(id);
                 if (!req.institution) {
                     req.flash('error', 'Institution introuvable.');
                     return res.redirect('/admin/institutions');
                 }
+                // Persist so subsequent page loads in the same flow keep the context
+                req.session.activeInstitutionId = req.institution._id.toString();
+                res.locals.institutionColor = req.institution.primaryColor || '#0e7490';
+                res.locals.institutionId = req.institution._id.toString();
             }
             return next();
         }
@@ -57,8 +67,8 @@ module.exports.loadInstitution = async (req, res, next) => {
         }
 
         req.institution = institution;
-        // Expose brand color to all institution dashboard views
         res.locals.institutionColor = institution.primaryColor || '#0e7490';
+        res.locals.institutionId = institution._id.toString();
         next();
     } catch (err) {
         next(err);
@@ -79,7 +89,7 @@ module.exports.isInstitutionStudent = (req, res, next) => {
 };
 
 // Loads the institution for /institution/learn/ routes.
-// Tries user.institutionId first, then derives from enrolled courses.
+// Tries user.institutionId first, then derives from an active enrollment.
 module.exports.loadStudentInstitution = async (req, res, next) => {
     try {
         let institution;
@@ -88,17 +98,16 @@ module.exports.loadStudentInstitution = async (req, res, next) => {
             institution = await Institution.findById(req.user.institutionId);
         }
 
-        // Derive from enrolled courses if institutionId not set
+        // Derive from an active enrollment if institutionId not set on the user
         if (!institution) {
-            const courseIds = (req.user.coursesTaken || []).map(id => id._id || id);
-            institution = await Institution.findOne({
-                assignedCourses: { $in: courseIds },
-                isActive: true
-            });
+            const enrollment = await InstitutionEnrollment.findOne({ userId: req.user._id });
+            if (enrollment) {
+                institution = await Institution.findById(enrollment.institutionId);
+            }
         }
 
         if (!institution) {
-            req.flash('error', 'Aucune institution associée à vos cours.');
+            req.flash('error', 'Aucune institution associée à votre compte.');
             return res.redirect('/dashboard');
         }
         if (!institution.isActive) {
@@ -115,7 +124,7 @@ module.exports.loadStudentInstitution = async (req, res, next) => {
 };
 
 // Loads institution for /institution/:institutionId/portal.
-// Verifies the student is enrolled in at least one course from that institution.
+// Verifies the student has at least one enrollment in that institution.
 module.exports.loadPortalInstitution = async (req, res, next) => {
     try {
         const institution = await Institution.findById(req.params.institutionId);
@@ -124,11 +133,12 @@ module.exports.loadPortalInstitution = async (req, res, next) => {
             return res.redirect('/dashboard');
         }
 
-        const courseIds   = (req.user.coursesTaken || []).map(id => (id._id || id).toString());
-        const assignedIds = institution.assignedCourses.map(id => id.toString());
-        const hasAccess   = assignedIds.some(id => courseIds.includes(id));
+        const enrollment = await InstitutionEnrollment.findOne({
+            userId: req.user._id,
+            institutionId: institution._id
+        });
 
-        if (!hasAccess) {
+        if (!enrollment) {
             req.flash('error', 'Vous n\'avez pas accès à ce portail.');
             return res.redirect('/dashboard');
         }
@@ -141,27 +151,29 @@ module.exports.loadPortalInstitution = async (req, res, next) => {
     }
 };
 
-// Verifies the student has active enrollment in the requested course
-// Requires req.institution to be set (run loadStudentInstitution first)
-// Sets req.course on success
+// Verifies the student has active enrollment in the requested course.
+// Requires req.institution to be set (run loadStudentInstitution first).
+// Sets req.course (InstitutionCourse) and req.enrollment on success.
 module.exports.checkInstitutionCourseAccess = async (req, res, next) => {
     try {
         const { courseId } = req.params;
-        const assignedCourses = req.institution.assignedCourses || [];
 
-        const isAssigned = assignedCourses.some(id => id.toString() === courseId);
-        if (!isAssigned) {
+        const course = await InstitutionCourse.findOne({
+            _id: courseId,
+            institutionId: req.institution._id
+        }).populate('modules', 'title order quiz assignment');
+
+        if (!course) {
             req.flash('error', 'Ce cours n\'est pas disponible dans votre institution.');
             return res.redirect('/institution/learn/courses');
         }
 
-        const course = await Course.findById(courseId).populate('modules', 'title order moduleQuiz moduleAssignment');
-        if (!course) {
-            req.flash('error', 'Cours introuvable.');
-            return res.redirect('/institution/learn/courses');
-        }
+        const enrollment = await InstitutionEnrollment.findOne({
+            userId: req.user._id,
+            courseId,
+            institutionId: req.institution._id
+        });
 
-        const enrollment = (req.user.specialProgram || []).find(p => p.courseTitle === course.title);
         if (!enrollment) {
             req.flash('error', 'Vous n\'êtes pas inscrit à ce cours.');
             return res.redirect('/institution/learn/courses');

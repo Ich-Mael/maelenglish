@@ -7,8 +7,8 @@ const Students        = require('../controllers/institution/studentsController')
 const Courses         = require('../controllers/institution/coursesController');
 const Announcements   = require('../controllers/institution/announcementsController');
 
-// All routes require institution-admin role + loaded institution
-router.use(isInstitutionAdmin, loadInstitution);
+// Dashboard routes require institution-admin role + loaded institution
+router.use('/dashboard', isInstitutionAdmin, loadInstitution);
 
 // ─── DASHBOARD HOME ───────────────────────────────────────────────────────────
 router.get('/dashboard', Dashboard.home);

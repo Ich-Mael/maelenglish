@@ -1,7 +1,7 @@
-<% layout('layouts/main') %>
+<% layout('layouts/institutionBoilerplate') %>
 
 <% headContent = `<style>
-  :root { --brand: <%= institutionColor %>; }
+  :root { --brand: ${institutionColor}; }
   .page-wrapper { margin-top: 80px; padding: 2rem 0 4rem; background: #f8fafc; }
   .module-header { background: linear-gradient(135deg, color-mix(in srgb, var(--brand) 85%, #000) 0%, var(--brand) 100%); color: white; padding: 2rem; border-radius: 18px; margin-bottom: 1.75rem; }
   .module-header h1 { margin: 0 0 .3rem; font-size: 1.7rem; font-weight: 800; }
@@ -35,7 +35,7 @@
         <div>
           <p style="opacity:.7;font-size:.82rem;margin:0 0 .2rem;"><%= course.title %></p>
           <h1><%= courseModule.title %></h1>
-          <% if (courseModule.willLearnModule) { %><p><%= courseModule.willLearnModule %></p><% } %>
+          <% if (courseModule.description) { %><p><%= courseModule.description %></p><% } %>
         </div>
         <a href="/institution/learn/courses/<%= course._id %>" class="btn btn-light btn-sm">← Cours</a>
       </div>
@@ -77,7 +77,7 @@
     </div>
 
     <!-- Module Quiz -->
-    <% if (courseModule.moduleQuiz && courseModule.moduleQuiz.questions && courseModule.moduleQuiz.questions.length > 0) { %>
+    <% if (courseModule.quiz && courseModule.quiz.questions && courseModule.quiz.questions.length > 0) { %>
     <div class="section-card">
       <h3>📝 Quiz du module</h3>
       <% if (!allLessonsDone) { %>
@@ -93,14 +93,14 @@
         </div>
       <% } else { %>
         <a href="/institution/learn/courses/<%= course._id %>/modules/<%= courseModule._id %>/quiz" class="btn-action btn-primary-brand">
-          Commencer le quiz (<%= courseModule.moduleQuiz.questions.length %> questions)
+          Commencer le quiz (<%= courseModule.quiz.questions.length %> questions)
         </a>
       <% } %>
     </div>
     <% } %>
 
     <!-- Module Assignment -->
-    <% if (courseModule.moduleAssignment && courseModule.moduleAssignment.title) { %>
+    <% if (courseModule.assignment && courseModule.assignment.title) { %>
     <div class="section-card">
       <h3>📋 Devoir du module</h3>
       <% if (!allLessonsDone) { %>
@@ -115,7 +115,7 @@
           <p class="mt-2 small text-muted mb-0"><strong>Feedback :</strong> <%= assignmentSubmission.feedback %></p>
         <% } %>
       <% } else { %>
-        <p class="text-muted small mb-2"><%= courseModule.moduleAssignment.instructions %></p>
+        <p class="text-muted small mb-2"><%= courseModule.assignment.instructions %></p>
         <a href="/institution/learn/courses/<%= course._id %>/modules/<%= courseModule._id %>/assignment" class="btn-action btn-primary-brand">
           Remettre le devoir
         </a>

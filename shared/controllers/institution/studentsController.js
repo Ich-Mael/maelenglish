@@ -1,68 +1,81 @@
 const crypto = require('crypto');
 const User = require('../../models/user');
-const { Course } = require('../../models/courses');
-const LessonProgress = require('../../models/lessonProgress');
-const Lesson = require('../../models/lesson');
-const QuizAttempt = require('../../models/quizAttempt');
-const AssignmentSubmission = require('../../models/assignmentSubmission');
+const {
+    InstitutionCourse,
+    InstitutionLesson,
+    InstitutionEnrollment,
+    InstitutionLessonProgress,
+    InstitutionQuizAttempt,
+    InstitutionAssignmentSubmission
+} = require('../../../programs/institution/models');
 const Emailer = require('../../utilities/sendEmail');
 const { getBaseUrl } = require('../../utilities/url');
 const catchAsync = require('../../utilities/catchAsync');
 
-// List all students enrolled in at least one of this institution's assigned courses
+// List all students with at least one enrollment in this institution
 module.exports.index = catchAsync(async (req, res) => {
-    const assignedCourses = req.institution.assignedCourses;
+    const now = new Date();
 
-    const [students, assignedCourseDetails] = await Promise.all([
-        User.find({
-            coursesTaken: { $in: assignedCourses },
-            role: { $ne: 'institution-admin' }
-        }).select('name surname username email isVerified specialProgram coursesTaken devices').sort({ surname: 1, name: 1 }),
-        Course.find({ _id: { $in: assignedCourses } }).select('title _id')
+    const [enrolledUserIds, courses, activeEnrollmentCounts] = await Promise.all([
+        InstitutionEnrollment.distinct('userId', { institutionId: req.institution._id }),
+        InstitutionCourse.find({ institutionId: req.institution._id }).select('title _id'),
+        InstitutionEnrollment.aggregate([
+            {
+                $match: {
+                    institutionId: req.institution._id,
+                    status: 'active',
+                    $or: [{ endDate: null }, { endDate: { $gte: now } }]
+                }
+            },
+            { $group: { _id: '$userId', count: { $sum: 1 } } }
+        ])
     ]);
+
+    const students = await User.find({
+        _id: { $in: enrolledUserIds },
+        role: { $ne: 'institution-admin' }
+    }).select('name surname username email isVerified devices').sort({ surname: 1, name: 1 });
+
+    const activeCountMap = Object.fromEntries(activeEnrollmentCounts.map(r => [r._id.toString(), r.count]));
 
     const studentsWithMeta = students.map(s => {
         const lastLogin = s.devices && s.devices.length > 0
             ? s.devices.reduce((latest, d) => d.lastLogin > latest ? d.lastLogin : latest, s.devices[0].lastLogin)
             : null;
-        const activeEnrollments = (s.specialProgram || []).filter(p =>
-            p.endDate && new Date(p.endDate) >= new Date()
-        );
-        return { student: s, lastLogin, activeEnrollmentsCount: activeEnrollments.length };
+        return {
+            student: s,
+            lastLogin,
+            activeEnrollmentsCount: activeCountMap[s._id.toString()] || 0
+        };
     });
 
     res.render('institution-dashboard/students/index', {
         institution: req.institution,
         studentsWithMeta,
-        assignedCourseDetails
+        assignedCourseDetails: courses
     });
 });
 
-// Search any AfrohK user by name / username / email (JSON API for live search)
+// Live search (JSON) — used by the enroll-student UI
 module.exports.search = catchAsync(async (req, res) => {
     const q = (req.query.q || '').trim();
-
     if (q.length < 2) return res.json({ users: [] });
 
-    const assignedCourses = req.institution.assignedCourses;
-
-    // Already enrolled: users who have taken at least one institution course
-    const enrolledIds = await User.find({
-        coursesTaken: { $in: assignedCourses }
-    }).distinct('_id');
-
-    const users = await User.find({
-        $or: [
-            { username: { $regex: q, $options: 'i' } },
-            { name:     { $regex: q, $options: 'i' } },
-            { surname:  { $regex: q, $options: 'i' } },
-            { email:    { $regex: q, $options: 'i' } }
-        ],
-        role: { $nin: ['admin', 'super-admin', 'institution-admin'] }
-    })
-    .select('username name surname email isVerified')
-    .limit(10)
-    .sort({ surname: 1, name: 1 });
+    const [enrolledIds, users] = await Promise.all([
+        InstitutionEnrollment.distinct('userId', { institutionId: req.institution._id }),
+        User.find({
+            $or: [
+                { username: { $regex: q, $options: 'i' } },
+                { name:     { $regex: q, $options: 'i' } },
+                { surname:  { $regex: q, $options: 'i' } },
+                { email:    { $regex: q, $options: 'i' } }
+            ],
+            role: { $nin: ['admin', 'super-admin', 'institution-admin'] }
+        })
+        .select('username name surname email isVerified')
+        .limit(10)
+        .sort({ surname: 1, name: 1 })
+    ]);
 
     const enrolledSet = new Set(enrolledIds.map(id => id.toString()));
 
@@ -79,40 +92,37 @@ module.exports.search = catchAsync(async (req, res) => {
     });
 });
 
-// Show one student's progress across this institution's assigned courses
+// Show one student's progress across this institution's courses
 module.exports.show = catchAsync(async (req, res) => {
-    const assignedCourses = req.institution.assignedCourses;
-
-    const student = await User.findById(req.params.userId).populate('coursesTaken');
-
+    const student = await User.findById(req.params.userId);
     if (!student) {
         req.flash('error', 'Étudiant introuvable.');
         return res.redirect('/institution/dashboard/students');
     }
 
-    const courses = await Course.find({
-        _id: { $in: assignedCourses }
-    }).select('title isActive modules');
+    const courses = await InstitutionCourse.find({
+        institutionId: req.institution._id
+    }).select('title isActive');
 
-    const courseObjectIds = courses.map(c => c._id);
+    const courseIds = courses.map(c => c._id);
 
-    const [lessonProgress, lessonCounts, passedQuizzes, pendingAssignments] = await Promise.all([
-        LessonProgress.find({ userId: student._id, courseId: { $in: courseObjectIds }, status: 'completed' }),
-        Lesson.aggregate([
-            { $match: { courseId: { $in: courseObjectIds }, isActive: true } },
+    const [lessonProgress, lessonCounts, passedQuizzes, pendingAssignments, enrollments] = await Promise.all([
+        InstitutionLessonProgress.find({ userId: student._id, courseId: { $in: courseIds } }),
+        InstitutionLesson.aggregate([
+            { $match: { courseId: { $in: courseIds }, isActive: true } },
             { $group: { _id: '$courseId', count: { $sum: 1 } } }
         ]),
-        QuizAttempt.aggregate([
-            { $match: { userId: student._id, courseId: { $in: courseObjectIds }, passed: true, quizType: 'module_quiz' } },
+        InstitutionQuizAttempt.aggregate([
+            { $match: { userId: student._id, courseId: { $in: courseIds }, passed: true } },
             { $group: { _id: '$courseId', count: { $sum: 1 } } }
         ]),
-        AssignmentSubmission.aggregate([
-            { $match: { userId: student._id, courseId: { $in: courseObjectIds }, status: 'pending' } },
+        InstitutionAssignmentSubmission.aggregate([
+            { $match: { userId: student._id, courseId: { $in: courseIds }, status: 'submitted' } },
             { $group: { _id: '$courseId', count: { $sum: 1 } } }
-        ])
+        ]),
+        InstitutionEnrollment.find({ userId: student._id, institutionId: req.institution._id })
     ]);
 
-    // Build per-course lookup maps
     const completedByCourse = {};
     const lastActivityByCourse = {};
     lessonProgress.forEach(p => {
@@ -123,29 +133,26 @@ module.exports.show = catchAsync(async (req, res) => {
             lastActivityByCourse[cid] = ts;
         }
     });
+
     const totalByCourse    = Object.fromEntries(lessonCounts.map(r => [r._id.toString(), r.count]));
     const passedQuizMap    = Object.fromEntries(passedQuizzes.map(r => [r._id.toString(), r.count]));
     const pendingAssignMap = Object.fromEntries(pendingAssignments.map(r => [r._id.toString(), r.count]));
+    const enrollmentByCourse = Object.fromEntries(enrollments.map(e => [e.courseId.toString(), e]));
 
     const enrollmentStatus = courses.map(course => {
-        const cid        = course._id.toString();
-        const enrollment = (student.specialProgram || []).find(p => p.courseTitle === course.title);
-        const isEnrolled = (student.coursesTaken || []).some(id => {
-            const idStr = id._id ? id._id.toString() : id.toString();
-            return idStr === cid;
-        });
-        const completed = completedByCourse[cid] || 0;
-        const total     = totalByCourse[cid]     || 0;
-
+        const cid       = course._id.toString();
+        const enrollment = enrollmentByCourse[cid];
+        const completed  = completedByCourse[cid] || 0;
+        const total      = totalByCourse[cid]      || 0;
         return {
             course,
-            isEnrolled,
+            isEnrolled: !!enrollment,
             enrollment,
-            completedModules:    completed,
-            totalModules:        total,
-            passedQuizzes:       passedQuizMap[cid]    || 0,
-            pendingAssignments:  pendingAssignMap[cid] || 0,
-            lastActivity:        lastActivityByCourse[cid] || null,
+            completedModules:   completed,
+            totalModules:       total,
+            passedQuizzes:      passedQuizMap[cid]    || 0,
+            pendingAssignments: pendingAssignMap[cid]  || 0,
+            lastActivity:       lastActivityByCourse[cid] || null,
             pct: total > 0 ? Math.round((completed / total) * 100) : 0
         };
     });
@@ -162,57 +169,53 @@ module.exports.show = catchAsync(async (req, res) => {
     });
 });
 
-// Enroll a student in one of this institution's assigned courses
+// Enroll a student in one of this institution's courses
 module.exports.enroll = catchAsync(async (req, res) => {
     const { courseId, startDate, endDate } = req.body;
     const { userId } = req.params;
 
-    // Verify course is assigned to this institution
-    const isAssigned = req.institution.assignedCourses.some(id => id.toString() === courseId);
-    if (!isAssigned) {
-        req.flash('error', 'Ce cours n\'est pas assigné à votre institution.');
-        return res.redirect(`/institution/dashboard/students/${userId}`);
-    }
-
-    const [student, course] = await Promise.all([
-        User.findById(userId),
-        Course.findById(courseId)
+    const [course, student] = await Promise.all([
+        InstitutionCourse.findOne({ _id: courseId, institutionId: req.institution._id }),
+        User.findById(userId)
     ]);
 
+    if (!course) {
+        req.flash('error', 'Ce cours n\'est pas disponible dans votre institution.');
+        return res.redirect(`/institution/dashboard/students/${userId}`);
+    }
     if (!student) {
         req.flash('error', 'Étudiant introuvable.');
         return res.redirect('/institution/dashboard/students');
     }
-    if (!course) {
-        req.flash('error', 'Cours introuvable.');
-        return res.redirect(`/institution/dashboard/students/${userId}`);
-    }
 
-    if ((student.coursesTaken || []).some(id => id.toString() === courseId)) {
+    const existing = await InstitutionEnrollment.findOne({ userId, courseId });
+    if (existing) {
         req.flash('error', `${student.name} est déjà inscrit(e) à "${course.title}".`);
         return res.redirect(`/institution/dashboard/students/${userId}`);
     }
 
-    course.students.push(student._id);
-    await course.save();
+    const start = startDate ? new Date(startDate) : new Date();
+    const end   = endDate   ? new Date(endDate)   : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
-    if (!student.coursesTaken) student.coursesTaken = [];
-    student.coursesTaken.push(course._id);
-
-    if (!student.specialProgram) student.specialProgram = [];
-    student.specialProgram.push({
-        courseTitle: course.title,
-        startDate: startDate ? new Date(startDate) : new Date(),
-        endDate: endDate ? new Date(endDate) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    await InstitutionEnrollment.create({
+        userId,
+        courseId,
+        institutionId: req.institution._id,
+        startDate: start,
+        endDate: end,
+        status: 'active',
+        enrolledBy: req.user._id
     });
 
-    await student.save();
+    // Link student to institution if not already
+    if (!student.institutionId) {
+        student.institutionId = req.institution._id;
+        await student.save();
+    }
 
-    // Send enrollment notification (fire-and-forget)
-    const enrollment = student.specialProgram[student.specialProgram.length - 1];
     const loginUrl = `${getBaseUrl(req)}/login`;
-    new Emailer(student).sendEnrollmentEmail(course.title, enrollment.startDate, enrollment.endDate, loginUrl)
-      .catch(err => console.error('Enrollment email error:', err));
+    new Emailer(student).sendEnrollmentEmail(course.title, start, end, loginUrl)
+        .catch(err => console.error('Enrollment email error:', err));
 
     req.flash('success', `${student.name} ${student.surname} inscrit(e) à "${course.title}".`);
     res.redirect(`/institution/dashboard/students/${userId}`);
@@ -222,10 +225,9 @@ module.exports.enroll = catchAsync(async (req, res) => {
 module.exports.enrollBulk = catchAsync(async (req, res) => {
     const { courseId, startDate, endDate, studentIds } = req.body;
 
-    // Verify course is assigned to this institution
-    const isAssigned = req.institution.assignedCourses.some(id => id.toString() === courseId);
-    if (!isAssigned) {
-        req.flash('error', 'Ce cours n\'est pas assigné à votre institution.');
+    const course = await InstitutionCourse.findOne({ _id: courseId, institutionId: req.institution._id });
+    if (!course) {
+        req.flash('error', 'Ce cours n\'est pas disponible dans votre institution.');
         return res.redirect('/institution/dashboard/students');
     }
 
@@ -235,36 +237,34 @@ module.exports.enrollBulk = catchAsync(async (req, res) => {
         return res.redirect('/institution/dashboard/students');
     }
 
-    const course = await Course.findById(courseId);
-    if (!course) {
-        req.flash('error', 'Cours introuvable.');
-        return res.redirect('/institution/dashboard/students');
-    }
-
     const start = startDate ? new Date(startDate) : new Date();
-    const end = endDate ? new Date(endDate) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    const end   = endDate   ? new Date(endDate)   : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
     let enrolled = 0;
-    let skipped = 0;
+    let skipped  = 0;
 
     for (const userId of ids) {
         const student = await User.findById(userId);
         if (!student) { skipped++; continue; }
 
-        // Skip already enrolled
-        if ((student.coursesTaken || []).some(id => id.toString() === courseId)) {
-            skipped++;
-            continue;
+        const existing = await InstitutionEnrollment.findOne({ userId, courseId });
+        if (existing) { skipped++; continue; }
+
+        await InstitutionEnrollment.create({
+            userId,
+            courseId,
+            institutionId: req.institution._id,
+            startDate: start,
+            endDate: end,
+            status: 'active',
+            enrolledBy: req.user._id
+        });
+
+        if (!student.institutionId) {
+            student.institutionId = req.institution._id;
+            await student.save();
         }
 
-        course.students.push(student._id);
-        if (!student.coursesTaken) student.coursesTaken = [];
-        student.coursesTaken.push(course._id);
-        if (!student.specialProgram) student.specialProgram = [];
-        student.specialProgram.push({ courseTitle: course.title, startDate: start, endDate: end });
-        await student.save();
-
-        // Fire-and-forget enrollment email
         const loginUrl = `${getBaseUrl(req)}/login`;
         new Emailer(student).sendEnrollmentEmail(course.title, start, end, loginUrl)
             .catch(err => console.error('Bulk enrollment email error:', err));
@@ -272,43 +272,29 @@ module.exports.enrollBulk = catchAsync(async (req, res) => {
         enrolled++;
     }
 
-    await course.save();
-
     req.flash('success', `${enrolled} étudiant(s) inscrit(s) à "${course.title}"${skipped > 0 ? ` (${skipped} déjà inscrit(s) ou introuvable(s))` : ''}.`);
     res.redirect('/institution/dashboard/students');
 });
 
-// Unenroll a student from one of this institution's assigned courses
+// Unenroll a student from a course
 module.exports.unenroll = catchAsync(async (req, res) => {
     const { userId, courseId } = req.params;
 
-    // Verify course is assigned to this institution (prevents cross-institution unenrollment)
-    const isAssigned = req.institution.assignedCourses.some(id => id.toString() === courseId);
-    if (!isAssigned) {
-        req.flash('error', 'Ce cours n\'est pas assigné à votre institution.');
-        return res.redirect('/institution/dashboard/students');
-    }
-
-    const [student, course] = await Promise.all([
-        User.findById(userId),
-        Course.findById(courseId)
+    const [course, student] = await Promise.all([
+        InstitutionCourse.findOne({ _id: courseId, institutionId: req.institution._id }),
+        User.findById(userId)
     ]);
 
+    if (!course) {
+        req.flash('error', 'Ce cours n\'est pas disponible dans votre institution.');
+        return res.redirect('/institution/dashboard/students');
+    }
     if (!student) {
         req.flash('error', 'Étudiant introuvable.');
         return res.redirect('/institution/dashboard/students');
     }
-    if (!course) {
-        req.flash('error', 'Cours introuvable.');
-        return res.redirect(`/institution/dashboard/students/${userId}`);
-    }
 
-    course.students = course.students.filter(id => id.toString() !== userId);
-    await course.save();
-
-    student.coursesTaken = (student.coursesTaken || []).filter(id => id.toString() !== courseId);
-    student.specialProgram = (student.specialProgram || []).filter(p => p.courseTitle !== course.title);
-    await student.save();
+    await InstitutionEnrollment.findOneAndDelete({ userId, courseId });
 
     req.flash('success', `${student.name} ${student.surname} désinscrit(e) de "${course.title}".`);
     res.redirect(`/institution/dashboard/students/${userId}`);
@@ -319,38 +305,27 @@ module.exports.updateEnrollment = catchAsync(async (req, res) => {
     const { userId, courseId } = req.params;
     const { startDate, endDate } = req.body;
 
-    const isAssigned = req.institution.assignedCourses.some(id => id.toString() === courseId);
-    if (!isAssigned) {
-        req.flash('error', 'Ce cours n\'est pas assigné à votre institution.');
+    const course = await InstitutionCourse.findOne({ _id: courseId, institutionId: req.institution._id });
+    if (!course) {
+        req.flash('error', 'Ce cours n\'est pas disponible dans votre institution.');
         return res.redirect(`/institution/dashboard/students/${userId}`);
     }
 
-    const [student, course] = await Promise.all([
-        User.findById(userId),
-        Course.findById(courseId).select('title')
-    ]);
-
-    if (!student) {
-        req.flash('error', 'Étudiant introuvable.');
-        return res.redirect('/institution/dashboard/students');
-    }
-
-    const entry = (student.specialProgram || []).find(p => p.courseTitle === course.title);
-    if (!entry) {
+    const enrollment = await InstitutionEnrollment.findOne({ userId, courseId });
+    if (!enrollment) {
         req.flash('error', 'Cet étudiant n\'est pas inscrit à ce cours.');
         return res.redirect(`/institution/dashboard/students/${userId}`);
     }
 
-    if (startDate) entry.startDate = new Date(startDate);
-    if (endDate)   entry.endDate   = new Date(endDate);
-    student.markModified('specialProgram');
-    await student.save();
+    if (startDate) enrollment.startDate = new Date(startDate);
+    if (endDate)   enrollment.endDate   = new Date(endDate);
+    await enrollment.save();
 
     req.flash('success', 'Dates d\'accès mises à jour.');
     res.redirect(`/institution/dashboard/students/${userId}`);
 });
 
-// Resend activation email with a fresh token and new temporary password
+// Resend activation email to unverified student
 module.exports.resendActivation = catchAsync(async (req, res) => {
     const student = await User.findById(req.params.userId);
 
@@ -358,18 +333,16 @@ module.exports.resendActivation = catchAsync(async (req, res) => {
         req.flash('error', 'Étudiant introuvable.');
         return res.redirect('/institution/dashboard/students');
     }
-
     if (student.isVerified) {
         req.flash('error', 'Ce compte est déjà activé.');
         return res.redirect(`/institution/dashboard/students/${req.params.userId}`);
     }
 
-    // Generate fresh token (48h) and new temporary password
     const activationToken   = crypto.randomBytes(32).toString('hex');
     const activationExpires = Date.now() + 48 * 60 * 60 * 1000;
 
-    const charset     = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#';
-    let newPassword   = '';
+    const charset   = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#';
+    let newPassword = '';
     for (let i = 0; i < 10; i++) newPassword += charset.charAt(Math.floor(Math.random() * charset.length));
     newPassword += 'A1a';
 

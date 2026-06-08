@@ -1,28 +1,29 @@
-const { Course }   = require('../../models/courses');
-const Lesson        = require('../../models/lesson');
-const LessonProgress = require('../../models/lessonProgress');
-const Announcement  = require('../../models/announcement');
-const catchAsync    = require('../../utilities/catchAsync');
+const { InstitutionCourse, InstitutionLesson, InstitutionLessonProgress, InstitutionEnrollment } = require('../../../programs/institution/models');
+const Announcement = require('../../models/announcement');
+const catchAsync   = require('../../utilities/catchAsync');
 
-// GET /institution/:institutionId/portal
 module.exports.show = catchAsync(async (req, res) => {
-    const institution  = req.institution; // set by loadPortalInstitution
-    const assignedIds  = (institution.assignedCourses || []).map(id => id.toString());
-    const enrolledIds  = (req.user.coursesTaken || []).map(id => (id._id || id).toString());
-    const intersection = assignedIds.filter(id => enrolledIds.includes(id));
+    const institution = req.institution;
 
-    // Courses + progress
-    const courses = await Course.find({ _id: { $in: intersection } })
-        .select('title isActive courseImageUrl modules category');
+    const enrollments = await InstitutionEnrollment.find({
+        userId: req.user._id,
+        institutionId: institution._id
+    }).select('courseId startDate endDate status');
+
+    const courseIds = enrollments.map(e => e.courseId);
+    const courses = await InstitutionCourse.find({
+        _id: { $in: courseIds },
+        isActive: true
+    }).select('title imageUrl');
 
     const courseObjectIds = courses.map(c => c._id);
 
     const [progressData, lessonCounts, announcements] = await Promise.all([
-        LessonProgress.aggregate([
-            { $match: { userId: req.user._id, courseId: { $in: courseObjectIds }, status: 'completed' } },
+        InstitutionLessonProgress.aggregate([
+            { $match: { userId: req.user._id, courseId: { $in: courseObjectIds } } },
             { $group: { _id: '$courseId', count: { $sum: 1 } } }
         ]),
-        Lesson.aggregate([
+        InstitutionLesson.aggregate([
             { $match: { courseId: { $in: courseObjectIds }, isActive: true } },
             { $group: { _id: '$courseId', count: { $sum: 1 } } }
         ]),
@@ -33,18 +34,18 @@ module.exports.show = catchAsync(async (req, res) => {
 
     const completedMap = Object.fromEntries(progressData.map(r => [r._id.toString(), r.count]));
     const totalMap     = Object.fromEntries(lessonCounts.map(r => [r._id.toString(), r.count]));
+    const enrollmentByCourse = Object.fromEntries(enrollments.map(e => [e.courseId.toString(), e]));
 
     const coursesWithProgress = courses.map(course => {
-        const cid        = course._id.toString();
-        const completed  = completedMap[cid] || 0;
-        const total      = totalMap[cid]     || 0;
-        const enrollment = (req.user.specialProgram || []).find(p => p.courseTitle === course.title);
+        const cid       = course._id.toString();
+        const completed = completedMap[cid] || 0;
+        const total     = totalMap[cid]     || 0;
         return {
             course,
             completed,
             total,
-            pct: total > 0 ? Math.round((completed / total) * 100) : 0,
-            enrollment
+            pct:        total > 0 ? Math.round((completed / total) * 100) : 0,
+            enrollment: enrollmentByCourse[cid]
         };
     });
 

@@ -1,0 +1,161 @@
+<% layout('layouts/institutionBoilerplate') %>
+<% const project = course.finalProject; %>
+<% const isLink  = project.submissionType === 'link'; %>
+<% const graded  = existing && existing.status === 'graded'; %>
+
+<% headContent = `<style>
+  :root { --brand: ${institutionColor}; }
+  .page-wrapper { margin-top: 80px; padding: 2rem 0 4rem; background: #f8fafc; }
+  .project-header { background: linear-gradient(135deg, color-mix(in srgb, var(--brand) 80%, #000) 0%, var(--brand) 100%); color: white; padding: 2rem; border-radius: 18px; margin-bottom: 1.75rem; }
+  .project-header h1 { margin: 0 0 .3rem; font-size: 1.6rem; font-weight: 800; }
+  .project-header p  { margin: 0; opacity: .85; font-size: .9rem; }
+  .card-section { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07); padding: 1.75rem; margin-bottom: 1.25rem; }
+  .card-section h2 { font-size: 1rem; font-weight: 700; color: #1e293b; margin: 0 0 1rem; padding-bottom: .65rem; border-bottom: 2px solid #f1f5f9; }
+  .form-control { border-radius: 12px; border: 1.5px solid #e2e8f0; padding: .85rem 1rem; font-size: .95rem; width: 100%; }
+  .form-control:focus { border-color: var(--brand); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 20%, #fff); outline: none; }
+  textarea.form-control { resize: vertical; }
+  .btn-submit { background: var(--brand); color: #fff; border: none; padding: .85rem 2rem; border-radius: 12px; font-weight: 700; font-size: .95rem; cursor: pointer; transition: opacity .2s; }
+  .btn-submit:hover { opacity: .88; }
+  .btn-submit:disabled { opacity: .5; cursor: not-allowed; }
+  .status-badge { display: inline-block; padding: .3rem .85rem; border-radius: 20px; font-size: .82rem; font-weight: 600; }
+  .badge-submitted { background: #fef9c3; color: #854d0e; }
+  .badge-graded    { background: #d1fae5; color: #065f46; }
+  .submission-preview { background: #f8fafc; border-radius: 10px; padding: 1rem; border: 1px solid #e2e8f0; color: #334155; white-space: pre-wrap; word-break: break-word; }
+  .feedback-block { background: #eff6ff; border-radius: 10px; padding: 1rem 1.25rem; border: 1px solid #bfdbfe; margin-top: 1rem; }
+  #confirm-section { display: none; background: #d1fae5; border: 2px solid #6ee7b7; border-radius: 16px; padding: 2rem; text-align: center; margin-bottom: 1rem; }
+</style>` %>
+
+<div class="page-wrapper">
+  <div class="container" style="max-width:760px;">
+
+    <div class="project-header">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+        <div>
+          <p style="opacity:.7;font-size:.82rem;margin:0 0 .2rem;"><%= course.title %></p>
+          <h1>📁 <%= project.title || 'Projet final' %></h1>
+          <p>Projet final · Score max : <%= project.maxScore || 100 %> pts</p>
+        </div>
+        <a href="/institution/learn/courses/<%= courseId %>" class="btn btn-light btn-sm">← Cours</a>
+      </div>
+    </div>
+
+    <%- include('../../partials/flash') %>
+
+    <!-- Instructions -->
+    <% if (project.instructions) { %>
+    <div class="card-section">
+      <h2>📋 Consignes</h2>
+      <div style="color:#475569;line-height:1.7;"><%- project.instructions %></div>
+      <% if (project.dueDate) { %>
+        <p class="small text-muted mt-2 mb-0">
+          📅 Date limite : <%= new Date(project.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) %>
+        </p>
+      <% } %>
+    </div>
+    <% } %>
+
+    <!-- Existing submission -->
+    <% if (existing) { %>
+    <div class="card-section">
+      <h2>📤 Votre soumission</h2>
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <span class="status-badge badge-<%= existing.status %>">
+          <% if (graded) { %>
+            ✓ Noté : <%= existing.grade %>/<%= project.maxScore || 100 %> pts
+          <% } else { %>
+            ⏳ En attente de correction
+          <% } %>
+        </span>
+        <span class="text-muted small">Soumis le <%= new Date(existing.submittedAt || existing.createdAt).toLocaleDateString('fr-FR') %></span>
+      </div>
+
+      <div class="submission-preview">
+        <% if (isLink) { %>
+          <a href="<%= existing.content %>" target="_blank" rel="noopener" style="color:var(--brand)"><%= existing.content %></a>
+        <% } else { %>
+          <%= existing.content %>
+        <% } %>
+      </div>
+
+      <% if (existing.feedback) { %>
+        <div class="feedback-block">
+          <strong style="color:#1e40af;">Feedback de l'instructeur :</strong>
+          <p class="mb-0 mt-1" style="color:#1e40af;"><%= existing.feedback %></p>
+        </div>
+      <% } %>
+    </div>
+    <% } %>
+
+    <!-- Confirm section (shown after AJAX submit) -->
+    <div id="confirm-section">
+      <div style="font-size:2rem;">✅</div>
+      <p class="fw-semibold fs-5 mb-1 mt-2">Projet soumis avec succès !</p>
+      <p class="text-muted small mb-3">Votre instructeur examinera votre travail et vous donnera une note.</p>
+      <a href="/institution/learn/courses/<%= courseId %>" class="btn px-4 rounded-pill" style="background:var(--brand);color:#fff;">← Retour au cours</a>
+    </div>
+
+    <!-- Submission form (hidden if already graded) -->
+    <% if (!graded) { %>
+    <div id="form-section" class="card-section">
+      <h2><%= existing ? '🔄 Modifier votre soumission' : '📨 Soumettre votre travail' %></h2>
+      <form id="projectForm">
+        <% if (isLink) { %>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Lien vers votre travail</label>
+            <input type="url" name="content" class="form-control" placeholder="https://..." value="<%= existing ? existing.content : '' %>" required>
+          </div>
+        <% } else { %>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Votre réponse</label>
+            <textarea name="content" class="form-control" rows="10" placeholder="Rédigez votre travail ici..." required><%= existing ? existing.content : '' %></textarea>
+          </div>
+        <% } %>
+        <div class="d-flex align-items-center gap-3">
+          <button type="submit" class="btn-submit" id="submitBtn">
+            <i class="bi bi-send me-2"></i><%= existing ? 'Mettre à jour' : 'Soumettre' %>
+          </button>
+          <span id="submitStatus" class="small text-muted"></span>
+        </div>
+      </form>
+    </div>
+    <% } %>
+
+  </div>
+</div>
+
+<script>
+document.getElementById('projectForm') && document.getElementById('projectForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var btn    = document.getElementById('submitBtn');
+  var status = document.getElementById('submitStatus');
+  btn.disabled = true;
+  btn.textContent = 'Envoi en cours…';
+
+  var formData = new FormData(this);
+  var body = new URLSearchParams(formData).toString();
+
+  try {
+    var res = await fetch('/institution/learn/courses/<%= courseId %>/final-project/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body
+    });
+    var data = await res.json();
+
+    if (data.ok) {
+      document.getElementById('form-section').style.display = 'none';
+      var confirm = document.getElementById('confirm-section');
+      confirm.style.display = 'block';
+      confirm.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      btn.disabled = false;
+      btn.textContent = '<%= existing ? "Mettre à jour" : "Soumettre" %>';
+      status.textContent = 'Une erreur est survenue.';
+    }
+  } catch(err) {
+    btn.disabled = false;
+    btn.textContent = '<%= existing ? "Mettre à jour" : "Soumettre" %>';
+    status.textContent = 'Une erreur est survenue. Veuillez réessayer.';
+  }
+});
+</script>

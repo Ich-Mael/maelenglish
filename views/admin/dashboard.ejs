@@ -243,10 +243,6 @@
         <div class="action-icon"><i class="bi bi-people"></i></div>
         <div><p class="action-title">Gérer les utilisateurs</p><p class="action-sub">Voir, modifier, vérifier</p></div>
       </a>
-      <a href="/admin/courses/new" class="action-card">
-        <div class="action-icon teal"><i class="bi bi-plus-circle"></i></div>
-        <div><p class="action-title">Nouveau cours</p><p class="action-sub">Pour les institutions partenaires</p></div>
-      </a>
       <a href="/admin/institutions/new" class="action-card">
         <div class="action-icon teal"><i class="bi bi-building-add"></i></div>
         <div><p class="action-title">Nouvelle institution</p><p class="action-sub">Créer un partenaire</p></div>
@@ -295,18 +291,6 @@
 
       <div class="prog-grid">
 
-        <!-- Cours institutions -->
-        <div class="prog-card teal-card">
-          <div class="prog-card-header">
-            <div class="prog-icon teal"><i class="bi bi-book-half"></i></div>
-            <h3 class="prog-name teal">Cours</h3>
-          </div>
-          <div class="prog-links">
-            <a href="/admin/courses" class="prog-link teal-link"><i class="bi bi-list-ul"></i> Tous les cours</a>
-            <a href="/admin/courses/new" class="prog-link teal-link"><i class="bi bi-plus-circle"></i> Créer un cours</a>
-          </div>
-        </div>
-
         <!-- Institutions -->
         <div class="prog-card teal-card">
           <div class="prog-card-header">
@@ -346,16 +330,16 @@
             <thead>
               <tr>
                 <th>Institution</th>
-                <th>Cours assignés</th>
+                <th>Cours</th>
                 <th>Étudiants</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
-              <% institutionStats.forEach(({ institution, studentCount }) => { %>
+              <% institutionStats.forEach(({ institution, studentCount, courseCount }) => { %>
                 <tr>
                   <td class="fw-semibold"><%= institution.name %></td>
-                  <td><%= institution.assignedCourses.length %></td>
+                  <td><%= courseCount %></td>
                   <td><span class="inst-count-pill"><%= studentCount %></span></td>
                   <td><a href="/admin/institutions/<%= institution._id %>" class="btn btn-sm btn-outline-primary py-0 px-2">Voir</a></td>
                 </tr>

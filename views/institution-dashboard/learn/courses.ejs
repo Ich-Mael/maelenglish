@@ -1,7 +1,7 @@
-<% layout('layouts/main') %>
+<% layout('layouts/institutionBoilerplate') %>
 
 <% headContent = `<style>
-  :root { --brand: <%= institutionColor %>; }
+  :root { --brand: ${institutionColor}; }
   .page-wrapper { margin-top: 80px; padding: 2.5rem 0 5rem; min-height: 100vh; background: #f8fafc; }
   .page-header { background: linear-gradient(135deg, var(--brand) 0%, color-mix(in srgb, var(--brand) 70%, #000) 100%); color: white; padding: 2.5rem 2rem; border-radius: 20px; margin-bottom: 2rem; box-shadow: 0 8px 30px rgba(0,0,0,.15); }
   .page-header h1 { margin: 0 0 .3rem; font-size: 1.9rem; font-weight: 800; }

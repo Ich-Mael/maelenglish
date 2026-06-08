@@ -1,7 +1,7 @@
-<% layout('layouts/main') %>
+<% layout('layouts/institutionBoilerplate') %>
 
 <% headContent = `<style>
-  :root { --brand: <%= institutionColor %>; }
+  :root { --brand: ${institutionColor}; }
   .page-wrapper { margin-top: 80px; padding: 2rem 0 4rem; background: #f8fafc; }
   .lesson-header { background: linear-gradient(135deg, color-mix(in srgb, var(--brand) 85%, #000) 0%, var(--brand) 100%); color: white; padding: 1.75rem 2rem; border-radius: 16px; margin-bottom: 1.75rem; }
   .lesson-header h1 { margin: 0 0 .25rem; font-size: 1.5rem; font-weight: 800; }
@@ -66,14 +66,26 @@
         <div class="lesson-content-card">
           <% if (lesson.type === 'video') { %>
             <% if (lesson.videoUrl) { %>
-              <% const isYT    = lesson.videoUrl.includes('youtube') || lesson.videoUrl.includes('youtu.be');
-                 const isVimeo = lesson.videoUrl.includes('vimeo');
-                 let embed = lesson.videoUrl;
-                 if (isYT) { const m = lesson.videoUrl.match(/(?:v=|youtu\.be\/)([^&?]+)/); if (m) embed = 'https://www.youtube.com/embed/' + m[1]; }
-                 if (isVimeo) { const m = lesson.videoUrl.match(/vimeo\.com\/(\d+)/); if (m) embed = 'https://player.vimeo.com/video/' + m[1]; }
+              <%
+                const isYT    = lesson.videoUrl.includes('youtube') || lesson.videoUrl.includes('youtu.be');
+                const isVimeo = lesson.videoUrl.includes('vimeo');
+                let embed = lesson.videoUrl;
+                if (isYT) {
+                  const m = lesson.videoUrl.match(/(?:v=|youtu\.be\/)([^&?]+)/);
+                  if (m) embed = 'https://www.youtube.com/embed/' + m[1];
+                }
+                if (isVimeo) {
+                  if (lesson.videoUrl.includes('player.vimeo.com')) {
+                    // Already embed format — decode HTML entities from copied embed code
+                    embed = lesson.videoUrl.replace(/&amp;/g, '&');
+                  } else {
+                    const m = lesson.videoUrl.match(/vimeo\.com\/(\d+)/);
+                    if (m) embed = 'https://player.vimeo.com/video/' + m[1];
+                  }
+                }
               %>
               <div class="video-container mb-3">
-                <iframe src="<%= embed %>" allowfullscreen title="<%= lesson.title %>"></iframe>
+                <iframe src="<%- embed %>" allowfullscreen allow="autoplay; fullscreen; picture-in-picture" title="<%= lesson.title %>"></iframe>
               </div>
             <% } else { %>
               <p class="text-muted">Aucune vidéo configurée.</p>

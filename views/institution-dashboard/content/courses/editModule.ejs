@@ -1,4 +1,4 @@
-<% layout('layouts/main') %>
+<% layout('layouts/institutionBoilerplate') %>
 
 <% headContent = `<style>
   .page-wrapper { margin-top: 80px; padding: 2rem 0 5rem; background: #f8fafc; }
@@ -57,7 +57,7 @@
         </div>
         <div class="mb-3">
           <label class="form-label">Description</label>
-          <textarea name="description" class="form-control" rows="3"><%= courseModule.description || '' %></textarea>
+          <textarea id="moduleDesc" name="description" class="form-control" rows="3"><%= courseModule.description || '' %></textarea>
         </div>
         <button type="submit" class="btn-save">Enregistrer</button>
       </form>
@@ -133,7 +133,7 @@
               <div class="col-md-4"><input type="text" name="fileName" class="form-control form-control-sm" placeholder="Nom du fichier"></div>
             </div>
             <div id="nText" style="display:none" class="mb-2">
-              <textarea name="content" class="form-control form-control-sm" rows="4" placeholder="Contenu (HTML accepté)"></textarea>
+              <textarea id="nContent" name="content" class="form-control form-control-sm" rows="4" placeholder="Contenu de la leçon..."></textarea>
             </div>
             <p id="nQuiz" style="display:none" class="text-muted small mb-2">La leçon sera créée vide — ajoutez les questions après.</p>
             <button type="submit" class="btn btn-success btn-sm px-4">Créer</button>
@@ -157,7 +157,7 @@
             <div class="col-md-4"><input type="text" name="fileName" id="eFileName" class="form-control form-control-sm" placeholder="Nom fichier"></div>
           </div>
           <div id="eText" style="display:none" class="mb-2">
-            <textarea name="content" id="eContent" class="form-control form-control-sm" rows="4" placeholder="Contenu HTML"></textarea>
+            <textarea name="content" id="eContent" class="form-control form-control-sm" rows="4" placeholder="Contenu de la leçon..."></textarea>
           </div>
           <div class="d-flex gap-2">
             <button type="submit" class="btn btn-warning btn-sm px-4">Enregistrer</button>
@@ -216,7 +216,7 @@
           <% } %>
         </div>
 
-        <button type="button" class="btn btn-outline-secondary btn-sm mb-3" onclick="addQuestion()">+ Ajouter une question</button>
+        <button type="button" id="addQuestionBtn" class="btn btn-outline-secondary btn-sm mb-3">+ Ajouter une question</button>
         <div><button type="submit" class="btn-save">Sauvegarder le quiz</button></div>
       </form>
     </div>
@@ -247,7 +247,7 @@
         </div>
         <div class="mb-3">
           <label class="form-label">Consignes</label>
-          <textarea name="instructions" class="form-control" rows="4"
+          <textarea id="assignInstructions" name="instructions" class="form-control" rows="4"
                     placeholder="Décrivez ce que les étudiants doivent faire..."><%= courseModule.assignment && courseModule.assignment.instructions ? courseModule.assignment.instructions : '' %></textarea>
         </div>
         <div class="mb-3">
@@ -264,54 +264,34 @@
 </div>
 
 <script>
-function toggleNewFields(type) {
-  ['nVideo','nPdf','nText','nQuiz'].forEach(id => document.getElementById(id).style.display = 'none');
-  if (type === 'video')          document.getElementById('nVideo').style.display = 'flex';
-  else if (type === 'pdf')       document.getElementById('nPdf').style.display = 'flex';
-  else if (type === 'text')      document.getElementById('nText').style.display = 'block';
-  else if (type === 'practice_quiz') document.getElementById('nQuiz').style.display = 'block';
-}
+// Always-visible editors — safe to init immediately
+hugerte.init({ ...window.RTECONFIG, selector: '#moduleDesc' });
+hugerte.init({ ...window.RTECONFIG, selector: '#assignInstructions' });
 
-document.getElementById('lessonList').addEventListener('click', e => {
-  const btn = e.target.closest('[data-edit-id]');
-  if (!btn) return;
-  const { editId, type, title, desc, videourl, dur, fileurl, filename } = btn.dataset;
-  const form = document.getElementById('editForm');
-  form.action = '/institution/dashboard/content/courses/<%- course._id %>/modules/<%- courseModule._id %>/lessons/' + editId;
-  document.getElementById('eTitle').value = title;
-  document.getElementById('eDesc').value  = desc;
-  ['eVideo','ePdf','eText'].forEach(id => document.getElementById(id).style.display = 'none');
-  if (type === 'video') {
-    document.getElementById('eVideo').style.display = 'flex';
-    document.getElementById('eVideoUrl').value = videourl;
-    document.getElementById('eVideoDur').value = dur;
-  } else if (type === 'pdf') {
-    document.getElementById('ePdf').style.display = 'flex';
-    document.getElementById('eFileUrl').value  = fileurl;
-    document.getElementById('eFileName').value = filename;
-  } else if (type === 'text') {
-    document.getElementById('eText').style.display = 'block';
-  }
-  const panel = document.getElementById('editPanel');
-  panel.style.display = 'block';
-  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-});
+// Lesson content map
+const lessonContents = {
+  <% lessons.forEach((lesson, i) => { %>
+    '<%= lesson._id %>': <%- JSON.stringify(lesson.content || '') %><%= i < lessons.length - 1 ? ',' : '' %>
+  <% }) %>
+};
 
+// ── Quiz ──────────────────────────────────────────────────────────────────────
 let qIdx = <%= courseModule.quiz && courseModule.quiz.questions ? courseModule.quiz.questions.length : 0 %>;
-function addQuestion() {
+
+document.getElementById('addQuestionBtn').addEventListener('click', function() {
   var idx = qIdx++;
-  var opts = '';
   var letters = ['a','b','c','d'];
+  var opts = '';
   for (var oi = 0; oi < 4; oi++) {
     opts += '<div class="row g-1 mb-1">' +
       '<div class="col-8"><input type="text" name="questions[' + idx + '][options][' + oi + '][text]" class="form-control form-control-sm" placeholder="Option ' + (oi+1) + '"></div>' +
-      '<div class="col-4"><input type="text" name="questions[' + idx + '][options][' + oi + '][value]" class="form-control form-control-sm" placeholder="' + letters[oi] + '"></div>' +
-      '</div>';
+      '<div class="col-4"><input type="text" name="questions[' + idx + '][options][' + oi + '][value]" class="form-control form-control-sm" value="' + letters[oi] + '"></div>' +
+    '</div>';
   }
   var html = '<div class="question-block">' +
     '<div class="d-flex justify-content-between mb-2">' +
       '<strong class="small text-muted">Question ' + (idx + 1) + '</strong>' +
-      '<button type="button" class="btn btn-sm btn-outline-danger py-0 px-1" onclick="this.closest(\'.question-block\').remove()">×</button>' +
+      '<button type="button" class="btn btn-sm btn-outline-danger py-0 px-1 remove-question">×</button>' +
     '</div>' +
     '<input type="text" name="questions[' + idx + '][text]" class="form-control form-control-sm mb-2" placeholder="Texte de la question" required>' +
     opts +
@@ -320,6 +300,72 @@ function addQuestion() {
       '<div class="col-md-8"><input type="text" name="questions[' + idx + '][explanation]" class="form-control form-control-sm" placeholder="Explication (optionnel)"></div>' +
     '</div>' +
   '</div>';
-  document.getElementById('quizQuestions').insertAdjacentHTML('beforeend', html);
+  var container = document.getElementById('quizQuestions');
+  container.insertAdjacentHTML('beforeend', html);
+  container.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+});
+
+document.getElementById('quizQuestions').addEventListener('click', function(e) {
+  var btn = e.target.closest('.remove-question');
+  if (btn) btn.closest('.question-block').remove();
+});
+
+// ── Lesson fields ─────────────────────────────────────────────────────────────
+function toggleNewFields(type) {
+  ['nVideo','nPdf','nText','nQuiz'].forEach(function(id) {
+    document.getElementById(id).style.display = 'none';
+  });
+  if (type === 'video')              document.getElementById('nVideo').style.display = 'flex';
+  else if (type === 'pdf')           document.getElementById('nPdf').style.display = 'flex';
+  else if (type === 'text')          document.getElementById('nText').style.display = 'block';
+  else if (type === 'practice_quiz') document.getElementById('nQuiz').style.display = 'block';
 }
+
+// Lazy-init nContent editor when the add-lesson panel opens
+var nContentInited = false;
+document.querySelector('details').addEventListener('toggle', function() {
+  if (this.open && !nContentInited) {
+    hugerte.init({ ...window.RTECONFIG, selector: '#nContent' });
+    nContentInited = true;
+  }
+});
+
+// Lazy-init eContent editor + populate fields when edit button clicked
+var eContentInited = false;
+document.getElementById('lessonList').addEventListener('click', function(e) {
+  var btn = e.target.closest('[data-edit-id]');
+  if (!btn) return;
+  var editId   = btn.dataset.editId;
+  var type     = btn.dataset.type;
+  var form     = document.getElementById('editForm');
+  form.action  = '/institution/dashboard/content/courses/<%- course._id %>/modules/<%- courseModule._id %>/lessons/' + editId + '?_method=PUT';
+  document.getElementById('eTitle').value = btn.dataset.title;
+  document.getElementById('eDesc').value  = btn.dataset.desc;
+  ['eVideo','ePdf','eText'].forEach(function(id) {
+    document.getElementById(id).style.display = 'none';
+  });
+  if (type === 'video') {
+    document.getElementById('eVideo').style.display = 'flex';
+    document.getElementById('eVideoUrl').value = btn.dataset.videourl;
+    document.getElementById('eVideoDur').value = btn.dataset.dur;
+  } else if (type === 'pdf') {
+    document.getElementById('ePdf').style.display = 'flex';
+    document.getElementById('eFileUrl').value  = btn.dataset.fileurl;
+    document.getElementById('eFileName').value = btn.dataset.filename;
+  } else if (type === 'text') {
+    document.getElementById('eText').style.display = 'block';
+    if (!eContentInited) {
+      hugerte.init({ ...window.RTECONFIG, selector: '#eContent' });
+      eContentInited = true;
+    }
+    // Wait a tick for the editor to be ready before setting content
+    setTimeout(function() {
+      var ed = hugerte.get('eContent');
+      if (ed) ed.setContent(lessonContents[editId] || '');
+    }, 50);
+  }
+  var panel = document.getElementById('editPanel');
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+});
 </script>

@@ -1,4 +1,4 @@
-<% layout('layouts/main') %>
+<% layout('layouts/institutionBoilerplate') %>
 
 <% headContent = `<style>
   .page-wrapper { margin-top: 80px; padding: 2rem 0 5rem; background: #f8fafc; }
@@ -34,7 +34,7 @@
           <h1>📚 Contenu du cours</h1>
           <p>Gérez tous les cours de votre institution</p>
         </div>
-        <a href="/institution/dashboard/content/courses/new" class="btn-new">+ Nouveau cours</a>
+        <a href="/institution/dashboard/content/courses/new?institutionId=<%= institution ? institution._id : '' %>" class="btn-new">+ Nouveau cours</a>
       </div>
     </div>
 
@@ -46,7 +46,7 @@
       <% if (courses.length === 0) { %>
         <div class="empty-state">
           <p>Aucun cours créé pour le moment.</p>
-          <a href="/institution/dashboard/content/courses/new" class="btn-new">Créer votre premier cours</a>
+          <a href="/institution/dashboard/content/courses/new?institutionId=<%= institution ? institution._id : '' %>" class="btn-new">Créer votre premier cours</a>
         </div>
       <% } else { %>
         <% courses.forEach(course => { %>
