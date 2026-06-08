@@ -99,7 +99,7 @@
       <div class="inst-nav-avatar">
         <%= currentUser.name ? currentUser.name[0].toUpperCase() : currentUser.username[0].toUpperCase() %>
       </div>
-      <span class="inst-nav-username d-none d-md-block"><%= currentUser.name %> <%= currentUser.surname %></span>
+      <a href="/user/<%= currentUser._id %>" class="inst-nav-username d-none d-md-block" style="text-decoration:none;color:inherit;"><%= currentUser.name %> <%= currentUser.surname %></a>
     <% } %>
     <a href="/logout" class="inst-nav-logout">Déconnexion</a>
   </div>
