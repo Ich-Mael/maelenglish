@@ -1,0 +1,119 @@
+<% const _inst    = typeof institution !== 'undefined' ? institution : null; %>
+<% const _color   = typeof institutionColor !== 'undefined' ? institutionColor : '#0e7490'; %>
+<% const _initials = _inst ? (_inst.name || 'I').substring(0, 2).toUpperCase() : 'I'; %>
+
+<style>
+  .inst-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    height: 64px;
+    background: #fff;
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 1px 8px rgba(0,0,0,.06);
+    display: flex; align-items: center;
+    padding: 0 1.5rem; gap: 1.25rem;
+  }
+  .inst-nav-brand {
+    display: flex; align-items: center; gap: .65rem;
+    text-decoration: none; flex-shrink: 0;
+  }
+  .inst-nav-logo {
+    width: 36px; height: 36px; border-radius: 8px; object-fit: contain;
+    border: 1px solid #f1f5f9;
+  }
+  .inst-nav-logo-fallback {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: var(--inst-brand); color: #fff;
+    font-size: .75rem; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; letter-spacing: .03em;
+  }
+  .inst-nav-name {
+    font-size: .9rem; font-weight: 700; color: #1e293b;
+    max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .inst-nav-divider {
+    width: 1px; height: 28px; background: #e2e8f0; flex-shrink: 0;
+  }
+  .inst-nav-links {
+    display: flex; align-items: center; gap: .15rem; flex: 1; overflow: hidden;
+  }
+  .inst-nav-link {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .45rem .75rem; border-radius: 8px;
+    font-size: .85rem; font-weight: 600; text-decoration: none;
+    color: #64748b; white-space: nowrap;
+    transition: background .15s, color .15s;
+  }
+  .inst-nav-link:hover { background: #f8fafc; color: #1e293b; }
+  .inst-nav-link.active { background: color-mix(in srgb, var(--inst-brand) 10%, #fff); color: var(--inst-brand); }
+  .inst-nav-user {
+    display: flex; align-items: center; gap: .65rem; flex-shrink: 0; margin-left: auto;
+  }
+  .inst-nav-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--inst-brand); color: #fff;
+    font-size: .78rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .inst-nav-username {
+    font-size: .85rem; font-weight: 600; color: #334155;
+    max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .inst-nav-logout {
+    font-size: .82rem; color: #94a3b8; text-decoration: none;
+    padding: .3rem .65rem; border-radius: 6px;
+    transition: background .15s, color .15s; white-space: nowrap;
+  }
+  .inst-nav-logout:hover { background: #fee2e2; color: #dc2626; }
+  @media (max-width: 768px) {
+    .inst-nav-links { display: none; }
+    .inst-nav-name  { max-width: 120px; }
+  }
+</style>
+
+<nav class="inst-nav" style="--inst-brand: <%= _color %>">
+  <!-- Brand -->
+  <a href="/institution/dashboard" class="inst-nav-brand">
+    <% if (_inst && _inst.logoUrl) { %>
+      <img src="<%= _inst.logoUrl %>" alt="<%= _inst.name %>" class="inst-nav-logo">
+    <% } else { %>
+      <div class="inst-nav-logo-fallback"><%= _initials %></div>
+    <% } %>
+    <span class="inst-nav-name"><%= _inst ? _inst.name : 'Institution' %></span>
+  </a>
+
+  <div class="inst-nav-divider"></div>
+
+  <!-- Nav links -->
+  <div class="inst-nav-links">
+    <a href="/institution/dashboard"              class="inst-nav-link" data-path="/institution/dashboard">🏠 Tableau de bord</a>
+    <a href="/institution/dashboard/content"      class="inst-nav-link" data-path="/institution/dashboard/content">📚 Contenu</a>
+    <a href="/institution/dashboard/courses"      class="inst-nav-link" data-path="/institution/dashboard/courses">📊 Cours</a>
+    <a href="/institution/dashboard/students"     class="inst-nav-link" data-path="/institution/dashboard/students">👥 Étudiants</a>
+    <a href="/institution/dashboard/announcements" class="inst-nav-link" data-path="/institution/dashboard/announcements">📢 Annonces</a>
+  </div>
+
+  <!-- User -->
+  <div class="inst-nav-user">
+    <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+      <div class="inst-nav-avatar">
+        <%= currentUser.name ? currentUser.name[0].toUpperCase() : currentUser.username[0].toUpperCase() %>
+      </div>
+      <span class="inst-nav-username d-none d-md-block"><%= currentUser.name %> <%= currentUser.surname %></span>
+    <% } %>
+    <a href="/logout" class="inst-nav-logout">Déconnexion</a>
+  </div>
+</nav>
+
+<script>
+(function () {
+  var path = window.location.pathname;
+  document.querySelectorAll('.inst-nav-link').forEach(function (a) {
+    var ap = a.getAttribute('data-path');
+    // exact match for dashboard home, prefix match for sub-sections
+    if (ap === '/institution/dashboard' ? path === ap : path.startsWith(ap)) {
+      a.classList.add('active');
+    }
+  });
+})();
+</script>

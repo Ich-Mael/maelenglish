@@ -44,6 +44,7 @@ module.exports.loadInstitution = async (req, res, next) => {
                 req.session.activeInstitutionId = req.institution._id.toString();
                 res.locals.institutionColor = req.institution.primaryColor || '#0e7490';
                 res.locals.institutionId = req.institution._id.toString();
+                res.locals.institution = req.institution;
             }
             return next();
         }
@@ -69,6 +70,7 @@ module.exports.loadInstitution = async (req, res, next) => {
         req.institution = institution;
         res.locals.institutionColor = institution.primaryColor || '#0e7490';
         res.locals.institutionId = institution._id.toString();
+        res.locals.institution = institution;
         next();
     } catch (err) {
         next(err);
