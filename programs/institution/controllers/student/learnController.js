@@ -195,7 +195,8 @@ module.exports.completeLesson = catchAsync(async (req, res) => {
     });
 
     if (!lesson) {
-        return res.status(404).json({ error: 'Leçon introuvable' });
+        req.flash('error', 'Leçon introuvable.');
+        return res.redirect(`/institution/learn/courses/${courseId}/modules/${moduleId}`);
     }
 
     await InstitutionLessonProgress.findOneAndUpdate(
@@ -204,7 +205,7 @@ module.exports.completeLesson = catchAsync(async (req, res) => {
         { upsert: true }
     );
 
-    res.json({ ok: true });
+    res.redirect(`/institution/learn/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}`);
 });
 
 // ─── QUIZ ─────────────────────────────────────────────────────────────────────
@@ -212,18 +213,29 @@ module.exports.completeLesson = catchAsync(async (req, res) => {
 module.exports.quiz = catchAsync(async (req, res) => {
     const { courseId, moduleId } = req.params;
 
-    const mod = await InstitutionModule.findOne({
-        _id: moduleId,
-        courseId,
-        institutionId: req.institution._id
-    });
+    const [course, courseModule] = await Promise.all([
+        InstitutionCourse.findById(courseId).select('title _id').lean(),
+        InstitutionModule.findOne({ _id: moduleId, courseId, institutionId: req.institution._id })
+    ]);
 
-    if (!mod || !mod.quiz) {
+    if (!courseModule || !courseModule.quiz) {
         req.flash('error', 'Quiz non trouvé.');
-        return res.redirect(`/institution/learn/courses/${courseId}/modules/${moduleId}`);
+        return res.redirect(`/institution/learn/courses/${courseId}/modules/${moduleId}/overview`);
     }
 
-    res.render('institution-dashboard/learn/quiz', { module: mod, courseId, moduleId });
+    const lastAttempt = await InstitutionQuizAttempt.findOne({
+        userId: req.user._id,
+        moduleId
+    }).sort({ createdAt: -1 }).lean();
+
+    res.render('institution-dashboard/learn/quiz', {
+        course,
+        courseModule,
+        quiz: courseModule.quiz,
+        lastAttempt,
+        submitUrl: `/institution/learn/courses/${courseId}/modules/${moduleId}/quiz/submit`,
+        backUrl: `/institution/learn/courses/${courseId}/modules/${moduleId}/overview`
+    });
 });
 
 module.exports.submitQuiz = catchAsync(async (req, res) => {
@@ -237,7 +249,8 @@ module.exports.submitQuiz = catchAsync(async (req, res) => {
     });
 
     if (!mod || !mod.quiz) {
-        return res.status(404).json({ error: 'Quiz not found' });
+        req.flash('error', 'Quiz introuvable.');
+        return res.redirect(`/institution/learn/courses/${courseId}/modules/${moduleId}/overview`);
     }
 
     let score = 0;
@@ -265,8 +278,12 @@ module.exports.submitQuiz = catchAsync(async (req, res) => {
         submittedAt: new Date()
     });
 
-    req.flash('success', `Quiz soumis. Score : ${Math.round(score)}%`);
-    res.json({ ok: true, score: Math.round(score), passed: attempt.passed });
+    const flashType = attempt.passed ? 'success' : 'error';
+    const flashMsg  = attempt.passed
+        ? `Quiz réussi ! Score : ${Math.round(score)}%`
+        : `Score insuffisant : ${Math.round(score)}%. Vous pouvez réessayer.`;
+    req.flash(flashType, flashMsg);
+    res.redirect(`/institution/learn/courses/${courseId}/modules/${moduleId}/quiz`);
 });
 
 // ─── ASSIGNMENT ───────────────────────────────────────────────────────────────
@@ -274,18 +291,33 @@ module.exports.submitQuiz = catchAsync(async (req, res) => {
 module.exports.assignment = catchAsync(async (req, res) => {
     const { courseId, moduleId } = req.params;
 
-    const mod = await InstitutionModule.findOne({
-        _id: moduleId,
-        courseId,
-        institutionId: req.institution._id
-    });
+    const [course, courseModule] = await Promise.all([
+        InstitutionCourse.findById(courseId).select('title _id').lean(),
+        InstitutionModule.findOne({ _id: moduleId, courseId, institutionId: req.institution._id })
+    ]);
 
-    if (!mod || !mod.assignment) {
+    if (!courseModule || !courseModule.assignment) {
         req.flash('error', 'Devoir non trouvé.');
-        return res.redirect(`/institution/learn/courses/${courseId}/modules/${moduleId}`);
+        return res.redirect(`/institution/learn/courses/${courseId}/modules/${moduleId}/overview`);
     }
 
-    res.render('institution-dashboard/learn/assignment', { module: mod, courseId, moduleId });
+    const existing = await InstitutionAssignmentSubmission.findOne({
+        userId: req.user._id,
+        moduleId
+    }).lean();
+
+    res.render('institution-dashboard/learn/assignment', {
+        course,
+        courseModule,
+        title: courseModule.assignment.title || 'Devoir',
+        instructions: courseModule.assignment.instructions || '',
+        submissionType: courseModule.assignment.submissionType || 'text',
+        maxScore: courseModule.assignment.maxScore || 100,
+        existing,
+        submitUrl: `/institution/learn/courses/${courseId}/modules/${moduleId}/assignment/submit`,
+        backUrl: `/institution/learn/courses/${courseId}/modules/${moduleId}/overview`,
+        assignmentType: 'module_assignment'
+    });
 });
 
 module.exports.submitAssignment = catchAsync(async (req, res) => {
@@ -299,7 +331,8 @@ module.exports.submitAssignment = catchAsync(async (req, res) => {
     });
 
     if (!mod || !mod.assignment) {
-        return res.status(404).json({ error: 'Assignment not found' });
+        req.flash('error', 'Devoir introuvable.');
+        return res.redirect(`/institution/learn/courses/${courseId}/modules/${moduleId}/overview`);
     }
 
     await InstitutionAssignmentSubmission.create({
@@ -313,7 +346,7 @@ module.exports.submitAssignment = catchAsync(async (req, res) => {
     });
 
     req.flash('success', 'Devoir soumis.');
-    res.json({ ok: true });
+    res.redirect(`/institution/learn/courses/${courseId}/modules/${moduleId}/assignment`);
 });
 
 // ─── FINAL EXAM ───────────────────────────────────────────────────────────────

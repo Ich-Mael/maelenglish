@@ -7,8 +7,19 @@
   .lesson-header h1 { margin: 0 0 .25rem; font-size: 1.5rem; font-weight: 800; }
   .lesson-header p  { margin: 0; opacity: .8; font-size: .9rem; }
   .lesson-content-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07); padding: 2rem; margin-bottom: 1.5rem; }
-  .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; }
-  .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; border-radius: 12px; }
+  /* Video player */
+  .video-card { background: #0f172a; border-radius: 18px; overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,.22); margin-bottom: 1.5rem; border-top: 4px solid var(--brand); }
+  .video-shell { position: relative; padding-bottom: 56.25%; height: 0; }
+  .video-shell iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+  .video-loader { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #0f172a; transition: opacity .4s; z-index: 2; pointer-events: none; }
+  .video-loader .spin { width: 52px; height: 52px; border: 4px solid rgba(255,255,255,.1); border-top-color: var(--brand); border-radius: 50%; animation: vspin .75s linear infinite; }
+  @keyframes vspin { to { transform: rotate(360deg); } }
+  .video-meta { padding: .7rem 1.25rem; display: flex; align-items: center; gap: .75rem; }
+  .video-live { display: flex; align-items: center; gap: .45rem; font-size: .75rem; color: var(--brand); font-weight: 700; letter-spacing: .04em; }
+  .video-live-dot { width: 7px; height: 7px; background: var(--brand); border-radius: 50%; animation: vpulse 1.6s ease-in-out infinite; flex-shrink: 0; }
+  @keyframes vpulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+  .video-badge { font-size: .7rem; font-weight: 700; padding: .18rem .55rem; border-radius: 20px; background: rgba(255,255,255,.09); color: rgba(255,255,255,.6); }
+  .video-duration { margin-left: auto; font-size: .75rem; color: rgba(255,255,255,.45); display: flex; align-items: center; gap: .3rem; }
   .lesson-nav { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem; }
   .btn-nav { display: inline-flex; align-items: center; gap: .5rem; padding: .7rem 1.4rem; border-radius: 12px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; transition: opacity .2s; }
   .btn-back    { background: #f1f5f9; color: #475569; }
@@ -63,42 +74,60 @@
 
         <%- include('../../partials/flash') %>
 
-        <div class="lesson-content-card">
-          <% if (lesson.type === 'video') { %>
-            <% if (lesson.videoUrl) { %>
-              <%
-                const isYT    = lesson.videoUrl.includes('youtube') || lesson.videoUrl.includes('youtu.be');
-                const isVimeo = lesson.videoUrl.includes('vimeo');
-                let embed = lesson.videoUrl;
-                if (isYT) {
-                  const m = lesson.videoUrl.match(/(?:v=|youtu\.be\/)([^&?]+)/);
-                  if (m) embed = 'https://www.youtube.com/embed/' + m[1];
+        <% if (lesson.type === 'video') { %>
+          <% if (lesson.videoUrl) { %>
+            <%
+              const isYT    = lesson.videoUrl.includes('youtube') || lesson.videoUrl.includes('youtu.be');
+              const isVimeo = lesson.videoUrl.includes('vimeo');
+              let embed = lesson.videoUrl;
+              if (isYT) {
+                const m = lesson.videoUrl.match(/(?:v=|youtu\.be\/)([^&?]+)/);
+                if (m) embed = 'https://www.youtube.com/embed/' + m[1] + '?rel=0&modestbranding=1';
+              }
+              if (isVimeo) {
+                if (lesson.videoUrl.includes('player.vimeo.com')) {
+                  embed = lesson.videoUrl.replace(/&amp;/g, '&');
+                } else {
+                  const m = lesson.videoUrl.match(/vimeo\.com\/(\d+)/);
+                  if (m) embed = 'https://player.vimeo.com/video/' + m[1];
                 }
-                if (isVimeo) {
-                  if (lesson.videoUrl.includes('player.vimeo.com')) {
-                    // Already embed format — decode HTML entities from copied embed code
-                    embed = lesson.videoUrl.replace(/&amp;/g, '&');
-                  } else {
-                    const m = lesson.videoUrl.match(/vimeo\.com\/(\d+)/);
-                    if (m) embed = 'https://player.vimeo.com/video/' + m[1];
-                  }
-                }
-              %>
-              <div class="video-container mb-3">
-                <iframe src="<%- embed %>" allowfullscreen allow="autoplay; fullscreen; picture-in-picture" title="<%= lesson.title %>"></iframe>
+              }
+              const sourceLabel = isVimeo ? 'Vimeo' : isYT ? 'YouTube' : 'Vidéo';
+            %>
+            <div class="video-card">
+              <div class="video-shell">
+                <div class="video-loader" id="vloader">
+                  <div class="spin"></div>
+                </div>
+                <iframe src="<%- embed %>"
+                        allowfullscreen
+                        allow="autoplay; fullscreen; picture-in-picture"
+                        title="<%= lesson.title %>"
+                        onload="const l=document.getElementById('vloader');l.style.opacity='0';setTimeout(()=>l.remove(),400)">
+                </iframe>
               </div>
-            <% } else { %>
-              <p class="text-muted">Aucune vidéo configurée.</p>
-            <% } %>
-            <% if (lesson.videoDuration) { %><p class="text-muted small"><i class="bi bi-clock me-1"></i><%= lesson.videoDuration %> min</p><% } %>
+              <div class="video-meta">
+                <span class="video-live"><span class="video-live-dot"></span>En cours</span>
+                <span class="video-badge"><%= sourceLabel %></span>
+                <% if (lesson.videoDuration) { %>
+                  <span class="video-duration"><i class="bi bi-clock"></i> <%= lesson.videoDuration %> min</span>
+                <% } %>
+              </div>
+            </div>
+          <% } else { %>
+            <div class="lesson-content-card">
+              <p class="text-muted mb-0">Aucune vidéo configurée.</p>
+            </div>
+          <% } %>
 
-          <% } else if (lesson.type === 'text') { %>
+        <% } else { %>
+        <div class="lesson-content-card">
+          <% if (lesson.type === 'text') { %>
             <% if (lesson.content) { %>
               <div style="line-height:1.75;color:#334155;"><%- lesson.content %></div>
             <% } else { %>
               <p class="text-muted">Aucun contenu textuel configuré.</p>
             <% } %>
-
           <% } else if (lesson.type === 'pdf') { %>
             <% if (lesson.fileUrl) { %>
               <div class="text-center py-4">
@@ -111,7 +140,6 @@
             <% } else { %>
               <p class="text-muted">Aucun fichier configuré.</p>
             <% } %>
-
           <% } else if (lesson.type === 'practice_quiz') { %>
             <% if (lesson.practiceQuiz && lesson.practiceQuiz.questions && lesson.practiceQuiz.questions.length > 0) { %>
               <h5 class="fw-bold mb-3">🧩 Quiz de pratique</h5>
@@ -133,6 +161,7 @@
             <% } %>
           <% } %>
         </div>
+        <% } %>
 
         <!-- Navigation -->
         <div class="lesson-nav">

@@ -1,4 +1,4 @@
-<% layout('layouts/main') %>
+<% layout('layouts/institutionBoilerplate') %>
 
 <% headContent = `<style>
   .page-wrapper { margin-top: 80px; padding: 2rem 0 5rem; background: #f8fafc; }
@@ -16,7 +16,7 @@
 </style>` %>
 
 <div class="page-wrapper">
-  <div class="container" style="max-width:600px;">
+  <div class="container" style="max-width:860px;">
 
     <div class="page-header">
       <h1>➕ Nouveau cours</h1>
@@ -27,6 +27,7 @@
 
     <div class="section-card">
       <form action="/institution/dashboard/content/courses" method="POST">
+        <input type="hidden" name="institutionId" value="<%= institution ? institution._id : '' %>">
         <div class="mb-3">
           <label class="form-label">Titre du cours *</label>
           <input type="text" name="title" class="form-control" required placeholder="ex: Introduction à la gestion de projet">
@@ -34,20 +35,36 @@
 
         <div class="mb-3">
           <label class="form-label">Description</label>
-          <textarea name="description" class="form-control" rows="4" placeholder="Décrivez le contenu et les objectifs du cours..."></textarea>
+          <textarea id="courseDesc" name="description" class="form-control" rows="4" placeholder="Décrivez le contenu et les objectifs du cours..."></textarea>
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Image (URL)</label>
+          <label class="form-label">Prérequis</label>
+          <textarea id="coursePrereqs" name="prerequisites" class="form-control" rows="3" placeholder="Listez les connaissances nécessaires avant de suivre ce cours..."></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Image de couverture (URL)</label>
           <input type="url" name="imageUrl" class="form-control" placeholder="https://example.com/image.jpg">
         </div>
 
         <div class="d-flex gap-2">
           <button type="submit" class="btn-save">Créer le cours</button>
-          <a href="/institution/dashboard/content" class="btn-cancel">Annuler</a>
+          <a href="/institution/dashboard/content<%= typeof institutionId !== 'undefined' ? '?institutionId=' + institutionId : '' %>" class="btn-cancel">Annuler</a>
         </div>
       </form>
     </div>
 
   </div>
 </div>
+
+<script>
+hugerte.init({ ...window.RTECONFIG, selector: '#courseDesc', height: 240 });
+hugerte.init({ ...window.RTECONFIG, selector: '#coursePrereqs', height: 180 });
+document.querySelector('form').addEventListener('submit', function() {
+  ['courseDesc', 'coursePrereqs'].forEach(function(id) {
+    var ed = window.hugerte && window.hugerte.get(id);
+    if (ed) document.getElementById(id).value = ed.getContent();
+  });
+});
+</script>

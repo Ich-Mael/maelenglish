@@ -51,18 +51,23 @@
 </head>
 
 <body>
-  <%- include('../partials/navbar') %>
+  <% if (typeof learnMode !== 'undefined' && learnMode) { %>
+    <%- include('../partials/learnNavbar') %>
+  <% } else { %>
+    <%- include('../partials/navbar') %>
     <%- include('../partials/flash') %>
+  <% } %>
 
-      <main id="main">
-        <%- body %>
-      </main>
+  <main id="main">
+    <%- body %>
+  </main>
 
-      <%- include('../partials/footer') %>
-
-        <a href="#" class="back-to-top d-flex align-items-center justify-content-center">
-          <i class="bi bi-arrow-up-short"></i>
-        </a>
+  <% if (!(typeof learnMode !== 'undefined' && learnMode)) { %>
+    <%- include('../partials/footer') %>
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center">
+      <i class="bi bi-arrow-up-short"></i>
+    </a>
+  <% } %>
 
         <!-- Vendor JS -->
         <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

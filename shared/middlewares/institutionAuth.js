@@ -117,6 +117,8 @@ module.exports.loadStudentInstitution = async (req, res, next) => {
 
         req.institution = institution;
         res.locals.institutionColor = institution.primaryColor || '#0e7490';
+        res.locals.institution = institution;
+        res.locals.learnMode = true;
         next();
     } catch (err) {
         next(err);

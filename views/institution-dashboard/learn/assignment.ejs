@@ -51,7 +51,7 @@
         <h2>📤 Votre soumission</h2>
         <div class="d-flex align-items-center gap-2 mb-3">
           <span class="status-badge badge-<%= existing.status %>">
-            <% if (existing.status === 'graded') { %>✓ Noté : <%= existing.grade %>/<%= existing.maxScore %>
+            <% if (existing.status === 'graded') { %>✓ Noté : <%= existing.grade %>/<%= maxScore %>
             <% } else if (existing.status === 'returned') { %>↩ Retourné
             <% } else { %>⏳ En attente de correction<% } %>
           </span>

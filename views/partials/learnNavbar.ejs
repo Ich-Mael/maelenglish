@@ -1,0 +1,121 @@
+<style>
+  .learn-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    height: 64px;
+    background: #fff;
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 1px 6px rgba(0,0,0,.06);
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    gap: 1rem;
+  }
+  .learn-nav-back {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    color: #475569;
+    font-size: .88rem;
+    font-weight: 600;
+    text-decoration: none;
+    padding: .4rem .8rem;
+    border-radius: 8px;
+    transition: background .15s, color .15s;
+    white-space: nowrap;
+  }
+  .learn-nav-back:hover { background: #f1f5f9; color: #1e293b; }
+  .learn-nav-brand {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .55rem;
+    font-weight: 700;
+    font-size: .95rem;
+    color: #1e293b;
+    overflow: hidden;
+  }
+  .learn-nav-brand-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--learn-brand, #0e7490);
+    flex-shrink: 0;
+  }
+  .learn-nav-brand-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .learn-nav-user {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    flex-shrink: 0;
+  }
+  .learn-nav-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--learn-brand, #0e7490);
+    color: #fff;
+    font-size: .8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .learn-nav-username {
+    font-size: .85rem;
+    font-weight: 600;
+    color: #334155;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .learn-nav-logout {
+    font-size: .82rem;
+    color: #94a3b8;
+    text-decoration: none;
+    padding: .3rem .65rem;
+    border-radius: 6px;
+    transition: background .15s, color .15s;
+    white-space: nowrap;
+  }
+  .learn-nav-logout:hover { background: #fee2e2; color: #dc2626; }
+  @media (max-width: 576px) {
+    .learn-nav-username { display: none; }
+    .learn-nav-brand-name { max-width: 140px; }
+  }
+</style>
+
+<% const _learnColor = typeof institutionColor !== 'undefined' ? institutionColor : '#0e7490'; %>
+<% const _inst = typeof institution !== 'undefined' ? institution : null; %>
+
+<nav class="learn-nav" style="--learn-brand: <%= _learnColor %>">
+  <a href="/institution/learn/courses" class="learn-nav-back">
+    <i class="bi bi-arrow-left"></i>
+    <span>Mes cours</span>
+  </a>
+
+  <div class="learn-nav-brand">
+    <span class="learn-nav-brand-dot"></span>
+    <span class="learn-nav-brand-name"><%= _inst ? _inst.name : 'AfroHK' %></span>
+  </div>
+
+  <div class="learn-nav-user">
+    <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+      <div class="learn-nav-avatar">
+        <%= currentUser.name ? currentUser.name[0].toUpperCase() : currentUser.username[0].toUpperCase() %>
+      </div>
+      <span class="learn-nav-username"><%= currentUser.name %> <%= currentUser.surname %></span>
+    <% } %>
+    <a href="/logout" class="learn-nav-logout">Déconnexion</a>
+  </div>
+</nav>
