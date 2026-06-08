@@ -63,7 +63,8 @@
                   </span>
                 </div>
               </div>
-              <div class="d-flex gap-2">
+              <div class="d-flex gap-2 flex-wrap">
+                <a href="/institution/dashboard/content/courses/<%= course._id %>/submissions" class="btn-outline-secondary btn-small" style="color:#5d06ba;border-color:#c4b5fd;">📋 Soumissions</a>
                 <a href="/institution/dashboard/content/courses/<%= course._id %>" class="btn-outline-secondary btn-small">Voir</a>
                 <a href="/institution/dashboard/content/courses/<%= course._id %>/edit" class="btn-outline-secondary btn-small">Modifier</a>
                 <form action="/institution/dashboard/content/courses/<%= course._id %>?_method=DELETE" method="POST" style="display: inline;"
