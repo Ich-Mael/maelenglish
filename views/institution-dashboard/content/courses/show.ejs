@@ -32,7 +32,8 @@
           <h1><%= course.title %></h1>
           <p><span class="badge"><%= course.isActive ? '✓ Actif' : '● Brouillon' %></span></p>
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="/institution/dashboard/content/courses/<%= course._id %>/submissions" class="btn btn-light btn-sm" style="background:#fff3;color:#fff;border-color:#fff5;">📋 Soumissions</a>
           <a href="/institution/dashboard/content/courses/<%= course._id %>/edit" class="btn btn-light btn-sm">Modifier</a>
           <a href="/institution/dashboard/content<%= typeof institutionId !== 'undefined' ? '?institutionId=' + institutionId : '' %>" class="btn btn-light btn-sm">← Tous les cours</a>
         </div>

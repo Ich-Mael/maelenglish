@@ -7,6 +7,7 @@ const adminOnly = [isLoggedIn, isInstitutionAdmin, loadInstitution];
 
 const courseController = require('../controllers/admin/courseController');
 const moduleController = require('../controllers/admin/moduleController');
+const gradingController = require('../controllers/admin/gradingController');
 
 // ─── COURSE CRUD ─────────────────────────────────────────────────────────────
 
@@ -46,5 +47,11 @@ router.post('/courses/:courseId/modules/:moduleId/assignment', ...adminOnly, mod
 
 router.post('/courses/:id/final-exam', ...adminOnly, courseController.saveFinalExam);
 router.post('/courses/:id/final-project', ...adminOnly, courseController.saveFinalProject);
+
+// ─── GRADING ─────────────────────────────────────────────────────────────────
+
+router.get('/courses/:courseId/submissions', ...adminOnly, gradingController.submissions);
+router.post('/courses/:courseId/assignments/:submissionId/grade', ...adminOnly, gradingController.gradeAssignment);
+router.post('/courses/:courseId/final-projects/:submissionId/grade', ...adminOnly, gradingController.gradeFinalProject);
 
 module.exports = router;
