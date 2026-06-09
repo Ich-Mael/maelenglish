@@ -335,6 +335,16 @@ module.exports.submitAssignment = catchAsync(async (req, res) => {
         return res.redirect(`/institution/learn/courses/${courseId}/modules/${moduleId}/overview`);
     }
 
+    const alreadySubmitted = await InstitutionAssignmentSubmission.findOne({
+        userId: req.user._id,
+        moduleId
+    });
+
+    if (alreadySubmitted) {
+        req.flash('error', 'Vous avez déjà soumis ce devoir.');
+        return res.redirect(`/institution/learn/courses/${courseId}/modules/${moduleId}/assignment`);
+    }
+
     await InstitutionAssignmentSubmission.create({
         userId: req.user._id,
         moduleId,
