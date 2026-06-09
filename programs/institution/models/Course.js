@@ -25,6 +25,12 @@ const institutionCourseSchema = new mongoose.Schema(
                 ref: 'InstitutionModule'
             }
         ],
+        instructors: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'InstitutionInstructor'
+            }
+        ],
         finalExam: {
             title: String,
             passingScore: {

@@ -1,4 +1,4 @@
-const { InstitutionCourse } = require('../../models');
+const { InstitutionCourse, InstitutionInstructor } = require('../../models');
 const catchAsync = require('../../../../shared/utilities/catchAsync');
 
 module.exports.index = catchAsync(async (req, res) => {
@@ -39,17 +39,20 @@ module.exports.create = catchAsync(async (req, res) => {
 });
 
 module.exports.show = catchAsync(async (req, res) => {
-    const course = await InstitutionCourse.findOne({
-        _id: req.params.id,
-        institutionId: req.institution._id
-    }).populate('modules');
+    const [course, allInstructors] = await Promise.all([
+        InstitutionCourse.findOne({
+            _id: req.params.id,
+            institutionId: req.institution._id
+        }).populate('modules').populate('instructors', 'name title photoUrl'),
+        InstitutionInstructor.find({ institutionId: req.institution._id }).select('name title')
+    ]);
 
     if (!course) {
         req.flash('error', 'Cours introuvable.');
         return res.redirect('/institution/dashboard/content');
     }
 
-    res.render('institution-dashboard/content/courses/show', { course });
+    res.render('institution-dashboard/content/courses/show', { course, allInstructors });
 });
 
 module.exports.edit = catchAsync(async (req, res) => {

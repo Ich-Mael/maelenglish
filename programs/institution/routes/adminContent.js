@@ -51,12 +51,16 @@ router.post('/courses/:id/final-project', ...adminOnly, courseController.saveFin
 
 // ─── INSTRUCTORS ─────────────────────────────────────────────────────────────
 
-router.get('/instructors',          ...adminOnly, instructorController.index);
-router.get('/instructors/new',      ...adminOnly, instructorController.new);
-router.post('/instructors',         ...adminOnly, instructorController.create);
-router.get('/instructors/:id/edit', ...adminOnly, instructorController.edit);
-router.put('/instructors/:id',      ...adminOnly, instructorController.update);
-router.delete('/instructors/:id',   ...adminOnly, instructorController.destroy);
+router.get('/instructors',              ...adminOnly, instructorController.index);
+router.get('/instructors/search',       ...adminOnly, instructorController.search);
+router.post('/instructors',             ...adminOnly, instructorController.add);
+router.get('/instructors/:id/edit',     ...adminOnly, instructorController.edit);
+router.put('/instructors/:id',          ...adminOnly, instructorController.update);
+router.delete('/instructors/:id',       ...adminOnly, instructorController.destroy);
+
+// ─── COURSE INSTRUCTOR ASSIGNMENT ───────────────────────────────────────────
+
+router.post('/courses/:courseId/instructors', ...adminOnly, instructorController.assignToCourse);
 
 // ─── GRADING ─────────────────────────────────────────────────────────────────
 

@@ -131,6 +131,84 @@
       </div>
     </div>
 
+    <!-- Instructors -->
+    <div class="card-section">
+      <h2>
+        Instructeurs
+        <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#newInstructorForm">
+          + Créer un instructeur
+        </button>
+      </h2>
+
+      <!-- Create form (collapsed by default) -->
+      <div class="collapse mb-3" id="newInstructorForm">
+        <div style="background:#f8f5ff;border-radius:12px;padding:1.25rem;border:1px solid #ede8f8;">
+          <p class="fw-semibold mb-3" style="font-size:.9rem;">Nouveau compte instructeur pour <em><%= institution.name %></em></p>
+          <form action="/admin/institutions/<%= institution._id %>/instructors" method="POST">
+            <div class="row g-2 mb-2">
+              <div class="col-md-4">
+                <input type="text" name="name" class="form-control form-control-sm" placeholder="Prénom *" required>
+              </div>
+              <div class="col-md-4">
+                <input type="text" name="surname" class="form-control form-control-sm" placeholder="Nom *" required>
+              </div>
+              <div class="col-md-4">
+                <select name="gender" class="form-select form-select-sm" required>
+                  <option value="" disabled selected>Genre *</option>
+                  <option value="male">Homme</option>
+                  <option value="female">Femme</option>
+                </select>
+              </div>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-md-5">
+                <input type="email" name="email" class="form-control form-control-sm" placeholder="Email *" required>
+              </div>
+              <div class="col-md-4">
+                <input type="text" name="username" class="form-control form-control-sm" placeholder="Nom d'utilisateur *" required>
+              </div>
+              <div class="col-md-3">
+                <input type="text" name="title" class="form-control form-control-sm" placeholder="Titre / Fonction">
+              </div>
+            </div>
+            <div class="row g-2 mb-3">
+              <div class="col-md-8">
+                <input type="url" name="photoUrl" class="form-control form-control-sm" placeholder="URL de photo (optionnel)">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-sm btn-primary px-4">Créer et envoyer l'invitation</button>
+          </form>
+        </div>
+      </div>
+
+      <% if (!instructors || instructors.length === 0) { %>
+        <p class="text-muted small">Aucun instructeur pour cette institution.</p>
+      <% } else { %>
+        <% instructors.forEach(inst => { %>
+          <div class="admin-row">
+            <% if (inst.photoUrl) { %>
+              <img src="<%= inst.photoUrl %>" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;">
+            <% } else { %>
+              <div style="width:36px;height:36px;border-radius:50%;background:#ede8f8;color:#5d06ba;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;flex-shrink:0;">
+                <%= inst.name[0].toUpperCase() %>
+              </div>
+            <% } %>
+            <div class="flex-grow-1">
+              <div class="fw-semibold"><%= inst.name %></div>
+              <% if (inst.title) { %><div style="font-size:.78rem;color:#5d06ba;"><%= inst.title %></div><% } %>
+              <% if (inst.userId) { %><div class="text-muted small">@<%= inst.userId.username %> · <%= inst.userId.email %></div><% } %>
+            </div>
+            <% if (inst.userId) { %>
+              <span class="badge <%= inst.userId.isVerified ? 'bg-success' : 'bg-warning text-dark' %>" style="font-size:.7rem;">
+                <%= inst.userId.isVerified ? 'Vérifié' : 'En attente' %>
+              </span>
+              <a href="/admin/users/<%= inst.userId._id %>/edit" class="btn btn-sm btn-outline-secondary ms-1 py-0 px-2">✎</a>
+            <% } %>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+
     <div class="mt-2">
       <a href="/admin/institutions" class="btn btn-outline-secondary btn-sm">← Retour à la liste</a>
     </div>

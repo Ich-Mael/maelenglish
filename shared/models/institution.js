@@ -65,11 +65,32 @@ const institutionSchema = new Schema({
         default: true
     },
 
-    // Branding
+    // Branding — up to 3 brand colors
     primaryColor: {
         type: String,
         trim: true,
         default: '#0e7490'
+    },
+    secondaryColor: {
+        type: String,
+        trim: true,
+        default: ''
+    },
+    accentColor: {
+        type: String,
+        trim: true,
+        default: ''
+    },
+
+    // Social media & web presence
+    socialMedia: {
+        website:   { type: String, trim: true, default: '' },
+        facebook:  { type: String, trim: true, default: '' },
+        instagram: { type: String, trim: true, default: '' },
+        twitter:   { type: String, trim: true, default: '' },
+        linkedin:  { type: String, trim: true, default: '' },
+        youtube:   { type: String, trim: true, default: '' },
+        whatsapp:  { type: String, trim: true, default: '' }
     },
 
     // AfrohK admin who created this institution

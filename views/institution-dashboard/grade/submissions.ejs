@@ -1,0 +1,205 @@
+<%
+  layout(false);
+  const _color = typeof institutionColor !== 'undefined' ? institutionColor : '#7c3aed';
+%>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soumissions — <%= course.title %></title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <style>
+    :root { --brand: <%= _color %>; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #0f172a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #e2e8f0; min-height: 100vh; }
+    .main { margin-top: 64px; padding: 2rem 1.5rem 5rem; max-width: 960px; margin-left: auto; margin-right: auto; }
+    .back-link { display: inline-flex; align-items: center; gap: .4rem; color: #64748b; font-size: .85rem; text-decoration: none; margin-bottom: 1.5rem; }
+    .back-link:hover { color: #e2e8f0; }
+    .page-title { font-size: 1.5rem; font-weight: 800; color: #f8fafc; margin-bottom: .2rem; }
+    .page-sub { font-size: .88rem; color: #64748b; margin-bottom: 2rem; }
+    .section-title { font-size: 1rem; font-weight: 700; color: #f1f5f9; margin: 2rem 0 .85rem; display: flex; align-items: center; gap: .5rem; }
+    .section-title .count-badge { font-size: .75rem; font-weight: 600; background: rgba(255,255,255,.08); color: #94a3b8; border-radius: 20px; padding: .15rem .55rem; }
+    .module-heading { font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #475569; margin: 1.2rem 0 .6rem; padding-left: .2rem; }
+    /* Submission card */
+    .sub-card {
+      background: #1e293b; border-radius: 12px; border: 1.5px solid rgba(255,255,255,.06);
+      padding: 1.1rem 1.25rem; margin-bottom: .75rem;
+    }
+    .sub-card.graded { border-color: rgba(52,211,153,.2); }
+    .sub-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: .75rem; }
+    .sub-student { font-weight: 700; font-size: .9rem; color: #f1f5f9; }
+    .sub-meta { font-size: .75rem; color: #64748b; margin-top: .1rem; }
+    .status-badge-pending {
+      display: inline-flex; align-items: center; gap: .3rem;
+      background: rgba(245,158,11,.15); color: #fbbf24;
+      border: 1px solid rgba(245,158,11,.3); border-radius: 20px;
+      font-size: .72rem; font-weight: 700; padding: .2rem .6rem; white-space: nowrap; flex-shrink: 0;
+    }
+    .status-badge-graded {
+      display: inline-flex; align-items: center; gap: .3rem;
+      background: rgba(52,211,153,.1); color: #34d399;
+      border: 1px solid rgba(52,211,153,.2); border-radius: 20px;
+      font-size: .72rem; font-weight: 700; padding: .2rem .6rem; white-space: nowrap; flex-shrink: 0;
+    }
+    .sub-content-box {
+      background: rgba(255,255,255,.04); border-radius: 8px; padding: .75rem 1rem;
+      font-size: .85rem; color: #94a3b8; line-height: 1.6; margin-bottom: .85rem; word-break: break-word;
+    }
+    .sub-content-box a { color: var(--brand); }
+    .grade-panel { background: rgba(255,255,255,.03); border-radius: 8px; padding: .85rem 1rem; border: 1px solid rgba(255,255,255,.06); }
+    .grade-panel.already-graded { border-color: rgba(52,211,153,.15); }
+    .grade-row { display: flex; align-items: flex-start; gap: .75rem; flex-wrap: wrap; }
+    .grade-input {
+      width: 90px; padding: .4rem .65rem; border-radius: 8px; border: 1.5px solid rgba(255,255,255,.1);
+      background: rgba(255,255,255,.06); color: #f1f5f9; font-size: .88rem;
+    }
+    .grade-input:focus { outline: none; border-color: var(--brand); background: rgba(255,255,255,.08); }
+    .feedback-input {
+      flex: 1; min-width: 180px; padding: .4rem .7rem; border-radius: 8px;
+      border: 1.5px solid rgba(255,255,255,.1); background: rgba(255,255,255,.06);
+      color: #f1f5f9; font-size: .85rem; resize: vertical; min-height: 60px;
+    }
+    .feedback-input:focus { outline: none; border-color: var(--brand); background: rgba(255,255,255,.08); }
+    .btn-grade {
+      padding: .45rem 1.1rem; border-radius: 8px; border: none; cursor: pointer;
+      background: var(--brand); color: #fff; font-weight: 700; font-size: .82rem;
+      transition: opacity .15s; white-space: nowrap; align-self: flex-end;
+    }
+    .btn-grade:hover { opacity: .85; }
+    .prev-grade { font-size: .8rem; color: #34d399; font-weight: 600; margin-bottom: .4rem; }
+    .empty-state { text-align: center; padding: 3rem 2rem; color: #475569; background: rgba(255,255,255,.02); border-radius: 12px; }
+  </style>
+</head>
+<body>
+  <%- include('../../partials/instructorNavbar') %>
+
+  <div class="main">
+    <a href="/institution/grade" class="back-link"><i class="bi bi-arrow-left"></i> Mes cours</a>
+
+    <h1 class="page-title"><%= course.title %></h1>
+    <p class="page-sub">Soumissions des étudiants à noter</p>
+
+    <%- include('../../partials/flash') %>
+
+    <%
+      const totalAssign = Object.values(assignmentsByModule).reduce((n, arr) => n + arr.length, 0);
+      const pendingAssign = Object.values(assignmentsByModule).reduce((n, arr) => n + arr.filter(s => s.status === 'submitted').length, 0);
+    %>
+
+    <!-- ASSIGNMENTS SECTION -->
+    <div class="section-title">
+      📝 Devoirs
+      <span class="count-badge"><%= totalAssign %> soumission<%= totalAssign !== 1 ? 's' : '' %></span>
+      <% if (pendingAssign > 0) { %><span style="font-size:.75rem;color:#fbbf24;margin-left:.25rem;">⏳ <%= pendingAssign %> en attente</span><% } %>
+    </div>
+
+    <% if (totalAssign === 0) { %>
+      <div class="empty-state"><p>Aucune soumission de devoir pour l'instant.</p></div>
+    <% } else { %>
+      <% Object.entries(assignmentsByModule).forEach(([moduleId, subs]) => { %>
+        <% const mod = moduleMap[moduleId]; %>
+        <div class="module-heading"><%= mod ? mod.title : 'Module inconnu' %></div>
+        <% subs.forEach(sub => { %>
+          <div class="sub-card <%= sub.status === 'graded' ? 'graded' : '' %>">
+            <div class="sub-header">
+              <div>
+                <p class="sub-student"><%= sub.userId ? `${sub.userId.name} ${sub.userId.surname}` : 'Étudiant inconnu' %></p>
+                <p class="sub-meta">
+                  @<%= sub.userId ? sub.userId.username : '—' %>
+                  · Soumis le <%= sub.submittedAt ? new Date(sub.submittedAt).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' }) : new Date(sub.createdAt).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' }) %>
+                </p>
+              </div>
+              <% if (sub.status === 'graded') { %>
+                <span class="status-badge-graded">✓ Noté</span>
+              <% } else { %>
+                <span class="status-badge-pending">⏳ En attente</span>
+              <% } %>
+            </div>
+
+            <div class="sub-content-box">
+              <% if (sub.submissionType === 'link') { %>
+                <a href="<%= sub.content %>" target="_blank" rel="noopener"><i class="bi bi-link-45deg"></i> <%= sub.content %></a>
+              <% } else { %>
+                <%- sub.content || '<em>Aucun contenu</em>' %>
+              <% } %>
+            </div>
+
+            <div class="grade-panel <%= sub.status === 'graded' ? 'already-graded' : '' %>">
+              <% if (sub.status === 'graded' && sub.grade != null) { %>
+                <p class="prev-grade">Note actuelle : <%= sub.grade %>/100
+                  <% if (sub.feedback) { %> · <em style="font-weight:400;color:#94a3b8;"><%= sub.feedback %></em><% } %>
+                </p>
+              <% } %>
+              <form action="/institution/grade/courses/<%= course._id %>/assignments/<%= sub._id %>" method="POST">
+                <div class="grade-row">
+                  <input type="number" name="grade" class="grade-input" min="0" max="100" step="0.5"
+                         placeholder="Note" value="<%= sub.grade != null ? sub.grade : '' %>" required>
+                  <textarea name="feedback" class="feedback-input" placeholder="Commentaire (optionnel)"><%= sub.feedback || '' %></textarea>
+                  <button type="submit" class="btn-grade"><%= sub.status === 'graded' ? 'Modifier' : 'Noter' %></button>
+                </div>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      <% }) %>
+    <% } %>
+
+    <!-- FINAL PROJECTS SECTION -->
+    <div class="section-title">
+      🎯 Projets finaux
+      <span class="count-badge"><%= projectSubs.length %> soumission<%= projectSubs.length !== 1 ? 's' : '' %></span>
+      <% const pendingProj = projectSubs.filter(s => s.status === 'submitted').length; %>
+      <% if (pendingProj > 0) { %><span style="font-size:.75rem;color:#fbbf24;margin-left:.25rem;">⏳ <%= pendingProj %> en attente</span><% } %>
+    </div>
+
+    <% if (projectSubs.length === 0) { %>
+      <div class="empty-state"><p>Aucun projet final soumis pour l'instant.</p></div>
+    <% } else { %>
+      <% projectSubs.forEach(sub => { %>
+        <div class="sub-card <%= sub.status === 'graded' ? 'graded' : '' %>">
+          <div class="sub-header">
+            <div>
+              <p class="sub-student"><%= sub.userId ? `${sub.userId.name} ${sub.userId.surname}` : 'Étudiant inconnu' %></p>
+              <p class="sub-meta">
+                @<%= sub.userId ? sub.userId.username : '—' %>
+                · Soumis le <%= sub.submittedAt ? new Date(sub.submittedAt).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' }) : new Date(sub.createdAt).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' }) %>
+              </p>
+            </div>
+            <% if (sub.status === 'graded') { %>
+              <span class="status-badge-graded">✓ Noté</span>
+            <% } else { %>
+              <span class="status-badge-pending">⏳ En attente</span>
+            <% } %>
+          </div>
+
+          <div class="sub-content-box">
+            <% if (sub.submissionType === 'link') { %>
+              <a href="<%= sub.content %>" target="_blank" rel="noopener"><i class="bi bi-link-45deg"></i> <%= sub.content %></a>
+            <% } else { %>
+              <%- sub.content || '<em>Aucun contenu</em>' %>
+            <% } %>
+          </div>
+
+          <div class="grade-panel <%= sub.status === 'graded' ? 'already-graded' : '' %>">
+            <% if (sub.status === 'graded' && sub.grade != null) { %>
+              <p class="prev-grade">Note actuelle : <%= sub.grade %>/100
+                <% if (sub.feedback) { %> · <em style="font-weight:400;color:#94a3b8;"><%= sub.feedback %></em><% } %>
+              </p>
+            <% } %>
+            <form action="/institution/grade/courses/<%= course._id %>/final-projects/<%= sub._id %>" method="POST">
+              <div class="grade-row">
+                <input type="number" name="grade" class="grade-input" min="0" max="100" step="0.5"
+                       placeholder="Note" value="<%= sub.grade != null ? sub.grade : '' %>" required>
+                <textarea name="feedback" class="feedback-input" placeholder="Commentaire (optionnel)"><%= sub.feedback || '' %></textarea>
+                <button type="submit" class="btn-grade"><%= sub.status === 'graded' ? 'Modifier' : 'Noter' %></button>
+              </div>
+            </form>
+          </div>
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+</body>
+</html>

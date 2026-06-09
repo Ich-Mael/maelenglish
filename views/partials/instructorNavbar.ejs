@@ -1,0 +1,77 @@
+<style>
+  .grade-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    height: 64px;
+    background: #1e1e2e;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    box-shadow: 0 2px 12px rgba(0,0,0,.25);
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    gap: 1rem;
+  }
+  .grade-nav-brand {
+    display: flex; align-items: center; gap: .55rem;
+    font-weight: 800; font-size: 1rem; color: #fff;
+    text-decoration: none; flex-shrink: 0;
+  }
+  .grade-nav-brand-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--grade-brand, #7c3aed); flex-shrink: 0;
+  }
+  .grade-nav-links {
+    display: flex; align-items: center; gap: .25rem; flex: 1; padding-left: 1rem;
+  }
+  .grade-nav-link {
+    font-size: .85rem; font-weight: 600; color: rgba(255,255,255,.65);
+    text-decoration: none; padding: .4rem .75rem; border-radius: 8px;
+    transition: background .15s, color .15s; white-space: nowrap;
+  }
+  .grade-nav-link:hover, .grade-nav-link.active { background: rgba(255,255,255,.08); color: #fff; }
+  .grade-nav-user {
+    display: flex; align-items: center; gap: .65rem; flex-shrink: 0; margin-left: auto;
+  }
+  .grade-nav-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--grade-brand, #7c3aed); color: #fff;
+    font-size: .8rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .grade-nav-username {
+    font-size: .85rem; font-weight: 600; color: rgba(255,255,255,.8);
+    max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .grade-nav-logout {
+    font-size: .8rem; color: rgba(255,255,255,.45); text-decoration: none;
+    padding: .3rem .65rem; border-radius: 6px;
+    transition: background .15s, color .15s;
+  }
+  .grade-nav-logout:hover { background: rgba(220,38,38,.2); color: #f87171; }
+  @media (max-width: 576px) { .grade-nav-username { display: none; } }
+</style>
+
+<% const _gradeColor = typeof institutionColor !== 'undefined' ? institutionColor : '#7c3aed'; %>
+<% const _gradeInst = typeof institution !== 'undefined' ? institution : null; %>
+
+<nav class="grade-nav" style="--grade-brand: <%= _gradeColor %>">
+  <a href="/institution/grade" class="grade-nav-brand">
+    <span class="grade-nav-brand-dot"></span>
+    <%= _gradeInst ? _gradeInst.name : 'AfroHK' %>
+  </a>
+
+  <div class="grade-nav-links">
+    <a href="/institution/grade" class="grade-nav-link<%= typeof activePage !== 'undefined' && activePage === 'home' ? ' active' : '' %>">📋 Mes cours</a>
+  </div>
+
+  <div class="grade-nav-user">
+    <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+      <div class="grade-nav-avatar">
+        <%= currentUser.name ? currentUser.name[0].toUpperCase() : currentUser.username[0].toUpperCase() %>
+      </div>
+      <span class="grade-nav-username"><%= currentUser.name %> <%= currentUser.surname %></span>
+    <% } %>
+    <a href="/logout" class="grade-nav-logout">Déconnexion</a>
+  </div>
+</nav>

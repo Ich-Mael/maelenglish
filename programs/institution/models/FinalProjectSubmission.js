@@ -32,7 +32,9 @@ const institutionFinalProjectSubmissionSchema = new mongoose.Schema(
             enum: ['submitted', 'graded'],
             default: 'submitted'
         },
-        submittedAt: Date
+        submittedAt: Date,
+        gradedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'InstitutionInstructor' },
+        gradedAt: Date
     },
     { timestamps: true }
 );

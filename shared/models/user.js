@@ -63,6 +63,7 @@ const userSchema = new Schema({
       "student_manager",
       "englishClub-boardMember",
       "institution-admin",
+      "institution-instructor",
     ],
   },
 

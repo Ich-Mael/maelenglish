@@ -255,6 +255,11 @@ router.get(
       return res.redirect("/institution/dashboard");
     }
 
+    // Institution instructors go to their grading dashboard
+    if (user.role === "institution-instructor") {
+      return res.redirect("/institution/grade");
+    }
+
     // For all other roles (user, learner, etc.), redirect to learner dashboard
     return res.redirect(`/user/${user._id}`);
   })

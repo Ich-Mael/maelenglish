@@ -13,6 +13,10 @@ router.use('/dashboard', isInstitutionAdmin, loadInstitution);
 // ─── DASHBOARD HOME ───────────────────────────────────────────────────────────
 router.get('/dashboard', Dashboard.home);
 
+// ─── SETTINGS ─────────────────────────────────────────────────────────────────
+router.get('/dashboard/settings', Dashboard.settings);
+router.put('/dashboard/settings', Dashboard.updateSettings);
+
 // ─── COURSES ──────────────────────────────────────────────────────────────────
 router.get('/dashboard/courses', Courses.index);
 router.get('/dashboard/courses/:courseId', Courses.show);

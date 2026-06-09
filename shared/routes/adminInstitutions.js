@@ -4,7 +4,7 @@ const crypto = require('crypto');
 
 const Institution = require('../models/institution');
 const User = require('../models/user');
-const { InstitutionCourse } = require('../../programs/institution/models');
+const { InstitutionCourse, InstitutionInstructor } = require('../../programs/institution/models');
 const catchAsync = require('../utilities/catchAsync');
 const { isLoggedIn, checkRoles } = require('../middlewares/auth');
 const Emailer = require('../utilities/sendEmail');
@@ -37,6 +37,7 @@ router.get('/new', ...adminOnly, catchAsync(async (req, res) => {
 router.post('/', ...adminOnly, catchAsync(async (req, res) => {
     const {
         name, description, contactEmail, phone, city, country, logoUrl,
+        primaryColor, secondaryColor, accentColor,
         adminName, adminSurname, adminUsername, adminEmail, adminGender
     } = req.body;
 
@@ -95,6 +96,9 @@ router.post('/', ...adminOnly, catchAsync(async (req, res) => {
         city: city || '',
         country: country || 'Burkina Faso',
         logoUrl: logoUrl || '',
+        primaryColor:   (primaryColor   && /^#[0-9a-fA-F]{6}$/.test(primaryColor))   ? primaryColor   : '#0e7490',
+        secondaryColor: (secondaryColor && /^#[0-9a-fA-F]{6}$/.test(secondaryColor)) ? secondaryColor : '',
+        accentColor:    (accentColor    && /^#[0-9a-fA-F]{6}$/.test(accentColor))    ? accentColor    : '',
         createdBy: req.user._id,
         admins: [adminUser._id]
     });
@@ -128,12 +132,15 @@ router.get('/:id', ...adminOnly, catchAsync(async (req, res) => {
         return res.redirect('/admin/institutions');
     }
 
-    const [studentCount, courseCount] = await Promise.all([
+    const [studentCount, courseCount, instructors] = await Promise.all([
         User.countDocuments({ institutionId: institution._id, role: 'user' }),
-        InstitutionCourse.countDocuments({ institutionId: institution._id })
+        InstitutionCourse.countDocuments({ institutionId: institution._id }),
+        InstitutionInstructor.find({ institutionId: institution._id })
+            .populate('userId', 'name surname username email isVerified')
+            .sort({ createdAt: -1 })
     ]);
 
-    res.render('admin/institutions/show', { institution, studentCount, courseCount });
+    res.render('admin/institutions/show', { institution, studentCount, courseCount, instructors });
 }));
 
 // ─── EDIT ─────────────────────────────────────────────────────────────────────
@@ -148,7 +155,8 @@ router.get('/:id/edit', ...adminOnly, catchAsync(async (req, res) => {
 }));
 
 router.put('/:id', ...adminOnly, catchAsync(async (req, res) => {
-    const { name, description, contactEmail, phone, city, country, logoUrl, primaryColor, primaryColorHex } = req.body;
+    const { name, description, contactEmail, phone, city, country, logoUrl,
+            primaryColor, primaryColorHex, secondaryColor, accentColor } = req.body;
     const institution = await Institution.findById(req.params.id);
     if (!institution) {
         req.flash('error', 'Institution introuvable.');
@@ -164,9 +172,80 @@ router.put('/:id', ...adminOnly, catchAsync(async (req, res) => {
     if (logoUrl !== undefined) institution.logoUrl = logoUrl;
     const color = primaryColorHex || primaryColor;
     if (color && /^#[0-9a-fA-F]{6}$/.test(color)) institution.primaryColor = color;
+    institution.secondaryColor = (secondaryColor && /^#[0-9a-fA-F]{6}$/.test(secondaryColor)) ? secondaryColor : '';
+    institution.accentColor    = (accentColor    && /^#[0-9a-fA-F]{6}$/.test(accentColor))    ? accentColor    : '';
 
     await institution.save();
     req.flash('success', 'Institution mise à jour avec succès.');
+    res.redirect(`/admin/institutions/${institution._id}`);
+}));
+
+// ─── CREATE INSTRUCTOR ───────────────────────────────────────────────────────
+
+router.post('/:id/instructors', ...adminOnly, catchAsync(async (req, res) => {
+    const institution = await Institution.findById(req.params.id);
+    if (!institution) {
+        req.flash('error', 'Institution introuvable.');
+        return res.redirect('/admin/institutions');
+    }
+
+    const { name, surname, username, email, gender, title, photoUrl } = req.body;
+
+    if (!name || !surname || !username || !email || !gender) {
+        req.flash('error', 'Veuillez remplir tous les champs obligatoires.');
+        return res.redirect(`/admin/institutions/${institution._id}`);
+    }
+
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    if (existingUser) {
+        req.flash('error', existingUser.username === username
+            ? 'Ce nom d\'utilisateur est déjà utilisé.'
+            : 'Cette adresse email est déjà utilisée.');
+        return res.redirect(`/admin/institutions/${institution._id}`);
+    }
+
+    // Generate temp password + activation token
+    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%';
+    let password = '';
+    for (let i = 0; i < 10; i++) password += charset.charAt(Math.floor(Math.random() * charset.length));
+    password += 'A1a';
+
+    const activationToken = crypto.randomBytes(32).toString('hex');
+    const activationExpires = Date.now() + 48 * 60 * 60 * 1000;
+
+    const instructorUser = new User({
+        name,
+        surname,
+        username,
+        email,
+        gender,
+        role: 'institution-instructor',
+        institutionId: institution._id,
+        isVerified: false,
+        activationToken,
+        activationExpires
+    });
+    await User.register(instructorUser, password);
+
+    // Create InstitutionInstructor profile
+    await InstitutionInstructor.create({
+        userId: instructorUser._id,
+        institutionId: institution._id,
+        name: `${name} ${surname}`,
+        title: title || '',
+        photoUrl: photoUrl || '',
+        createdBy: req.user._id
+    });
+
+    try {
+        const activationUrl = `${getBaseUrl(req)}/user/activate/${activationToken}`;
+        await new Emailer(instructorUser, activationUrl).sendActivationEmail(password);
+        req.flash('success', `Compte instructeur créé pour ${name} ${surname}. Email d'activation envoyé à ${email}.`);
+    } catch (err) {
+        console.error('Instructor activation email error:', err);
+        req.flash('warning', `Compte instructeur créé, mais l'email n'a pas pu être envoyé. Mot de passe temporaire : ${password}`);
+    }
+
     res.redirect(`/admin/institutions/${institution._id}`);
 }));
 

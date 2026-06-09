@@ -1,39 +1,78 @@
+const User = require('../../../../shared/models/user');
 const { InstitutionInstructor } = require('../../models');
 const catchAsync = require('../../../../shared/utilities/catchAsync');
 
 const base = '/institution/dashboard/content/instructors';
 
+// List instructors + search endpoint
 module.exports.index = catchAsync(async (req, res) => {
     const instructors = await InstitutionInstructor.find({
         institutionId: req.institution._id
-    }).sort({ name: 1 });
+    }).populate('userId', 'name surname username email').sort({ name: 1 });
 
     res.render('institution-dashboard/content/instructors/index', { instructors });
 });
 
-module.exports.new = (req, res) => {
-    res.render('institution-dashboard/content/instructors/new');
-};
+// JSON search — find institution-instructor users not already in this institution
+module.exports.search = catchAsync(async (req, res) => {
+    const q = (req.query.q || '').trim();
+    if (q.length < 2) return res.json({ users: [] });
 
-module.exports.create = catchAsync(async (req, res) => {
-    const { name, title, bio, photoUrl, email } = req.body;
+    const alreadyLinked = await InstitutionInstructor.distinct('userId', {
+        institutionId: req.institution._id
+    });
 
-    if (!name || !name.trim()) {
-        req.flash('error', 'Le nom est requis.');
-        return res.redirect(`${base}/new`);
+    const users = await User.find({
+        role: 'institution-instructor',
+        _id: { $nin: alreadyLinked },
+        $or: [
+            { username: { $regex: q, $options: 'i' } },
+            { name:     { $regex: q, $options: 'i' } },
+            { surname:  { $regex: q, $options: 'i' } },
+            { email:    { $regex: q, $options: 'i' } }
+        ]
+    }).select('name surname username email').limit(10);
+
+    res.json({ users: users.map(u => ({
+        _id:      u._id,
+        name:     u.name,
+        surname:  u.surname,
+        username: u.username,
+        email:    u.email
+    })) });
+});
+
+// Link an institution-instructor user to this institution
+module.exports.add = catchAsync(async (req, res) => {
+    const { userId, title, bio, photoUrl } = req.body;
+
+    const user = await User.findOne({ _id: userId, role: 'institution-instructor' });
+    if (!user) {
+        req.flash('error', 'Utilisateur introuvable ou rôle incorrect.');
+        return res.redirect(base);
+    }
+
+    const existing = await InstitutionInstructor.findOne({
+        userId,
+        institutionId: req.institution._id
+    });
+    if (existing) {
+        req.flash('error', `${user.name} ${user.surname} est déjà dans votre liste.`);
+        return res.redirect(base);
     }
 
     await InstitutionInstructor.create({
         institutionId: req.institution._id,
-        name: name.trim(),
-        title: title ? title.trim() : '',
-        bio: bio || '',
+        userId,
+        name:     `${user.name} ${user.surname}`,
+        title:    title ? title.trim() : '',
+        bio:      bio || '',
         photoUrl: photoUrl ? photoUrl.trim() : '',
-        email: email ? email.trim() : '',
+        email:    user.email,
         createdBy: req.user._id
     });
 
-    req.flash('success', `Instructeur "${name.trim()}" créé.`);
+    req.flash('success', `${user.name} ${user.surname} ajouté(e) comme instructeur.`);
     res.redirect(base);
 });
 
@@ -41,7 +80,7 @@ module.exports.edit = catchAsync(async (req, res) => {
     const instructor = await InstitutionInstructor.findOne({
         _id: req.params.id,
         institutionId: req.institution._id
-    });
+    }).populate('userId', 'name surname username email');
 
     if (!instructor) {
         req.flash('error', 'Instructeur introuvable.');
@@ -52,7 +91,7 @@ module.exports.edit = catchAsync(async (req, res) => {
 });
 
 module.exports.update = catchAsync(async (req, res) => {
-    const { name, title, bio, photoUrl, email } = req.body;
+    const { title, bio, photoUrl } = req.body;
 
     const instructor = await InstitutionInstructor.findOne({
         _id: req.params.id,
@@ -64,14 +103,12 @@ module.exports.update = catchAsync(async (req, res) => {
         return res.redirect(base);
     }
 
-    if (name) instructor.name = name.trim();
-    instructor.title   = title ? title.trim() : '';
-    instructor.bio     = bio || '';
+    instructor.title    = title    ? title.trim()    : '';
+    instructor.bio      = bio      || '';
     instructor.photoUrl = photoUrl ? photoUrl.trim() : '';
-    instructor.email   = email ? email.trim() : '';
 
     await instructor.save();
-    req.flash('success', 'Instructeur mis à jour.');
+    req.flash('success', 'Profil instructeur mis à jour.');
     res.redirect(base);
 });
 
@@ -81,6 +118,30 @@ module.exports.destroy = catchAsync(async (req, res) => {
         institutionId: req.institution._id
     });
 
-    req.flash('success', 'Instructeur supprimé.');
+    req.flash('success', 'Instructeur retiré de votre institution.');
     res.redirect(base);
+});
+
+// Assign/update instructors on a course
+module.exports.assignToCourse = catchAsync(async (req, res) => {
+    const { InstitutionCourse } = require('../../models');
+    const { courseId } = req.params;
+    const instructorIds = req.body.instructorIds
+        ? (Array.isArray(req.body.instructorIds) ? req.body.instructorIds : [req.body.instructorIds])
+        : [];
+
+    const course = await InstitutionCourse.findOne({
+        _id: courseId,
+        institutionId: req.institution._id
+    });
+    if (!course) {
+        req.flash('error', 'Cours introuvable.');
+        return res.redirect('/institution/dashboard/content');
+    }
+
+    course.instructors = instructorIds;
+    await course.save();
+
+    req.flash('success', 'Instructeurs assignés au cours.');
+    res.redirect(`/institution/dashboard/content/courses/${courseId}`);
 });

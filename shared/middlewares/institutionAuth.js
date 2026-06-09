@@ -1,5 +1,5 @@
 const Institution = require('../models/institution');
-const { InstitutionEnrollment, InstitutionCourse } = require('../../programs/institution/models');
+const { InstitutionEnrollment, InstitutionCourse, InstitutionInstructor } = require('../../programs/institution/models');
 
 // Passes if user is institution-admin (or global admin who can access everything)
 module.exports.isInstitutionAdmin = (req, res, next) => {
@@ -195,6 +195,47 @@ module.exports.checkInstitutionCourseAccess = async (req, res, next) => {
 
         req.course = course;
         req.enrollment = enrollment;
+        next();
+    } catch (err) {
+        next(err);
+    }
+};
+
+// ─── INSTRUCTOR MIDDLEWARE ─────────────────────────────────────────────────────
+
+module.exports.isInstitutionInstructor = (req, res, next) => {
+    if (!req.isAuthenticated()) {
+        req.session.returnTo = req.originalUrl;
+        req.flash('error', 'Vous devez d\'abord vous connecter.');
+        return res.redirect('/login');
+    }
+    if (req.user.role !== 'institution-instructor') {
+        req.flash('error', 'Accès réservé aux instructeurs.');
+        return res.redirect('/');
+    }
+    return next();
+};
+
+// Loads the instructor's InstitutionInstructor profile and their institution.
+module.exports.loadInstructorInstitution = async (req, res, next) => {
+    try {
+        const instructor = await InstitutionInstructor.findOne({ userId: req.user._id });
+        if (!instructor) {
+            req.flash('error', 'Profil instructeur introuvable. Contactez votre administrateur.');
+            return res.redirect('/');
+        }
+
+        const institution = await Institution.findById(instructor.institutionId);
+        if (!institution || !institution.isActive) {
+            req.flash('error', 'Institution introuvable ou inactive.');
+            return res.redirect('/');
+        }
+
+        req.instructor    = instructor;
+        req.institution   = institution;
+        res.locals.institutionColor = institution.primaryColor || '#0e7490';
+        res.locals.institution      = institution;
+        res.locals.instructor       = instructor;
         next();
     } catch (err) {
         next(err);
