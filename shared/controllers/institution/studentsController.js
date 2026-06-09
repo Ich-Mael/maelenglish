@@ -325,6 +325,89 @@ module.exports.updateEnrollment = catchAsync(async (req, res) => {
     res.redirect(`/institution/dashboard/students/${userId}`);
 });
 
+// Create a brand-new student account and optionally enroll them
+module.exports.createStudent = catchAsync(async (req, res) => {
+    const { name, surname, email, username: rawUsername, courseId, startDate, endDate } = req.body;
+
+    if (!name || !surname || !email) {
+        req.flash('error', 'Prénom, nom et email sont requis.');
+        return res.redirect('/institution/dashboard/students');
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Derive username: provided > email prefix, then ensure uniqueness
+    let baseUsername = rawUsername
+        ? rawUsername.trim().toLowerCase().replace(/[^a-z0-9._-]/g, '')
+        : normalizedEmail.split('@')[0].replace(/[^a-z0-9._-]/g, '');
+    if (!baseUsername) baseUsername = 'etudiant';
+
+    let username = baseUsername;
+    let attempt  = 0;
+    while (await User.findOne({ username })) {
+        attempt++;
+        username = `${baseUsername}${attempt}`;
+    }
+
+    const emailExists = await User.findOne({ email: normalizedEmail });
+    if (emailExists) {
+        req.flash('error', `Un compte avec l'email ${normalizedEmail} existe déjà. Utilisez la recherche pour l'inscrire.`);
+        return res.redirect('/institution/dashboard/students');
+    }
+
+    // Generate temporary password
+    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#';
+    let tempPassword = '';
+    for (let i = 0; i < 10; i++) tempPassword += charset.charAt(Math.floor(Math.random() * charset.length));
+    tempPassword += 'A1a';
+
+    const activationToken   = crypto.randomBytes(32).toString('hex');
+    const activationExpires = Date.now() + 72 * 60 * 60 * 1000;
+
+    const student = new User({
+        name:              name.trim(),
+        surname:           surname.trim(),
+        email:             normalizedEmail,
+        username,
+        gender:            'other',
+        role:              'user',
+        institutionId:     req.institution._id,
+        isVerified:        false,
+        activationToken,
+        activationExpires
+    });
+    await User.register(student, tempPassword);
+
+    // Optional immediate enrollment
+    if (courseId) {
+        const course = await InstitutionCourse.findOne({ _id: courseId, institutionId: req.institution._id });
+        if (course) {
+            const start = startDate ? new Date(startDate) : new Date();
+            const end   = endDate   ? new Date(endDate)   : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+            await InstitutionEnrollment.create({
+                userId:        student._id,
+                courseId,
+                institutionId: req.institution._id,
+                startDate:     start,
+                endDate:       end,
+                status:        'active',
+                enrolledBy:    req.user._id
+            });
+        }
+    }
+
+    try {
+        const activationUrl = `${getBaseUrl(req)}/user/activate/${activationToken}`;
+        await new Emailer(student, activationUrl).sendActivationEmail(tempPassword);
+        req.flash('success', `Compte créé pour ${student.name} ${student.surname}. Un email d'activation a été envoyé.`);
+    } catch (err) {
+        console.error('Create student activation email error:', err);
+        req.flash('success', `Compte créé pour ${student.name} ${student.surname} (@${username}). Email non envoyé — mot de passe temporaire : ${tempPassword}`);
+    }
+
+    res.redirect(`/institution/dashboard/students/${student._id}`);
+});
+
 // Resend activation email to unverified student
 module.exports.resendActivation = catchAsync(async (req, res) => {
     const student = await User.findById(req.params.userId);

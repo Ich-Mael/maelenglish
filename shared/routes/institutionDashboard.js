@@ -23,6 +23,9 @@ router.get('/dashboard/students', Students.index);
 router.get('/dashboard/students/search', Students.search);  // must be before /:userId
 router.get('/dashboard/students/:userId', Students.show);
 
+// Create a new student account (and optionally enroll)
+router.post('/dashboard/students/create', Students.createStudent);
+
 // Enroll student in a course
 router.post('/dashboard/students/:userId/enroll', Students.enroll);
 

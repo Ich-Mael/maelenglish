@@ -26,6 +26,15 @@
   .enroll-form { background: #f8f9fa; border-radius: 10px; padding: 1rem; margin-top: .75rem; display: none; }
   .enroll-form.visible { display: block; }
   .enrolled-tag { background: #d1fae5; color: #065f46; padding: .1rem .5rem; border-radius: 20px; font-size: .72rem; font-weight: 600; }
+  /* Create panel */
+  .create-panel { background: #fff; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,.07); padding: 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid #22c55e; display: none; }
+  .create-panel.visible { display: block; }
+  .create-panel h3 { font-size: 1rem; font-weight: 700; color: #166534; margin: 0 0 1rem; }
+  /* Tab-style toggles */
+  .panel-tabs { display: flex; gap: .5rem; margin-bottom: 0; }
+  .panel-tab { padding: .5rem 1.1rem; border-radius: 8px 8px 0 0; font-size: .88rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; border-bottom: none; background: #f8fafc; color: #64748b; transition: background .15s, color .15s; }
+  .panel-tab.active { background: #fff; color: #0e7490; box-shadow: 0 -2px 0 #0e7490 inset; }
+  .panel-body { background: #fff; border: 1px solid #e2e8f0; border-radius: 0 8px 8px 8px; padding: 1.25rem; margin-bottom: 1.5rem; }
 </style>` %>
 
 <div class="page-wrapper">
@@ -39,20 +48,23 @@
 
     <%- include('../../partials/flash') %>
 
-    <!-- ── STUDENT SEARCH ── -->
-    <div class="search-panel">
-      <h3>➕ Inscrire un étudiant</h3>
+    <!-- ── ENROLL / CREATE TABS ── -->
+    <div class="panel-tabs">
+      <div class="panel-tab active" id="tabSearch" onclick="switchTab('search')">🔍 Inscrire un étudiant existant</div>
+      <div class="panel-tab" id="tabCreate" onclick="switchTab('create')">➕ Créer un nouveau compte</div>
+    </div>
+
+    <!-- TAB: Search existing -->
+    <div class="panel-body" id="bodySearch">
       <% if (!assignedCourseDetails || assignedCourseDetails.length === 0) { %>
         <div class="p-3" style="background:#fef9c3;border-radius:10px;border:1px solid #fde68a;color:#854d0e;font-size:.9rem;">
-          ⚠ Aucun cours disponible pour cette institution. AfroHK doit d'abord créer des cours avant que vous puissiez inscrire des étudiants.
+          ⚠ Aucun cours disponible. Créez d'abord un cours dans l'onglet Contenu.
         </div>
       <% } else { %>
         <div>
           <input type="text" id="studentSearch" class="form-control" placeholder="Rechercher par nom, prénom, username ou email…" autocomplete="off">
           <div class="search-results" id="searchResults"></div>
         </div>
-
-        <!-- Enroll form — revealed after selecting a user -->
         <form class="enroll-form" id="enrollForm" method="POST">
           <p class="mb-2 fw-semibold" id="selectedName"></p>
           <div class="row g-2 align-items-end">
@@ -79,6 +91,62 @@
           </div>
         </form>
       <% } %>
+    </div>
+
+    <!-- TAB: Create new student -->
+    <div class="panel-body" id="bodyCreate" style="display:none;">
+      <p class="small text-muted mb-3">
+        Crée un compte étudiant directement dans votre institution. Un email d'activation sera envoyé avec un mot de passe temporaire.
+      </p>
+      <form action="/institution/dashboard/students/create" method="POST">
+        <div class="row g-2 mb-2">
+          <div class="col-md-3">
+            <label class="form-label mb-1" style="font-size:.82rem">Prénom *</label>
+            <input type="text" name="name" class="form-control form-control-sm" placeholder="Marie" required>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label mb-1" style="font-size:.82rem">Nom *</label>
+            <input type="text" name="surname" class="form-control form-control-sm" placeholder="Dupont" required>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label mb-1" style="font-size:.82rem">Email *</label>
+            <input type="email" name="email" class="form-control form-control-sm" placeholder="marie@exemple.com" required>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label mb-1" style="font-size:.82rem">Nom d'utilisateur</label>
+            <input type="text" name="username" class="form-control form-control-sm" placeholder="(auto si vide)">
+          </div>
+        </div>
+        <% if (assignedCourseDetails && assignedCourseDetails.length > 0) { %>
+        <div class="row g-2 mb-2 align-items-end">
+          <div class="col-md-4">
+            <label class="form-label mb-1" style="font-size:.82rem">Inscrire immédiatement à</label>
+            <select name="courseId" class="form-select form-select-sm">
+              <option value="">— Aucun cours pour l'instant —</option>
+              <% assignedCourseDetails.forEach(c => { %>
+                <option value="<%= c._id %>"><%= c.title %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label mb-1" style="font-size:.82rem">Début</label>
+            <input type="date" name="startDate" class="form-control form-control-sm" value="<%= new Date().toISOString().split('T')[0] %>">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label mb-1" style="font-size:.82rem">Fin</label>
+            <input type="date" name="endDate" class="form-control form-control-sm">
+          </div>
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-success btn-sm w-100">Créer le compte</button>
+          </div>
+        </div>
+        <% } else { %>
+        <button type="submit" class="btn btn-success btn-sm px-4">Créer le compte</button>
+        <% } %>
+        <p class="small text-muted mt-2 mb-0">
+          <i class="bi bi-info-circle me-1"></i>Un email d'activation avec le mot de passe temporaire sera envoyé à l'étudiant.
+        </p>
+      </form>
     </div>
 
     <% if (studentsWithMeta.length > 0 && assignedCourseDetails && assignedCourseDetails.length > 0) { %>
@@ -238,6 +306,7 @@ function clearSelection() {
     }
   });
 
+
   // Reset search after successful enroll
   enrollForm && enrollForm.addEventListener('submit', function() {
     setTimeout(() => {
@@ -248,4 +317,12 @@ function clearSelection() {
     }, 100);
   });
 })();
+
+function switchTab(tab) {
+  var isSearch = tab === 'search';
+  document.getElementById('tabSearch').classList.toggle('active', isSearch);
+  document.getElementById('tabCreate').classList.toggle('active', !isSearch);
+  document.getElementById('bodySearch').style.display = isSearch  ? '' : 'none';
+  document.getElementById('bodyCreate').style.display = isSearch  ? 'none' : '';
+}
 </script>
