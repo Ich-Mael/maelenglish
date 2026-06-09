@@ -461,6 +461,63 @@ module.exports.finalProject = catchAsync(async (req, res) => {
     res.render('institution-dashboard/learn/final-project', { course, courseId, existing });
 });
 
+// ─── GRADES PAGE ─────────────────────────────────────────────────────────────
+
+module.exports.grades = catchAsync(async (req, res) => {
+    const { courseId } = req.params;
+
+    const course = await InstitutionCourse.findOne({
+        _id: courseId,
+        institutionId: req.institution._id
+    });
+
+    if (!course) {
+        req.flash('error', 'Cours introuvable.');
+        return res.redirect('/institution/learn/courses');
+    }
+
+    const modules = await InstitutionModule.find({ courseId, institutionId: req.institution._id })
+        .sort({ order: 1 })
+        .lean();
+
+    const moduleIds = modules.map(m => m._id);
+
+    const [quizAttempts, assignmentSubs, finalExamAttempts, finalProjectSub] = await Promise.all([
+        InstitutionQuizAttempt.aggregate([
+            { $match: { userId: req.user._id, courseId: course._id, moduleId: { $in: moduleIds } } },
+            { $sort: { score: -1, createdAt: -1 } },
+            { $group: { _id: '$moduleId', score: { $first: '$score' }, passed: { $first: '$passed' }, submittedAt: { $first: '$submittedAt' }, attempts: { $sum: 1 } } }
+        ]),
+        InstitutionAssignmentSubmission.find({ userId: req.user._id, courseId }).lean(),
+        InstitutionFinalExamAttempt.find({ userId: req.user._id, courseId }).sort({ createdAt: -1 }).lean(),
+        InstitutionFinalProjectSubmission.findOne({ userId: req.user._id, courseId }).lean()
+    ]);
+
+    const quizByModule       = Object.fromEntries(quizAttempts.map(a => [a._id.toString(), a]));
+    const assignmentByModule = Object.fromEntries(assignmentSubs.map(s => [s.moduleId.toString(), s]));
+    const bestFinalExam      = finalExamAttempts.find(a => a.passed) || finalExamAttempts[0] || null;
+
+    const moduleGrades = modules.map(mod => ({
+        module:        mod,
+        quiz:          quizByModule[mod._id.toString()]       || null,
+        assignment:    assignmentByModule[mod._id.toString()] || null,
+        hasQuiz:       !!(mod.quiz && mod.quiz.questions && mod.quiz.questions.length),
+        hasAssignment: !!(mod.assignment && mod.assignment.title)
+    })).filter(r => r.hasQuiz || r.hasAssignment);
+
+    const pendingCount = assignmentSubs.filter(s => s.status === 'submitted').length
+        + (finalProjectSub && finalProjectSub.status === 'submitted' ? 1 : 0);
+
+    res.render('institution-dashboard/learn/grades', {
+        course,
+        moduleGrades,
+        bestFinalExam,
+        finalProjectSub,
+        pendingCount,
+        institution: req.institution
+    });
+});
+
 // ─── INSTRUCTORS PAGE ─────────────────────────────────────────────────────────
 
 module.exports.instructors = catchAsync(async (req, res) => {

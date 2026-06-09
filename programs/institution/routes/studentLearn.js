@@ -15,6 +15,7 @@ router.get('/instructors', ...studentAuth, learnController.instructors);
 
 router.get('/courses', ...studentAuth, learnController.courses);
 router.get('/courses/:courseId', ...studentAuth, checkInstitutionCourseAccess, learnController.courseShow);
+router.get('/courses/:courseId/grades', ...studentAuth, checkInstitutionCourseAccess, learnController.grades);
 
 // ─── MODULE + LESSON VIEWS ──────────────────────────────────────────────────
 

@@ -197,6 +197,20 @@
             </a>
           <% } %>
 
+          <%
+            const _pendingGrades = Object.values(assignmentSubByModule).filter(s => s.status === 'submitted').length
+              + (finalProjectSubmission && finalProjectSubmission.status === 'submitted' ? 1 : 0);
+            const _gradedNew = Object.values(assignmentSubByModule).filter(s => s.status === 'graded').length
+              + (finalProjectSubmission && finalProjectSubmission.status === 'graded' ? 1 : 0);
+          %>
+          <a href="/institution/learn/courses/<%= course._id %>/grades" class="btn-cta btn-cta-outline" style="position:relative;">
+            <i class="bi bi-award"></i>
+            Mes notes
+            <% if (_pendingGrades > 0) { %>
+              <span style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:#f59e0b;color:#fff;font-size:.65rem;font-weight:800;display:flex;align-items:center;justify-content:center;"><%= _pendingGrades %></span>
+            <% } %>
+          </a>
+
           <% if (course.finalExam && course.finalExam.questions && course.finalExam.questions.length > 0) { %>
             <a href="/institution/learn/courses/<%= course._id %>/final-exam" class="btn-cta btn-cta-outline">
               <i class="bi bi-clipboard-check"></i>

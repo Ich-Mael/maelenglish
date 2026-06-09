@@ -49,7 +49,10 @@
           <h1><%= courseModule.title %></h1>
           <% if (courseModule.description) { %><p><%= courseModule.description %></p><% } %>
         </div>
-        <a href="/institution/learn/courses/<%= course._id %>" class="btn btn-light btn-sm">← Cours</a>
+        <div class="d-flex gap-2 align-items-center flex-wrap">
+          <a href="/institution/learn/courses/<%= course._id %>/grades" class="btn btn-light btn-sm">📊 Mes notes</a>
+          <a href="/institution/learn/courses/<%= course._id %>" class="btn btn-light btn-sm">← Cours</a>
+        </div>
       </div>
     </div>
 
