@@ -90,10 +90,22 @@ module.exports.courseShow = catchAsync(async (req, res) => {
     // First module that is not 100% complete
     const resumeModule = modulesWithProgress.find(({ pct }) => pct < 100) || modulesWithProgress[0] || null;
 
-    const [finalExamAttempt, finalProjectSubmission] = await Promise.all([
+    const [finalExamAttempt, finalProjectSubmission, quizAttempts, assignmentSubs] = await Promise.all([
         InstitutionFinalExamAttempt.findOne({ userId: req.user._id, courseId }).sort({ createdAt: -1 }).lean(),
-        InstitutionFinalProjectSubmission.findOne({ userId: req.user._id, courseId }).lean()
+        InstitutionFinalProjectSubmission.findOne({ userId: req.user._id, courseId }).lean(),
+        InstitutionQuizAttempt.find({ userId: req.user._id, courseId }).sort({ score: -1 }).lean(),
+        InstitutionAssignmentSubmission.find({ userId: req.user._id, courseId }).lean()
     ]);
+
+    // Best quiz attempt per module
+    const quizAttemptByModule = {};
+    quizAttempts.forEach(a => {
+        const mid = a.moduleId.toString();
+        if (!quizAttemptByModule[mid]) quizAttemptByModule[mid] = a;
+    });
+
+    const assignmentSubByModule = {};
+    assignmentSubs.forEach(s => { assignmentSubByModule[s.moduleId.toString()] = s; });
 
     res.render('institution-dashboard/learn/course-show', {
         course,
@@ -101,6 +113,8 @@ module.exports.courseShow = catchAsync(async (req, res) => {
         resumeModule,
         finalExamAttempt,
         finalProjectSubmission,
+        quizAttemptByModule,
+        assignmentSubByModule,
         institution: req.institution,
         enrollment: req.enrollment
     });

@@ -19,6 +19,16 @@
   .mod-bar-bg  { height: 5px; border-radius: 3px; background: #e2e8f0; overflow: hidden; }
   .mod-bar-fill { height: 100%; background: var(--brand); border-radius: 3px; }
   .mod-pct { font-size: .72rem; color: #64748b; text-align: right; margin-top: .2rem; }
+  /* Grades */
+  .grade-table { width: 100%; border-collapse: collapse; }
+  .grade-table th { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #94a3b8; padding: .4rem .6rem; text-align: left; border-bottom: 2px solid #f1f5f9; }
+  .grade-table td { padding: .65rem .6rem; border-bottom: 1px solid #f8fafc; font-size: .88rem; vertical-align: middle; }
+  .grade-table tr:last-child td { border-bottom: none; }
+  .grade-pill { display: inline-flex; align-items: center; gap: .3rem; padding: .18rem .6rem; border-radius: 20px; font-size: .75rem; font-weight: 600; }
+  .grade-pass    { background: #d1fae5; color: #065f46; }
+  .grade-fail    { background: #fee2e2; color: #991b1b; }
+  .grade-pending { background: #fef9c3; color: #854d0e; }
+  .grade-none    { color: #cbd5e1; font-size: .8rem; }
   /* Sidebar */
   .sidebar { position: sticky; top: 95px; }
   .sidebar-card { background: #fff; border-radius: 18px; box-shadow: 0 4px 24px rgba(0,0,0,.1); padding: 1.75rem; }
@@ -70,6 +80,89 @@
               <i class="bi bi-chevron-right" style="color:#cbd5e1;font-size:.85rem;"></i>
             </a>
           <% }) %>
+        </div>
+        <!-- Grades summary -->
+        <div class="section-card">
+          <h2><i class="bi bi-award" style="color:var(--brand)"></i> Mes notes</h2>
+          <table class="grade-table">
+            <thead>
+              <tr>
+                <th>Module / Évaluation</th>
+                <th>Quiz</th>
+                <th>Devoir</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% modulesWithProgress.forEach(({ module }) => { %>
+                <%
+                  const qa  = quizAttemptByModule[module._id.toString()];
+                  const as  = assignmentSubByModule[module._id.toString()];
+                  const hasQuiz       = module.quiz && module.quiz.questions && module.quiz.questions.length > 0;
+                  const hasAssignment = module.assignment && module.assignment.title;
+                %>
+                <% if (hasQuiz || hasAssignment) { %>
+                <tr>
+                  <td class="fw-semibold" style="color:#334155;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><%= module.title %></td>
+                  <td>
+                    <% if (!hasQuiz) { %>
+                      <span class="grade-none">—</span>
+                    <% } else if (qa) { %>
+                      <span class="grade-pill <%= qa.passed ? 'grade-pass' : 'grade-fail' %>">
+                        <%= qa.passed ? '✓' : '✗' %> <%= qa.score %>/100
+                      </span>
+                    <% } else { %>
+                      <span class="grade-none">Non tenté</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <% if (!hasAssignment) { %>
+                      <span class="grade-none">—</span>
+                    <% } else if (as && as.status === 'graded') { %>
+                      <span class="grade-pill grade-pass">✓ <%= as.grade %>/<%= module.assignment.maxScore || 100 %></span>
+                    <% } else if (as) { %>
+                      <span class="grade-pill grade-pending">⏳ En attente</span>
+                    <% } else { %>
+                      <span class="grade-none">Non soumis</span>
+                    <% } %>
+                  </td>
+                </tr>
+                <% } %>
+              <% }) %>
+
+              <% if (course.finalExam && course.finalExam.questions && course.finalExam.questions.length > 0) { %>
+              <tr style="background:#fafafa;">
+                <td class="fw-semibold" style="color:#334155;">Examen final</td>
+                <td colspan="2">
+                  <% if (finalExamAttempt) { %>
+                    <span class="grade-pill <%= finalExamAttempt.passed ? 'grade-pass' : 'grade-fail' %>">
+                      <%= finalExamAttempt.passed ? '✓' : '✗' %> <%= finalExamAttempt.score %>/100
+                    </span>
+                  <% } else { %>
+                    <span class="grade-none">Non tenté</span>
+                  <% } %>
+                </td>
+              </tr>
+              <% } %>
+
+              <% if (course.finalProject && course.finalProject.title) { %>
+              <tr style="background:#fafafa;">
+                <td class="fw-semibold" style="color:#334155;">Projet final</td>
+                <td colspan="2">
+                  <% if (finalProjectSubmission && finalProjectSubmission.status === 'graded') { %>
+                    <span class="grade-pill grade-pass">✓ <%= finalProjectSubmission.grade %>/<%= course.finalProject.maxScore || 100 %></span>
+                    <% if (finalProjectSubmission.feedback) { %>
+                      <div class="small text-muted mt-1"><i class="bi bi-chat-left-text me-1"></i><%= finalProjectSubmission.feedback %></div>
+                    <% } %>
+                  <% } else if (finalProjectSubmission) { %>
+                    <span class="grade-pill grade-pending">⏳ En attente</span>
+                  <% } else { %>
+                    <span class="grade-none">Non soumis</span>
+                  <% } %>
+                </td>
+              </tr>
+              <% } %>
+            </tbody>
+          </table>
         </div>
       </div>
 
