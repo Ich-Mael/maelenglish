@@ -28,14 +28,26 @@
   .attempt-passed { background: #d1fae5; border: 1px solid #6ee7b7; }
   .attempt-failed { background: #fef9c3; border: 1px solid #fde68a; }
   #result-section { display: none; }
+  .inst-pill { display: inline-flex; align-items: center; gap: .45rem; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.28); border-radius: 30px; padding: .25rem .75rem .25rem .35rem; margin-bottom: .9rem; }
+  .inst-pill-logo { width: 22px; height: 22px; border-radius: 50%; object-fit: contain; background: rgba(255,255,255,.85); }
+  .inst-pill-fallback { width: 22px; height: 22px; border-radius: 50%; background: rgba(255,255,255,.9); color: var(--brand); font-size: .58rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .inst-pill-name { font-size: .78rem; font-weight: 700; color: rgba(255,255,255,.92); }
 </style>` %>
 
 <div class="page-wrapper">
   <div class="container" style="max-width:760px;">
 
+    <% const _ei = typeof institution !== 'undefined' ? institution : null; %>
     <div class="exam-header">
       <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
         <div>
+          <% if (_ei) { %>
+            <div class="inst-pill">
+              <% if (_ei.logoUrl) { %><img src="<%= _ei.logoUrl %>" class="inst-pill-logo" alt="<%= _ei.name %>">
+              <% } else { %><div class="inst-pill-fallback"><%= _ei.name.substring(0,2).toUpperCase() %></div><% } %>
+              <span class="inst-pill-name"><%= _ei.name %></span>
+            </div>
+          <% } %>
           <p style="opacity:.7;font-size:.82rem;margin:0 0 .2rem;"><%= course.title %></p>
           <h1>🎓 <%= exam.title || 'Examen final' %></h1>
           <p>

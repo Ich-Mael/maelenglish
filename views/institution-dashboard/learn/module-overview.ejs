@@ -25,14 +25,26 @@
   .btn-primary-brand:hover { opacity: .88; color: #fff; }
   .btn-outline-brand { background: #fff; color: var(--brand); border: 1.5px solid var(--brand); }
   .btn-outline-brand:hover { background: color-mix(in srgb, var(--brand) 8%, #fff); color: var(--brand); }
+  .inst-pill { display: inline-flex; align-items: center; gap: .45rem; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.28); border-radius: 30px; padding: .25rem .75rem .25rem .35rem; margin-bottom: .9rem; }
+  .inst-pill-logo { width: 22px; height: 22px; border-radius: 50%; object-fit: contain; background: rgba(255,255,255,.85); }
+  .inst-pill-fallback { width: 22px; height: 22px; border-radius: 50%; background: rgba(255,255,255,.9); color: var(--brand); font-size: .58rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .inst-pill-name { font-size: .78rem; font-weight: 700; color: rgba(255,255,255,.92); }
 </style>` %>
 
 <div class="page-wrapper">
   <div class="container" style="max-width:780px;">
 
+    <% const _mi = typeof institution !== 'undefined' ? institution : null; %>
     <div class="module-header">
       <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
         <div>
+          <% if (_mi) { %>
+            <div class="inst-pill">
+              <% if (_mi.logoUrl) { %><img src="<%= _mi.logoUrl %>" class="inst-pill-logo" alt="<%= _mi.name %>">
+              <% } else { %><div class="inst-pill-fallback"><%= _mi.name.substring(0,2).toUpperCase() %></div><% } %>
+              <span class="inst-pill-name"><%= _mi.name %></span>
+            </div>
+          <% } %>
           <p style="opacity:.7;font-size:.82rem;margin:0 0 .2rem;"><%= course.title %></p>
           <h1><%= courseModule.title %></h1>
           <% if (courseModule.description) { %><p><%= courseModule.description %></p><% } %>
