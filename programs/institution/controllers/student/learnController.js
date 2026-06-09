@@ -114,9 +114,11 @@ module.exports.courseShow = catchAsync(async (req, res) => {
     const assignmentSubByModule = {};
     assignmentSubs.forEach(s => { assignmentSubByModule[s.moduleId.toString()] = s; });
 
-    const allLessonsCompleted = allLessons.length === 0 || completedIds.size >= allLessons.length;
-    const hasFinalExam        = course.finalExam?.questions?.length > 0;
-    const finalExamPassed     = !hasFinalExam || (finalExamAttempt?.passed === true);
+    // Every module must have at least one lesson AND all its lessons completed
+    const allLessonsCompleted = modulesWithProgress.length > 0 &&
+        modulesWithProgress.every(({ total, completed }) => total > 0 && completed >= total);
+    const hasFinalExam          = course.finalExam?.questions?.length > 0;
+    const finalExamPassed       = !hasFinalExam || (finalExamAttempt?.passed === true);
     const isCertificateEligible = allLessonsCompleted && finalExamPassed;
 
     res.render('institution-dashboard/learn/course-show', {
@@ -585,13 +587,27 @@ module.exports.certificate = catchAsync(async (req, res) => {
     const course       = await InstitutionCourse.findOne({ _id: courseId, institutionId: req.institution._id }).lean();
     if (!course) return res.redirect('/institution/learn/courses');
 
-    const [allLessons, completedCount] = await Promise.all([
+    const [modules, allLessons, completedProgress] = await Promise.all([
+        InstitutionModule.find({ courseId }).lean(),
         InstitutionLesson.find({ courseId }).lean(),
-        InstitutionLessonProgress.countDocuments({ userId: req.user._id, courseId })
+        InstitutionLessonProgress.find({ userId: req.user._id, courseId }).lean()
     ]);
 
-    if (allLessons.length > 0 && completedCount < allLessons.length) {
-        req.flash('error', 'Complétez toutes les leçons pour obtenir votre certificat.');
+    const completedIds    = new Set(completedProgress.map(p => p.lessonId.toString()));
+    const lessonsByModule = {};
+    allLessons.forEach(l => {
+        const mid = l.moduleId.toString();
+        if (!lessonsByModule[mid]) lessonsByModule[mid] = [];
+        lessonsByModule[mid].push(l._id.toString());
+    });
+
+    const allModulesComplete = modules.length > 0 && modules.every(m => {
+        const mLessons = lessonsByModule[m._id.toString()] || [];
+        return mLessons.length > 0 && mLessons.every(lid => completedIds.has(lid));
+    });
+
+    if (!allModulesComplete) {
+        req.flash('error', 'Complétez toutes les leçons de chaque module pour obtenir votre certificat.');
         return res.redirect(`/institution/learn/courses/${courseId}`);
     }
 
