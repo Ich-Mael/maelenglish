@@ -114,6 +114,11 @@ module.exports.courseShow = catchAsync(async (req, res) => {
     const assignmentSubByModule = {};
     assignmentSubs.forEach(s => { assignmentSubByModule[s.moduleId.toString()] = s; });
 
+    const allLessonsCompleted = allLessons.length === 0 || completedIds.size >= allLessons.length;
+    const hasFinalExam        = course.finalExam?.questions?.length > 0;
+    const finalExamPassed     = !hasFinalExam || (finalExamAttempt?.passed === true);
+    const isCertificateEligible = allLessonsCompleted && finalExamPassed;
+
     res.render('institution-dashboard/learn/course-show', {
         course,
         modulesWithProgress,
@@ -122,6 +127,7 @@ module.exports.courseShow = catchAsync(async (req, res) => {
         finalProjectSubmission,
         quizAttemptByModule,
         assignmentSubByModule,
+        isCertificateEligible,
         institution: req.institution,
         enrollment: req.enrollment
     });
@@ -570,4 +576,113 @@ module.exports.submitFinalProject = catchAsync(async (req, res) => {
 
     req.flash('success', 'Projet soumis.');
     res.json({ ok: true });
+});
+
+// ─── CERTIFICATE ──────────────────────────────────────────────────────────────
+
+module.exports.certificate = catchAsync(async (req, res) => {
+    const { courseId } = req.params;
+    const course       = await InstitutionCourse.findOne({ _id: courseId, institutionId: req.institution._id }).lean();
+    if (!course) return res.redirect('/institution/learn/courses');
+
+    const [allLessons, completedCount] = await Promise.all([
+        InstitutionLesson.find({ courseId }).lean(),
+        InstitutionLessonProgress.countDocuments({ userId: req.user._id, courseId })
+    ]);
+
+    if (allLessons.length > 0 && completedCount < allLessons.length) {
+        req.flash('error', 'Complétez toutes les leçons pour obtenir votre certificat.');
+        return res.redirect(`/institution/learn/courses/${courseId}`);
+    }
+
+    let finalExamScore = null;
+    if (course.finalExam?.questions?.length > 0) {
+        const best = await InstitutionFinalExamAttempt.findOne({
+            userId: req.user._id, courseId: course._id, passed: true
+        }).sort({ score: -1 }).lean();
+        if (!best) {
+            req.flash('error', 'Réussissez l\'examen final pour obtenir votre certificat.');
+            return res.redirect(`/institution/learn/courses/${courseId}`);
+        }
+        finalExamScore = best.score;
+    }
+
+    const PDFDocument  = require('pdfkit');
+    const institution  = req.institution;
+    const brand        = institution.primaryColor || '#0e7490';
+    const studentName  = `${req.user.name || ''} ${req.user.surname || ''}`.trim() || req.user.username;
+    const completionDate = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    const doc = new PDFDocument({ size: 'A4', layout: 'landscape', margin: 0 });
+    const filename = `certificat_${course.title.replace(/[^a-z0-9]/gi, '_')}.pdf`;
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    doc.pipe(res);
+
+    const W = doc.page.width;   // 841.89
+    const H = doc.page.height;  // 595.28
+
+    // ── Background ──────────────────────────────────────────────────────────────
+    doc.rect(0, 0, W, H).fill('#fffef7');
+
+    // ── Top bar ─────────────────────────────────────────────────────────────────
+    doc.rect(0, 0, W, 72).fill(brand);
+
+    // Institution name
+    doc.fillColor('#ffffff').font('Helvetica-Bold').fontSize(20)
+       .text(institution.name.toUpperCase(), 0, 18, { align: 'center', width: W, lineBreak: false });
+
+    // AfroHK tagline
+    doc.fillOpacity(0.65).fillColor('#ffffff').font('Helvetica').fontSize(10)
+       .text('AFROHK · PLATEFORME D\'APPRENTISSAGE', 0, 47, { align: 'center', width: W, lineBreak: false });
+    doc.fillOpacity(1);
+
+    // ── Outer decorative border ──────────────────────────────────────────────────
+    doc.rect(22, 82, W - 44, H - 104).lineWidth(2).stroke(brand);
+    doc.rect(28, 88, W - 56, H - 116).lineWidth(0.5).stroke(brand);
+
+    // ── Corner ornaments ─────────────────────────────────────────────────────────
+    const corners = [[30, 90], [W - 30, 90], [30, H - 32], [W - 30, H - 32]];
+    corners.forEach(([cx, cy]) => {
+        doc.circle(cx, cy, 4).fill(brand);
+    });
+
+    // ── Main title ───────────────────────────────────────────────────────────────
+    doc.fillColor(brand).font('Helvetica-Bold').fontSize(28)
+       .text('CERTIFICAT DE RÉUSSITE', 0, 108, { align: 'center', width: W });
+
+    // Decorative divider
+    const divY = 146, divW = 220, divX = (W - divW) / 2;
+    doc.moveTo(divX, divY).lineTo(divX + divW, divY).lineWidth(1.5).stroke(brand);
+    doc.circle(W / 2, divY, 3).fill(brand);
+
+    // ── Student section ──────────────────────────────────────────────────────────
+    doc.fillColor('#94a3b8').font('Helvetica').fontSize(11)
+       .text('Décerné à', 0, 160, { align: 'center', width: W });
+
+    doc.fillColor('#1e293b').font('Helvetica-Bold').fontSize(30)
+       .text(studentName, 60, 178, { align: 'center', width: W - 120 });
+
+    // ── Course section ───────────────────────────────────────────────────────────
+    doc.fillColor('#64748b').font('Helvetica').fontSize(12)
+       .text('pour avoir complété avec succès le cours', 0, 228, { align: 'center', width: W });
+
+    doc.fillColor(brand).font('Helvetica-Bold').fontSize(18)
+       .text(course.title, 80, 250, { align: 'center', width: W - 160 });
+
+    if (finalExamScore !== null) {
+        doc.fillColor('#475569').font('Helvetica').fontSize(11)
+           .text(`Score à l'examen final : ${finalExamScore} %`, 0, 285, { align: 'center', width: W });
+    }
+
+    // ── Bottom bar ───────────────────────────────────────────────────────────────
+    doc.rect(0, H - 52, W, 52).fill(brand);
+
+    doc.fillOpacity(0.85).fillColor('#ffffff').font('Helvetica').fontSize(10)
+       .text(`Délivré le ${completionDate}`, 50, H - 36, { width: 300, lineBreak: false });
+
+    doc.text('AfroHouse of Knowledge', W - 350, H - 36, { width: 300, align: 'right', lineBreak: false });
+    doc.fillOpacity(1);
+
+    doc.end();
 });

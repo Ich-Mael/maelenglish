@@ -24,8 +24,6 @@
   },
   "homepage": "https://github.com/Ich-Mael/ahk#readme",
   "dependencies": {
-    "express-rate-limit": "^7.0.0",
-    "helmet": "^8.0.0",
     "@sendgrid/mail": "^8.1.0",
     "connect-flash-plus": "^0.2.1",
     "connect-mongo": "^5.1.0",
@@ -36,8 +34,10 @@
     "ejs-mate": "^4.0.0",
     "express": "^4.19.2",
     "express-ejs-layouts": "^2.5.1",
+    "express-rate-limit": "^7.0.0",
     "express-session": "^1.18.0",
     "express-useragent": "^2.1.0",
+    "helmet": "^8.0.0",
     "html-to-text": "^9.0.5",
     "method-override": "^3.0.0",
     "moment": "^2.30.1",
@@ -46,6 +46,7 @@
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^8.0.0",
+    "pdfkit": "^0.19.0",
     "ua-parser-js": "^2.0.9"
   },
   "devDependencies": {

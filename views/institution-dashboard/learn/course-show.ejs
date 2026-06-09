@@ -211,6 +211,13 @@
             <% } %>
           </a>
 
+          <% if (typeof isCertificateEligible !== 'undefined' && isCertificateEligible) { %>
+            <a href="/institution/learn/courses/<%= course._id %>/certificate" class="btn-cta" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+              <i class="bi bi-patch-check-fill"></i>
+              Télécharger mon certificat
+            </a>
+          <% } %>
+
           <% if (course.finalExam && course.finalExam.questions && course.finalExam.questions.length > 0) { %>
             <a href="/institution/learn/courses/<%= course._id %>/final-exam" class="btn-cta btn-cta-outline">
               <i class="bi bi-clipboard-check"></i>
