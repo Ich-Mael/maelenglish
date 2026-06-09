@@ -91,7 +91,8 @@
                 data-videourl="<%= lesson.videoUrl || '' %>"
                 data-dur="<%= lesson.videoDuration || 0 %>"
                 data-fileurl="<%= (lesson.fileUrl||'').replace(/"/g,'&quot;') %>"
-                data-filename="<%= (lesson.fileName||'').replace(/"/g,'&quot;') %>">
+                data-filename="<%= (lesson.fileName||'').replace(/"/g,'&quot;') %>"
+                data-instructor="<%= lesson.instructorId ? lesson.instructorId._id || lesson.instructorId : '' %>">
                 Modifier
               </button>
             <% } %>
@@ -136,6 +137,16 @@
               <textarea id="nContent" name="content" class="form-control form-control-sm" rows="4" placeholder="Contenu de la leçon..."></textarea>
             </div>
             <p id="nQuiz" style="display:none" class="text-muted small mb-2">La leçon sera créée vide — ajoutez les questions après.</p>
+            <% if (typeof instructors !== 'undefined' && instructors.length > 0) { %>
+            <div class="mb-2">
+              <select name="instructorId" class="form-select form-select-sm">
+                <option value="">— Instructeur (optionnel) —</option>
+                <% instructors.forEach(inst => { %>
+                  <option value="<%= inst._id %>"><%= inst.name %><%= inst.title ? ' — ' + inst.title : '' %></option>
+                <% }) %>
+              </select>
+            </div>
+            <% } %>
             <button type="submit" class="btn btn-success btn-sm px-4">Créer</button>
           </form>
         </div>
@@ -159,6 +170,16 @@
           <div id="eText" style="display:none" class="mb-2">
             <textarea name="content" id="eContent" class="form-control form-control-sm" rows="4" placeholder="Contenu de la leçon..."></textarea>
           </div>
+          <% if (typeof instructors !== 'undefined' && instructors.length > 0) { %>
+          <div class="mb-2">
+            <select name="instructorId" id="eInstructor" class="form-select form-select-sm">
+              <option value="">— Instructeur (optionnel) —</option>
+              <% instructors.forEach(inst => { %>
+                <option value="<%= inst._id %>"><%= inst.name %><%= inst.title ? ' — ' + inst.title : '' %></option>
+              <% }) %>
+            </select>
+          </div>
+          <% } %>
           <div class="d-flex gap-2">
             <button type="submit" class="btn btn-warning btn-sm px-4">Enregistrer</button>
             <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('editPanel').style.display='none'">Annuler</button>
@@ -364,6 +385,8 @@ document.getElementById('lessonList').addEventListener('click', function(e) {
       if (ed) ed.setContent(lessonContents[editId] || '');
     }, 50);
   }
+  var instrSel = document.getElementById('eInstructor');
+  if (instrSel) instrSel.value = btn.dataset.instructor || '';
   var panel = document.getElementById('editPanel');
   panel.style.display = 'block';
   panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });

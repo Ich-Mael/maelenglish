@@ -1,4 +1,4 @@
-const { InstitutionCourse, InstitutionModule, InstitutionLesson } = require('../../models');
+const { InstitutionCourse, InstitutionModule, InstitutionLesson, InstitutionInstructor } = require('../../models');
 const catchAsync = require('../../../../shared/utilities/catchAsync');
 
 const base = (courseId, moduleId) => `/institution/dashboard/content/courses/${courseId}/modules/${moduleId}/edit`;
@@ -7,10 +7,11 @@ const base = (courseId, moduleId) => `/institution/dashboard/content/courses/${c
 
 module.exports.edit = catchAsync(async (req, res) => {
     const { courseId, moduleId } = req.params;
-    const [course, courseModule, lessons] = await Promise.all([
+    const [course, courseModule, lessons, instructors] = await Promise.all([
         InstitutionCourse.findById(courseId),
         InstitutionModule.findById(moduleId),
-        InstitutionLesson.find({ moduleId }).sort({ order: 1 })
+        InstitutionLesson.find({ moduleId }).sort({ order: 1 }).populate('instructorId', 'name'),
+        InstitutionInstructor.find({ institutionId: req.institution._id }).sort({ name: 1 }).select('name title')
     ]);
 
     if (!courseModule || !course) {
@@ -18,7 +19,7 @@ module.exports.edit = catchAsync(async (req, res) => {
         return res.redirect(`/institution/dashboard/content/courses/${courseId}`);
     }
 
-    res.render('institution-dashboard/content/courses/editModule', { course, courseModule, lessons });
+    res.render('institution-dashboard/content/courses/editModule', { course, courseModule, lessons, instructors });
 });
 
 // ─── MODULE CREATE ────────────────────────────────────────────────────────────
@@ -91,7 +92,7 @@ module.exports.destroy = catchAsync(async (req, res) => {
 
 module.exports.createLesson = catchAsync(async (req, res) => {
     const { courseId, moduleId } = req.params;
-    const { title, type, description, videoUrl, videoDuration, fileUrl, fileName, content } = req.body;
+    const { title, type, description, videoUrl, videoDuration, fileUrl, fileName, content, instructorId } = req.body;
 
     if (!title || !type) {
         req.flash('error', 'Titre et type sont requis.');
@@ -111,7 +112,8 @@ module.exports.createLesson = catchAsync(async (req, res) => {
         videoDuration: type === 'video' ? (parseInt(videoDuration) || 0) : undefined,
         fileUrl: type === 'pdf' ? (fileUrl || '') : undefined,
         fileName: type === 'pdf' ? (fileName || '') : undefined,
-        content: type === 'text' ? (content || '') : undefined
+        content: type === 'text' ? (content || '') : undefined,
+        instructorId: instructorId || undefined
     });
 
     await InstitutionModule.findByIdAndUpdate(moduleId, { $push: { lessons: lesson._id } });
@@ -124,7 +126,7 @@ module.exports.createLesson = catchAsync(async (req, res) => {
 
 module.exports.updateLesson = catchAsync(async (req, res) => {
     const { courseId, moduleId, lessonId } = req.params;
-    const { title, description, videoUrl, videoDuration, fileUrl, fileName, content } = req.body;
+    const { title, description, videoUrl, videoDuration, fileUrl, fileName, content, instructorId } = req.body;
 
     const lesson = await InstitutionLesson.findOne({ _id: lessonId, moduleId });
     if (!lesson) {
@@ -143,6 +145,7 @@ module.exports.updateLesson = catchAsync(async (req, res) => {
         if (fileName !== undefined) lesson.fileName = fileName;
     }
     if (lesson.type === 'text' && content !== undefined) lesson.content = content;
+    lesson.instructorId = instructorId || null;
 
     await lesson.save();
     req.flash('success', 'Leçon mise à jour.');

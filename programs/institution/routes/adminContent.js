@@ -5,9 +5,10 @@ const { isInstitutionAdmin, loadInstitution } = require('../../../shared/middlew
 
 const adminOnly = [isLoggedIn, isInstitutionAdmin, loadInstitution];
 
-const courseController = require('../controllers/admin/courseController');
-const moduleController = require('../controllers/admin/moduleController');
-const gradingController = require('../controllers/admin/gradingController');
+const courseController      = require('../controllers/admin/courseController');
+const moduleController      = require('../controllers/admin/moduleController');
+const gradingController     = require('../controllers/admin/gradingController');
+const instructorController  = require('../controllers/admin/instructorController');
 
 // ─── COURSE CRUD ─────────────────────────────────────────────────────────────
 
@@ -47,6 +48,15 @@ router.post('/courses/:courseId/modules/:moduleId/assignment', ...adminOnly, mod
 
 router.post('/courses/:id/final-exam', ...adminOnly, courseController.saveFinalExam);
 router.post('/courses/:id/final-project', ...adminOnly, courseController.saveFinalProject);
+
+// ─── INSTRUCTORS ─────────────────────────────────────────────────────────────
+
+router.get('/instructors',          ...adminOnly, instructorController.index);
+router.get('/instructors/new',      ...adminOnly, instructorController.new);
+router.post('/instructors',         ...adminOnly, instructorController.create);
+router.get('/instructors/:id/edit', ...adminOnly, instructorController.edit);
+router.put('/instructors/:id',      ...adminOnly, instructorController.update);
+router.delete('/instructors/:id',   ...adminOnly, instructorController.destroy);
 
 // ─── GRADING ─────────────────────────────────────────────────────────────────
 

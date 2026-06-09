@@ -7,6 +7,10 @@ const learnController = require('../controllers/student/learnController');
 
 const studentAuth = [isLoggedIn, isInstitutionStudent, loadStudentInstitution];
 
+// ─── INSTRUCTORS ────────────────────────────────────────────────────────────
+
+router.get('/instructors', ...studentAuth, learnController.instructors);
+
 // ─── COURSE BROWSING ────────────────────────────────────────────────────────
 
 router.get('/courses', ...studentAuth, learnController.courses);

@@ -2,6 +2,7 @@ const {
     InstitutionCourse,
     InstitutionModule,
     InstitutionLesson,
+    InstitutionInstructor,
     InstitutionLessonProgress,
     InstitutionEnrollment,
     InstitutionQuizAttempt,
@@ -175,7 +176,7 @@ module.exports.lessonShow = catchAsync(async (req, res) => {
     const [course, courseModule, lesson, lessons, progress] = await Promise.all([
         InstitutionCourse.findById(courseId).select('title _id').lean(),
         InstitutionModule.findById(moduleId).select('title _id').lean(),
-        InstitutionLesson.findOne({ _id: lessonId, moduleId, courseId, institutionId: req.institution._id }),
+        InstitutionLesson.findOne({ _id: lessonId, moduleId, courseId, institutionId: req.institution._id }).populate('instructorId'),
         InstitutionLesson.find({ moduleId, courseId }).sort({ order: 1 }).lean(),
         InstitutionLessonProgress.findOne({ userId: req.user._id, lessonId }).lean()
     ]);
@@ -458,6 +459,19 @@ module.exports.finalProject = catchAsync(async (req, res) => {
     });
 
     res.render('institution-dashboard/learn/final-project', { course, courseId, existing });
+});
+
+// ─── INSTRUCTORS PAGE ─────────────────────────────────────────────────────────
+
+module.exports.instructors = catchAsync(async (req, res) => {
+    const instructors = await InstitutionInstructor.find({
+        institutionId: req.institution._id
+    }).sort({ name: 1 });
+
+    res.render('institution-dashboard/learn/instructors', {
+        institution: req.institution,
+        instructors
+    });
 });
 
 module.exports.submitFinalProject = catchAsync(async (req, res) => {

@@ -28,6 +28,15 @@
     white-space: nowrap;
   }
   .learn-nav-back:hover { background: #f1f5f9; color: #1e293b; }
+  .learn-nav-instructors {
+    display: inline-flex; align-items: center; gap: .3rem;
+    font-size: .82rem; font-weight: 600; text-decoration: none;
+    padding: .35rem .7rem; border-radius: 8px;
+    color: #64748b; white-space: nowrap; flex-shrink: 0;
+    transition: background .15s, color .15s;
+  }
+  .learn-nav-instructors:hover { background: #f1f5f9; color: #1e293b; }
+  @media (max-width: 640px) { .learn-nav-instructors { display: none; } }
   .learn-nav-brand {
     flex: 1;
     display: flex;
@@ -103,6 +112,8 @@
     <i class="bi bi-arrow-left"></i>
     <span>Mes cours</span>
   </a>
+
+  <a href="/institution/learn/instructors" class="learn-nav-instructors">👨‍🏫 Instructeurs</a>
 
   <div class="learn-nav-brand">
     <span class="learn-nav-brand-dot"></span>

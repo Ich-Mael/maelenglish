@@ -54,6 +54,10 @@ const institutionLessonSchema = new mongoose.Schema(
                     explanation: String
                 }
             ]
+        },
+        instructorId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'InstitutionInstructor'
         }
     },
     { timestamps: true }
