@@ -21,6 +21,12 @@
   .btn-outline-danger:hover { background: #fef2f2; }
   .empty-state { text-align: center; padding: 2rem; color: #6b7280; }
   .badge { display: inline-block; padding: .25rem .75rem; border-radius: 20px; font-size: .75rem; font-weight: 600; background: #dcfce7; color: #166534; }
+  .drag-handle { cursor: grab; color: #cbd5e1; font-size: 1rem; padding: 0 .25rem; flex-shrink: 0; user-select: none; }
+  .drag-handle:active { cursor: grabbing; }
+  .module-item.dragging { opacity: .4; }
+  .module-item.drag-over { border: 2px dashed #5d06ba; background: #f5f0ff; }
+  #save-modules-btn { position: fixed; bottom: 2rem; right: 2rem; z-index: 100; background: #5d06ba; color: #fff; border: none; border-radius: 12px; padding: .7rem 1.5rem; font-weight: 700; font-size: .9rem; box-shadow: 0 4px 20px rgba(93,6,186,.35); cursor: pointer; display: none; }
+  #save-modules-btn.visible { display: block; }
 </style>` %>
 
 <div class="page-wrapper">
@@ -75,15 +81,17 @@
         </form>
       </div>
 
+      <div id="moduleList">
       <% if (!course.modules || course.modules.length === 0) { %>
         <div class="empty-state">
           <p>Aucun module. Créez-en un ci-dessus.</p>
         </div>
       <% } else { %>
         <% course.modules.forEach((mod, idx) => { %>
-          <div class="module-item">
+          <div class="module-item" draggable="true" data-id="<%= mod._id %>">
+            <span class="drag-handle" title="Réorganiser">⠿</span>
             <div class="module-info">
-              <div class="module-title"><%= idx + 1 %>. <%= mod.title %></div>
+              <div class="module-title"><span class="module-index"><%= idx + 1 %></span>. <%= mod.title %></div>
               <div class="module-meta">
                 <%= mod.lessons ? mod.lessons.length : 0 %> leçon<%= (mod.lessons && mod.lessons.length !== 1) ? 's' : '' %>
                 <% if (mod.quiz) { %><span style="margin-left: .5rem;">✓ Quiz</span><% } %>
@@ -100,6 +108,8 @@
           </div>
         <% }) %>
       <% } %>
+      </div>
+      <button id="save-modules-btn" onclick="saveModuleOrder()">✓ Enregistrer l'ordre</button>
     </div>
 
     <!-- Final exam -->
@@ -191,3 +201,65 @@
 
   </div>
 </div>
+
+<script>
+(function () {
+  const list    = document.getElementById('moduleList');
+  const saveBtn = document.getElementById('save-modules-btn');
+  if (!list || !saveBtn) return;
+
+  let dragged      = null;
+  let orderChanged = false;
+
+  list.addEventListener('dragstart', e => {
+    dragged = e.target.closest('.module-item');
+    if (!dragged) return;
+    setTimeout(() => dragged.classList.add('dragging'), 0);
+  });
+
+  list.addEventListener('dragend', () => {
+    if (dragged) dragged.classList.remove('dragging');
+    list.querySelectorAll('.module-item').forEach(c => c.classList.remove('drag-over'));
+    dragged = null;
+    if (orderChanged) saveBtn.classList.add('visible');
+  });
+
+  list.addEventListener('dragover', e => {
+    e.preventDefault();
+    const target = e.target.closest('.module-item');
+    if (!target || target === dragged) return;
+    list.querySelectorAll('.module-item').forEach(c => c.classList.remove('drag-over'));
+    target.classList.add('drag-over');
+    const after = e.clientY > target.getBoundingClientRect().top + target.getBoundingClientRect().height / 2;
+    list.insertBefore(dragged, after ? target.nextSibling : target);
+    list.querySelectorAll('.module-index').forEach((el, i) => el.textContent = i + 1);
+    orderChanged = true;
+  });
+
+  list.addEventListener('dragenter', e => e.preventDefault());
+
+  window.saveModuleOrder = function () {
+    const ids = Array.from(list.querySelectorAll('.module-item')).map(c => c.dataset.id).join(',');
+    saveBtn.textContent = 'Enregistrement…';
+    saveBtn.disabled    = true;
+    fetch('/institution/dashboard/content/courses/<%= course._id %>/modules/reorder', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body:    'orderedIds=' + encodeURIComponent(ids)
+    })
+    .then(r => r.json())
+    .then(d => {
+      if (d.ok) {
+        saveBtn.textContent = '✓ Enregistré !';
+        orderChanged = false;
+        setTimeout(() => {
+          saveBtn.classList.remove('visible');
+          saveBtn.textContent = '✓ Enregistrer l\'ordre';
+          saveBtn.disabled = false;
+        }, 1500);
+      }
+    })
+    .catch(() => { saveBtn.textContent = 'Erreur — réessayer'; saveBtn.disabled = false; });
+  };
+})();
+</script>

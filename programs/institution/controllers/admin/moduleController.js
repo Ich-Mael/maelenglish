@@ -170,6 +170,20 @@ module.exports.destroyLesson = catchAsync(async (req, res) => {
     res.redirect(base(courseId, moduleId));
 });
 
+// ─── MODULE REORDER ───────────────────────────────────────────────────────────
+
+module.exports.reorderModules = catchAsync(async (req, res) => {
+    const { courseId } = req.params;
+    const orderedIds = (req.body.orderedIds || '').split(',').filter(Boolean);
+
+    for (let i = 0; i < orderedIds.length; i++) {
+        await InstitutionModule.findOneAndUpdate({ _id: orderedIds[i], courseId }, { order: i + 1 });
+    }
+    await InstitutionCourse.findByIdAndUpdate(courseId, { modules: orderedIds });
+
+    res.json({ ok: true });
+});
+
 // ─── LESSON REORDER ───────────────────────────────────────────────────────────
 
 module.exports.reorderLessons = catchAsync(async (req, res) => {

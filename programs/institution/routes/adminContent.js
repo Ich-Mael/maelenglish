@@ -29,6 +29,7 @@ router.delete('/courses/:id',     ...afroHKOnly, courseController.destroy);
 // ─── MODULE CRUD (AfroHK only) ───────────────────────────────────────────────
 
 router.post('/courses/:courseId/modules',                       ...afroHKOnly, moduleController.create);
+router.post('/courses/:courseId/modules/reorder',               ...afroHKOnly, moduleController.reorderModules);
 router.get('/courses/:courseId/modules/:moduleId/edit',         ...afroHKOnly, moduleController.edit);
 router.put('/courses/:courseId/modules/:moduleId',              ...afroHKOnly, moduleController.update);
 router.delete('/courses/:courseId/modules/:moduleId',           ...afroHKOnly, moduleController.destroy);
