@@ -1,4 +1,5 @@
 <% layout('layouts/institutionBoilerplate') %>
+<% const _isAfroHK = currentUser && (currentUser.role === 'admin' || currentUser.role === 'super-admin'); %>
 
 <% headContent = `<style>
   .page-wrapper { margin-top: 80px; padding: 2rem 0 5rem; background: #f8fafc; }
@@ -33,15 +34,20 @@
           <p><span class="badge"><%= course.isActive ? '✓ Actif' : '● Brouillon' %></span></p>
         </div>
         <div class="d-flex gap-2 flex-wrap">
-          <a href="/institution/dashboard/content/courses/<%= course._id %>/submissions" class="btn btn-light btn-sm" style="background:#fff3;color:#fff;border-color:#fff5;">📋 Soumissions</a>
-          <a href="/institution/dashboard/content/courses/<%= course._id %>/edit" class="btn btn-light btn-sm">Modifier</a>
-          <a href="/institution/dashboard/content<%= typeof institutionId !== 'undefined' ? '?institutionId=' + institutionId : '' %>" class="btn btn-light btn-sm">← Tous les cours</a>
+          <% if (_isAfroHK) { %>
+            <a href="/institution/dashboard/content/courses/<%= course._id %>/submissions" class="btn btn-light btn-sm" style="background:#fff3;color:#fff;border-color:#fff5;">📋 Soumissions</a>
+            <a href="/institution/dashboard/content/courses/<%= course._id %>/edit" class="btn btn-light btn-sm">Modifier</a>
+            <a href="/institution/dashboard/content<%= typeof institutionId !== 'undefined' ? '?institutionId=' + institutionId : '' %>" class="btn btn-light btn-sm">← Tous les cours</a>
+          <% } else { %>
+            <a href="/institution/dashboard/content/instructors" class="btn btn-light btn-sm">← Instructeurs</a>
+          <% } %>
         </div>
       </div>
     </div>
 
     <%- include('../../../partials/flash') %>
 
+    <% if (_isAfroHK) { %>
     <!-- Course info -->
     <div class="section-card">
       <h2>📋 Informations du cours</h2>
@@ -155,6 +161,7 @@
         <button type="submit" class="btn btn-sm btn-success">Créer projet final</button>
       </form>
     </div>
+    <% } %>
 
     <!-- Instructor assignment -->
     <% if (typeof allInstructors !== 'undefined' && allInstructors.length > 0) { %>

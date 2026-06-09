@@ -1,16 +1,21 @@
 const User = require('../../../../shared/models/user');
-const { InstitutionInstructor } = require('../../models');
+const { InstitutionInstructor, InstitutionCourse } = require('../../models');
 const catchAsync = require('../../../../shared/utilities/catchAsync');
 
 const base = '/institution/dashboard/content/instructors';
 
 // List instructors + search endpoint
 module.exports.index = catchAsync(async (req, res) => {
-    const instructors = await InstitutionInstructor.find({
-        institutionId: req.institution._id
-    }).populate('userId', 'name surname username email').sort({ name: 1 });
+    const [instructors, courses] = await Promise.all([
+        InstitutionInstructor.find({ institutionId: req.institution._id })
+            .populate('userId', 'name surname username email')
+            .sort({ name: 1 }),
+        InstitutionCourse.find({ institutionId: req.institution._id })
+            .select('title instructors isActive')
+            .sort({ createdAt: -1 })
+    ]);
 
-    res.render('institution-dashboard/content/instructors/index', { instructors });
+    res.render('institution-dashboard/content/instructors/index', { instructors, courses });
 });
 
 // JSON search — find institution-instructor users not already in this institution
@@ -124,7 +129,6 @@ module.exports.destroy = catchAsync(async (req, res) => {
 
 // Assign/update instructors on a course
 module.exports.assignToCourse = catchAsync(async (req, res) => {
-    const { InstitutionCourse } = require('../../models');
     const { courseId } = req.params;
     const instructorIds = req.body.instructorIds
         ? (Array.isArray(req.body.instructorIds) ? req.body.instructorIds : [req.body.instructorIds])
@@ -136,12 +140,14 @@ module.exports.assignToCourse = catchAsync(async (req, res) => {
     });
     if (!course) {
         req.flash('error', 'Cours introuvable.');
-        return res.redirect('/institution/dashboard/content');
+        return res.redirect(base);
     }
 
     course.instructors = instructorIds;
     await course.save();
 
-    req.flash('success', 'Instructeurs assignés au cours.');
-    res.redirect(`/institution/dashboard/content/courses/${courseId}`);
+    req.flash('success', `Instructeurs mis à jour pour "${course.title}".`);
+    // Redirect back to instructors page — works for both institution admins and AfroHK admins
+    const ref = req.get('Referer') || base;
+    res.redirect(ref.includes('/courses/') ? base : ref);
 });

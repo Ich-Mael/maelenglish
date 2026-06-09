@@ -201,6 +201,22 @@ module.exports.checkInstitutionCourseAccess = async (req, res, next) => {
     }
 };
 
+// ─── AFROHK-ONLY CONTENT MIDDLEWARE ──────────────────────────────────────────
+
+// Blocks institution-admin from content authoring routes — only AfroHK team can
+// create/edit courses, modules, and lessons.
+module.exports.isAfroHKAdmin = (req, res, next) => {
+    if (!req.isAuthenticated()) {
+        req.session.returnTo = req.originalUrl;
+        req.flash('error', 'Vous devez d\'abord vous connecter.');
+        return res.redirect('/login');
+    }
+    const role = req.user.role;
+    if (role === 'admin' || role === 'super-admin') return next();
+    req.flash('error', 'La création et modification de contenu est réservée à l\'équipe AfroHK.');
+    return res.redirect('/institution/dashboard');
+};
+
 // ─── INSTRUCTOR MIDDLEWARE ─────────────────────────────────────────────────────
 
 module.exports.isInstitutionInstructor = (req, res, next) => {
