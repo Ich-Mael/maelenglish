@@ -10,6 +10,7 @@ const {
     InstitutionFinalExamAttempt,
     InstitutionFinalProjectSubmission
 } = require('../../models');
+const Announcement = require('../../../../shared/models/announcement');
 const catchAsync = require('../../../../shared/utilities/catchAsync');
 
 // ─── COURSE LIST ─────────────────────────────────────────────────────────────
@@ -22,7 +23,7 @@ module.exports.courses = catchAsync(async (req, res) => {
 
     const courseIds = enrollments.map(e => e.courseId?._id).filter(Boolean);
 
-    const [completedAgg, totalAgg] = await Promise.all([
+    const [completedAgg, totalAgg, announcements] = await Promise.all([
         InstitutionLessonProgress.aggregate([
             { $match: { userId: req.user._id, courseId: { $in: courseIds } } },
             { $group: { _id: '$courseId', count: { $sum: 1 } } }
@@ -30,7 +31,11 @@ module.exports.courses = catchAsync(async (req, res) => {
         InstitutionLesson.aggregate([
             { $match: { courseId: { $in: courseIds } } },
             { $group: { _id: '$courseId', count: { $sum: 1 } } }
-        ])
+        ]),
+        Announcement.find({ institutionId: req.institution._id, isPublished: true })
+            .sort({ isPinned: -1, createdAt: -1 })
+            .limit(10)
+            .lean()
     ]);
 
     const completedMap = Object.fromEntries(completedAgg.map(r => [r._id.toString(), r.count]));
@@ -46,7 +51,8 @@ module.exports.courses = catchAsync(async (req, res) => {
 
     res.render('institution-dashboard/learn/courses', {
         institution: req.institution,
-        coursesWithProgress
+        coursesWithProgress,
+        announcements
     });
 });
 

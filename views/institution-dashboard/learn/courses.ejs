@@ -32,6 +32,23 @@
   .inst-hero-fallback { width: 48px; height: 48px; border-radius: 12px; background: rgba(255,255,255,.25); color: #fff; font-size: .85rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 2px solid rgba(255,255,255,.3); }
   .inst-hero-name { font-size: 1rem; font-weight: 700; color: rgba(255,255,255,.95); letter-spacing: .01em; }
   .inst-hero-tagline { font-size: .78rem; color: rgba(255,255,255,.65); }
+  .ann-list { margin-bottom: 1.75rem; display: flex; flex-direction: column; gap: .65rem; }
+  .ann-item { background: #fff; border-radius: 14px; border-left: 4px solid var(--brand); padding: 1rem 1.25rem 1rem 1.1rem; box-shadow: 0 1px 8px rgba(0,0,0,.06); display: flex; gap: 1rem; align-items: flex-start; }
+  .ann-item.pinned { background: color-mix(in srgb, var(--brand) 5%, #fff); }
+  .ann-icon { font-size: 1.25rem; flex-shrink: 0; line-height: 1; margin-top: .1rem; }
+  .ann-content { flex: 1; min-width: 0; }
+  .ann-header { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; margin-bottom: .25rem; }
+  .ann-title { font-weight: 700; font-size: .92rem; color: #1e293b; margin: 0; }
+  .ann-pin { font-size: .75rem; color: var(--brand); font-weight: 600; }
+  .ann-body { font-size: .85rem; color: #475569; line-height: 1.6; margin: 0 0 .3rem; white-space: pre-line; }
+  .ann-meta { font-size: .73rem; color: #94a3b8; }
+  .ann-dismiss { background: none; border: none; color: #cbd5e1; font-size: 1.1rem; cursor: pointer; padding: 0; flex-shrink: 0; line-height: 1; margin-top: .1rem; }
+  .ann-dismiss:hover { color: #94a3b8; }
+  .type-info       { --ann-icon: '📢'; }
+  .type-discount   { --ann-icon: '🎉'; }
+  .type-new_course { --ann-icon: '📚'; }
+  .type-event      { --ann-icon: '📅'; }
+  .type-reminder   { --ann-icon: '⏰'; }
 </style>` %>
 
 <div class="page-wrapper">
@@ -56,6 +73,28 @@
     </div>
 
     <%- include('../../partials/flash') %>
+
+    <% if (typeof announcements !== 'undefined' && announcements.length > 0) { %>
+    <%
+      const _annIcons = { info: '📢', discount: '🎉', new_course: '📚', event: '📅', reminder: '⏰' };
+    %>
+    <div class="ann-list" id="annList">
+      <% announcements.forEach(ann => { %>
+        <div class="ann-item <%= ann.isPinned ? 'pinned' : '' %>" data-ann-id="<%= ann._id %>">
+          <span class="ann-icon"><%= _annIcons[ann.type] || '📢' %></span>
+          <div class="ann-content">
+            <div class="ann-header">
+              <p class="ann-title"><%= ann.title %></p>
+              <% if (ann.isPinned) { %><span class="ann-pin">📌 Épinglé</span><% } %>
+            </div>
+            <p class="ann-body"><%= ann.body %></p>
+            <p class="ann-meta"><%= new Date(ann.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) %></p>
+          </div>
+          <button class="ann-dismiss" title="Masquer" onclick="dismissAnn(this, '<%= ann._id %>')">×</button>
+        </div>
+      <% }) %>
+    </div>
+    <% } %>
 
     <% if (coursesWithProgress.length === 0) { %>
       <div class="empty-state">
@@ -111,3 +150,24 @@
     <% } %>
   </div>
 </div>
+
+<script>
+(function () {
+  const KEY = 'dismissed_anns_<%= typeof institution !== "undefined" && institution ? institution._id : "x" %>';
+  const dismissed = new Set(JSON.parse(sessionStorage.getItem(KEY) || '[]'));
+
+  // Hide already-dismissed announcements immediately
+  document.querySelectorAll('[data-ann-id]').forEach(el => {
+    if (dismissed.has(el.dataset.annId)) el.style.display = 'none';
+  });
+
+  window.dismissAnn = function (btn, id) {
+    const item = btn.closest('[data-ann-id]');
+    item.style.transition = 'opacity .2s';
+    item.style.opacity = '0';
+    setTimeout(() => { item.style.display = 'none'; }, 200);
+    dismissed.add(id);
+    sessionStorage.setItem(KEY, JSON.stringify([...dismissed]));
+  };
+})();
+</script>
