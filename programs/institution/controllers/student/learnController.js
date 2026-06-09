@@ -459,6 +459,15 @@ module.exports.submitFinalProject = catchAsync(async (req, res) => {
         return res.status(404).json({ error: 'Project not found' });
     }
 
+    const alreadySubmitted = await InstitutionFinalProjectSubmission.findOne({
+        userId: req.user._id,
+        courseId
+    });
+
+    if (alreadySubmitted) {
+        return res.status(409).json({ ok: false, error: 'Vous avez déjà soumis ce projet.' });
+    }
+
     await InstitutionFinalProjectSubmission.create({
         userId: req.user._id,
         courseId,

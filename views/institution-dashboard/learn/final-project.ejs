@@ -94,10 +94,10 @@
       <a href="/institution/learn/courses/<%= courseId %>" class="btn px-4 rounded-pill" style="background:var(--brand);color:#fff;">← Retour au cours</a>
     </div>
 
-    <!-- Submission form (hidden if already graded) -->
-    <% if (!graded) { %>
+    <!-- Submission form (hidden once any submission exists) -->
+    <% if (!existing) { %>
     <div id="form-section" class="card-section">
-      <h2><%= existing ? '🔄 Modifier votre soumission' : '📨 Soumettre votre travail' %></h2>
+      <h2>📨 Soumettre votre travail</h2>
       <form id="projectForm">
         <% if (isLink) { %>
           <div class="mb-3">
@@ -149,8 +149,8 @@ document.getElementById('projectForm') && document.getElementById('projectForm')
       confirm.scrollIntoView({ behavior: 'smooth' });
     } else {
       btn.disabled = false;
-      btn.textContent = '<%= existing ? "Mettre à jour" : "Soumettre" %>';
-      status.textContent = 'Une erreur est survenue.';
+      btn.textContent = 'Soumettre';
+      status.textContent = data.error || 'Une erreur est survenue.';
     }
   } catch(err) {
     btn.disabled = false;
