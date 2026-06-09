@@ -1,27 +1,94 @@
-const { InstitutionCourse, InstitutionEnrollment } = require('../../../programs/institution/models');
+const {
+    InstitutionCourse, InstitutionEnrollment,
+    InstitutionLesson, InstitutionLessonProgress,
+    InstitutionAssignmentSubmission, InstitutionFinalProjectSubmission
+} = require('../../../programs/institution/models');
 const Institution = require('../../models/institution');
-const catchAsync = require('../../utilities/catchAsync');
+const catchAsync  = require('../../utilities/catchAsync');
 
 module.exports.home = catchAsync(async (req, res) => {
-    const now = new Date();
+    const institutionId = req.institution._id;
+    const now     = new Date();
+    const in7days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-    const [courseCount, studentIds, activeEnrollments] = await Promise.all([
-        InstitutionCourse.countDocuments({ institutionId: req.institution._id }),
-        InstitutionEnrollment.distinct('userId', { institutionId: req.institution._id }),
-        InstitutionEnrollment.countDocuments({
-            institutionId: req.institution._id,
-            status: 'active',
-            $or: [{ endDate: null }, { endDate: { $gte: now } }]
-        })
+    const courses = await InstitutionCourse.find({ institutionId })
+        .populate('instructors', 'name title')
+        .sort({ createdAt: -1 })
+        .lean();
+
+    const courseIds = courses.map(c => c._id);
+
+    const [
+        enrollCounts,
+        activeCounts,
+        lessonCounts,
+        progressAgg,
+        pendingAssignments,
+        pendingProjects,
+        expiringEnrollments,
+        expiredCount
+    ] = await Promise.all([
+        InstitutionEnrollment.aggregate([
+            { $match: { institutionId, courseId: { $in: courseIds } } },
+            { $group: { _id: '$courseId', count: { $sum: 1 } } }
+        ]),
+        InstitutionEnrollment.aggregate([
+            { $match: { institutionId, courseId: { $in: courseIds },
+                $or: [{ endDate: null }, { endDate: { $gte: now } }] } },
+            { $group: { _id: '$courseId', count: { $sum: 1 } } }
+        ]),
+        InstitutionLesson.aggregate([
+            { $match: { courseId: { $in: courseIds } } },
+            { $group: { _id: '$courseId', count: { $sum: 1 } } }
+        ]),
+        // Average progress % per course: avg completed lessons per enrolled user
+        InstitutionLessonProgress.aggregate([
+            { $match: { courseId: { $in: courseIds } } },
+            { $group: { _id: { courseId: '$courseId', userId: '$userId' }, done: { $sum: 1 } } },
+            { $group: { _id: '$_id.courseId', avgDone: { $avg: '$done' } } }
+        ]),
+        InstitutionAssignmentSubmission.aggregate([
+            { $match: { courseId: { $in: courseIds }, status: 'submitted' } },
+            { $group: { _id: '$courseId', count: { $sum: 1 } } }
+        ]),
+        InstitutionFinalProjectSubmission.aggregate([
+            { $match: { courseId: { $in: courseIds }, status: 'submitted' } },
+            { $group: { _id: '$courseId', count: { $sum: 1 } } }
+        ]),
+        InstitutionEnrollment.find({
+            institutionId,
+            endDate: { $gte: now, $lte: in7days }
+        }).populate('userId', 'name surname username').populate('courseId', 'title').lean(),
+        InstitutionEnrollment.countDocuments({ institutionId, endDate: { $lt: now } })
     ]);
+
+    const toMap = arr => Object.fromEntries(arr.map(r => [r._id.toString(), r.count]));
+    const enrollMap  = toMap(enrollCounts);
+    const activeMap  = toMap(activeCounts);
+    const lessonMap  = toMap(lessonCounts);
+    const assignMap  = toMap(pendingAssignments);
+    const projectMap = toMap(pendingProjects);
+    const progMap    = Object.fromEntries(progressAgg.map(r => [r._id.toString(), r.avgDone]));
+
+    const courseCards = courses.map(course => {
+        const cid        = course._id.toString();
+        const enrolled   = enrollMap[cid]  || 0;
+        const active     = activeMap[cid]  || 0;
+        const total      = lessonMap[cid]  || 0;
+        const avgDone    = progMap[cid]    || 0;
+        const avgPct     = total > 0 ? Math.round((avgDone / total) * 100) : 0;
+        const pending    = (assignMap[cid] || 0) + (projectMap[cid] || 0);
+        return { course, enrolled, active, avgPct, pending, instructors: course.instructors || [] };
+    });
+
+    const totalPending = courseCards.reduce((s, c) => s + c.pending, 0);
 
     res.render('institution-dashboard/home', {
         institution: req.institution,
-        stats: {
-            studentCount: studentIds.length,
-            courseCount,
-            activeEnrollments
-        }
+        courseCards,
+        expiringEnrollments,
+        expiredCount,
+        totalPending
     });
 });
 

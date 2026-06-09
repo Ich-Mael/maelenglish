@@ -1,73 +1,222 @@
 <% layout('layouts/institutionBoilerplate') %>
+<% const _brand = typeof institutionColor !== 'undefined' ? institutionColor : '#0e7490'; %>
 
-<% const brandColor = typeof institutionColor !== 'undefined' ? institutionColor : '#0e7490'; %>
 <% headContent = `<style>
-  :root { --brand: ${brandColor}; }
-  .page-wrapper { margin-top: 80px; padding: 2rem 0 4rem; min-height: calc(100vh - 200px); }
-  .page-header { background: linear-gradient(135deg, var(--brand) 0%, color-mix(in srgb, var(--brand) 70%, #000) 100%); color: white; padding: 2.5rem 2rem; border-radius: 20px; margin-bottom: 2rem; }
-  .page-header h1 { margin: 0 0 .3rem; font-size: 2rem; font-weight: 800; }
-  .page-header p { margin: 0; opacity: .85; }
-  .stat-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07); padding: 1.75rem; text-align: center; }
-  .stat-card .num { font-size: 2.5rem; font-weight: 800; color: var(--brand); }
-  .stat-card .lbl { color: #555; font-size: .9rem; margin-top: .25rem; }
-  .nav-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07); padding: 1.5rem; text-decoration: none; color: inherit; display: block; transition: box-shadow .2s, transform .2s; border-left: 4px solid var(--brand); }
-  .nav-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,.15); transform: translateY(-2px); color: inherit; }
-  .nav-card h3 { font-size: 1.05rem; font-weight: 700; margin: 0 0 .3rem; color: var(--brand); }
-  .nav-card p { font-size: .85rem; color: #666; margin: 0; }
+  :root { --brand: ${_brand}; }
+  .page-wrapper { margin-top: 80px; padding: 2rem 0 5rem; background: #f8fafc; min-height: 100vh; }
+
+  /* ── Header ── */
+  .dash-header { background: linear-gradient(135deg, var(--brand) 0%, color-mix(in srgb, var(--brand) 68%, #000) 100%); color: #fff; padding: 2rem 2.25rem; border-radius: 20px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1.25rem; }
+  .dash-logo { width: 56px; height: 56px; border-radius: 14px; object-fit: contain; border: 2px solid rgba(255,255,255,.3); flex-shrink: 0; }
+  .dash-logo-fallback { width: 56px; height: 56px; border-radius: 14px; background: rgba(255,255,255,.2); color: #fff; font-size: 1rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; letter-spacing: .04em; }
+  .dash-header h1 { margin: 0 0 .2rem; font-size: 1.6rem; font-weight: 800; }
+  .dash-header p  { margin: 0; opacity: .8; font-size: .9rem; }
+
+  /* ── Alert strip ── */
+  .alert-strip { display: flex; flex-direction: column; gap: .6rem; margin-bottom: 1.5rem; }
+  .alert-item { display: flex; align-items: center; gap: .85rem; padding: .85rem 1.1rem; border-radius: 12px; font-size: .88rem; font-weight: 600; }
+  .alert-warn  { background: #fef9c3; color: #854d0e; border: 1px solid #fde68a; }
+  .alert-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+  .alert-icon { font-size: 1.1rem; flex-shrink: 0; }
+  .alert-item a { color: inherit; text-decoration: underline; }
+  .expiry-list { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .4rem; }
+  .expiry-chip { background: rgba(0,0,0,.07); border-radius: 20px; padding: .15rem .6rem; font-size: .78rem; font-weight: 500; }
+
+  /* ── Section title ── */
+  .section-title { font-size: 1rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: .06em; margin: 0 0 1rem; }
+
+  /* ── Course cards ── */
+  .course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem; margin-bottom: 2.5rem; }
+  .course-card { background: #fff; border-radius: 18px; box-shadow: 0 2px 14px rgba(0,0,0,.07); padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; border-top: 4px solid var(--brand); transition: box-shadow .2s; }
+  .course-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,.12); }
+  .cc-header { display: flex; align-items: flex-start; justify-content: space-between; gap: .5rem; }
+  .cc-title { font-size: 1rem; font-weight: 700; color: #1e293b; margin: 0; line-height: 1.35; }
+  .cc-draft { font-size: .72rem; font-weight: 700; background: #f1f5f9; color: #94a3b8; padding: .15rem .55rem; border-radius: 20px; white-space: nowrap; }
+  .cc-stats { display: flex; gap: .75rem; flex-wrap: wrap; }
+  .cc-stat { display: flex; flex-direction: column; align-items: center; background: #f8fafc; border-radius: 10px; padding: .5rem .85rem; min-width: 64px; }
+  .cc-stat .num { font-size: 1.3rem; font-weight: 800; color: var(--brand); line-height: 1; }
+  .cc-stat .lbl { font-size: .7rem; color: #94a3b8; margin-top: .15rem; text-align: center; }
+  .cc-stat.danger .num { color: #dc2626; }
+  .cc-stat.danger { background: #fff5f5; }
+  .cc-progress-wrap { display: flex; flex-direction: column; gap: .3rem; }
+  .cc-progress-label { display: flex; justify-content: space-between; font-size: .78rem; color: #64748b; }
+  .cc-progress-bar { height: 7px; border-radius: 4px; background: #e2e8f0; overflow: hidden; }
+  .cc-progress-fill { height: 100%; background: var(--brand); border-radius: 4px; transition: width .4s; }
+  .cc-instructors { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+  .cc-instr-label { font-size: .75rem; color: #94a3b8; }
+  .cc-instr-chip { display: inline-flex; align-items: center; gap: .3rem; background: color-mix(in srgb, var(--brand) 10%, #fff); color: var(--brand); border-radius: 20px; padding: .2rem .65rem; font-size: .75rem; font-weight: 600; }
+  .cc-footer { margin-top: auto; }
+  .cc-btn { display: flex; align-items: center; justify-content: center; gap: .5rem; width: 100%; padding: .7rem; background: var(--brand); color: #fff; border-radius: 12px; font-weight: 700; text-decoration: none; font-size: .9rem; transition: opacity .2s; }
+  .cc-btn:hover { opacity: .88; color: #fff; }
+  .empty-courses { text-align: center; padding: 4rem 2rem; background: #fff; border-radius: 18px; box-shadow: 0 2px 12px rgba(0,0,0,.06); color: #94a3b8; }
+
+  /* ── Quick nav ── */
+  .quick-nav { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+  .qn-card { background: #fff; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,.06); padding: 1.25rem 1.4rem; text-decoration: none; color: inherit; display: flex; align-items: center; gap: .85rem; transition: box-shadow .2s, transform .2s; border-left: 4px solid var(--brand); }
+  .qn-card:hover { box-shadow: 0 5px 18px rgba(0,0,0,.12); transform: translateY(-2px); color: inherit; }
+  .qn-icon { font-size: 1.5rem; flex-shrink: 0; }
+  .qn-label { font-size: .9rem; font-weight: 700; color: #1e293b; margin: 0 0 .1rem; }
+  .qn-sub   { font-size: .78rem; color: #94a3b8; margin: 0; }
 </style>` %>
 
 <div class="page-wrapper">
-  <div class="container">
-    <div class="page-header">
-      <% if (institution.logoUrl) { %>
-        <img src="<%= institution.logoUrl %>" alt="logo" style="width:52px;height:52px;border-radius:10px;object-fit:cover;margin-bottom:.75rem;">
-      <% } %>
-      <h1>Tableau de bord — <%= institution.name %></h1>
-      <p>Gérez les inscriptions et suivez la progression de vos étudiants.</p>
-    </div>
+  <div class="container" style="max-width:1100px;">
 
     <%- include('../partials/flash') %>
 
-    <div class="row g-3 mb-4">
-      <div class="col-md-4">
-        <div class="stat-card">
-          <div class="num"><%= stats.studentCount %></div>
-          <div class="lbl">Étudiants</div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="stat-card">
-          <div class="num"><%= stats.courseCount %></div>
-          <div class="lbl">Cours disponibles</div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="stat-card">
-          <div class="num"><%= stats.activeEnrollments %></div>
-          <div class="lbl">Inscriptions actives</div>
-        </div>
+    <!-- Header -->
+    <div class="dash-header">
+      <% if (institution.logoUrl) { %>
+        <img src="<%= institution.logoUrl %>" alt="<%= institution.name %>" class="dash-logo">
+      <% } else { %>
+        <div class="dash-logo-fallback"><%= institution.name.substring(0,2).toUpperCase() %></div>
+      <% } %>
+      <div>
+        <h1><%= institution.name %></h1>
+        <p>Tableau de bord · <% if (institution.city || institution.country) { %><%= [institution.city, institution.country].filter(Boolean).join(', ') %><% } else { %>Gérez vos cours et étudiants<% } %></p>
       </div>
     </div>
 
-    <div class="row g-3">
-      <div class="col-md-4">
-        <a href="/institution/dashboard/students" class="nav-card">
-          <h3>👥 Mes étudiants</h3>
-          <p>Voir la liste des étudiants, gérer les inscriptions et suivre leur activité.</p>
-        </a>
+    <!-- Alert strip -->
+    <% if (expiredCount > 0 || expiringEnrollments.length > 0 || totalPending > 0) { %>
+    <div class="alert-strip">
+
+      <% if (totalPending > 0) { %>
+      <div class="alert-item alert-danger">
+        <span class="alert-icon">📋</span>
+        <div>
+          <strong><%= totalPending %> travail<%= totalPending > 1 ? 'x' : '' %> en attente de correction</strong> à travers vos cours.
+          Vérifiez que vos instructeurs sont à jour.
+        </div>
       </div>
-      <div class="col-md-4">
-        <a href="/institution/dashboard/courses" class="nav-card">
-          <h3>📚 Cours assignés</h3>
-          <p>Voir les cours disponibles pour votre institution et la progression par cours.</p>
-        </a>
+      <% } %>
+
+      <% if (expiringEnrollments.length > 0) { %>
+      <div class="alert-item alert-warn">
+        <span class="alert-icon">⏰</span>
+        <div>
+          <strong><%= expiringEnrollments.length %> inscription<%= expiringEnrollments.length > 1 ? 's expirent' : ' expire' %> dans moins de 7 jours.</strong>
+          <div class="expiry-list mt-1">
+            <% expiringEnrollments.slice(0, 6).forEach(e => { %>
+              <span class="expiry-chip"><%= e.userId?.name %> <%= e.userId?.surname %> — <%= e.courseId?.title %> (<%= new Date(e.endDate).toLocaleDateString('fr-FR') %>)</span>
+            <% }) %>
+            <% if (expiringEnrollments.length > 6) { %><span class="expiry-chip">+<%= expiringEnrollments.length - 6 %> autres</span><% } %>
+          </div>
+        </div>
       </div>
-      <div class="col-md-4">
-        <a href="/institution/dashboard/announcements" class="nav-card">
-          <h3>📢 Annonces</h3>
-          <p>Publier des informations, promotions et nouveautés pour vos étudiants.</p>
-        </a>
+      <% } %>
+
+      <% if (expiredCount > 0) { %>
+      <div class="alert-item alert-warn">
+        <span class="alert-icon">📅</span>
+        <strong><%= expiredCount %> inscription<%= expiredCount > 1 ? 's ont' : ' a' %> expiré.</strong>
+        <a href="/institution/dashboard/students" style="margin-left:.4rem;">Gérer les étudiants →</a>
       </div>
+      <% } %>
+
     </div>
+    <% } %>
+
+    <!-- Course cards -->
+    <p class="section-title">Vos cours (<%= courseCards.length %>)</p>
+
+    <% if (courseCards.length === 0) { %>
+      <div class="empty-courses">
+        <p style="font-size:3rem;margin:0 0 .75rem;">📚</p>
+        <p class="fw-semibold" style="color:#475569;">Aucun cours assigné.</p>
+        <p class="small">Contactez l'équipe AfroHK pour assigner des cours à votre institution.</p>
+      </div>
+    <% } else { %>
+      <div class="course-grid">
+        <% courseCards.forEach(({ course, enrolled, active, avgPct, pending, instructors }) => { %>
+          <div class="course-card">
+
+            <div class="cc-header">
+              <h3 class="cc-title"><%= course.title %></h3>
+              <% if (!course.isActive) { %><span class="cc-draft">Brouillon</span><% } %>
+            </div>
+
+            <div class="cc-stats">
+              <div class="cc-stat">
+                <span class="num"><%= enrolled %></span>
+                <span class="lbl">Inscrits</span>
+              </div>
+              <div class="cc-stat">
+                <span class="num"><%= active %></span>
+                <span class="lbl">Actifs</span>
+              </div>
+              <div class="cc-stat <%= pending > 0 ? 'danger' : '' %>">
+                <span class="num"><%= pending %></span>
+                <span class="lbl">À corriger</span>
+              </div>
+            </div>
+
+            <div class="cc-progress-wrap">
+              <div class="cc-progress-label">
+                <span>Progression moyenne</span>
+                <span><%= avgPct %>%</span>
+              </div>
+              <div class="cc-progress-bar">
+                <div class="cc-progress-fill" style="width:<%= avgPct %>%"></div>
+              </div>
+            </div>
+
+            <% if (instructors.length > 0) { %>
+              <div class="cc-instructors">
+                <span class="cc-instr-label">Instructeurs :</span>
+                <% instructors.forEach(inst => { %>
+                  <span class="cc-instr-chip">👤 <%= inst.name %></span>
+                <% }) %>
+              </div>
+            <% } else { %>
+              <div class="cc-instructors">
+                <span class="cc-instr-label" style="color:#e2a000;">⚠ Aucun instructeur assigné</span>
+              </div>
+            <% } %>
+
+            <div class="cc-footer">
+              <a href="/institution/dashboard/courses/<%= course._id %>" class="cc-btn">
+                Gérer ce cours →
+              </a>
+            </div>
+
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <!-- Quick nav -->
+    <p class="section-title">Accès rapide</p>
+    <div class="quick-nav">
+      <a href="/institution/dashboard/students" class="qn-card">
+        <span class="qn-icon">👥</span>
+        <div>
+          <p class="qn-label">Étudiants</p>
+          <p class="qn-sub">Inscrire, gérer les accès</p>
+        </div>
+      </a>
+      <a href="/institution/dashboard/content/instructors" class="qn-card">
+        <span class="qn-icon">👨‍🏫</span>
+        <div>
+          <p class="qn-label">Instructeurs</p>
+          <p class="qn-sub">Assigner aux cours</p>
+        </div>
+      </a>
+      <a href="/institution/dashboard/announcements" class="qn-card">
+        <span class="qn-icon">📢</span>
+        <div>
+          <p class="qn-label">Annonces</p>
+          <p class="qn-sub">Publier, épingler</p>
+        </div>
+      </a>
+      <a href="/institution/dashboard/settings" class="qn-card">
+        <span class="qn-icon">⚙️</span>
+        <div>
+          <p class="qn-label">Paramètres</p>
+          <p class="qn-sub">Profil, couleurs, contacts</p>
+        </div>
+      </a>
+    </div>
+
   </div>
 </div>
