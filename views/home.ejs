@@ -288,6 +288,246 @@
       }
     }
 
+    /* Institution Formations Teaser */
+    #institution-formations {
+      position: relative;
+      overflow: hidden;
+      padding: 110px 0;
+      background:
+        url('https://images.pexels.com/photos/11694327/pexels-photo-11694327.jpeg')
+        center/cover no-repeat;
+    }
+    #institution-formations::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        110deg,
+        rgba(10, 2, 35, 0.90) 0%,
+        rgba(45, 3, 112, 0.82) 45%,
+        rgba(10, 2, 35, 0.55) 100%
+      );
+    }
+    .inst-teaser-inner {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 64px;
+      align-items: center;
+    }
+    .inst-teaser-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.25);
+      backdrop-filter: blur(6px);
+      color: #e0d4ff;
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      padding: 6px 16px;
+      border-radius: 50px;
+      margin-bottom: 20px;
+    }
+    .inst-teaser-heading {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 20px rgba(0,0,0,.3);
+    }
+    .inst-teaser-heading span {
+      background: linear-gradient(90deg, #c084fc, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .inst-teaser-desc {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,.78);
+      line-height: 1.75;
+      margin-bottom: 28px;
+      max-width: 500px;
+    }
+    .inst-teaser-features {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 24px;
+    }
+    .inst-teaser-features li {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: .9rem;
+      color: rgba(255,255,255,.85);
+      font-weight: 500;
+    }
+    .inst-teaser-features li i {
+      color: #a78bfa;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .inst-teaser-stats {
+      display: flex;
+      gap: 36px;
+      margin-bottom: 40px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255,255,255,.12);
+    }
+    .inst-stat { display: flex; flex-direction: column; }
+    .inst-stat-num {
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: #c084fc;
+      line-height: 1;
+    }
+    .inst-stat-label {
+      font-size: .75rem;
+      color: rgba(255,255,255,.5);
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      margin-top: 3px;
+    }
+    .inst-teaser-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 34px;
+      background: #fff;
+      color: #4b08a1;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: 1rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,.25);
+      transition: all .3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .inst-teaser-cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #ede9fe, #fff);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .inst-teaser-cta:hover::before { opacity: 1; }
+    .inst-teaser-cta span, .inst-teaser-cta i { position: relative; z-index: 1; }
+    .inst-teaser-cta:hover {
+      color: #4b08a1;
+      box-shadow: 0 14px 40px rgba(0,0,0,.35);
+      transform: translateY(-2px);
+    }
+    .inst-teaser-cta i { transition: transform .3s ease; }
+    .inst-teaser-cta:hover i { transform: translateX(5px); }
+
+    /* Glassmorphism card panel */
+    .inst-teaser-right { display: flex; justify-content: center; align-items: center; }
+    .inst-glass-panel {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.15);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 24px;
+      padding: 28px;
+      width: 100%;
+      max-width: 360px;
+    }
+    .igp-label {
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: rgba(255,255,255,.5);
+      margin-bottom: 18px;
+    }
+    .igp-course {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      margin-bottom: 10px;
+      transition: background .2s;
+    }
+    .igp-course:last-of-type { margin-bottom: 0; }
+    .igp-thumb {
+      width: 46px; height: 46px;
+      border-radius: 10px;
+      flex-shrink: 0;
+    }
+    .igp-t1 { background: linear-gradient(135deg, #7c3aed, #4b08a1); }
+    .igp-t2 { background: linear-gradient(135deg, #0ea5e9, #0369a1); }
+    .igp-t3 { background: linear-gradient(135deg, #f59e0b, #b45309); }
+    .igp-info { flex: 1; min-width: 0; }
+    .igp-title {
+      font-size: .85rem;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 3px;
+    }
+    .igp-inst {
+      font-size: .72rem;
+      color: rgba(255,255,255,.5);
+    }
+    .igp-badge {
+      font-size: .65rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 50px;
+      background: rgba(167,139,250,.2);
+      color: #c084fc;
+      border: 1px solid rgba(167,139,250,.3);
+      white-space: nowrap;
+    }
+    .igp-divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,.08);
+      margin: 16px 0;
+    }
+    .igp-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .igp-footer-text {
+      font-size: .78rem;
+      color: rgba(255,255,255,.45);
+    }
+    .igp-footer-link {
+      font-size: .78rem;
+      font-weight: 700;
+      color: #c084fc;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .igp-footer-link:hover { color: #a78bfa; }
+
+    @media (max-width: 1024px) {
+      .inst-teaser-inner { grid-template-columns: 1fr; gap: 48px; }
+      .inst-teaser-right { display: none; }
+      .inst-teaser-features { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      #institution-formations { padding: 80px 0; }
+      .inst-teaser-heading { font-size: 2.2rem; }
+    }
+
     /* About Section Mouse Move Animation */
     .about-img-wrapper {
       position: relative;
@@ -350,6 +590,34 @@
         </div>
       </section>
       <!-- End Hero -->
+
+      <!-- ======= Student English Boost Banner ======= -->
+      <section id="student-english-boost" style="
+        position: relative; overflow: hidden;
+        background: url('https://qtxasset.com/quartz/qcloud4/media/image/fierceeducation/1619202148/Black%20Woman.jpg?VersionId=7oKG2cY25LCxh.QhEZoMWVAxVbdECB47') center 30%/cover no-repeat;
+      ">
+        <div style="position:absolute;inset:0;background:linear-gradient(100deg,rgba(12,3,40,.93) 0%,rgba(45,3,112,.86) 55%,rgba(12,3,40,.55) 100%);"></div>
+        <div class="container position-relative" style="z-index:2;padding:52px 0;">
+          <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-4">
+            <div data-aos="fade-right">
+              <span style="display:inline-block;background:#c084fc;color:#1a0040;font-weight:800;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;padding:4px 14px;border-radius:50px;margin-bottom:14px;">Bourse 2026 · Places limitées</span>
+              <h2 style="font-size:1.9rem;font-weight:800;color:#fff;line-height:1.15;margin:0 0 10px;">200 bourses de formation en <span style="color:#c084fc;">Anglais</span></h2>
+              <p style="font-size:.95rem;color:rgba(255,255,255,.75);margin:0;line-height:1.6;">
+                Anglais conversationnel intensif pour étudiants — <strong style="color:#c084fc;">4 semaines · 15 000 FCFA</strong> · Sessions : Juillet, Août, Septembre 2026
+              </p>
+            </div>
+            <div class="d-flex gap-3 flex-shrink-0 flex-wrap" data-aos="fade-left" data-aos-delay="100">
+              <a href="/programs/language-learning/student-english-boost" style="display:inline-flex;align-items:center;gap:8px;padding:12px 26px;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.3);color:#fff;text-decoration:none;border-radius:50px;font-weight:700;font-size:.9rem;backdrop-filter:blur(6px);white-space:nowrap;">
+                En savoir plus <i class="bi bi-arrow-right"></i>
+              </a>
+              <a href="https://forms.gle/yXxUnxpLofgwbE1t6" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;padding:12px 26px;background:#c084fc;color:#1a0040;text-decoration:none;border-radius:50px;font-weight:800;font-size:.9rem;white-space:nowrap;">
+                Postuler <i class="bi bi-box-arrow-up-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- End Student English Boost Banner -->
 
       <main id="main">
         <!-- ======= About Section ======= -->
@@ -593,121 +861,92 @@ Développez vos compétences en communication, préparez vos entretiens avec ass
               </div>
 
             </div>
-          </div>
+
           </div>
         </section>
         <!-- End Programs Section -->
 
-        <!-- ======= Student English Boost Section ======= -->
-        <section id="student-english-boost" style="
-          position: relative;
-          overflow: hidden;
-          background: url('https://qtxasset.com/quartz/qcloud4/media/image/fierceeducation/1619202148/Black%20Woman.jpg?VersionId=7oKG2cY25LCxh.QhEZoMWVAxVbdECB47') center/cover no-repeat;
-        ">
-          <div style="
-            position: absolute; inset: 0;
-            background: linear-gradient(100deg, rgba(20, 5, 50, 0.92) 0%, rgba(45, 3, 112, 0.85) 50%, rgba(20, 5, 50, 0.6) 100%);
-          "></div>
-          <div class="container position-relative" style="z-index: 2; padding: 90px 0;">
-            <div class="row align-items-center g-5">
-              <div class="col-lg-7" data-aos="fade-right">
-                <span style="
-                  display: inline-block;
-                  background: #c084fc;
-                  color: #1a0040;
-                  font-weight: 800;
-                  font-size: 0.75rem;
-                  text-transform: uppercase;
-                  letter-spacing: 1px;
-                  padding: 5px 16px;
-                  border-radius: 50px;
-                  margin-bottom: 20px;
-                ">Nouveau · Bourse 2026</span>
-                <h2 style="font-size: 2.8rem; font-weight: 800; color: #fff; line-height: 1.15; margin-bottom: 18px;">
-                  Student English Boost
-                </h2>
-                <p style="font-size: 1.1rem; color: rgba(255,255,255,0.8); line-height: 1.8; margin-bottom: 28px;">
-                  Bourse partielle de formation en anglais conversationnel pour étudiants du premier cycle.
-                  AfroHK prend en charge <strong style="color:#c084fc;">70% des frais</strong> — 4 semaines intensives pour seulement <strong style="color:#c084fc;">15 000 FCFA</strong>.
+        <!-- ======= Institution Courses Teaser ======= -->
+        <section id="institution-formations">
+          <div class="container">
+            <div class="inst-teaser-inner" data-aos="fade-up">
+
+              <!-- Left: copy -->
+              <div class="inst-teaser-left">
+                <span class="inst-teaser-pill"><i class="bi bi-buildings-fill"></i> Formations Institutionnelles</span>
+                <h2 class="inst-teaser-heading">Apprenez avec<br><span>votre institution</span></h2>
+                <p class="inst-teaser-desc">
+                  Développez des compétences reconnues avec des formations certifiées dispensées par des institutions partenaires d'AfroHK. Chaque programme est conçu pour vous rendre opérationnel — pas juste instruit.
                 </p>
-                <div style="display: flex; gap: 32px; flex-wrap: wrap; margin-bottom: 36px;">
-                  <div>
-                    <div style="font-size: 2rem; font-weight: 800; color: #c084fc; line-height: 1;">200</div>
-                    <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px;">Bourses</div>
+                <ul class="inst-teaser-features">
+                  <li><i class="bi bi-check-circle-fill"></i> Cours structurés en modules et leçons</li>
+                  <li><i class="bi bi-check-circle-fill"></i> Quiz, devoirs et projets finaux</li>
+                  <li><i class="bi bi-check-circle-fill"></i> Accès en ligne, tous appareils</li>
+                  <li><i class="bi bi-check-circle-fill"></i> Suivi de progression en temps réel</li>
+                </ul>
+                <% if ((typeof institutionCount !== 'undefined' && institutionCount > 0) ||
+                       (typeof institutionCourseCount !== 'undefined' && institutionCourseCount > 0)) { %>
+                <div class="inst-teaser-stats">
+                  <% if (typeof institutionCount !== 'undefined' && institutionCount > 0) { %>
+                  <div class="inst-stat">
+                    <span class="inst-stat-num"><%= institutionCount %></span>
+                    <span class="inst-stat-label">Institution<%= institutionCount > 1 ? 's' : '' %></span>
                   </div>
-                  <div>
-                    <div style="font-size: 2rem; font-weight: 800; color: #c084fc; line-height: 1;">4</div>
-                    <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px;">Semaines</div>
+                  <% } %>
+                  <% if (typeof institutionCourseCount !== 'undefined' && institutionCourseCount > 0) { %>
+                  <div class="inst-stat">
+                    <span class="inst-stat-num"><%= institutionCourseCount %></span>
+                    <span class="inst-stat-label">Cours disponible<%= institutionCourseCount > 1 ? 's' : '' %></span>
                   </div>
-                  <div>
-                    <div style="font-size: 2rem; font-weight: 800; color: #c084fc; line-height: 1;">3</div>
-                    <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px;">Sessions</div>
-                  </div>
-                  <div>
-                    <div style="font-size: 2rem; font-weight: 800; color: #c084fc; line-height: 1;">4</div>
-                    <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px;">Centres</div>
-                  </div>
+                  <% } %>
                 </div>
-                <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-                  <a href="/programs/language-learning/student-english-boost" style="
-                    display: inline-flex; align-items: center; gap: 8px;
-                    padding: 14px 32px;
-                    background: linear-gradient(135deg, #5d06ba, #4b08a1);
-                    color: #fff; text-decoration: none;
-                    border-radius: 50px; font-weight: 700; font-size: 0.95rem;
-                    box-shadow: 0 8px 28px rgba(93, 6, 186, 0.5);
-                    border: 2px solid rgba(255,255,255,0.15);
-                    transition: all 0.3s ease;
-                  ">
-                    En savoir plus <i class="bi bi-arrow-right"></i>
-                  </a>
-                  <a href="https://forms.gle/yXxUnxpLofgwbE1t6" target="_blank" rel="noopener noreferrer" style="
-                    display: inline-flex; align-items: center; gap: 8px;
-                    padding: 14px 32px;
-                    background: transparent;
-                    color: #fff; text-decoration: none;
-                    border-radius: 50px; font-weight: 700; font-size: 0.95rem;
-                    border: 2px solid rgba(255,255,255,0.4);
-                    transition: all 0.3s ease;
-                  ">
-                    Postuler <i class="bi bi-box-arrow-up-right"></i>
-                  </a>
+                <% } %>
+                <a href="/formations" class="inst-teaser-cta">
+                  <span>Explorer le catalogue</span> <i class="bi bi-arrow-right"></i>
+                </a>
+              </div>
+
+              <!-- Right: glassmorphism preview panel -->
+              <div class="inst-teaser-right" aria-hidden="true">
+                <div class="inst-glass-panel">
+                  <p class="igp-label">Formations disponibles</p>
+                  <div class="igp-course">
+                    <div class="igp-thumb igp-t1"></div>
+                    <div class="igp-info">
+                      <div class="igp-title">Développement Web</div>
+                      <div class="igp-inst">Institut Tech Afrique</div>
+                    </div>
+                    <span class="igp-badge">6 modules</span>
+                  </div>
+                  <div class="igp-course">
+                    <div class="igp-thumb igp-t2"></div>
+                    <div class="igp-info">
+                      <div class="igp-title">Gestion de Projet</div>
+                      <div class="igp-inst">Business School BF</div>
+                    </div>
+                    <span class="igp-badge">4 modules</span>
+                  </div>
+                  <div class="igp-course">
+                    <div class="igp-thumb igp-t3"></div>
+                    <div class="igp-info">
+                      <div class="igp-title">Marketing Digital</div>
+                      <div class="igp-inst">AfroHK Academy</div>
+                    </div>
+                    <span class="igp-badge">5 modules</span>
+                  </div>
+                  <hr class="igp-divider">
+                  <div class="igp-footer">
+                    <span class="igp-footer-text">Mis à jour aujourd'hui</span>
+                    <a href="/formations" class="igp-footer-link">Voir tout <i class="bi bi-arrow-right"></i></a>
+                  </div>
                 </div>
               </div>
-              <div class="col-lg-5 d-none d-lg-flex justify-content-end" data-aos="fade-left" data-aos-delay="200">
-                <div style="
-                  background: rgba(255,255,255,0.08);
-                  border: 1px solid rgba(255,255,255,0.15);
-                  border-radius: 24px;
-                  padding: 32px 28px;
-                  backdrop-filter: blur(12px);
-                  width: 100%;
-                  max-width: 340px;
-                ">
-                  <p style="color: rgba(255,255,255,0.6); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;">Détail financier</p>
-                  <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; margin-bottom: 12px; display: flex; justify-content: space-between;">
-                    <span style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Coût réel</span>
-                    <span style="color: #fff; font-weight: 600;">50 000 FCFA</span>
-                  </div>
-                  <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; margin-bottom: 12px; display: flex; justify-content: space-between;">
-                    <span style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Bourse AfroHK (70%)</span>
-                    <span style="color: #a3e635; font-weight: 600;">− 35 000 FCFA</span>
-                  </div>
-                  <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="color: #fff; font-weight: 700;">Votre contribution</span>
-                    <span style="color: #c084fc; font-weight: 800; font-size: 1.3rem;">15 000 FCFA</span>
-                  </div>
-                  <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
-                  <p style="color: rgba(255,255,255,0.6); font-size: 0.82rem; margin: 0; line-height: 1.6;">
-                    Sessions disponibles :<br>
-                    <strong style="color: #fff;">Juillet · Août · Septembre 2026</strong>
-                  </p>
-                </div>
-              </div>
+
             </div>
           </div>
         </section>
-        <!-- End Student English Boost Section -->
+        <!-- End Institution Courses Teaser -->
+
 
         <!-- ======= Our Services Section ======= -->
         <section id="our-services" class="programs-section-modern" style="padding-top: 0;">

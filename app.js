@@ -32,6 +32,7 @@ const rateLimit = require("express-rate-limit");
 
 // Import User model for Passport authentication
 const User = require("./shared/models/user");
+const InstitutionCourse = require("./programs/institution/models/Course");
 
 // Import program routes
 const eKalanRoutes = require("./programs/ekalan");
@@ -43,6 +44,20 @@ const accountRoutes = require("./shared/routes/account");
 const adminInstitutionRoutes = require("./shared/routes/adminInstitutions");
 const institutionDashboardRoutes = require("./shared/routes/institutionDashboard");
 const institutionStudentRoutes  = require("./shared/routes/institutionStudent");
+
+function stripHtml(html) {
+    if (!html) return '';
+    return html
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
+        .replace(/&([a-z]+);/g, (_, e) => (
+            { agrave:'à',aacute:'á',acirc:'â',egrave:'è',eacute:'é',ecirc:'ê',euml:'ë',
+              icirc:'î',iuml:'ï',ograve:'ò',oacute:'ó',ocirc:'ô',ugrave:'ù',uacute:'ú',
+              ucirc:'û',uuml:'ü',ccedil:'ç',ntilde:'ñ',aelig:'æ',oelig:'œ' }[e] || `&${e};`
+        ))
+        .replace(/\s+/g, ' ').trim();
+}
 
 // Database connection
 const dbUrl = process.env.APP_DB || 'mongodb://localhost:27017/afrohk';
@@ -137,8 +152,25 @@ app.use((req, res, next) => {
 });
 
 // App Routes
-app.get('/', (req, res) => {
-    res.render('home');
+app.get('/', async (req, res) => {
+    const [courseCount, institutionIds] = await Promise.all([
+        InstitutionCourse.countDocuments({ isActive: true }),
+        InstitutionCourse.distinct('institutionId', { isActive: true })
+    ]);
+    res.render('home', { institutionCourseCount: courseCount, institutionCount: institutionIds.length });
+});
+
+app.get('/formations', async (req, res) => {
+    const courses = await InstitutionCourse
+        .find({ isActive: true })
+        .populate('institutionId', 'name primaryColor logoUrl contactEmail city country description')
+        .select('title description imageUrl institutionId modules category')
+        .lean();
+    courses.forEach(c => {
+        if (c.title)       c.title       = stripHtml(c.title);
+        if (c.description) c.description = stripHtml(c.description);
+    });
+    res.render('formations', { courses });
 });
 
 // Mount Shared Routes
