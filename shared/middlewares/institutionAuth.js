@@ -42,7 +42,9 @@ module.exports.loadInstitution = async (req, res, next) => {
                 }
                 // Persist so subsequent page loads in the same flow keep the context
                 req.session.activeInstitutionId = req.institution._id.toString();
-                res.locals.institutionColor = req.institution.primaryColor || '#0e7490';
+                res.locals.institutionColor          = req.institution.primaryColor   || '#0e7490';
+                res.locals.institutionSecondaryColor = req.institution.secondaryColor || '';
+                res.locals.institutionAccentColor    = req.institution.accentColor    || '';
                 res.locals.institutionId = req.institution._id.toString();
                 res.locals.institution = req.institution;
             }
@@ -68,7 +70,9 @@ module.exports.loadInstitution = async (req, res, next) => {
         }
 
         req.institution = institution;
-        res.locals.institutionColor = institution.primaryColor || '#0e7490';
+        res.locals.institutionColor          = institution.primaryColor   || '#0e7490';
+        res.locals.institutionSecondaryColor = institution.secondaryColor || '';
+        res.locals.institutionAccentColor    = institution.accentColor    || '';
         res.locals.institutionId = institution._id.toString();
         res.locals.institution = institution;
         next();
@@ -118,7 +122,9 @@ module.exports.loadStudentInstitution = async (req, res, next) => {
         }
 
         req.institution = institution;
-        res.locals.institutionColor = institution.primaryColor || '#0e7490';
+        res.locals.institutionColor          = institution.primaryColor   || '#0e7490';
+        res.locals.institutionSecondaryColor = institution.secondaryColor || '';
+        res.locals.institutionAccentColor    = institution.accentColor    || '';
         res.locals.institution = institution;
         res.locals.learnMode = true;
         next();
@@ -148,7 +154,9 @@ module.exports.loadPortalInstitution = async (req, res, next) => {
         }
 
         req.institution = institution;
-        res.locals.institutionColor = institution.primaryColor || '#0e7490';
+        res.locals.institutionColor          = institution.primaryColor   || '#0e7490';
+        res.locals.institutionSecondaryColor = institution.secondaryColor || '';
+        res.locals.institutionAccentColor    = institution.accentColor    || '';
         next();
     } catch (err) {
         next(err);
@@ -249,7 +257,9 @@ module.exports.loadInstructorInstitution = async (req, res, next) => {
 
         req.instructor    = instructor;
         req.institution   = institution;
-        res.locals.institutionColor = institution.primaryColor || '#0e7490';
+        res.locals.institutionColor          = institution.primaryColor   || '#0e7490';
+        res.locals.institutionSecondaryColor = institution.secondaryColor || '';
+        res.locals.institutionAccentColor    = institution.accentColor    || '';
         res.locals.institution      = institution;
         res.locals.instructor       = instructor;
         next();

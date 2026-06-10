@@ -1,35 +1,83 @@
 <% layout('layouts/institutionBoilerplate') %>
+<% const _brand = typeof institutionColor !== 'undefined' ? institutionColor : '#0e7490'; %>
 
 <% headContent = `<style>
-  .page-wrapper { margin-top: 80px; padding: 2rem 0 4rem; }
-  .page-header { background: linear-gradient(135deg, #0e7490 0%, #164e63 100%); color: white; padding: 2rem; border-radius: 16px; margin-bottom: 2rem; }
-  .page-header h1 { margin: 0 0 .3rem; font-size: 1.8rem; font-weight: 700; }
-  .page-header p { opacity: .85; margin: 0; }
-  .card-section { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07); padding: 1.75rem; margin-bottom: 1.5rem; }
-  .card-section h2 { font-size: 1rem; font-weight: 700; color: #0e7490; margin: 0 0 1rem; padding-bottom: .75rem; border-bottom: 2px solid #e0f2f7; }
-  .progress-bar-custom { height: 8px; border-radius: 4px; background: #e2e8f0; overflow: hidden; }
-  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #0e7490, #06b6d4); border-radius: 4px; transition: width .4s; }
-  .course-block { border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
-  .course-block.enrolled { border-color: #0e7490; background: #f0fdff; }
-  .status-enrolled { color: #065f46; background: #d1fae5; padding: .2rem .7rem; border-radius: 20px; font-size: .78rem; font-weight: 600; }
-  .status-not-enrolled { color: #6b7280; background: #f3f4f6; padding: .2rem .7rem; border-radius: 20px; font-size: .78rem; font-weight: 600; }
-  .status-expired { color: #991b1b; background: #fee2e2; padding: .2rem .7rem; border-radius: 20px; font-size: .78rem; font-weight: 600; }
-  .btn-edit-dates { display: inline-flex; align-items: center; gap: .3rem; background: #f0fdff; border: 1px solid #0e7490; color: #0e7490; border-radius: 20px; padding: .15rem .65rem; font-size: .75rem; font-weight: 600; cursor: pointer; transition: background .15s; }
-  .btn-edit-dates:hover { background: #cffafe; }
+  :root { --brand: ${_brand}; }
+  .page-wrapper { margin-top: 80px; padding: 2rem 0 5rem; background: #f8fafc; min-height: 100vh; }
+
+  /* ── Header ── */
+  .page-header { background: linear-gradient(135deg, var(--brand) 0%, color-mix(in srgb, var(--brand) 68%, #000) 100%); color: #fff; padding: 2rem 2.25rem; border-radius: 20px; margin-bottom: 1.75rem; }
+  .page-header h1 { margin: 0 0 .3rem; font-size: 1.75rem; font-weight: 800; }
+  .page-header p  { margin: 0; opacity: .8; font-size: .9rem; }
+
+  /* ── Layout ── */
+  .layout { display: grid; grid-template-columns: 280px 1fr; gap: 1.5rem; align-items: start; }
+  @media (max-width: 768px) { .layout { grid-template-columns: 1fr; } }
+
+  /* ── Info card ── */
+  .info-card { background: #fff; border-radius: 18px; box-shadow: 0 2px 14px rgba(0,0,0,.07); padding: 1.5rem; }
+  .info-card h2 { font-size: .85rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .06em; margin: 0 0 1rem; }
+  .info-row { display: flex; flex-direction: column; gap: .1rem; margin-bottom: .75rem; }
+  .info-lbl { font-size: .73rem; color: #94a3b8; }
+  .info-val { font-size: .88rem; font-weight: 600; color: #1e293b; word-break: break-all; }
+  .avatar-lg { width: 60px; height: 60px; border-radius: 50%; background: color-mix(in srgb, var(--brand) 15%, #fff); color: var(--brand); font-size: 1.5rem; font-weight: 800; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
+
+  /* ── Course tabs ── */
+  .tab-bar { display: flex; gap: .35rem; flex-wrap: wrap; margin-bottom: 1.25rem; border-bottom: 2px solid #e2e8f0; padding-bottom: .5rem; }
+  .tab-btn { padding: .45rem 1rem; border-radius: 8px 8px 0 0; font-size: .85rem; font-weight: 600; cursor: pointer; background: none; border: none; color: #64748b; transition: color .15s, background .15s; white-space: nowrap; }
+  .tab-btn:hover { color: var(--brand); background: color-mix(in srgb, var(--brand) 8%, #fff); }
+  .tab-btn.active { color: var(--brand); background: color-mix(in srgb, var(--secondary) 25%, #fff); box-shadow: 0 2px 0 var(--accent); }
+
+  /* ── Course panel ── */
+  .course-panel { display: none; }
+  .course-panel.active { display: block; }
+  .course-section { background: #fff; border-radius: 18px; box-shadow: 0 2px 14px rgba(0,0,0,.07); margin-bottom: 1.25rem; overflow: hidden; }
+  .cs-head { padding: 1rem 1.5rem; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .cs-title { font-size: .9rem; font-weight: 700; color: #1e293b; margin: 0; }
+  .cs-body { padding: 1.25rem 1.5rem; }
+
+  /* ── Enrollment meta ── */
+  .enroll-meta { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .badge-active  { background: #d1fae5; color: #065f46; padding: .2rem .65rem; border-radius: 20px; font-size: .75rem; font-weight: 700; }
+  .badge-expired { background: #fee2e2; color: #991b1b; padding: .2rem .65rem; border-radius: 20px; font-size: .75rem; font-weight: 700; }
+  .meta-text { font-size: .83rem; color: #64748b; }
+
+  /* ── Progress bar ── */
+  .prog-wrap { margin-bottom: 1rem; }
+  .prog-label { display: flex; justify-content: space-between; font-size: .8rem; color: #64748b; margin-bottom: .3rem; }
+  .prog-bar { height: 8px; border-radius: 4px; background: #e2e8f0; overflow: hidden; }
+  .prog-fill { height: 100%; background: var(--brand); border-radius: 4px; transition: width .4s; }
+
+  /* ── Module breakdown table ── */
+  .module-table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+  .module-table th { background: color-mix(in srgb, var(--secondary) 20%, #fff); color: #64748b; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; padding: .5rem .75rem; border-bottom: 1px solid color-mix(in srgb, var(--secondary) 40%, #fff); text-align: left; }
+  .module-table td { padding: .6rem .75rem; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+  .module-table tr:last-child td { border-bottom: none; }
+  .mini-bar-wrap { display: flex; align-items: center; gap: .5rem; }
+  .mini-bar { height: 5px; width: 60px; border-radius: 3px; background: #e2e8f0; overflow: hidden; flex-shrink: 0; }
+  .mini-bar-fill { height: 100%; background: var(--brand); border-radius: 3px; }
+  .chip { display: inline-block; padding: .1rem .5rem; border-radius: 20px; font-size: .72rem; font-weight: 600; }
+  .chip-pass  { background: color-mix(in srgb, var(--accent) 15%, #fff); color: color-mix(in srgb, var(--accent) 80%, #000); }
+  .chip-fail  { background: #fee2e2; color: #991b1b; }
+  .chip-wait  { background: #fef9c3; color: #854d0e; }
+  .chip-none  { background: #f1f5f9; color: #94a3b8; }
+
+  /* ── Date edit form ── */
+  .btn-edit-dates { display: inline-flex; align-items: center; gap: .3rem; background: color-mix(in srgb,var(--brand) 10%,#fff); border: 1px solid var(--brand); color: var(--brand); border-radius: 20px; padding: .15rem .65rem; font-size: .75rem; font-weight: 600; cursor: pointer; transition: background .15s; }
+  .btn-edit-dates:hover { background: color-mix(in srgb,var(--brand) 20%,#fff); }
   .date-edit-form { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem; margin-top: .75rem; }
-  .date-edit-form .form-control-sm { border-radius: 8px; border: 1.5px solid #e2e8f0; font-size: .85rem; }
-  .date-edit-form .form-control-sm:focus { border-color: #0e7490; box-shadow: 0 0 0 3px rgba(14,116,144,.15); outline: none; }
 </style>` %>
 
 <div class="page-wrapper">
-  <div class="container">
+  <div class="container" style="max-width:1100px;">
+
     <div class="page-header">
       <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
         <div>
           <h1><%= student.surname %> <%= student.name %></h1>
           <p>@<%= student.username %> &nbsp;·&nbsp; <%= student.email %></p>
         </div>
-        <div class="d-flex gap-2 flex-wrap align-items-center">
+        <div class="d-flex gap-2 align-items-center flex-wrap">
           <span class="badge <%= student.isVerified ? 'bg-success' : 'bg-warning text-dark' %>">
             <%= student.isVerified ? 'Vérifié' : 'Non vérifié' %>
           </span>
@@ -40,37 +88,49 @@
 
     <%- include('../../partials/flash') %>
 
-    <div class="row g-3">
-      <div class="col-md-4">
-        <div class="card-section">
+    <div class="layout">
+
+      <!-- ── Left: student info ── -->
+      <div>
+        <div class="info-card">
+          <div class="avatar-lg"><%= student.name.charAt(0).toUpperCase() %></div>
           <h2>Informations</h2>
-          <table class="table table-sm table-borderless mb-0">
-            <tbody>
-              <tr><td class="text-muted">Nom d'utilisateur</td><td><strong>@<%= student.username %></strong></td></tr>
-              <tr><td class="text-muted">Email</td><td><%= student.email %></td></tr>
-              <tr>
-                <td class="text-muted">Statut</td>
-                <td>
-                  <% if (student.isVerified) { %>
-                    <span class="badge bg-success bg-opacity-10 text-success" style="font-size:.75rem;">✓ Compte activé</span>
-                  <% } else { %>
-                    <span class="badge bg-warning text-dark bg-opacity-20" style="font-size:.75rem;">⚠ Non activé</span>
-                  <% } %>
-                </td>
-              </tr>
-              <% if (lastLogin) { %>
-                <tr><td class="text-muted">Dernière connexion</td><td><%= new Date(lastLogin).toLocaleDateString('fr-FR') %></td></tr>
+
+          <div class="info-row">
+            <span class="info-lbl">Nom d'utilisateur</span>
+            <span class="info-val">@<%= student.username %></span>
+          </div>
+          <div class="info-row">
+            <span class="info-lbl">Email</span>
+            <span class="info-val"><%= student.email %></span>
+          </div>
+          <div class="info-row">
+            <span class="info-lbl">Statut du compte</span>
+            <span class="info-val">
+              <% if (student.isVerified) { %>
+                <span class="badge bg-success bg-opacity-10 text-success" style="font-size:.75rem;">✓ Activé</span>
               <% } else { %>
-                <tr><td class="text-muted">Connexion</td><td class="text-muted">Jamais</td></tr>
+                <span class="badge bg-warning text-dark bg-opacity-20" style="font-size:.75rem;">⚠ Non activé</span>
               <% } %>
-              <tr><td class="text-muted">Inscrit depuis</td><td><%= new Date(student.createdAt || Date.now()).toLocaleDateString('fr-FR') %></td></tr>
-            </tbody>
-          </table>
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="info-lbl">Dernière connexion</span>
+            <span class="info-val"><%= lastLogin ? new Date(lastLogin).toLocaleDateString('fr-FR') : 'Jamais' %></span>
+          </div>
+          <div class="info-row">
+            <span class="info-lbl">Inscrit depuis</span>
+            <span class="info-val"><%= new Date(student.createdAt || Date.now()).toLocaleDateString('fr-FR') %></span>
+          </div>
+          <div class="info-row">
+            <span class="info-lbl">Cours</span>
+            <span class="info-val"><%= courseData.length %> inscription<%= courseData.length > 1 ? 's' : '' %></span>
+          </div>
 
           <% if (!student.isVerified) { %>
             <div class="mt-3 p-3" style="background:#fffbeb;border-radius:10px;border:1px solid #fde68a;">
               <p class="small mb-2" style="color:#92400e;">
-                <strong>⚠ Ce compte n'est pas encore activé.</strong><br>
+                <strong>⚠ Compte non activé.</strong><br>
                 L'étudiant n'a pas cliqué sur le lien d'activation ou celui-ci a expiré.
               </p>
               <form action="/institution/dashboard/students/<%= student._id %>/resend-activation" method="POST">
@@ -83,132 +143,225 @@
         </div>
       </div>
 
-      <div class="col-md-8">
-        <div class="card-section">
-          <h2>Progression par cours</h2>
+      <!-- ── Right: course tabs ── -->
+      <div>
+        <% if (courseData.length === 0) { %>
+          <div class="course-section">
+            <div class="cs-body text-center text-muted py-4">
+              <p style="font-size:2rem;margin:0 0 .5rem;">📚</p>
+              <p class="small mb-0">Cet étudiant n'est inscrit à aucun cours.</p>
+            </div>
+          </div>
 
-          <% if (enrollmentStatus.length === 0) { %>
-            <p class="text-muted">Aucun cours assigné à votre institution.</p>
-          <% } else { %>
-            <% enrollmentStatus.forEach(({ course, isEnrolled, enrollment, completedModules, totalModules, pct, passedQuizzes, pendingAssignments, lastActivity }) => {
-              const now = new Date();
-              const isExpired = enrollment && enrollment.endDate && new Date(enrollment.endDate) < now;
-            %>
-              <div class="course-block <%= isEnrolled ? 'enrolled' : '' %>">
-                <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
-                  <strong><%= course.title %></strong>
-                  <% if (!isEnrolled) { %>
-                    <span class="status-not-enrolled">Non inscrit</span>
-                  <% } else if (isExpired) { %>
-                    <span class="status-expired">Accès expiré</span>
-                  <% } else { %>
-                    <span class="status-enrolled">Inscrit</span>
-                  <% } %>
-                </div>
+        <% } else { %>
 
-                <% if (isEnrolled && enrollment) { %>
-                  <%
-                    const startISO = enrollment.startDate ? new Date(enrollment.startDate).toISOString().split('T')[0] : '';
-                    const endISO   = enrollment.endDate   ? new Date(enrollment.endDate).toISOString().split('T')[0]   : '';
-                    const cid      = course._id.toString();
-                  %>
-                  <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
-                    <span class="text-muted small">
-                      <i class="bi bi-calendar3"></i>
-                      <%= enrollment.startDate ? new Date(enrollment.startDate).toLocaleDateString('fr-FR') : '—' %>
-                      → <%= enrollment.endDate ? new Date(enrollment.endDate).toLocaleDateString('fr-FR') : '—' %>
-                    </span>
-                    <% if (lastActivity) { %>
-                      <span class="text-muted small">· Activité : <%= new Date(lastActivity).toLocaleDateString('fr-FR') %></span>
-                    <% } %>
-                    <button type="button" class="btn-edit-dates" data-target="date-form-<%= cid %>">
-                      <i class="bi bi-pencil" style="font-size:.7rem;"></i> Modifier les dates
-                    </button>
-                  </div>
+          <!-- Tab bar (only render if more than 1 course) -->
+          <% if (courseData.length > 1) { %>
+          <div class="tab-bar">
+            <% courseData.forEach(({ course }, i) => { %>
+              <button class="tab-btn <%= i === 0 ? 'active' : '' %>"
+                      onclick="switchCourseTab('<%= course._id %>', this)">
+                <%= course.title %>
+              </button>
+            <% }) %>
+          </div>
+          <% } %>
 
-                  <!-- Inline date edit form (hidden by default) -->
-                  <div id="date-form-<%= cid %>" class="date-edit-form d-none mb-2">
-                    <p class="small fw-semibold mb-2" style="color:#0e7490;">
-                      <i class="bi bi-pencil-square me-1"></i>Modifier les dates d'accès
-                    </p>
-                    <form action="/institution/dashboard/students/<%= student._id %>/courses/<%= course._id %>?_method=PUT" method="POST">
-                      <div class="d-flex gap-2 flex-wrap align-items-end">
-                        <div>
-                          <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;">Date de début</label>
-                          <input type="date" name="startDate" class="form-control form-control-sm" value="<%= startISO %>">
-                        </div>
-                        <div>
-                          <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;">Date de fin</label>
-                          <input type="date" name="endDate" class="form-control form-control-sm" value="<%= endISO %>">
-                        </div>
-                        <div class="d-flex gap-1">
-                          <button type="submit" class="btn btn-sm btn-primary px-3">
-                            <i class="bi bi-check-lg me-1"></i>Enregistrer
-                          </button>
-                          <button type="button" class="btn btn-sm btn-outline-secondary" data-close="date-form-<%= cid %>">
-                            Annuler
-                          </button>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
+          <!-- Course panels -->
+          <% courseData.forEach(({ course, enrollment, isExpired, courseModules, totalLessons, completedLessons, overallPct, lastActivity, finalExam, finalProject }, i) => {
+            const startISO = enrollment.startDate ? new Date(enrollment.startDate).toISOString().split('T')[0] : '';
+            const endISO   = enrollment.endDate   ? new Date(enrollment.endDate).toISOString().split('T')[0]   : '';
+            const cid      = course._id.toString();
+          %>
+          <div class="course-panel <%= i === 0 ? 'active' : '' %>" id="panel-<%= cid %>">
 
-                  <% if (totalModules > 0) { %>
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                      <div class="progress-bar-custom flex-grow-1">
-                        <div class="progress-bar-fill" style="width:<%= pct %>%"></div>
-                      </div>
-                      <span class="text-muted small"><%= completedModules %>/<%= totalModules %> leçons (<%= pct %>%)</span>
-                    </div>
-                  <% } %>
-                  <div class="d-flex gap-3 mb-2">
-                    <% if (passedQuizzes > 0) { %>
-                      <span class="text-muted small">✓ <%= passedQuizzes %> quiz réussi<%= passedQuizzes > 1 ? 's' : '' %></span>
-                    <% } %>
-                    <% if (pendingAssignments > 0) { %>
-                      <span class="small" style="color:#c2410c;">⏳ <%= pendingAssignments %> devoir<%= pendingAssignments > 1 ? 's' : '' %> en attente</span>
-                    <% } %>
-                  </div>
-                  <form action="/institution/dashboard/students/<%= student._id %>/courses/<%= course._id %>?_method=DELETE" method="POST" style="display:inline">
-                    <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" onclick="return confirm('Désinscrire de ce cours ?')">Désinscrire</button>
-                  </form>
+            <!-- Enrollment dates -->
+            <div class="course-section">
+              <div class="cs-head">
+                <h3 class="cs-title">📅 Accès</h3>
+                <% if (isExpired) { %>
+                  <span class="badge-expired">Expiré</span>
                 <% } else { %>
-                  <!-- Enroll form -->
-                  <form action="/institution/dashboard/students/<%= student._id %>/enroll" method="POST" class="d-flex gap-2 flex-wrap align-items-end mt-1">
-                    <input type="hidden" name="courseId" value="<%= course._id %>">
-                    <div>
-                      <label class="form-label mb-0" style="font-size:.8rem">Début</label>
-                      <input type="date" name="startDate" class="form-control form-control-sm" value="<%= new Date().toISOString().split('T')[0] %>">
-                    </div>
-                    <div>
-                      <label class="form-label mb-0" style="font-size:.8rem">Fin</label>
-                      <input type="date" name="endDate" class="form-control form-control-sm">
-                    </div>
-                    <button type="submit" class="btn btn-sm btn-primary">Inscrire</button>
-                  </form>
+                  <span class="badge-active">Actif</span>
                 <% } %>
               </div>
-            <% }) %>
-          <% } %>
-        </div>
-      </div>
-    </div>
+              <div class="cs-body">
+                <div class="enroll-meta">
+                  <span class="meta-text">
+                    <i class="bi bi-calendar3"></i>
+                    <%= enrollment.startDate ? new Date(enrollment.startDate).toLocaleDateString('fr-FR') : '—' %>
+                    → <%= enrollment.endDate ? new Date(enrollment.endDate).toLocaleDateString('fr-FR') : '—' %>
+                  </span>
+                  <% if (lastActivity) { %>
+                    <span class="meta-text">· Dernière activité : <%= new Date(lastActivity).toLocaleDateString('fr-FR') %></span>
+                  <% } %>
+                  <button type="button" class="btn-edit-dates" data-target="date-form-<%= cid %>">
+                    <i class="bi bi-pencil" style="font-size:.7rem;"></i> Modifier
+                  </button>
+                </div>
+
+                <div id="date-form-<%= cid %>" class="date-edit-form d-none">
+                  <form action="/institution/dashboard/students/<%= student._id %>/courses/<%= cid %>?_method=PUT" method="POST">
+                    <div class="d-flex gap-2 flex-wrap align-items-end">
+                      <div>
+                        <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;">Début</label>
+                        <input type="date" name="startDate" class="form-control form-control-sm" value="<%= startISO %>">
+                      </div>
+                      <div>
+                        <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;">Fin</label>
+                        <input type="date" name="endDate" class="form-control form-control-sm" value="<%= endISO %>">
+                      </div>
+                      <div class="d-flex gap-1">
+                        <button type="submit" class="btn btn-sm btn-primary px-3">Enregistrer</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-close="date-form-<%= cid %>">Annuler</button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+
+                <form action="/institution/dashboard/students/<%= student._id %>/courses/<%= cid %>?_method=DELETE" method="POST" class="mt-2">
+                  <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2"
+                          onclick="return confirm('Désinscrire <%= student.name %> de ce cours ?')">Désinscrire</button>
+                </form>
+              </div>
+            </div>
+
+            <!-- Overall progress -->
+            <div class="course-section">
+              <div class="cs-head"><h3 class="cs-title">📊 Progression générale</h3></div>
+              <div class="cs-body">
+                <div class="prog-wrap">
+                  <div class="prog-label">
+                    <span>Leçons complétées</span>
+                    <span><%= completedLessons %>/<%= totalLessons %> (<%= overallPct %>%)</span>
+                  </div>
+                  <div class="prog-bar"><div class="prog-fill" style="width:<%= overallPct %>%"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Module breakdown -->
+            <% if (courseModules.length > 0) { %>
+            <div class="course-section">
+              <div class="cs-head"><h3 class="cs-title">📋 Détail par module</h3></div>
+              <div style="overflow-x:auto;">
+                <table class="module-table">
+                  <thead>
+                    <tr>
+                      <th>Module</th>
+                      <th>Leçons</th>
+                      <th>Quiz</th>
+                      <th>Devoir</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% courseModules.forEach(({ module: m, total, completed, pct, quiz, assign }) => { %>
+                    <tr>
+                      <td style="font-weight:600;color:#1e293b;max-width:200px;"><%= m.title %></td>
+                      <td>
+                        <% if (total > 0) { %>
+                          <div class="mini-bar-wrap">
+                            <div class="mini-bar"><div class="mini-bar-fill" style="width:<%= pct %>%"></div></div>
+                            <span style="font-size:.78rem;color:#64748b;white-space:nowrap"><%= completed %>/<%= total %></span>
+                          </div>
+                        <% } else { %>
+                          <span class="chip chip-none">—</span>
+                        <% } %>
+                      </td>
+                      <td>
+                        <% if (!m.quiz || !m.quiz.questions || !m.quiz.questions.length) { %>
+                          <span class="chip chip-none">—</span>
+                        <% } else if (!quiz) { %>
+                          <span class="chip chip-none">Non tenté</span>
+                        <% } else { %>
+                          <span class="chip <%= quiz.passed ? 'chip-pass' : 'chip-fail' %>"><%= quiz.score %>%<%= quiz.passed ? ' ✓' : ' ✗' %></span>
+                        <% } %>
+                      </td>
+                      <td>
+                        <% if (!m.assignment || !m.assignment.title) { %>
+                          <span class="chip chip-none">—</span>
+                        <% } else if (!assign) { %>
+                          <span class="chip chip-none">Non soumis</span>
+                        <% } else if (assign.status === 'graded') { %>
+                          <span class="chip chip-pass"><%= assign.grade %>/<%= m.assignment.maxScore || 100 %></span>
+                        <% } else { %>
+                          <span class="chip chip-wait">En attente</span>
+                        <% } %>
+                      </td>
+                    </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <% } %>
+
+            <!-- Final exam -->
+            <% if (course.finalExam && course.finalExam.questions && course.finalExam.questions.length > 0) { %>
+            <div class="course-section">
+              <div class="cs-head">
+                <h3 class="cs-title">🎓 Examen final</h3>
+                <% if (!finalExam) { %>
+                  <span class="chip chip-none">Non tenté</span>
+                <% } else if (finalExam.passed) { %>
+                  <span class="chip chip-pass"><%= finalExam.score %>% — Réussi</span>
+                <% } else { %>
+                  <span class="chip chip-fail"><%= finalExam.score %>% — Échoué</span>
+                <% } %>
+              </div>
+              <% if (finalExam) { %>
+              <div class="cs-body pt-0">
+                <div class="prog-wrap mb-0">
+                  <div class="prog-label">
+                    <span>Score</span>
+                    <span><%= finalExam.score %>% (seuil : <%= course.finalExam.passingScore || 70 %>%)</span>
+                  </div>
+                  <div class="prog-bar"><div class="prog-fill" style="width:<%= finalExam.score %>%;background:<%= finalExam.passed ? 'var(--brand)' : '#ef4444' %>"></div></div>
+                </div>
+              </div>
+              <% } %>
+            </div>
+            <% } %>
+
+            <!-- Final project -->
+            <% if (course.finalProject && course.finalProject.title) { %>
+            <div class="course-section">
+              <div class="cs-head">
+                <h3 class="cs-title">📁 Projet final — <%= course.finalProject.title %></h3>
+                <% if (!finalProject) { %>
+                  <span class="chip chip-none">Non soumis</span>
+                <% } else if (finalProject.status === 'graded') { %>
+                  <span class="chip chip-pass"><%= finalProject.grade %>/<%= course.finalProject.maxScore || 100 %></span>
+                <% } else { %>
+                  <span class="chip chip-wait">En attente de correction</span>
+                <% } %>
+              </div>
+            </div>
+            <% } %>
+
+          </div><!-- /course-panel -->
+          <% }) %>
+
+        <% } %>
+      </div><!-- /right -->
+
+    </div><!-- /layout -->
   </div>
 </div>
 
 <script>
-  // Toggle date-edit panels via data-target / data-close attributes
-  document.addEventListener('click', function (e) {
+  function switchCourseTab(courseId, btn) {
+    document.querySelectorAll('.course-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    const panel = document.getElementById('panel-' + courseId);
+    if (panel) panel.classList.add('active');
+    btn.classList.add('active');
+  }
+
+  document.addEventListener('click', function(e) {
     const btn = e.target.closest('[data-target]');
-    if (btn) {
-      const panel = document.getElementById(btn.dataset.target);
-      if (panel) panel.classList.toggle('d-none');
-      return;
-    }
+    if (btn) { const p = document.getElementById(btn.dataset.target); if (p) p.classList.toggle('d-none'); return; }
     const close = e.target.closest('[data-close]');
-    if (close) {
-      const panel = document.getElementById(close.dataset.close);
-      if (panel) panel.classList.add('d-none');
-    }
+    if (close) { const p = document.getElementById(close.dataset.close); if (p) p.classList.add('d-none'); }
   });
 </script>

@@ -48,6 +48,12 @@
   </script>
 
   <%- typeof headContent !=='undefined' ? headContent : '' %>
+  <style>
+    :root {
+      --secondary: <%= (typeof institutionSecondaryColor !== 'undefined' && institutionSecondaryColor) ? institutionSecondaryColor : 'color-mix(in srgb, var(--brand, #0e7490) 18%, #fff)' %>;
+      --accent:    <%= (typeof institutionAccentColor    !== 'undefined' && institutionAccentColor)    ? institutionAccentColor    : '#f59e0b' %>;
+    }
+  </style>
 </head>
 
 <body>

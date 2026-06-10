@@ -4,6 +4,9 @@ const {
     InstitutionQuizAttempt, InstitutionAssignmentSubmission,
     InstitutionFinalExamAttempt, InstitutionFinalProjectSubmission
 } = require('../../../programs/institution/models');
+const User       = require('../../models/user');
+const Emailer    = require('../../utilities/sendEmail');
+const { getBaseUrl } = require('../../utilities/url');
 const catchAsync = require('../../utilities/catchAsync');
 
 module.exports.index = catchAsync(async (req, res) => {
@@ -35,24 +38,77 @@ module.exports.show = catchAsync(async (req, res) => {
     const course = await InstitutionCourse.findOne({
         _id: courseId,
         institutionId: req.institution._id
-    }).populate('modules', 'title order');
+    })
+    .populate('instructors', 'name title email')
+    .lean();
 
     if (!course) {
         req.flash('error', 'Cours introuvable.');
         return res.redirect('/institution/dashboard/courses');
     }
 
-    const enrollments = await InstitutionEnrollment.find({ courseId })
-        .populate('userId', 'name surname username email devices');
+    const modules = await InstitutionModule.find({ courseId: course._id })
+        .select('title order quiz assignment')
+        .sort({ order: 1 })
+        .lean();
 
-    const userIds = enrollments.map(e => e.userId._id || e.userId);
-    const totalLessons = await InstitutionLesson.countDocuments({ courseId, isActive: true });
+    const moduleIds = modules.map(m => m._id);
+
+    const [
+        enrollments,
+        totalLessons,
+        assignmentStats,
+        projectStats
+    ] = await Promise.all([
+        InstitutionEnrollment.find({ courseId })
+            .populate('userId', 'name surname username email devices')
+            .lean(),
+        InstitutionLesson.countDocuments({ courseId, isActive: true }),
+        // Per-module: submitted vs graded counts
+        InstitutionAssignmentSubmission.aggregate([
+            { $match: { moduleId: { $in: moduleIds } } },
+            { $group: {
+                _id: { moduleId: '$moduleId', status: '$status' },
+                count: { $sum: 1 }
+            }}
+        ]),
+        // Final project stats
+        InstitutionFinalProjectSubmission.aggregate([
+            { $match: { courseId: course._id } },
+            { $group: { _id: '$status', count: { $sum: 1 } } }
+        ])
+    ]);
+
+    // Build per-module grading map: { moduleId: { submitted, graded } }
+    const moduleGradingMap = {};
+    for (const row of assignmentStats) {
+        const mid = row._id.moduleId.toString();
+        if (!moduleGradingMap[mid]) moduleGradingMap[mid] = { submitted: 0, graded: 0 };
+        if (row._id.status === 'submitted') moduleGradingMap[mid].submitted += row.count;
+        if (row._id.status === 'graded')    moduleGradingMap[mid].graded   += row.count;
+    }
+
+    const modulesWithGrading = modules.map(m => ({
+        ...m,
+        grading: moduleGradingMap[m._id.toString()] || null
+    }));
+
+    // Final project counts
+    const projectStatMap = Object.fromEntries(projectStats.map(r => [r._id, r.count]));
+    const finalProjectStats = {
+        submitted: projectStatMap['submitted'] || 0,
+        graded:    projectStatMap['graded']    || 0
+    };
+
+    const userIds = enrollments.map(e => (e.userId._id || e.userId));
 
     const progress = await InstitutionLessonProgress.aggregate([
         { $match: { userId: { $in: userIds }, courseId: course._id } },
         { $group: { _id: '$userId', completed: { $sum: 1 }, lastActivity: { $max: '$completedAt' } } }
     ]);
     const progressByUser = Object.fromEntries(progress.map(r => [r._id.toString(), r]));
+
+    const enrolledUserIds = new Set(enrollments.map(e => (e.userId._id || e.userId).toString()));
 
     const studentsData = enrollments.map(enrollment => {
         const student = enrollment.userId;
@@ -75,8 +131,61 @@ module.exports.show = catchAsync(async (req, res) => {
     res.render('institution-dashboard/courses/show', {
         institution: req.institution,
         course,
-        studentsData
+        studentsData,
+        modulesWithGrading,
+        finalProjectStats,
+        enrolledUserIds: Array.from(enrolledUserIds)
     });
+});
+
+module.exports.enrollFromCourse = catchAsync(async (req, res) => {
+    const { courseId } = req.params;
+    const { userId, startDate, endDate } = req.body;
+
+    const [course, student] = await Promise.all([
+        InstitutionCourse.findOne({ _id: courseId, institutionId: req.institution._id }),
+        User.findById(userId)
+    ]);
+
+    if (!course) {
+        req.flash('error', 'Cours introuvable.');
+        return res.redirect(`/institution/dashboard/courses/${courseId}`);
+    }
+    if (!student) {
+        req.flash('error', 'Étudiant introuvable.');
+        return res.redirect(`/institution/dashboard/courses/${courseId}`);
+    }
+
+    const existing = await InstitutionEnrollment.findOne({ userId, courseId });
+    if (existing) {
+        req.flash('error', `${student.name} est déjà inscrit(e) à ce cours.`);
+        return res.redirect(`/institution/dashboard/courses/${courseId}`);
+    }
+
+    const start = startDate ? new Date(startDate) : new Date();
+    const end   = endDate   ? new Date(endDate)   : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+    await InstitutionEnrollment.create({
+        userId,
+        courseId,
+        institutionId: req.institution._id,
+        startDate: start,
+        endDate: end,
+        status: 'active',
+        enrolledBy: req.user._id
+    });
+
+    if (!student.institutionId) {
+        student.institutionId = req.institution._id;
+        await student.save();
+    }
+
+    const loginUrl = `${getBaseUrl(req)}/login`;
+    new Emailer(student).sendEnrollmentEmail(course.title, start, end, loginUrl)
+        .catch(err => console.error('Enrollment email error:', err));
+
+    req.flash('success', `${student.name} ${student.surname} inscrit(e) à ce cours.`);
+    res.redirect(`/institution/dashboard/courses/${courseId}`);
 });
 
 module.exports.exportCsv = catchAsync(async (req, res) => {

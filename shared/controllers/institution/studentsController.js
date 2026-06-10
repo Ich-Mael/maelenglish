@@ -2,11 +2,14 @@ const crypto = require('crypto');
 const User = require('../../models/user');
 const {
     InstitutionCourse,
+    InstitutionModule,
     InstitutionLesson,
     InstitutionEnrollment,
     InstitutionLessonProgress,
     InstitutionQuizAttempt,
-    InstitutionAssignmentSubmission
+    InstitutionAssignmentSubmission,
+    InstitutionFinalExamAttempt,
+    InstitutionFinalProjectSubmission
 } = require('../../../programs/institution/models');
 const Emailer = require('../../utilities/sendEmail');
 const { getBaseUrl } = require('../../utilities/url');
@@ -15,44 +18,73 @@ const catchAsync = require('../../utilities/catchAsync');
 // List all students with at least one enrollment in this institution
 module.exports.index = catchAsync(async (req, res) => {
     const now = new Date();
+    const filterCourseId = req.query.courseId || null;
 
-    const [enrolledUserIds, courses, activeEnrollmentCounts] = await Promise.all([
-        InstitutionEnrollment.distinct('userId', { institutionId: req.institution._id }),
-        InstitutionCourse.find({ institutionId: req.institution._id }).select('title _id'),
+    const courses = await InstitutionCourse.find({ institutionId: req.institution._id })
+        .select('title _id').sort({ title: 1 }).lean();
+    const courseIds = courses.map(c => c._id);
+    const courseMap = Object.fromEntries(courses.map(c => [c._id.toString(), c.title]));
+
+    // userId set: scoped to one course when filter active, otherwise all
+    const enrollmentFilter = { institutionId: req.institution._id };
+    if (filterCourseId) enrollmentFilter.courseId = filterCourseId;
+
+    const [filteredUserIds, allEnrollments, activeEnrollmentCounts] = await Promise.all([
+        InstitutionEnrollment.distinct('userId', enrollmentFilter),
+        // All enrollments across all courses (for badges + tab counts)
+        InstitutionEnrollment.find({ institutionId: req.institution._id, courseId: { $in: courseIds } })
+            .select('userId courseId endDate').lean(),
         InstitutionEnrollment.aggregate([
-            {
-                $match: {
-                    institutionId: req.institution._id,
-                    status: 'active',
-                    $or: [{ endDate: null }, { endDate: { $gte: now } }]
-                }
-            },
+            { $match: {
+                institutionId: req.institution._id,
+                courseId: { $in: courseIds },
+                $or: [{ endDate: null }, { endDate: { $gte: now } }]
+            }},
             { $group: { _id: '$userId', count: { $sum: 1 } } }
         ])
     ]);
 
     const students = await User.find({
-        _id: { $in: enrolledUserIds },
+        _id: { $in: filteredUserIds },
         role: { $ne: 'institution-admin' }
     }).select('name surname username email isVerified devices').sort({ surname: 1, name: 1 });
+
+    // Per-student course badges & per-course student counts for tab labels
+    const enrollmentsByUser = {};
+    const courseCountMap = {};
+    for (const e of allEnrollments) {
+        const uid = e.userId.toString();
+        const cid = e.courseId.toString();
+        if (!enrollmentsByUser[uid]) enrollmentsByUser[uid] = [];
+        enrollmentsByUser[uid].push({
+            courseId: cid,
+            title: courseMap[cid] || '?',
+            expired: !!(e.endDate && new Date(e.endDate) < now)
+        });
+        courseCountMap[cid] = (courseCountMap[cid] || 0) + 1;
+    }
 
     const activeCountMap = Object.fromEntries(activeEnrollmentCounts.map(r => [r._id.toString(), r.count]));
 
     const studentsWithMeta = students.map(s => {
+        const uid = s._id.toString();
         const lastLogin = s.devices && s.devices.length > 0
             ? s.devices.reduce((latest, d) => d.lastLogin > latest ? d.lastLogin : latest, s.devices[0].lastLogin)
             : null;
         return {
             student: s,
             lastLogin,
-            activeEnrollmentsCount: activeCountMap[s._id.toString()] || 0
+            activeEnrollmentsCount: activeCountMap[uid] || 0,
+            courseBadges: enrollmentsByUser[uid] || []
         };
     });
 
     res.render('institution-dashboard/students/index', {
         institution: req.institution,
         studentsWithMeta,
-        assignedCourseDetails: courses
+        assignedCourseDetails: courses,
+        filterCourseId,
+        courseCountMap
     });
 });
 
@@ -100,71 +132,129 @@ module.exports.show = catchAsync(async (req, res) => {
         return res.redirect('/institution/dashboard/students');
     }
 
-    const courses = await InstitutionCourse.find({
+    const enrollments = await InstitutionEnrollment.find({
+        userId: student._id,
         institutionId: req.institution._id
-    }).select('title isActive');
-
-    const courseIds = courses.map(c => c._id);
-
-    const [lessonProgress, lessonCounts, passedQuizzes, pendingAssignments, enrollments] = await Promise.all([
-        InstitutionLessonProgress.find({ userId: student._id, courseId: { $in: courseIds } }),
-        InstitutionLesson.aggregate([
-            { $match: { courseId: { $in: courseIds }, isActive: true } },
-            { $group: { _id: '$courseId', count: { $sum: 1 } } }
-        ]),
-        InstitutionQuizAttempt.aggregate([
-            { $match: { userId: student._id, courseId: { $in: courseIds }, passed: true } },
-            { $group: { _id: '$courseId', count: { $sum: 1 } } }
-        ]),
-        InstitutionAssignmentSubmission.aggregate([
-            { $match: { userId: student._id, courseId: { $in: courseIds }, status: 'submitted' } },
-            { $group: { _id: '$courseId', count: { $sum: 1 } } }
-        ]),
-        InstitutionEnrollment.find({ userId: student._id, institutionId: req.institution._id })
-    ]);
-
-    const completedByCourse = {};
-    const lastActivityByCourse = {};
-    lessonProgress.forEach(p => {
-        const cid = p.courseId.toString();
-        completedByCourse[cid] = (completedByCourse[cid] || 0) + 1;
-        const ts = p.completedAt || p.updatedAt;
-        if (ts && (!lastActivityByCourse[cid] || ts > lastActivityByCourse[cid])) {
-            lastActivityByCourse[cid] = ts;
-        }
-    });
-
-    const totalByCourse    = Object.fromEntries(lessonCounts.map(r => [r._id.toString(), r.count]));
-    const passedQuizMap    = Object.fromEntries(passedQuizzes.map(r => [r._id.toString(), r.count]));
-    const pendingAssignMap = Object.fromEntries(pendingAssignments.map(r => [r._id.toString(), r.count]));
-    const enrollmentByCourse = Object.fromEntries(enrollments.map(e => [e.courseId.toString(), e]));
-
-    const enrollmentStatus = courses.map(course => {
-        const cid       = course._id.toString();
-        const enrollment = enrollmentByCourse[cid];
-        const completed  = completedByCourse[cid] || 0;
-        const total      = totalByCourse[cid]      || 0;
-        return {
-            course,
-            isEnrolled: !!enrollment,
-            enrollment,
-            completedModules:   completed,
-            totalModules:       total,
-            passedQuizzes:      passedQuizMap[cid]    || 0,
-            pendingAssignments: pendingAssignMap[cid]  || 0,
-            lastActivity:       lastActivityByCourse[cid] || null,
-            pct: total > 0 ? Math.round((completed / total) * 100) : 0
-        };
-    });
+    }).lean();
 
     const lastLogin = student.devices && student.devices.length > 0
         ? student.devices.reduce((latest, d) => d.lastLogin > latest ? d.lastLogin : latest, student.devices[0].lastLogin)
         : null;
 
+    if (enrollments.length === 0) {
+        return res.render('institution-dashboard/students/show', {
+            institution: req.institution,
+            student,
+            courseData: [],
+            lastLogin
+        });
+    }
+
+    const enrolledCourseIds = enrollments.map(e => e.courseId);
+    const enrollmentByCourse = Object.fromEntries(enrollments.map(e => [e.courseId.toString(), e]));
+
+    const [courses, modules, allLessons, progressRecords, quizAttempts,
+           assignmentSubs, finalExamAttempts, finalProjectSubs] = await Promise.all([
+        InstitutionCourse.find({ _id: { $in: enrolledCourseIds } })
+            .select('title isActive finalExam finalProject').lean(),
+        InstitutionModule.find({ courseId: { $in: enrolledCourseIds } })
+            .select('title order quiz assignment courseId').sort({ courseId: 1, order: 1 }).lean(),
+        InstitutionLesson.find({ courseId: { $in: enrolledCourseIds }, isActive: true })
+            .select('_id moduleId courseId').lean(),
+        InstitutionLessonProgress.find({ userId: student._id, courseId: { $in: enrolledCourseIds } })
+            .select('lessonId courseId completedAt').lean(),
+        InstitutionQuizAttempt.aggregate([
+            { $match: { userId: student._id, courseId: { $in: enrolledCourseIds } } },
+            { $sort: { score: -1 } },
+            { $group: { _id: '$moduleId', score: { $first: '$score' }, passed: { $first: '$passed' } } }
+        ]),
+        InstitutionAssignmentSubmission.find({
+            userId: student._id, courseId: { $in: enrolledCourseIds }
+        }).lean(),
+        InstitutionFinalExamAttempt.aggregate([
+            { $match: { userId: student._id, courseId: { $in: enrolledCourseIds } } },
+            { $sort: { score: -1 } },
+            { $group: { _id: '$courseId', score: { $first: '$score' }, passed: { $first: '$passed' } } }
+        ]),
+        InstitutionFinalProjectSubmission.find({
+            userId: student._id, courseId: { $in: enrolledCourseIds }
+        }).lean()
+    ]);
+
+    const completedLessonIds = new Set(progressRecords.map(p => p.lessonId.toString()));
+    const quizByModule       = Object.fromEntries(quizAttempts.map(r => [r._id.toString(), r]));
+    const assignByModule     = Object.fromEntries(assignmentSubs.map(a => [a.moduleId.toString(), a]));
+    const finalExamByCourse  = Object.fromEntries(finalExamAttempts.map(r => [r._id.toString(), r]));
+    const finalProjByCourse  = Object.fromEntries(finalProjectSubs.map(p => [p.courseId.toString(), p]));
+
+    // Group lessons by moduleId
+    const lessonsByModule = {};
+    for (const l of allLessons) {
+        const mid = l.moduleId.toString();
+        if (!lessonsByModule[mid]) lessonsByModule[mid] = [];
+        lessonsByModule[mid].push(l._id.toString());
+    }
+
+    // Group modules by courseId
+    const modulesByCourse = {};
+    for (const m of modules) {
+        const cid = m.courseId.toString();
+        if (!modulesByCourse[cid]) modulesByCourse[cid] = [];
+        modulesByCourse[cid].push(m);
+    }
+
+    // Last activity per course
+    const lastActivityByCourse = {};
+    for (const p of progressRecords) {
+        const cid = p.courseId.toString();
+        const ts  = p.completedAt || p.updatedAt;
+        if (ts && (!lastActivityByCourse[cid] || ts > lastActivityByCourse[cid])) {
+            lastActivityByCourse[cid] = ts;
+        }
+    }
+
+    const now = new Date();
+    const courseData = courses.map(course => {
+        const cid        = course._id.toString();
+        const enrollment = enrollmentByCourse[cid];
+        const isExpired  = !!(enrollment.endDate && new Date(enrollment.endDate) < now);
+
+        const courseModules = (modulesByCourse[cid] || []).map(m => {
+            const mid        = m._id.toString();
+            const lessonIds  = lessonsByModule[mid] || [];
+            const total      = lessonIds.length;
+            const completed  = lessonIds.filter(lid => completedLessonIds.has(lid)).length;
+            return {
+                module:    m,
+                total,
+                completed,
+                pct:       total > 0 ? Math.round((completed / total) * 100) : null,
+                quiz:      quizByModule[mid]   || null,
+                assign:    assignByModule[mid] || null
+            };
+        });
+
+        const totalLessons     = courseModules.reduce((s, m) => s + m.total, 0);
+        const completedLessons = courseModules.reduce((s, m) => s + m.completed, 0);
+
+        return {
+            course,
+            enrollment,
+            isExpired,
+            courseModules,
+            totalLessons,
+            completedLessons,
+            overallPct:   totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0,
+            lastActivity: lastActivityByCourse[cid] || null,
+            finalExam:    finalExamByCourse[cid]    || null,
+            finalProject: finalProjByCourse[cid]    || null
+        };
+    });
+
     res.render('institution-dashboard/students/show', {
         institution: req.institution,
         student,
-        enrollmentStatus,
+        courseData,
         lastLogin
     });
 });

@@ -21,6 +21,7 @@ router.put('/dashboard/settings', Dashboard.updateSettings);
 router.get('/dashboard/courses', Courses.index);
 router.get('/dashboard/courses/:courseId', Courses.show);
 router.get('/dashboard/courses/:courseId/export.csv', Courses.exportCsv);
+router.post('/dashboard/courses/:courseId/enroll', Courses.enrollFromCourse);
 
 // ─── STUDENTS ─────────────────────────────────────────────────────────────────
 router.get('/dashboard/students', Students.index);

@@ -16,20 +16,19 @@
   .input-icon-wrap .icon { position: absolute; left: .75rem; top: 50%; transform: translateY(-50%); font-size: .95rem; pointer-events: none; }
   .input-icon-wrap .form-control { padding-left: 2.1rem; }
   .hint { font-size: .75rem; color: #94a3b8; margin-top: .3rem; }
-  .color-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-  .color-slot { border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column; gap: .55rem; transition: border-color .15s; }
+  .color-slots { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1rem; }
+  .color-slot { border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column; gap: .55rem; transition: border-color .15s; overflow: hidden; }
   .color-slot:focus-within { border-color: var(--brand); }
   .color-slot-label { font-size: .76rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: #64748b; }
   .color-slot-optional { font-size: .69rem; font-weight: 400; color: #94a3b8; text-transform: none; letter-spacing: 0; }
   .color-picker-row { display: flex; align-items: center; gap: .5rem; }
   .color-swatch { width: 38px; height: 38px; border-radius: 8px; border: none; cursor: pointer; padding: 2px; flex-shrink: 0; background: none; }
-  .color-hex { flex: 1; font-family: monospace; font-size: .87rem; padding: .4rem .6rem; border-radius: 8px; border: 1.5px solid #e2e8f0; }
+  .color-hex { flex: 1; min-width: 0; font-family: monospace; font-size: .87rem; padding: .4rem .6rem; border-radius: 8px; border: 1.5px solid #e2e8f0; }
   .color-hex:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 15%, #fff); }
   .clear-color-btn { background: none; border: none; color: #94a3b8; font-size: .85rem; cursor: pointer; padding: .2rem .4rem; border-radius: 6px; }
   .clear-color-btn:hover { background: #fee2e2; color: #dc2626; }
   .brand-preview { border-radius: 10px; overflow: hidden; height: 36px; display: flex; margin-top: .6rem; border: 1px solid #e2e8f0; }
   .brand-preview-block { flex: 1; transition: background .2s; }
-  @media (max-width: 600px) { .color-slots { grid-template-columns: 1fr; } }
   .btn-save { background: var(--brand); color: #fff; border: none; padding: .7rem 2.5rem; border-radius: 10px; font-weight: 700; font-size: .95rem; cursor: pointer; transition: opacity .15s; }
   .btn-save:hover { opacity: .88; }
   .social-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .85rem; }
