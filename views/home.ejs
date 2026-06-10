@@ -528,6 +528,236 @@
       .inst-teaser-heading { font-size: 2.2rem; }
     }
 
+    /* ── About Section Redesign ── */
+    .abt-section {
+      padding: 100px 0 80px;
+      background: linear-gradient(135deg, #0f0720 0%, #1a0a38 50%, #0d1530 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .abt-section::before {
+      content: '';
+      position: absolute;
+      top: -120px; right: -120px;
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(81,7,206,.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .abt-section::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; left: -80px;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(14,165,233,.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .abt-header {
+      text-align: center;
+      margin-bottom: 64px;
+      position: relative;
+      z-index: 1;
+    }
+    .abt-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,.08);
+      color: #c4b5fd;
+      font-size: .72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      padding: 6px 16px;
+      border-radius: 50px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(255,255,255,.12);
+    }
+    .abt-heading {
+      font-size: 2.6rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.15;
+      margin: 0;
+    }
+    .abt-heading em {
+      font-style: normal;
+      background: linear-gradient(90deg, #a78bfa, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Vision / Mission */
+    .abt-top-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+      margin-bottom: 80px;
+      position: relative;
+      z-index: 1;
+    }
+    .abt-vm-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .abt-vm-card {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      background: rgba(255,255,255,.05);
+      border-radius: 18px;
+      padding: 28px;
+      border: 1px solid rgba(255,255,255,.09);
+      backdrop-filter: blur(8px);
+      transition: background .3s, transform .3s;
+    }
+    .abt-vm-card:hover {
+      background: rgba(255,255,255,.08);
+      transform: translateY(-3px);
+    }
+    .abt-vm-icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+    .abt-vision .abt-vm-icon  { background: rgba(167,139,250,.15); color: #a78bfa; }
+    .abt-mission .abt-vm-icon { background: rgba(245,158,11,.12);  color: #fbbf24; }
+    .abt-vm-label {
+      font-size: .72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: rgba(255,255,255,.35);
+      margin: 0 0 6px;
+    }
+    .abt-vm-text {
+      font-size: .95rem;
+      color: rgba(255,255,255,.72);
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    /* Photo side */
+    .abt-photos-wrap { position: relative; padding-bottom: 18px; }
+    .abt-photos-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 200px 200px;
+      gap: 12px;
+    }
+    .abt-photo {
+      overflow: hidden;
+      border-radius: 14px;
+      position: relative;
+    }
+    .abt-photo img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform .5s ease;
+      display: block;
+    }
+    .abt-photo:hover img { transform: scale(1.07); }
+    .abt-photo-tall { grid-row: span 2; }
+    .abt-photos-badge {
+      position: absolute;
+      bottom: 0; right: 20px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.15);
+      backdrop-filter: blur(14px);
+      border-radius: 14px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+    }
+    .abt-photos-badge-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #7c3aed, #4b08a1);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .abt-photos-badge-text { font-size: .78rem; color: rgba(255,255,255,.6); }
+    .abt-photos-badge-text strong { display: block; font-size: .9rem; color: #fff; font-weight: 800; }
+
+    /* Values */
+    .abt-values-header {
+      text-align: center;
+      margin-bottom: 36px;
+      position: relative;
+      z-index: 1;
+    }
+    .abt-values-eyebrow {
+      font-size: .72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      color: rgba(255,255,255,.3);
+      margin-bottom: 8px;
+    }
+    .abt-values-title {
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: #fff;
+      margin: 0;
+    }
+    .abt-values-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+    }
+    .abt-value-card {
+      background: rgba(255,255,255,.05);
+      border-radius: 18px;
+      padding: 26px 22px;
+      border: 1px solid rgba(255,255,255,.08);
+      transition: transform .3s, background .3s;
+    }
+    .abt-value-card:hover {
+      transform: translateY(-5px);
+      background: rgba(255,255,255,.09);
+    }
+    .abt-val-icon {
+      width: 48px; height: 48px;
+      border-radius: 13px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem;
+      margin-bottom: 16px;
+    }
+    .abt-val-name {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #fff;
+      margin: 0 0 8px;
+    }
+    .abt-val-desc {
+      font-size: .85rem;
+      color: rgba(255,255,255,.55);
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    @media (max-width: 992px) {
+      .abt-top-grid { grid-template-columns: 1fr; gap: 40px; }
+      .abt-values-grid { grid-template-columns: repeat(2, 1fr); }
+      .abt-heading { font-size: 2.1rem; }
+    }
+    @media (max-width: 600px) {
+      .abt-section { padding: 70px 0 60px; }
+      .abt-values-grid { grid-template-columns: 1fr; }
+      .abt-photos-grid { grid-template-rows: 160px 160px; }
+    }
+
     /* About Section Mouse Move Animation */
     .about-img-wrapper {
       position: relative;
@@ -621,116 +851,113 @@
 
       <main id="main">
         <!-- ======= About Section ======= -->
-        <section id="about" class="about section-bg">
-          <div class="container" data-aos="fade-up">
-            <div class="programs-header-modern" data-aos="fade-up">
-              <h3 class="slogan mb-5" id="values-a">
-                <span class="purple">À Propos de Nous</span>
-              </h3>
-            </div>
-            <div class="row no-gutters">
-              <div class="content mt-5 col-lg-7 d-flex flex-column align-items-stretch text-start">
+        <section id="about" class="abt-section">
+          <div class="container">
 
-                <h3 class="values">Vision</h3>
-                <p>
-                  Devenir une référence africaine en transformation digitale de l’éducation, en créant un écosystème de
-                  produits éducatifs à fort impact.
-                </p>
-                <hr />
-                <h3 class="values">Mission</h3>
-                <p>
-                  Développer des solutions éducatives numériques accessibles, innovantes et adaptées au contexte
-                  africain pour former des apprenants confiants, compétents et prêts pour le monde de demain.
-                </p>
-              </div>
-              <!-- Image -->
-              <div class="content col-lg-5 d-flex justify-content-center align-items-center">
-                <div class="about-modern-gallery">
-                  <div class="gallery-grid">
-                    <div class="gallery-card card-1">
-                      <img loading="lazy" src="https://images.pexels.com/photos/6894013/pexels-photo-6894013.jpeg"
-                        alt="Éducation et apprentissage">
-                    </div>
-                    <div class="gallery-card card-2">
-                      <img loading="lazy" src="https://images.pexels.com/photos/27178154/pexels-photo-27178154.jpeg"
-                        alt="Apprentissage collaboratif">
-                    </div>
-                    <div class="gallery-card card-3">
-                      <img loading="lazy" src="https://images.pexels.com/photos/7605859/pexels-photo-7605859.jpeg"
-                        alt="Étudiants en action">
-                    </div>
-                    <div class="gallery-card card-4">
-                      <img loading="lazy" src="https://images.pexels.com/photos/4260323/pexels-photo-4260323.jpeg"
-                        alt="Communauté éducative">
-                    </div>
+            <!-- Header -->
+            <div class="abt-header" data-aos="fade-up">
+              <span class="abt-pill"><i class="bi bi-info-circle-fill"></i> Qui sommes-nous</span>
+              <h2 class="abt-heading">Bâtir l’éducation africaine<br>de <em>demain</em>, aujourd’hui.</h2>
+            </div>
+
+            <!-- Vision / Mission + Photos -->
+            <div class="abt-top-grid">
+
+              <div class="abt-vm-stack" data-aos="fade-right">
+                <div class="abt-vm-card abt-vision">
+                  <div class="abt-vm-icon"><i class="bi bi-eye-fill"></i></div>
+                  <div>
+                    <p class="abt-vm-label">Notre Vision</p>
+                    <p class="abt-vm-text">Devenir une référence africaine en transformation digitale de l’éducation, en créant un écosystème de produits éducatifs à fort impact.</p>
+                  </div>
+                </div>
+                <div class="abt-vm-card abt-mission">
+                  <div class="abt-vm-icon"><i class="bi bi-bullseye"></i></div>
+                  <div>
+                    <p class="abt-vm-label">Notre Mission</p>
+                    <p class="abt-vm-text">Développer des solutions éducatives numériques accessibles, innovantes et adaptées au contexte africain pour former des apprenants confiants, compétents et prêts pour le monde de demain.</p>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Our core Values -->
-            <div class="content  d-flex align-items-stretch">
-              <div class="icon-boxes d-flex flex-column justify-content-center">
-                <h3 class="slogan" id="values-a">
-                  <span class="purple">Les Valeurs <br> Que Nous Chérissons</span>
-                </h3>
-                <div class="row">
-                  <!-- Accessibilité -->
-                  <div class="col-md-6 col-lg-6 icon-box" data-aos="fade-up" data-aos-delay="100">
-                    <h5 class="values-items"><i class="fa-solid fa-universal-access"></i>Accessibilité</h5>
-                    <p>
-                      Nous croyons que l'éducation de qualité doit être accessible à tous, brisant les barrières
-                      géographiques et financières.
-                    </p>
+              <div class="abt-photos-wrap" data-aos="fade-left" data-aos-delay="100">
+                <div class="abt-photos-grid">
+                  <div class="abt-photo abt-photo-tall">
+                    <img loading="lazy" src="https://images.pexels.com/photos/6894013/pexels-photo-6894013.jpeg" alt="Éducation">
                   </div>
-
-                  <!-- Excellence -->
-                  <div class="col-md-6 col-lg-6 icon-box" data-aos="fade-up" data-aos-delay="200">
-                    <h5 class="values-items"><i class="fa-solid fa-star"></i> Excellence </h5>
-                    <p>
-                      Nous nous engageons à offrir un enseignement rigoureux et des contenus pédagogiques aux standards
-                      les plus élevés.
-                    </p>
+                  <div class="abt-photo">
+                    <img loading="lazy" src="https://images.pexels.com/photos/27178154/pexels-photo-27178154.jpeg" alt="Apprentissage collaboratif">
                   </div>
-
-                  <!-- Équité -->
-                  <div class="col-md-6 col-lg-6 icon-box" data-aos="fade-up" data-aos-delay="500">
-                    <h5 class="values-items"><i class="fa-solid fa-scale-balanced"></i>Équité</h5>
-                    <p>
-                      Nous offrons à chaque apprenant, quelles que soient ses origines, les mêmes opportunités de
-                      réussir et de s'épanouir.
-                    </p>
+                  <div class="abt-photo">
+                    <img loading="lazy" src="https://images.pexels.com/photos/7605859/pexels-photo-7605859.jpeg" alt="Étudiants en action">
                   </div>
-
-                  <!-- Communauté -->
-                  <div class="col-md-6 col-lg-6 icon-box" data-aos="fade-up" data-aos-delay="600">
-                    <h5 class="values-items"><i class="fa-solid fa-users"></i>Communauté</h5>
-                    <p>
-                      Nous favorisons l'entraide et le partage au sein d'une communauté apprenante solidaire et
-                      dynamique.
-                    </p>
-                  </div>
-
-                  <!-- Innovation -->
-                  <div class="col-md-6 col-lg-6 icon-box" data-aos="fade-up" data-aos-delay="400">
-                    <h5 class="values-items"><i class="fa-solid fa-lightbulb"></i>Innovation</h5>
-                    <p>
-                      Nous utilisons les technologies numériques pour créer des expériences d'apprentissage modernes,
-                      engageantes et efficaces.
-                    </p>
-                  </div>
-
-                  <!-- Engagement -->
-                  <div class="col-md-6 col-lg-6 icon-box" data-aos="fade-up" data-aos-delay="300">
-                    <h5 class="values-items"><i class="fa-solid fa-hand-holding-heart"></i>Engagement</h5>
-                    <p>
-                      Nous sommes passionnément dévoués à l'accompagnement et à la réussite de chaque apprenant qui nous
-                      fait confiance.
-                    </p>
+                </div>
+                <div class="abt-photos-badge">
+                  <div class="abt-photos-badge-icon"><i class="bi bi-mortarboard-fill"></i></div>
+                  <div class="abt-photos-badge-text">
+                    <strong>+2 000</strong>
+                    apprenants accompagnés
                   </div>
                 </div>
               </div>
-              <!-- End .content-->
+
+            </div>
+
+            <!-- Values -->
+            <div class="abt-values-header" data-aos="fade-up">
+              <p class="abt-values-eyebrow">Ce qui nous guide</p>
+              <h3 class="abt-values-title">Nos valeurs fondamentales</h3>
+            </div>
+            <div class="abt-values-grid">
+
+              <div class="abt-value-card" data-aos="fade-up" data-aos-delay="50">
+                <div class="abt-val-icon" style="background:rgba(14,165,233,.18);color:#38bdf8;">
+                  <i class="bi bi-universal-access"></i>
+                </div>
+                <p class="abt-val-name">Accessibilité</p>
+                <p class="abt-val-desc">L’éducation de qualité doit être accessible à tous, sans barrières géographiques ni financières.</p>
+              </div>
+
+              <div class="abt-value-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="abt-val-icon" style="background:rgba(251,191,36,.15);color:#fbbf24;">
+                  <i class="bi bi-star-fill"></i>
+                </div>
+                <p class="abt-val-name">Excellence</p>
+                <p class="abt-val-desc">Un enseignement rigoureux et des contenus pédagogiques aux standards les plus élevés.</p>
+              </div>
+
+              <div class="abt-value-card" data-aos="fade-up" data-aos-delay="150">
+                <div class="abt-val-icon" style="background:rgba(52,211,153,.15);color:#34d399;">
+                  <i class="bi bi-balance-scale-fill" style="font-size:1.1rem;"></i>
+                </div>
+                <p class="abt-val-name">Équité</p>
+                <p class="abt-val-desc">Les mêmes opportunités de réussir et de s’épanouir, quelles que soient les origines de l’apprenant.</p>
+              </div>
+
+              <div class="abt-value-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="abt-val-icon" style="background:rgba(167,139,250,.18);color:#a78bfa;">
+                  <i class="bi bi-lightbulb-fill"></i>
+                </div>
+                <p class="abt-val-name">Innovation</p>
+                <p class="abt-val-desc">Les technologies numériques au service d’expériences d’apprentissage modernes, engageantes et efficaces.</p>
+              </div>
+
+              <div class="abt-value-card" data-aos="fade-up" data-aos-delay="250">
+                <div class="abt-val-icon" style="background:rgba(244,114,182,.15);color:#f472b6;">
+                  <i class="bi bi-heart-fill"></i>
+                </div>
+                <p class="abt-val-name">Engagement</p>
+                <p class="abt-val-desc">Un dévouement total à l’accompagnement et à la réussite de chaque apprenant qui nous fait confiance.</p>
+              </div>
+
+              <div class="abt-value-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="abt-val-icon" style="background:rgba(251,146,60,.15);color:#fb923c;">
+                  <i class="bi bi-people-fill"></i>
+                </div>
+                <p class="abt-val-name">Communauté</p>
+                <p class="abt-val-desc">L’entraide et le partage au sein d’une communauté apprenante solidaire et dynamique.</p>
+              </div>
+
             </div>
           </div>
         </section>
@@ -1090,105 +1317,90 @@ Développez vos compétences en communication, préparez vos entretiens avec ass
 
 
         <!-- ======= English Biiga Section ======= -->
-        <section id="english-biiga" class="about"
-          style="background: linear-gradient(135deg, #110b29 0%, #2a0845 100%); padding: 100px 0; overflow: hidden; position: relative;">
-          <!-- Decorative shapes -->
-          <div class="position-absolute top-0 end-0 p-5 opacity-10"
-            style="color: #4aa3ff; transform: translate(30%, -30%);">
-            <i class="bi bi-circle-fill" style="font-size: 300px; filter: blur(80px);"></i>
-          </div>
-          <div class="position-absolute bottom-0 start-0 p-5 opacity-10"
-            style="color: #ff4b4b; transform: translate(-30%, 30%);">
-            <i class="bi bi-circle-fill" style="font-size: 300px; filter: blur(80px);"></i>
-          </div>
+        <section id="english-biiga" style="background: linear-gradient(135deg, #0a0618 0%, #150930 50%, #0f1f3d 100%); padding: 110px 0; overflow: hidden; position: relative;">
 
-          <div class="container position-relative z-2" data-aos="fade-up">
-            <div class="row align-items-center">
-              <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right" data-aos-delay="200">
+          <!-- Ambient glows -->
+          <div style="position:absolute;top:-100px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(74,163,255,.12) 0%,transparent 70%);pointer-events:none;"></div>
+          <div style="position:absolute;bottom:-80px;left:-80px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(255,75,75,.1) 0%,transparent 70%);pointer-events:none;"></div>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(93,6,186,.06) 0%,transparent 65%);pointer-events:none;"></div>
+
+          <div class="container position-relative" style="z-index:2;">
+            <div class="row align-items-center g-5">
+
+              <!-- Image -->
+              <div class="col-lg-5 mb-5 mb-lg-0" data-aos="fade-right" data-aos-delay="150">
                 <div class="position-relative">
                   <div class="position-absolute top-0 start-0 w-100 h-100 rounded-4"
-                    style="background: linear-gradient(45deg, #4aa3ff, #ff4b4b); transform: rotate(-3deg); z-index: 0; opacity: 0.7; filter: blur(10px);">
+                    style="background:linear-gradient(45deg,#4aa3ff,#ff4b4b);transform:rotate(-4deg);opacity:.6;filter:blur(18px);z-index:0;">
                   </div>
                   <img loading="lazy"
                     src="https://res.cloudinary.com/dccibzcxp/image/upload/v1768972885/Afro%20Language%20lab/WhatsApp_Image_2025-10-01_at_08.10.51_qksnjf.jpg"
-                    class="img-fluid rounded-4 shadow-lg position-relative z-2" alt="English Biiga"
-                    style="border: 3px solid rgba(255, 255, 255, 0.2);">
+                    class="img-fluid rounded-4 shadow-lg position-relative" style="z-index:1;border:2px solid rgba(255,255,255,.15);" alt="English Biiga">
+                  <!-- Startup badge overlay -->
+                  <div style="position:absolute;bottom:-16px;left:24px;z-index:2;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(12px);border-radius:14px;padding:10px 18px;display:flex;align-items:center;gap:10px;">
+                    <div style="width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px #4ade80;flex-shrink:0;"></div>
+                    <span style="color:#fff;font-size:.78rem;font-weight:700;">Startup active · englishbiiga.com</span>
+                  </div>
                 </div>
               </div>
-              <div class="col-lg-6 content ps-lg-5" data-aos="fade-left" data-aos-delay="300">
-                <div class="section-title text-start mb-4">
-                  <h2 class="text-uppercase tracking-wider text-white-50 small fw-bold mb-2 letter-spacing-2"
-                    data-aos="fade-down" data-aos-delay="400">Innovation Majeure</h2>
-                  <h3 class="display-3 fw-bold mb-3 lh-1" style="font-family: 'Outfit', sans-serif;" data-aos="zoom-in"
-                    data-aos-delay="500">
-                    <span style="color: #4aa3ff; text-shadow: 0 0 30px rgba(74, 163, 255, 0.3);">English</span>
-                    <span style="color: #ff4b4b; text-shadow: 0 0 30px rgba(255, 75, 75, 0.3);">Biiga</span>
-                  </h3>
+
+              <!-- Content -->
+              <div class="col-lg-7 ps-lg-5" data-aos="fade-left" data-aos-delay="250">
+
+                <!-- Label -->
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+                  <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(74,163,255,.12);border:1px solid rgba(74,163,255,.25);color:#4aa3ff;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;padding:5px 14px;border-radius:50px;">
+                    <i class="bi bi-rocket-takeoff-fill"></i> Startup EdTech
+                  </span>
+                  <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,75,75,.1);border:1px solid rgba(255,75,75,.2);color:#ff6b6b;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;padding:5px 14px;border-radius:50px;">
+                    <i class="bi bi-buildings-fill"></i> Fondée par AfroHK
+                  </span>
                 </div>
 
-                <h4 class="mb-4 text-white fst-italic fs-5" style="border-left: 4px solid #ff4b4b; padding-left: 15px;"
-                  data-aos="fade-up" data-aos-delay="600">
-                  "La solution éducative qui transforme l’apprentissage des enfants en Afrique."
-                </h4>
+                <!-- Name -->
+                <h3 class="fw-bold lh-1 mb-3" style="font-family:’Outfit’,sans-serif;font-size:3.2rem;">
+                  <span style="color:#4aa3ff;text-shadow:0 0 40px rgba(74,163,255,.4);">English</span><span style="color:#ff4b4b;text-shadow:0 0 40px rgba(255,75,75,.4);">Biiga</span>
+                </h3>
 
-                <p class="description mb-5 text-white-50 fs-6" data-aos="fade-up" data-aos-delay="700">
-                  Plus qu'un programme, <strong>English Biiga</strong> est un écosystème éducatif complet conçu par
-                  AfroHK pour former les leaders de demain. Nous combinons technologie et pédagogie pour un impact
-                  durable.
+                <!-- Tagline -->
+                <p style="font-size:1.15rem;color:rgba(255,255,255,.55);font-style:italic;border-left:3px solid #ff4b4b;padding-left:16px;margin-bottom:24px;line-height:1.6;">
+                  "Former des enfants africains bilingues, compétents en numérique et prêts à diriger."
                 </p>
 
-                <div class="row g-3 mb-5" data-aos="fade-up" data-aos-delay="800">
-                  <div class="col-md-6">
-                    <div class="d-flex align-items-center mb-3 text-white">
-                      <div class="icon-box-sm rounded-circle p-2 me-3 d-flex align-items-center justify-content-center"
-                        style="background: rgba(74, 163, 255, 0.1); width: 40px; height: 40px; color: #4aa3ff;">
-                        <i class="bi bi-translate"></i>
-                      </div>
-                      <span class="fw-semibold">Anglais intensif</span>
-                    </div>
-                    <div class="d-flex align-items-center mb-3 text-white">
-                      <div class="icon-box-sm rounded-circle p-2 me-3 d-flex align-items-center justify-content-center"
-                        style="background: rgba(255, 75, 75, 0.1); width: 40px; height: 40px; color: #ff4b4b;">
-                        <i class="bi bi-trophy"></i>
-                      </div>
-                      <span class="fw-semibold">Leadership</span>
-                    </div>
-                    <div class="d-flex align-items-center text-white">
-                      <div class="icon-box-sm rounded-circle p-2 me-3 d-flex align-items-center justify-content-center"
-                        style="background: rgba(74, 163, 255, 0.1); width: 40px; height: 40px; color: #4aa3ff;">
-                        <i class="bi bi-mic"></i>
-                      </div>
-                      <span class="fw-semibold">Tuteur IA Vocal</span>
-                    </div>
+                <!-- Description -->
+                <p style="font-size:.97rem;color:rgba(255,255,255,.65);line-height:1.8;margin-bottom:32px;">
+                  AfroHK a fondé <strong style="color:#fff;">English Biiga</strong> comme une startup EdTech à part entière, dotée de sa propre marque, plateforme et stratégie de croissance. Sa mission : aller au-delà de l’apprentissage de l’anglais pour bâtir chez chaque enfant les compétences du 21ème siècle — langue, leadership, numérique — à travers une expérience éducative immersive et technologique.
+                </p>
+
+                <!-- Pillars -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:36px;">
+                  <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;">
+                    <div style="width:36px;height:36px;border-radius:9px;background:rgba(74,163,255,.12);display:flex;align-items:center;justify-content:center;color:#4aa3ff;flex-shrink:0;"><i class="bi bi-translate"></i></div>
+                    <span style="color:#fff;font-size:.88rem;font-weight:600;">Anglais intensif</span>
                   </div>
-                  <div class="col-md-6">
-                    <div class="d-flex align-items-center mb-3 text-white">
-                      <div class="icon-box-sm rounded-circle p-2 me-3 d-flex align-items-center justify-content-center"
-                        style="background: rgba(255, 75, 75, 0.1); width: 40px; height: 40px; color: #ff4b4b;">
-                        <i class="bi bi-laptop"></i>
-                      </div>
-                      <span class="fw-semibold">Compétences Digitales</span>
-                    </div>
-                    <div class="d-flex align-items-center mb-3 text-white">
-                      <div class="icon-box-sm rounded-circle p-2 me-3 d-flex align-items-center justify-content-center"
-                        style="background: rgba(74, 163, 255, 0.1); width: 40px; height: 40px; color: #4aa3ff;">
-                        <i class="bi bi-building"></i>
-                      </div>
-                      <span class="fw-semibold">Centres & Plateforme</span>
-                    </div>
+                  <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;">
+                    <div style="width:36px;height:36px;border-radius:9px;background:rgba(255,75,75,.1);display:flex;align-items:center;justify-content:center;color:#ff6b6b;flex-shrink:0;"><i class="bi bi-trophy-fill"></i></div>
+                    <span style="color:#fff;font-size:.88rem;font-weight:600;">Leadership</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;">
+                    <div style="width:36px;height:36px;border-radius:9px;background:rgba(74,163,255,.12);display:flex;align-items:center;justify-content:center;color:#4aa3ff;flex-shrink:0;"><i class="bi bi-mic-fill"></i></div>
+                    <span style="color:#fff;font-size:.88rem;font-weight:600;">Tuteur IA Vocal</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;">
+                    <div style="width:36px;height:36px;border-radius:9px;background:rgba(255,75,75,.1);display:flex;align-items:center;justify-content:center;color:#ff6b6b;flex-shrink:0;"><i class="bi bi-laptop-fill"></i></div>
+                    <span style="color:#fff;font-size:.88rem;font-weight:600;">Compétences Digitales</span>
                   </div>
                 </div>
 
-                <div class="d-flex flex-column flex-sm-row gap-3" data-aos="flip-up" data-aos-delay="900">
-                  <a href="https://www.englishbiiga.com" target="_blank"
-                    class="btn btn-lg rounded-pill px-5 shadow-lg d-flex align-items-center justify-content-center"
-                    style="background: linear-gradient(90deg, #4aa3ff, #ff4b4b); border: none; color: white;">
-                    Découvrir English Biiga <i class="bi bi-arrow-right-short fs-4 ms-2"></i>
+                <!-- CTA -->
+                <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+                  <a href="https://www.englishbiiga.com" target="_blank" rel="noopener noreferrer"
+                    style="display:inline-flex;align-items:center;gap:8px;padding:14px 32px;background:linear-gradient(90deg,#4aa3ff,#ff4b4b);color:#fff;text-decoration:none;border-radius:50px;font-weight:800;font-size:.95rem;box-shadow:0 8px 28px rgba(74,163,255,.3);transition:all .3s;">
+                    Visiter English Biiga <i class="bi bi-box-arrow-up-right"></i>
                   </a>
+                  <span style="font-size:.8rem;color:rgba(255,255,255,.3);">Une startup fondée par <strong style="color:rgba(255,255,255,.55);">Afro House of Knowledge</strong></span>
                 </div>
-                <p class="mt-4 small text-white-50 text-center text-sm-start" data-aos="fade-in" data-aos-delay="1000">
-                  Un produit fièrement développé par <span class="fw-bold text-white">Afro House of Knowledge</span>.
-                </p>
+
               </div>
             </div>
           </div>
