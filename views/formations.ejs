@@ -95,12 +95,25 @@
   }
   .course-thumb {
     position: relative;
-    height: 175px;
+    height: 210px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
   }
+  .course-price-badge {
+    position: absolute;
+    top: 10px; right: 10px;
+    z-index: 3;
+    font-size: .72rem;
+    font-weight: 800;
+    padding: .3rem .75rem;
+    border-radius: 20px;
+    backdrop-filter: blur(6px);
+  }
+  .course-price-badge.free { background: rgba(22,163,74,.9); color: #fff; }
+  .course-price-badge.paid { background: rgba(255,255,255,.92); color: #1d1d1f; }
+  .course-price-badge.demand { background: rgba(0,0,0,.55); color: rgba(255,255,255,.9); border: 1px solid rgba(255,255,255,.25); }
   .course-thumb img {
     position: absolute;
     inset: 0;
@@ -182,33 +195,25 @@
     align-items: center;
     gap: 4px;
   }
-  .course-divider {
-    border: none;
+  .course-footer {
+    padding: .85rem 1.3rem 1.1rem;
     border-top: 1px solid #f1f5f9;
-    margin: .4rem 0 0;
-  }
-  .enroll-info {
-    padding: 0 1.3rem 1.3rem;
-  }
-  .enroll-info-heading {
-    font-size: .72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .05em;
-    color: #94a3b8;
-    margin-bottom: 8px;
-  }
-  .enroll-info-rows { display: flex; flex-direction: column; gap: 5px; }
-  .enroll-info-row {
     display: flex;
     align-items: center;
-    gap: 7px;
-    font-size: .8rem;
-    color: #475569;
+    justify-content: space-between;
+    gap: .75rem;
   }
-  .enroll-info-row i { color: #5107ce; font-size: .85rem; flex-shrink: 0; }
-  .enroll-info-row a { color: #5107ce; text-decoration: none; }
-  .enroll-info-row a:hover { text-decoration: underline; }
+  .course-footer .meta { font-size: .75rem; color: #94a3b8; }
+  .btn-learn-more {
+    display: inline-flex; align-items: center; gap: .35rem;
+    background: #5107ce; color: #fff;
+    font-size: .8rem; font-weight: 700;
+    padding: .5rem 1.1rem; border-radius: 8px;
+    text-decoration: none; white-space: nowrap;
+    transition: background .18s;
+    flex-shrink: 0;
+  }
+  .btn-learn-more:hover { background: #3d0094; color: #fff; }
 
   .empty-state {
     text-align: center;
@@ -284,6 +289,11 @@
         const initials = inst ? inst.name.substring(0,2).toUpperCase() : 'IN';
         const instId = inst ? String(inst._id) : '';
         const moduleCount = (course.modules || []).length;
+        const pricing = course.pricing || {};
+        let priceLabel, priceBadgeClass;
+        if (pricing.isFree) { priceLabel = 'Gratuit'; priceBadgeClass = 'free'; }
+        else if (pricing.amount) { priceLabel = Number(pricing.amount).toLocaleString('fr-FR') + ' ' + (pricing.currency || 'FCFA'); priceBadgeClass = 'paid'; }
+        else { priceLabel = 'Sur demande'; priceBadgeClass = 'demand'; }
       %>
       <div class="course-card" data-inst="<%= instId %>"
            data-search="<%= [course.title, course.description, inst ? inst.name : ''].join(' ').toLowerCase() %>">
@@ -294,6 +304,7 @@
             <i class="bi bi-book-half course-thumb-icon"></i>
           <% } %>
           <div class="course-thumb-overlay"></div>
+          <span class="course-price-badge <%= priceBadgeClass %>"><%= priceLabel %></span>
         </div>
 
         <div class="course-body">
@@ -317,26 +328,10 @@
           </div>
         </div>
 
-        <% if (inst && (inst.contactEmail || inst.phone)) { %>
-        <hr class="course-divider">
-        <div class="enroll-info">
-          <p class="enroll-info-heading">Comment s'inscrire</p>
-          <div class="enroll-info-rows">
-            <% if (inst.contactEmail) { %>
-              <div class="enroll-info-row">
-                <i class="bi bi-envelope-fill"></i>
-                <a href="mailto:<%= inst.contactEmail %>"><%= inst.contactEmail %></a>
-              </div>
-            <% } %>
-            <% if (inst.phone) { %>
-              <div class="enroll-info-row">
-                <i class="bi bi-telephone-fill"></i>
-                <span><%= inst.phone %></span>
-              </div>
-            <% } %>
-          </div>
+        <div class="course-footer">
+          <span class="meta"><i class="bi bi-building"></i> <%= inst ? inst.name : 'Institution' %></span>
+          <a href="/formations/<%= course._id %>" class="btn-learn-more">En savoir plus →</a>
         </div>
-        <% } %>
       </div>
       <% }) %>
     </div>

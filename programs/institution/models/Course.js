@@ -68,6 +68,11 @@ const institutionCourseSchema = new mongoose.Schema(
             },
             dueDate: Date
         },
+        pricing: {
+            isFree: { type: Boolean, default: false },
+            amount: Number,
+            currency: { type: String, default: 'FCFA' }
+        },
         createdBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'

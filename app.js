@@ -33,6 +33,8 @@ const rateLimit = require("express-rate-limit");
 // Import User model for Passport authentication
 const User = require("./shared/models/user");
 const InstitutionCourse = require("./programs/institution/models/Course");
+const InstitutionCourseTestimonial = require("./programs/institution/models/Testimonial");
+const InstitutionModule = require("./programs/institution/models/Module");
 
 // Import program routes
 const eKalanRoutes = require("./programs/ekalan");
@@ -43,7 +45,7 @@ const institutionProgram = require("./programs/institution");
 const accountRoutes = require("./shared/routes/account");
 const adminInstitutionRoutes = require("./shared/routes/adminInstitutions");
 const institutionDashboardRoutes = require("./shared/routes/institutionDashboard");
-const institutionStudentRoutes  = require("./shared/routes/institutionStudent");
+const institutionStudentRoutes = require("./shared/routes/institutionStudent");
 
 function stripHtml(html) {
     if (!html) return '';
@@ -52,9 +54,11 @@ function stripHtml(html) {
         .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
         .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
         .replace(/&([a-z]+);/g, (_, e) => (
-            { agrave:'à',aacute:'á',acirc:'â',egrave:'è',eacute:'é',ecirc:'ê',euml:'ë',
-              icirc:'î',iuml:'ï',ograve:'ò',oacute:'ó',ocirc:'ô',ugrave:'ù',uacute:'ú',
-              ucirc:'û',uuml:'ü',ccedil:'ç',ntilde:'ñ',aelig:'æ',oelig:'œ' }[e] || `&${e};`
+            {
+                agrave: 'à', aacute: 'á', acirc: 'â', egrave: 'è', eacute: 'é', ecirc: 'ê', euml: 'ë',
+                icirc: 'î', iuml: 'ï', ograve: 'ò', oacute: 'ó', ocirc: 'ô', ugrave: 'ù', uacute: 'ú',
+                ucirc: 'û', uuml: 'ü', ccedil: 'ç', ntilde: 'ñ', aelig: 'æ', oelig: 'œ'
+            }[e] || `&${e};`
         ))
         .replace(/\s+/g, ' ').trim();
 }
@@ -82,26 +86,26 @@ app.set('trust proxy', true);
 
 // Security headers
 app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "kit.fontawesome.com", "*.fontawesome.com"],
-      styleSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "fonts.googleapis.com"],
-      fontSrc: ["'self'", "fonts.gstatic.com", "cdnjs.cloudflare.com", "*.fontawesome.com"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "*.fontawesome.com"],
-      frameSrc: ["player.vimeo.com", "www.youtube.com", "www.youtube-nocookie.com"],
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "kit.fontawesome.com", "*.fontawesome.com"],
+            styleSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "fonts.googleapis.com"],
+            fontSrc: ["'self'", "fonts.gstatic.com", "cdnjs.cloudflare.com", "*.fontawesome.com"],
+            imgSrc: ["'self'", "data:", "https:"],
+            connectSrc: ["'self'", "*.fontawesome.com"],
+            frameSrc: ["player.vimeo.com", "www.youtube.com", "www.youtube-nocookie.com", "maps.google.com", "www.google.com"],
+        },
     },
-  },
 }));
 
 // Rate limiters
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20,
-  message: { error: "Trop de tentatives, veuillez réessayer dans 15 minutes." },
-  standardHeaders: true,
-  legacyHeaders: false,
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 20,
+    message: { error: "Trop de tentatives, veuillez réessayer dans 15 minutes." },
+    standardHeaders: true,
+    legacyHeaders: false,
 });
 
 // Middleware
@@ -164,13 +168,41 @@ app.get('/formations', async (req, res) => {
     const courses = await InstitutionCourse
         .find({ isActive: true })
         .populate('institutionId', 'name primaryColor logoUrl contactEmail city country description')
-        .select('title description imageUrl institutionId modules category')
+        .select('title description imageUrl institutionId modules category pricing')
         .lean();
     courses.forEach(c => {
-        if (c.title)       c.title       = stripHtml(c.title);
+        if (c.title) c.title = stripHtml(c.title);
         if (c.description) c.description = stripHtml(c.description);
     });
     res.render('formations', { courses });
+});
+
+app.get('/formations/:courseId', async (req, res) => {
+    const course = await InstitutionCourse
+        .findOne({ _id: req.params.courseId, isActive: true })
+        .populate('institutionId', 'name primaryColor logoUrl contactEmail phone city country description')
+        .populate('instructors', 'name title bio photoUrl email')
+        .lean();
+
+    if (!course) return res.status(404).render('noAccess', { statusCode: 404, message: 'Cours introuvable' });
+
+    const [modules, testimonials] = await Promise.all([
+        InstitutionModule.find({ courseId: course._id })
+            .select('title order lessons')
+            .sort({ order: 1 })
+            .lean(),
+        InstitutionCourseTestimonial.find({ courseId: course._id, isPublished: true })
+            .sort({ createdAt: -1 })
+            .lean()
+    ]);
+
+    course.title       = stripHtml(course.title);
+    course.description = stripHtml(course.description);
+    if (course.prerequisites) course.prerequisites = stripHtml(course.prerequisites);
+
+    const totalLessons = modules.reduce((sum, m) => sum + (m.lessons ? m.lessons.length : 0), 0);
+
+    res.render('formations-show', { course, modules, testimonials, totalLessons });
 });
 
 // Mount Shared Routes

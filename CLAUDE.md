@@ -19,6 +19,12 @@ No test suite is configured. The app runs on port 3000 by default (or `PORT` env
 ### Entry point: `app.js`
 Sets up Express with Helmet CSP, rate limiting on auth routes (`authLimiter`, accessed via `req.app.get('authLimiter')`), session (MongoDB-backed via connect-mongo, 7-day expiry, lazy updates every 24h), Passport.js, flash messages, and mounts the two program routers. App exits on startup if `APP_DB` or `SECRET` are missing.
 
+Also owns two public (no-auth) routes:
+- `GET /` — home page; queries active `InstitutionCourse` counts for teaser section stats.
+- `GET /formations` — public institution course catalog (search + filter). Strips HTML/entities from course fields via local `stripHtml()` helper before rendering.
+
+`stripHtml(html)` is defined at the top of `app.js` — strips tags, decodes common French HTML entities. Use it whenever displaying institution course content outside the learning portal.
+
 ### Programs (`programs/`)
 Each program is a self-contained Express router mounted in `app.js`:
 
@@ -34,6 +40,7 @@ Each program is a self-contained Express router mounted in `app.js`:
   - Auth: Uses `isInstitutionAdmin` + `loadInstitution` (admin) and `isInstitutionStudent` + `loadStudentInstitution` (student) from shared middleware
   - Enrollment: `InstitutionEnrollment` model (not embedded in User) with date windows and status tracking
   - Progress: `InstitutionLessonProgress`, `InstitutionQuizAttempt`, `InstitutionAssignmentSubmission`, `InstitutionFinalExamAttempt`, `InstitutionFinalProjectSubmission` models track student activity
+  - Public catalog: `GET /formations` (no auth) — lists all active institution courses with search + filter. Rendered by `views/formations.ejs`. `GET /formations/:courseId` (planned) — public course detail page.
 
 ### Shared core (`shared/`)
 - `shared/models/user.js` — Single User model used across all programs. Carries program-specific flags (`isHighSchoolStudent`, `isClubMember`, `isPecpStudent`, `isVip`, etc.) and an embedded `specialProgram[]` array storing course enrollment with start/end dates.

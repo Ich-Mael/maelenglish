@@ -87,6 +87,13 @@ module.exports.update = catchAsync(async (req, res) => {
     if (imageUrl !== undefined) course.imageUrl = imageUrl;
     course.isActive = isActive === 'on' || isActive === 'true';
 
+    const pricingBody = req.body.pricing || {};
+    course.pricing = {
+        isFree: pricingBody.isFree === 'on' || pricingBody.isFree === 'true',
+        amount: pricingBody.amount ? Number(pricingBody.amount) : undefined,
+        currency: pricingBody.currency || 'FCFA'
+    };
+
     await course.save();
     req.flash('success', 'Cours mis à jour.');
     res.redirect(`/institution/dashboard/content/courses/${course._id}`);

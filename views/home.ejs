@@ -21,7 +21,9 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700|Raleway:400,500,600,700|Poppins:400,500,600,700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700|Raleway:400,500,600,700|Poppins:400,500,600,700&display=swap"
+    rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
 
   <!-- Vendor CSS Files -->
@@ -294,20 +296,19 @@
       overflow: hidden;
       padding: 110px 0;
       background:
-        url('https://images.pexels.com/photos/11694327/pexels-photo-11694327.jpeg')
-        center/cover no-repeat;
+        url('https://images.pexels.com/photos/11694327/pexels-photo-11694327.jpeg') center/cover no-repeat;
     }
+
     #institution-formations::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(
-        110deg,
-        rgba(10, 2, 35, 0.90) 0%,
-        rgba(45, 3, 112, 0.82) 45%,
-        rgba(10, 2, 35, 0.55) 100%
-      );
+      background: linear-gradient(110deg,
+          rgba(10, 2, 35, 0.90) 0%,
+          rgba(45, 3, 112, 0.82) 45%,
+          rgba(10, 2, 35, 0.55) 100%);
     }
+
     .inst-teaser-inner {
       position: relative;
       z-index: 2;
@@ -316,12 +317,13 @@
       gap: 64px;
       align-items: center;
     }
+
     .inst-teaser-pill {
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      background: rgba(255,255,255,.12);
-      border: 1px solid rgba(255,255,255,.25);
+      background: rgba(255, 255, 255, .12);
+      border: 1px solid rgba(255, 255, 255, .25);
       backdrop-filter: blur(6px);
       color: #e0d4ff;
       font-size: .72rem;
@@ -332,27 +334,31 @@
       border-radius: 50px;
       margin-bottom: 20px;
     }
+
     .inst-teaser-heading {
       font-size: 3rem;
       font-weight: 800;
       color: #fff;
       line-height: 1.1;
       margin-bottom: 20px;
-      text-shadow: 0 2px 20px rgba(0,0,0,.3);
+      text-shadow: 0 2px 20px rgba(0, 0, 0, .3);
     }
+
     .inst-teaser-heading span {
       background: linear-gradient(90deg, #c084fc, #a78bfa);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
+
     .inst-teaser-desc {
       font-size: 1.05rem;
-      color: rgba(255,255,255,.78);
+      color: rgba(255, 255, 255, .78);
       line-height: 1.75;
       margin-bottom: 28px;
       max-width: 500px;
     }
+
     .inst-teaser-features {
       list-style: none;
       padding: 0;
@@ -361,40 +367,50 @@
       grid-template-columns: 1fr 1fr;
       gap: 12px 24px;
     }
+
     .inst-teaser-features li {
       display: flex;
       align-items: center;
       gap: 9px;
       font-size: .9rem;
-      color: rgba(255,255,255,.85);
+      color: rgba(255, 255, 255, .85);
       font-weight: 500;
     }
+
     .inst-teaser-features li i {
       color: #a78bfa;
       font-size: 1rem;
       flex-shrink: 0;
     }
+
     .inst-teaser-stats {
       display: flex;
       gap: 36px;
       margin-bottom: 40px;
       padding-top: 8px;
-      border-top: 1px solid rgba(255,255,255,.12);
+      border-top: 1px solid rgba(255, 255, 255, .12);
     }
-    .inst-stat { display: flex; flex-direction: column; }
+
+    .inst-stat {
+      display: flex;
+      flex-direction: column;
+    }
+
     .inst-stat-num {
       font-size: 2.4rem;
       font-weight: 800;
       color: #c084fc;
       line-height: 1;
     }
+
     .inst-stat-label {
       font-size: .75rem;
-      color: rgba(255,255,255,.5);
+      color: rgba(255, 255, 255, .5);
       text-transform: uppercase;
       letter-spacing: .07em;
       margin-top: 3px;
     }
+
     .inst-teaser-cta {
       display: inline-flex;
       align-items: center;
@@ -406,11 +422,12 @@
       border-radius: 50px;
       font-weight: 800;
       font-size: 1rem;
-      box-shadow: 0 8px 32px rgba(0,0,0,.25);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .25);
       transition: all .3s ease;
       position: relative;
       overflow: hidden;
     }
+
     .inst-teaser-cta::before {
       content: '';
       position: absolute;
@@ -419,21 +436,41 @@
       opacity: 0;
       transition: opacity .3s;
     }
-    .inst-teaser-cta:hover::before { opacity: 1; }
-    .inst-teaser-cta span, .inst-teaser-cta i { position: relative; z-index: 1; }
+
+    .inst-teaser-cta:hover::before {
+      opacity: 1;
+    }
+
+    .inst-teaser-cta span,
+    .inst-teaser-cta i {
+      position: relative;
+      z-index: 1;
+    }
+
     .inst-teaser-cta:hover {
       color: #4b08a1;
-      box-shadow: 0 14px 40px rgba(0,0,0,.35);
+      box-shadow: 0 14px 40px rgba(0, 0, 0, .35);
       transform: translateY(-2px);
     }
-    .inst-teaser-cta i { transition: transform .3s ease; }
-    .inst-teaser-cta:hover i { transform: translateX(5px); }
+
+    .inst-teaser-cta i {
+      transition: transform .3s ease;
+    }
+
+    .inst-teaser-cta:hover i {
+      transform: translateX(5px);
+    }
 
     /* Glassmorphism card panel */
-    .inst-teaser-right { display: flex; justify-content: center; align-items: center; }
+    .inst-teaser-right {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
     .inst-glass-panel {
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.15);
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .15);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-radius: 24px;
@@ -441,35 +478,56 @@
       width: 100%;
       max-width: 360px;
     }
+
     .igp-label {
       font-size: .72rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: .08em;
-      color: rgba(255,255,255,.5);
+      color: rgba(255, 255, 255, .5);
       margin-bottom: 18px;
     }
+
     .igp-course {
       display: flex;
       align-items: center;
       gap: 14px;
       padding: 12px;
       border-radius: 14px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid rgba(255, 255, 255, .08);
       margin-bottom: 10px;
       transition: background .2s;
     }
-    .igp-course:last-of-type { margin-bottom: 0; }
+
+    .igp-course:last-of-type {
+      margin-bottom: 0;
+    }
+
     .igp-thumb {
-      width: 46px; height: 46px;
+      width: 46px;
+      height: 46px;
       border-radius: 10px;
       flex-shrink: 0;
     }
-    .igp-t1 { background: linear-gradient(135deg, #7c3aed, #4b08a1); }
-    .igp-t2 { background: linear-gradient(135deg, #0ea5e9, #0369a1); }
-    .igp-t3 { background: linear-gradient(135deg, #f59e0b, #b45309); }
-    .igp-info { flex: 1; min-width: 0; }
+
+    .igp-t1 {
+      background: linear-gradient(135deg, #7c3aed, #4b08a1);
+    }
+
+    .igp-t2 {
+      background: linear-gradient(135deg, #0ea5e9, #0369a1);
+    }
+
+    .igp-t3 {
+      background: linear-gradient(135deg, #f59e0b, #b45309);
+    }
+
+    .igp-info {
+      flex: 1;
+      min-width: 0;
+    }
+
     .igp-title {
       font-size: .85rem;
       font-weight: 700;
@@ -479,34 +537,40 @@
       text-overflow: ellipsis;
       margin-bottom: 3px;
     }
+
     .igp-inst {
       font-size: .72rem;
-      color: rgba(255,255,255,.5);
+      color: rgba(255, 255, 255, .5);
     }
+
     .igp-badge {
       font-size: .65rem;
       font-weight: 700;
       padding: 3px 9px;
       border-radius: 50px;
-      background: rgba(167,139,250,.2);
+      background: rgba(167, 139, 250, .2);
       color: #c084fc;
-      border: 1px solid rgba(167,139,250,.3);
+      border: 1px solid rgba(167, 139, 250, .3);
       white-space: nowrap;
     }
+
     .igp-divider {
       border: none;
-      border-top: 1px solid rgba(255,255,255,.08);
+      border-top: 1px solid rgba(255, 255, 255, .08);
       margin: 16px 0;
     }
+
     .igp-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
+
     .igp-footer-text {
       font-size: .78rem;
-      color: rgba(255,255,255,.45);
+      color: rgba(255, 255, 255, .45);
     }
+
     .igp-footer-link {
       font-size: .78rem;
       font-weight: 700;
@@ -516,16 +580,34 @@
       align-items: center;
       gap: 5px;
     }
-    .igp-footer-link:hover { color: #a78bfa; }
+
+    .igp-footer-link:hover {
+      color: #a78bfa;
+    }
 
     @media (max-width: 1024px) {
-      .inst-teaser-inner { grid-template-columns: 1fr; gap: 48px; }
-      .inst-teaser-right { display: none; }
-      .inst-teaser-features { grid-template-columns: 1fr; }
+      .inst-teaser-inner {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+
+      .inst-teaser-right {
+        display: none;
+      }
+
+      .inst-teaser-features {
+        grid-template-columns: 1fr;
+      }
     }
+
     @media (max-width: 768px) {
-      #institution-formations { padding: 80px 0; }
-      .inst-teaser-heading { font-size: 2.2rem; }
+      #institution-formations {
+        padding: 80px 0;
+      }
+
+      .inst-teaser-heading {
+        font-size: 2.2rem;
+      }
     }
 
     /* ── About Section Redesign ── */
@@ -535,35 +617,43 @@
       position: relative;
       overflow: hidden;
     }
+
     .abt-section::before {
       content: '';
       position: absolute;
-      top: -120px; right: -120px;
-      width: 500px; height: 500px;
+      top: -120px;
+      right: -120px;
+      width: 500px;
+      height: 500px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(81,7,206,.18) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(81, 7, 206, .18) 0%, transparent 70%);
       pointer-events: none;
     }
+
     .abt-section::after {
       content: '';
       position: absolute;
-      bottom: -80px; left: -80px;
-      width: 400px; height: 400px;
+      bottom: -80px;
+      left: -80px;
+      width: 400px;
+      height: 400px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(14,165,233,.08) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(14, 165, 233, .08) 0%, transparent 70%);
       pointer-events: none;
     }
+
     .abt-header {
       text-align: center;
       margin-bottom: 64px;
       position: relative;
       z-index: 1;
     }
+
     .abt-pill {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(255,255,255,.08);
+      background: rgba(255, 255, 255, .08);
       color: #c4b5fd;
       font-size: .72rem;
       font-weight: 800;
@@ -572,8 +662,9 @@
       padding: 6px 16px;
       border-radius: 50px;
       margin-bottom: 18px;
-      border: 1px solid rgba(255,255,255,.12);
+      border: 1px solid rgba(255, 255, 255, .12);
     }
+
     .abt-heading {
       font-size: 2.6rem;
       font-weight: 800;
@@ -581,6 +672,7 @@
       line-height: 1.15;
       margin: 0;
     }
+
     .abt-heading em {
       font-style: normal;
       background: linear-gradient(90deg, #a78bfa, #c084fc);
@@ -599,76 +691,108 @@
       position: relative;
       z-index: 1;
     }
+
     .abt-vm-stack {
       display: flex;
       flex-direction: column;
       gap: 20px;
     }
+
     .abt-vm-card {
       display: flex;
       gap: 20px;
       align-items: flex-start;
-      background: rgba(255,255,255,.05);
+      background: rgba(255, 255, 255, .05);
       border-radius: 18px;
       padding: 28px;
-      border: 1px solid rgba(255,255,255,.09);
+      border: 1px solid rgba(255, 255, 255, .09);
       backdrop-filter: blur(8px);
       transition: background .3s, transform .3s;
     }
+
     .abt-vm-card:hover {
-      background: rgba(255,255,255,.08);
+      background: rgba(255, 255, 255, .08);
       transform: translateY(-3px);
     }
+
     .abt-vm-icon {
-      width: 52px; height: 52px;
+      width: 52px;
+      height: 52px;
       border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 1.4rem;
       flex-shrink: 0;
     }
-    .abt-vision .abt-vm-icon  { background: rgba(167,139,250,.15); color: #a78bfa; }
-    .abt-mission .abt-vm-icon { background: rgba(245,158,11,.12);  color: #fbbf24; }
+
+    .abt-vision .abt-vm-icon {
+      background: rgba(167, 139, 250, .15);
+      color: #a78bfa;
+    }
+
+    .abt-mission .abt-vm-icon {
+      background: rgba(245, 158, 11, .12);
+      color: #fbbf24;
+    }
+
     .abt-vm-label {
       font-size: .72rem;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: .08em;
-      color: rgba(255,255,255,.35);
+      color: rgba(255, 255, 255, .35);
       margin: 0 0 6px;
     }
+
     .abt-vm-text {
       font-size: .95rem;
-      color: rgba(255,255,255,.72);
+      color: rgba(255, 255, 255, .72);
       line-height: 1.7;
       margin: 0;
     }
 
     /* Photo side */
-    .abt-photos-wrap { position: relative; padding-bottom: 18px; }
+    .abt-photos-wrap {
+      position: relative;
+      padding-bottom: 18px;
+    }
+
     .abt-photos-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 200px 200px;
       gap: 12px;
     }
+
     .abt-photo {
       overflow: hidden;
       border-radius: 14px;
       position: relative;
     }
+
     .abt-photo img {
-      width: 100%; height: 100%;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
       transition: transform .5s ease;
       display: block;
     }
-    .abt-photo:hover img { transform: scale(1.07); }
-    .abt-photo-tall { grid-row: span 2; }
+
+    .abt-photo:hover img {
+      transform: scale(1.07);
+    }
+
+    .abt-photo-tall {
+      grid-row: span 2;
+    }
+
     .abt-photos-badge {
       position: absolute;
-      bottom: 0; right: 20px;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.15);
+      bottom: 0;
+      right: 20px;
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .15);
       backdrop-filter: blur(14px);
       border-radius: 14px;
       padding: 12px 20px;
@@ -677,16 +801,31 @@
       gap: 10px;
       white-space: nowrap;
     }
+
     .abt-photos-badge-icon {
-      width: 36px; height: 36px;
+      width: 36px;
+      height: 36px;
       border-radius: 10px;
       background: linear-gradient(135deg, #7c3aed, #4b08a1);
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 1rem;
       flex-shrink: 0;
     }
-    .abt-photos-badge-text { font-size: .78rem; color: rgba(255,255,255,.6); }
-    .abt-photos-badge-text strong { display: block; font-size: .9rem; color: #fff; font-weight: 800; }
+
+    .abt-photos-badge-text {
+      font-size: .78rem;
+      color: rgba(255, 255, 255, .6);
+    }
+
+    .abt-photos-badge-text strong {
+      display: block;
+      font-size: .9rem;
+      color: #fff;
+      font-weight: 800;
+    }
 
     /* Values */
     .abt-values-header {
@@ -695,20 +834,23 @@
       position: relative;
       z-index: 1;
     }
+
     .abt-values-eyebrow {
       font-size: .72rem;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: .09em;
-      color: rgba(255,255,255,.3);
+      color: rgba(255, 255, 255, .3);
       margin-bottom: 8px;
     }
+
     .abt-values-title {
       font-size: 1.9rem;
       font-weight: 800;
       color: #fff;
       margin: 0;
     }
+
     .abt-values-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -716,46 +858,72 @@
       position: relative;
       z-index: 1;
     }
+
     .abt-value-card {
-      background: rgba(255,255,255,.05);
+      background: rgba(255, 255, 255, .05);
       border-radius: 18px;
       padding: 26px 22px;
-      border: 1px solid rgba(255,255,255,.08);
+      border: 1px solid rgba(255, 255, 255, .08);
       transition: transform .3s, background .3s;
     }
+
     .abt-value-card:hover {
       transform: translateY(-5px);
-      background: rgba(255,255,255,.09);
+      background: rgba(255, 255, 255, .09);
     }
+
     .abt-val-icon {
-      width: 48px; height: 48px;
+      width: 48px;
+      height: 48px;
       border-radius: 13px;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 1.25rem;
       margin-bottom: 16px;
     }
+
     .abt-val-name {
       font-size: 1rem;
       font-weight: 800;
       color: #fff;
       margin: 0 0 8px;
     }
+
     .abt-val-desc {
       font-size: .85rem;
-      color: rgba(255,255,255,.55);
+      color: rgba(255, 255, 255, .55);
       line-height: 1.65;
       margin: 0;
     }
 
     @media (max-width: 992px) {
-      .abt-top-grid { grid-template-columns: 1fr; gap: 40px; }
-      .abt-values-grid { grid-template-columns: repeat(2, 1fr); }
-      .abt-heading { font-size: 2.1rem; }
+      .abt-top-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .abt-values-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .abt-heading {
+        font-size: 2.1rem;
+      }
     }
+
     @media (max-width: 600px) {
-      .abt-section { padding: 70px 0 60px; }
-      .abt-values-grid { grid-template-columns: 1fr; }
-      .abt-photos-grid { grid-template-rows: 160px 160px; }
+      .abt-section {
+        padding: 70px 0 60px;
+      }
+
+      .abt-values-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .abt-photos-grid {
+        grid-template-rows: 160px 160px;
+      }
     }
 
     /* About Section Mouse Move Animation */
@@ -826,21 +994,29 @@
         position: relative; overflow: hidden;
         background: url('https://qtxasset.com/quartz/qcloud4/media/image/fierceeducation/1619202148/Black%20Woman.jpg?VersionId=7oKG2cY25LCxh.QhEZoMWVAxVbdECB47') center 30%/cover no-repeat;
       ">
-        <div style="position:absolute;inset:0;background:linear-gradient(100deg,rgba(12,3,40,.93) 0%,rgba(45,3,112,.86) 55%,rgba(12,3,40,.55) 100%);"></div>
+        <div
+          style="position:absolute;inset:0;background:linear-gradient(100deg,rgba(12,3,40,.93) 0%,rgba(45,3,112,.86) 55%,rgba(12,3,40,.55) 100%);">
+        </div>
         <div class="container position-relative" style="z-index:2;padding:52px 0;">
           <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-4">
             <div data-aos="fade-right">
-              <span style="display:inline-block;background:#c084fc;color:#1a0040;font-weight:800;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;padding:4px 14px;border-radius:50px;margin-bottom:14px;">Bourse 2026 · Places limitées</span>
-              <h2 style="font-size:1.9rem;font-weight:800;color:#fff;line-height:1.15;margin:0 0 10px;">200 bourses de formation en <span style="color:#c084fc;">Anglais</span></h2>
+              <span
+                style="display:inline-block;background:#c084fc;color:#1a0040;font-weight:800;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;padding:4px 14px;border-radius:50px;margin-bottom:14px;">Bourse
+                2026 · Places limitées</span>
+              <h2 style="font-size:1.9rem;font-weight:800;color:#fff;line-height:1.15;margin:0 0 10px;">200 bourses de
+                formation en <span style="color:#c084fc;">Anglais</span></h2>
               <p style="font-size:.95rem;color:rgba(255,255,255,.75);margin:0;line-height:1.6;">
-                Anglais conversationnel intensif pour étudiants — <strong style="color:#c084fc;">4 semaines · 15 000 FCFA</strong> · Sessions : Juillet, Août, Septembre 2026
+                Anglais conversationnel intensif pour étudiants — <strong style="color:#c084fc;">4 semaines · Programme Intensif
+                </strong> · Sessions : Juillet, Août, Septembre 2026
               </p>
             </div>
             <div class="d-flex gap-3 flex-shrink-0 flex-wrap" data-aos="fade-left" data-aos-delay="100">
-              <a href="/programs/language-learning/student-english-boost" style="display:inline-flex;align-items:center;gap:8px;padding:12px 26px;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.3);color:#fff;text-decoration:none;border-radius:50px;font-weight:700;font-size:.9rem;backdrop-filter:blur(6px);white-space:nowrap;">
+              <a href="/programs/language-learning/student-english-boost"
+                style="display:inline-flex;align-items:center;gap:8px;padding:12px 26px;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.3);color:#fff;text-decoration:none;border-radius:50px;font-weight:700;font-size:.9rem;backdrop-filter:blur(6px);white-space:nowrap;">
                 En savoir plus <i class="bi bi-arrow-right"></i>
               </a>
-              <a href="https://forms.gle/yXxUnxpLofgwbE1t6" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;padding:12px 26px;background:#c084fc;color:#1a0040;text-decoration:none;border-radius:50px;font-weight:800;font-size:.9rem;white-space:nowrap;">
+              <a href="https://forms.gle/yXxUnxpLofgwbE1t6" target="_blank" rel="noopener noreferrer"
+                style="display:inline-flex;align-items:center;gap:8px;padding:12px 26px;background:#c084fc;color:#1a0040;text-decoration:none;border-radius:50px;font-weight:800;font-size:.9rem;white-space:nowrap;">
                 Postuler <i class="bi bi-box-arrow-up-right"></i>
               </a>
             </div>
@@ -853,7 +1029,6 @@
         <!-- ======= About Section ======= -->
         <section id="about" class="abt-section">
           <div class="container">
-
             <!-- Header -->
             <div class="abt-header" data-aos="fade-up">
               <span class="abt-pill"><i class="bi bi-info-circle-fill"></i> Qui sommes-nous</span>
@@ -868,14 +1043,17 @@
                   <div class="abt-vm-icon"><i class="bi bi-eye-fill"></i></div>
                   <div>
                     <p class="abt-vm-label">Notre Vision</p>
-                    <p class="abt-vm-text">Devenir une référence africaine en transformation digitale de l’éducation, en créant un écosystème de produits éducatifs à fort impact.</p>
+                    <p class="abt-vm-text">Devenir une référence africaine en transformation digitale de l’éducation, en
+                      créant un écosystème de produits éducatifs à fort impact.</p>
                   </div>
                 </div>
                 <div class="abt-vm-card abt-mission">
                   <div class="abt-vm-icon"><i class="bi bi-bullseye"></i></div>
                   <div>
                     <p class="abt-vm-label">Notre Mission</p>
-                    <p class="abt-vm-text">Développer des solutions éducatives numériques accessibles, innovantes et adaptées au contexte africain pour former des apprenants confiants, compétents et prêts pour le monde de demain.</p>
+                    <p class="abt-vm-text">Développer des solutions éducatives numériques accessibles, innovantes et
+                      adaptées au contexte africain pour former des apprenants confiants, compétents et prêts pour le
+                      monde de demain.</p>
                   </div>
                 </div>
               </div>
@@ -883,13 +1061,16 @@
               <div class="abt-photos-wrap" data-aos="fade-left" data-aos-delay="100">
                 <div class="abt-photos-grid">
                   <div class="abt-photo abt-photo-tall">
-                    <img loading="lazy" src="https://images.pexels.com/photos/6894013/pexels-photo-6894013.jpeg" alt="Éducation">
+                    <img loading="lazy" src="https://images.pexels.com/photos/6894013/pexels-photo-6894013.jpeg"
+                      alt="Éducation">
                   </div>
                   <div class="abt-photo">
-                    <img loading="lazy" src="https://images.pexels.com/photos/27178154/pexels-photo-27178154.jpeg" alt="Apprentissage collaboratif">
+                    <img loading="lazy" src="https://images.pexels.com/photos/27178154/pexels-photo-27178154.jpeg"
+                      alt="Apprentissage collaboratif">
                   </div>
                   <div class="abt-photo">
-                    <img loading="lazy" src="https://images.pexels.com/photos/7605859/pexels-photo-7605859.jpeg" alt="Étudiants en action">
+                    <img loading="lazy" src="https://images.pexels.com/photos/7605859/pexels-photo-7605859.jpeg"
+                      alt="Étudiants en action">
                   </div>
                 </div>
                 <div class="abt-photos-badge">
@@ -915,7 +1096,8 @@
                   <i class="bi bi-universal-access"></i>
                 </div>
                 <p class="abt-val-name">Accessibilité</p>
-                <p class="abt-val-desc">L’éducation de qualité doit être accessible à tous, sans barrières géographiques ni financières.</p>
+                <p class="abt-val-desc">L’éducation de qualité doit être accessible à tous, sans barrières géographiques
+                  ni financières.</p>
               </div>
 
               <div class="abt-value-card" data-aos="fade-up" data-aos-delay="100">
@@ -923,7 +1105,8 @@
                   <i class="bi bi-star-fill"></i>
                 </div>
                 <p class="abt-val-name">Excellence</p>
-                <p class="abt-val-desc">Un enseignement rigoureux et des contenus pédagogiques aux standards les plus élevés.</p>
+                <p class="abt-val-desc">Un enseignement rigoureux et des contenus pédagogiques aux standards les plus
+                  élevés.</p>
               </div>
 
               <div class="abt-value-card" data-aos="fade-up" data-aos-delay="150">
@@ -931,7 +1114,8 @@
                   <i class="bi bi-balance-scale-fill" style="font-size:1.1rem;"></i>
                 </div>
                 <p class="abt-val-name">Équité</p>
-                <p class="abt-val-desc">Les mêmes opportunités de réussir et de s’épanouir, quelles que soient les origines de l’apprenant.</p>
+                <p class="abt-val-desc">Les mêmes opportunités de réussir et de s’épanouir, quelles que soient les
+                  origines de l’apprenant.</p>
               </div>
 
               <div class="abt-value-card" data-aos="fade-up" data-aos-delay="200">
@@ -939,7 +1123,8 @@
                   <i class="bi bi-lightbulb-fill"></i>
                 </div>
                 <p class="abt-val-name">Innovation</p>
-                <p class="abt-val-desc">Les technologies numériques au service d’expériences d’apprentissage modernes, engageantes et efficaces.</p>
+                <p class="abt-val-desc">Les technologies numériques au service d’expériences d’apprentissage modernes,
+                  engageantes et efficaces.</p>
               </div>
 
               <div class="abt-value-card" data-aos="fade-up" data-aos-delay="250">
@@ -947,7 +1132,8 @@
                   <i class="bi bi-heart-fill"></i>
                 </div>
                 <p class="abt-val-name">Engagement</p>
-                <p class="abt-val-desc">Un dévouement total à l’accompagnement et à la réussite de chaque apprenant qui nous fait confiance.</p>
+                <p class="abt-val-desc">Un dévouement total à l’accompagnement et à la réussite de chaque apprenant qui
+                  nous fait confiance.</p>
               </div>
 
               <div class="abt-value-card" data-aos="fade-up" data-aos-delay="300">
@@ -955,7 +1141,8 @@
                   <i class="bi bi-people-fill"></i>
                 </div>
                 <p class="abt-val-name">Communauté</p>
-                <p class="abt-val-desc">L’entraide et le partage au sein d’une communauté apprenante solidaire et dynamique.</p>
+                <p class="abt-val-desc">L’entraide et le partage au sein d’une communauté apprenante solidaire et
+                  dynamique.</p>
               </div>
 
             </div>
@@ -1016,7 +1203,7 @@
             <div class="row justify-content-center text-center">
               <div class="col-lg-10">
                 <h2 class="fw-bold mb-5 focus-title" style="color: #ffffff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
-                Nous bâtissons l’avenir de l’éducation en Afrique par la puissance du numérique</h2>
+                  Nous bâtissons l’avenir de l’éducation en Afrique par la puissance du numérique</h2>
               </div>
             </div>
           </div>
@@ -1048,10 +1235,13 @@
                     <h3 class="program-card-title">e-Kalan</h3>
                   </div>
                   <p class="program-card-description">
-                   e-Kalan est le programme d'accompagnement scolaire digitale dédié aux élèves, étudiants et parents d'élèves. Du primaire à l’université, nous transformons les méthodes d'apprentissage pour garantir une réussite académique durable.
+                    e-Kalan est le programme d'accompagnement scolaire digitale dédié aux élèves, étudiants et parents
+                    d'élèves. Du primaire à l’université, nous transformons les méthodes d'apprentissage pour garantir
+                    une réussite académique durable.
                   </p>
                   <p class="program-promise small text-muted mb-3">
-                    <i class="bi bi-star-fill text-warning me-1"></i> <strong style="color: #4b08a1;">Notre promesse :</strong> Apprendre
+                    <i class="bi bi-star-fill text-warning me-1"></i> <strong style="color: #4b08a1;">Notre promesse
+                      :</strong> Apprendre
                     mieux aujourd’hui pour réussir demain.
                   </p>
                   <a href="/programs/ekalan/kalan" class="program-card-link">
@@ -1075,11 +1265,14 @@
                     <h3 class="program-card-title">English Boost</h3>
                   </div>
                   <p class="program-card-description">
-                   Propulsez votre carrière grâce à un anglais utile et adapté à votre réalité professionnelle.
-Développez vos compétences en communication, préparez vos entretiens avec assurance et bénéficiez d’un accompagnement personnalisé pour atteindre vos objectifs.
+                    Propulsez votre carrière grâce à un anglais utile et adapté à votre réalité professionnelle.
+                    Développez vos compétences en communication, préparez vos entretiens avec assurance et bénéficiez
+                    d’un accompagnement personnalisé pour atteindre vos objectifs.
                   </p>
                   <p class="program-promise small text-muted mb-3">
-                    <i class="bi bi-star-fill text-warning me-1"></i> <strong style="color: #4b08a1;">Notre promesse :</strong> Maîtriser l’anglais de votre métier, gagner en confiance et saisir de nouvelles opportunités professionnelles.
+                    <i class="bi bi-star-fill text-warning me-1"></i> <strong style="color: #4b08a1;">Notre promesse
+                      :</strong> Maîtriser l’anglais de votre métier, gagner en confiance et saisir de nouvelles
+                    opportunités professionnelles.
                   </p>
                   <a href="/programs/language-learning/english4all" class="program-card-link">
                     En savoir plus <i class="bi bi-arrow-right"></i>
@@ -1103,7 +1296,8 @@ Développez vos compétences en communication, préparez vos entretiens avec ass
                 <span class="inst-teaser-pill"><i class="bi bi-buildings-fill"></i> Formations Institutionnelles</span>
                 <h2 class="inst-teaser-heading">Apprenez avec<br><span>votre institution</span></h2>
                 <p class="inst-teaser-desc">
-                  Développez des compétences reconnues avec des formations certifiées dispensées par des institutions partenaires d'AfroHK. Chaque programme est conçu pour vous rendre opérationnel — pas juste instruit.
+                  Développez des compétences reconnues avec des formations certifiées dispensées par des institutions
+                  partenaires d'AfroHK. Chaque programme est conçu pour vous rendre opérationnel — pas juste instruit.
                 </p>
                 <ul class="inst-teaser-features">
                   <li><i class="bi bi-check-circle-fill"></i> Cours structurés en modules et leçons</li>
@@ -1111,26 +1305,31 @@ Développez vos compétences en communication, préparez vos entretiens avec ass
                   <li><i class="bi bi-check-circle-fill"></i> Accès en ligne, tous appareils</li>
                   <li><i class="bi bi-check-circle-fill"></i> Suivi de progression en temps réel</li>
                 </ul>
-                <% if ((typeof institutionCount !== 'undefined' && institutionCount > 0) ||
-                       (typeof institutionCourseCount !== 'undefined' && institutionCourseCount > 0)) { %>
-                <div class="inst-teaser-stats">
-                  <% if (typeof institutionCount !== 'undefined' && institutionCount > 0) { %>
-                  <div class="inst-stat">
-                    <span class="inst-stat-num"><%= institutionCount %></span>
-                    <span class="inst-stat-label">Institution<%= institutionCount > 1 ? 's' : '' %></span>
+                <% if ((typeof institutionCount !=='undefined' && institutionCount> 0) ||
+                  (typeof institutionCourseCount !== 'undefined' && institutionCourseCount > 0)) { %>
+                  <div class="inst-teaser-stats">
+                    <% if (typeof institutionCount !=='undefined' && institutionCount> 0) { %>
+                      <div class="inst-stat">
+                        <span class="inst-stat-num">
+                          <%= institutionCount %>
+                        </span>
+                        <span class="inst-stat-label">Institution<%= institutionCount> 1 ? 's' : '' %></span>
+                      </div>
+                      <% } %>
+                        <% if (typeof institutionCourseCount !=='undefined' && institutionCourseCount> 0) { %>
+                          <div class="inst-stat">
+                            <span class="inst-stat-num">
+                              <%= institutionCourseCount %>
+                            </span>
+                            <span class="inst-stat-label">Cours disponible<%= institutionCourseCount> 1 ? 's' : ''
+                                %></span>
+                          </div>
+                          <% } %>
                   </div>
                   <% } %>
-                  <% if (typeof institutionCourseCount !== 'undefined' && institutionCourseCount > 0) { %>
-                  <div class="inst-stat">
-                    <span class="inst-stat-num"><%= institutionCourseCount %></span>
-                    <span class="inst-stat-label">Cours disponible<%= institutionCourseCount > 1 ? 's' : '' %></span>
-                  </div>
-                  <% } %>
-                </div>
-                <% } %>
-                <a href="/formations" class="inst-teaser-cta">
-                  <span>Explorer le catalogue</span> <i class="bi bi-arrow-right"></i>
-                </a>
+                    <a href="/formations" class="inst-teaser-cta">
+                      <span>Explorer le catalogue</span> <i class="bi bi-arrow-right"></i>
+                    </a>
               </div>
 
               <!-- Right: glassmorphism preview panel -->
@@ -1190,8 +1389,7 @@ Développez vos compétences en communication, préparez vos entretiens avec ass
               <!-- 1. Formation des Enseignants -->
               <div class="program-card-modern" data-aos="zoom-in" data-aos-delay="200">
                 <div class="program-card-image">
-                  <img loading="lazy" src="assets/img/teacher_training.png"
-                    alt="Formation Enseignants">
+                  <img loading="lazy" src="assets/img/teacher_training.png" alt="Formation Enseignants">
                   <div class="program-card-overlay"></div>
                 </div>
                 <div class="program-card-content">
@@ -1211,8 +1409,7 @@ Développez vos compétences en communication, préparez vos entretiens avec ass
               <!-- 2. Plateformes Digitales -->
               <div class="program-card-modern" data-aos="zoom-in" data-aos-delay="300">
                 <div class="program-card-image">
-                  <img loading="lazy" src="assets/img/digital_platforms.png"
-                    alt="Plateformes Digitales">
+                  <img loading="lazy" src="assets/img/digital_platforms.png" alt="Plateformes Digitales">
                   <div class="program-card-overlay"></div>
                 </div>
                 <div class="program-card-content">
@@ -1232,8 +1429,7 @@ Développez vos compétences en communication, préparez vos entretiens avec ass
               <!-- 3. Digitalisation Contenus -->
               <div class="program-card-modern" data-aos="zoom-in" data-aos-delay="400">
                 <div class="program-card-image">
-                  <img loading="lazy" src="assets/img/digital_content.png"
-                    alt="Digitalisation Contenus">
+                  <img loading="lazy" src="assets/img/digital_content.png" alt="Digitalisation Contenus">
                   <div class="program-card-overlay"></div>
                 </div>
                 <div class="program-card-content">
@@ -1317,12 +1513,19 @@ Développez vos compétences en communication, préparez vos entretiens avec ass
 
 
         <!-- ======= English Biiga Section ======= -->
-        <section id="english-biiga" style="background: linear-gradient(135deg, #0a0618 0%, #150930 50%, #0f1f3d 100%); padding: 110px 0; overflow: hidden; position: relative;">
+        <section id="english-biiga"
+          style="background: linear-gradient(135deg, #0a0618 0%, #150930 50%, #0f1f3d 100%); padding: 110px 0; overflow: hidden; position: relative;">
 
           <!-- Ambient glows -->
-          <div style="position:absolute;top:-100px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(74,163,255,.12) 0%,transparent 70%);pointer-events:none;"></div>
-          <div style="position:absolute;bottom:-80px;left:-80px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(255,75,75,.1) 0%,transparent 70%);pointer-events:none;"></div>
-          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(93,6,186,.06) 0%,transparent 65%);pointer-events:none;"></div>
+          <div
+            style="position:absolute;top:-100px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(74,163,255,.12) 0%,transparent 70%);pointer-events:none;">
+          </div>
+          <div
+            style="position:absolute;bottom:-80px;left:-80px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(255,75,75,.1) 0%,transparent 70%);pointer-events:none;">
+          </div>
+          <div
+            style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(93,6,186,.06) 0%,transparent 65%);pointer-events:none;">
+          </div>
 
           <div class="container position-relative" style="z-index:2;">
             <div class="row align-items-center g-5">
@@ -1335,10 +1538,14 @@ Développez vos compétences en communication, préparez vos entretiens avec ass
                   </div>
                   <img loading="lazy"
                     src="https://res.cloudinary.com/dccibzcxp/image/upload/v1768972885/Afro%20Language%20lab/WhatsApp_Image_2025-10-01_at_08.10.51_qksnjf.jpg"
-                    class="img-fluid rounded-4 shadow-lg position-relative" style="z-index:1;border:2px solid rgba(255,255,255,.15);" alt="English Biiga">
+                    class="img-fluid rounded-4 shadow-lg position-relative"
+                    style="z-index:1;border:2px solid rgba(255,255,255,.15);" alt="English Biiga">
                   <!-- Startup badge overlay -->
-                  <div style="position:absolute;bottom:-16px;left:24px;z-index:2;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(12px);border-radius:14px;padding:10px 18px;display:flex;align-items:center;gap:10px;">
-                    <div style="width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px #4ade80;flex-shrink:0;"></div>
+                  <div
+                    style="position:absolute;bottom:-16px;left:24px;z-index:2;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(12px);border-radius:14px;padding:10px 18px;display:flex;align-items:center;gap:10px;">
+                    <div
+                      style="width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px #4ade80;flex-shrink:0;">
+                    </div>
                     <span style="color:#fff;font-size:.78rem;font-weight:700;">Startup active · englishbiiga.com</span>
                   </div>
                 </div>
@@ -1349,45 +1556,68 @@ Développez vos compétences en communication, préparez vos entretiens avec ass
 
                 <!-- Label -->
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
-                  <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(74,163,255,.12);border:1px solid rgba(74,163,255,.25);color:#4aa3ff;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;padding:5px 14px;border-radius:50px;">
+                  <span
+                    style="display:inline-flex;align-items:center;gap:6px;background:rgba(74,163,255,.12);border:1px solid rgba(74,163,255,.25);color:#4aa3ff;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;padding:5px 14px;border-radius:50px;">
                     <i class="bi bi-rocket-takeoff-fill"></i> Startup EdTech
                   </span>
-                  <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,75,75,.1);border:1px solid rgba(255,75,75,.2);color:#ff6b6b;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;padding:5px 14px;border-radius:50px;">
+                  <span
+                    style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,75,75,.1);border:1px solid rgba(255,75,75,.2);color:#ff6b6b;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;padding:5px 14px;border-radius:50px;">
                     <i class="bi bi-buildings-fill"></i> Fondée par AfroHK
                   </span>
                 </div>
 
                 <!-- Name -->
                 <h3 class="fw-bold lh-1 mb-3" style="font-family:’Outfit’,sans-serif;font-size:3.2rem;">
-                  <span style="color:#4aa3ff;text-shadow:0 0 40px rgba(74,163,255,.4);">English</span><span style="color:#ff4b4b;text-shadow:0 0 40px rgba(255,75,75,.4);">Biiga</span>
+                  <span style="color:#4aa3ff;text-shadow:0 0 40px rgba(74,163,255,.4);">English</span><span
+                    style="color:#ff4b4b;text-shadow:0 0 40px rgba(255,75,75,.4);">Biiga</span>
                 </h3>
 
                 <!-- Tagline -->
-                <p style="font-size:1.15rem;color:rgba(255,255,255,.55);font-style:italic;border-left:3px solid #ff4b4b;padding-left:16px;margin-bottom:24px;line-height:1.6;">
+                <p
+                  style="font-size:1.15rem;color:rgba(255,255,255,.55);font-style:italic;border-left:3px solid #ff4b4b;padding-left:16px;margin-bottom:24px;line-height:1.6;">
                   "Former des enfants africains bilingues, compétents en numérique et prêts à diriger."
                 </p>
 
                 <!-- Description -->
                 <p style="font-size:.97rem;color:rgba(255,255,255,.65);line-height:1.8;margin-bottom:32px;">
-                  AfroHK a fondé <strong style="color:#fff;">English Biiga</strong> comme une startup EdTech à part entière, dotée de sa propre marque, plateforme et stratégie de croissance. Sa mission : aller au-delà de l’apprentissage de l’anglais pour bâtir chez chaque enfant les compétences du 21ème siècle — langue, leadership, numérique — à travers une expérience éducative immersive et technologique.
+                  AfroHK a fondé <strong style="color:#fff;">English Biiga</strong> comme une startup EdTech à part
+                  entière, dotée de sa propre marque, plateforme et stratégie de croissance. Sa mission : aller au-delà
+                  de l’apprentissage de l’anglais pour bâtir chez chaque enfant les compétences du 21ème siècle —
+                  langue, leadership, numérique — à travers une expérience éducative immersive et technologique.
                 </p>
 
                 <!-- Pillars -->
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:36px;">
-                  <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;">
-                    <div style="width:36px;height:36px;border-radius:9px;background:rgba(74,163,255,.12);display:flex;align-items:center;justify-content:center;color:#4aa3ff;flex-shrink:0;"><i class="bi bi-translate"></i></div>
+                  <div
+                    style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;">
+                    <div
+                      style="width:36px;height:36px;border-radius:9px;background:rgba(74,163,255,.12);display:flex;align-items:center;justify-content:center;color:#4aa3ff;flex-shrink:0;">
+                      <i class="bi bi-translate"></i>
+                    </div>
                     <span style="color:#fff;font-size:.88rem;font-weight:600;">Anglais intensif</span>
                   </div>
-                  <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;">
-                    <div style="width:36px;height:36px;border-radius:9px;background:rgba(255,75,75,.1);display:flex;align-items:center;justify-content:center;color:#ff6b6b;flex-shrink:0;"><i class="bi bi-trophy-fill"></i></div>
+                  <div
+                    style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;">
+                    <div
+                      style="width:36px;height:36px;border-radius:9px;background:rgba(255,75,75,.1);display:flex;align-items:center;justify-content:center;color:#ff6b6b;flex-shrink:0;">
+                      <i class="bi bi-trophy-fill"></i>
+                    </div>
                     <span style="color:#fff;font-size:.88rem;font-weight:600;">Leadership</span>
                   </div>
-                  <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;">
-                    <div style="width:36px;height:36px;border-radius:9px;background:rgba(74,163,255,.12);display:flex;align-items:center;justify-content:center;color:#4aa3ff;flex-shrink:0;"><i class="bi bi-mic-fill"></i></div>
+                  <div
+                    style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;">
+                    <div
+                      style="width:36px;height:36px;border-radius:9px;background:rgba(74,163,255,.12);display:flex;align-items:center;justify-content:center;color:#4aa3ff;flex-shrink:0;">
+                      <i class="bi bi-mic-fill"></i>
+                    </div>
                     <span style="color:#fff;font-size:.88rem;font-weight:600;">Tuteur IA Vocal</span>
                   </div>
-                  <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;">
-                    <div style="width:36px;height:36px;border-radius:9px;background:rgba(255,75,75,.1);display:flex;align-items:center;justify-content:center;color:#ff6b6b;flex-shrink:0;"><i class="bi bi-laptop-fill"></i></div>
+                  <div
+                    style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;">
+                    <div
+                      style="width:36px;height:36px;border-radius:9px;background:rgba(255,75,75,.1);display:flex;align-items:center;justify-content:center;color:#ff6b6b;flex-shrink:0;">
+                      <i class="bi bi-laptop-fill"></i>
+                    </div>
                     <span style="color:#fff;font-size:.88rem;font-weight:600;">Compétences Digitales</span>
                   </div>
                 </div>
@@ -1398,7 +1628,8 @@ Développez vos compétences en communication, préparez vos entretiens avec ass
                     style="display:inline-flex;align-items:center;gap:8px;padding:14px 32px;background:linear-gradient(90deg,#4aa3ff,#ff4b4b);color:#fff;text-decoration:none;border-radius:50px;font-weight:800;font-size:.95rem;box-shadow:0 8px 28px rgba(74,163,255,.3);transition:all .3s;">
                     Visiter English Biiga <i class="bi bi-box-arrow-up-right"></i>
                   </a>
-                  <span style="font-size:.8rem;color:rgba(255,255,255,.3);">Une startup fondée par <strong style="color:rgba(255,255,255,.55);">Afro House of Knowledge</strong></span>
+                  <span style="font-size:.8rem;color:rgba(255,255,255,.3);">Une startup fondée par <strong
+                      style="color:rgba(255,255,255,.55);">Afro House of Knowledge</strong></span>
                 </div>
 
               </div>
@@ -2211,104 +2442,121 @@ Développez vos compétences en communication, préparez vos entretiens avec ass
       End Team Section -->
 
         <!-- ======= Contact Section ======= -->
-        <section id="contact" class="contact">
-          <div class="container">
-            <!-- Section Title -->
-            <div class="section-title" data-aos="fade-up">
-              <h2>Rejoignez-nous</h2>
-              <p class="mb-4">Vous êtes parent, école, entreprise ou partenaire ?</p>
-              <div class="d-flex justify-content-center gap-3 mb-4">
-                <a href="#contact"
-                  class="btn-get-started scrollto d-inline-flex align-items-center justify-content-center align-self-center"
-                  style="background: #5d06ba; color: white; padding: 12px 30px; border-radius: 50px; text-decoration: none; font-weight: 600;">
-                  Contactez-nous
-                </a>
-                <a href="#programs"
-                  class="btn-get-started scrollto d-inline-flex align-items-center justify-content-center align-self-center"
-                  style="background: transparent; border: 2px solid #5d06ba; color: #5d06ba; padding: 10px 30px; border-radius: 50px; text-decoration: none; font-weight: 600;">
-                  Découvrez nos programmes
-                </a>
-              </div>
-              <p class="text-muted fst-italic mt-3" style="font-size: 1.1rem;">"Innover aujourd’hui. Former les leaders
-                de demain."</p>
+        <section id="contact" style="position:relative;padding:100px 0 0;background:linear-gradient(160deg,#0a0618 0%,#130830 40%,#0d1530 100%);overflow:hidden;">
+
+          <!-- Ambient glows -->
+          <div style="position:absolute;top:-120px;left:-80px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(93,6,186,.18),transparent 70%);pointer-events:none;"></div>
+          <div style="position:absolute;bottom:-80px;right:-60px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(45,3,112,.22),transparent 70%);pointer-events:none;"></div>
+
+          <div class="container" style="position:relative;z-index:2;">
+
+            <!-- Header -->
+            <div style="text-align:center;margin-bottom:64px;" data-aos="fade-up">
+              <span style="display:inline-block;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:.3rem 1.1rem;font-size:.78rem;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.08em;text-transform:uppercase;margin-bottom:1.1rem;">📬 Contact</span>
+              <h2 style="font-size:2.5rem;font-weight:800;color:#fff;margin:0 0 .75rem;line-height:1.2;">
+                Parlons de votre <em style="font-style:normal;background:linear-gradient(90deg,#a78bfa,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">projet</em>
+              </h2>
+              <p style="color:rgba(255,255,255,.55);font-size:1.05rem;max-width:520px;margin:0 auto;line-height:1.7;">
+                Parent, école, entreprise ou partenaire — écrivez-nous, nous vous répondons rapidement.
+              </p>
             </div>
 
-            <!-- Contact Container -->
-            <div class="contact-container" data-aos="fade-up" data-aos-delay="100">
-              <div class="contact-grid">
-                <!-- Map Section -->
-                <div class="contact-map">
-                  <iframe src="https://maps.google.com/maps?q=12.338531,-1.559718&hl=fr&z=15&output=embed"
-                    allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
-                  </iframe>
+            <!-- Main grid: form left, map right -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:stretch;" class="contact-main-grid" data-aos="fade-up" data-aos-delay="80">
+
+              <!-- ── Left: contact info + form ── -->
+              <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+                <!-- Contact channels -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                  <a href="tel:+22667323131" style="display:flex;align-items:center;gap:.85rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:1rem 1.1rem;text-decoration:none;transition:background .2s;" onmouseover="this.style.background=’rgba(255,255,255,.1)’" onmouseout="this.style.background=’rgba(255,255,255,.06)’">
+                    <div style="width:40px;height:40px;border-radius:10px;background:rgba(167,139,250,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                      <i class="bx bx-phone-call" style="font-size:1.2rem;color:#a78bfa;"></i>
+                    </div>
+                    <div>
+                      <div style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.15rem;">Téléphone</div>
+                      <div style="font-size:.88rem;font-weight:600;color:#fff;">+226 67 32 31 31</div>
+                    </div>
+                  </a>
+
+                  <a href="https://wa.me/22653344444" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:.85rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:1rem 1.1rem;text-decoration:none;transition:background .2s;" onmouseover="this.style.background=’rgba(255,255,255,.1)’" onmouseout="this.style.background=’rgba(255,255,255,.06)’">
+                    <div style="width:40px;height:40px;border-radius:10px;background:rgba(34,197,94,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                      <i class="bx bxl-whatsapp" style="font-size:1.2rem;color:#4ade80;"></i>
+                    </div>
+                    <div>
+                      <div style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.15rem;">WhatsApp</div>
+                      <div style="font-size:.88rem;font-weight:600;color:#fff;">+226 53 34 44 44</div>
+                    </div>
+                  </a>
+
+                  <a href="mailto:contact@afrohk.com" style="display:flex;align-items:center;gap:.85rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:1rem 1.1rem;text-decoration:none;transition:background .2s;grid-column:1/-1;" onmouseover="this.style.background=’rgba(255,255,255,.1)’" onmouseout="this.style.background=’rgba(255,255,255,.06)’">
+                    <div style="width:40px;height:40px;border-radius:10px;background:rgba(96,165,250,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                      <i class="bx bx-envelope" style="font-size:1.2rem;color:#60a5fa;"></i>
+                    </div>
+                    <div>
+                      <div style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.15rem;">Email</div>
+                      <div style="font-size:.88rem;font-weight:600;color:#fff;">contact@afrohk.com</div>
+                    </div>
+                  </a>
                 </div>
 
-                <!-- Form Section -->
-                <div class="contact-form-section">
-                  <!-- Motivational Text -->
-                  <div class="contact-intro">
-                    <p>Une question ? Un projet ? N'hésitez pas à nous écrire, nous vous répondrons dans les plus brefs
-                      délais.</p>
+                <!-- Form -->
+                <form action="/visitormessage" method="post" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:1.75rem;backdrop-filter:blur(8px);flex:1;">
+                  <p style="font-size:.82rem;color:rgba(255,255,255,.5);margin:0 0 1.35rem;line-height:1.6;">Une question, un partenariat, une idée — envoyez-nous un message.</p>
+
+                  <div style="margin-bottom:1rem;">
+                    <input type="text" name="visitor[name]" placeholder="Votre nom complet" required
+                      style="width:100%;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);border-radius:10px;padding:.75rem 1rem;font-size:.9rem;color:#fff;outline:none;transition:border-color .2s;"
+                      onfocus="this.style.borderColor=’rgba(167,139,250,.6)’" onblur="this.style.borderColor=’rgba(255,255,255,.12)’">
                   </div>
-
-                  <!-- Contact Form -->
-                  <form action="/visitormessage" method="post" class="msg-form">
-                    <div class="form-group">
-                      <input type="text" name="visitor[name]" id="name" placeholder="Votre nom complet" required />
-                    </div>
-
-                    <div class="form-group">
-                      <input type="email" name="visitor[email]" id="email" placeholder="Votre adresse email" required />
-                    </div>
-
-                    <div class="form-group">
-                      <textarea name="visitor[message]" id="message" placeholder="Votre message..." required></textarea>
-                    </div>
-
-                    <button type="submit">Envoyer le Message</button>
-                  </form>
-
-                  <!-- Contact Info -->
-                  <div class="contact-info-grid">
-                    <!-- Call -->
-                    <div class="contact-info-item">
-                      <div class="icon">
-                        <i class="bx bx-phone-call"></i>
-                      </div>
-                      <div class="content">
-                        <h4>Téléphone</h4>
-                        <p>+226 67323131</p>
-                      </div>
-                    </div>
-
-                    <!-- WhatsApp -->
-                    <div class="contact-info-item">
-                      <div class="icon">
-                        <i class="bx bxl-whatsapp"></i>
-                      </div>
-                      <div class="content">
-                        <h4>WhatsApp</h4>
-                        <p>+226 53344444</p>
-                      </div>
-                    </div>
-
-                    <!-- Email -->
-                    <div class="contact-info-item">
-                      <div class="icon">
-                        <i class="bx bx-envelope"></i>
-                      </div>
-                      <div class="content">
-                        <h4>Email</h4>
-                        <p>contact@afrohk.com</p>
-                      </div>
-                    </div>
+                  <div style="margin-bottom:1rem;">
+                    <input type="email" name="visitor[email]" placeholder="Votre adresse email" required
+                      style="width:100%;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);border-radius:10px;padding:.75rem 1rem;font-size:.9rem;color:#fff;outline:none;transition:border-color .2s;"
+                      onfocus="this.style.borderColor=’rgba(167,139,250,.6)’" onblur="this.style.borderColor=’rgba(255,255,255,.12)’">
                   </div>
-                </div>
+                  <div style="margin-bottom:1.35rem;">
+                    <textarea name="visitor[message]" placeholder="Votre message..." required rows="4"
+                      style="width:100%;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);border-radius:10px;padding:.75rem 1rem;font-size:.9rem;color:#fff;outline:none;resize:vertical;transition:border-color .2s;font-family:inherit;"
+                      onfocus="this.style.borderColor=’rgba(167,139,250,.6)’" onblur="this.style.borderColor=’rgba(255,255,255,.12)’"></textarea>
+                  </div>
+                  <button type="submit"
+                    style="width:100%;padding:.85rem;background:linear-gradient(135deg,#5d06ba,#7c3aed);color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:700;cursor:pointer;letter-spacing:.02em;box-shadow:0 4px 20px rgba(93,6,186,.35);transition:opacity .2s;"
+                    onmouseover="this.style.opacity=’.88’" onmouseout="this.style.opacity=’1’">
+                    Envoyer le message →
+                  </button>
+                </form>
               </div>
+
+              <!-- ── Right: map ── -->
+              <div style="border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.1);min-height:480px;position:relative;">
+                <iframe
+                  src="https://maps.google.com/maps?q=12.338531,-1.559718&hl=fr&z=15&output=embed"
+                  width="100%" height="100%"
+                  style="position:absolute;inset:0;width:100%;height:100%;border:none;display:block;"
+                  allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+              </div>
+
             </div>
           </div>
+
+          <!-- Bottom wave into footer -->
+          <div style="margin-top:80px;line-height:0;">
+            <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:60px;display:block;">
+              <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="#0a0618"/>
+            </svg>
+          </div>
+
         </section>
         <!-- End Contact Section -->
+
+        <style>
+          @media (max-width: 768px) {
+            .contact-main-grid { grid-template-columns: 1fr !important; }
+            .contact-main-grid > div:last-child { min-height: 320px !important; }
+          }
+          #contact input::placeholder, #contact textarea::placeholder { color: rgba(255,255,255,.3); }
+        </style>
       </main>
       <!-- End #main -->
 

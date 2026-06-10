@@ -4,6 +4,7 @@ const {
     InstitutionQuizAttempt, InstitutionAssignmentSubmission,
     InstitutionFinalExamAttempt, InstitutionFinalProjectSubmission
 } = require('../../../programs/institution/models');
+const InstitutionCourseTestimonial = require('../../../programs/institution/models/Testimonial');
 const User       = require('../../models/user');
 const Emailer    = require('../../utilities/sendEmail');
 const { getBaseUrl } = require('../../utilities/url');
@@ -110,6 +111,10 @@ module.exports.show = catchAsync(async (req, res) => {
 
     const enrolledUserIds = new Set(enrollments.map(e => (e.userId._id || e.userId).toString()));
 
+    const testimonials = await InstitutionCourseTestimonial.find({ courseId, institutionId: req.institution._id })
+        .sort({ createdAt: -1 })
+        .lean();
+
     const studentsData = enrollments.map(enrollment => {
         const student = enrollment.userId;
         const uid = (student._id || student).toString();
@@ -134,7 +139,8 @@ module.exports.show = catchAsync(async (req, res) => {
         studentsData,
         modulesWithGrading,
         finalProjectStats,
-        enrolledUserIds: Array.from(enrolledUserIds)
+        enrolledUserIds: Array.from(enrolledUserIds),
+        testimonials
     });
 });
 

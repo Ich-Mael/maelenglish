@@ -5,6 +5,7 @@ const { isInstitutionAdmin, loadInstitution } = require('../middlewares/institut
 const Dashboard       = require('../controllers/institution/dashboardController');
 const Students        = require('../controllers/institution/studentsController');
 const Courses         = require('../controllers/institution/coursesController');
+const Testimonials    = require('../controllers/institution/testimonialsController');
 const Announcements   = require('../controllers/institution/announcementsController');
 
 // Dashboard routes require institution-admin role + loaded institution
@@ -22,6 +23,11 @@ router.get('/dashboard/courses', Courses.index);
 router.get('/dashboard/courses/:courseId', Courses.show);
 router.get('/dashboard/courses/:courseId/export.csv', Courses.exportCsv);
 router.post('/dashboard/courses/:courseId/enroll', Courses.enrollFromCourse);
+
+// ─── TESTIMONIALS ─────────────────────────────────────────────────────────────
+router.post('/dashboard/courses/:courseId/testimonials', Testimonials.create);
+router.put('/dashboard/courses/:courseId/testimonials/:tid', Testimonials.togglePublished);
+router.delete('/dashboard/courses/:courseId/testimonials/:tid', Testimonials.destroy);
 
 // ─── STUDENTS ─────────────────────────────────────────────────────────────────
 router.get('/dashboard/students', Students.index);

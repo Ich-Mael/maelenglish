@@ -58,6 +58,26 @@
           <input type="url" name="imageUrl" class="form-control" value="<%= course.imageUrl || '' %>" placeholder="https://example.com/image.jpg">
         </div>
 
+        <!-- Pricing -->
+        <div class="mb-4" style="background:#f8f5ff;border-radius:12px;padding:1.25rem;">
+          <label class="form-label" style="color:#2d0370;font-size:.9rem;">💰 Tarification</label>
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="isFree" name="pricing[isFree]" <%= (course.pricing && course.pricing.isFree) ? 'checked' : '' %> onchange="togglePricing(this.checked)">
+            <label class="form-check-label" for="isFree" style="font-size:.9rem;">Formation gratuite</label>
+          </div>
+          <div id="pricingFields" style="display:<%= (course.pricing && course.pricing.isFree) ? 'none' : 'flex' %>;gap:1rem;align-items:flex-end;">
+            <div style="flex:1;">
+              <label class="form-label">Montant</label>
+              <input type="number" name="pricing[amount]" class="form-control" min="0" placeholder="ex: 50000" value="<%= (course.pricing && course.pricing.amount) ? course.pricing.amount : '' %>">
+            </div>
+            <div style="width:130px;">
+              <label class="form-label">Devise</label>
+              <input type="text" name="pricing[currency]" class="form-control" placeholder="FCFA" value="<%= (course.pricing && course.pricing.currency) ? course.pricing.currency : 'FCFA' %>">
+            </div>
+          </div>
+          <p class="field-hint" style="margin-top:.5rem;">Si aucun montant n'est précisé, la tarification sera affichée "Sur demande" sur le catalogue public.</p>
+        </div>
+
         <div class="mb-4 form-check">
           <input type="checkbox" class="form-check-input" id="isActive" name="isActive" <%= course.isActive ? 'checked' : '' %>>
           <label class="form-check-label" for="isActive" style="font-size:.9rem;">
@@ -85,4 +105,8 @@ document.getElementById('editForm').addEventListener('submit', function() {
     if (ed) document.getElementById(id).value = ed.getContent();
   });
 });
+
+function togglePricing(isFree) {
+  document.getElementById('pricingFields').style.display = isFree ? 'none' : 'flex';
+}
 </script>
