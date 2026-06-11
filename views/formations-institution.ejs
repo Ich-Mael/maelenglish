@@ -1,0 +1,203 @@
+<% layout('layouts/main') %>
+
+<%
+  const brand    = institution.primaryColor || '#5d06ba';
+  const sm       = institution.socialMedia  || {};
+  const hasSocial = sm.website || sm.facebook || sm.instagram || sm.linkedin || sm.twitter || sm.youtube || sm.whatsapp;
+%>
+
+<% headContent = `<style>
+  :root { --brand: ${brand}; }
+
+  .inst-hero {
+    margin-top: 70px;
+    background: linear-gradient(135deg, #0f0720 0%, #1a0a38 100%);
+    padding: 3.5rem 0 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .inst-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 70% 50%, color-mix(in srgb, ${brand} 18%, transparent) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .inst-hero-inner { position: relative; z-index: 1; display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; }
+  .inst-logo-box {
+    width: 110px; height: 110px; flex-shrink: 0;
+    border-radius: 20px;
+    background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,.35);
+    overflow: hidden;
+  }
+  .inst-logo-box img { width: 100%; height: 100%; object-fit: contain; padding: 8px; }
+  .inst-logo-box .inst-initials {
+    font-size: 2.6rem; font-weight: 900; color: var(--brand);
+    line-height: 1;
+  }
+  .inst-hero-text { flex: 1; min-width: 240px; }
+  .inst-hero-text h1 { font-size: 2rem; font-weight: 900; color: #fff; margin: 0 0 .4rem; line-height: 1.2; }
+  .inst-hero-meta { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: .9rem; align-items: center; }
+  .inst-meta-chip { display: inline-flex; align-items: center; gap: .35rem; font-size: .78rem; color: rgba(255,255,255,.7); background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.12); border-radius: 20px; padding: .25rem .75rem; }
+  .inst-hero-desc { font-size: .9rem; color: rgba(255,255,255,.72); line-height: 1.65; max-width: 560px; margin: 0; }
+  .inst-social { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .9rem; }
+  .inst-social a { display: inline-flex; align-items: center; gap: .35rem; font-size: .78rem; color: rgba(255,255,255,.8); background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15); border-radius: 8px; padding: .3rem .75rem; text-decoration: none; transition: background .15s; }
+  .inst-social a:hover { background: rgba(255,255,255,.18); color: #fff; }
+
+  /* stat strip */
+  .inst-stat-bar { background: #fff; border-bottom: 1px solid #f1f5f9; padding: .85rem 0; }
+  .inst-stat-inner { display: flex; gap: 2.5rem; flex-wrap: wrap; align-items: center; }
+  .inst-stat { font-size: .85rem; color: #374151; display: flex; align-items: center; gap: .4rem; }
+  .inst-stat strong { color: #1d1d1f; font-size: 1rem; }
+
+  /* courses grid */
+  .inst-body { padding: 3rem 0 5rem; background: #f8fafc; }
+  .sect-title { font-size: 1.1rem; font-weight: 800; color: #1d1d1f; margin: 0 0 1.5rem; }
+
+  .ic-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  @media (max-width: 992px) { .ic-grid { grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 600px)  { .ic-grid { grid-template-columns: 1fr; } }
+
+  .ic-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07); overflow: visible; display: flex; flex-direction: column; transition: transform .22s, box-shadow .22s; }
+  .ic-card:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,.12); }
+  .ic-thumb { height: 180px; border-radius: 16px 16px 0 0; overflow: hidden; position: relative; background: linear-gradient(135deg, var(--brand), color-mix(in srgb, var(--brand) 55%, #000)); display: flex; align-items: center; justify-content: center; }
+  .ic-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .ic-thumb-icon { font-size: 2.5rem; opacity: .3; color: #fff; }
+  .ic-price-badge { position: absolute; top: 10px; right: 10px; font-size: .7rem; font-weight: 800; padding: .25rem .65rem; border-radius: 20px; backdrop-filter: blur(6px); }
+  .ic-price-badge.free   { background: rgba(22,163,74,.9);  color: #fff; }
+  .ic-price-badge.paid   { background: rgba(255,255,255,.92); color: #1d1d1f; }
+  .ic-price-badge.demand { background: rgba(0,0,0,.55); color: rgba(255,255,255,.9); border: 1px solid rgba(255,255,255,.2); }
+  .ic-body { padding: 1.1rem 1.2rem 1.3rem; flex: 1; display: flex; flex-direction: column; gap: .5rem; }
+  .ic-title { font-size: .98rem; font-weight: 700; color: #1e293b; line-height: 1.35; }
+  .ic-desc-wrap { position: relative; flex: 1; overflow: visible; }
+  .ic-desc { font-size: .82rem; color: #64748b; line-height: 1.55; margin: 0; cursor: default; }
+  .ic-desc-tooltip { display: none; position: absolute; bottom: calc(100% + 8px); left: 0; right: 0; background: #1e293b; color: #e2e8f0; font-size: .79rem; line-height: 1.6; padding: .8rem 1rem; border-radius: 10px; box-shadow: 0 8px 28px rgba(0,0,0,.25); z-index: 100; pointer-events: none; }
+  .ic-desc-tooltip::after { content: ''; position: absolute; top: 100%; left: 18px; border: 6px solid transparent; border-top-color: #1e293b; }
+  .ic-desc-wrap:hover .ic-desc-tooltip { display: block; }
+  .ic-meta { font-size: .75rem; color: #94a3b8; display: flex; align-items: center; gap: 10px; }
+  .ic-footer { padding: .75rem 1.2rem 1rem; border-top: 1px solid #f1f5f9; }
+  .btn-ic { display: inline-flex; align-items: center; gap: .3rem; background: var(--brand); color: #fff; font-size: .8rem; font-weight: 700; padding: .5rem 1.1rem; border-radius: 8px; text-decoration: none; transition: opacity .15s; }
+  .btn-ic:hover { opacity: .85; color: #fff; }
+
+  .empty-state { text-align: center; padding: 4rem 2rem; background: #fff; border-radius: 20px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+
+  .back-link {
+    display: inline-flex; align-items: center; gap: .45rem;
+    font-size: .82rem; font-weight: 700;
+    color: rgba(255,255,255,.85);
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.18);
+    backdrop-filter: blur(8px);
+    padding: .45rem 1rem .45rem .8rem;
+    border-radius: 50px;
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+    transition: background .18s, color .18s;
+  }
+  .back-link:hover { background: rgba(255,255,255,.2); color: #fff; }
+  .back-link .arrow { transition: transform .18s; }
+  .back-link:hover .arrow { transform: translateX(-3px); }
+
+  @media (max-width: 640px) {
+    .inst-hero-inner { flex-direction: column; align-items: flex-start; }
+    .inst-hero-text h1 { font-size: 1.55rem; }
+  }
+</style>` %>
+
+<!-- Hero -->
+<section class="inst-hero">
+  <div class="container">
+    <a href="/formations" class="back-link"><span class="arrow">←</span> Retour au catalogue</a>
+    <div class="inst-hero-inner">
+
+      <!-- Logo -->
+      <div class="inst-logo-box">
+        <% if (institution.logoUrl) { %>
+          <img src="<%= institution.logoUrl %>" alt="<%= institution.name %>">
+        <% } else { %>
+          <span class="inst-initials"><%= institution.name.substring(0,2).toUpperCase() %></span>
+        <% } %>
+      </div>
+
+      <!-- Info -->
+      <div class="inst-hero-text">
+        <h1><%= institution.name %></h1>
+        <div class="inst-hero-meta">
+          <% if (institution.city || institution.country) { %>
+            <span class="inst-meta-chip">📍 <%= [institution.city, institution.country].filter(Boolean).join(', ') %></span>
+          <% } %>
+          <span class="inst-meta-chip">📚 <%= courses.length %> cours disponible<%= courses.length !== 1 ? 's' : '' %></span>
+          <% if (institution.contactEmail) { %>
+            <a href="mailto:<%= institution.contactEmail %>" class="inst-meta-chip" style="text-decoration:none;color:rgba(255,255,255,.7);">✉ <%= institution.contactEmail %></a>
+          <% } %>
+        </div>
+        <% if (institution.description) { %>
+          <p class="inst-hero-desc"><%= institution.description %></p>
+        <% } %>
+        <% if (hasSocial) { %>
+          <div class="inst-social">
+            <% if (sm.website)   { %><a href="<%= sm.website %>"   target="_blank" rel="noopener">🌐 Site web</a><% } %>
+            <% if (sm.facebook)  { %><a href="<%= sm.facebook %>"  target="_blank" rel="noopener">📘 Facebook</a><% } %>
+            <% if (sm.instagram) { %><a href="<%= sm.instagram %>" target="_blank" rel="noopener">📸 Instagram</a><% } %>
+            <% if (sm.linkedin)  { %><a href="<%= sm.linkedin %>"  target="_blank" rel="noopener">💼 LinkedIn</a><% } %>
+            <% if (sm.twitter)   { %><a href="<%= sm.twitter %>"   target="_blank" rel="noopener">🐦 Twitter</a><% } %>
+            <% if (sm.youtube)   { %><a href="<%= sm.youtube %>"   target="_blank" rel="noopener">▶ YouTube</a><% } %>
+            <% if (sm.whatsapp)  { %><a href="https://wa.me/<%= sm.whatsapp.replace(/\D/g,'') %>" target="_blank" rel="noopener">💬 WhatsApp</a><% } %>
+          </div>
+        <% } %>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Courses -->
+<section class="inst-body">
+  <div class="container">
+    <h2 class="sect-title">Formations proposées par <%= institution.name %></h2>
+
+    <% if (courses.length === 0) { %>
+      <div class="empty-state">
+        <p style="font-size:2.5rem;margin-bottom:.75rem;">📭</p>
+        <p style="color:#64748b;">Aucun cours disponible pour le moment. Revenez bientôt !</p>
+        <a href="/formations" style="color:var(--brand);font-weight:700;text-decoration:none;">← Retour au catalogue</a>
+      </div>
+    <% } else { %>
+    <div class="ic-grid">
+      <% courses.forEach(course => {
+        const pricing = course.pricing || {};
+        let priceLabel, priceBadgeClass;
+        if (pricing.isFree) { priceLabel = 'Gratuit'; priceBadgeClass = 'free'; }
+        else if (pricing.amount) { priceLabel = Number(pricing.amount).toLocaleString('fr-FR') + ' ' + (pricing.currency || 'FCFA'); priceBadgeClass = 'paid'; }
+        else { priceLabel = 'Sur demande'; priceBadgeClass = 'demand'; }
+        const moduleCount = (course.modules || []).length;
+      %>
+      <div class="ic-card">
+        <div class="ic-thumb">
+          <% if (course.imageUrl) { %><img loading="lazy" src="<%= course.imageUrl %>" alt="<%= course.title %>"><% } else { %><i class="bi bi-book-half ic-thumb-icon"></i><% } %>
+          <span class="ic-price-badge <%= priceBadgeClass %>"><%= priceLabel %></span>
+        </div>
+        <div class="ic-body">
+          <div class="ic-title"><%= course.title %></div>
+          <% if (course.description) { %>
+            <div class="ic-desc-wrap">
+              <p class="ic-desc"><%= course.description.substring(0, 110) %><%= course.description.length > 110 ? '…' : '' %></p>
+              <% if (course.description.length > 110) { %>
+                <div class="ic-desc-tooltip"><%= course.description %></div>
+              <% } %>
+            </div>
+          <% } %>
+          <div class="ic-meta">
+            <span><i class="bi bi-grid-3x3-gap-fill"></i> <%= moduleCount %> module<%= moduleCount !== 1 ? 's' : '' %></span>
+          </div>
+        </div>
+        <div class="ic-footer">
+          <a href="/formations/<%= course._id %>" class="btn-ic">En savoir plus →</a>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+    <% } %>
+  </div>
+</section>

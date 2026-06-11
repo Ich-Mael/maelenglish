@@ -26,44 +26,87 @@
   /* ── Hero ── */
   .cd-hero {
     margin-top: 70px;
+    background: linear-gradient(135deg, #0f0720 0%, #1a0a38 100%);
+    padding: 2.75rem 0 2.75rem;
     position: relative;
-    min-height: 340px;
-    display: flex;
-    align-items: flex-end;
     overflow: hidden;
-    background: linear-gradient(135deg, #0f0720, #1a0a38);
   }
-  .cd-hero-bg {
+  .cd-hero::before {
+    content: '';
     position: absolute; inset: 0;
-    background-size: cover; background-position: center;
-    opacity: .35;
+    background: radial-gradient(ellipse at 80% 50%, color-mix(in srgb, ${brand} 20%, transparent) 0%, transparent 60%);
+    pointer-events: none;
   }
-  .cd-hero-overlay {
-    position: absolute; inset: 0;
-    background: linear-gradient(to top, rgba(15,7,32,.97) 0%, rgba(15,7,32,.6) 60%, transparent 100%);
-  }
-  .cd-hero-content {
+  .cd-hero-grid {
     position: relative; z-index: 2;
-    padding: 3rem 0 2.5rem;
-    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 2.5rem;
+    align-items: center;
   }
-  .cd-back-link { color: rgba(255,255,255,.65); font-size: .82rem; text-decoration: none; display:inline-flex; align-items:center; gap:.4rem; margin-bottom: 1.25rem; }
-  .cd-back-link:hover { color: #fff; }
-  .cd-inst-badge {
-    display: inline-flex; align-items: center; gap: .5rem;
-    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
-    border-radius: 20px; padding: .3rem .9rem; font-size: .8rem; color: rgba(255,255,255,.85);
-    margin-bottom: .9rem;
+  .cd-hero-left { display: flex; flex-direction: column; align-items: flex-start; }
+  .cd-back-link {
+    display: inline-flex; align-items: center; gap: .45rem;
+    font-size: .82rem; font-weight: 700;
+    color: rgba(255,255,255,.85);
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.18);
+    backdrop-filter: blur(8px);
+    padding: .45rem 1rem .45rem .8rem;
+    border-radius: 50px;
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+    transition: background .18s, color .18s;
   }
-  .cd-inst-badge .inst-logo { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; }
-  .cd-inst-badge .inst-initials { width: 22px; height: 22px; border-radius: 50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.7rem; color:#fff; background: var(--brand); }
-  .cd-title { font-size: 2.1rem; font-weight: 800; color: #fff; line-height: 1.25; margin-bottom: 1rem; max-width: 780px; }
-  .cd-chips { display: flex; flex-wrap: wrap; gap: .55rem; }
+  .cd-back-link:hover { background: rgba(255,255,255,.2); color: #fff; }
+  .cd-back-link .arrow { transition: transform .18s; }
+  .cd-back-link:hover .arrow { transform: translateX(-3px); }
+  .cd-inst-block {
+    display: flex; align-items: center; gap: .85rem;
+    margin-bottom: 1.1rem;
+    text-decoration: none;
+  }
+  .cd-inst-logo {
+    width: 56px; height: 56px; flex-shrink: 0;
+    border-radius: 12px; background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,.35);
+    overflow: hidden;
+  }
+  .cd-inst-logo img { width: 100%; height: 100%; object-fit: contain; padding: 5px; }
+  .cd-inst-logo .initials { font-size: 1.3rem; font-weight: 900; color: var(--brand); line-height: 1; }
+  .cd-inst-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: rgba(255,255,255,.4); margin-bottom: .15rem; }
+  .cd-inst-name  { font-size: 1rem; font-weight: 800; color: #fff; line-height: 1.2; }
+  .cd-inst-location { font-size: .75rem; color: rgba(255,255,255,.55); margin-top: .1rem; }
+  .cd-inst-block:hover .cd-inst-name { text-decoration: underline; }
+  .cd-title { font-size: 2rem; font-weight: 800; color: #fff; line-height: 1.25; margin: 0 0 1.1rem; }
+  .cd-chips { display: flex; flex-wrap: wrap; gap: .5rem; }
   .cd-chip { display: inline-flex; align-items: center; gap: .35rem; font-size: .78rem; padding: .35rem .8rem; border-radius: 20px; font-weight: 600; }
   .cd-chip-price { background: var(--brand); color: #fff; }
   .cd-chip-price.free { background: #16a34a; }
   .cd-chip-price.demand { background: rgba(255,255,255,.12); color: rgba(255,255,255,.8); border: 1px solid rgba(255,255,255,.2); }
   .cd-chip-neutral { background: rgba(255,255,255,.1); color: rgba(255,255,255,.8); border: 1px solid rgba(255,255,255,.12); }
+  /* right image panel */
+  .cd-hero-img {
+    aspect-ratio: 16/10;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 16px 48px rgba(0,0,0,.45);
+    background: linear-gradient(135deg, color-mix(in srgb, ${brand} 60%, #000), #0f0720);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .cd-hero-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cd-hero-img .no-img-icon { font-size: 4rem; opacity: .25; color: #fff; }
+  @media (max-width: 900px) {
+    .cd-hero-grid { grid-template-columns: 1fr; }
+    .cd-hero-img { aspect-ratio: 16/7; border-radius: 14px; }
+    .cd-title { font-size: 1.65rem; }
+  }
+  @media (max-width: 500px) {
+    .cd-hero-img { aspect-ratio: 16/9; }
+    .cd-title { font-size: 1.4rem; }
+  }
 
   /* ── Stat bar ── */
   .cd-stat-bar { background: #fff; border-bottom: 1px solid #f1f5f9; padding: .9rem 0; }
@@ -125,8 +168,7 @@
   .cta-contact a:hover { text-decoration: underline; }
   .cta-divider { height: 1px; background: #f1f5f9; margin: 1rem 0; }
 
-  @media (max-width: 768px) {
-    .cd-title { font-size: 1.55rem; }
+  @media (max-width: 900px) {
     .cd-layout { flex-direction: column; }
     .cd-sidebar { width: 100%; }
     .cta-card { position: static; }
@@ -135,38 +177,55 @@
 
 <!-- Hero -->
 <section class="cd-hero">
-  <% if (course.imageUrl) { %>
-    <div class="cd-hero-bg" style="background-image: url('<%= course.imageUrl %>');"></div>
-  <% } %>
-  <div class="cd-hero-overlay"></div>
-  <div class="cd-hero-content">
-    <div class="container">
-      <a href="/formations" class="cd-back-link">← Retour au catalogue</a>
-      <div class="cd-inst-badge">
-        <% if (inst.logoUrl) { %>
-          <img src="<%= inst.logoUrl %>" alt="<%= inst.name %>" class="inst-logo">
+  <div class="container">
+    <div class="cd-hero-grid">
+
+      <!-- Left: text content -->
+      <div class="cd-hero-left">
+        <a href="/formations" class="cd-back-link"><span class="arrow">←</span> Retour au catalogue</a>
+        <a href="/formations/institutions/<%= inst._id %>" class="cd-inst-block">
+          <div class="cd-inst-logo">
+            <% if (inst.logoUrl) { %>
+              <img src="<%= inst.logoUrl %>" alt="<%= inst.name %>">
+            <% } else { %>
+              <span class="initials"><%= (inst.name || 'I').substring(0,2).toUpperCase() %></span>
+            <% } %>
+          </div>
+          <div>
+            <div class="cd-inst-label">Institution</div>
+            <div class="cd-inst-name"><%= inst.name || 'Institution' %></div>
+            <% if (inst.city || inst.country) { %>
+              <div class="cd-inst-location">📍 <%= [inst.city, inst.country].filter(Boolean).join(', ') %></div>
+            <% } %>
+          </div>
+        </a>
+        <h1 class="cd-title"><%= course.title %></h1>
+        <div class="cd-chips">
+          <%
+            let priceChipClass = 'cd-chip-price';
+            if (isFree) priceChipClass += ' free';
+            else if (priceText === 'Sur demande') priceChipClass += ' demand';
+          %>
+          <span class="cd-chip <%= priceChipClass %>">
+            <%= isFree ? '🎓' : (priceText === 'Sur demande' ? '📋' : '💳') %> <%= priceText %>
+          </span>
+          <span class="cd-chip cd-chip-neutral">📚 <%= modules.length %> module<%= modules.length !== 1 ? 's' : '' %></span>
+          <span class="cd-chip cd-chip-neutral">🎬 <%= totalLessons %> leçon<%= totalLessons !== 1 ? 's' : '' %></span>
+          <% if (hasFinalExam) { %><span class="cd-chip cd-chip-neutral">📝 Examen final</span><% } %>
+          <% if (hasFinalProject) { %><span class="cd-chip cd-chip-neutral">🎯 Projet final</span><% } %>
+          <% if (avgRating) { %><span class="cd-chip cd-chip-neutral">⭐ <%= avgRating %>/5</span><% } %>
+        </div>
+      </div>
+
+      <!-- Right: course image -->
+      <div class="cd-hero-img">
+        <% if (course.imageUrl) { %>
+          <img src="<%= course.imageUrl %>" alt="<%= course.title %>">
         <% } else { %>
-          <span class="inst-initials"><%= (inst.name || 'I').charAt(0).toUpperCase() %></span>
+          <i class="bi bi-book-half no-img-icon"></i>
         <% } %>
-        <%= inst.name || 'Institution' %>
-        <% if (inst.city) { %> · <%= inst.city %><% } %>
       </div>
-      <h1 class="cd-title"><%= course.title %></h1>
-      <div class="cd-chips">
-        <%
-          let priceChipClass = 'cd-chip-price';
-          if (isFree) priceChipClass += ' free';
-          else if (priceText === 'Sur demande') priceChipClass += ' demand';
-        %>
-        <span class="cd-chip <%= priceChipClass %>">
-          <%= isFree ? '🎓' : (priceText === 'Sur demande' ? '📋' : '💳') %> <%= priceText %>
-        </span>
-        <span class="cd-chip cd-chip-neutral">📚 <%= modules.length %> module<%= modules.length !== 1 ? 's' : '' %></span>
-        <span class="cd-chip cd-chip-neutral">🎬 <%= totalLessons %> leçon<%= totalLessons !== 1 ? 's' : '' %></span>
-        <% if (hasFinalExam) { %><span class="cd-chip cd-chip-neutral">📝 Examen final</span><% } %>
-        <% if (hasFinalProject) { %><span class="cd-chip cd-chip-neutral">🎯 Projet final</span><% } %>
-        <% if (avgRating) { %><span class="cd-chip cd-chip-neutral">⭐ <%= avgRating %>/5</span><% } %>
-      </div>
+
     </div>
   </div>
 </section>
@@ -285,6 +344,9 @@
         <div class="cta-card">
           <div class="cta-price <%= isFree ? 'free' : (priceText === 'Sur demande' ? 'demand' : '') %>"><%= priceText %></div>
           <div class="cta-inst-name">Proposé par <strong><%= inst.name || 'l\'institution' %></strong></div>
+          <a href="/formations/institutions/<%= inst._id %>" style="display:inline-flex;align-items:center;gap:.35rem;font-size:.78rem;font-weight:700;color:var(--brand);text-decoration:none;margin-top:.35rem;">
+            Voir tous les cours →
+          </a>
 
           <div class="cta-divider"></div>
 
@@ -314,7 +376,9 @@
           <% } %>
 
           <div class="cta-divider"></div>
-          <a href="/formations" style="display:block;text-align:center;font-size:.82rem;color:#94a3b8;text-decoration:none;">← Retour au catalogue</a>
+          <a href="/formations" style="display:flex;align-items:center;justify-content:center;gap:.4rem;font-size:.82rem;font-weight:600;color:#64748b;text-decoration:none;padding:.5rem;border-radius:8px;transition:background .15s,color .15s;" onmouseover="this.style.background='#f1f5f9';this.style.color='#1e293b'" onmouseout="this.style.background='';this.style.color='#64748b'">
+            <span style="font-size:.9rem;">←</span> Retour au catalogue
+          </a>
         </div>
       </div>
 

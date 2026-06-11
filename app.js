@@ -194,6 +194,24 @@ app.get('/formations', async (req, res) => {
     res.render('formations', { courses });
 });
 
+app.get('/formations/institutions/:institutionId', async (req, res) => {
+    const Institution = require('./shared/models/institution');
+    const institution = await Institution.findById(req.params.institutionId).lean();
+    if (!institution) return res.status(404).render('noAccess', { statusCode: 404, message: 'Institution introuvable' });
+
+    const courses = await InstitutionCourse
+        .find({ institutionId: institution._id, isActive: true })
+        .select('title description imageUrl modules pricing createdAt')
+        .lean();
+
+    courses.forEach(c => {
+        if (c.title) c.title = stripHtml(c.title);
+        if (c.description) c.description = stripHtml(c.description);
+    });
+
+    res.render('formations-institution', { institution, courses });
+});
+
 app.get('/formations/:courseId', async (req, res) => {
     const course = await InstitutionCourse
         .findOne({ _id: req.params.courseId, isActive: true })
