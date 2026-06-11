@@ -237,7 +237,8 @@ app.get('/formations/:courseId', async (req, res) => {
 
     const [modules, testimonials] = await Promise.all([
         InstitutionModule.find({ courseId: course._id })
-            .select('title order lessons')
+            .select('title order lessons quiz assignment')
+            .populate('lessons', 'title type isPreview videoDuration')
             .sort({ order: 1 })
             .lean(),
         InstitutionCourseTestimonial.find({ courseId: course._id, isPublished: true })
@@ -254,22 +255,25 @@ app.get('/formations/:courseId', async (req, res) => {
 
 // Public lesson preview (no auth required — only works when isPreview: true)
 app.get('/formations/:courseId/preview/:lessonId', async (req, res) => {
-    const lesson = await InstitutionLesson.findOne({
-        _id: req.params.lessonId,
-        courseId: req.params.courseId,
-        isPreview: true,
-        isActive: true
-    }).lean();
+    try {
+        const lesson = await InstitutionLesson.findOne({
+            _id: req.params.lessonId,
+            courseId: req.params.courseId,
+            isPreview: true
+        }).lean();
 
-    if (!lesson) return res.status(404).render('noAccess', { statusCode: 404, message: 'Aperçu indisponible' });
+        if (!lesson) return res.status(404).render('noAccess', { statusCode: 404, message: 'Aperçu indisponible' });
 
-    const course = await InstitutionCourse.findOne({ _id: req.params.courseId, isActive: true })
-        .populate('institutionId', 'name primaryColor logoUrl')
-        .lean();
+        const course = await InstitutionCourse.findOne({ _id: req.params.courseId, isActive: true })
+            .populate('institutionId', 'name primaryColor logoUrl')
+            .lean();
 
-    if (!course) return res.status(404).render('noAccess', { statusCode: 404, message: 'Cours introuvable' });
+        if (!course) return res.status(404).render('noAccess', { statusCode: 404, message: 'Cours introuvable' });
 
-    res.render('formations-preview', { lesson, course });
+        res.render('formations-preview', { lesson, course });
+    } catch (err) {
+        res.status(404).render('noAccess', { statusCode: 404, message: 'Aperçu indisponible' });
+    }
 });
 
 // Contact form submission (public, no auth)

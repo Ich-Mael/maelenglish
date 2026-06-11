@@ -60,6 +60,28 @@
       <% if (course.imageUrl) { %>
         <img src="<%= course.imageUrl %>" alt="<%= course.title %>" style="max-width:100%;border-radius:10px;max-height:260px;object-fit:cover;margin-bottom:1.25rem;">
       <% } %>
+
+      <!-- Promo video -->
+      <div style="margin-bottom:1.25rem;padding:.85rem 1rem;border-radius:10px;background:<%= course.promoVideoUrl ? '#f0fdf4' : '#fff8f0' %>;border:1px solid <%= course.promoVideoUrl ? '#bbf7d0' : '#fed7aa' %>;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+          <div>
+            <p style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:<%= course.promoVideoUrl ? '#15803d' : '#c2410c' %>;margin:0 0 .25rem;">
+              🎬 Vidéo de présentation
+            </p>
+            <% if (course.promoVideoUrl) { %>
+              <a href="<%= course.promoVideoUrl %>" target="_blank" style="font-size:.85rem;color:#0891b2;word-break:break-all;text-decoration:none;">
+                <%= course.promoVideoUrl %>
+              </a>
+            <% } else { %>
+              <p style="font-size:.82rem;color:#c2410c;margin:0;">Non définie — les visiteurs ne verront pas de vidéo sur la page publique.</p>
+            <% } %>
+          </div>
+          <a href="/institution/dashboard/content/courses/<%= course._id %>/edit" style="font-size:.8rem;font-weight:700;color:#5d06ba;text-decoration:none;white-space:nowrap;padding:.35rem .85rem;border:1.5px solid #c4b5fd;border-radius:8px;">
+            <%= course.promoVideoUrl ? '✏ Modifier' : '+ Ajouter' %>
+          </a>
+        </div>
+      </div>
+
       <% if (course.description) { %>
         <div class="mb-3"><%- course.description %></div>
       <% } %>
