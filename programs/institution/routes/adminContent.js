@@ -25,6 +25,7 @@ router.get('/courses/:id',        ...adminOnly,  courseController.show);   // in
 router.get('/courses/:id/edit',   ...afroHKOnly, courseController.edit);
 router.put('/courses/:id',        ...afroHKOnly, courseController.update);
 router.delete('/courses/:id',     ...afroHKOnly, courseController.destroy);
+router.post('/courses/:id/toggle-active', ...afroHKOnly, courseController.toggleActive);
 
 // ─── MODULE CRUD (AfroHK only) ───────────────────────────────────────────────
 

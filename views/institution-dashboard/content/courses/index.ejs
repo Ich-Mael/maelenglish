@@ -67,6 +67,14 @@
                 <a href="/institution/dashboard/content/courses/<%= course._id %>/submissions" class="btn-outline-secondary btn-small" style="color:#5d06ba;border-color:#c4b5fd;">📋 Soumissions</a>
                 <a href="/institution/dashboard/content/courses/<%= course._id %>" class="btn-outline-secondary btn-small">Voir</a>
                 <a href="/institution/dashboard/content/courses/<%= course._id %>/edit" class="btn-outline-secondary btn-small">Modifier</a>
+                <form action="/institution/dashboard/content/courses/<%= course._id %>/toggle-active" method="POST" style="display:inline;">
+                  <button type="submit" class="btn-small" style="border-radius:6px;cursor:pointer;font-size:.8rem;padding:.4rem .8rem;
+                    background:<%= course.isActive ? '#fef2f2' : '#f0fdf4' %>;
+                    color:<%= course.isActive ? '#dc2626' : '#15803d' %>;
+                    border:1px solid <%= course.isActive ? '#fca5a5' : '#86efac' %>;">
+                    <%= course.isActive ? 'Désactiver' : 'Activer' %>
+                  </button>
+                </form>
                 <form action="/institution/dashboard/content/courses/<%= course._id %>?_method=DELETE" method="POST" style="display: inline;"
                       onsubmit="return confirm('Supprimer ce cours ? Cela supprimera tous ses modules et leçons.')">
                   <button type="submit" class="btn-outline-danger btn-small">Supprimer</button>

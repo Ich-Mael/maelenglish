@@ -99,6 +99,21 @@ module.exports.update = catchAsync(async (req, res) => {
     res.redirect(`/institution/dashboard/content/courses/${course._id}`);
 });
 
+module.exports.toggleActive = catchAsync(async (req, res) => {
+    const course = await InstitutionCourse.findOne({
+        _id: req.params.id,
+        institutionId: req.institution._id
+    });
+    if (!course) {
+        req.flash('error', 'Cours introuvable.');
+        return res.redirect('/institution/dashboard/content');
+    }
+    course.isActive = !course.isActive;
+    await course.save();
+    req.flash('success', `Cours "${course.title}" ${course.isActive ? 'activé' : 'désactivé'}.`);
+    res.redirect('/institution/dashboard/content');
+});
+
 module.exports.destroy = catchAsync(async (req, res) => {
     const course = await InstitutionCourse.findOne({
         _id: req.params.id,

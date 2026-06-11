@@ -132,15 +132,17 @@ router.get('/:id', ...adminOnly, catchAsync(async (req, res) => {
         return res.redirect('/admin/institutions');
     }
 
-    const [studentCount, courseCount, instructors] = await Promise.all([
+    const [studentCount, courses, instructors] = await Promise.all([
         User.countDocuments({ institutionId: institution._id, role: 'user' }),
-        InstitutionCourse.countDocuments({ institutionId: institution._id }),
+        InstitutionCourse.find({ institutionId: institution._id })
+            .select('title isActive createdAt')
+            .sort({ createdAt: -1 }),
         InstitutionInstructor.find({ institutionId: institution._id })
             .populate('userId', 'name surname username email isVerified')
             .sort({ createdAt: -1 })
     ]);
 
-    res.render('admin/institutions/show', { institution, studentCount, courseCount, instructors });
+    res.render('admin/institutions/show', { institution, studentCount, courses, courseCount: courses.length, instructors });
 }));
 
 // ─── EDIT ─────────────────────────────────────────────────────────────────────
@@ -247,6 +249,23 @@ router.post('/:id/instructors', ...adminOnly, catchAsync(async (req, res) => {
     }
 
     res.redirect(`/admin/institutions/${institution._id}`);
+}));
+
+// ─── TOGGLE COURSE ACTIVE ─────────────────────────────────────────────────────
+
+router.post('/:id/courses/:courseId/toggle', ...adminOnly, catchAsync(async (req, res) => {
+    const course = await InstitutionCourse.findOne({
+        _id: req.params.courseId,
+        institutionId: req.params.id
+    });
+    if (!course) {
+        req.flash('error', 'Cours introuvable.');
+        return res.redirect(`/admin/institutions/${req.params.id}`);
+    }
+    course.isActive = !course.isActive;
+    await course.save();
+    req.flash('success', `Cours "${course.title}" ${course.isActive ? 'activé' : 'désactivé'}.`);
+    res.redirect(`/admin/institutions/${req.params.id}`);
 }));
 
 // ─── TOGGLE ACTIVE ────────────────────────────────────────────────────────────
