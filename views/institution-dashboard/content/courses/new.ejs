@@ -44,6 +44,25 @@
         </div>
 
         <div class="mb-3">
+          <label class="form-label">Objectifs du cours</label>
+          <textarea id="courseObjectives" name="objectives" class="form-control" rows="4" placeholder="Ce que les apprenants vont acquérir à l'issue de ce cours..."></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">À qui s'adresse ce cours ?</label>
+          <textarea id="courseAudience" name="targetAudience" class="form-control" rows="3" placeholder="Décrivez le public cible : profils, niveau, besoins..."></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Catégorie</label>
+          <select name="category" class="form-control">
+            <% ['Informatique & Tech','Gestion & Finance','Droit & Fiscalité','Langues','Marketing & Communication','Comptabilité','Ressources Humaines','Développement Personnel','Santé','Agriculture','Autre'].forEach(cat => { %>
+              <option value="<%= cat %>"><%= cat %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div class="mb-3">
           <label class="form-label">Image de couverture (URL)</label>
           <input type="url" name="imageUrl" class="form-control" placeholder="https://example.com/image.jpg">
         </div>
@@ -61,8 +80,10 @@
 <script>
 hugerte.init({ ...window.RTECONFIG, selector: '#courseDesc', height: 240 });
 hugerte.init({ ...window.RTECONFIG, selector: '#coursePrereqs', height: 180 });
+hugerte.init({ ...window.RTECONFIG, selector: '#courseObjectives', height: 200 });
+hugerte.init({ ...window.RTECONFIG, selector: '#courseAudience', height: 180 });
 document.querySelector('form').addEventListener('submit', function() {
-  ['courseDesc', 'coursePrereqs'].forEach(function(id) {
+  ['courseDesc', 'coursePrereqs', 'courseObjectives', 'courseAudience'].forEach(function(id) {
     var ed = window.hugerte && window.hugerte.get(id);
     if (ed) document.getElementById(id).value = ed.getContent();
   });

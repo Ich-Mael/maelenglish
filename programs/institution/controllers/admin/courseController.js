@@ -25,13 +25,16 @@ module.exports.create = catchAsync(async (req, res) => {
         req.flash('error', 'Aucune institution sélectionnée.');
         return res.redirect('/admin/institutions');
     }
-    const { title, description, prerequisites, imageUrl } = req.body;
+    const { title, description, prerequisites, objectives, targetAudience, imageUrl, category } = req.body;
     const course = await InstitutionCourse.create({
         institutionId: req.institution._id,
         title: title.trim(),
         description: description || '',
         prerequisites: prerequisites || '',
+        objectives: objectives || '',
+        targetAudience: targetAudience || '',
         imageUrl: imageUrl || '',
+        category: category || 'Autre',
         createdBy: req.user._id
     });
     req.flash('success', `Cours "${course.title}" créé.`);
@@ -70,7 +73,7 @@ module.exports.edit = catchAsync(async (req, res) => {
 });
 
 module.exports.update = catchAsync(async (req, res) => {
-    const { title, description, prerequisites, imageUrl, isActive } = req.body;
+    const { title, description, prerequisites, objectives, targetAudience, imageUrl, isActive, category } = req.body;
     const course = await InstitutionCourse.findOne({
         _id: req.params.id,
         institutionId: req.institution._id
@@ -84,7 +87,10 @@ module.exports.update = catchAsync(async (req, res) => {
     if (title) course.title = title.trim();
     if (description !== undefined) course.description = description;
     if (prerequisites !== undefined) course.prerequisites = prerequisites;
+    if (objectives !== undefined) course.objectives = objectives;
+    if (targetAudience !== undefined) course.targetAudience = targetAudience;
     if (imageUrl !== undefined) course.imageUrl = imageUrl;
+    if (category) course.category = category;
     course.isActive = isActive === 'on' || isActive === 'true';
 
     const pricingBody = req.body.pricing || {};

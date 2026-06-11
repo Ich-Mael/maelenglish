@@ -138,6 +138,22 @@
   .lesson-row:last-child { border-bottom: none; }
   .lesson-icon { color: #94a3b8; font-size: .85rem; width: 18px; text-align: center; flex-shrink: 0; }
 
+  /* ── Objectives box ── */
+  .obj-box { background: #f0fdf4; border-radius: 12px; padding: 1.25rem 1.5rem; }
+  .obj-box ul { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: .6rem; }
+  .obj-box ul li { display: flex; align-items: flex-start; gap: .6rem; font-size: .9rem; color: #1e293b; line-height: 1.5; }
+  .obj-box ul li::before { content: '✓'; color: #16a34a; font-weight: 800; font-size: .95rem; flex-shrink: 0; margin-top: .05rem; }
+  .obj-box .rte-content { font-size: .9rem; color: #1e293b; line-height: 1.65; }
+  .obj-box .rte-content ul { display: block; padding-left: 0; }
+  .obj-box .rte-content ul li { display: flex; }
+  .obj-box .rte-content p { margin: 0 0 .5rem; }
+
+  /* ── Audience box ── */
+  .audience-box { background: #eff6ff; border-left: 3px solid #3b82f6; border-radius: 10px; padding: 1rem 1.25rem; }
+  .audience-box .rte-content { font-size: .9rem; color: #1e293b; line-height: 1.65; }
+  .audience-box .rte-content p { margin: 0 0 .5rem; }
+  .audience-box .rte-content ul, .audience-box .rte-content ol { padding-left: 1.25rem; margin: 0; }
+
   /* ── Prerequisites box ── */
   .prereq-box { background: #f5f3ff; border-left: 3px solid var(--brand); border-radius: 10px; padding: 1rem 1.25rem; }
 
@@ -209,6 +225,7 @@
           <span class="cd-chip <%= priceChipClass %>">
             <%= isFree ? '🎓' : (priceText === 'Sur demande' ? '📋' : '💳') %> <%= priceText %>
           </span>
+          <% if (course.category && course.category !== 'Autre') { %><span class="cd-chip cd-chip-neutral">🏷 <%= course.category %></span><% } %>
           <span class="cd-chip cd-chip-neutral">📚 <%= modules.length %> module<%= modules.length !== 1 ? 's' : '' %></span>
           <span class="cd-chip cd-chip-neutral">🎬 <%= totalLessons %> leçon<%= totalLessons !== 1 ? 's' : '' %></span>
           <% if (hasFinalExam) { %><span class="cd-chip cd-chip-neutral">📝 Examen final</span><% } %>
@@ -242,7 +259,27 @@
         <% if (course.description) { %>
         <div class="cd-section">
           <h2>À propos de ce cours</h2>
-          <p style="color:#374151;line-height:1.7;font-size:.95rem;margin:0;"><%= course.description %></p>
+          <div style="color:#374151;line-height:1.7;font-size:.95rem;"><%- course.description %></div>
+        </div>
+        <% } %>
+
+        <!-- Objectives -->
+        <% if (course.objectives) { %>
+        <div class="cd-section">
+          <h2>Ce que vous allez apprendre</h2>
+          <div class="obj-box">
+            <div class="rte-content"><%- course.objectives %></div>
+          </div>
+        </div>
+        <% } %>
+
+        <!-- Target audience -->
+        <% if (course.targetAudience) { %>
+        <div class="cd-section">
+          <h2>À qui s'adresse ce cours ?</h2>
+          <div class="audience-box">
+            <div class="rte-content"><%- course.targetAudience %></div>
+          </div>
         </div>
         <% } %>
 
@@ -251,7 +288,7 @@
         <div class="cd-section">
           <h2>Prérequis</h2>
           <div class="prereq-box">
-            <p style="margin:0;color:#374151;font-size:.9rem;line-height:1.6;"><%= course.prerequisites %></p>
+            <div style="color:#374151;font-size:.9rem;line-height:1.6;"><%- course.prerequisites %></div>
           </div>
         </div>
         <% } %>

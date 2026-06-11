@@ -231,9 +231,7 @@ app.get('/formations/:courseId', async (req, res) => {
             .lean()
     ]);
 
-    course.title       = stripHtml(course.title);
-    course.description = stripHtml(course.description);
-    if (course.prerequisites) course.prerequisites = stripHtml(course.prerequisites);
+    course.title = stripHtml(course.title);
 
     const totalLessons = modules.reduce((sum, m) => sum + (m.lessons ? m.lessons.length : 0), 0);
 

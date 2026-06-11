@@ -17,10 +17,10 @@
 
       <!-- Center: Logo -->
       <div class="navbar-logo">
-        <a href="/">
-          <svg height="40" stroke-miterlimit="10"
+        <a href="/" class="navbar-logo-circle">
+          <svg stroke-miterlimit="10"
             style="fill-rule: nonzero; clip-rule: evenodd; stroke-linecap: round; stroke-linejoin: round;" version="1.1"
-            viewBox="0 0 1024 1024" width="40" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 1024 1024" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"
             xmlns:vectornator="http://vectornator.io" xmlns:xlink="http://www.w3.org/1999/xlink">
             <defs />
             <path d="M0 0L1024 0L1024 1024L0 1024L0 0Z" fill="#ffffff" fill-rule="nonzero" opacity="1" stroke="none" />
@@ -129,8 +129,7 @@
           <% } else { %>
             <!-- Visitor CTA -->
             <div class="navbar-cta">
-              <a href="/login" class="btn-primary"
-                style="background: transparent; border: 2px solid #5d06ba; color: #5d06ba; margin-right: 10px;">Connexion</a>
+              <a href="/login" class="btn-outline">Connexion</a>
               <a href="#contact" class="btn-primary scrollto">
                 Contact
                 <i class="bi bi-arrow-right"></i>
@@ -145,6 +144,8 @@
               </button>
 
     </div>
+    <!-- scroll-progress bar -->
+    <div class="scroll-progress"><div class="scroll-progress-fill" id="scrollProgressFill"></div></div>
   </div>
 </header>
 
@@ -176,10 +177,9 @@
       </a>
     </div>
     <% } else { %>
-      <div class="navbar-cta" style="flex-direction: column; gap: 10px; padding: 0 20px;">
-        <a href="/login" class="btn-primary"
-          style="background: transparent; border: 2px solid #5d06ba; color: #5d06ba; width: 100%; text-align: center;">Connexion</a>
-        <a href="#contact" class="btn-primary scrollto" style="width: 100%; justify-content: center;">
+      <div class="navbar-cta">
+        <a href="/login" class="btn-outline">Connexion</a>
+        <a href="#contact" class="btn-primary scrollto">
           Contact
           <i class="bi bi-arrow-right"></i>
         </a>
@@ -188,47 +188,80 @@
 </div>
 
 <script>
-  // Mobile menu toggle functionality
-  document.addEventListener('DOMContentLoaded', function () {
-    const mobileToggle = document.querySelector('.mobile-nav-toggle');
-    const mobileClose = document.querySelector('.mobile-nav-close');
-    const mobileMenu = document.querySelector('.navbar-mobile');
-    const header = document.querySelector('#header');
+var isHomePage = <%- (typeof isHomePage !== 'undefined' && isHomePage) ? 'true' : 'false' %>;
+(function () {
+  const header       = document.querySelector('#header');
+  const progressFill = document.getElementById('scrollProgressFill');
+  const mobileToggle = document.querySelector('.mobile-nav-toggle');
+  const mobileClose  = document.querySelector('.mobile-nav-close');
+  const mobileMenu   = document.querySelector('.navbar-mobile');
+  const isHome       = !!isHomePage;
 
-    if (mobileToggle && mobileMenu) {
-      mobileToggle.addEventListener('click', function () {
-        this.classList.toggle('active');
-        mobileMenu.classList.toggle('active');
-        document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
-      });
+  /* ── Home transparent state ── */
+  if (isHome) header.classList.add('header-home');
 
-      if (mobileClose) {
-        mobileClose.addEventListener('click', function () {
-          mobileToggle.classList.remove('active');
-          mobileMenu.classList.remove('active');
-          document.body.style.overflow = '';
-        });
-      }
+  /* ── Scroll handler ── */
+  function onScroll() {
+    const scrollY   = window.scrollY;
+    const scrolled  = scrollY > 80;
 
-      // Close mobile menu when clicking on a link
-      const mobileLinks = mobileMenu.querySelectorAll('a');
-      mobileLinks.forEach(link => {
-        link.addEventListener('click', function () {
-          mobileToggle.classList.remove('active');
-          mobileMenu.classList.remove('active');
-          document.body.style.overflow = '';
-        });
-      });
+    header.classList.toggle('header-scrolled', scrolled);
+
+    /* Remove transparent glass once scrolled */
+    if (isHome) header.classList.toggle('header-home', !scrolled);
+
+    /* Progress bar */
+    if (progressFill) {
+      const docH   = document.documentElement.scrollHeight - window.innerHeight;
+      const pct    = docH > 0 ? (scrollY / docH) * 100 : 0;
+      progressFill.style.width = pct + '%';
     }
+  }
 
-    // Scrolled state
-    window.addEventListener('scroll', function () {
-      if (window.scrollY > 100) {
-        header.classList.add('header-scrolled');
-      } else {
-        header.classList.remove('header-scrolled');
-      }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll(); // run once on load
+
+  /* ── Active section tracking (home page) ── */
+  if (isHome && 'IntersectionObserver' in window) {
+    const sections  = document.querySelectorAll('section[id], div[id]');
+    const navLinks  = document.querySelectorAll('.navbar-nav a.scrollto, .navbar-mobile .navbar-nav a.scrollto');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            link.classList.toggle('active', href === '#' + id);
+          });
+        }
+      });
+    }, { threshold: 0.4 });
+
+    sections.forEach(s => observer.observe(s));
+  }
+
+  /* ── Mobile menu ── */
+  function closeMobile() {
+    mobileToggle && mobileToggle.classList.remove('active');
+    mobileMenu   && mobileMenu.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  if (mobileToggle && mobileMenu) {
+    mobileToggle.addEventListener('click', function () {
+      const opening = !mobileMenu.classList.contains('active');
+      this.classList.toggle('active');
+      mobileMenu.classList.toggle('active');
+      document.body.style.overflow = opening ? 'hidden' : '';
     });
-  });
+
+    mobileClose && mobileClose.addEventListener('click', closeMobile);
+
+    mobileMenu.querySelectorAll('a').forEach(link =>
+      link.addEventListener('click', closeMobile)
+    );
+  }
+})();
 </script>
 <!-- End Header -->

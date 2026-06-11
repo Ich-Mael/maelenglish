@@ -14,7 +14,26 @@ const institutionCourseSchema = new mongoose.Schema(
         },
         description: String,
         prerequisites: String,
+        objectives: String,
+        targetAudience: String,
         imageUrl: String,
+        category: {
+            type: String,
+            enum: [
+                'Informatique & Tech',
+                'Gestion & Finance',
+                'Droit & Fiscalité',
+                'Langues',
+                'Marketing & Communication',
+                'Comptabilité',
+                'Ressources Humaines',
+                'Développement Personnel',
+                'Santé',
+                'Agriculture',
+                'Autre'
+            ],
+            default: 'Autre'
+        },
         isActive: {
             type: Boolean,
             default: false

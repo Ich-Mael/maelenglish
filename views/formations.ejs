@@ -66,6 +66,17 @@
     background: #5107ce;
     color: #fff;
   }
+  .category-badge {
+    display: inline-block;
+    font-size: .7rem;
+    font-weight: 700;
+    padding: .2rem .6rem;
+    border-radius: 20px;
+    background: #ede9fe;
+    color: #5107ce;
+    white-space: nowrap;
+    align-self: flex-start;
+  }
 
   .results-meta {
     font-size: .85rem;
@@ -283,22 +294,37 @@
     <%
       const allInstitutions = [];
       const seenIds = new Set();
+      const allCategories = [];
+      const seenCats = new Set();
       courses.forEach(c => {
         const inst = c.institutionId;
         if (inst && !seenIds.has(String(inst._id))) {
           seenIds.add(String(inst._id));
           allInstitutions.push(inst);
         }
+        const cat = c.category || 'Autre';
+        if (!seenCats.has(cat)) { seenCats.add(cat); allCategories.push(cat); }
       });
     %>
 
     <!-- Institution filter pills -->
     <% if (allInstitutions.length > 1) { %>
     <div class="filter-bar">
-      <span class="filter-label">Filtrer :</span>
-      <button class="filter-pill active" data-inst="">Toutes les institutions</button>
+      <span class="filter-label">Institution :</span>
+      <button class="filter-pill active" data-inst="">Toutes</button>
       <% allInstitutions.forEach(inst => { %>
         <button class="filter-pill" data-inst="<%= String(inst._id) %>"><%= inst.name %></button>
+      <% }) %>
+    </div>
+    <% } %>
+
+    <!-- Category filter pills -->
+    <% if (allCategories.length > 1) { %>
+    <div class="filter-bar" id="catFilterBar">
+      <span class="filter-label">Catégorie :</span>
+      <button class="filter-pill active" data-cat="">Toutes</button>
+      <% allCategories.forEach(cat => { %>
+        <button class="filter-pill" data-cat="<%= cat %>"><%= cat %></button>
       <% }) %>
     </div>
     <% } %>
@@ -327,8 +353,9 @@
         else if (pricing.amount) { priceLabel = Number(pricing.amount).toLocaleString('fr-FR') + ' ' + (pricing.currency || 'FCFA'); priceBadgeClass = 'paid'; }
         else { priceLabel = 'Sur demande'; priceBadgeClass = 'demand'; }
       %>
-      <div class="course-card" data-inst="<%= instId %>"
-           data-search="<%= [course.title, course.description, inst ? inst.name : ''].join(' ').toLowerCase() %>">
+      <% const courseCat = course.category || 'Autre'; %>
+      <div class="course-card" data-inst="<%= instId %>" data-cat="<%= courseCat %>"
+           data-search="<%= [course.title, course.description, inst ? inst.name : '', courseCat].join(' ').toLowerCase() %>">
         <div class="course-thumb" style="background: linear-gradient(135deg, <%= brand %>, color-mix(in srgb, <%= brand %> 60%, #000));">
           <% if (course.imageUrl) { %>
             <img loading="lazy" src="<%= course.imageUrl %>" alt="<%= course.title %>">
@@ -349,6 +376,7 @@
             <span class="inst-name-sm"><%= inst ? inst.name : 'Institution' %></span>
           </div>
           <h5 class="course-title"><%= course.title %></h5>
+          <span class="category-badge"><%= courseCat %></span>
           <% if (course.description) { %>
             <div class="course-desc-wrap">
               <p class="course-desc"><%= course.description.substring(0, 110) %><%= course.description.length > 110 ? '…' : '' %></p>
@@ -385,28 +413,40 @@
   const cards = Array.from(grid.querySelectorAll('.course-card'));
   const countEl = document.getElementById('resultCount');
   const searchInput = document.getElementById('searchInput');
-  const filterPills = document.querySelectorAll('.filter-pill');
+  const instPills = document.querySelectorAll('[data-inst]');
+  const catPills  = document.querySelectorAll('[data-cat]');
 
   let activeInst = '';
+  let activeCat  = '';
   let searchQuery = '';
 
   function applyFilters() {
     let visible = 0;
     cards.forEach(card => {
       const matchInst = !activeInst || card.dataset.inst === activeInst;
+      const matchCat  = !activeCat  || card.dataset.cat  === activeCat;
       const matchSearch = !searchQuery || card.dataset.search.includes(searchQuery);
-      const show = matchInst && matchSearch;
+      const show = matchInst && matchCat && matchSearch;
       card.style.display = show ? '' : 'none';
       if (show) visible++;
     });
     countEl.textContent = visible;
   }
 
-  filterPills.forEach(pill => {
+  instPills.forEach(pill => {
     pill.addEventListener('click', function () {
-      filterPills.forEach(p => p.classList.remove('active'));
+      instPills.forEach(p => p.classList.remove('active'));
       this.classList.add('active');
       activeInst = this.dataset.inst;
+      applyFilters();
+    });
+  });
+
+  catPills.forEach(pill => {
+    pill.addEventListener('click', function () {
+      catPills.forEach(p => p.classList.remove('active'));
+      this.classList.add('active');
+      activeCat = this.dataset.cat;
       applyFilters();
     });
   });

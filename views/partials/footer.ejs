@@ -1,293 +1,460 @@
 <!-- ======= Footer ======= -->
 <style>
-  /* Footer Premium Styles */
   #footer {
-    background: #0f0f12;
-    color: #e0e0e0;
-    font-size: 0.95rem;
+    background: #09040f;
+    color: #cbd5e1;
     font-family: 'Outfit', sans-serif;
-    padding-top: 5rem;
-    margin-top: auto;
     position: relative;
     overflow: hidden;
   }
 
-  /* Top Gradient Border */
-  #footer::before {
-    content: '';
+  /* ambient glows */
+  #footer .fg-orb-1 {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #5d06ba 0%, #a259ff 50%, #5d06ba 100%);
+    top: -120px; right: -80px;
+    width: 520px; height: 520px;
+    background: radial-gradient(circle, rgba(93,6,186,.18) 0%, transparent 65%);
+    pointer-events: none;
   }
-
-  /* Subtle Background Glow */
-  #footer::after {
-    content: '';
+  #footer .fg-orb-2 {
     position: absolute;
-    top: -100px;
-    right: -100px;
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(93, 6, 186, 0.15) 0%, transparent 70%);
-    z-index: 0;
+    bottom: 60px; left: -100px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(168,85,247,.10) 0%, transparent 65%);
     pointer-events: none;
   }
 
-  .footer-content {
-    position: relative;
-    z-index: 1;
-    padding-bottom: 4rem;
+  /* dot-grid texture */
+  #footer::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,.028) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
   }
 
-  /* Brand Section */
-  .footer-brand h3 {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 1.2rem;
-    letter-spacing: -0.5px;
-    color: white;
-    display: inline-block;
-  }
-  
-  .footer-brand h3 span {
-    color: #5d06ba;
+  /* top accent line */
+  .footer-accent-line {
+    height: 3px;
+    background: linear-gradient(90deg, transparent 0%, #5d06ba 30%, #a855f7 60%, transparent 100%);
   }
 
-  .footer-brand p {
-    color: #a0a0a5;
-    line-height: 1.7;
-    margin-bottom: 2rem;
-    max-width: 320px;
-    font-size: 1rem;
+  /* ── CTA strip ── */
+  .footer-cta-strip {
+    position: relative; z-index: 1;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    padding: 2.5rem 0;
   }
-
-  /* Column Titles */
-  .footer-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 1.5rem;
-    letter-spacing: 0.5px;
-  }
-
-  /* Links with Hover Effect */
-  .footer-links ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .footer-links li {
-    margin-bottom: 1rem;
-  }
-
-  .footer-links a {
-    color: #a0a0a5;
-    text-decoration: none;
-    transition: all 0.3s ease;
+  .footer-cta-inner {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 1rem;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
   }
-
-  .footer-links a:hover {
-    color: #a259ff;
-    transform: translateX(5px);
+  .footer-cta-text .fct-label {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #a855f7;
+    margin-bottom: .35rem;
   }
-  
-  .footer-links a i {
-      font-size: 0.8rem;
-      color: #5d06ba;
-      transition: color 0.3s ease;
+  .footer-cta-text h2 {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0;
+    line-height: 1.25;
+    letter-spacing: -.02em;
   }
-  
-  .footer-links a:hover i {
-      color: #a259ff;
-  }
-
-  /* Contact Items */
-  .footer-contact-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1.25rem;
-    color: #a0a0a5;
-  }
-
-  .footer-contact-item i {
-    color: #5d06ba;
-    font-size: 1.25rem;
-    margin-top: 2px;
+  .footer-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    background: #5d06ba;
+    color: #fff;
+    font-size: .88rem;
+    font-weight: 700;
+    padding: .75rem 1.6rem;
+    border-radius: 12px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background .22s, transform .22s, box-shadow .22s;
+    box-shadow: 0 4px 18px rgba(93,6,186,.35);
     flex-shrink: 0;
   }
+  .footer-cta-btn:hover {
+    background: #4a0594;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(93,6,186,.5);
+    color: #fff;
+  }
+  .footer-cta-btn i { font-size: .9rem; transition: transform .22s; }
+  .footer-cta-btn:hover i { transform: translateX(3px); }
 
-  /* Modern Social Icons */
-  .social-links {
-    display: flex;
-    gap: 12px;
+  /* ── Main grid ── */
+  .footer-main {
+    position: relative; z-index: 1;
+    padding: 3.5rem 0 3rem;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.8fr 1fr 1.2fr 1.3fr;
+    gap: 2.5rem 3rem;
   }
 
-  .social-btn {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.05);
+  /* brand col */
+  .footer-brand-col {}
+  .footer-logo-circle {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(0,0,0,.35);
+    overflow: hidden;
+    padding: 7px;
+    margin-bottom: 1.2rem;
     text-decoration: none;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: transform .25s, box-shadow .25s;
+    flex-shrink: 0;
+  }
+  .footer-logo-circle:hover {
+    transform: scale(1.07);
+    box-shadow: 0 6px 28px rgba(93,6,186,.35);
+  }
+  .footer-logo-circle img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .footer-brand-name {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: .6rem;
+    letter-spacing: -.01em;
+  }
+  .footer-brand-name span { color: #a855f7; }
+  .footer-tagline {
+    font-size: .85rem;
+    color: #7c8ca0;
+    line-height: 1.65;
+    margin-bottom: 1.5rem;
+    max-width: 280px;
   }
 
-  .social-btn:hover {
-    background: #5d06ba;
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(93, 6, 186, 0.3);
-    border-color: #5d06ba;
+  /* social */
+  .footer-social {
+    display: flex;
+    gap: 9px;
+    flex-wrap: wrap;
   }
-  
-  .social-btn i {
-    font-size: 1.2rem;
-  }
-
-  /* Footer Bottom */
-  .footer-bottom {
-    background: #050507;
-    padding: 2rem 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    font-size: 0.9rem;
-    color: #6e6e73;
-  }
-
-  /* Newsletter/Input Group (Optional Future Use) */
-  .footer-input-group {
-    position: relative;
-    margin-top: 1rem;
-  }
-  
-  .footer-input {
-    width: 100%;
-    padding: 12px 16px;
-    padding-right: 50px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+  .footer-social-btn {
+    width: 38px; height: 38px;
     border-radius: 10px;
-    color: white;
-    outline: none;
-    transition: all 0.3s ease;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.08);
+    display: flex; align-items: center; justify-content: center;
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: background .22s, color .22s, transform .22s, border-color .22s;
   }
-  
-  .footer-input:focus {
-    border-color: #5d06ba;
-    background: rgba(255,255,255,0.08);
-  }
-  
-  .footer-input-btn {
-    position: absolute;
-    right: 5px;
-    top: 5px;
-    bottom: 5px;
-    width: 40px;
+  .footer-social-btn:hover {
     background: #5d06ba;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  
-  .footer-input-btn:hover {
-    background: #7b2cbf;
+    border-color: #5d06ba;
+    color: #fff;
+    transform: translateY(-3px);
   }
 
-  @media (max-width: 991px) {
-    .footer-brand { margin-bottom: 2rem; }
-    .footer-links { margin-bottom: 2rem; }
+  /* column */
+  .footer-col-title {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 1.25rem;
+    position: relative;
+    padding-bottom: .6rem;
+  }
+  .footer-col-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 24px; height: 2px;
+    background: #5d06ba;
+    border-radius: 2px;
+  }
+  .footer-col ul {
+    list-style: none;
+    padding: 0; margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+  }
+  .footer-col ul li a {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    color: #7c8ca0;
+    text-decoration: none;
+    font-size: .88rem;
+    padding: .45rem 0;
+    border-bottom: 1px solid transparent;
+    transition: color .22s, gap .22s;
+  }
+  .footer-col ul li a i {
+    font-size: .65rem;
+    color: #5d06ba;
+    opacity: 0;
+    transition: opacity .22s, transform .22s;
+  }
+  .footer-col ul li a:hover {
+    color: #e2e8f0;
+    gap: .75rem;
+  }
+  .footer-col ul li a:hover i {
+    opacity: 1;
+    transform: translateX(2px);
+  }
+  .footer-col ul li a .ext-icon {
+    font-size: .62rem;
+    color: #4b5563;
+    margin-left: auto;
+    opacity: 0;
+    transition: opacity .22s;
+  }
+  .footer-col ul li a:hover .ext-icon { opacity: 1; }
+
+  /* contact col */
+  .footer-contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .footer-contact-row {
+    display: flex;
+    align-items: flex-start;
+    gap: .85rem;
+  }
+  .footer-contact-row .fci {
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    background: rgba(93,6,186,.15);
+    border: 1px solid rgba(93,6,186,.25);
+    display: flex; align-items: center; justify-content: center;
+    color: #a855f7;
+    font-size: .9rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .footer-contact-row .fct {
+    font-size: .75rem;
+    color: #4b5563;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: .15rem;
+  }
+  .footer-contact-row .fcv {
+    font-size: .85rem;
+    color: #94a3b8;
+    line-height: 1.45;
+  }
+  .footer-contact-row a.fcv {
+    text-decoration: none;
+    transition: color .2s;
+  }
+  .footer-contact-row a.fcv:hover { color: #e2e8f0; }
+
+  /* ── Divider ── */
+  .footer-divider {
+    position: relative; z-index: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.07) 30%, rgba(255,255,255,.07) 70%, transparent);
+    margin: 0;
+  }
+
+  /* ── Bottom bar ── */
+  .footer-bottom {
+    position: relative; z-index: 1;
+    padding: 1.5rem 0;
+  }
+  .footer-bottom-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .footer-copyright {
+    font-size: .8rem;
+    color: #4b5563;
+  }
+  .footer-copyright strong { color: #64748b; }
+  .footer-made {
+    font-size: .78rem;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+  }
+  .footer-made .heart { color: #ef4444; }
+  .footer-legal {
+    display: flex;
+    gap: 1.5rem;
+  }
+  .footer-legal a {
+    font-size: .78rem;
+    color: #374151;
+    text-decoration: none;
+    transition: color .2s;
+  }
+  .footer-legal a:hover { color: #94a3b8; }
+
+  /* ── Responsive ── */
+  @media (max-width: 1100px) {
+    .footer-grid { grid-template-columns: 1.6fr 1fr 1.1fr; }
+    .footer-brand-col { grid-column: 1 / -1; display: flex; align-items: flex-start; gap: 2rem; flex-wrap: wrap; }
+    .footer-tagline { max-width: 360px; }
+  }
+  @media (max-width: 768px) {
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .footer-brand-col { grid-column: 1 / -1; flex-direction: column; gap: 0; }
+    .footer-cta-inner { flex-direction: column; align-items: flex-start; }
+    .footer-cta-text h2 { font-size: 1.25rem; }
+    .footer-bottom-inner { flex-direction: column; align-items: flex-start; gap: .75rem; }
+  }
+  @media (max-width: 480px) {
+    .footer-grid { grid-template-columns: 1fr; }
+    .footer-main { padding: 2.5rem 0 2rem; }
   }
 </style>
 
 <footer id="footer">
-  <div class="container footer-content">
-    <div class="row">
-      <!-- Brand & About -->
-      <div class="col-lg-4 col-md-12 footer-brand">
-        <h3>Afro HK<span>.</span></h3>
-        <p>
-          Libérez votre potentiel grâce à une éducation d'excellence. 
-          Afro House of Knowledge construit les leaders de demain à travers l'innovation et la culture.
-        </p>
-        <div class="social-links">
-          <a href="https://web.facebook.com/Afro-House-Of-Knowledge-104795908266730" target="_blank" class="social-btn" aria-label="Facebook"><i class="bx bxl-facebook"></i></a>
-          <a href="https://www.instagram.com/afro_h_k/" target="_blank" class="social-btn" aria-label="Instagram"><i class="bx bxl-instagram"></i></a>
-          <a href="https://www.youtube.com/channel/UCoyOQOqSqRGjH8FrkvT4b0g" target="_blank" class="social-btn" aria-label="YouTube"><i class="bx bxl-youtube"></i></a>
-          <a href="https://twitter.com/afro__HK" target="_blank" class="social-btn" aria-label="Twitter"><i class="bx bxl-twitter"></i></a>
-          <a href="#" class="social-btn" aria-label="LinkedIn"><i class="bx bxl-linkedin"></i></a>
-        </div>
-      </div>
+  <div class="fg-orb-1"></div>
+  <div class="fg-orb-2"></div>
 
-      <!-- Quick Links -->
-      <div class="col-lg-2 col-md-6 footer-links">
-        <div class="footer-title">Navigation</div>
-        <ul>
-          <li><a href="/">Accueil</a></li>
-          <li><a href="/#about">À propos</a></li>
-          <li><a href="/#portfolio">Communauté</a></li>
-        </ul>
-      </div>
+  <div class="footer-accent-line"></div>
 
-      <!-- Programs -->
-      <div class="col-lg-3 col-md-6 footer-links">
-        <div class="footer-title">Nos Programmes</div>
-        <ul>
-            <li><a href="/programs/language-learning/english4all">English Boost</a></li>
-            <li><a href="/programs/ekalan/kalan">e-Kalan</a></li>
-            <li><a href="www.englishbiiga.com" target="_blank">English biiga</a></li>
-        </ul>
-      </div>
-
-      <!-- Contact -->
-      <div class="col-lg-3 col-md-12 footer-links">
-        <div class="footer-title">Nous Contacter</div>
-        <div class="footer-contact-item">
-          <i class="bi bi-geo-alt"></i>
-          <div>
-            <strong>Siège Social</strong><br>
-            Ouagadougou, Burkina Faso
-          </div>
+  <!-- CTA Strip -->
+  <div class="footer-cta-strip">
+    <div class="container">
+      <div class="footer-cta-inner">
+        <div class="footer-cta-text">
+          <div class="fct-label">Formations disponibles maintenant</div>
+          <h2>Prêt à transformer votre avenir ?</h2>
         </div>
-        <div class="footer-contact-item">
-          <i class="bi bi-envelope"></i>
-          <div>
-            <strong>Email</strong><br>
-            contact@afrohk.com
-          </div>
-        </div>
-        <div class="footer-contact-item">
-          <i class="bi bi-telephone"></i>
-          <div>
-            <strong>Téléphone</strong><br>
-            +226 67323131
-          </div>
-        </div>
+        <a href="/formations" class="footer-cta-btn">
+          Explorer les formations
+          <i class="bi bi-arrow-right"></i>
+        </a>
       </div>
     </div>
   </div>
 
-  <div class="footer-bottom">
-    <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between">
-      <div class="copyright text-center text-md-start mb-2 mb-md-0">
-        &copy; <%= new Date().getFullYear() %> <strong>Afro House of Knowledge</strong>. Tous droits réservés.
+  <!-- Main Grid -->
+  <div class="footer-main">
+    <div class="container">
+      <div class="footer-grid">
+
+        <!-- Brand -->
+        <div class="footer-brand-col">
+          <a href="/" class="footer-logo-circle">
+            <img src="/assets/img/afrohk_logo_2.png" alt="Afro House of Knowledge">
+          </a>
+          <div>
+            <div class="footer-brand-name">Afro House of Knowledge<span>.</span></div>
+            <p class="footer-tagline">Libérez votre potentiel grâce à une éducation d'excellence. Nous construisons les leaders de demain à travers l'innovation et la culture africaine.</p>
+            <div class="footer-social">
+              <a href="https://web.facebook.com/Afro-House-Of-Knowledge-104795908266730" target="_blank" rel="noopener" class="footer-social-btn" aria-label="Facebook"><i class="bx bxl-facebook"></i></a>
+              <a href="https://www.instagram.com/afro_h_k/" target="_blank" rel="noopener" class="footer-social-btn" aria-label="Instagram"><i class="bx bxl-instagram"></i></a>
+              <a href="https://www.youtube.com/channel/UCoyOQOqSqRGjH8FrkvT4b0g" target="_blank" rel="noopener" class="footer-social-btn" aria-label="YouTube"><i class="bx bxl-youtube"></i></a>
+              <a href="https://twitter.com/afro__HK" target="_blank" rel="noopener" class="footer-social-btn" aria-label="Twitter/X"><i class="bx bxl-twitter"></i></a>
+              <a href="#" class="footer-social-btn" aria-label="LinkedIn"><i class="bx bxl-linkedin"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="footer-col">
+          <div class="footer-col-title">Navigation</div>
+          <ul>
+            <li><a href="/"><i class="bi bi-chevron-right"></i>Accueil</a></li>
+            <li><a href="/#about"><i class="bi bi-chevron-right"></i>À propos</a></li>
+            <li><a href="/#programs"><i class="bi bi-chevron-right"></i>Nos programmes</a></li>
+            <li><a href="/#gallery"><i class="bi bi-chevron-right"></i>Galerie</a></li>
+            <li><a href="/formations"><i class="bi bi-chevron-right"></i>Formations</a></li>
+          </ul>
+        </div>
+
+        <!-- Programmes -->
+        <div class="footer-col">
+          <div class="footer-col-title">Nos Programmes</div>
+          <ul>
+            <li><a href="/programs/language-learning/english4all"><i class="bi bi-chevron-right"></i>English Boost</a></li>
+            <li><a href="/programs/ekalan/kalan"><i class="bi bi-chevron-right"></i>e-Kalan</a></li>
+            <li>
+              <a href="https://www.englishbiiga.com" target="_blank" rel="noopener">
+                <i class="bi bi-chevron-right"></i>English Biiga
+                <i class="bi bi-box-arrow-up-right ext-icon"></i>
+              </a>
+            </li>
+            <li><a href="/formations"><i class="bi bi-chevron-right"></i>Formations institutionnelles</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact -->
+        <div class="footer-col">
+          <div class="footer-col-title">Nous Contacter</div>
+          <div class="footer-contact-list">
+            <div class="footer-contact-row">
+              <div class="fci"><i class="bi bi-geo-alt-fill"></i></div>
+              <div>
+                <div class="fct">Adresse</div>
+                <div class="fcv">Ouagadougou, Burkina Faso</div>
+              </div>
+            </div>
+            <div class="footer-contact-row">
+              <div class="fci"><i class="bi bi-envelope-fill"></i></div>
+              <div>
+                <div class="fct">Email</div>
+                <a href="mailto:afrohouseofknowledge@gmail.com" class="fcv">afrohouseofknowledge@gmail.com</a>
+              </div>
+            </div>
+            <div class="footer-contact-row">
+              <div class="fci"><i class="bi bi-telephone-fill"></i></div>
+              <div>
+                <div class="fct">Téléphone</div>
+                <a href="tel:+22667323131" class="fcv">+226 67 32 31 31</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
-      <div class="text-center text-md-end">
-        <div class="d-flex gap-4">
-           <a href="#" class="text-white text-decoration-none small" style="opacity:0.6;">Mentions Légales</a>
-           <a href="#" class="text-white text-decoration-none small" style="opacity:0.6;">Confidentialité</a>
+    </div>
+  </div>
+
+  <div class="footer-divider"></div>
+
+  <!-- Bottom bar -->
+  <div class="footer-bottom">
+    <div class="container">
+      <div class="footer-bottom-inner">
+        <div class="footer-copyright">
+          &copy; <%= new Date().getFullYear() %> <strong>Afro House of Knowledge</strong>. Tous droits réservés.
+        </div>
+        <div class="footer-made">
+          Fait avec <span class="heart">♥</span> en Afrique
+        </div>
+        <div class="footer-legal">
+          <a href="#">Mentions légales</a>
+          <a href="#">Confidentialité</a>
         </div>
       </div>
     </div>
