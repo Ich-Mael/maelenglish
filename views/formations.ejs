@@ -27,7 +27,7 @@
   .search-bar-wrap input::placeholder { color: #94a3b8; }
   .search-bar-wrap button {
     padding: 12px 22px;
-    background: #f59e0b;
+    background: #1e293b;
     color: #fff;
     border: none;
     border-radius: 12px;
@@ -37,7 +37,7 @@
     white-space: nowrap;
     transition: background .2s;
   }
-  .search-bar-wrap button:hover { background: #d97706; }
+  .search-bar-wrap button:hover { background: #0f172a; }
 
   .catalog-body { padding: 48px 0 80px; background: #f8fafc; min-height: 60vh; }
 
@@ -76,14 +76,16 @@
 
   .courses-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 24px;
   }
+  @media (max-width: 992px) { .courses-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px)  { .courses-grid { grid-template-columns: 1fr; } }
 
   .course-card {
     background: #fff;
     border-radius: 18px;
-    overflow: hidden;
+    overflow: visible;
     box-shadow: 0 2px 14px rgba(0,0,0,.07);
     display: flex;
     flex-direction: column;
@@ -93,6 +95,42 @@
     transform: translateY(-5px);
     box-shadow: 0 10px 32px rgba(0,0,0,.13);
   }
+  /* Description tooltip */
+  .course-desc-wrap {
+    position: relative;
+    flex: 1;
+    overflow: visible;
+  }
+  .course-desc {
+    font-size: .83rem;
+    color: #64748b;
+    line-height: 1.55;
+    margin: 0;
+    cursor: default;
+  }
+  .desc-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0; right: 0;
+    background: #1e293b;
+    color: #e2e8f0;
+    font-size: .8rem;
+    line-height: 1.6;
+    padding: .85rem 1rem;
+    border-radius: 10px;
+    box-shadow: 0 8px 28px rgba(0,0,0,.25);
+    z-index: 100;
+    pointer-events: none;
+  }
+  .desc-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%; left: 20px;
+    border: 6px solid transparent;
+    border-top-color: #1e293b;
+  }
+  .course-desc-wrap:hover .desc-tooltip { display: block; }
   .course-thumb {
     position: relative;
     height: 210px;
@@ -100,6 +138,7 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    border-radius: 18px 18px 0 0;
   }
   .course-price-badge {
     position: absolute;
@@ -174,13 +213,6 @@
     color: #1e293b;
     margin: 0;
     line-height: 1.35;
-  }
-  .course-desc {
-    font-size: .83rem;
-    color: #64748b;
-    line-height: 1.55;
-    margin: 0;
-    flex: 1;
   }
   .course-meta-row {
     display: flex;
@@ -318,7 +350,12 @@
           </div>
           <h5 class="course-title"><%= course.title %></h5>
           <% if (course.description) { %>
-            <p class="course-desc"><%= course.description.substring(0, 110) %><%= course.description.length > 110 ? '…' : '' %></p>
+            <div class="course-desc-wrap">
+              <p class="course-desc"><%= course.description.substring(0, 110) %><%= course.description.length > 110 ? '…' : '' %></p>
+              <% if (course.description.length > 110) { %>
+                <div class="desc-tooltip"><%= course.description %></div>
+              <% } %>
+            </div>
           <% } %>
           <div class="course-meta-row">
             <span><i class="bi bi-grid-3x3-gap-fill"></i> <%= moduleCount %> module<%= moduleCount !== 1 ? 's' : '' %></span>

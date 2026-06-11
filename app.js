@@ -51,17 +51,32 @@ const institutionStudentRoutes = require("./shared/routes/institutionStudent");
 
 function stripHtml(html) {
     if (!html) return '';
+    const entities = {
+        // lowercase accented
+        agrave: 'à', aacute: 'á', acirc: 'â', atilde: 'ã', auml: 'ä', aring: 'å',
+        egrave: 'è', eacute: 'é', ecirc: 'ê', euml: 'ë',
+        igrave: 'ì', iacute: 'í', icirc: 'î', iuml: 'ï',
+        ograve: 'ò', oacute: 'ó', ocirc: 'ô', otilde: 'õ', ouml: 'ö',
+        ugrave: 'ù', uacute: 'ú', ucirc: 'û', uuml: 'ü',
+        ccedil: 'ç', ntilde: 'ñ', aelig: 'æ', oelig: 'œ', szlig: 'ß',
+        // uppercase accented
+        Agrave: 'À', Aacute: 'Á', Acirc: 'Â', Atilde: 'Ã', Auml: 'Ä', Aring: 'Å',
+        Egrave: 'È', Eacute: 'É', Ecirc: 'Ê', Euml: 'Ë',
+        Igrave: 'Ì', Iacute: 'Í', Icirc: 'Î', Iuml: 'Ï',
+        Ograve: 'Ò', Oacute: 'Ó', Ocirc: 'Ô', Otilde: 'Õ', Ouml: 'Ö',
+        Ugrave: 'Ù', Uacute: 'Ú', Ucirc: 'Û', Uuml: 'Ü',
+        Ccedil: 'Ç', Ntilde: 'Ñ', AElig: 'Æ', OElig: 'Œ',
+        // punctuation & quotes
+        rsquo: '’', lsquo: '‘', rdquo: '”', ldquo: '“',
+        ndash: '–', mdash: '—', hellip: '…', middot: '·',
+        laquo: '«', raquo: '»',
+    };
     return html
         .replace(/<[^>]*>/g, ' ')
         .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
         .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
-        .replace(/&([a-z]+);/g, (_, e) => (
-            {
-                agrave: 'à', aacute: 'á', acirc: 'â', egrave: 'è', eacute: 'é', ecirc: 'ê', euml: 'ë',
-                icirc: 'î', iuml: 'ï', ograve: 'ò', oacute: 'ó', ocirc: 'ô', ugrave: 'ù', uacute: 'ú',
-                ucirc: 'û', uuml: 'ü', ccedil: 'ç', ntilde: 'ñ', aelig: 'æ', oelig: 'œ'
-            }[e] || `&${e};`
-        ))
+        .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
+        .replace(/&([A-Za-z]+);/g, (_, e) => entities[e] || `&${e};`)
         .replace(/\s+/g, ' ').trim();
 }
 
