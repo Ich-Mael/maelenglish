@@ -16,10 +16,10 @@ const catchAsync = require('../../../../shared/utilities/catchAsync');
 // ─── COURSE LIST ─────────────────────────────────────────────────────────────
 
 module.exports.courses = catchAsync(async (req, res) => {
+    // Fetch all enrollments across all institutions for this student
     const enrollments = await InstitutionEnrollment.find({
-        userId: req.user._id,
-        institutionId: req.institution._id
-    }).populate('courseId', 'title isActive imageUrl');
+        userId: req.user._id
+    }).populate('courseId', 'title isActive imageUrl institutionId');
 
     const courseIds = enrollments.map(e => e.courseId?._id).filter(Boolean);
 

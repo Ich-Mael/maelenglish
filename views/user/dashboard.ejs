@@ -3,84 +3,84 @@
 <% headContent = `<style>
   #main { margin-top: 0 !important; padding-top: 0 !important; }
 
-  /* ─── Layout ─────────────────────────────────────────── */
-  .ud-page {
-    background: #f3f4f8;
-    min-height: 100vh;
-    padding: 100px 0 5rem;
-  }
+  /* ─── Page ───────────────────────────────────────────────── */
+  .ud-page { background: #f0f0f6; min-height: 100vh; padding: 100px 0 5rem; }
   .ud-container { max-width: 1060px; margin: 0 auto; padding: 0 1.25rem; }
 
-  /* ─── Hero ───────────────────────────────────────────── */
+  /* ─── Hero ───────────────────────────────────────────────── */
   .ud-hero {
-    background: linear-gradient(135deg, #1a0044 0%, #3b0096 55%, #6d22c5 100%);
-    border-radius: 20px;
-    padding: 2.25rem 2.5rem;
+    background: linear-gradient(135deg, #120033 0%, #3b0096 55%, #6d22c5 100%);
+    border-radius: 22px;
+    padding: 2.5rem 2.5rem;
     color: #fff;
     display: flex;
     align-items: center;
     gap: 2rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 12px 40px rgba(93,6,186,.28);
+    margin-bottom: 1.75rem;
+    box-shadow: 0 12px 40px rgba(93,6,186,.3);
     position: relative;
     overflow: hidden;
   }
+  .ud-hero::before {
+    content: '';
+    position: absolute; right: -60px; top: -60px;
+    width: 260px; height: 260px;
+    background: rgba(255,255,255,.06);
+    border-radius: 50%;
+    pointer-events: none;
+  }
   .ud-hero::after {
     content: '';
-    position: absolute;
-    right: -80px; top: -80px;
-    width: 280px; height: 280px;
-    background: rgba(255,255,255,.07);
+    position: absolute; right: 80px; bottom: -90px;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,.04);
     border-radius: 50%;
     pointer-events: none;
   }
   .ud-avatar {
-    width: 90px; height: 90px;
-    border-radius: 50%;
-    border: 3px solid rgba(255,255,255,.3);
-    object-fit: cover;
-    flex-shrink: 0;
+    width: 88px; height: 88px; border-radius: 50%;
+    border: 3px solid rgba(255,255,255,.35);
+    object-fit: cover; flex-shrink: 0;
+    position: relative; z-index: 1;
   }
   .ud-avatar-initials {
-    width: 90px; height: 90px;
-    border-radius: 50%;
-    border: 3px solid rgba(255,255,255,.3);
-    background: rgba(255,255,255,.15);
+    width: 88px; height: 88px; border-radius: 50%;
+    border: 3px solid rgba(255,255,255,.35);
+    background: rgba(255,255,255,.12);
     display: flex; align-items: center; justify-content: center;
-    font-size: 2rem; font-weight: 700; color: #fff;
-    flex-shrink: 0;
-    backdrop-filter: blur(4px);
+    font-size: 2rem; font-weight: 800; color: #fff;
+    flex-shrink: 0; backdrop-filter: blur(6px);
+    position: relative; z-index: 1;
   }
-  .ud-hero-info { flex: 1; min-width: 0; }
-  .ud-hero-name { font-size: 1.65rem; font-weight: 800; margin: 0 0 .2rem; line-height: 1.2; }
-  .ud-hero-meta { font-size: .85rem; opacity: .75; margin-bottom: .9rem; display: flex; gap: 1.25rem; flex-wrap: wrap; }
+  .ud-hero-info { flex: 1; min-width: 0; position: relative; z-index: 1; }
+  .ud-hero-name { font-size: 1.7rem; font-weight: 800; margin: 0 0 .3rem; line-height: 1.2; }
+  .ud-hero-meta { font-size: .83rem; opacity: .7; margin-bottom: 1rem; display: flex; gap: 1.25rem; flex-wrap: wrap; }
   .ud-hero-meta span { display: inline-flex; align-items: center; gap: .35rem; }
   .ud-chips { display: flex; gap: .5rem; flex-wrap: wrap; }
   .ud-chip {
-    padding: .3rem .85rem;
-    border-radius: 50px;
-    font-size: .78rem; font-weight: 600;
-    background: rgba(255,255,255,.15);
-    border: 1px solid rgba(255,255,255,.2);
+    padding: .3rem .9rem; border-radius: 50px;
+    font-size: .77rem; font-weight: 600;
+    background: rgba(255,255,255,.13);
+    border: 1px solid rgba(255,255,255,.22);
     backdrop-filter: blur(6px);
     display: inline-flex; align-items: center; gap: .35rem;
   }
-  .ud-chip-green { background: rgba(52,211,153,.25); border-color: rgba(52,211,153,.4); }
-  .ud-hero-actions { display: flex; flex-direction: column; gap: .75rem; align-items: flex-end; flex-shrink: 0; }
+  .ud-chip-green { background: rgba(52,211,153,.22); border-color: rgba(52,211,153,.4); }
+  .ud-hero-actions { display: flex; flex-direction: column; gap: .75rem; align-items: flex-end; flex-shrink: 0; position: relative; z-index: 1; }
   .ud-btn-pw {
     display: inline-flex; align-items: center; gap: .6rem;
     padding: .65rem 1.4rem;
-    background: rgba(255,255,255,.15);
-    border: 1.5px solid rgba(255,255,255,.3);
+    background: rgba(255,255,255,.13);
+    border: 1.5px solid rgba(255,255,255,.28);
     color: #fff; text-decoration: none;
-    border-radius: 12px; font-weight: 600; font-size: .88rem;
-    backdrop-filter: blur(6px);
+    border-radius: 12px; font-weight: 600; font-size: .85rem;
+    backdrop-filter: blur(8px);
     transition: background .2s, transform .2s;
     white-space: nowrap;
   }
-  .ud-btn-pw:hover { background: rgba(255,255,255,.25); transform: translateY(-2px); color: #fff; text-decoration: none; }
+  .ud-btn-pw:hover { background: rgba(255,255,255,.22); transform: translateY(-2px); color: #fff; text-decoration: none; }
 
-  /* ─── Stats ──────────────────────────────────────────── */
+  /* ─── Stats ──────────────────────────────────────────────── */
   .ud-stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -88,164 +88,291 @@
     margin-bottom: 2rem;
   }
   .ud-stat {
-    background: #fff;
-    border-radius: 14px;
-    padding: 1.25rem 1.4rem;
-    box-shadow: 0 2px 12px rgba(0,0,0,.06);
-    display: flex; align-items: center; gap: 1rem;
+    background: #fff; border-radius: 14px;
+    padding: 1.1rem 1.25rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    display: flex; align-items: center; gap: .9rem;
     transition: transform .2s, box-shadow .2s;
   }
   .ud-stat:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,.1); }
   .ud-stat-icon {
-    width: 48px; height: 48px;
-    border-radius: 12px;
+    width: 44px; height: 44px; border-radius: 11px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.35rem; flex-shrink: 0;
+    font-size: 1.2rem; flex-shrink: 0;
   }
-  .ud-stat-icon.purple { background: rgba(93,6,186,.1); color: #5d06ba; }
+  .ud-stat-icon.purple { background: rgba(93,6,186,.1);  color: #5d06ba; }
   .ud-stat-icon.blue   { background: rgba(59,130,246,.1); color: #2563eb; }
   .ud-stat-icon.teal   { background: rgba(20,184,166,.1); color: #0d9488; }
-  .ud-stat-icon.green  { background: rgba(34,197,94,.1); color: #16a34a; }
+  .ud-stat-icon.green  { background: rgba(34,197,94,.1);  color: #16a34a; }
   .ud-stat-icon.orange { background: rgba(249,115,22,.1); color: #ea580c; }
-  .ud-stat-val { font-size: 1.6rem; font-weight: 800; color: #1e1b4b; line-height: 1; }
-  .ud-stat-lbl { font-size: .78rem; color: #64748b; margin-top: .2rem; font-weight: 500; }
+  .ud-stat-val { font-size: 1.5rem; font-weight: 800; color: #1e1b4b; line-height: 1; }
+  .ud-stat-lbl { font-size: .75rem; color: #64748b; margin-top: .2rem; font-weight: 500; }
 
-  /* ─── Sections ───────────────────────────────────────── */
-  .ud-section { margin-bottom: 2rem; }
-  .ud-section-head {
-    display: flex; align-items: center; gap: .65rem;
-    font-size: 1.1rem; font-weight: 700; color: #1e1b4b;
-    margin-bottom: 1.1rem;
-    padding-bottom: .75rem;
-    border-bottom: 2px solid #ede8ff;
-  }
-  .ud-section-head i { color: #5d06ba; font-size: 1.1rem; }
+  /* ─── Section wrapper ────────────────────────────────────── */
+  .ud-section { margin-bottom: 1.75rem; }
 
-  /* ─── Quick Actions ──────────────────────────────────── */
-  .ud-actions-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: .9rem;
+  /* ─── Section panel labels ───────────────────────────────── */
+  .ud-panel-label {
+    display: flex; align-items: center; gap: .6rem;
+    font-size: .72rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: .1em;
+    margin-bottom: 1rem;
+    padding: 0 .25rem;
   }
-  .ud-action-btn {
+  .ud-panel-label .lbl-line {
+    flex: 1; height: 1px;
+  }
+
+  /* AfroHK label: purple */
+  .ud-panel-label.afrohk { color: #5d06ba; }
+  .ud-panel-label.afrohk .lbl-line { background: linear-gradient(to right, #c4b5fd, transparent); }
+
+  /* Institution label: slate */
+  .ud-panel-label.institution { color: #0e7490; }
+  .ud-panel-label.institution .lbl-line { background: linear-gradient(to right, #a5f3fc, transparent); }
+
+  /* Quick actions */
+  .ud-panel-label.actions { color: #374151; }
+  .ud-panel-label.actions .lbl-line { background: linear-gradient(to right, #d1d5db, transparent); }
+
+  /* ─── AfroHK panel ───────────────────────────────────────── */
+  .afrohk-panel {
+    background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+    border: 1px solid #e9d5ff;
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 1.75rem;
+  }
+  .afrohk-panel-header {
     display: flex; align-items: center; gap: .75rem;
-    padding: 1rem 1.25rem;
-    background: #fff;
-    border-radius: 12px;
-    border: 1.5px solid #e8e3ff;
-    color: #3b0096; font-weight: 600; font-size: .9rem;
-    text-decoration: none;
-    transition: all .2s;
-    box-shadow: 0 2px 8px rgba(93,6,186,.06);
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1.5px solid #e9d5ff;
   }
-  .ud-action-btn i { font-size: 1.2rem; color: #5d06ba; }
-  .ud-action-btn:hover {
-    background: #5d06ba; color: #fff; border-color: #5d06ba;
-    transform: translateY(-2px); box-shadow: 0 6px 18px rgba(93,6,186,.25);
-    text-decoration: none;
+  .afrohk-panel-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: linear-gradient(135deg, #5d06ba, #7c3aed);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 1.1rem; flex-shrink: 0;
   }
-  .ud-action-btn:hover i { color: #fff; }
+  .afrohk-panel-title { font-size: 1rem; font-weight: 800; color: #3b0096; margin: 0; }
+  .afrohk-panel-sub   { font-size: .78rem; color: #7c3aed; margin: 0; }
 
-  /* ─── Program & Course Cards ─────────────────────────── */
+  /* ─── Institution panel ──────────────────────────────────── */
+  .inst-panel {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 1.75rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,.05);
+  }
+
+  /* Institution group (one per institution) */
+  .inst-group { border-bottom: 1px solid #f1f5f9; }
+  .inst-group:last-child { border-bottom: none; }
+
+  .inst-group-header {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 1.1rem 1.5rem;
+    border-left: 4px solid var(--g-brand, #0e7490);
+    background: color-mix(in srgb, var(--g-brand, #0e7490) 5%, #fff);
+  }
+  .inst-group-logo {
+    width: 42px; height: 42px; border-radius: 10px;
+    background: #fff; border: 1.5px solid #e2e8f0;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,.08);
+  }
+  .inst-group-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+  .inst-group-logo .fallback {
+    font-size: .75rem; font-weight: 800;
+    color: var(--g-brand, #0e7490);
+  }
+  .inst-group-name { font-size: .97rem; font-weight: 800; color: #1e293b; margin: 0; }
+  .inst-group-meta { font-size: .77rem; color: #64748b; margin: .1rem 0 0; }
+  .inst-group-count {
+    margin-left: auto; flex-shrink: 0;
+    background: color-mix(in srgb, var(--g-brand, #0e7490) 12%, #fff);
+    color: var(--g-brand, #0e7490);
+    font-size: .72rem; font-weight: 700;
+    padding: .25rem .7rem; border-radius: 20px;
+    border: 1px solid color-mix(in srgb, var(--g-brand, #0e7490) 25%, transparent);
+  }
+
+  .inst-group-courses { padding: 1rem 1.25rem 1.25rem; display: flex; flex-direction: column; gap: .75rem; }
+
+  /* ─── Compact course row (for institution courses) ───────── */
+  .inst-course-row {
+    display: flex; align-items: center; gap: 1rem;
+    padding: .85rem 1rem;
+    background: #fafafa;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    transition: box-shadow .2s, border-color .2s;
+  }
+  .inst-course-row:hover { box-shadow: 0 4px 14px rgba(0,0,0,.08); border-color: var(--g-brand, #0e7490); }
+  .inst-course-thumb {
+    width: 52px; height: 52px; border-radius: 10px;
+    flex-shrink: 0; overflow: hidden;
+    background: linear-gradient(135deg, var(--g-brand, #0e7490), color-mix(in srgb, var(--g-brand, #0e7490) 60%, #000));
+    display: flex; align-items: center; justify-content: center;
+  }
+  .inst-course-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .inst-course-thumb .thumb-icon { font-size: 1.4rem; color: rgba(255,255,255,.7); }
+  .inst-course-info { flex: 1; min-width: 0; }
+  .inst-course-title { font-size: .92rem; font-weight: 700; color: #1e293b; margin: 0 0 .25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .inst-course-badges { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+  .ic-status {
+    display: inline-flex; align-items: center; gap: .3rem;
+    font-size: .72rem; font-weight: 600; padding: .2rem .6rem; border-radius: 20px;
+  }
+  .ic-status-active  { background: #dcfce7; color: #15803d; }
+  .ic-status-expired { background: #fee2e2; color: #dc2626; }
+  .ic-status-pending { background: #fef3c7; color: #d97706; }
+  .ic-date { font-size: .72rem; color: #94a3b8; display: inline-flex; align-items: center; gap: .25rem; }
+  .inst-course-action { flex-shrink: 0; }
+  .ic-btn {
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .5rem 1.1rem;
+    border-radius: 8px;
+    font-size: .82rem; font-weight: 700;
+    text-decoration: none;
+    transition: opacity .18s, transform .18s;
+    white-space: nowrap;
+  }
+  .ic-btn:hover { opacity: .85; transform: translateY(-1px); text-decoration: none; }
+  .ic-btn-active { background: var(--g-brand, #0e7490); color: #fff; }
+  .ic-btn-active:hover { color: #fff; }
+  .ic-btn-disabled {
+    background: #f1f5f9; color: #94a3b8;
+    pointer-events: none; cursor: default;
+  }
+
+  /* "Voir tous" footer strip */
+  .inst-group-more {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .75rem 1rem;
+    background: color-mix(in srgb, var(--g-brand, #0e7490) 4%, #f8fafc);
+    border: 1px dashed color-mix(in srgb, var(--g-brand, #0e7490) 30%, transparent);
+    border-radius: 10px;
+    margin-top: .25rem;
+  }
+  .inst-group-more-text { font-size: .8rem; color: #64748b; display: flex; align-items: center; gap: .4rem; }
+  .inst-group-more-link {
+    display: inline-flex; align-items: center; gap: .4rem;
+    font-size: .82rem; font-weight: 700;
+    color: var(--g-brand, #0e7490);
+    text-decoration: none;
+    padding: .35rem .9rem; border-radius: 8px;
+    border: 1.5px solid color-mix(in srgb, var(--g-brand, #0e7490) 35%, transparent);
+    transition: background .18s, color .18s;
+  }
+  .inst-group-more-link:hover {
+    background: var(--g-brand, #0e7490); color: #fff;
+    text-decoration: none;
+  }
+
+  /* ─── AfroHK program cards ───────────────────────────────── */
   .ud-cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
   }
   .ud-card {
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 2px 12px rgba(0,0,0,.06);
-    overflow: hidden;
-    display: flex; flex-direction: column;
+    background: #fff; border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    overflow: hidden; display: flex; flex-direction: column;
     transition: transform .2s, box-shadow .2s;
+    border: 1px solid #ede8ff;
   }
-  .ud-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,.1); }
-  .ud-card-accent { height: 4px; }
-  .ud-card-body { padding: 1.4rem; flex: 1; display: flex; flex-direction: column; gap: .9rem; }
+  .ud-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(93,6,186,.12); border-color: #c4b5fd; }
+  .ud-card-accent { height: 3px; }
+  .ud-card-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; gap: .85rem; }
   .ud-card-header { display: flex; align-items: center; gap: .85rem; }
   .ud-card-icon {
-    width: 44px; height: 44px;
-    border-radius: 12px;
+    width: 42px; height: 42px; border-radius: 11px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.25rem; flex-shrink: 0;
+    font-size: 1.2rem; flex-shrink: 0;
   }
-  .ud-card-title { font-size: 1rem; font-weight: 700; color: #1e1b4b; margin: 0; line-height: 1.3; }
-  .ud-card-subtitle { font-size: .77rem; color: #94a3b8; font-weight: 500; margin-top: .15rem; }
+  .ud-card-title   { font-size: .95rem; font-weight: 700; color: #1e1b4b; margin: 0; line-height: 1.3; }
+  .ud-card-subtitle { font-size: .75rem; color: #94a3b8; font-weight: 500; margin-top: .12rem; }
   .ud-card-status {
     display: inline-flex; align-items: center; gap: .4rem;
-    font-size: .8rem; font-weight: 600;
-    padding: .35rem .75rem;
-    border-radius: 50px;
+    font-size: .78rem; font-weight: 600; padding: .3rem .7rem; border-radius: 50px;
   }
-  .ud-status-active  { background: #dcfce7; color: #15803d; }
-  .ud-status-expired { background: #fee2e2; color: #dc2626; }
-  .ud-status-pending { background: #fef3c7; color: #d97706; }
+  .ud-status-active { background: #dcfce7; color: #15803d; }
   .ud-card-footer { margin-top: auto; }
   .ud-btn-primary {
     display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
-    width: 100%; padding: .7rem 1.25rem;
-    border-radius: 10px;
-    font-weight: 600; font-size: .88rem;
+    width: 100%; padding: .65rem 1.25rem; border-radius: 9px;
+    font-weight: 600; font-size: .85rem;
     color: #fff; text-decoration: none;
     transition: opacity .2s, transform .2s;
   }
   .ud-btn-primary:hover { opacity: .88; transform: translateY(-1px); color: #fff; text-decoration: none; }
-  .ud-btn-disabled {
-    display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
-    width: 100%; padding: .7rem 1.25rem;
-    border-radius: 10px;
-    font-weight: 600; font-size: .88rem;
-    background: #f1f5f9; color: #94a3b8;
-    cursor: default;
-  }
-  .ud-expiry-note { font-size: .78rem; color: #94a3b8; display: flex; align-items: center; gap: .35rem; }
 
-  /* ─── Empty State ────────────────────────────────────── */
-  .ud-empty {
-    background: #fff;
-    border-radius: 14px;
-    padding: 2.5rem 2rem;
-    text-align: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,.05);
+  /* ─── Quick Actions ──────────────────────────────────────── */
+  .ud-actions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: .85rem; }
+  .ud-action-btn {
+    display: flex; align-items: center; gap: .7rem;
+    padding: .9rem 1.1rem;
+    background: #fff; border-radius: 11px;
+    border: 1.5px solid #e5e7eb;
+    color: #374151; font-weight: 600; font-size: .87rem;
+    text-decoration: none;
+    transition: all .2s;
+    box-shadow: 0 1px 6px rgba(0,0,0,.04);
   }
-  .ud-empty i { font-size: 2.5rem; color: #cbd5e1; display: block; margin-bottom: .75rem; }
-  .ud-empty p { color: #94a3b8; margin: 0; font-size: .9rem; }
+  .ud-action-btn i { font-size: 1.1rem; color: #5d06ba; }
+  .ud-action-btn:hover { background: #5d06ba; color: #fff; border-color: #5d06ba; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(93,6,186,.22); text-decoration: none; }
+  .ud-action-btn:hover i { color: #fff; }
 
-  /* ─── Account Info ───────────────────────────────────── */
-  .ud-account-grid {
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 2px 12px rgba(0,0,0,.06);
-    overflow: hidden;
-  }
-  .ud-account-row {
-    display: flex; align-items: center;
-    padding: .9rem 1.5rem;
-    border-bottom: 1px solid #f1f5f9;
-    gap: 1rem;
-  }
+  /* ─── Account Info ───────────────────────────────────────── */
+  .ud-account-grid { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.06); overflow: hidden; border: 1px solid #e9ecef; }
+  .ud-account-row { display: flex; align-items: center; padding: .85rem 1.5rem; border-bottom: 1px solid #f1f5f9; gap: 1rem; }
   .ud-account-row:last-child { border-bottom: none; }
   .ud-account-icon { color: #5d06ba; font-size: 1rem; width: 20px; flex-shrink: 0; }
-  .ud-account-label { font-size: .82rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; min-width: 140px; flex-shrink: 0; }
-  .ud-account-value { color: #1e1b4b; font-weight: 500; font-size: .9rem; }
+  .ud-account-label { font-size: .8rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; min-width: 140px; flex-shrink: 0; }
+  .ud-account-value { color: #1e1b4b; font-weight: 500; font-size: .88rem; }
   .ud-verified-badge {
     display: inline-flex; align-items: center; gap: .35rem;
-    padding: .25rem .75rem; border-radius: 50px; font-size: .8rem; font-weight: 600;
+    padding: .25rem .7rem; border-radius: 50px; font-size: .78rem; font-weight: 600;
   }
 
-  /* ─── Responsive ─────────────────────────────────────── */
+  /* ─── Empty State ────────────────────────────────────────── */
+  .ud-empty { background: rgba(255,255,255,.7); border-radius: 12px; padding: 2rem 1.5rem; text-align: center; }
+  .ud-empty i { font-size: 2.2rem; color: #c4b5fd; display: block; margin-bottom: .65rem; }
+  .ud-empty p { color: #94a3b8; margin: 0; font-size: .88rem; }
+
+  /* ─── Divider ────────────────────────────────────────────── */
+  .ud-divider {
+    display: flex; align-items: center; gap: 1rem;
+    margin: 2rem 0 1.75rem;
+  }
+  .ud-divider-line { flex: 1; height: 1px; background: #e2e8f0; }
+  .ud-divider-label {
+    font-size: .72rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .1em; color: #94a3b8;
+    padding: .3rem .9rem; border-radius: 20px;
+    background: #fff; border: 1px solid #e2e8f0;
+  }
+
+  /* ─── Responsive ─────────────────────────────────────────── */
   @media (max-width: 900px) {
     .ud-stats { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 700px) {
+    .inst-course-row { flex-wrap: wrap; gap: .75rem; }
+    .inst-course-action { width: 100%; }
+    .ic-btn { width: 100%; justify-content: center; }
   }
   @media (max-width: 640px) {
     .ud-hero { flex-direction: column; text-align: center; padding: 1.75rem 1.5rem; gap: 1.25rem; }
     .ud-hero-meta { justify-content: center; }
     .ud-chips { justify-content: center; }
     .ud-hero-actions { align-items: center; width: 100%; }
-    .ud-stats { grid-template-columns: repeat(2, 1fr); }
-    .ud-account-row { flex-wrap: wrap; }
-    .ud-account-label { min-width: 100%; margin-bottom: .1rem; }
   }
   @media (max-width: 400px) {
     .ud-stats { grid-template-columns: 1fr; }
@@ -257,7 +384,7 @@
 
     <%- include('../partials/flash') %>
 
-    <!-- ─── Hero ─────────────────────────────────────────────── -->
+    <!-- ─── Hero ──────────────────────────────────────────────── -->
     <div class="ud-hero">
       <% if (user.imageUrl && !user.imageUrl.includes('kindpng.com')) { %>
         <img src="<%= user.imageUrl %>" alt="<%= user.name %>" class="ud-avatar">
@@ -283,14 +410,10 @@
               : 'Apprenant' %>
           </span>
           <% if (user.isVerified) { %>
-            <span class="ud-chip ud-chip-green">
-              <i class="bi bi-patch-check-fill"></i> Vérifié
-            </span>
+            <span class="ud-chip ud-chip-green"><i class="bi bi-patch-check-fill"></i> Vérifié</span>
           <% } %>
           <% if (user.institutionId) { %>
-            <span class="ud-chip">
-              <i class="bi bi-building"></i> Institution
-            </span>
+            <span class="ud-chip"><i class="bi bi-building"></i> Institution</span>
           <% } %>
         </div>
       </div>
@@ -343,7 +466,7 @@
       </div>
     </div>
 
-    <!-- ─── Quick Actions ─────────────────────────────────────── -->
+    <!-- ─── Quick Actions ────────────────────────────────────── -->
     <%
       const hasActions = (user.role === 'admin' || user.role === 'super-admin' || user.role === 'account-manager')
                       || user.role === 'english-coach'
@@ -352,27 +475,20 @@
     %>
     <% if (hasActions) { %>
     <div class="ud-section">
-      <div class="ud-section-head">
+      <div class="ud-panel-label actions">
         <i class="bi bi-lightning-charge-fill"></i> Actions rapides
+        <span class="lbl-line"></span>
       </div>
       <div class="ud-actions-grid">
         <% if (user.role === 'admin' || user.role === 'super-admin') { %>
-          <a href="/admin/dashboard" class="ud-action-btn">
-            <i class="bi bi-speedometer2"></i> Dashboard Admin
-          </a>
-          <a href="/admin/users" class="ud-action-btn">
-            <i class="bi bi-people-fill"></i> Gérer les utilisateurs
-          </a>
+          <a href="/admin/dashboard" class="ud-action-btn"><i class="bi bi-speedometer2"></i> Dashboard Admin</a>
+          <a href="/admin/users" class="ud-action-btn"><i class="bi bi-people-fill"></i> Gérer les utilisateurs</a>
         <% } %>
         <% if (user.role === 'admin' || user.role === 'super-admin' || user.role === 'account-manager') { %>
-          <a href="/admin/users/create" class="ud-action-btn">
-            <i class="bi bi-person-plus-fill"></i> Créer un compte
-          </a>
+          <a href="/admin/users/create" class="ud-action-btn"><i class="bi bi-person-plus-fill"></i> Créer un compte</a>
         <% } %>
         <% if (user.role === 'english-coach') { %>
-          <a href="/programs/language-learning/instructor/dashboard" class="ud-action-btn">
-            <i class="bi bi-person-video3"></i> Dashboard Instructeur
-          </a>
+          <a href="/programs/language-learning/instructor/dashboard" class="ud-action-btn"><i class="bi bi-person-video3"></i> Dashboard Instructeur</a>
         <% } %>
         <% if (user.isHighSchoolStudent) { %>
           <%
@@ -380,20 +496,18 @@
               ? `/programs/ekalan/kalan/class/${studentClassId}`
               : '/programs/ekalan/kalan';
           %>
-          <a href="<%= kalanRoute %>" class="ud-action-btn">
-            <i class="bi bi-mortarboard-fill"></i> Tableau de bord Kalan
-          </a>
+          <a href="<%= kalanRoute %>" class="ud-action-btn"><i class="bi bi-mortarboard-fill"></i> Tableau de bord Kalan</a>
         <% } %>
         <% if (user.coursesTaken && user.coursesTaken.some(c => (c._id || c).toString() === '69584e4bf744983f1e3ed576')) { %>
-          <a href="/programs/language-learning/general-english-boost/my-courses" class="ud-action-btn">
-            <i class="bi bi-play-circle-fill"></i> English Boost — mes cours
-          </a>
+          <a href="/programs/language-learning/general-english-boost/my-courses" class="ud-action-btn"><i class="bi bi-play-circle-fill"></i> English Boost — mes cours</a>
         <% } %>
       </div>
     </div>
     <% } %>
 
-    <!-- ─── AfroHK Programmes ──────────────────────────────────── -->
+    <!-- ═══════════════════════════════════════════════════════
+         AFROHK PROGRAMS
+    ═══════════════════════════════════════════════════════ -->
     <%
       const afroProg = [];
       if (user.isHighSchoolStudent) {
@@ -411,10 +525,16 @@
       if (user.coursesTaken && user.coursesTaken.length > 0)
         afroProg.push({ name: 'General English Boost', sub: 'Cours de langue', icon: 'stars', color: '#d97706', route: '/programs/language-learning/general-english-boost/my-courses' });
     %>
-    <div class="ud-section">
-      <div class="ud-section-head">
-        <i class="bi bi-grid-3x3-gap-fill"></i> Mes programmes AfroHK
+
+    <div class="afrohk-panel">
+      <div class="afrohk-panel-header">
+        <div class="afrohk-panel-icon"><i class="bi bi-grid-3x3-gap-fill"></i></div>
+        <div>
+          <p class="afrohk-panel-title">Programmes AfroHK</p>
+          <p class="afrohk-panel-sub">Contenus et programmes proposés par Afro House of Knowledge</p>
+        </div>
       </div>
+
       <% if (afroProg.length > 0) { %>
         <div class="ud-cards-grid">
           <% afroProg.forEach(p => { %>
@@ -450,136 +570,189 @@
       <% } %>
     </div>
 
-    <!-- ─── Institution Courses ────────────────────────────────── -->
+    <!-- ═══════════════════════════════════════════════════════
+         INSTITUTION COURSES (grouped by institution)
+    ═══════════════════════════════════════════════════════ -->
     <% if (typeof institutionEnrollments !== 'undefined' && institutionEnrollments.length > 0) { %>
-    <div class="ud-section">
-      <div class="ud-section-head">
-        <i class="bi bi-building-fill"></i> Mes cours d'institution
-      </div>
-      <div class="ud-cards-grid">
-        <% institutionEnrollments.forEach(enrollment => { %>
-          <% const instCourse = enrollment.courseId; %>
-          <% const inst = enrollment.institutionId; %>
-          <% const brandColor = inst ? (inst.primaryColor || '#0e7490') : '#0e7490'; %>
-          <% const now = new Date(); %>
-          <% const isExpired = enrollment.endDate && new Date(enrollment.endDate) < now; %>
-          <% const notStarted = enrollment.startDate && new Date(enrollment.startDate) > now; %>
-          <div class="ud-card">
-            <div class="ud-card-accent" style="background:<%= brandColor %>;"></div>
-            <div class="ud-card-body">
-              <div class="ud-card-header">
-                <div class="ud-card-icon" style="background:color-mix(in srgb,<%= brandColor %> 12%,#fff);color:<%= brandColor %>;">
-                  <% if (inst && inst.logoUrl) { %>
-                    <img src="<%= inst.logoUrl %>" alt="" style="width:26px;height:26px;object-fit:cover;border-radius:6px;">
-                  <% } else { %>
-                    <i class="bi bi-building-fill"></i>
-                  <% } %>
-                </div>
-                <div>
-                  <p class="ud-card-title"><%= instCourse ? instCourse.title : 'Cours' %></p>
-                  <p class="ud-card-subtitle"><%= inst ? inst.name : 'Institution' %></p>
-                </div>
-              </div>
 
-              <% if (isExpired) { %>
-                <span class="ud-card-status ud-status-expired">
-                  <i class="bi bi-x-circle-fill"></i> Accès expiré
-                </span>
-              <% } else if (notStarted) { %>
-                <span class="ud-card-status ud-status-pending">
-                  <i class="bi bi-hourglass-split"></i> Disponible le <%= new Date(enrollment.startDate).toLocaleDateString('fr-FR', {day:'2-digit',month:'short',year:'numeric'}) %>
-                </span>
-              <% } else { %>
-                <span class="ud-card-status ud-status-active">
-                  <i class="bi bi-check-circle-fill"></i> Cours actif
-                </span>
-              <% } %>
+    <%
+      // Group enrollments by institution
+      const instGroups = {};
+      institutionEnrollments.forEach(e => {
+        const iid = e.institutionId?._id?.toString() || 'unknown';
+        if (!instGroups[iid]) instGroups[iid] = { institution: e.institutionId, enrollments: [] };
+        instGroups[iid].enrollments.push(e);
+      });
+      const instGroupsList = Object.values(instGroups);
+    %>
 
-              <% if (enrollment.endDate) { %>
-                <p class="ud-expiry-note">
-                  <i class="bi bi-calendar3"></i>
-                  <% if (isExpired) { %>
-                    A expiré le <%= new Date(enrollment.endDate).toLocaleDateString('fr-FR', {day:'2-digit',month:'long',year:'numeric'}) %>
-                  <% } else { %>
-                    Accès jusqu'au <%= new Date(enrollment.endDate).toLocaleDateString('fr-FR', {day:'2-digit',month:'long',year:'numeric'}) %>
-                  <% } %>
-                </p>
-              <% } %>
-
-              <div class="ud-card-footer">
-                <% if (!isExpired && !notStarted && instCourse) { %>
-                  <a href="/institution/learn/courses/<%= instCourse._id %>" class="ud-btn-primary" style="background:<%= brandColor %>;">
-                    <i class="bi bi-play-fill"></i> Accéder au cours
-                  </a>
-                <% } else { %>
-                  <div class="ud-btn-disabled">
-                    <i class="bi bi-lock-fill"></i>
-                    <%= isExpired ? 'Accès expiré' : 'Pas encore disponible' %>
-                  </div>
-                <% } %>
-              </div>
-            </div>
-          </div>
-        <% }); %>
-      </div>
+    <div class="ud-divider">
+      <div class="ud-divider-line"></div>
+      <span class="ud-divider-label">🏛 Cours d'institution</span>
+      <div class="ud-divider-line"></div>
     </div>
+
+    <div class="inst-panel">
+      <% instGroupsList.forEach(group => { %>
+        <%
+          const gi = group.institution;
+          const gBrand = gi ? (gi.primaryColor || '#0e7490') : '#0e7490';
+          const gInitials = gi ? gi.name.substring(0,2).toUpperCase() : 'IN';
+        %>
+        <div class="inst-group" style="--g-brand: <%= gBrand %>;">
+
+          <!-- Institution group header -->
+          <div class="inst-group-header">
+            <div class="inst-group-logo">
+              <% if (gi && gi.logoUrl) { %>
+                <img src="<%= gi.logoUrl %>" alt="<%= gi.name %>">
+              <% } else { %>
+                <span class="fallback"><%= gInitials %></span>
+              <% } %>
+            </div>
+            <div>
+              <p class="inst-group-name"><%= gi ? gi.name : 'Institution' %></p>
+              <p class="inst-group-meta"><i class="bi bi-mortarboard me-1"></i><%= group.enrollments.length %> inscription<%= group.enrollments.length > 1 ? 's' : '' %></p>
+            </div>
+            <span class="inst-group-count"><%= group.enrollments.length %> cours</span>
+          </div>
+
+          <!-- Course rows (max 3 preview) -->
+          <%
+            const PREVIEW_MAX = 3;
+            const previewList = group.enrollments.slice(0, PREVIEW_MAX);
+            const hiddenCount = group.enrollments.length - PREVIEW_MAX;
+          %>
+          <div class="inst-group-courses">
+            <% previewList.forEach(enrollment => { %>
+              <%
+                const instCourse = enrollment.courseId;
+                const now = new Date();
+                const isExpired  = enrollment.endDate   && new Date(enrollment.endDate)   < now;
+                const notStarted = enrollment.startDate && new Date(enrollment.startDate) > now;
+                const isActive   = !isExpired && !notStarted;
+              %>
+              <div class="inst-course-row" style="--g-brand: <%= gBrand %>;">
+                <!-- Thumbnail -->
+                <div class="inst-course-thumb">
+                  <% if (instCourse && instCourse.imageUrl) { %>
+                    <img src="<%= instCourse.imageUrl %>" alt="">
+                  <% } else { %>
+                    <i class="bi bi-book-half thumb-icon"></i>
+                  <% } %>
+                </div>
+
+                <!-- Info -->
+                <div class="inst-course-info">
+                  <p class="inst-course-title"><%= instCourse ? instCourse.title : 'Cours' %></p>
+                  <div class="inst-course-badges">
+                    <% if (isExpired) { %>
+                      <span class="ic-status ic-status-expired"><i class="bi bi-x-circle-fill"></i> Expiré</span>
+                    <% } else if (notStarted) { %>
+                      <span class="ic-status ic-status-pending"><i class="bi bi-hourglass-split"></i> Disponible le <%= new Date(enrollment.startDate).toLocaleDateString('fr-FR', {day:'2-digit',month:'short',year:'numeric'}) %></span>
+                    <% } else { %>
+                      <span class="ic-status ic-status-active"><i class="bi bi-check-circle-fill"></i> Actif</span>
+                    <% } %>
+                    <% if (enrollment.endDate && !notStarted) { %>
+                      <span class="ic-date">
+                        <i class="bi bi-calendar3"></i>
+                        <%= isExpired ? 'Expiré' : 'Jusqu\'au' %> <%= new Date(enrollment.endDate).toLocaleDateString('fr-FR', {day:'2-digit',month:'short',year:'numeric'}) %>
+                      </span>
+                    <% } %>
+                  </div>
+                </div>
+
+                <!-- Action -->
+                <div class="inst-course-action">
+                  <% if (isActive && instCourse) { %>
+                    <a href="/institution/learn/courses/<%= instCourse._id %>" class="ic-btn ic-btn-active" style="background:<%= gBrand %>;">
+                      <i class="bi bi-play-fill"></i> Accéder
+                    </a>
+                  <% } else { %>
+                    <span class="ic-btn ic-btn-disabled">
+                      <i class="bi bi-lock-fill"></i>
+                      <%= isExpired ? 'Expiré' : 'Bientôt' %>
+                    </span>
+                  <% } %>
+                </div>
+              </div>
+            <% }); %>
+
+            <% if (hiddenCount > 0) { %>
+              <div class="inst-group-more" style="--g-brand: <%= gBrand %>;">
+                <span class="inst-group-more-text">
+                  <i class="bi bi-layers"></i>
+                  + <%= hiddenCount %> autre<%= hiddenCount > 1 ? 's' : '' %> cours non affiché<%= hiddenCount > 1 ? 's' : '' %>
+                </span>
+                <a href="/institution/learn/courses" class="inst-group-more-link">
+                  Voir les <%= group.enrollments.length %> cours <i class="bi bi-arrow-right"></i>
+                </a>
+              </div>
+            <% } %>
+          </div>
+
+        </div>
+      <% }); %>
+    </div>
+
     <% } %>
 
     <!-- ─── Account Info ──────────────────────────────────────── -->
-    <div class="ud-section">
-      <div class="ud-section-head">
-        <i class="bi bi-person-lines-fill"></i> Informations du compte
+    <div class="ud-divider">
+      <div class="ud-divider-line"></div>
+      <span class="ud-divider-label">👤 Informations du compte</span>
+      <div class="ud-divider-line"></div>
+    </div>
+
+    <div class="ud-account-grid">
+      <div class="ud-account-row">
+        <i class="bi bi-person-fill ud-account-icon"></i>
+        <span class="ud-account-label">Nom complet</span>
+        <span class="ud-account-value"><%= user.name %> <%= user.surname %></span>
       </div>
-      <div class="ud-account-grid">
-        <div class="ud-account-row">
-          <i class="bi bi-person-fill ud-account-icon"></i>
-          <span class="ud-account-label">Nom complet</span>
-          <span class="ud-account-value"><%= user.name %> <%= user.surname %></span>
-        </div>
-        <div class="ud-account-row">
-          <i class="bi bi-at ud-account-icon"></i>
-          <span class="ud-account-label">Nom d'utilisateur</span>
-          <span class="ud-account-value">@<%= user.username %></span>
-        </div>
-        <div class="ud-account-row">
-          <i class="bi bi-envelope-fill ud-account-icon"></i>
-          <span class="ud-account-label">Adresse email</span>
-          <span class="ud-account-value"><%= user.email %></span>
-        </div>
-        <% if (user.phoneNumber) { %>
-        <div class="ud-account-row">
-          <i class="bi bi-phone-fill ud-account-icon"></i>
-          <span class="ud-account-label">Téléphone</span>
-          <span class="ud-account-value"><%= user.phoneNumber %></span>
-        </div>
-        <% } %>
-        <div class="ud-account-row">
-          <i class="bi bi-gender-ambiguous ud-account-icon"></i>
-          <span class="ud-account-label">Genre</span>
-          <span class="ud-account-value"><%= user.gender === 'male' ? 'Homme' : user.gender === 'female' ? 'Femme' : 'Non précisé' %></span>
-        </div>
-        <% if (user.englishLevel) { %>
-        <div class="ud-account-row">
-          <i class="bi bi-translate ud-account-icon"></i>
-          <span class="ud-account-label">Niveau d'anglais</span>
-          <span class="ud-account-value"><%= user.englishLevel %></span>
-        </div>
-        <% } %>
-        <div class="ud-account-row">
-          <i class="bi bi-patch-check-fill ud-account-icon"></i>
-          <span class="ud-account-label">Vérification</span>
-          <span class="ud-account-value">
-            <span class="ud-verified-badge <%= user.isVerified ? 'ud-status-active' : 'ud-status-pending' %>">
-              <i class="bi bi-<%= user.isVerified ? 'check-circle-fill' : 'clock' %>"></i>
-              <%= user.isVerified ? 'Compte vérifié' : 'En attente de vérification' %>
-            </span>
+      <div class="ud-account-row">
+        <i class="bi bi-at ud-account-icon"></i>
+        <span class="ud-account-label">Nom d'utilisateur</span>
+        <span class="ud-account-value">@<%= user.username %></span>
+      </div>
+      <div class="ud-account-row">
+        <i class="bi bi-envelope-fill ud-account-icon"></i>
+        <span class="ud-account-label">Adresse email</span>
+        <span class="ud-account-value"><%= user.email %></span>
+      </div>
+      <% if (user.phoneNumber) { %>
+      <div class="ud-account-row">
+        <i class="bi bi-phone-fill ud-account-icon"></i>
+        <span class="ud-account-label">Téléphone</span>
+        <span class="ud-account-value"><%= user.phoneNumber %></span>
+      </div>
+      <% } %>
+      <div class="ud-account-row">
+        <i class="bi bi-gender-ambiguous ud-account-icon"></i>
+        <span class="ud-account-label">Genre</span>
+        <span class="ud-account-value"><%= user.gender === 'male' ? 'Homme' : user.gender === 'female' ? 'Femme' : 'Non précisé' %></span>
+      </div>
+      <% if (user.englishLevel) { %>
+      <div class="ud-account-row">
+        <i class="bi bi-translate ud-account-icon"></i>
+        <span class="ud-account-label">Niveau d'anglais</span>
+        <span class="ud-account-value"><%= user.englishLevel %></span>
+      </div>
+      <% } %>
+      <div class="ud-account-row">
+        <i class="bi bi-patch-check-fill ud-account-icon"></i>
+        <span class="ud-account-label">Vérification</span>
+        <span class="ud-account-value">
+          <span class="ud-verified-badge <%= user.isVerified ? 'ud-status-active' : 'ic-status-pending' %>">
+            <i class="bi bi-<%= user.isVerified ? 'check-circle-fill' : 'clock' %>"></i>
+            <%= user.isVerified ? 'Compte vérifié' : 'En attente de vérification' %>
           </span>
-        </div>
-        <div class="ud-account-row">
-          <i class="bi bi-calendar3 ud-account-icon"></i>
-          <span class="ud-account-label">Membre depuis</span>
-          <span class="ud-account-value"><%= new Date(user.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' }) %></span>
-        </div>
+        </span>
+      </div>
+      <div class="ud-account-row">
+        <i class="bi bi-calendar3 ud-account-icon"></i>
+        <span class="ud-account-label">Membre depuis</span>
+        <span class="ud-account-value"><%= new Date(user.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' }) %></span>
       </div>
     </div>
 

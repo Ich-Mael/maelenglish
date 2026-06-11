@@ -1,0 +1,262 @@
+<% layout('layouts/main') %>
+
+<%
+  const inst  = course.institutionId || {};
+  const brand = inst.primaryColor || '#5d06ba';
+
+  function embedUrl(url) {
+    if (!url) return null;
+    const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/);
+    if (yt) return 'https://www.youtube.com/embed/' + yt[1] + '?rel=0&modestbranding=1&autoplay=1';
+    const vim = url.match(/vimeo\.com\/(\d+)/);
+    if (vim) return 'https://player.vimeo.com/video/' + vim[1] + '?autoplay=1';
+    if (/\.(mp4|webm|ogv)(\?|$)/i.test(url)) return url;
+    return null;
+  }
+
+  const videoEmbed = lesson.type === 'video' ? embedUrl(lesson.videoUrl) : null;
+  const isDirectVideo = videoEmbed && /\.(mp4|webm|ogv)/i.test(videoEmbed);
+%>
+
+<% headContent = `<style>
+  :root { --brand: ${brand}; }
+
+  .preview-wrap {
+    margin-top: 70px;
+    min-height: 100vh;
+    background: #09040f;
+  }
+
+  /* top bar */
+  .preview-topbar {
+    background: rgba(255,255,255,.04);
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    padding: .75rem 0;
+  }
+  .preview-topbar .inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .preview-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .82rem;
+  }
+  .preview-breadcrumb a {
+    color: rgba(255,255,255,.55);
+    text-decoration: none;
+    transition: color .2s;
+  }
+  .preview-breadcrumb a:hover { color: #fff; }
+  .preview-breadcrumb .sep { color: rgba(255,255,255,.25); }
+  .preview-breadcrumb .cur { color: rgba(255,255,255,.85); font-weight: 600; }
+  .preview-badge {
+    display: inline-flex; align-items: center; gap: .35rem;
+    background: rgba(167,139,250,.15);
+    border: 1px solid rgba(167,139,250,.3);
+    color: #a78bfa;
+    font-size: .72rem;
+    font-weight: 700;
+    padding: .3rem .8rem;
+    border-radius: 20px;
+  }
+
+  /* video area */
+  .preview-stage {
+    background: #000;
+    position: relative;
+  }
+  .preview-video-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    position: relative;
+    aspect-ratio: 16/9;
+    background: #000;
+  }
+  .preview-video-wrap iframe,
+  .preview-video-wrap video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
+  /* content (text/PDF) */
+  .preview-content-area {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem;
+    color: #e2e8f0;
+    line-height: 1.75;
+    font-size: .97rem;
+  }
+  .preview-content-area h1, .preview-content-area h2,
+  .preview-content-area h3 { color: #fff; margin-top: 1.5rem; }
+  .preview-content-area a { color: #a78bfa; }
+  .preview-pdf-frame {
+    width: 100%;
+    height: 80vh;
+    border: none;
+    border-radius: 12px;
+    display: block;
+  }
+
+  /* bottom info */
+  .preview-info {
+    border-top: 1px solid rgba(255,255,255,.07);
+    padding: 2rem 0 3.5rem;
+  }
+  .preview-info .inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .preview-lesson-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: .4rem;
+    line-height: 1.3;
+  }
+  .preview-lesson-meta {
+    font-size: .82rem;
+    color: rgba(255,255,255,.45);
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    flex-wrap: wrap;
+  }
+  .preview-cta-box {
+    background: rgba(93,6,186,.18);
+    border: 1px solid rgba(93,6,186,.35);
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    min-width: 260px;
+    max-width: 320px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .preview-cta-box p {
+    font-size: .85rem;
+    color: rgba(255,255,255,.65);
+    margin: 0 0 1rem;
+    line-height: 1.55;
+  }
+  .btn-enroll {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    background: var(--brand);
+    color: #fff;
+    font-size: .88rem;
+    font-weight: 700;
+    padding: .7rem 1.5rem;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background .2s, transform .2s;
+    width: 100%;
+    justify-content: center;
+  }
+  .btn-enroll:hover { background: #4a0594; transform: translateY(-1px); color: #fff; }
+  .btn-back-course {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    color: rgba(255,255,255,.55);
+    font-size: .8rem;
+    text-decoration: none;
+    margin-top: .75rem;
+    transition: color .2s;
+  }
+  .btn-back-course:hover { color: #fff; }
+</style>` %>
+
+<div class="preview-wrap">
+
+  <!-- Top bar -->
+  <div class="preview-topbar">
+    <div class="container">
+      <div class="inner">
+        <div class="preview-breadcrumb">
+          <a href="/formations">Catalogue</a>
+          <span class="sep">›</span>
+          <a href="/formations/<%= course._id %>"><%= course.title %></a>
+          <span class="sep">›</span>
+          <span class="cur"><%= lesson.title %></span>
+        </div>
+        <span class="preview-badge">👁 Aperçu gratuit</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage -->
+  <% if (lesson.type === 'video') { %>
+    <div class="preview-stage">
+      <div class="preview-video-wrap">
+        <% if (videoEmbed && !isDirectVideo) { %>
+          <iframe src="<%= videoEmbed %>" allowfullscreen allow="autoplay; fullscreen"></iframe>
+        <% } else if (videoEmbed && isDirectVideo) { %>
+          <video controls autoplay>
+            <source src="<%= videoEmbed %>">
+          </video>
+        <% } else { %>
+          <div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,.4);font-size:.9rem;">
+            Vidéo indisponible
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+  <% } else if (lesson.type === 'text') { %>
+    <div class="preview-content-area">
+      <%- lesson.content || '<p style="color:rgba(255,255,255,.4)">Contenu indisponible.</p>' %>
+    </div>
+
+  <% } else if (lesson.type === 'pdf') { %>
+    <div class="preview-content-area">
+      <% if (lesson.fileUrl) { %>
+        <iframe src="<%= lesson.fileUrl %>" class="preview-pdf-frame" title="<%= lesson.title %>"></iframe>
+      <% } else { %>
+        <p style="color:rgba(255,255,255,.4)">Fichier indisponible.</p>
+      <% } %>
+    </div>
+  <% } %>
+
+  <!-- Info + CTA -->
+  <div class="preview-info">
+    <div class="inner">
+      <div>
+        <div class="preview-lesson-title"><%= lesson.title %></div>
+        <div class="preview-lesson-meta">
+          <% const icons = { video: '▶ Vidéo', text: '📄 Texte', pdf: '📎 PDF', practice_quiz: '🧩 Quiz' }; %>
+          <span><%= icons[lesson.type] || lesson.type %></span>
+          <% if (lesson.videoDuration) { %><span>⏱ <%= lesson.videoDuration %> min</span><% } %>
+          <span>Cours : <%= course.title %></span>
+        </div>
+        <% if (lesson.description) { %>
+          <p style="font-size:.88rem;color:rgba(255,255,255,.5);margin-top:.75rem;max-width:520px;line-height:1.6;"><%= lesson.description %></p>
+        <% } %>
+      </div>
+
+      <div class="preview-cta-box">
+        <p>Vous regardez un aperçu gratuit. Inscrivez-vous pour accéder à tout le cours.</p>
+        <a href="/formations/<%= course._id %>" class="btn-enroll">
+          Voir le cours complet <i class="bi bi-arrow-right"></i>
+        </a>
+        <a href="/formations" class="btn-back-course">← Retour au catalogue</a>
+      </div>
+    </div>
+  </div>
+
+</div>

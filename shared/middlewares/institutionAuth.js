@@ -95,16 +95,30 @@ module.exports.isInstitutionStudent = (req, res, next) => {
 };
 
 // Loads the institution for /institution/learn/ routes.
-// Tries user.institutionId first, then derives from an active enrollment.
+// When a courseId param is present, resolves the institution from that course's
+// enrollment so students with multi-institution enrollments land in the right context.
 module.exports.loadStudentInstitution = async (req, res, next) => {
     try {
         let institution;
+        const { courseId } = req.params;
 
-        if (req.user.institutionId) {
+        // Course-specific: resolve institution from the enrollment for this exact course
+        if (courseId) {
+            const enrollment = await InstitutionEnrollment.findOne({
+                userId: req.user._id,
+                courseId
+            });
+            if (enrollment) {
+                institution = await Institution.findById(enrollment.institutionId);
+            }
+        }
+
+        // Fall back to user's primary institutionId
+        if (!institution && req.user.institutionId) {
             institution = await Institution.findById(req.user.institutionId);
         }
 
-        // Derive from an active enrollment if institutionId not set on the user
+        // Last resort: any active enrollment
         if (!institution) {
             const enrollment = await InstitutionEnrollment.findOne({ userId: req.user._id });
             if (enrollment) {
@@ -176,7 +190,7 @@ module.exports.checkInstitutionCourseAccess = async (req, res, next) => {
         }).populate('modules', 'title order quiz assignment');
 
         if (!course) {
-            req.flash('error', 'Ce cours n\'est pas disponible dans votre institution.');
+            req.flash('error', 'Ce cours est introuvable ou n\'appartient pas à votre institution.');
             return res.redirect('/institution/learn/courses');
         }
 

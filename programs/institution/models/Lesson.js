@@ -55,6 +55,10 @@ const institutionLessonSchema = new mongoose.Schema(
                 }
             ]
         },
+        isPreview: {
+            type: Boolean,
+            default: false
+        },
         instructorId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'InstitutionInstructor'

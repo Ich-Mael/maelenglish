@@ -35,6 +35,7 @@ const User = require("./shared/models/user");
 const InstitutionCourse = require("./programs/institution/models/Course");
 const InstitutionCourseTestimonial = require("./programs/institution/models/Testimonial");
 const InstitutionModule = require("./programs/institution/models/Module");
+const InstitutionLesson = require("./programs/institution/models/Lesson");
 const VisitorMessage = require("./shared/models/visitorMessage");
 
 // Import program routes
@@ -78,6 +79,19 @@ function stripHtml(html) {
         .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
         .replace(/&([A-Za-z]+);/g, (_, e) => entities[e] || `&${e};`)
         .replace(/\s+/g, ' ').trim();
+}
+
+function embedUrl(url) {
+    if (!url) return null;
+    // YouTube
+    const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/);
+    if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}?rel=0&modestbranding=1`;
+    // Vimeo
+    const vimMatch = url.match(/vimeo\.com\/(\d+)/);
+    if (vimMatch) return `https://player.vimeo.com/video/${vimMatch[1]}`;
+    // Direct video (mp4, webm, ogg)
+    if (/\.(mp4|webm|ogv)(\?|$)/i.test(url)) return url;
+    return null;
 }
 
 // Database connection
@@ -235,7 +249,27 @@ app.get('/formations/:courseId', async (req, res) => {
 
     const totalLessons = modules.reduce((sum, m) => sum + (m.lessons ? m.lessons.length : 0), 0);
 
-    res.render('formations-show', { course, modules, testimonials, totalLessons });
+    res.render('formations-show', { course, modules, testimonials, totalLessons, embedUrl });
+});
+
+// Public lesson preview (no auth required — only works when isPreview: true)
+app.get('/formations/:courseId/preview/:lessonId', async (req, res) => {
+    const lesson = await InstitutionLesson.findOne({
+        _id: req.params.lessonId,
+        courseId: req.params.courseId,
+        isPreview: true,
+        isActive: true
+    }).lean();
+
+    if (!lesson) return res.status(404).render('noAccess', { statusCode: 404, message: 'Aperçu indisponible' });
+
+    const course = await InstitutionCourse.findOne({ _id: req.params.courseId, isActive: true })
+        .populate('institutionId', 'name primaryColor logoUrl')
+        .lean();
+
+    if (!course) return res.status(404).render('noAccess', { statusCode: 404, message: 'Cours introuvable' });
+
+    res.render('formations-preview', { lesson, course });
 });
 
 // Contact form submission (public, no auth)

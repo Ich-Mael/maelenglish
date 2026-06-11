@@ -41,6 +41,7 @@ router.post('/courses/:courseId/modules/:moduleId/lessons',                     
 router.put('/courses/:courseId/modules/:moduleId/lessons/:lessonId',                    ...afroHKOnly, moduleController.updateLesson);
 router.delete('/courses/:courseId/modules/:moduleId/lessons/:lessonId',                 ...afroHKOnly, moduleController.destroyLesson);
 router.post('/courses/:courseId/modules/:moduleId/lessons/reorder',                     ...afroHKOnly, moduleController.reorderLessons);
+router.post('/courses/:courseId/modules/:moduleId/lessons/:lessonId/toggle-preview',   ...afroHKOnly, moduleController.togglePreview);
 
 // ─── LESSON PRACTICE QUIZ (AfroHK only) ─────────────────────────────────────
 

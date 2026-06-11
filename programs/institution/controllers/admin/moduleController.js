@@ -92,7 +92,7 @@ module.exports.destroy = catchAsync(async (req, res) => {
 
 module.exports.createLesson = catchAsync(async (req, res) => {
     const { courseId, moduleId } = req.params;
-    const { title, type, description, videoUrl, videoDuration, fileUrl, fileName, content, instructorId } = req.body;
+    const { title, type, description, videoUrl, videoDuration, fileUrl, fileName, content, instructorId, isPreview } = req.body;
 
     if (!title || !type) {
         req.flash('error', 'Titre et type sont requis.');
@@ -113,6 +113,7 @@ module.exports.createLesson = catchAsync(async (req, res) => {
         fileUrl: type === 'pdf' ? (fileUrl || '') : undefined,
         fileName: type === 'pdf' ? (fileName || '') : undefined,
         content: type === 'text' ? (content || '') : undefined,
+        isPreview: isPreview === 'on' || isPreview === 'true',
         instructorId: instructorId || undefined
     });
 
@@ -126,7 +127,7 @@ module.exports.createLesson = catchAsync(async (req, res) => {
 
 module.exports.updateLesson = catchAsync(async (req, res) => {
     const { courseId, moduleId, lessonId } = req.params;
-    const { title, description, videoUrl, videoDuration, fileUrl, fileName, content, instructorId } = req.body;
+    const { title, description, videoUrl, videoDuration, fileUrl, fileName, content, instructorId, isPreview } = req.body;
 
     const lesson = await InstitutionLesson.findOne({ _id: lessonId, moduleId });
     if (!lesson) {
@@ -145,6 +146,7 @@ module.exports.updateLesson = catchAsync(async (req, res) => {
         if (fileName !== undefined) lesson.fileName = fileName;
     }
     if (lesson.type === 'text' && content !== undefined) lesson.content = content;
+    if (isPreview !== undefined) lesson.isPreview = isPreview === 'on' || isPreview === 'true';
     lesson.instructorId = instructorId || null;
 
     await lesson.save();
@@ -167,6 +169,20 @@ module.exports.destroyLesson = catchAsync(async (req, res) => {
     }
 
     req.flash('success', 'Leçon supprimée.');
+    res.redirect(base(courseId, moduleId));
+});
+
+// ─── LESSON TOGGLE PREVIEW ───────────────────────────────────────────────────
+
+module.exports.togglePreview = catchAsync(async (req, res) => {
+    const { courseId, moduleId, lessonId } = req.params;
+    const lesson = await InstitutionLesson.findOne({ _id: lessonId, moduleId });
+    if (!lesson) {
+        req.flash('error', 'Leçon introuvable.');
+        return res.redirect(base(courseId, moduleId));
+    }
+    lesson.isPreview = !lesson.isPreview;
+    await lesson.save();
     res.redirect(base(courseId, moduleId));
 });
 

@@ -16,6 +16,7 @@ const institutionCourseSchema = new mongoose.Schema(
         prerequisites: String,
         objectives: String,
         targetAudience: String,
+        promoVideoUrl: String,
         imageUrl: String,
         category: {
             type: String,
