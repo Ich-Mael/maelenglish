@@ -97,11 +97,15 @@ module.exports.courseShow = catchAsync(async (req, res) => {
     // First module that is not 100% complete
     const resumeModule = modulesWithProgress.find(({ pct }) => pct < 100) || modulesWithProgress[0] || null;
 
-    const [finalExamAttempt, finalProjectSubmission, quizAttempts, assignmentSubs] = await Promise.all([
+    const [finalExamAttempt, finalProjectSubmission, quizAttempts, assignmentSubs, announcements] = await Promise.all([
         InstitutionFinalExamAttempt.findOne({ userId: req.user._id, courseId }).sort({ createdAt: -1 }).lean(),
         InstitutionFinalProjectSubmission.findOne({ userId: req.user._id, courseId }).lean(),
         InstitutionQuizAttempt.find({ userId: req.user._id, courseId }).sort({ score: -1 }).lean(),
-        InstitutionAssignmentSubmission.find({ userId: req.user._id, courseId }).lean()
+        InstitutionAssignmentSubmission.find({ userId: req.user._id, courseId }).lean(),
+        Announcement.find({ institutionId: req.institution._id, isPublished: true })
+            .sort({ isPinned: -1, createdAt: -1 })
+            .limit(5)
+            .lean()
     ]);
 
     // Best quiz attempt per module
@@ -130,6 +134,7 @@ module.exports.courseShow = catchAsync(async (req, res) => {
         quizAttemptByModule,
         assignmentSubByModule,
         isCertificateEligible,
+        announcements,
         institution: req.institution,
         enrollment: req.enrollment
     });
