@@ -275,17 +275,19 @@ router.get(
   checkRoles(["admin", "super-admin"]),
   catchAsync(async (req, res) => {
     const { InstitutionEnrollment, InstitutionCourse } = require('../../programs/institution/models');
+    const VisitorMessage = require('../../shared/models/visitorMessage');
 
     const [
       totalUsers, totalAdmins, totalLearners, verifiedUsers,
-      institutions, totalInstitutionStudents
+      institutions, totalInstitutionStudents, unreadMessages
     ] = await Promise.all([
       User.countDocuments(),
       User.countDocuments({ role: { $in: ["admin", "super-admin"] } }),
       User.countDocuments({ role: "user" }),
       User.countDocuments({ isVerified: true }),
       Institution.find({ isActive: true }).select('name').sort({ name: 1 }),
-      User.countDocuments({ institutionId: { $ne: null } })
+      User.countDocuments({ institutionId: { $ne: null } }),
+      VisitorMessage.countDocuments({ isRead: false })
     ]);
 
     const institutionIds = institutions.map(i => i._id);
@@ -332,7 +334,8 @@ router.get(
       institutionStats,
       recentEnrollments,
       totalInstitutions: institutions.length,
-      totalInstitutionStudents
+      totalInstitutionStudents,
+      unreadMessages
     });
   })
 );

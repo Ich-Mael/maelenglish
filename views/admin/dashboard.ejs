@@ -247,6 +247,16 @@
         <div class="action-icon teal"><i class="bi bi-building-add"></i></div>
         <div><p class="action-title">Nouvelle institution</p><p class="action-sub">Créer un partenaire</p></div>
       </a>
+      <a href="/admin/messages" class="action-card" style="position:relative;">
+        <div class="action-icon" style="background:#fef3c7;color:#d97706;"><i class="bi bi-envelope"></i></div>
+        <div>
+          <p class="action-title">Messages visiteurs</p>
+          <p class="action-sub">Boîte de réception</p>
+        </div>
+        <% if (typeof unreadMessages !== 'undefined' && unreadMessages > 0) { %>
+          <span style="position:absolute;top:12px;right:14px;background:#ef4444;color:#fff;font-size:.7rem;font-weight:800;min-width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0 4px;"><%= unreadMessages %></span>
+        <% } %>
+      </a>
     </div>
 
     <!-- ── AfroHK Programs ── -->
@@ -312,6 +322,22 @@
           <div class="prog-links">
             <a href="/admin/users?role=institution-admin" class="prog-link teal-link"><i class="bi bi-shield-person"></i> Admins institutions</a>
             <a href="/admin/users/create" class="prog-link teal-link"><i class="bi bi-person-plus"></i> Créer un compte</a>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="prog-card teal-card">
+          <div class="prog-card-header">
+            <div class="prog-icon teal"><i class="bi bi-envelope"></i></div>
+            <h3 class="prog-name teal">
+              Messages
+              <% if (typeof unreadMessages !== 'undefined' && unreadMessages > 0) { %>
+                <span style="margin-left:.5rem;background:#ef4444;color:#fff;font-size:.65rem;font-weight:800;padding:.15rem .5rem;border-radius:50px;vertical-align:middle;"><%= unreadMessages %> non lu<%= unreadMessages > 1 ? 's' : '' %></span>
+              <% } %>
+            </h3>
+          </div>
+          <div class="prog-links">
+            <a href="/admin/messages" class="prog-link teal-link"><i class="bi bi-inbox"></i> Boîte de réception</a>
           </div>
         </div>
 
