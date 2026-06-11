@@ -35,6 +35,7 @@ const User = require("./shared/models/user");
 const InstitutionCourse = require("./programs/institution/models/Course");
 const InstitutionCourseTestimonial = require("./programs/institution/models/Testimonial");
 const InstitutionModule = require("./programs/institution/models/Module");
+const VisitorMessage = require("./shared/models/visitorMessage");
 
 // Import program routes
 const eKalanRoutes = require("./programs/ekalan");
@@ -44,6 +45,7 @@ const institutionProgram = require("./programs/institution");
 // Import shared routes
 const accountRoutes = require("./shared/routes/account");
 const adminInstitutionRoutes = require("./shared/routes/adminInstitutions");
+const adminMessagesRoutes = require("./shared/routes/adminMessages");
 const institutionDashboardRoutes = require("./shared/routes/institutionDashboard");
 const institutionStudentRoutes = require("./shared/routes/institutionStudent");
 
@@ -205,9 +207,26 @@ app.get('/formations/:courseId', async (req, res) => {
     res.render('formations-show', { course, modules, testimonials, totalLessons });
 });
 
+// Contact form submission (public, no auth)
+app.post('/visitormessage', async (req, res) => {
+    try {
+        const { name, email, message } = req.body.visitor || {};
+        if (!name || !email || !message) {
+            req.flash('error', 'Veuillez remplir tous les champs.');
+            return res.redirect('/#contact');
+        }
+        await VisitorMessage.create({ name: name.trim(), email: email.trim(), message: message.trim() });
+        req.flash('success', 'Votre message a bien été envoyé. Nous vous répondrons bientôt !');
+    } catch (e) {
+        req.flash('error', 'Une erreur est survenue. Veuillez réessayer.');
+    }
+    res.redirect('/#contact');
+});
+
 // Mount Shared Routes
 app.use('/', accountRoutes);
 app.use('/admin/institutions', adminInstitutionRoutes);
+app.use('/admin/messages', adminMessagesRoutes);
 app.use('/institution', institutionDashboardRoutes);
 app.use('/institution', institutionStudentRoutes);
 
