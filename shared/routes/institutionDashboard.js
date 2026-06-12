@@ -5,8 +5,9 @@ const { isInstitutionAdmin, loadInstitution } = require('../middlewares/institut
 const Dashboard       = require('../controllers/institution/dashboardController');
 const Students        = require('../controllers/institution/studentsController');
 const Courses         = require('../controllers/institution/coursesController');
-const Testimonials    = require('../controllers/institution/testimonialsController');
-const Announcements   = require('../controllers/institution/announcementsController');
+const Testimonials         = require('../controllers/institution/testimonialsController');
+const Announcements        = require('../controllers/institution/announcementsController');
+const EnrollmentRequests   = require('../controllers/institution/enrollmentRequestsController');
 
 // Dashboard routes require institution-admin role + loaded institution
 router.use('/dashboard', isInstitutionAdmin, loadInstitution);
@@ -57,5 +58,10 @@ router.get('/dashboard/announcements',                           Announcements.i
 router.post('/dashboard/announcements',                          Announcements.create);
 router.post('/dashboard/announcements/:id/pin',                  Announcements.togglePin);
 router.delete('/dashboard/announcements/:id',                    Announcements.destroy);
+
+// ─── ENROLLMENT REQUESTS ──────────────────────────────────────────────────────
+router.get('/dashboard/requests',               EnrollmentRequests.index);
+router.put('/dashboard/requests/:id/status',    EnrollmentRequests.updateStatus);
+router.delete('/dashboard/requests/:id',        EnrollmentRequests.destroy);
 
 module.exports = router;

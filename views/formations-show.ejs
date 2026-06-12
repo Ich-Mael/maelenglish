@@ -342,6 +342,37 @@
   }
   .cta-back:hover { background: #f1f5f9; color: #0f172a; }
 
+  /* ── Enrollment request form ── */
+  .enroll-form-head {
+    padding: 1.1rem 1.5rem .9rem;
+    border-bottom: 1.5px solid #f1f5f9;
+    display: flex; flex-direction: column; gap: .15rem;
+  }
+  .enroll-form-title { font-size: .95rem; font-weight: 800; color: #0f172a; }
+  .enroll-form-sub   { font-size: .76rem; color: #94a3b8; }
+  .enroll-form-body  { padding: 1.1rem 1.5rem 1.25rem; }
+  .ef-field { margin-bottom: .7rem; }
+  .ef-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #64748b; display: block; margin-bottom: .3rem; }
+  .ef-input, .ef-textarea {
+    width: 100%; padding: .6rem .85rem;
+    border: 1.5px solid #e2e8f0; border-radius: 9px;
+    font-size: .86rem; color: #0f172a; background: #f8fafc;
+    outline: none; transition: border-color .18s, background .18s;
+    font-family: inherit; box-sizing: border-box;
+  }
+  .ef-input:focus, .ef-textarea:focus { border-color: var(--brand); background: #fff; }
+  .ef-textarea { resize: vertical; min-height: 70px; }
+  .ef-submit {
+    width: 100%; padding: .78rem;
+    background: var(--brand); color: #fff; border: none; border-radius: 10px;
+    font-size: .9rem; font-weight: 700; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: .45rem;
+    margin-top: .3rem;
+    transition: background .18s, transform .15s;
+  }
+  .ef-submit:hover { background: color-mix(in srgb, var(--brand) 85%, #000); transform: translateY(-1px); }
+  .ef-note { font-size: .72rem; color: #94a3b8; text-align: center; margin-top: .5rem; }
+
   /* ── Responsive ── */
   @media (max-width: 960px) {
     .cd-layout { flex-direction: column; }
@@ -621,9 +652,36 @@
             <% if (!isFree && priceText !== 'Sur demande') { %>
               <div class="cta-price-note">Tarif de formation</div>
             <% } %>
-            <a href="<%= inst.contactEmail ? 'mailto:' + inst.contactEmail : '#' %>" class="cta-enroll-btn <%= isFree ? 'free-btn' : '' %>">
-              <i class="bi bi-send-fill"></i> Contacter pour s'inscrire
-            </a>
+          </div>
+
+          <!-- Enrollment request form -->
+          <div class="enroll-form-head">
+            <div class="enroll-form-title">✉ Demander l'inscription</div>
+            <div class="enroll-form-sub">L'institution vous recontactera sous 48 h</div>
+          </div>
+          <div class="enroll-form-body">
+            <form action="/formations/<%= course._id %>/enroll-request" method="POST">
+              <div class="ef-field">
+                <label class="ef-label" for="ef-name">Nom complet *</label>
+                <input class="ef-input" type="text" id="ef-name" name="name" placeholder="Votre nom" required>
+              </div>
+              <div class="ef-field">
+                <label class="ef-label" for="ef-email">Email *</label>
+                <input class="ef-input" type="email" id="ef-email" name="email" placeholder="votre@email.com" required>
+              </div>
+              <div class="ef-field">
+                <label class="ef-label" for="ef-phone">Téléphone</label>
+                <input class="ef-input" type="tel" id="ef-phone" name="phone" placeholder="+226 70 00 00 00">
+              </div>
+              <div class="ef-field">
+                <label class="ef-label" for="ef-message">Message</label>
+                <textarea class="ef-textarea" id="ef-message" name="message" placeholder="Questions, disponibilités…"></textarea>
+              </div>
+              <button type="submit" class="ef-submit">
+                <i class="bi bi-send-fill"></i> Envoyer la demande
+              </button>
+              <p class="ef-note">Gratuit, sans engagement</p>
+            </form>
           </div>
 
           <div class="cta-body">
@@ -641,27 +699,6 @@
                 <a href="/formations/institutions/<%= inst._id %>" class="cta-inst-link">Voir tous les cours →</a>
               </div>
             </div>
-
-            <% if (inst.contactEmail) { %>
-            <div class="cta-row">
-              <span class="cta-label">Email</span>
-              <div class="cta-contact-val"><a href="mailto:<%= inst.contactEmail %>"><%= inst.contactEmail %></a></div>
-            </div>
-            <% } %>
-
-            <% if (inst.phone) { %>
-            <div class="cta-row">
-              <span class="cta-label">Téléphone</span>
-              <div class="cta-contact-val"><a href="tel:<%= inst.phone %>"><%= inst.phone %></a></div>
-            </div>
-            <% } %>
-
-            <% if (inst.city || inst.country) { %>
-            <div class="cta-row">
-              <span class="cta-label">Localisation</span>
-              <div class="cta-contact-val">📍 <%= [inst.city, inst.country].filter(Boolean).join(', ') %></div>
-            </div>
-            <% } %>
 
             <div class="cta-divider"></div>
             <a href="/formations" class="cta-back">← Retour au catalogue</a>

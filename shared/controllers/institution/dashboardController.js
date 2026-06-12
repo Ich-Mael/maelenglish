@@ -1,7 +1,8 @@
 const {
     InstitutionCourse, InstitutionEnrollment,
     InstitutionLesson, InstitutionLessonProgress,
-    InstitutionAssignmentSubmission, InstitutionFinalProjectSubmission
+    InstitutionAssignmentSubmission, InstitutionFinalProjectSubmission,
+    InstitutionEnrollmentRequest
 } = require('../../../programs/institution/models');
 const Institution = require('../../models/institution');
 const catchAsync  = require('../../utilities/catchAsync');
@@ -26,7 +27,8 @@ module.exports.home = catchAsync(async (req, res) => {
         pendingAssignments,
         pendingProjects,
         expiringEnrollments,
-        expiredCount
+        expiredCount,
+        pendingRequestCount
     ] = await Promise.all([
         InstitutionEnrollment.aggregate([
             { $match: { institutionId, courseId: { $in: courseIds } } },
@@ -59,7 +61,8 @@ module.exports.home = catchAsync(async (req, res) => {
             institutionId,
             endDate: { $gte: now, $lte: in7days }
         }).populate('userId', 'name surname username').populate('courseId', 'title').lean(),
-        InstitutionEnrollment.countDocuments({ institutionId, endDate: { $lt: now } })
+        InstitutionEnrollment.countDocuments({ institutionId, endDate: { $lt: now } }),
+        InstitutionEnrollmentRequest.countDocuments({ institutionId, status: 'pending' })
     ]);
 
     const toMap = arr => Object.fromEntries(arr.map(r => [r._id.toString(), r.count]));
@@ -88,7 +91,8 @@ module.exports.home = catchAsync(async (req, res) => {
         courseCards,
         expiringEnrollments,
         expiredCount,
-        totalPending
+        totalPending,
+        pendingRequestCount
     });
 });
 

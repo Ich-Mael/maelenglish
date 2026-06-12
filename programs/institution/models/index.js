@@ -9,5 +9,6 @@ module.exports = {
     InstitutionAssignmentSubmission: require('./AssignmentSubmission'),
     InstitutionFinalExamAttempt: require('./FinalExamAttempt'),
     InstitutionFinalProjectSubmission: require('./FinalProjectSubmission'),
-    InstitutionCourseTestimonial: require('./Testimonial')
+    InstitutionCourseTestimonial: require('./Testimonial'),
+    InstitutionEnrollmentRequest: require('./EnrollmentRequest')
 };

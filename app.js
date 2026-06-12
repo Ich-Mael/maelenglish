@@ -36,6 +36,7 @@ const InstitutionCourse = require("./programs/institution/models/Course");
 const InstitutionCourseTestimonial = require("./programs/institution/models/Testimonial");
 const InstitutionModule = require("./programs/institution/models/Module");
 const InstitutionLesson = require("./programs/institution/models/Lesson");
+const InstitutionEnrollmentRequest = require("./programs/institution/models/EnrollmentRequest");
 const VisitorMessage = require("./shared/models/visitorMessage");
 
 // Import program routes
@@ -283,6 +284,55 @@ app.get('/formations/:courseId/preview/:lessonId', async (req, res) => {
         res.render('formations-preview', { lesson, course });
     } catch (err) {
         res.status(404).render('noAccess', { statusCode: 404, message: 'Aperçu indisponible' });
+    }
+});
+
+// Enrollment request (public, no auth)
+app.post('/formations/:courseId/enroll-request', async (req, res) => {
+    try {
+        const { name, email, phone, message } = req.body;
+        if (!name || !email) {
+            req.flash('error', 'Le nom et l\'email sont requis.');
+            return res.redirect(`/formations/${req.params.courseId}`);
+        }
+        const course = await InstitutionCourse.findOne({ _id: req.params.courseId, isActive: true })
+            .populate('institutionId', 'name contactEmail')
+            .lean();
+        if (!course) {
+            req.flash('error', 'Cours introuvable.');
+            return res.redirect('/formations');
+        }
+        await InstitutionEnrollmentRequest.create({
+            courseId:      course._id,
+            institutionId: course.institutionId._id,
+            name:    name.trim(),
+            email:   email.trim().toLowerCase(),
+            phone:   phone   ? phone.trim()   : '',
+            message: message ? message.trim() : ''
+        });
+        // Notify institution by email (best effort)
+        const instEmail = course.institutionId.contactEmail;
+        if (instEmail && process.env.EMAIL_USERNAME && process.env.EMAIL_PASSWORD) {
+            const nodemailer = require('nodemailer');
+            const transporter = nodemailer.createTransport({
+                host: process.env.EMAIL_HOST || 'smtp-relay.brevo.com',
+                port: process.env.EMAIL_PORT || 587,
+                auth: { user: process.env.EMAIL_USERNAME, pass: process.env.EMAIL_PASSWORD }
+            });
+            const dashUrl = `${process.env.APP_URL || 'http://localhost:3000'}/institution/dashboard/requests`;
+            await transporter.sendMail({
+                from: `AfroHK <${process.env.EMAIL_FROM || 'contact@afrohk.com'}>`,
+                to:   instEmail,
+                subject: `Nouvelle demande d'inscription — ${stripHtml(course.title)}`,
+                html: `<p><strong>${name.trim()}</strong> (${email.trim()}) a soumis une demande d'inscription au cours <strong>${stripHtml(course.title)}</strong>.</p>${phone ? `<p>Téléphone : ${phone}</p>` : ''}${message ? `<p>Message : ${message}</p>` : ''}<p><a href="${dashUrl}">Voir les demandes →</a></p>`
+            }).catch(() => {}); // non-blocking
+        }
+        req.flash('success', 'Demande envoyée ! L\'institution vous contactera bientôt.');
+        res.redirect(`/formations/${req.params.courseId}`);
+    } catch (err) {
+        console.error(err);
+        req.flash('error', 'Une erreur est survenue. Veuillez réessayer.');
+        res.redirect(`/formations/${req.params.courseId}`);
     }
 });
 
