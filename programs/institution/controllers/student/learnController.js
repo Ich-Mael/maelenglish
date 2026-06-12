@@ -172,9 +172,13 @@ module.exports.moduleOverview = catchAsync(async (req, res) => {
 
     const allLessonsDone = lessons.length === 0 || lessons.every(l => completedIds.has(l._id.toString()));
 
-    const [quizAttempt, assignmentSubmission] = await Promise.all([
+    const [quizAttempt, assignmentSubmission, announcements] = await Promise.all([
         InstitutionQuizAttempt.findOne({ userId: req.user._id, moduleId }).sort({ createdAt: -1 }).lean(),
-        InstitutionAssignmentSubmission.findOne({ userId: req.user._id, moduleId }).lean()
+        InstitutionAssignmentSubmission.findOne({ userId: req.user._id, moduleId }).lean(),
+        Announcement.find({ institutionId: req.institution._id, isPublished: true })
+            .sort({ isPinned: -1, createdAt: -1 })
+            .limit(5)
+            .lean()
     ]);
 
     res.render('institution-dashboard/learn/module-overview', {
@@ -183,7 +187,9 @@ module.exports.moduleOverview = catchAsync(async (req, res) => {
         lessonsWithStatus,
         allLessonsDone,
         quizAttempt,
-        assignmentSubmission
+        assignmentSubmission,
+        announcements,
+        institution: req.institution
     });
 });
 
