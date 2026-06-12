@@ -210,20 +210,30 @@ app.get('/formations', async (req, res) => {
 
 app.get('/formations/institutions/:institutionId', async (req, res) => {
     const Institution = require('./shared/models/institution');
+    const InstitutionInstructor = require('./programs/institution/models/Instructor');
+
     const institution = await Institution.findById(req.params.institutionId).lean();
     if (!institution) return res.status(404).render('noAccess', { statusCode: 404, message: 'Institution introuvable' });
 
-    const courses = await InstitutionCourse
-        .find({ institutionId: institution._id, isActive: true })
-        .select('title description imageUrl modules pricing createdAt')
-        .lean();
+    const [courses, instructors] = await Promise.all([
+        InstitutionCourse
+            .find({ institutionId: institution._id, isActive: true })
+            .select('title description imageUrl modules pricing createdAt category')
+            .lean(),
+        InstitutionInstructor
+            .find({ institutionId: institution._id })
+            .select('name title bio photoUrl')
+            .lean()
+    ]);
 
     courses.forEach(c => {
         if (c.title) c.title = stripHtml(c.title);
         if (c.description) c.description = stripHtml(c.description);
     });
 
-    res.render('formations-institution', { institution, courses });
+    const totalModules = courses.reduce((sum, c) => sum + (c.modules ? c.modules.length : 0), 0);
+
+    res.render('formations-institution', { institution, courses, instructors, totalModules });
 });
 
 app.get('/formations/:courseId', async (req, res) => {

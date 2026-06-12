@@ -1,146 +1,312 @@
 <% layout('layouts/main') %>
 
 <%
-  const brand    = institution.primaryColor || '#5d06ba';
-  const sm       = institution.socialMedia  || {};
+  const brand    = institution.primaryColor  || '#5d06ba';
+  const sec      = institution.secondaryColor || '';
+  const acc      = institution.accentColor    || '';
+  const sm       = institution.socialMedia    || {};
   const hasSocial = sm.website || sm.facebook || sm.instagram || sm.linkedin || sm.twitter || sm.youtube || sm.whatsapp;
+  const hasContact = institution.contactEmail || institution.phone || institution.city || institution.country || hasSocial;
 %>
 
 <% headContent = `<style>
   :root { --brand: ${brand}; }
 
+  /* ── Hero ── */
   .inst-hero {
     margin-top: 70px;
-    background: linear-gradient(135deg, #0f0720 0%, #1a0a38 100%);
-    padding: 2.75rem 0;
-    position: relative;
-    overflow: hidden;
+    background: linear-gradient(150deg, #07031a 0%, #130330 50%, #240861 100%);
+    padding: 3.5rem 0 4rem;
+    position: relative; overflow: hidden;
   }
   .inst-hero::before {
     content: '';
     position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 80% 50%, color-mix(in srgb, ${brand} 20%, transparent) 0%, transparent 60%);
+    background: radial-gradient(ellipse at 78% 45%, color-mix(in srgb, ${brand} 28%, transparent) 0%, transparent 60%);
     pointer-events: none;
   }
-  .inst-hero-grid {
-    position: relative; z-index: 1;
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 2.5rem;
-    align-items: center;
+  .inst-hero::after {
+    content: '';
+    position: absolute; bottom: -1px; left: 0; right: 0; height: 48px;
+    background: linear-gradient(to bottom, transparent, #f4f6fb);
+    pointer-events: none; z-index: 3;
   }
-  .inst-hero-left { display: flex; flex-direction: column; align-items: flex-start; }
-  .inst-hero-left h1 { font-size: 2rem; font-weight: 900; color: #fff; margin: 0 0 .75rem; line-height: 1.2; }
-  .inst-hero-meta { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: .9rem; align-items: center; }
-  .inst-meta-chip { display: inline-flex; align-items: center; gap: .35rem; font-size: .78rem; color: rgba(255,255,255,.7); background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.12); border-radius: 20px; padding: .25rem .75rem; }
-  .inst-hero-desc { font-size: .9rem; color: rgba(255,255,255,.72); line-height: 1.65; margin: 0; }
-  .inst-social { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .9rem; }
-  .inst-social a { display: inline-flex; align-items: center; gap: .35rem; font-size: .78rem; color: rgba(255,255,255,.8); background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15); border-radius: 8px; padding: .3rem .75rem; text-decoration: none; transition: background .15s; }
-  .inst-social a:hover { background: rgba(255,255,255,.18); color: #fff; }
-  /* right logo panel */
-  .inst-hero-logo-panel {
-    aspect-ratio: 1;
-    border-radius: 24px;
-    background: #fff;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 16px 48px rgba(0,0,0,.4);
-    overflow: hidden;
-    padding: 20px;
-  }
-  .inst-hero-logo-panel img { width: 100%; height: 100%; object-fit: contain; }
-  .inst-hero-logo-panel .inst-initials { font-size: 5rem; font-weight: 900; color: var(--brand); line-height: 1; }
-  @media (max-width: 900px) {
-    .inst-hero-grid { grid-template-columns: 1fr; }
-    .inst-hero-logo-panel { aspect-ratio: unset; height: 180px; border-radius: 18px; padding: 16px; }
-    .inst-hero-left h1 { font-size: 1.65rem; }
-  }
-  @media (max-width: 500px) {
-    .inst-hero-left h1 { font-size: 1.4rem; }
-  }
-
-  /* stat strip */
-  .inst-stat-bar { background: #fff; border-bottom: 1px solid #f1f5f9; padding: .85rem 0; }
-  .inst-stat-inner { display: flex; gap: 2.5rem; flex-wrap: wrap; align-items: center; }
-  .inst-stat { font-size: .85rem; color: #374151; display: flex; align-items: center; gap: .4rem; }
-  .inst-stat strong { color: #1d1d1f; font-size: 1rem; }
-
-  /* courses grid */
-  .inst-body { padding: 3rem 0 5rem; background: #f8fafc; }
-  .sect-title { font-size: 1.1rem; font-weight: 800; color: #1d1d1f; margin: 0 0 1.5rem; }
-
-  .ic-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-  @media (max-width: 992px) { .ic-grid { grid-template-columns: repeat(2,1fr); } }
-  @media (max-width: 600px)  { .ic-grid { grid-template-columns: 1fr; } }
-
-  .ic-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07); overflow: visible; display: flex; flex-direction: column; transition: transform .22s, box-shadow .22s; }
-  .ic-card:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,.12); }
-  .ic-thumb { height: 180px; border-radius: 16px 16px 0 0; overflow: hidden; position: relative; background: linear-gradient(135deg, var(--brand), color-mix(in srgb, var(--brand) 55%, #000)); display: flex; align-items: center; justify-content: center; }
-  .ic-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-  .ic-thumb-icon { font-size: 2.5rem; opacity: .3; color: #fff; }
-  .ic-price-badge { position: absolute; top: 10px; right: 10px; font-size: .7rem; font-weight: 800; padding: .25rem .65rem; border-radius: 20px; backdrop-filter: blur(6px); }
-  .ic-price-badge.free   { background: rgba(22,163,74,.9);  color: #fff; }
-  .ic-price-badge.paid   { background: rgba(255,255,255,.92); color: #1d1d1f; }
-  .ic-price-badge.demand { background: rgba(0,0,0,.55); color: rgba(255,255,255,.9); border: 1px solid rgba(255,255,255,.2); }
-  .ic-body { padding: 1.1rem 1.2rem 1.3rem; flex: 1; display: flex; flex-direction: column; gap: .5rem; }
-  .ic-title { font-size: .98rem; font-weight: 700; color: #1e293b; line-height: 1.35; }
-  .ic-desc-wrap { position: relative; flex: 1; overflow: visible; }
-  .ic-desc { font-size: .82rem; color: #64748b; line-height: 1.55; margin: 0; cursor: default; }
-  .ic-desc-tooltip { display: none; position: absolute; bottom: calc(100% + 8px); left: 0; right: 0; background: #1e293b; color: #e2e8f0; font-size: .79rem; line-height: 1.6; padding: .8rem 1rem; border-radius: 10px; box-shadow: 0 8px 28px rgba(0,0,0,.25); z-index: 100; pointer-events: none; }
-  .ic-desc-tooltip::after { content: ''; position: absolute; top: 100%; left: 18px; border: 6px solid transparent; border-top-color: #1e293b; }
-  .ic-desc-wrap:hover .ic-desc-tooltip { display: block; }
-  .ic-meta { font-size: .75rem; color: #94a3b8; display: flex; align-items: center; gap: 10px; }
-  .ic-footer { padding: .75rem 1.2rem 1rem; border-top: 1px solid #f1f5f9; }
-  .btn-ic { display: inline-flex; align-items: center; gap: .3rem; background: var(--brand); color: #fff; font-size: .8rem; font-weight: 700; padding: .5rem 1.1rem; border-radius: 8px; text-decoration: none; transition: opacity .15s; }
-  .btn-ic:hover { opacity: .85; color: #fff; }
-
-  .empty-state { text-align: center; padding: 4rem 2rem; background: #fff; border-radius: 20px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
-
-  .filter-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 1.5rem; }
-  .filter-label { font-size: .82rem; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: .05em; }
-  .filter-pill { padding: 6px 16px; border-radius: 50px; border: 1.5px solid #e2e8f0; background: #fff; font-size: .83rem; font-weight: 600; color: #374151; cursor: pointer; transition: all .2s; white-space: nowrap; }
-  .filter-pill:hover, .filter-pill.active { border-color: var(--brand); background: var(--brand); color: #fff; }
-  .ic-cat-badge { display: inline-block; font-size: .7rem; font-weight: 700; padding: .2rem .6rem; border-radius: 20px; background: #ede9fe; color: var(--brand); white-space: nowrap; align-self: flex-start; }
+  .inst-hero-inner { position: relative; z-index: 2; }
 
   .back-link {
     display: inline-flex; align-items: center; gap: .45rem;
-    font-size: .82rem; font-weight: 700;
-    color: rgba(255,255,255,.85);
-    background: rgba(255,255,255,.1);
-    border: 1px solid rgba(255,255,255,.18);
+    font-size: .8rem; font-weight: 700;
+    color: rgba(255,255,255,.75);
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.14);
     backdrop-filter: blur(8px);
-    padding: .45rem 1rem .45rem .8rem;
-    border-radius: 50px;
-    text-decoration: none;
-    margin-bottom: 1.5rem;
+    padding: .4rem 1rem .4rem .75rem;
+    border-radius: 50px; text-decoration: none;
+    margin-bottom: 1.75rem; display: inline-flex;
     transition: background .18s, color .18s;
   }
-  .back-link:hover { background: rgba(255,255,255,.2); color: #fff; }
+  .back-link:hover { background: rgba(255,255,255,.16); color: #fff; }
   .back-link .arrow { transition: transform .18s; }
   .back-link:hover .arrow { transform: translateX(-3px); }
 
+  .inst-hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 240px;
+    gap: 3rem; align-items: center;
+  }
+
+  .inst-logo-panel {
+    aspect-ratio: 1; border-radius: 24px;
+    background: #fff; overflow: hidden;
+    padding: 22px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 20px 56px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.06);
+  }
+  .inst-logo-panel img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .inst-logo-panel .initials { font-size: 5rem; font-weight: 900; color: var(--brand); line-height: 1; }
+
+  .inst-hero-name { font-size: 2.25rem; font-weight: 900; color: #fff; margin: 0 0 1rem; line-height: 1.18; }
+
+  .inst-chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.1rem; }
+  .inst-chip {
+    display: inline-flex; align-items: center; gap: .35rem;
+    font-size: .78rem; font-weight: 600;
+    color: rgba(255,255,255,.78);
+    background: rgba(255,255,255,.09);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 20px; padding: .28rem .82rem;
+  }
+  .inst-chip a { color: inherit; text-decoration: none; }
+  .inst-chip a:hover { text-decoration: underline; }
+
+  .inst-hero-desc {
+    font-size: .92rem; color: rgba(255,255,255,.72); line-height: 1.7;
+    margin: 0 0 1.25rem; max-width: 640px;
+  }
+
+  .inst-social { display: flex; gap: .45rem; flex-wrap: wrap; }
+  .inst-social a {
+    display: inline-flex; align-items: center; gap: .35rem;
+    font-size: .78rem; font-weight: 600;
+    color: rgba(255,255,255,.8);
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 8px; padding: .3rem .8rem;
+    text-decoration: none; transition: background .15s;
+  }
+  .inst-social a:hover { background: rgba(255,255,255,.18); color: #fff; }
+
+  @media (max-width: 900px) {
+    .inst-hero-grid { grid-template-columns: 1fr; }
+    .inst-logo-panel { width: 140px; height: 140px; aspect-ratio: unset; border-radius: 18px; padding: 16px; }
+    .inst-hero-name { font-size: 1.75rem; }
+  }
+
+  /* ── Body ── */
+  .inst-body { padding: 2.75rem 0 5rem; background: #f4f6fb; }
+  .inst-layout { display: flex; gap: 2rem; align-items: flex-start; }
+  .inst-main { flex: 1; min-width: 0; }
+  .inst-sidebar { width: 288px; flex-shrink: 0; }
+
+  /* ── Section card ── */
+  .inst-sec {
+    background: #fff; border-radius: 16px;
+    box-shadow: 0 1px 6px rgba(0,0,0,.05), 0 4px 16px rgba(0,0,0,.04);
+    overflow: hidden; margin-bottom: 1.25rem;
+  }
+  .inst-sec-head {
+    display: flex; align-items: center; gap: .65rem;
+    padding: 1.15rem 1.5rem 1rem;
+    border-bottom: 1.5px solid #f1f5f9;
+  }
+  .inst-sec-icon {
+    width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: .85rem;
+  }
+  .inst-sec-title { font-size: 1rem; font-weight: 800; color: #0f172a; margin: 0; flex: 1; }
+  .inst-sec-meta  { font-size: .75rem; color: #94a3b8; font-weight: 500; }
+  .inst-sec-body  { padding: 1.25rem 1.5rem; }
+
+  /* ── About ── */
+  .about-text { font-size: .93rem; color: #374151; line-height: 1.78; }
+
+  /* ── Stats strip ── */
+  .inst-stats {
+    display: flex; gap: 0;
+    background: #fff; border-radius: 14px;
+    box-shadow: 0 1px 6px rgba(0,0,0,.05), 0 4px 16px rgba(0,0,0,.04);
+    overflow: hidden; margin-bottom: 1.25rem;
+  }
+  .inst-stat {
+    flex: 1; padding: 1.1rem 1.25rem;
+    text-align: center;
+    border-right: 1px solid #f1f5f9;
+  }
+  .inst-stat:last-child { border-right: none; }
+  .inst-stat-val { font-size: 1.6rem; font-weight: 800; color: var(--brand); line-height: 1; margin-bottom: .25rem; }
+  .inst-stat-lbl { font-size: .73rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+
+  /* ── Instructors ── */
+  .instr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: .85rem; }
+  .instr-card {
+    background: #f8fafc; border: 1px solid #e8edf5; border-radius: 12px;
+    padding: 1.1rem; display: flex; flex-direction: column; align-items: center; text-align: center;
+    gap: .5rem;
+  }
+  .instr-avatar {
+    width: 58px; height: 58px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+    background: var(--brand);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.35rem; font-weight: 800; color: #fff;
+    border: 3px solid #fff; box-shadow: 0 3px 10px rgba(0,0,0,.1);
+  }
+  .instr-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .instr-name  { font-weight: 700; font-size: .88rem; color: #0f172a; }
+  .instr-title { font-size: .75rem; color: #64748b; line-height: 1.4; }
+  .instr-bio   { font-size: .76rem; color: #94a3b8; line-height: 1.5; }
+
+  /* ── Courses ── */
+  .ic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.1rem; }
+  .ic-card {
+    background: #fff; border-radius: 14px;
+    box-shadow: 0 1px 6px rgba(0,0,0,.06), 0 3px 12px rgba(0,0,0,.04);
+    overflow: hidden; display: flex; flex-direction: column;
+    transition: transform .22s, box-shadow .22s;
+  }
+  .ic-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,.12); }
+  .ic-thumb {
+    height: 160px; position: relative;
+    background: linear-gradient(135deg, var(--brand), color-mix(in srgb, var(--brand) 50%, #000));
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+  }
+  .ic-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .ic-thumb .no-img { font-size: 2.25rem; opacity: .25; color: #fff; }
+  .ic-price-badge {
+    position: absolute; top: 10px; right: 10px;
+    font-size: .68rem; font-weight: 800; padding: .22rem .6rem; border-radius: 20px;
+    backdrop-filter: blur(6px);
+  }
+  .ic-price-badge.free   { background: rgba(22,163,74,.9); color: #fff; }
+  .ic-price-badge.paid   { background: rgba(255,255,255,.92); color: #1d1d1f; }
+  .ic-price-badge.demand { background: rgba(0,0,0,.55); color: rgba(255,255,255,.88); border: 1px solid rgba(255,255,255,.2); }
+  .ic-body { padding: .95rem 1.1rem 1rem; flex: 1; display: flex; flex-direction: column; gap: .4rem; }
+  .ic-cat-badge {
+    align-self: flex-start; font-size: .67rem; font-weight: 700;
+    background: color-mix(in srgb, ${brand} 10%, #f5f3ff); color: var(--brand);
+    border-radius: 20px; padding: .18rem .55rem;
+  }
+  .ic-title { font-size: .93rem; font-weight: 700; color: #1e293b; line-height: 1.35; }
+  .ic-desc  { font-size: .8rem; color: #64748b; line-height: 1.5; flex: 1; }
+  .ic-meta  { font-size: .73rem; color: #94a3b8; display: flex; gap: 10px; margin-top: .1rem; }
+  .ic-footer { padding: .65rem 1.1rem .85rem; border-top: 1px solid #f1f5f9; }
+  .btn-ic {
+    display: inline-flex; align-items: center; gap: .3rem;
+    background: var(--brand); color: #fff;
+    font-size: .8rem; font-weight: 700; padding: .48rem 1.1rem; border-radius: 8px;
+    text-decoration: none; transition: opacity .15s;
+  }
+  .btn-ic:hover { opacity: .85; color: #fff; }
+
+  /* ── Filter bar ── */
+  .filter-bar { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+  .filter-label { font-size: .78rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .06em; }
+  .filter-pill {
+    padding: .32rem 1rem; border-radius: 50px;
+    border: 1.5px solid #e2e8f0; background: #fff;
+    font-size: .8rem; font-weight: 600; color: #374151; cursor: pointer;
+    transition: all .18s; white-space: nowrap;
+  }
+  .filter-pill:hover, .filter-pill.active { border-color: var(--brand); background: var(--brand); color: #fff; }
+
+  /* ── Contact sidebar ── */
+  .contact-card {
+    background: #fff; border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.08), 0 1px 5px rgba(0,0,0,.05);
+    overflow: hidden; position: sticky; top: 88px;
+  }
+  .contact-card-head {
+    padding: 1.1rem 1.4rem .95rem;
+    background: linear-gradient(135deg, color-mix(in srgb, ${brand} 8%, #fff), #fff);
+    border-bottom: 1.5px solid #f1f5f9;
+  }
+  .contact-card-title { font-size: .85rem; font-weight: 800; color: #0f172a; margin-bottom: .1rem; }
+  .contact-card-sub   { font-size: .72rem; color: #94a3b8; }
+  .contact-card-body  { padding: 1.1rem 1.4rem; }
+
+  .contact-row { margin-bottom: .9rem; }
+  .contact-row:last-child { margin-bottom: 0; }
+  .contact-lbl { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #94a3b8; margin-bottom: .28rem; display: block; }
+  .contact-val { font-size: .87rem; color: #374151; word-break: break-all; display: flex; align-items: center; gap: .4rem; }
+  .contact-val a { color: var(--brand); text-decoration: none; }
+  .contact-val a:hover { text-decoration: underline; }
+
+  .contact-social { display: flex; flex-direction: column; gap: .4rem; margin-top: .75rem; }
+  .contact-social a {
+    display: flex; align-items: center; gap: .55rem;
+    font-size: .82rem; font-weight: 600; color: #374151;
+    background: #f8fafc; border: 1px solid #e8edf5; border-radius: 8px;
+    padding: .45rem .75rem; text-decoration: none;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .contact-social a:hover { background: color-mix(in srgb, ${brand} 8%, #fff); border-color: var(--brand); color: var(--brand); }
+  .contact-social .soc-icon { width: 20px; text-align: center; flex-shrink: 0; }
+
+  .contact-cta {
+    display: flex; align-items: center; justify-content: center; gap: .45rem;
+    width: 100%; padding: .75rem;
+    background: var(--brand); color: #fff; border: none; border-radius: 10px;
+    font-weight: 700; font-size: .88rem; text-decoration: none; cursor: pointer;
+    margin-top: 1rem;
+    transition: background .18s, transform .15s;
+  }
+  .contact-cta:hover { background: color-mix(in srgb, var(--brand) 85%, #000); transform: translateY(-1px); color: #fff; }
+
+  .contact-divider { height: 1px; background: #f1f5f9; margin: .9rem 0; }
+
+  /* ── Empty state ── */
+  .empty-state { text-align: center; padding: 3.5rem 2rem; background: #fff; border-radius: 16px; box-shadow: 0 1px 6px rgba(0,0,0,.05); }
+
+  /* ── Responsive ── */
+  @media (max-width: 960px) {
+    .inst-layout { flex-direction: column; }
+    .inst-sidebar { width: 100%; }
+    .contact-card { position: static; }
+    .instr-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  }
+  @media (max-width: 600px) {
+    .inst-stats { flex-wrap: wrap; }
+    .inst-stat { flex: 0 0 50%; border-bottom: 1px solid #f1f5f9; }
+    .inst-stat:nth-child(2n) { border-right: none; }
+    .inst-stat:nth-last-child(-n+2) { border-bottom: none; }
+  }
 </style>` %>
 
 <!-- Hero -->
 <section class="inst-hero">
-  <div class="container">
-    <div class="inst-hero-grid">
+  <div class="container inst-hero-inner">
+    <a href="/formations" class="back-link"><span class="arrow">←</span> Retour au catalogue</a>
 
-      <!-- Left: text -->
-      <div class="inst-hero-left">
-        <a href="/formations" class="back-link"><span class="arrow">←</span> Retour au catalogue</a>
-        <h1><%= institution.name %></h1>
-        <div class="inst-hero-meta">
+    <div class="inst-hero-grid">
+      <div>
+        <h1 class="inst-hero-name"><%= institution.name %></h1>
+
+        <div class="inst-chips">
           <% if (institution.city || institution.country) { %>
-            <span class="inst-meta-chip">📍 <%= [institution.city, institution.country].filter(Boolean).join(', ') %></span>
+            <span class="inst-chip">📍 <%= [institution.city, institution.country].filter(Boolean).join(', ') %></span>
           <% } %>
-          <span class="inst-meta-chip">📚 <%= courses.length %> cours disponible<%= courses.length !== 1 ? 's' : '' %></span>
+          <span class="inst-chip">📚 <%= courses.length %> cours</span>
+          <% if (instructors.length > 0) { %>
+            <span class="inst-chip">👨‍🏫 <%= instructors.length %> formateur<%= instructors.length !== 1 ? 's' : '' %></span>
+          <% } %>
           <% if (institution.contactEmail) { %>
-            <a href="mailto:<%= institution.contactEmail %>" class="inst-meta-chip" style="text-decoration:none;color:rgba(255,255,255,.7);">✉ <%= institution.contactEmail %></a>
+            <span class="inst-chip">✉ <a href="mailto:<%= institution.contactEmail %>"><%= institution.contactEmail %></a></span>
           <% } %>
         </div>
+
         <% if (institution.description) { %>
           <p class="inst-hero-desc"><%= institution.description %></p>
         <% } %>
+
         <% if (hasSocial) { %>
           <div class="inst-social">
             <% if (sm.website)   { %><a href="<%= sm.website %>"   target="_blank" rel="noopener">🌐 Site web</a><% } %>
@@ -154,88 +320,221 @@
         <% } %>
       </div>
 
-      <!-- Right: logo panel -->
-      <div class="inst-hero-logo-panel">
+      <div class="inst-logo-panel">
         <% if (institution.logoUrl) { %>
           <img src="<%= institution.logoUrl %>" alt="<%= institution.name %>">
         <% } else { %>
-          <span class="inst-initials"><%= institution.name.substring(0,2).toUpperCase() %></span>
+          <span class="initials"><%= institution.name.substring(0,2).toUpperCase() %></span>
         <% } %>
       </div>
-
     </div>
   </div>
 </section>
 
-<!-- Courses -->
-<section class="inst-body">
+<!-- Body -->
+<div class="inst-body">
   <div class="container">
-    <h2 class="sect-title">Formations proposées par <%= institution.name %></h2>
+    <div class="inst-layout">
 
-    <%
-      const instCats = [];
-      const seenInstCats = new Set();
-      courses.forEach(c => {
-        const cat = c.category || 'Autre';
-        if (!seenInstCats.has(cat)) { seenInstCats.add(cat); instCats.push(cat); }
-      });
-    %>
-    <% if (instCats.length > 1) { %>
-    <div class="filter-bar" id="instCatFilter">
-      <span class="filter-label">Catégorie :</span>
-      <button class="filter-pill active" data-cat="">Toutes</button>
-      <% instCats.forEach(cat => { %>
-        <button class="filter-pill" data-cat="<%= cat %>"><%= cat %></button>
-      <% }) %>
-    </div>
-    <% } %>
+      <!-- ── Main ── -->
+      <div class="inst-main">
 
-    <% if (courses.length === 0) { %>
-      <div class="empty-state">
-        <p style="font-size:2.5rem;margin-bottom:.75rem;">📭</p>
-        <p style="color:#64748b;">Aucun cours disponible pour le moment. Revenez bientôt !</p>
-        <a href="/formations" style="color:var(--brand);font-weight:700;text-decoration:none;">← Retour au catalogue</a>
-      </div>
-    <% } else { %>
-    <div class="ic-grid">
-      <% courses.forEach(course => {
-        const pricing = course.pricing || {};
-        let priceLabel, priceBadgeClass;
-        if (pricing.isFree) { priceLabel = 'Gratuit'; priceBadgeClass = 'free'; }
-        else if (pricing.amount) { priceLabel = Number(pricing.amount).toLocaleString('fr-FR') + ' ' + (pricing.currency || 'FCFA'); priceBadgeClass = 'paid'; }
-        else { priceLabel = 'Sur demande'; priceBadgeClass = 'demand'; }
-        const moduleCount = (course.modules || []).length;
-        const instCourseCat = course.category || 'Autre';
-      %>
-      <div class="ic-card" data-cat="<%= instCourseCat %>">
-        <div class="ic-thumb">
-          <% if (course.imageUrl) { %><img loading="lazy" src="<%= course.imageUrl %>" alt="<%= course.title %>"><% } else { %><i class="bi bi-book-half ic-thumb-icon"></i><% } %>
-          <span class="ic-price-badge <%= priceBadgeClass %>"><%= priceLabel %></span>
-        </div>
-        <div class="ic-body">
-          <div class="ic-title"><%= course.title %></div>
-          <span class="ic-cat-badge"><%= instCourseCat %></span>
-          <% if (course.description) { %>
-            <div class="ic-desc-wrap">
-              <p class="ic-desc"><%= course.description.substring(0, 110) %><%= course.description.length > 110 ? '…' : '' %></p>
-              <% if (course.description.length > 110) { %>
-                <div class="ic-desc-tooltip"><%= course.description %></div>
-              <% } %>
-            </div>
-          <% } %>
-          <div class="ic-meta">
-            <span><i class="bi bi-grid-3x3-gap-fill"></i> <%= moduleCount %> module<%= moduleCount !== 1 ? 's' : '' %></span>
+        <!-- Stats -->
+        <div class="inst-stats">
+          <div class="inst-stat">
+            <div class="inst-stat-val"><%= courses.length %></div>
+            <div class="inst-stat-lbl">Cours</div>
+          </div>
+          <div class="inst-stat">
+            <div class="inst-stat-val"><%= totalModules %></div>
+            <div class="inst-stat-lbl">Modules</div>
+          </div>
+          <div class="inst-stat">
+            <div class="inst-stat-val"><%= instructors.length %></div>
+            <div class="inst-stat-lbl">Formateurs</div>
+          </div>
+          <%
+            const freeCount = courses.filter(c => c.pricing && c.pricing.isFree).length;
+          %>
+          <div class="inst-stat">
+            <div class="inst-stat-val"><%= freeCount %></div>
+            <div class="inst-stat-lbl">Gratuits</div>
           </div>
         </div>
-        <div class="ic-footer">
-          <a href="/formations/<%= course._id %>" class="btn-ic">En savoir plus →</a>
+
+        <!-- About (if description long enough to warrant its own block, i.e. description not already in hero) -->
+        <% if (institution.description && institution.description.length > 200) { %>
+        <div class="inst-sec">
+          <div class="inst-sec-head">
+            <div class="inst-sec-icon" style="background:#eff6ff;color:#2563eb;">🏫</div>
+            <h2 class="inst-sec-title">À propos</h2>
+          </div>
+          <div class="inst-sec-body">
+            <p class="about-text"><%= institution.description %></p>
+          </div>
+        </div>
+        <% } %>
+
+        <!-- Instructors -->
+        <% if (instructors.length > 0) { %>
+        <div class="inst-sec">
+          <div class="inst-sec-head">
+            <div class="inst-sec-icon" style="background:#fef9c3;color:#ca8a04;">👨‍🏫</div>
+            <h2 class="inst-sec-title">Équipe pédagogique</h2>
+            <span class="inst-sec-meta"><%= instructors.length %> formateur<%= instructors.length !== 1 ? 's' : '' %></span>
+          </div>
+          <div class="inst-sec-body">
+            <div class="instr-grid">
+              <% instructors.forEach(instr => { %>
+                <div class="instr-card">
+                  <div class="instr-avatar">
+                    <% if (instr.photoUrl) { %>
+                      <img src="<%= instr.photoUrl %>" alt="<%= instr.name %>">
+                    <% } else { %>
+                      <%= (instr.name || 'I').charAt(0).toUpperCase() %>
+                    <% } %>
+                  </div>
+                  <div>
+                    <div class="instr-name"><%= instr.name %></div>
+                    <% if (instr.title) { %><div class="instr-title"><%= instr.title %></div><% } %>
+                    <% if (instr.bio) { %><div class="instr-bio"><%= instr.bio.substring(0, 100) %><%= instr.bio.length > 100 ? '…' : '' %></div><% } %>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+          </div>
+        </div>
+        <% } %>
+
+        <!-- Courses -->
+        <div class="inst-sec">
+          <div class="inst-sec-head">
+            <div class="inst-sec-icon" style="background:color-mix(in srgb, var(--brand) 10%, #fff);color:var(--brand);">📚</div>
+            <h2 class="inst-sec-title">Formations proposées</h2>
+            <span class="inst-sec-meta"><%= courses.length %> cours</span>
+          </div>
+          <div class="inst-sec-body">
+
+            <%
+              const instCats = [];
+              const seenInstCats = new Set();
+              courses.forEach(c => {
+                const cat = c.category || 'Autre';
+                if (!seenInstCats.has(cat)) { seenInstCats.add(cat); instCats.push(cat); }
+              });
+            %>
+            <% if (instCats.length > 1) { %>
+            <div class="filter-bar" id="instCatFilter">
+              <span class="filter-label">Catégorie :</span>
+              <button class="filter-pill active" data-cat="">Toutes</button>
+              <% instCats.forEach(cat => { %>
+                <button class="filter-pill" data-cat="<%= cat %>"><%= cat %></button>
+              <% }) %>
+            </div>
+            <% } %>
+
+            <% if (courses.length === 0) { %>
+              <div class="empty-state">
+                <p style="font-size:2.25rem;margin-bottom:.6rem;">📭</p>
+                <p style="color:#64748b;font-size:.9rem;">Aucun cours disponible pour le moment.</p>
+              </div>
+            <% } else { %>
+            <div class="ic-grid">
+              <% courses.forEach(course => {
+                const pricing = course.pricing || {};
+                let priceLabel, priceBadgeClass;
+                if (pricing.isFree) { priceLabel = 'Gratuit'; priceBadgeClass = 'free'; }
+                else if (pricing.amount) { priceLabel = Number(pricing.amount).toLocaleString('fr-FR') + ' ' + (pricing.currency || 'FCFA'); priceBadgeClass = 'paid'; }
+                else { priceLabel = 'Sur demande'; priceBadgeClass = 'demand'; }
+                const moduleCount = (course.modules || []).length;
+                const courseCat = course.category || 'Autre';
+              %>
+              <div class="ic-card" data-cat="<%= courseCat %>">
+                <div class="ic-thumb">
+                  <% if (course.imageUrl) { %><img loading="lazy" src="<%= course.imageUrl %>" alt="<%= course.title %>"><% } else { %><i class="bi bi-book-half no-img"></i><% } %>
+                  <span class="ic-price-badge <%= priceBadgeClass %>"><%= priceLabel %></span>
+                </div>
+                <div class="ic-body">
+                  <span class="ic-cat-badge"><%= courseCat %></span>
+                  <div class="ic-title"><%= course.title %></div>
+                  <% if (course.description) { %>
+                    <p class="ic-desc"><%= course.description.substring(0, 100) %><%= course.description.length > 100 ? '…' : '' %></p>
+                  <% } %>
+                  <div class="ic-meta">
+                    <span>📚 <%= moduleCount %> module<%= moduleCount !== 1 ? 's' : '' %></span>
+                  </div>
+                </div>
+                <div class="ic-footer">
+                  <a href="/formations/<%= course._id %>" class="btn-ic">En savoir plus →</a>
+                </div>
+              </div>
+              <% }) %>
+            </div>
+            <% } %>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Sidebar ── -->
+      <% if (hasContact) { %>
+      <div class="inst-sidebar">
+        <div class="contact-card">
+          <div class="contact-card-head">
+            <div class="contact-card-title"><%= institution.name %></div>
+            <div class="contact-card-sub">Informations de contact</div>
+          </div>
+          <div class="contact-card-body">
+
+            <% if (institution.city || institution.country) { %>
+            <div class="contact-row">
+              <span class="contact-lbl">Localisation</span>
+              <div class="contact-val">📍 <%= [institution.city, institution.country].filter(Boolean).join(', ') %></div>
+            </div>
+            <% } %>
+
+            <% if (institution.contactEmail) { %>
+            <div class="contact-row">
+              <span class="contact-lbl">Email</span>
+              <div class="contact-val">✉ <a href="mailto:<%= institution.contactEmail %>"><%= institution.contactEmail %></a></div>
+            </div>
+            <% } %>
+
+            <% if (institution.phone) { %>
+            <div class="contact-row">
+              <span class="contact-lbl">Téléphone</span>
+              <div class="contact-val">📞 <a href="tel:<%= institution.phone %>"><%= institution.phone %></a></div>
+            </div>
+            <% } %>
+
+            <% if (institution.contactEmail) { %>
+              <a href="mailto:<%= institution.contactEmail %>" class="contact-cta">✉ Contacter l'institution</a>
+            <% } else if (sm.whatsapp) { %>
+              <a href="https://wa.me/<%= sm.whatsapp.replace(/\D/g,'') %>" target="_blank" rel="noopener" class="contact-cta">💬 WhatsApp</a>
+            <% } %>
+
+            <% if (hasSocial) { %>
+              <div class="contact-divider"></div>
+              <div class="contact-social">
+                <% if (sm.website)   { %><a href="<%= sm.website %>"   target="_blank" rel="noopener"><span class="soc-icon">🌐</span> Site web</a><% } %>
+                <% if (sm.facebook)  { %><a href="<%= sm.facebook %>"  target="_blank" rel="noopener"><span class="soc-icon">📘</span> Facebook</a><% } %>
+                <% if (sm.instagram) { %><a href="<%= sm.instagram %>" target="_blank" rel="noopener"><span class="soc-icon">📸</span> Instagram</a><% } %>
+                <% if (sm.linkedin)  { %><a href="<%= sm.linkedin %>"  target="_blank" rel="noopener"><span class="soc-icon">💼</span> LinkedIn</a><% } %>
+                <% if (sm.twitter)   { %><a href="<%= sm.twitter %>"   target="_blank" rel="noopener"><span class="soc-icon">🐦</span> Twitter</a><% } %>
+                <% if (sm.youtube)   { %><a href="<%= sm.youtube %>"   target="_blank" rel="noopener"><span class="soc-icon">▶</span> YouTube</a><% } %>
+                <% if (sm.whatsapp)  { %><a href="https://wa.me/<%= sm.whatsapp.replace(/\D/g,'') %>" target="_blank" rel="noopener"><span class="soc-icon">💬</span> WhatsApp</a><% } %>
+              </div>
+            <% } %>
+
+          </div>
         </div>
       </div>
-      <% }) %>
+      <% } %>
+
     </div>
-    <% } %>
   </div>
-</section>
+</div>
 
 <% scripts = `<script>
 (function () {
