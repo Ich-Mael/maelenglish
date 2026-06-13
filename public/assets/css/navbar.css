@@ -170,7 +170,7 @@
 }
 
 #header.header-home .navbar-logo-circle {
-  background: rgba(255, 255, 255, 0.12);
+  background: #ffffff;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
