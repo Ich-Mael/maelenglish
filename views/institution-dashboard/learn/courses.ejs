@@ -104,7 +104,7 @@
       </div>
     <% } else { %>
       <div class="courses-grid">
-        <% coursesWithProgress.forEach(({ course, completed, total, pct, enrollment }) => {
+        <% coursesWithProgress.forEach(({ course, completed, total, pct, enrollment, resumeUrl }) => {
           const now = new Date();
           const isExpired = enrollment && enrollment.endDate && new Date(enrollment.endDate) < now;
           const daysLeft  = enrollment && enrollment.endDate ? Math.ceil((new Date(enrollment.endDate) - now) / 86400000) : null;
@@ -139,7 +139,7 @@
                 </div>
               </div>
 
-              <a href="/institution/learn/courses/<%= course._id %>" class="btn-continue <%= isExpired ? 'btn-expired' : '' %>">
+              <a href="<%= isExpired ? '#' : resumeUrl %>" class="btn-continue <%= isExpired ? 'btn-expired' : '' %>">
                 <i class="bi bi-play-circle-fill"></i>
                 <%= pct === 0 ? 'Commencer' : pct === 100 ? 'Revoir' : 'Continuer' %>
               </a>

@@ -204,7 +204,7 @@
           <% if (resumeModule) { %>
             <a href="/institution/learn/courses/<%= course._id %>/modules/<%= resumeModule.module._id %>/overview" class="btn-cta">
               <i class="bi bi-play-circle-fill"></i>
-              <%= resumeModule.pct === 0 ? 'Commencer' : 'Continuer' %>
+              <%= modulesWithProgress.some(m => m.completed > 0) ? 'Continuer' : 'Commencer' %>
             </a>
           <% } %>
 

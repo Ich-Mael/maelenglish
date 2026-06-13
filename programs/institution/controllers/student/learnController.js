@@ -23,7 +23,7 @@ module.exports.courses = catchAsync(async (req, res) => {
 
     const courseIds = enrollments.map(e => e.courseId?._id).filter(Boolean);
 
-    const [completedAgg, totalAgg, announcements] = await Promise.all([
+    const [completedAgg, totalAgg, announcements, allModules, allLessons, completedProgress] = await Promise.all([
         InstitutionLessonProgress.aggregate([
             { $match: { userId: req.user._id, courseId: { $in: courseIds } } },
             { $group: { _id: '$courseId', count: { $sum: 1 } } }
@@ -35,18 +35,57 @@ module.exports.courses = catchAsync(async (req, res) => {
         Announcement.find({ institutionId: req.institution._id, isPublished: true })
             .sort({ isPinned: -1, createdAt: -1 })
             .limit(10)
+            .lean(),
+        InstitutionModule.find({ courseId: { $in: courseIds } })
+            .sort({ order: 1 })
+            .select('courseId order')
+            .lean(),
+        InstitutionLesson.find({ courseId: { $in: courseIds } })
+            .sort({ order: 1 })
+            .select('courseId moduleId order')
+            .lean(),
+        InstitutionLessonProgress.find({ userId: req.user._id, courseId: { $in: courseIds } })
+            .select('lessonId')
             .lean()
     ]);
 
     const completedMap = Object.fromEntries(completedAgg.map(r => [r._id.toString(), r.count]));
     const totalMap     = Object.fromEntries(totalAgg.map(r => [r._id.toString(), r.count]));
 
+    const completedIds = new Set(completedProgress.map(p => p.lessonId.toString()));
+
+    const modulesByCourse = {};
+    allModules.forEach(m => {
+        const cid = m.courseId.toString();
+        if (!modulesByCourse[cid]) modulesByCourse[cid] = [];
+        modulesByCourse[cid].push(m);
+    });
+
+    const lessonsByModule = {};
+    allLessons.forEach(l => {
+        const mid = l.moduleId.toString();
+        if (!lessonsByModule[mid]) lessonsByModule[mid] = [];
+        lessonsByModule[mid].push(l);
+    });
+
+    function getResumeUrl(courseId) {
+        const cid = courseId.toString();
+        for (const mod of (modulesByCourse[cid] || [])) {
+            for (const lesson of (lessonsByModule[mod._id.toString()] || [])) {
+                if (!completedIds.has(lesson._id.toString())) {
+                    return `/institution/learn/courses/${cid}/modules/${mod._id}/lessons/${lesson._id}`;
+                }
+            }
+        }
+        return `/institution/learn/courses/${cid}`;
+    }
+
     const coursesWithProgress = enrollments.map(enrollment => {
         const course    = enrollment.courseId;
         const cid       = course?._id?.toString();
         const completed = completedMap[cid] || 0;
         const total     = totalMap[cid]     || 0;
-        return { course, enrollment, completed, total, pct: total > 0 ? Math.round((completed / total) * 100) : 0 };
+        return { course, enrollment, completed, total, pct: total > 0 ? Math.round((completed / total) * 100) : 0, resumeUrl: getResumeUrl(course._id) };
     });
 
     res.render('institution-dashboard/learn/courses', {
