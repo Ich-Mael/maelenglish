@@ -205,6 +205,11 @@ module.exports.checkInstitutionCourseAccess = async (req, res, next) => {
             return res.redirect('/institution/learn/courses');
         }
 
+        if (enrollment.status && enrollment.status !== 'active') {
+            req.flash('error', 'Votre accès à ce cours a été suspendu. Contactez votre institution.');
+            return res.redirect('/institution/learn/courses');
+        }
+
         const now = new Date();
         if (enrollment.startDate && new Date(enrollment.startDate) > now) {
             req.flash('error', 'Ce cours n\'est pas encore disponible.');

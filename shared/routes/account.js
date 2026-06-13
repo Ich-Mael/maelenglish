@@ -3,6 +3,7 @@ const passport = require("passport");
 const router = express.Router();
 const User = require("../models/user");
 const Institution = require("../models/institution");
+const InstitutionEnrollment = require("../../programs/institution/models/Enrollment");
 const catchAsync = require("../utilities/catchAsync");
 const { isLoggedIn, checkRoles } = require("../middlewares/auth");
 const { trackDevice, getOrGenerateDeviceId } = require("../middlewares/deviceTracker");
@@ -180,10 +181,23 @@ router.get("/login", (req, res) => {
 router.post(
   "/login",
   (req, res, next) => req.app.get('authLimiter')(req, res, next),
-  passport.authenticate("local", {
-    failureFlash: true,
-    failureRedirect: "/login",
-  }),
+  (req, res, next) => {
+    passport.authenticate("local", (err, user, info) => {
+      if (err) return next(err);
+      if (!user) {
+        req.flash("error", (info && info.message) || "Identifiants invalides");
+        return res.redirect("/login");
+      }
+      if (user.isActive === false) {
+        req.flash("error", "Ce compte a été désactivé. Contactez l'équipe AfroHK.");
+        return res.redirect("/login");
+      }
+      req.logIn(user, (loginErr) => {
+        if (loginErr) return next(loginErr);
+        next();
+      });
+    })(req, res, next);
+  },
   trackDevice,
   (req, res) => {
     req.flash("success", `Content de vous revoir ${req.user.username}`);
@@ -516,6 +530,98 @@ router.post(
 
     req.flash("success", `Le statut de vérification de ${user.name} ${user.surname} a été ${user.isVerified ? 'activé' : 'désactivé'}`);
     res.redirect(req.get("Referrer") || "/");
+  })
+);
+
+/**
+ * DELETE /admin/users/:id
+ * Soft-delete (deactivate) an account and revoke its institution enrollments.
+ * The user record and all historical progress/grades are preserved.
+ */
+router.delete(
+  "/admin/users/:id",
+  isLoggedIn,
+  checkRoles(["admin", "super-admin"]),
+  catchAsync(async (req, res) => {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      req.flash("error", "Utilisateur non trouvé");
+      return res.redirect("/admin/users");
+    }
+
+    if (String(user._id) === String(req.user._id)) {
+      req.flash("error", "Vous ne pouvez pas désactiver votre propre compte.");
+      return res.redirect(req.get("Referrer") || "/admin/users");
+    }
+
+    if (user.isActive === false) {
+      req.flash("error", `${user.name} ${user.surname} est déjà désactivé.`);
+      return res.redirect(req.get("Referrer") || "/admin/users");
+    }
+
+    user.isActive = false;
+    user.deactivatedAt = new Date();
+    user.deactivatedBy = req.user._id;
+    await user.save();
+
+    // Revoke active course access by suspending institution enrollments. Only
+    // touch enrollments that currently grant access (active / unset status) and
+    // tag the reason, so reactivation restores exactly these and leaves
+    // expired or otherwise-suspended enrollments as they were.
+    const { modifiedCount } = await InstitutionEnrollment.updateMany(
+      { userId: user._id, status: { $nin: ["suspended", "expired"] } },
+      { $set: { status: "suspended", suspendedReason: "account-deactivated" } }
+    );
+
+    req.flash(
+      "success",
+      `Compte de ${user.name} ${user.surname} désactivé. ${modifiedCount} inscription(s) révoquée(s).`
+    );
+    res.redirect("/admin/users");
+  })
+);
+
+/**
+ * POST /admin/users/:id/restore
+ * Reactivate a soft-deleted account and restore its (previously revoked) enrollments.
+ */
+router.post(
+  "/admin/users/:id/restore",
+  isLoggedIn,
+  checkRoles(["admin", "super-admin"]),
+  catchAsync(async (req, res) => {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      req.flash("error", "Utilisateur non trouvé");
+      return res.redirect("/admin/users");
+    }
+
+    if (user.isActive !== false) {
+      req.flash("error", `${user.name} ${user.surname} est déjà actif.`);
+      return res.redirect(req.get("Referrer") || "/admin/users");
+    }
+
+    user.isActive = true;
+    user.deactivatedAt = null;
+    user.deactivatedBy = null;
+    await user.save();
+
+    // Re-activate only the enrollments that were suspended *by this deactivation*
+    // (tagged 'account-deactivated'), leaving enrollments suspended for other
+    // reasons untouched. The course access middleware still enforces the
+    // start/end date window, so genuinely expired enrollments remain inaccessible.
+    const { modifiedCount } = await InstitutionEnrollment.updateMany(
+      { userId: user._id, status: "suspended", suspendedReason: "account-deactivated" },
+      { $set: { status: "active", suspendedReason: null } }
+    );
+
+    req.flash(
+      "success",
+      `Compte de ${user.name} ${user.surname} réactivé. ${modifiedCount} inscription(s) restaurée(s).`
+    );
+    res.redirect("/admin/users");
   })
 );
 

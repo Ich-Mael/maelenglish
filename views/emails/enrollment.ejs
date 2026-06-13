@@ -1,60 +1,118 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="color-scheme" content="light only">
+    <meta name="supported-color-schemes" content="light only">
     <title>Inscription à un cours — AfroHK</title>
+    <!--[if mso]>
+    <style>* { font-family: Arial, sans-serif !important; }</style>
+    <![endif]-->
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
-        .email-container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .email-header { background: linear-gradient(135deg, #0e7490 0%, #164e63 100%); color: #ffffff; padding: 30px 20px; text-align: center; }
-        .email-header h1 { margin: 0; font-size: 26px; }
-        .email-body { padding: 30px 20px; color: #333333; line-height: 1.6; }
-        .email-body h2 { color: #0e7490; font-size: 20px; margin-top: 0; }
-        .info-box { background-color: #f0fdff; border-left: 4px solid #0e7490; padding: 15px; margin: 20px 0; border-radius: 4px; }
-        .info-box p { margin: 8px 0; }
-        .info-box strong { color: #0e7490; }
-        .btn { display: inline-block; padding: 12px 30px; background: linear-gradient(135deg, #0e7490 0%, #164e63 100%); color: #ffffff; text-decoration: none; border-radius: 50px; margin: 20px 0; font-weight: bold; }
-        .email-footer { background-color: #f8f9fa; padding: 20px; text-align: center; color: #666666; font-size: 14px; }
-        .email-footer a { color: #0e7490; text-decoration: none; }
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
+        body { margin: 0; padding: 0; width: 100% !important; background-color: #f1eefb; }
+        a { color: #6d28d9; }
+        @media only screen and (max-width: 600px) {
+            .email-card { width: 100% !important; border-radius: 0 !important; }
+            .px { padding-left: 24px !important; padding-right: 24px !important; }
+        }
     </style>
 </head>
-<body>
-    <div class="email-container">
-        <div class="email-header">
-            <h1>📚 Nouvelle inscription</h1>
-        </div>
+<body style="margin:0; padding:0; background-color:#f1eefb;">
 
-        <div class="email-body">
-            <h2>Bonjour <%= user.name %> <%= user.surname %> !</h2>
-
-            <p>Vous avez été inscrit(e) à un nouveau cours sur <strong>Afro House of Knowledge</strong>.</p>
-
-            <div class="info-box">
-                <p><strong>Cours :</strong> <%= courseTitle %></p>
-                <p><strong>Début d'accès :</strong> <%= startDate %></p>
-                <p><strong>Fin d'accès :</strong> <%= endDate %></p>
-            </div>
-
-            <p>Connectez-vous à votre espace pour accéder à votre cours.</p>
-
-            <p style="text-align: center;">
-                <a href="<%= loginUrl %>" class="btn">Accéder à mes cours</a>
-            </p>
-
-            <p>Pour toute question, n'hésitez pas à contacter votre institution ou l'équipe AfroHK.</p>
-
-            <p>Cordialement,<br><strong>L'équipe AfroHK</strong></p>
-        </div>
-
-        <div class="email-footer">
-            <p>Afro House of Knowledge — Le savoir sans barrières</p>
-            <p>
-                <a href="https://www.afrohk.com">www.afrohk.com</a> |
-                <a href="mailto:contact@afrohk.com">contact@afrohk.com</a>
-            </p>
-            <p style="font-size: 12px; color: #999;">Cet email a été envoyé automatiquement. Merci de ne pas y répondre directement.</p>
-        </div>
+    <!-- Preheader (hidden preview text) -->
+    <div style="display:none; max-height:0; overflow:hidden; opacity:0; mso-hide:all;">
+        Vous avez été inscrit(e) au cours <%= courseTitle %> sur Afro House of Knowledge.
     </div>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f1eefb;">
+        <tr>
+            <td align="center" style="padding: 32px 16px;">
+
+                <table role="presentation" class="email-card" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px; max-width:600px; background-color:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 6px 24px rgba(76,29,149,0.10);">
+
+                    <!-- Header -->
+                    <tr>
+                        <td align="center" bgcolor="#5b21b6" style="background-color:#5b21b6; background-image:linear-gradient(135deg,#6d28d9 0%,#4c1d95 100%); padding: 36px 24px;">
+                            <div style="font-family:Arial,Helvetica,sans-serif; font-size:13px; letter-spacing:2px; text-transform:uppercase; color:#d6c8f7; font-weight:bold;">Afro House of Knowledge</div>
+                            <div style="font-family:Arial,Helvetica,sans-serif; font-size:26px; line-height:32px; color:#ffffff; font-weight:bold; margin-top:8px;">🎓 Nouvelle inscription</div>
+                        </td>
+                    </tr>
+
+                    <!-- Body -->
+                    <tr>
+                        <td class="px" style="padding: 36px 40px 8px 40px; font-family:Arial,Helvetica,sans-serif; color:#374151; font-size:16px; line-height:1.6;">
+                            <h1 style="margin:0 0 16px 0; font-size:22px; line-height:28px; color:#4c1d95;">Bonjour <%= user.name %> <%= user.surname %> 👋</h1>
+                            <p style="margin:0 0 8px 0;">Bonne nouvelle ! Vous venez d'être inscrit(e) à un nouveau cours sur <strong>Afro House of Knowledge</strong>.</p>
+                        </td>
+                    </tr>
+
+                    <!-- Course info card -->
+                    <tr>
+                        <td class="px" style="padding: 16px 40px 8px 40px;">
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f6f2fe; border-radius:12px;">
+                                <tr>
+                                    <td style="padding: 22px 24px; font-family:Arial,Helvetica,sans-serif; font-size:15px; line-height:1.5; color:#374151; border-left:4px solid #6d28d9; border-radius:12px;">
+                                        <p style="margin:0 0 10px 0;"><span style="color:#6d28d9; font-weight:bold;">Cours&nbsp;:</span> <%= courseTitle %></p>
+                                        <p style="margin:0 0 10px 0;"><span style="color:#6d28d9; font-weight:bold;">Début d'accès&nbsp;:</span> <%= startDate %></p>
+                                        <p style="margin:0;"><span style="color:#6d28d9; font-weight:bold;">Fin d'accès&nbsp;:</span> <%= endDate %></p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Intro line -->
+                    <tr>
+                        <td class="px" style="padding: 16px 40px 4px 40px; font-family:Arial,Helvetica,sans-serif; color:#374151; font-size:16px; line-height:1.6;">
+                            <p style="margin:0;">Connectez-vous à votre espace pour commencer dès maintenant.</p>
+                        </td>
+                    </tr>
+
+                    <!-- Bulletproof button -->
+                    <tr>
+                        <td align="center" style="padding: 24px 40px 8px 40px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center">
+                                <tr>
+                                    <td align="center" bgcolor="#6d28d9" style="border-radius:10px;">
+                                        <a href="<%= loginUrl %>" target="_blank" style="display:inline-block; padding:15px 38px; font-family:Arial,Helvetica,sans-serif; font-size:16px; font-weight:bold; color:#ffffff; text-decoration:none; border-radius:10px; background-color:#6d28d9;">Accéder à mon cours&nbsp;&rarr;</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Secondary -->
+                    <tr>
+                        <td class="px" style="padding: 12px 40px 36px 40px; font-family:Arial,Helvetica,sans-serif; color:#6b7280; font-size:14px; line-height:1.6;">
+                            <p style="margin:0 0 6px 0;">Le bouton ne fonctionne pas ? Copiez ce lien dans votre navigateur&nbsp;:<br>
+                                <a href="<%= loginUrl %>" style="color:#6d28d9; word-break:break-all;"><%= loginUrl %></a></p>
+                            <p style="margin:16px 0 0 0;">Pour toute question, contactez votre institution ou l'équipe AfroHK.</p>
+                            <p style="margin:16px 0 0 0; color:#374151;">Cordialement,<br><strong>L'équipe AfroHK</strong></p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td align="center" bgcolor="#faf8ff" style="background-color:#faf8ff; padding: 24px 40px; font-family:Arial,Helvetica,sans-serif; color:#9ca3af; font-size:13px; line-height:1.6; border-top:1px solid #eee6fb;">
+                            <p style="margin:0 0 6px 0; color:#6b7280; font-weight:bold;">Afro House of Knowledge — Le savoir sans barrières</p>
+                            <p style="margin:0 0 10px 0;">
+                                <a href="https://www.afrohk.com" style="color:#6d28d9; text-decoration:none;">www.afrohk.com</a>&nbsp;&nbsp;•&nbsp;&nbsp;
+                                <a href="mailto:contact@afrohk.com" style="color:#6d28d9; text-decoration:none;">contact@afrohk.com</a>
+                            </p>
+                            <p style="margin:0; font-size:12px; color:#b9bcc4;">Cet email a été envoyé automatiquement. Merci de ne pas y répondre directement.</p>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
 </body>
 </html>

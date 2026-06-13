@@ -37,6 +37,7 @@ const InstitutionCourseTestimonial = require("./programs/institution/models/Test
 const InstitutionModule = require("./programs/institution/models/Module");
 const InstitutionLesson = require("./programs/institution/models/Lesson");
 const InstitutionEnrollmentRequest = require("./programs/institution/models/EnrollmentRequest");
+const InstitutionEnrollment = require("./programs/institution/models/Enrollment");
 const VisitorMessage = require("./shared/models/visitorMessage");
 
 // Import program routes
@@ -178,6 +179,18 @@ app.use(passport.session());
 
 app.use(flash());
 
+// Force-logout any session whose account was deactivated (soft-deleted) by an admin.
+app.use((req, res, next) => {
+    if (req.user && req.user.isActive === false) {
+        return req.logout((err) => {
+            if (err) return next(err);
+            req.flash('error', "Ce compte a été désactivé. Contactez l'équipe AfroHK.");
+            res.redirect('/login');
+        });
+    }
+    next();
+});
+
 // Flash midlewar
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
@@ -261,7 +274,23 @@ app.get('/formations/:courseId', async (req, res) => {
 
     const totalLessons = modules.reduce((sum, m) => sum + (m.lessons ? m.lessons.length : 0), 0);
 
-    res.render('formations-show', { course, modules, testimonials, totalLessons, embedUrl });
+    // If a logged-in user already has valid access to this course, surface a
+    // "go to course" CTA instead of the enrollment-request form.
+    let isEnrolled = false;
+    if (req.user) {
+        const enrollment = await InstitutionEnrollment.findOne({
+            userId: req.user._id,
+            courseId: course._id
+        }).lean();
+        if (enrollment && (!enrollment.status || enrollment.status === 'active')) {
+            const now = new Date();
+            const notStarted = enrollment.startDate && new Date(enrollment.startDate) > now;
+            const expired = enrollment.endDate && new Date(enrollment.endDate) < now;
+            isEnrolled = !notStarted && !expired;
+        }
+    }
+
+    res.render('formations-show', { course, modules, testimonials, totalLessons, embedUrl, isEnrolled });
 });
 
 // Public lesson preview (no auth required — only works when isPreview: true)
@@ -301,6 +330,17 @@ app.post('/formations/:courseId/enroll-request', async (req, res) => {
         if (!course) {
             req.flash('error', 'Cours introuvable.');
             return res.redirect('/formations');
+        }
+        // Already enrolled? Don't create a duplicate request — send them to the course.
+        if (req.user) {
+            const existing = await InstitutionEnrollment.findOne({
+                userId: req.user._id,
+                courseId: course._id
+            }).lean();
+            if (existing) {
+                req.flash('success', 'Vous êtes déjà inscrit à ce cours.');
+                return res.redirect(`/institution/learn/courses/${course._id}`);
+            }
         }
         await InstitutionEnrollmentRequest.create({
             courseId:      course._id,

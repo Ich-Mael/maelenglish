@@ -1,0 +1,158 @@
+<%# Brand preloader — self-contained (styles + markup + script). %>
+<%# Include it right after the opening <body> tag via the partials/preloader path. %>
+<style>
+  #preloader {
+    position: fixed; inset: 0; z-index: 99999;
+    display: grid; place-items: center; overflow: hidden;
+    background: #ffffff;
+    transition: opacity .7s ease, visibility .7s ease;
+  }
+  #preloader.done { opacity: 0; visibility: hidden; pointer-events: none; }
+
+  /* Animated purple strips top & bottom; white center reserved for the logo + text */
+  .pl-strip {
+    position: absolute; left: 0; right: 0;
+    height: clamp(52px, 10vh, 100px); overflow: hidden; pointer-events: none;
+  }
+  .pl-strip--top    { top: 0;    box-shadow: 0 14px 30px rgba(124,58,237,.22); animation: pl-slide-top    .9s cubic-bezier(.16,1,.3,1) both; }
+  .pl-strip--bottom { bottom: 0; box-shadow: 0 -14px 30px rgba(124,58,237,.22); animation: pl-slide-bottom .9s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes pl-slide-top    { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+  @keyframes pl-slide-bottom { from { transform: translateY(100%);  } to { transform: translateY(0); } }
+
+  /* Flowing purple gradient inside each strip */
+  .pl-strip::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, #4c1d95, #7c3aed, #a855f7, #c084fc, #a855f7, #7c3aed, #4c1d95);
+    background-size: 300% 100%;
+    animation: pl-flow 4s cubic-bezier(.65,.05,.36,1) infinite;
+  }
+  @keyframes pl-flow { 0% { background-position: 0% 0; } 100% { background-position: 300% 0; } }
+
+  /* Diagonal sheen sweeping across the strip */
+  .pl-strip::after {
+    content: ''; position: absolute; top: 0; bottom: 0; left: -40%; width: 38%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent);
+    transform: skewX(-22deg);
+    animation: pl-sweep 2.8s cubic-bezier(.85,0,.15,1) infinite;
+  }
+  .pl-strip--bottom::after { animation-delay: 1.4s; }
+  @keyframes pl-sweep { 0% { left: -40%; } 60%, 100% { left: 130%; } }
+
+  .pl-stage {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center;
+    gap: clamp(1.5rem, 3.2vw, 2.4rem); padding: 2rem;
+  }
+
+  .pl-logo {
+    position: relative;
+    width: clamp(140px, 16vw, 220px); height: clamp(140px, 16vw, 220px);
+    animation: pl-logo-in .9s cubic-bezier(.22,1,.36,1) both, pl-float 3s ease-in-out 1s infinite;
+  }
+  .pl-logo::before {
+    content: ''; position: absolute; inset: -14%; z-index: -1; border-radius: 50%;
+    background: radial-gradient(circle, rgba(124,58,237,.24) 0%, transparent 66%);
+    animation: pl-glow 2.8s ease-in-out infinite;
+  }
+  .pl-logo img {
+    width: 100%; height: 100%; object-fit: contain; display: block;
+    filter: drop-shadow(0 12px 30px rgba(76,29,149,.18));
+  }
+  @keyframes pl-logo-in { from { opacity: 0; transform: translateY(16px) scale(.92); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes pl-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  @keyframes pl-glow { 0%,100% { opacity: .55; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
+
+  .pl-tagline {
+    margin: 0; font-family: 'Outfit', sans-serif;
+    font-size: clamp(1.05rem, 2.4vw, 1.65rem);
+    font-weight: 500; letter-spacing: .01em; color: #3b2370;
+    min-height: 1.4em; text-align: center;
+    display: flex; align-items: center;
+    animation: pl-fade-up .8s ease .4s both;
+  }
+  .pl-caret {
+    display: inline-block; width: 2px; height: 1.05em; margin-left: .12em;
+    background: #7c3aed; border-radius: 2px;
+    animation: pl-blink 1s steps(1) infinite;
+  }
+  @keyframes pl-blink { 50% { opacity: 0; } }
+
+  .pl-progress {
+    width: clamp(180px, 22vw, 280px); height: 4px; border-radius: 99px;
+    background: rgba(124,58,237,.14); overflow: hidden;
+    animation: pl-fade-up .8s ease .55s both;
+  }
+  .pl-progress__bar {
+    display: block; height: 100%; width: 0%; border-radius: 99px;
+    background: linear-gradient(90deg, #7c3aed, #c084fc, #7c3aed);
+    background-size: 200% 100%;
+    transition: width .35s cubic-bezier(.4,0,.2,1);
+    animation: pl-sheen 1.4s linear infinite;
+  }
+  @keyframes pl-sheen { to { background-position: -200% 0; } }
+  @keyframes pl-fade-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pl-logo, .pl-logo::before, .pl-strip, .pl-strip::before, .pl-strip::after, .pl-progress__bar, .pl-caret { animation: none !important; }
+    .pl-logo { transform: none; }
+  }
+</style>
+
+<div id="preloader" role="status" aria-live="polite" aria-label="Chargement en cours">
+  <div class="pl-strip pl-strip--top" aria-hidden="true"></div>
+  <div class="pl-strip pl-strip--bottom" aria-hidden="true"></div>
+  <div class="pl-stage">
+    <div class="pl-logo">
+      <img src="/assets/img/afrohk_logo_tp.png" alt="AfroHK">
+    </div>
+    <p class="pl-tagline"><span id="plText"></span><span class="pl-caret" aria-hidden="true"></span></p>
+    <div class="pl-progress" aria-hidden="true"><span class="pl-progress__bar"></span></div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var MIN = 2600;            // minimum on-screen time (lets the brand register + phrase type)
+    var loaded = false, elapsed = false, hidden = false;
+    var p = document.getElementById('preloader');
+    var bar = p && p.querySelector('.pl-progress__bar');
+    var progress = 0;
+
+    // ── Progress simulation: ease toward 90% while loading, complete to 100% on load ──
+    function loop() {
+      if (hidden) return;
+      var ceiling = (loaded && elapsed) ? 100 : 90;
+      if (progress < ceiling) {
+        progress += Math.max(0.35, (ceiling - progress) * 0.045);
+        if (progress > ceiling) progress = ceiling;
+        if (bar) bar.style.width = progress.toFixed(1) + '%';
+      }
+      if (progress >= 100) { hide(); return; }
+      requestAnimationFrame(loop);
+    }
+
+    // ── Typewriter tagline ──
+    var phrase = 'Le savoir sans barrières';
+    var textEl = document.getElementById('plText');
+    var i = 0;
+    function type() {
+      if (!textEl || i > phrase.length) return;
+      textEl.textContent = phrase.slice(0, i);
+      i++;
+      setTimeout(type, 70);
+    }
+    setTimeout(type, 500);
+
+    // ── Fade-out ──
+    function hide() {
+      if (hidden || !p) return;
+      hidden = true;
+      p.classList.add('done');
+      setTimeout(function () { if (p.parentNode) p.remove(); }, 750);
+    }
+
+    setTimeout(function () { elapsed = true; }, MIN);
+    window.addEventListener('load', function () { loaded = true; });
+    requestAnimationFrame(loop);
+  })();
+</script>

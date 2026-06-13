@@ -645,44 +645,57 @@
       <div class="cd-sidebar">
         <div class="cta-card">
 
-          <div class="cta-price-block">
-            <div class="cta-price <%= isFree ? 'free' : (priceText === 'Sur demande' ? 'demand' : '') %>">
-              <%= priceText %>
+          <% if (typeof isEnrolled !== 'undefined' && isEnrolled) { %>
+            <!-- Already enrolled — link straight to the course -->
+            <div class="enroll-form-head">
+              <div class="enroll-form-title">✓ Vous êtes inscrit</div>
+              <div class="enroll-form-sub">Reprenez là où vous vous êtes arrêté</div>
             </div>
-            <% if (!isFree && priceText !== 'Sur demande') { %>
-              <div class="cta-price-note">Tarif de formation</div>
-            <% } %>
-          </div>
+            <div class="enroll-form-body">
+              <a href="/institution/learn/courses/<%= course._id %>" class="cta-enroll-btn free-btn">
+                <i class="bi bi-play-circle-fill"></i> Accéder au cours
+              </a>
+            </div>
+          <% } else { %>
+            <div class="cta-price-block">
+              <div class="cta-price <%= isFree ? 'free' : (priceText === 'Sur demande' ? 'demand' : '') %>">
+                <%= priceText %>
+              </div>
+              <% if (!isFree && priceText !== 'Sur demande') { %>
+                <div class="cta-price-note">Tarif de formation</div>
+              <% } %>
+            </div>
 
-          <!-- Enrollment request form -->
-          <div class="enroll-form-head">
-            <div class="enroll-form-title">✉ Demander l'inscription</div>
-            <div class="enroll-form-sub">L'institution vous recontactera sous 48 h</div>
-          </div>
-          <div class="enroll-form-body">
-            <form action="/formations/<%= course._id %>/enroll-request" method="POST">
-              <div class="ef-field">
-                <label class="ef-label" for="ef-name">Nom complet *</label>
-                <input class="ef-input" type="text" id="ef-name" name="name" placeholder="Votre nom" required>
-              </div>
-              <div class="ef-field">
-                <label class="ef-label" for="ef-email">Email *</label>
-                <input class="ef-input" type="email" id="ef-email" name="email" placeholder="votre@email.com" required>
-              </div>
-              <div class="ef-field">
-                <label class="ef-label" for="ef-phone">Téléphone</label>
-                <input class="ef-input" type="tel" id="ef-phone" name="phone" placeholder="+226 70 00 00 00">
-              </div>
-              <div class="ef-field">
-                <label class="ef-label" for="ef-message">Message</label>
-                <textarea class="ef-textarea" id="ef-message" name="message" placeholder="Questions, disponibilités…"></textarea>
-              </div>
-              <button type="submit" class="ef-submit">
-                <i class="bi bi-send-fill"></i> Envoyer la demande
-              </button>
-              <p class="ef-note">Gratuit, sans engagement</p>
-            </form>
-          </div>
+            <!-- Enrollment request form -->
+            <div class="enroll-form-head">
+              <div class="enroll-form-title">✉ Demander l'inscription</div>
+              <div class="enroll-form-sub">L'institution vous recontactera sous 48 h</div>
+            </div>
+            <div class="enroll-form-body">
+              <form action="/formations/<%= course._id %>/enroll-request" method="POST">
+                <div class="ef-field">
+                  <label class="ef-label" for="ef-name">Nom complet *</label>
+                  <input class="ef-input" type="text" id="ef-name" name="name" placeholder="Votre nom" required>
+                </div>
+                <div class="ef-field">
+                  <label class="ef-label" for="ef-email">Email *</label>
+                  <input class="ef-input" type="email" id="ef-email" name="email" placeholder="votre@email.com" required>
+                </div>
+                <div class="ef-field">
+                  <label class="ef-label" for="ef-phone">Téléphone</label>
+                  <input class="ef-input" type="tel" id="ef-phone" name="phone" placeholder="+226 70 00 00 00">
+                </div>
+                <div class="ef-field">
+                  <label class="ef-label" for="ef-message">Message</label>
+                  <textarea class="ef-textarea" id="ef-message" name="message" placeholder="Questions, disponibilités…"></textarea>
+                </div>
+                <button type="submit" class="ef-submit">
+                  <i class="bi bi-send-fill"></i> Envoyer la demande
+                </button>
+                <p class="ef-note">Gratuit, sans engagement</p>
+              </form>
+            </div>
+          <% } %>
 
           <div class="cta-body">
             <!-- Institution -->

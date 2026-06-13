@@ -592,7 +592,12 @@
                       </div>
                     <% } %>
                     <div>
-                      <div class="user-name"><%= user.name %> <%= user.surname %></div>
+                      <div class="user-name">
+                        <%= user.name %> <%= user.surname %>
+                        <% if (user.isActive === false) { %>
+                          <span style="display:inline-block; margin-left:.4rem; font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:#b91c1c; background:#fee2e2; padding:.1rem .45rem; border-radius:99px; vertical-align:middle;">Désactivé</span>
+                        <% } %>
+                      </div>
                       <div class="user-email"><%= user.email %></div>
                       <div style="font-size: 0.85rem; color: #999; margin-top: 0.25rem;">@<%= user.username %></div>
                     </div>
@@ -626,6 +631,25 @@
                       <i class="bi bi-devices"></i>
                       Appareils
                     </a>
+                    <% if (currentUser && String(currentUser._id) !== String(user._id)) { %>
+                      <% if (user.isActive === false) { %>
+                        <form action="/admin/users/<%= user._id %>/restore" method="POST" style="display:inline;">
+                          <button type="submit" class="btn-action" style="background: rgba(22, 163, 74, 0.1); color: #16a34a; border: none; cursor: pointer;"
+                                  onclick="return confirm('Réactiver le compte de <%= user.name %> <%= user.surname %> et restaurer ses inscriptions ?');">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                            Réactiver
+                          </button>
+                        </form>
+                      <% } else { %>
+                        <form action="/admin/users/<%= user._id %>?_method=DELETE" method="POST" style="display:inline;">
+                          <button type="submit" class="btn-action" style="background: rgba(220, 38, 38, 0.1); color: #dc2626; border: none; cursor: pointer;"
+                                  onclick="return confirm('Désactiver le compte de <%= user.name %> <%= user.surname %> ? Son accès aux cours sera révoqué (les données sont conservées).');">
+                            <i class="bi bi-person-x"></i>
+                            Désactiver
+                          </button>
+                        </form>
+                      <% } %>
+                    <% } %>
                   </div>
                 </td>
               </tr>

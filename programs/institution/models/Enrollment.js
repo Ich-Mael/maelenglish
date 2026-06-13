@@ -27,6 +27,14 @@ const institutionEnrollmentSchema = new mongoose.Schema(
             enum: ['active', 'expired', 'suspended'],
             default: 'active'
         },
+        // Why the enrollment was suspended. 'account-deactivated' marks suspensions
+        // caused by a soft-deleted user account, so reactivation only restores those
+        // and leaves enrollments suspended for other reasons untouched.
+        suspendedReason: {
+            type: String,
+            enum: ['account-deactivated', null],
+            default: null
+        },
         enrolledBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'

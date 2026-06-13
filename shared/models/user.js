@@ -316,6 +316,23 @@ const userSchema = new Schema({
   maxDevices: {
     type: Number,
     default: 3 // Limite par défaut de 3 appareils
+  },
+
+  // ── Soft-delete (account deactivation by a global admin) ──
+  // isActive: false blocks login and revokes course access while preserving
+  // the user record and all historical progress/grades.
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+  deactivatedAt: {
+    type: Date,
+    default: null
+  },
+  deactivatedBy: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    default: null
   }
 }, {
   timestamps: true
