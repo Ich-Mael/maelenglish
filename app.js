@@ -123,6 +123,10 @@ app.use(helmet({
         directives: {
             defaultSrc: ["'self'"],
             scriptSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "kit.fontawesome.com", "*.fontawesome.com"],
+            // Allow inline event-handler attributes (onclick, etc.) used across the
+            // EJS views. Helmet defaults script-src-attr to 'none', which would
+            // otherwise block them even though inline <script> is allowed above.
+            scriptSrcAttr: ["'unsafe-inline'"],
             styleSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "fonts.googleapis.com"],
             fontSrc: ["'self'", "fonts.gstatic.com", "cdnjs.cloudflare.com", "*.fontawesome.com"],
             imgSrc: ["'self'", "data:", "https:"],
