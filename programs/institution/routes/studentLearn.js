@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 const { isLoggedIn } = require('../../../shared/middlewares/auth');
 const { isInstitutionStudent, loadStudentInstitution, checkInstitutionCourseAccess } = require('../../../shared/middlewares/institutionAuth');
+const loadNotifications = require('../../../shared/middlewares/loadNotifications');
 
 const learnController = require('../controllers/student/learnController');
 
-const studentAuth = [isLoggedIn, isInstitutionStudent, loadStudentInstitution];
+const studentAuth = [isLoggedIn, isInstitutionStudent, loadStudentInstitution, loadNotifications];
 
 // ─── INSTRUCTORS ────────────────────────────────────────────────────────────
 
@@ -44,5 +45,12 @@ router.post('/courses/:courseId/final-exam/submit', ...studentAuth, checkInstitu
 
 router.get('/courses/:courseId/final-project', ...studentAuth, checkInstitutionCourseAccess, learnController.finalProject);
 router.post('/courses/:courseId/final-project/submit', ...studentAuth, checkInstitutionCourseAccess, learnController.submitFinalProject);
+
+// ─── NOTIFICATIONS ───────────────────────────────────────────────────────────
+
+router.post('/notifications/mark-seen', isLoggedIn, isInstitutionStudent, (req, res) => {
+    req.session.notifSeenAt = new Date().toISOString();
+    res.json({ ok: true });
+});
 
 module.exports = router;

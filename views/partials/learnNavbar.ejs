@@ -102,6 +102,44 @@
     .learn-nav-username { display: none; }
     .learn-nav-brand-name { max-width: 140px; }
   }
+  /* Notification bell */
+  .notif-wrap { position: relative; flex-shrink: 0; }
+  .notif-btn {
+    width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer;
+    background: #f1f5f9; color: #475569; display: flex; align-items: center;
+    justify-content: center; font-size: 1rem; position: relative; transition: background .15s;
+  }
+  .notif-btn:hover { background: #e2e8f0; }
+  .notif-badge {
+    position: absolute; top: -3px; right: -3px; min-width: 16px; height: 16px;
+    border-radius: 8px; background: #ef4444; color: #fff; font-size: .62rem;
+    font-weight: 800; display: flex; align-items: center; justify-content: center;
+    padding: 0 3px; border: 2px solid #fff; line-height: 1;
+  }
+  .notif-dropdown {
+    display: none; position: absolute; top: calc(100% + 10px); right: 0;
+    width: 300px; background: #fff; border-radius: 14px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.14); border: 1px solid #e2e8f0; z-index: 2000;
+    overflow: hidden;
+  }
+  .notif-dropdown.open { display: block; }
+  .notif-header {
+    padding: .75rem 1rem; font-size: .75rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .06em; color: #94a3b8; border-bottom: 1px solid #f1f5f9;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .notif-item {
+    display: flex; gap: .65rem; padding: .8rem 1rem; border-bottom: 1px solid #f8fafc;
+    text-decoration: none; color: inherit; transition: background .12s;
+  }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-item:hover { background: #f8fafc; }
+  .notif-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: .9rem; flex-shrink: 0; }
+  .notif-icon-ann   { background: #dbeafe; }
+  .notif-icon-grade { background: #dcfce7; }
+  .notif-text strong { font-size: .85rem; font-weight: 600; color: #1e293b; display: block; line-height: 1.35; }
+  .notif-text span   { font-size: .75rem; color: #94a3b8; }
+  .notif-empty { padding: 1.5rem 1rem; text-align: center; color: #94a3b8; font-size: .85rem; }
 </style>
 
 <% const _learnColor = typeof institutionColor !== 'undefined' ? institutionColor : '#0e7490'; %>
@@ -120,6 +158,49 @@
     <span class="learn-nav-brand-name"><%= _inst ? _inst.name : 'AfroHK' %></span>
   </div>
 
+  <%
+    const _nc  = typeof notifCount !== 'undefined' ? notifCount : 0;
+    const _na  = typeof notifAnnouncements !== 'undefined' ? notifAnnouncements : [];
+    const _ng  = typeof notifGradeCount !== 'undefined' ? notifGradeCount : 0;
+    const _annIcons = { info: '📢', discount: '🎉', new_course: '📚', event: '📅', reminder: '⏰' };
+  %>
+  <div class="notif-wrap" id="notifWrap">
+    <button class="notif-btn" id="notifBtn" aria-label="Notifications">
+      <i class="bi bi-bell"></i>
+      <% if (_nc > 0) { %>
+        <span class="notif-badge" id="notifBadge"><%= _nc > 9 ? '9+' : _nc %></span>
+      <% } %>
+    </button>
+    <div class="notif-dropdown" id="notifDropdown">
+      <div class="notif-header">
+        <span>Notifications</span>
+        <% if (_nc > 0) { %><span style="color:var(--learn-brand,#0e7490);cursor:pointer;font-size:.72rem;font-weight:700;" id="notifMarkSeen">Tout marquer lu</span><% } %>
+      </div>
+      <% if (_nc === 0) { %>
+        <div class="notif-empty">Aucune nouvelle notification</div>
+      <% } else { %>
+        <% if (_ng > 0) { %>
+          <a href="#" class="notif-item" data-course-grades="1">
+            <div class="notif-icon notif-icon-grade">🎓</div>
+            <div class="notif-text">
+              <strong><%= _ng %> correction<%= _ng > 1 ? 's' : '' %> disponible<%= _ng > 1 ? 's' : '' %></strong>
+              <span>Consultez vos notes</span>
+            </div>
+          </a>
+        <% } %>
+        <% _na.forEach(ann => { %>
+          <div class="notif-item">
+            <div class="notif-icon notif-icon-ann"><%= _annIcons[ann.type] || '📢' %></div>
+            <div class="notif-text">
+              <strong><%= ann.title %></strong>
+              <span><%= new Date(ann.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) %></span>
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+  </div>
+
   <div class="learn-nav-user">
     <% if (typeof currentUser !== 'undefined' && currentUser) { %>
       <div class="learn-nav-avatar">
@@ -130,3 +211,40 @@
     <a href="/logout" class="learn-nav-logout">Déconnexion</a>
   </div>
 </nav>
+
+<script>
+(function () {
+  const btn      = document.getElementById('notifBtn');
+  const dropdown = document.getElementById('notifDropdown');
+  const badge    = document.getElementById('notifBadge');
+  const markSeen = document.getElementById('notifMarkSeen');
+
+  if (!btn) return;
+
+  btn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    dropdown.classList.toggle('open');
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!document.getElementById('notifWrap').contains(e.target)) {
+      dropdown.classList.remove('open');
+    }
+  });
+
+  function markAllSeen() {
+    fetch('/institution/learn/notifications/mark-seen', { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+      .then(() => {
+        if (badge) badge.remove();
+        if (markSeen) markSeen.remove();
+        const empty = document.createElement('div');
+        empty.className = 'notif-empty';
+        empty.textContent = 'Aucune nouvelle notification';
+        dropdown.innerHTML = '<div class="notif-header"><span>Notifications</span></div>';
+        dropdown.appendChild(empty);
+      });
+  }
+
+  if (markSeen) markSeen.addEventListener('click', markAllSeen);
+})();
+</script>
