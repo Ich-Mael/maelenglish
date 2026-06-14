@@ -478,25 +478,23 @@ premiumRequestSchema.index({ studentId: 1, subjectId: 1, status: 1 }, {
   partialFilterExpression: { status: "pending" }
 });
 
-Class = mongoose.model("Class", classSchema);
+const Class = mongoose.model("Class", classSchema);
 
-Chapter = mongoose.model("Chapter", chapterSchema);
+const Chapter = mongoose.model("Chapter", chapterSchema);
 
-Subject = mongoose.model("Subject", subjectSchema);
+const Subject = mongoose.model("Subject", subjectSchema);
 
-HSCourseVideo = mongoose.model("HSCourseVideo", courseVideoSchema);
+const HSCourseVideo = mongoose.model("HSCourseVideo", courseVideoSchema);
 
-HStudent = mongoose.model("HStudent", HStudentSchema);
+const HStudent = mongoose.model("HStudent", HStudentSchema);
 
-HTeacher = mongoose.model("HTeacher", homeTeacherSchema);
+const HTeacher = mongoose.model("HTeacher", homeTeacherSchema);
 
-PremiumContent = mongoose.model("PremiumContent", premiumContentSchema);
+const PremiumContent = mongoose.model("PremiumContent", premiumContentSchema);
 
-PremiumRequest = mongoose.model("PremiumRequest", premiumRequestSchema);
+const PremiumRequest = mongoose.model("PremiumRequest", premiumRequestSchema);
 
-HighSchool = mongoose.model("HighSchool", HighSchoolSchema);
-
-// Grade = mongoose.model("Grade", gradeSchema);
+const HighSchool = mongoose.model("HighSchool", HighSchoolSchema);
 
 module.exports = {
   Class,

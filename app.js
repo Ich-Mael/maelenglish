@@ -122,15 +122,18 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "kit.fontawesome.com", "*.fontawesome.com"],
+            // 'unsafe-eval' is required by the Desmos calculator API (it uses `new Function`).
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "kit.fontawesome.com", "*.fontawesome.com", "https://www.desmos.com"],
             // Allow inline event-handler attributes (onclick, etc.) used across the
             // EJS views. Helmet defaults script-src-attr to 'none', which would
             // otherwise block them even though inline <script> is allowed above.
             scriptSrcAttr: ["'unsafe-inline'"],
             styleSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "fonts.googleapis.com"],
-            fontSrc: ["'self'", "fonts.gstatic.com", "cdnjs.cloudflare.com", "*.fontawesome.com"],
-            imgSrc: ["'self'", "data:", "https:"],
-            connectSrc: ["'self'", "*.fontawesome.com"],
+            fontSrc: ["'self'", "data:", "fonts.gstatic.com", "cdnjs.cloudflare.com", "*.fontawesome.com", "https://www.desmos.com"],
+            imgSrc: ["'self'", "data:", "blob:", "https:"],
+            connectSrc: ["'self'", "*.fontawesome.com", "https://www.desmos.com", "https://saved-work.desmos.com"],
+            // Desmos graphing/scientific calculators spin up web workers from blob: URLs.
+            workerSrc: ["'self'", "blob:"],
             frameSrc: ["player.vimeo.com", "www.youtube.com", "www.youtube-nocookie.com", "maps.google.com", "www.google.com"],
         },
     },

@@ -364,66 +364,42 @@
       </form>
     </div>
     
-    <!-- Serie D -->
-    <div class="section-header">
-      <span>Série D</span>
-    </div>
-    
-    <div class="classes-grid">
-    <% for(let schoolClass of schoolClassesD) {%>
-        <div class="class-card">
-          <div class="class-card-header">
-            <h2 class="class-title"><%= schoolClass.title %></h2>
-            <span class="serie-badge serie-d">Série D</span>
-          </div>
-          <div class="class-actions">
-            <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/subject/new" class="btn-class-action btn-primary-action">
-              <i class="bi bi-plus-circle"></i>
-              Ajouter une matière
-            </a>
-            <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/subjects" class="btn-class-action btn-secondary-action">
-              <i class="bi bi-list-ul"></i>
-              Voir toutes les matières
-            </a>
-            <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/addStudent" class="btn-class-action btn-success-action">
-              <i class="bi bi-person-plus"></i>
-              Ajouter un étudiant
-            </a>
-      </div>
-    </div>
+    <% const series = Object.keys(classesBySerie).sort(); %>
+    <% if (series.length === 0) { %>
+      <div class="section-header"><span>Aucune classe pour le moment</span></div>
     <% } %>
-  </div>
-    
-    <div class="divider"></div>
-    
-    <!-- Serie A -->
-    <div class="section-header">
-      <span>Série A</span>
-</div>
+    <% series.forEach(function(serie, idx) { %>
+      <% if (idx > 0) { %><div class="divider"></div><% } %>
 
-    <div class="classes-grid">
-    <% for(let schoolClass of schoolClassesA) {%>
-        <div class="class-card">
-          <div class="class-card-header">
-            <h2 class="class-title"><%= schoolClass.title %></h2>
-            <span class="serie-badge serie-a">Série A</span>
-          </div>
-          <div class="class-actions">
-            <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/subject/new" class="btn-class-action btn-primary-action">
-              <i class="bi bi-plus-circle"></i>
-              Ajouter une matière
-            </a>
-            <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/subjects" class="btn-class-action btn-secondary-action">
-              <i class="bi bi-list-ul"></i>
-              Voir toutes les matières
-            </a>
-            <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/addStudent" class="btn-class-action btn-success-action">
-              <i class="bi bi-person-plus"></i>
-              Ajouter un étudiant
-            </a>
+      <!-- Serie <%= serie %> -->
+      <div class="section-header">
+        <span>Série <%= serie %></span>
       </div>
-    </div>
-    <% } %>
-    </div>
+
+      <div class="classes-grid">
+      <% classesBySerie[serie].forEach(function(schoolClass) { %>
+          <div class="class-card">
+            <div class="class-card-header">
+              <h2 class="class-title"><%= schoolClass.title %></h2>
+              <span class="serie-badge serie-<%= (serie || '').toString().toLowerCase() %>">Série <%= serie %></span>
+            </div>
+            <div class="class-actions">
+              <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/subject/new" class="btn-class-action btn-primary-action">
+                <i class="bi bi-plus-circle"></i>
+                Ajouter une matière
+              </a>
+              <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/subjects" class="btn-class-action btn-secondary-action">
+                <i class="bi bi-list-ul"></i>
+                Voir toutes les matières
+              </a>
+              <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/addStudent" class="btn-class-action btn-success-action">
+                <i class="bi bi-person-plus"></i>
+                Ajouter un étudiant
+              </a>
+        </div>
+      </div>
+      <% }); %>
+      </div>
+    <% }); %>
   </div>
 </div>

@@ -17,7 +17,6 @@ const {
   chapterPremiumAccess, // Gardé pour compatibilité (redirige vers subject)
   subjectPremiumAccess, // ✅ NOUVEAU: Accès premium au niveau matière
   checkExercisePremiumAccess,
-  filterExercisesByAccess,
 } = require("../../middlewares/studentController");
 const { HighSchool, HStudent, Class, Subject } = require("./model");
 
@@ -45,17 +44,17 @@ router.get(
   isVerified,
   checkRoles(["admin", "super-admin"]),
   catchAsync(async (req, res) => {
-    const schoolClassesD = await Class.find({
-      serie: "D",
-    });
+    const allClasses = await Class.find({}).sort({ serie: 1, title: 1 });
 
-    const schoolClassesA = await Class.find({
-      serie: "A",
-    });
+    // Group classes by serie so the view can render every serie, not just A and D.
+    const classesBySerie = allClasses.reduce((acc, c) => {
+      const key = c.serie || "—";
+      (acc[key] = acc[key] || []).push(c);
+      return acc;
+    }, {});
 
     res.render("programs/ekalan/allClasses", {
-      schoolClassesD,
-      schoolClassesA,
+      classesBySerie,
     });
   })
 );
@@ -131,9 +130,9 @@ router.get(
 // Show class home
 router.get(
   "/class/:class_id",
-  classCheck,
   isLoggedIn,
   isVerified,
+  classCheck,
   catchAsync(BAC.showClassHome)
 );
 
@@ -307,7 +306,6 @@ router.get(
   isLoggedIn,
   isVerified,
   classCheck,
-  filterExercisesByAccess,
   catchAsync(BAC.viewChapterSE)
 );
 
@@ -318,7 +316,6 @@ router.get(
   isVerified,
   classCheck,
   subjectPremiumAccess, // ✅ Changé: accès premium vérifié au niveau matière
-  filterExercisesByAccess,
   catchAsync(BAC.viewChapterPRE)
 );
 

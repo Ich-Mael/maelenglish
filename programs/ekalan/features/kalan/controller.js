@@ -9,11 +9,43 @@ const {
   PremiumRequest,
 } = require("./model");
 
-// remove an element from an array
-function remove_array_element(arr, ele) {
-  arr.splice(arr.indexOf(ele), 1);
-  return arr;
-}
+// Expected class/serie combinations offered on E-Kalan, used to populate the
+// student-creation forms. Seconde: A, C, Ti, AB3, H. Premiere & Terminale: A, D,
+// C, E, F1–F4, G1, G2, H.
+const EXPECTED_CLASS_COMBINATIONS = [
+  { title: "Seconde", serie: "A" },
+  { title: "Seconde", serie: "C" },
+  { title: "Seconde", serie: "Ti" },
+  { title: "Seconde", serie: "AB3" },
+  { title: "Seconde", serie: "H" },
+  { title: "Premiere", serie: "A" },
+  { title: "Premiere", serie: "D" },
+  { title: "Premiere", serie: "C" },
+  { title: "Premiere", serie: "E" },
+  { title: "Premiere", serie: "F1" },
+  { title: "Premiere", serie: "F2" },
+  { title: "Premiere", serie: "F3" },
+  { title: "Premiere", serie: "F4" },
+  { title: "Premiere", serie: "G1" },
+  { title: "Premiere", serie: "G2" },
+  { title: "Premiere", serie: "H" },
+  { title: "Terminale", serie: "A" },
+  { title: "Terminale", serie: "D" },
+  { title: "Terminale", serie: "C" },
+  { title: "Terminale", serie: "E" },
+  { title: "Terminale", serie: "F1" },
+  { title: "Terminale", serie: "F2" },
+  { title: "Terminale", serie: "F3" },
+  { title: "Terminale", serie: "F4" },
+  { title: "Terminale", serie: "G1" },
+  { title: "Terminale", serie: "G2" },
+  { title: "Terminale", serie: "H" },
+];
+
+// Builds a Mongo $or query matching the expected class/serie combinations.
+const expectedClassQuery = () => ({
+  $or: EXPECTED_CLASS_COMBINATIONS.map(({ title, serie }) => ({ title, serie })),
+});
 
 // show serie home
 module.exports.showClassHome = async (req, res) => {
@@ -155,53 +187,9 @@ module.exports.showCreateStudentForm = async (req, res) => {
     return res.redirect("/programs/ekalan/kalan/admindashboard/kalan/series_and_classes");
   }
   
-  // Define expected class-series combinations
-  // Seconde: A, C, Ti, AB3, H
-  // Premiere & Terminale: A, D, C, E, F1, F2, F3, F4, G1, G2, H
-  const expectedCombinations = [
-    // Seconde
-    { title: "Seconde", serie: "A" },
-    { title: "Seconde", serie: "C" },
-    { title: "Seconde", serie: "Ti" },
-    { title: "Seconde", serie: "AB3" },
-    { title: "Seconde", serie: "H" },
-    // Premiere
-    { title: "Premiere", serie: "A" },
-    { title: "Premiere", serie: "D" },
-    { title: "Premiere", serie: "C" },
-    { title: "Premiere", serie: "E" },
-    { title: "Premiere", serie: "F1" },
-    { title: "Premiere", serie: "F2" },
-    { title: "Premiere", serie: "F3" },
-    { title: "Premiere", serie: "F4" },
-    { title: "Premiere", serie: "G1" },
-    { title: "Premiere", serie: "G2" },
-    { title: "Premiere", serie: "H" },
-    // Terminale
-    { title: "Terminale", serie: "A" },
-    { title: "Terminale", serie: "D" },
-    { title: "Terminale", serie: "C" },
-    { title: "Terminale", serie: "E" },
-    { title: "Terminale", serie: "F1" },
-    { title: "Terminale", serie: "F2" },
-    { title: "Terminale", serie: "F3" },
-    { title: "Terminale", serie: "F4" },
-    { title: "Terminale", serie: "G1" },
-    { title: "Terminale", serie: "G2" },
-    { title: "Terminale", serie: "H" }
-  ];
-  
-  // Build MongoDB query with $or conditions for each combination
-  const classQuery = {
-    $or: expectedCombinations.map(combo => ({
-      title: combo.title,
-      serie: combo.serie
-    }))
-  };
-  
   // Get classes from database matching the expected combinations
-  const allClasses = await Class.find(classQuery).select('title serie').sort({ title: 1, serie: 1 });
-  
+  const allClasses = await Class.find(expectedClassQuery()).select('title serie').sort({ title: 1, serie: 1 });
+
   res.render("programs/ekalan/admin/students/create", {
     schoolClass,
     allClasses,
@@ -210,53 +198,9 @@ module.exports.showCreateStudentForm = async (req, res) => {
 
 // Show form to create student account (general - no class pre-selected)
 module.exports.showCreateStudentFormGeneral = async (req, res) => {
-  // Define expected class-series combinations
-  // Seconde: A, C, Ti, AB3, H
-  // Premiere & Terminale: A, D, C, E, F1, F2, F3, F4, G1, G2, H
-  const expectedCombinations = [
-    // Seconde
-    { title: "Seconde", serie: "A" },
-    { title: "Seconde", serie: "C" },
-    { title: "Seconde", serie: "Ti" },
-    { title: "Seconde", serie: "AB3" },
-    { title: "Seconde", serie: "H" },
-    // Premiere
-    { title: "Premiere", serie: "A" },
-    { title: "Premiere", serie: "D" },
-    { title: "Premiere", serie: "C" },
-    { title: "Premiere", serie: "E" },
-    { title: "Premiere", serie: "F1" },
-    { title: "Premiere", serie: "F2" },
-    { title: "Premiere", serie: "F3" },
-    { title: "Premiere", serie: "F4" },
-    { title: "Premiere", serie: "G1" },
-    { title: "Premiere", serie: "G2" },
-    { title: "Premiere", serie: "H" },
-    // Terminale
-    { title: "Terminale", serie: "A" },
-    { title: "Terminale", serie: "D" },
-    { title: "Terminale", serie: "C" },
-    { title: "Terminale", serie: "E" },
-    { title: "Terminale", serie: "F1" },
-    { title: "Terminale", serie: "F2" },
-    { title: "Terminale", serie: "F3" },
-    { title: "Terminale", serie: "F4" },
-    { title: "Terminale", serie: "G1" },
-    { title: "Terminale", serie: "G2" },
-    { title: "Terminale", serie: "H" }
-  ];
-  
-  // Build MongoDB query with $or conditions for each combination
-  const classQuery = {
-    $or: expectedCombinations.map(combo => ({
-      title: combo.title,
-      serie: combo.serie
-    }))
-  };
-  
   // Get classes from database matching the expected combinations
-  const allClasses = await Class.find(classQuery).select('title serie').sort({ title: 1, serie: 1 });
-  
+  const allClasses = await Class.find(expectedClassQuery()).select('title serie').sort({ title: 1, serie: 1 });
+
   res.render("programs/ekalan/admin/students/create", {
     schoolClass: null,
     allClasses,
@@ -392,43 +336,68 @@ module.exports.studentDashboard = async (req, res) => {
     username: req.body.student_username,
   });
 
+  if (!user) {
+    req.flash("error", `Utilisateur "${req.body.student_username}" non trouvé`);
+    return res.redirect("back");
+  }
+
   const student = await HStudent.findOne({ studentBasicInfo: user._id });
 
+  if (!student) {
+    req.flash("error", `${user.username} n'a pas de compte élève E-Kalan`);
+    return res.redirect("back");
+  }
+
   res.redirect(
-    `/admindashboard/kalan/studentDashboard/student/${student._id}`
+    `/programs/ekalan/kalan/admindashboard/kalan/studentDashboard/student/${student._id}`
   );
 };
 
 // add student to a class by updating
 module.exports.updateStudentInfo = async (req, res) => {
-  const user = await User.findOne({
-    username: req.body.student_username,
-  });
   const studentNewClass = await Class.findOne({
     title: req.body.class,
     serie: req.body.serie,
   });
 
-  const student = await HStudent.findByIdAndUpdate(req.params.student_id, {
-    school: req.body.school,
-    class: req.body.class,
-    serie: req.body.serie,
-  });
-  await student.save();
+  if (!studentNewClass) {
+    req.flash("error", `Classe ${req.body.class} (${req.body.serie}) introuvable`);
+    return res.redirect("back");
+  }
 
-  const studentPreviousClass = await Class.findById(student.class_id);
+  const student = await HStudent.findById(req.params.student_id);
 
-  // Updating student previous class
-  remove_array_element(studentPreviousClass.students, student.class_id);
-  await studentPreviousClass.save();
+  if (!student) {
+    req.flash("error", "Étudiant non trouvé");
+    return res.redirect("back");
+  }
 
-  // Updating student new class
-  studentNewClass.students.push(student._id);
-  await studentNewClass.save();
+  const previousClassId = student.class_id;
+
+  // Update the student's own fields
+  student.school = req.body.school;
+  student.class = req.body.class;
+  student.serie = req.body.serie;
+
+  // Remove the student from their previous class roster (if it changed)
+  if (previousClassId && String(previousClassId) !== String(studentNewClass._id)) {
+    const studentPreviousClass = await Class.findById(previousClassId);
+    if (studentPreviousClass) {
+      studentPreviousClass.students.pull(student._id);
+      await studentPreviousClass.save();
+    }
+
+    // Add to the new class roster (avoid duplicates)
+    if (!studentNewClass.students.includes(student._id)) {
+      studentNewClass.students.push(student._id);
+      await studentNewClass.save();
+    }
+  }
 
   student.class_id = studentNewClass._id;
   await student.save();
 
+  req.flash("success", "Informations de l'élève mises à jour");
   res.redirect("back");
 };
 

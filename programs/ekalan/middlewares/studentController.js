@@ -10,8 +10,10 @@ const {
     HSCourseVideo,
 } = require("../features/kalan/model");
 
+const isAdmin = (user) => user && (user.role === "admin" || user.role === "super-admin");
+
 module.exports.facebookPageLike = catchAsync(async (req, res, next) => {
-    if ((req.user.likedPage) || req.user.role === "admin") {
+    if (req.user.likedPage || isAdmin(req.user)) {
         next();
     } else {
         res.render("social_media")
@@ -20,7 +22,7 @@ module.exports.facebookPageLike = catchAsync(async (req, res, next) => {
 
 // Checking student status
 module.exports.checkStudentStatus = catchAsync(async (req, res, next) => {
-if(req.user.isHighSchoolStudent || req.user.role === "admin"){
+if(req.user.isHighSchoolStudent || isAdmin(req.user)){
     next();
 }else{
     res.render("notStudent");
@@ -32,7 +34,12 @@ module.exports.classCheck = catchAsync(async (req, res, next) => {
 
     const schoolClass = await Class.findById(req.params.class_id);
 
-    if ((schoolClass.students.includes(req.user.highSchool_id))) {
+    if (!schoolClass) {
+        return res.status(404).render("noAccess", { statusCode: 404, message: "Classe introuvable" });
+    }
+
+    // Admins can preview any class; students must belong to it.
+    if (isAdmin(req.user) || schoolClass.students.includes(req.user.highSchool_id)) {
         next();
     } else {
         res.render("noAccess");
@@ -144,43 +151,6 @@ module.exports.checkExercisePremiumAccess = catchAsync(async (req, res, next) =>
         req.flash('error', 'Vous n\'avez pas accès premium à cet exercice');
         return res.redirect('back');
     }
-    
-    next();
-});
-
-/**
- * ✅ NOUVEAU: Middleware pour filtrer les exercices selon l'accès premium
- * Utile pour les listes d'exercices
- */
-module.exports.filterExercisesByAccess = catchAsync(async (req, res, next) => {
-    const studentId = req.user.highSchool_id;
-    const isAdmin = req.user.role === 'admin' || req.user.role === 'super-admin';
-    
-    // Attacher la fonction de filtrage à req pour l'utiliser dans les contrôleurs
-    req.filterPremiumExercises = async (exercises) => {
-        if (isAdmin) {
-            return exercises; // Les admins voient tout
-        }
-        
-        const accessibleExercises = [];
-        
-        for (const exercise of exercises) {
-            // Les cours et exercices de compréhension sont toujours accessibles
-            if (exercise.videoType === 'course' || 
-                ['starterEx', 'CIAM_basic', 'practiceEx'].includes(exercise.videoType)) {
-                accessibleExercises.push(exercise);
-            } else if (!exercise.isPremium) {
-                accessibleExercises.push(exercise);
-            } else {
-                const hasAccess = await hasPremiumAccessToExercise(studentId, exercise._id);
-                if (hasAccess) {
-                    accessibleExercises.push(exercise);
-                }
-            }
-        }
-        
-        return accessibleExercises;
-    };
     
     next();
 });
