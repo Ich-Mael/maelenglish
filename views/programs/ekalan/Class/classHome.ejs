@@ -2,898 +2,389 @@
 
 <% headContent = `
   <style>
-    #main {
-      margin-top: 0 !important;
-      padding-top: 0 !important;
+    :root {
+      --ch-brand: #5d06ba;
+      --ch-brand-dark: #2d0370;
+      --ch-brand-50: #f4eefe;
+      --ch-brand-100: #e9d6fb;
+      --ch-gold: #f0b429;
+      --ch-ink: #1d1633;
+      --ch-muted: #6b6880;
+      --ch-bg: #f6f6fb;
+      --ch-surface: #ffffff;
+      --ch-border: #eceaf4;
+      --ch-radius: 18px;
+      --ch-shadow: 0 6px 24px rgba(45, 3, 112, 0.07);
+      --ch-shadow-lg: 0 18px 44px rgba(45, 3, 112, 0.16);
     }
-    
-    .class-home-page {
-      padding: 0;
-      min-height: calc(100vh - 200px);
-      background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
-      margin-top: 80px !important;
+
+    #main { margin-top: 0 !important; padding-top: 0 !important; }
+
+    .ch-page {
+      margin-top: 72px;
+      background: var(--ch-bg);
+      min-height: calc(100vh - 72px);
+      font-family: 'Outfit', system-ui, sans-serif;
+      color: var(--ch-ink);
     }
-    
-    /* Hero Banner */
-    .class-hero {
-      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
-      color: white;
-      padding: 2rem 2rem 2rem;
+
+    /* ───── Hero ───── */
+    .ch-hero {
       position: relative;
       overflow: hidden;
-      box-shadow: 0 10px 40px rgba(93, 6, 186, 0.2);
-    }
-    
-    .class-hero::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -10%;
-      width: 600px;
-      height: 600px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 50%;
-      animation: float 20s infinite ease-in-out;
-    }
-    
-    .class-hero::after {
-      content: '';
-      position: absolute;
-      bottom: -30%;
-      left: -5%;
-      width: 400px;
-      height: 400px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 50%;
-      animation: float 25s infinite ease-in-out reverse;
-    }
-    
-    @keyframes float {
-      0%, 100% { transform: translate(0, 0) rotate(0deg); }
-      50% { transform: translate(-30px, -30px) rotate(180deg); }
-    }
-    
-    .class-hero-content {
-      position: relative;
-      z-index: 2;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    
-    .hero-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1.5rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-    }
-    
-    .back-button {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1.5rem;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50px;
-      color: white;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.95rem;
-      transition: all 0.3s ease;
-      flex-shrink: 0;
-    }
-    
-    .back-button:hover {
-      background: rgba(255, 255, 255, 0.25);
-      border-color: rgba(255, 255, 255, 0.5);
-      transform: translateX(-5px);
-      color: white;
-      text-decoration: none;
-    }
-    
-    .back-button i {
-      font-size: 1.1rem;
-    }
-    
-    .class-title-wrapper {
-      text-align: center;
-      margin-bottom: 0.75rem;
-      flex: 1;
-      display: flex;
-      justify-content: center;
-    }
-    
-    .class-title {
-      font-size: 3.5rem;
-      font-weight: 700;
-      margin: 0;
-      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
-      letter-spacing: -1px;
-      text-align: center;
-    }
-    
-    .class-badge {
-      display: inline-block;
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(10px);
-      padding: 0.5rem 1.5rem;
-      border-radius: 50px;
-      font-size: 1rem;
-      font-weight: 600;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      margin-top: 0.5rem;
-    }
-    
-    .class-subtitle {
-      font-size: 1.1rem;
-      opacity: 0.95;
-      margin: 1rem 0 1.5rem 0;
-      font-weight: 300;
-      line-height: 1.5;
-      max-width: 700px;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: center;
-    }
-    
-    /* Calculators in Hero */
-    .hero-calculators {
-      margin-top: 1rem;
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    
-    .btn-calculator-hero {
-      padding: 0.875rem 1.75rem;
-      border-radius: 50px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      color: white;
-      font-weight: 600;
-      font-size: 0.95rem;
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.75rem;
-      text-decoration: none;
-      cursor: pointer;
-    }
-    
-    .btn-calculator-hero:hover {
-      background: rgba(255, 255, 255, 0.25);
-      border-color: rgba(255, 255, 255, 0.5);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-      color: white;
-    }
-    
-    .btn-calculator-hero i {
-      font-size: 1.3rem;
-    }
-    
-    /* Subjects Section */
-    .subjects-section {
-      padding: 4rem 2rem;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-    
-    .section-header {
-      text-align: center;
-      margin-bottom: 3rem;
-    }
-    
-    .section-title {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: #2d0370;
-      margin-bottom: 0.75rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-    }
-    
-    .section-title i {
-      font-size: 2rem;
-    }
-    
-    .section-description {
-      font-size: 1.15rem;
-      color: #666;
-      max-width: 700px;
-      margin: 0 auto;
-      line-height: 1.6;
-    }
-    
-    /* Subjects Grid - 3 columns */
-    .subjects-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2rem;
-    }
-    
-    .subject-card {
-      background: white;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 2px solid transparent;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .subject-card:hover {
-      transform: translateY(-12px);
-      box-shadow: 0 20px 50px rgba(93, 6, 186, 0.2);
-      border-color: #5d06ba;
-    }
-    
-    .subject-image-wrapper {
-      position: relative;
-      width: 100%;
-      height: 220px;
-      overflow: hidden;
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    }
-    
-    .subject-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.5s ease;
-    }
-    
-    .subject-card:hover .subject-image {
-      transform: scale(1.15);
-    }
-    
-    .subject-content {
-      padding: 2rem;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .subject-title {
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: #2d0370;
-      margin: 0 0 1.5rem 0;
-    }
-    
-    .subject-actions {
-      margin-top: auto;
-    }
-    
-    .btn-subject {
-      padding: 1rem 2rem;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 1rem;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
-      border: 2px solid white;
-      width: 100%;
-      position: relative;
-    }
-    
-    .btn-subject-primary {
-      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
-      color: white;
-    }
-    
-    .btn-subject-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(93, 6, 186, 0.4);
-      text-decoration: none;
-      color: white;
-    }
-    
-    .btn-subject-primary i {
-      font-size: 1.2rem;
-    }
-    
-    .btn-subject-warning {
-      background: #000;
-      border: 2px solid #ffd700;
-      color: #ffd700;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
-    }
-    
-    .btn-subject-warning::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
-      transition: left 0.5s ease;
-    }
-    
-    .btn-subject-warning:hover::before {
-      left: 100%;
-    }
-    
-    .btn-subject-warning:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 12px 30px rgba(255, 215, 0, 0.4);
-      color: #ffd700;
-      background: #1a1a1a;
-      border-color: #ffed4e;
-    }
-    
-    .btn-subject-warning:active {
-      transform: translateY(-1px) scale(0.98);
-    }
-    
-    .btn-subject-warning i {
-      animation: sparkle 2s ease-in-out infinite;
-    }
-    
-    @keyframes sparkle {
-      0%, 100% { 
-        transform: scale(1) rotate(0deg);
-        filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.8));
-      }
-      50% { 
-        transform: scale(1.1) rotate(5deg);
-        filter: drop-shadow(0 0 8px rgba(255, 215, 0, 1));
-      }
-    }
-    
-    
-    .btn-subject-secondary {
-      background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
-      color: white;
-      border: none;
-      position: relative;
-      cursor: not-allowed;
-      opacity: 0.85;
-    }
-    
-    .btn-subject-secondary::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
-    }
-    
-    .premium-badge {
-      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      font-size: 0.875rem;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      box-shadow: 0 2px 10px rgba(40, 167, 69, 0.3);
-      animation: pulse-glow 2s ease-in-out infinite;
-    }
-    
-    @keyframes pulse-glow {
-      0%, 100% {
-        box-shadow: 0 2px 10px rgba(40, 167, 69, 0.3);
-      }
-      50% {
-        box-shadow: 0 2px 20px rgba(40, 167, 69, 0.6);
-      }
-    }
-    
-    .premium-badge i {
-      font-size: 1rem;
-      animation: star-rotate 3s linear infinite;
-    }
-    
-    @keyframes star-rotate {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
-    .premium-info-tooltip {
-      position: relative;
-      display: inline-block;
-    }
-    
-    .premium-info-tooltip .tooltip-text {
-      visibility: hidden;
-      width: 200px;
-      background-color: #2d0370;
+      background:
+        radial-gradient(1100px 420px at 85% -40%, rgba(255,255,255,.18), transparent 60%),
+        linear-gradient(135deg, #6a0fd6 0%, var(--ch-brand) 45%, var(--ch-brand-dark) 100%);
       color: #fff;
-      text-align: center;
-      border-radius: 8px;
-      padding: 0.75rem;
-      position: absolute;
-      z-index: 1000;
-      bottom: 125%;
-      left: 50%;
-      margin-left: -100px;
-      opacity: 0;
-      transition: opacity 0.3s, visibility 0.3s;
-      font-size: 0.85rem;
-      box-shadow: 0 4px 15px rgba(45, 3, 112, 0.3);
+      padding: 1.5rem clamp(1rem, 4vw, 3rem) clamp(2.4rem, 5vw, 3.4rem);
     }
-    
-    .premium-info-tooltip .tooltip-text::after {
-      content: "";
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      margin-left: -5px;
-      border-width: 5px;
-      border-style: solid;
-      border-color: #2d0370 transparent transparent transparent;
+    .ch-hero::after {
+      content: '';
+      position: absolute; left: 0; right: 0; bottom: -1px; height: 40px;
+      background: var(--ch-bg);
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
     }
-    
-    .premium-info-tooltip:hover .tooltip-text {
-      visibility: visible;
-      opacity: 1;
+    .ch-hero__inner { max-width: 1240px; margin: 0 auto; position: relative; z-index: 2; }
+
+    .ch-breadcrumb {
+      display: inline-flex; align-items: center; gap: .55rem;
+      font-size: .9rem; font-weight: 500; margin-bottom: 1.6rem;
     }
-    
-    /* Contact Premium Buttons */
-    /* Contact Premium Buttons - Simple and Stable */
-    .btn-contact-whatsapp,
-    .btn-contact-phone {
-      padding: 1rem 1.5rem;
-      border-radius: 12px;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
-      font-weight: 600;
-      font-size: 1rem;
-      transition: background-color 0.2s ease;
-      border: none;
-      width: 100%;
-      color: white;
+    .ch-breadcrumb a {
+      display: inline-flex; align-items: center; gap: .45rem;
+      color: #fff; text-decoration: none;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.22);
+      padding: .5rem .95rem; border-radius: 999px;
+      transition: background .2s, transform .2s;
     }
-    
-    .btn-contact-whatsapp {
-      background: #25D366;
+    .ch-breadcrumb a:hover { background: rgba(255,255,255,.26); transform: translateX(-3px); color: #fff; }
+    .ch-breadcrumb .sep { opacity: .5; }
+    .ch-breadcrumb .current { opacity: .9; }
+
+    .ch-hero__head {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: 2rem; flex-wrap: wrap;
     }
-    
-    .btn-contact-whatsapp:hover {
-      background: #128C7E;
-      color: white;
-      text-decoration: none;
+    .ch-title {
+      font-size: clamp(2.1rem, 5vw, 3.2rem); font-weight: 700;
+      margin: 0; letter-spacing: -.02em; line-height: 1.05;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
     }
-    
-    .btn-contact-phone {
-      background: #007bff;
+    .ch-serie {
+      font-size: .9rem; font-weight: 600; letter-spacing: .02em;
+      background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.28);
+      padding: .4rem .9rem; border-radius: 999px; backdrop-filter: blur(6px);
     }
-    
-    .btn-contact-phone:hover {
-      background: #0056b3;
-      color: white;
-      text-decoration: none;
+    .ch-subtitle {
+      margin: .9rem 0 0; max-width: 560px;
+      font-size: 1.02rem; font-weight: 300; line-height: 1.55; opacity: .92;
     }
-    
-    /* Dropdown Premium Contact - Brand Colors */
-    .premium-dropdown-menu {
-      min-width: 280px;
-      padding: 0;
-      border-radius: 16px;
-      box-shadow: 0 8px 30px rgba(45, 3, 112, 0.2);
-      border: 1px solid rgba(93, 6, 186, 0.1);
-      margin-top: 0.5rem;
+    .ch-meta { display: flex; gap: 1.4rem; margin-top: 1.25rem; flex-wrap: wrap; }
+    .ch-meta__item {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-size: .92rem; font-weight: 500; opacity: .95;
+    }
+    .ch-meta__item i { font-size: 1.05rem; opacity: .9; }
+
+    /* Calculator toolbar */
+    .ch-tools { display: flex; gap: .75rem; flex-wrap: wrap; }
+    .ch-tool {
+      display: inline-flex; align-items: center; gap: .65rem;
+      padding: .8rem 1.3rem; border-radius: 14px; cursor: pointer;
+      background: rgba(255,255,255,.14); color: #fff;
+      border: 1px solid rgba(255,255,255,.26);
+      font-weight: 600; font-size: .92rem; font-family: inherit;
+      backdrop-filter: blur(8px);
+      transition: background .2s, transform .2s, box-shadow .2s;
+    }
+    .ch-tool:hover {
+      background: #fff; color: var(--ch-brand-dark);
+      transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,.2);
+    }
+    .ch-tool i { font-size: 1.25rem; }
+
+    /* ───── Body ───── */
+    .ch-body { max-width: 1240px; margin: 0 auto; padding: clamp(1.6rem, 4vw, 2.8rem) clamp(1rem, 4vw, 3rem) 4rem; }
+
+    .ch-section-head { margin-bottom: 1.8rem; }
+    .ch-section-head h2 {
+      font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 700; margin: 0;
+      display: flex; align-items: center; gap: .7rem; color: var(--ch-ink);
+    }
+    .ch-section-head h2 i { color: var(--ch-brand); }
+    .ch-section-head p { margin: .5rem 0 0; color: var(--ch-muted); font-size: 1rem; max-width: 640px; }
+
+    .ch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* ───── Subject card ───── */
+    .subj-card {
+      background: var(--ch-surface);
+      border: 1px solid var(--ch-border);
+      border-radius: var(--ch-radius);
       overflow: hidden;
+      display: flex; flex-direction: column;
+      box-shadow: var(--ch-shadow);
+      transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s, border-color .35s;
     }
-    
+    .subj-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--ch-shadow-lg);
+      border-color: var(--ch-brand-50);
+    }
+
+    .subj-cover { position: relative; height: 158px; overflow: hidden; }
+    .subj-cover img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+    .subj-card:hover .subj-cover img { transform: scale(1.07); }
+    .subj-cover--ph {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      background:
+        radial-gradient(120px 120px at 30% 20%, rgba(255,255,255,.14), transparent 70%),
+        linear-gradient(135deg, var(--ch-brand) 0%, var(--ch-brand-dark) 100%);
+    }
+    .subj-cover--ph i { font-size: 3rem; color: rgba(255,255,255,.92); }
+    .subj-cover::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(20,5,55,.28), transparent 55%);
+    }
+
+    .subj-pill {
+      position: absolute; top: .8rem; right: .8rem; z-index: 2;
+      display: inline-flex; align-items: center; gap: .35rem;
+      font-size: .76rem; font-weight: 700; letter-spacing: .02em;
+      padding: .35rem .7rem; border-radius: 999px;
+      background: rgba(255,255,255,.95); color: var(--ch-brand-dark);
+      box-shadow: 0 4px 12px rgba(0,0,0,.18);
+    }
+    .subj-pill i { color: var(--ch-gold); }
+
+    .subj-body { padding: 1.25rem 1.25rem 1.4rem; flex: 1; display: flex; flex-direction: column; }
+    .subj-title { font-size: 1.25rem; font-weight: 700; margin: 0 0 1rem; color: var(--ch-ink); }
+    .subj-actions { margin-top: auto; display: flex; flex-direction: column; gap: .6rem; }
+
+    .subj-btn {
+      display: flex; align-items: center; justify-content: center; gap: .6rem;
+      width: 100%; padding: .85rem 1rem; border-radius: 12px;
+      font-weight: 600; font-size: .96rem; font-family: inherit;
+      text-decoration: none; cursor: pointer; border: 1px solid transparent;
+      transition: transform .2s, box-shadow .2s, background .2s, color .2s;
+    }
+    .subj-btn i { font-size: 1.1rem; }
+
+    .subj-btn--primary {
+      background: linear-gradient(135deg, var(--ch-brand) 0%, var(--ch-brand-dark) 100%);
+      color: #fff;
+    }
+    .subj-btn--primary:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(93,6,186,.34); color: #fff; }
+
+    .subj-btn--premium {
+      background: #15131f; color: var(--ch-gold);
+      border-color: rgba(240,180,41,.45);
+      position: relative; overflow: hidden;
+    }
+    .subj-btn--premium::before {
+      content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(240,180,41,.22), transparent);
+      transition: left .6s ease;
+    }
+    .subj-btn--premium:hover::before { left: 100%; }
+    .subj-btn--premium:hover { color: var(--ch-gold); border-color: var(--ch-gold); transform: translateY(-2px); }
+    .subj-btn--premium i { animation: subjSparkle 2.4s ease-in-out infinite; }
+    @keyframes subjSparkle { 0%,100% { transform: scale(1); } 50% { transform: scale(1.18); } }
+
+    .subj-btn--pending {
+      background: #f3f4f6; color: #8b8a96; cursor: not-allowed; border-color: #ececf1;
+    }
+
+    .subj-pending-wrap { position: relative; }
+    .subj-pending-wrap .tip {
+      visibility: hidden; opacity: 0;
+      position: absolute; bottom: 118%; left: 50%; transform: translateX(-50%);
+      width: 220px; background: var(--ch-brand-dark); color: #fff;
+      padding: .7rem .85rem; border-radius: 10px; font-size: .8rem; line-height: 1.4;
+      text-align: center; z-index: 50; box-shadow: 0 8px 22px rgba(45,3,112,.3);
+      transition: opacity .25s, visibility .25s;
+    }
+    .subj-pending-wrap .tip::after {
+      content: ''; position: absolute; top: 100%; left: 50%; margin-left: -5px;
+      border: 5px solid transparent; border-top-color: var(--ch-brand-dark);
+    }
+    .subj-pending-wrap:hover .tip { visibility: visible; opacity: 1; }
+
+    /* Premium dropdown */
+    .premium-dropdown-menu {
+      min-width: 280px; padding: 0; border-radius: 16px; overflow: hidden;
+      border: 1px solid var(--ch-border); box-shadow: 0 12px 36px rgba(45,3,112,.22);
+    }
     .premium-dropdown-menu .dropdown-header {
-      padding: 1.25rem 1rem;
-      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
-      color: white;
-      border-radius: 0;
+      padding: 1.1rem 1rem; background: linear-gradient(135deg, var(--ch-brand) 0%, var(--ch-brand-dark) 100%); color: #fff;
     }
-    
-    .premium-dropdown-menu .dropdown-header strong {
-      font-size: 1.1rem;
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-    
-    .premium-dropdown-menu .dropdown-header .price-info {
-      font-size: 0.9rem;
-      opacity: 0.95;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    
-    .premium-dropdown-menu .dropdown-header .price-value {
-      color: #ffd700;
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-    
-    .premium-dropdown-menu .dropdown-item {
-      padding: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: all 0.2s ease;
-      border-left: 3px solid transparent;
-    }
-    
-    .premium-dropdown-menu .dropdown-item:hover {
-      background: linear-gradient(90deg, rgba(93, 6, 186, 0.05) 0%, rgba(93, 6, 186, 0.02) 100%);
-      border-left-color: #5d06ba;
-    }
-    
-    .premium-dropdown-menu .dropdown-item-content {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      flex: 1;
-    }
-    
-    .premium-dropdown-menu .dropdown-item.btn-contact-whatsapp,
-    .premium-dropdown-menu .dropdown-item.btn-contact-phone {
-      background: none;
-      color: #2d0370;
-      border: none;
-      text-decoration: none;
-      font-weight: 500;
-    }
-    
-    .premium-dropdown-menu .dropdown-item.btn-contact-whatsapp:hover {
-      color: #25D366;
-    }
-    
-    .premium-dropdown-menu .dropdown-item.btn-contact-phone:hover {
-      color: #5d06ba;
-    }
-    
-    .premium-dropdown-menu .dropdown-item.btn-contact-whatsapp i,
-    .premium-dropdown-menu .dropdown-item.btn-contact-phone i {
-      font-size: 1.4rem;
-      width: 24px;
-      text-align: center;
-    }
-    
-    .premium-dropdown-menu .phone-number {
-      font-size: 0.95rem;
-      color: #666;
-      font-weight: 600;
-      font-family: 'Courier New', monospace;
-      letter-spacing: 0.5px;
-    }
-    
-    .premium-dropdown-menu .dropdown-item.btn-contact-phone:hover .phone-number {
-      color: #5d06ba;
-    }
-    
+    .premium-dropdown-menu .dropdown-header strong { font-size: 1.05rem; display: block; margin-bottom: .35rem; }
+    .premium-dropdown-menu .price-info { font-size: .88rem; opacity: .95; display: flex; align-items: center; gap: .4rem; }
+    .premium-dropdown-menu .price-value { color: var(--ch-gold); font-weight: 700; }
+    .premium-dropdown-menu .dropdown-item { padding: .85rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: .5rem; transition: background .15s; }
+    .premium-dropdown-menu .dropdown-item:hover { background: var(--ch-brand-50); }
+    .premium-dropdown-menu .dropdown-item-content { display: flex; align-items: center; gap: .65rem; color: var(--ch-ink); }
+    .premium-dropdown-menu .dropdown-item-content i { font-size: 1.3rem; width: 22px; text-align: center; }
+    .premium-dropdown-menu .btn-contact-whatsapp:hover .dropdown-item-content { color: #25D366; }
+    .premium-dropdown-menu .btn-contact-phone:hover .dropdown-item-content { color: var(--ch-brand); }
+    .premium-dropdown-menu .phone-number { font-size: .9rem; color: var(--ch-muted); font-weight: 600; font-family: 'Courier New', monospace; }
     .premium-dropdown-menu .dropdown-item-text {
-      background: linear-gradient(135deg, rgba(93, 6, 186, 0.05) 0%, rgba(45, 3, 112, 0.05) 100%);
-      border-radius: 0;
-      border-top: 1px solid rgba(93, 6, 186, 0.1);
-      color: #666;
-      padding: 0.75rem 1rem;
-      font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      background: var(--ch-brand-50); border-top: 1px solid var(--ch-border);
+      color: var(--ch-muted); padding: .7rem 1rem; font-size: .8rem; display: flex; align-items: center; gap: .5rem;
     }
-    
-    .premium-dropdown-menu .dropdown-item-text i {
-      color: #5d06ba;
+    .premium-dropdown-menu .dropdown-item-text i { color: var(--ch-brand); }
+    .premium-dropdown-menu .dropdown-divider { margin: 0; border-color: var(--ch-border); }
+    .premium-dropdown-menu a { text-decoration: none; }
+
+    /* Empty state */
+    .ch-empty {
+      text-align: center; padding: 4.5rem 2rem;
+      background: var(--ch-surface); border: 1px dashed var(--ch-border);
+      border-radius: var(--ch-radius); grid-column: 1 / -1;
     }
-    
-    .premium-dropdown-menu .dropdown-divider {
-      margin: 0;
-      border-color: rgba(93, 6, 186, 0.1);
-    }
-    
-    .btn-contact-whatsapp i,
-    .btn-contact-phone i {
-      font-size: 1.5rem;
-    }
-    
-    .subject-actions form {
-      margin: 0;
-      margin-top: 0.75rem;
-    }
-    
-    .subject-actions button[type="submit"] {
-      width: 100%;
-      border: none;
-      background: inherit;
-      color: inherit;
-      font: inherit;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
-    }
-    
-    /* Empty State */
-    .empty-state {
-      text-align: center;
-      padding: 5rem 2rem;
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      grid-column: 1 / -1;
-    }
-    
-    .empty-state i {
-      font-size: 5rem;
-      color: #ccc;
-      margin-bottom: 1.5rem;
-    }
-    
-    .empty-state h3 {
-      color: #333;
-      margin-bottom: 0.75rem;
-      font-size: 1.75rem;
-    }
-    
-    .empty-state p {
-      color: #666;
-      font-size: 1.1rem;
-    }
-    
-    
-    /* Responsive */
-    @media (max-width: 1200px) {
-      .subjects-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-    
-    @media (max-width: 768px) {
-      .class-hero {
-        padding: 1.5rem 1.5rem 1.5rem;
-      }
-      
-      .hero-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-      }
-      
-      .back-button {
-        padding: 0.625rem 1.25rem;
-        font-size: 0.9rem;
-      }
-      
-      .class-title-wrapper {
-        width: 100%;
-        justify-content: center;
-      }
-      
-      .class-title {
-        font-size: 2.25rem;
-      }
-      
-      .class-subtitle {
-        font-size: 1rem;
-        margin: 0.75rem 0 1rem 0;
-      }
-      
-      .hero-calculators {
-        margin-top: 1rem;
-        flex-direction: column;
-        gap: 0.75rem;
-      }
-      
-      .btn-calculator-hero {
-        width: 100%;
-        justify-content: center;
-        padding: 0.75rem 1.25rem;
-        font-size: 0.9rem;
-      }
-      
-      .subjects-section {
-        padding: 3rem 1rem;
-      }
-      
-      .subjects-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-      }
-      
-      .section-title {
-        font-size: 2rem;
-      }
-      
-      .section-description {
-        font-size: 1rem;
-      }
-    }
-    
-    @media (min-width: 1400px) {
-      .subjects-grid {
-        gap: 2.5rem;
-      }
+    .ch-empty i { font-size: 3.5rem; color: var(--ch-brand-100); margin-bottom: 1rem; }
+    .ch-empty h3 { font-size: 1.4rem; margin: 0 0 .5rem; color: var(--ch-ink); }
+    .ch-empty p { color: var(--ch-muted); margin: 0; }
+
+    @media (max-width: 640px) {
+      .ch-hero__head { align-items: flex-start; }
+      .ch-tools { width: 100%; }
+      .ch-tool { flex: 1; justify-content: center; }
     }
   </style>
 ` %>
 
-<div class="class-home-page">
-  <!-- Hero Banner -->
-  <div class="class-hero">
-    <div class="class-hero-content">
-      <!-- Header with Back Button and Class Title -->
-      <div class="hero-header">
-        <a href="/programs/ekalan/kalan" class="back-button">
-          <i class="bi bi-arrow-left"></i>
-          Retour
-        </a>
-        <div class="class-title-wrapper">
-          <h1 class="class-title">
-            <%= schoolClass.title %> <%= schoolClass.serie %>
+<div class="ch-page">
+
+  <!-- ───── Hero ───── -->
+  <header class="ch-hero">
+    <div class="ch-hero__inner">
+      <nav class="ch-breadcrumb" aria-label="Fil d'Ariane">
+        <a href="/programs/ekalan/kalan"><i class="bi bi-arrow-left"></i> Kalan</a>
+        <span class="sep">/</span>
+        <span class="current"><%= schoolClass.title %> <%= schoolClass.serie %></span>
+      </nav>
+
+      <div class="ch-hero__head">
+        <div>
+          <h1 class="ch-title">
+            <%= schoolClass.title %>
+            <% if (schoolClass.serie) { %><span class="ch-serie">Série <%= schoolClass.serie %></span><% } %>
           </h1>
+          <p class="ch-subtitle">Étudiez et révisez à votre rythme. Accédez à toutes vos matières et progressez dans votre apprentissage.</p>
+          <% const subjectCount = (schoolClass.subjects || []).length; %>
+          <% const premiumCount = (schoolClass.subjects || []).filter(s => s.hasPremiumAccess).length; %>
+          <div class="ch-meta">
+            <span class="ch-meta__item"><i class="bi bi-journal-bookmark-fill"></i> <%= subjectCount %> matière<%= subjectCount > 1 ? 's' : '' %></span>
+            <% if (premiumCount > 0) { %>
+              <span class="ch-meta__item"><i class="bi bi-star-fill"></i> <%= premiumCount %> avec accès premium</span>
+            <% } %>
+          </div>
+        </div>
+
+        <div class="ch-tools">
+          <button type="button" class="ch-tool" data-bs-toggle="modal" data-bs-target="#graph-calc-modal">
+            <i class="bi bi-graph-up"></i> Calc. Graphique
+          </button>
+          <button type="button" class="ch-tool" data-bs-toggle="modal" data-bs-target="#scien-calc-modal">
+            <i class="bi bi-calculator"></i> Calc. Scientifique
+          </button>
         </div>
       </div>
-      
-      
-      <p class="class-subtitle">
-        Étudiez et révisez à votre rythme selon vos besoins et votre disponibilité. Accédez à toutes les matières et progressez dans votre apprentissage.
-      </p>
-      
-      <!-- Calculators in Hero -->
-      <div class="hero-calculators">
-        <button type="button" class="btn-calculator-hero" data-bs-toggle="modal" data-bs-target="#graph-calc-modal">
-          <i class="bi bi-graph-up"></i>
-          Calculatrice Graphique
-        </button>
-        <button type="button" class="btn-calculator-hero" data-bs-toggle="modal" data-bs-target="#scien-calc-modal">
-          <i class="bi bi-calculator"></i>
-          Calculatrice Scientifique
-        </button>
     </div>
-    </div>
-  </div>
-  
+  </header>
+
   <!-- Calculator Modals -->
   <%- include('../../../shared/partials/calculators/graphing-calculator-modal') %>
   <%- include('../../../shared/partials/calculators/scientific-calculator-modal') %>
-  
-  <!-- Subjects Section -->
-  <div class="subjects-section">
-    <div class="section-header">
-      <h2 class="section-title">
-        <i class="bi bi-book"></i>
-        Matières disponibles
-      </h2>
-      <p class="section-description">
-        Explorez les matières de votre classe et accédez à tout le contenu pédagogique pour exceller dans vos études
-      </p>
-</div>
-    
+
+  <!-- ───── Subjects ───── -->
+  <main class="ch-body">
+    <div class="ch-section-head">
+      <h2><i class="bi bi-grid-1x2-fill"></i> Matières disponibles</h2>
+      <p>Explorez les matières de votre classe et accédez à tout le contenu pédagogique.</p>
+    </div>
+
     <% if (schoolClass.subjects && schoolClass.subjects.length > 0) { %>
-      <div class="subjects-grid">
+      <div class="ch-grid">
         <% schoolClass.subjects.forEach(subject => { %>
-          <div class="subject-card">
-            <div class="subject-image-wrapper">
+          <article class="subj-card">
+            <div class="subj-cover">
               <% if (subject.subjectImageUrl) { %>
-          <img
-            src="<%= subject.subjectImageUrl %>"
-                  alt="<%= subject.title %>" 
-                  class="subject-image"
-                />
+                <img src="<%= subject.subjectImageUrl %>" alt="<%= subject.title %>" loading="lazy" />
               <% } else { %>
-                <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);">
-                  <i class="bi bi-book" style="font-size: 4rem; color: white;"></i>
-                  </div>
+                <div class="subj-cover--ph"><i class="bi bi-journal-text"></i></div>
               <% } %>
-                        </div>
-            
-            <div class="subject-content">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <h3 class="subject-title" style="margin: 0;"><%= subject.title %></h3>
-                <% if (subject.hasPremiumAccess) { %>
-                  <span class="premium-badge">
-                    <i class="bi bi-star-fill"></i> Premium
-                  </span>
-                <% } %>
-                        </div>
-              
-              <div class="subject-actions">
-                <a 
-                  href="/programs/ekalan/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>" 
-                  class="btn-subject btn-subject-primary"
-                >
-                  <i class="bi bi-box-arrow-in-right"></i>
-                  Accéder au contenu
+              <% if (subject.hasPremiumAccess) { %>
+                <span class="subj-pill"><i class="bi bi-star-fill"></i> Premium</span>
+              <% } %>
+            </div>
+
+            <div class="subj-body">
+              <h3 class="subj-title"><%= subject.title %></h3>
+
+              <div class="subj-actions">
+                <a href="/programs/ekalan/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>" class="subj-btn subj-btn--primary">
+                  <i class="bi bi-arrow-right-circle"></i> Accéder au contenu
                 </a>
-                
+
                 <% if (!subject.hasPremiumAccess && currentUser && currentUser.highSchool_id) { %>
                   <% if (subject.hasPendingRequest) { %>
-                    <div class="premium-info-tooltip" style="margin-top: 0.75rem; width: 100%;">
-                      <button class="btn-subject btn-subject-secondary" style="width: 100%;" disabled>
-                        <i class="bi bi-clock-history"></i>
-                        Demande en attente
+                    <div class="subj-pending-wrap">
+                      <button class="subj-btn subj-btn--pending" disabled>
+                        <i class="bi bi-clock-history"></i> Demande en attente
                       </button>
-                      <span class="tooltip-text">Votre demande est en cours de traitement par un administrateur. Vous recevrez une notification une fois approuvée.</span>
+                      <span class="tip">Votre demande est en cours de traitement. Vous serez notifié une fois approuvée.</span>
                     </div>
                   <% } else { %>
-                    <!-- Dropdown pour contact premium -->
-                    <div class="dropdown" style="width: 100%; margin-top: 0.75rem;">
-                      <button class="btn-subject btn-subject-warning dropdown-toggle" 
-                      type="button"
-                              id="premiumDropdown<%= subject._id %>" 
-                              data-bs-toggle="dropdown" 
-                              aria-expanded="false"
-                              style="width: 100%;">
-                        <i class="bi bi-star-fill"></i>
-                        <span>Accès Premium</span>
-                    </button>
+                    <div class="dropdown">
+                      <button class="subj-btn subj-btn--premium dropdown-toggle" type="button"
+                              id="premiumDropdown<%= subject._id %>" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-star-fill"></i> <span>Débloquer le Premium</span>
+                      </button>
                       <ul class="dropdown-menu premium-dropdown-menu" aria-labelledby="premiumDropdown<%= subject._id %>">
                         <li class="dropdown-header">
                           <strong><%= subject.title %></strong>
-                          <div class="price-info">
-                            <span>Prix:</span>
-                            <span class="price-value">2000 FCFA</span>
-                          </div>
+                          <div class="price-info"><span>Prix :</span> <span class="price-value">2000 FCFA</span></div>
                         </li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                          <a class="dropdown-item btn-contact-whatsapp" 
-                             href="https://wa.me/22653344444?text=Bonjour,%20je%20souhaite%20obtenir%20l'accès%20premium%20pour%20la%20matière%20<%= encodeURIComponent(subject.title) %>%20(%20Classe:%20<%= encodeURIComponent(schoolClass.title + ' ' + schoolClass.serie) %>).%20Prix:%202000%20FCFA" 
-                             target="_blank">
-                            <div class="dropdown-item-content">
-                              <i class="bi bi-whatsapp"></i>
-                              <span>Écrire sur WhatsApp</span>
-                            </div>
+                          <a class="dropdown-item btn-contact-whatsapp" target="_blank"
+                             href="https://wa.me/22653344444?text=Bonjour,%20je%20souhaite%20obtenir%20l'accès%20premium%20pour%20la%20matière%20<%= encodeURIComponent(subject.title) %>%20(%20Classe:%20<%= encodeURIComponent(schoolClass.title + ' ' + schoolClass.serie) %>).%20Prix:%202000%20FCFA">
+                            <div class="dropdown-item-content"><i class="bi bi-whatsapp"></i><span>Écrire sur WhatsApp</span></div>
                           </a>
                         </li>
                         <li>
-                          <a class="dropdown-item btn-contact-phone" 
-                             href="tel:+22653344444">
-                            <div class="dropdown-item-content">
-                              <i class="bi bi-telephone-fill"></i>
-                              <span>Appeler</span>
-                  </div>
+                          <a class="dropdown-item btn-contact-phone" href="tel:+22653344444">
+                            <div class="dropdown-item-content"><i class="bi bi-telephone-fill"></i><span>Appeler</span></div>
                             <span class="phone-number">+226 53 34 44 44</span>
                           </a>
                         </li>
                         <li><hr class="dropdown-divider"></li>
                         <li class="dropdown-item-text">
-                          <i class="bi bi-info-circle"></i>
-                          <span>Activation sous 24h après paiement</span>
+                          <i class="bi bi-info-circle"></i><span>Activation sous 24h après paiement</span>
                         </li>
                       </ul>
-                </div>
+                    </div>
                   <% } %>
                 <% } %>
               </div>
             </div>
-          </div>
+          </article>
         <% }); %>
       </div>
     <% } else { %>
-      <div class="empty-state">
+      <div class="ch-empty">
         <i class="bi bi-inbox"></i>
         <h3>Aucune matière disponible</h3>
-        <p>Les matières de cette classe seront bientôt ajoutées. Veuillez revenir plus tard.</p>
-    </div>
+        <p>Les matières de cette classe seront bientôt ajoutées. Revenez plus tard.</p>
+      </div>
     <% } %>
-  </div>
+  </main>
 </div>

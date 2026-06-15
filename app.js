@@ -123,12 +123,12 @@ app.use(helmet({
         directives: {
             defaultSrc: ["'self'"],
             // 'unsafe-eval' is required by the Desmos calculator API (it uses `new Function`).
-            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "kit.fontawesome.com", "*.fontawesome.com", "https://www.desmos.com"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "kit.fontawesome.com", "*.fontawesome.com", "https://www.desmos.com", "unpkg.com"],
             // Allow inline event-handler attributes (onclick, etc.) used across the
             // EJS views. Helmet defaults script-src-attr to 'none', which would
             // otherwise block them even though inline <script> is allowed above.
             scriptSrcAttr: ["'unsafe-inline'"],
-            styleSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "fonts.googleapis.com"],
+            styleSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "fonts.googleapis.com", "unpkg.com"],
             fontSrc: ["'self'", "data:", "fonts.gstatic.com", "cdnjs.cloudflare.com", "*.fontawesome.com", "https://www.desmos.com"],
             imgSrc: ["'self'", "data:", "blob:", "https:"],
             connectSrc: ["'self'", "*.fontawesome.com", "https://www.desmos.com", "https://saved-work.desmos.com"],
