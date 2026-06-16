@@ -312,7 +312,6 @@ module.exports.createHStudent = async (req, res) => {
 //Student profile
 module.exports.studentProfile = async (req, res) => {
   const student = await HStudent.findById(req.params.highSchool_id)
-    .populate("chaptersPremium")
     .populate("homeTeacher")
     .populate("studentBasicInfo");
 
@@ -452,6 +451,46 @@ module.exports.viewAllSubject = async (req, res) => {
   });
 };
 
+// Edit subject (GET - show form)
+module.exports.editSubject = async (req, res) => {
+  const schoolClass = await Class.findById(req.params.class_id);
+  const subject = await Subject.findById(req.params.subject_id);
+
+  if (!subject) {
+    req.flash("error", "Matière non trouvée");
+    return res.redirect(`/programs/ekalan/kalan/admindashboard/kalan/class/${req.params.class_id}/subjects`);
+  }
+
+  res.render("programs/ekalan/Class/subjects/editSubject", {
+    schoolClass,
+    subject,
+  });
+};
+
+// Update subject (PUT)
+module.exports.updateSubject = async (req, res) => {
+  const subject = await Subject.findById(req.params.subject_id);
+
+  if (!subject) {
+    req.flash("error", "Matière non trouvée");
+    return res.redirect(`/programs/ekalan/kalan/admindashboard/kalan/class/${req.params.class_id}/subjects`);
+  }
+
+  const data = req.body.subject || {};
+  subject.title = data.title || subject.title;
+  subject.subjectImageUrl = data.subjectImageUrl !== undefined ? data.subjectImageUrl : subject.subjectImageUrl;
+  subject.aboutVideoLink = data.aboutVideoLink !== undefined ? data.aboutVideoLink : subject.aboutVideoLink;
+  subject.isScience = data.isScience === "on" || data.isScience === "true" || data.isScience === true;
+  if (data.premiumPrice !== undefined && data.premiumPrice !== "") {
+    subject.premiumPrice = parseFloat(data.premiumPrice);
+  }
+
+  await subject.save();
+
+  req.flash("success", "Matière mise à jour avec succès");
+  res.redirect(`/programs/ekalan/kalan/admindashboard/kalan/class/${req.params.class_id}/subjects`);
+};
+
 /* CHAPTERS */
 
 // Show all chapters
@@ -529,8 +568,7 @@ module.exports.updateChapter = async (req, res) => {
   chapter.isActive = req.body.chapter.isActive === "on" || req.body.chapter.isActive === true;
   chapter.aboutLink = req.body.chapter.aboutLink || "";
   chapter.chapterImageUrl = req.body.chapter.chapterImageUrl || "";
-  chapter.premiumPrice = req.body.chapter.premiumPrice ? parseFloat(req.body.chapter.premiumPrice) : chapter.premiumPrice;
-  
+
   await chapter.save();
   
   req.flash("success", "Chapitre mis à jour avec succès");

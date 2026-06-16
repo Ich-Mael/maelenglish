@@ -98,11 +98,6 @@ const HStudentSchema = new Schema({
     grade: Number
   }],
 
-  chaptersPremium: [{
-    type: Schema.Types.ObjectId,
-    ref: "Chapter",
-  }, ],
-
   studentBasicInfo: {
     type: Schema.Types.ObjectId,
     ref: "User",
@@ -247,6 +242,12 @@ const subjectSchema = new Schema({
     ref: "HStudent",
   }, ],
 
+  // Prix de l'accès premium à cette matière (source de vérité unique, FCFA)
+  premiumPrice: {
+    type: Number,
+    default: 2000,
+  },
+
   // ✅ NOUVEAU: Liste des étudiants ayant accès premium à cette matière
   premiumStudents: [{
     type: Schema.Types.ObjectId,
@@ -303,11 +304,7 @@ const chapterSchema = new Schema({
     default: "",
   },
 
-  premiumPrice: {
-    type: Number,
-    default: 2000,
-  },
-
+  // ❌ SUPPRIMÉ: premiumPrice déplacé au niveau Subject (source de vérité unique)
   // ❌ SUPPRIMÉ: premiumStudents déplacé au niveau Subject
   // L'accès premium est maintenant géré au niveau de la matière
 

@@ -236,6 +236,10 @@
         <% for(let subject of subjects) {%>
           <div class="subject-card">
             <h3 class="subject-title"><%= subject.title %></h3>
+            <div style="margin-bottom: .9rem; font-size: .85rem; color: #5d06ba; font-weight: 600; display: inline-flex; align-items: center; gap: .4rem;">
+              <i class="bi bi-currency-exchange"></i>
+              Premium : <%= Number(subject.premiumPrice != null ? subject.premiumPrice : 2000).toLocaleString('fr-FR') %> FCFA
+            </div>
             <div class="subject-actions">
               <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%=schoolClass._id%>/subject/<%=subject._id%>/chapter/new" class="btn-subject-action btn-primary-action">
                 <i class="bi bi-plus-circle"></i>
@@ -244,6 +248,10 @@
               <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%=schoolClass._id%>/subject/<%=subject._id%>/chapters" class="btn-subject-action btn-success-action">
                 <i class="bi bi-list-ul"></i>
                 Tous les chapitres
+              </a>
+              <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%=schoolClass._id%>/subject/<%=subject._id%>/edit" class="btn-subject-action" style="background:#fff3cd; color:#9a6700; border:1px solid #ffe08a;">
+                <i class="bi bi-pencil-square"></i>
+                Modifier (prix, infos)
               </a>
             </div>
           </div>

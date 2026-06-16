@@ -14,8 +14,7 @@ const {
   facebookPageLike,
   classCheck,
   checkStudentStatus,
-  chapterPremiumAccess, // Gardé pour compatibilité (redirige vers subject)
-  subjectPremiumAccess, // ✅ NOUVEAU: Accès premium au niveau matière
+  subjectPremiumAccess, // Accès premium au niveau matière
   checkExercisePremiumAccess,
 } = require("../../middlewares/studentController");
 const { HighSchool, HStudent, Class, Subject } = require("./model");
@@ -240,6 +239,24 @@ router.get(
   catchAsync(BAC.viewAllSubject)
 );
 
+// Edit subject form (GET)
+router.get(
+  "/admindashboard/kalan/class/:class_id/subject/:subject_id/edit",
+  isLoggedIn,
+  isVerified,
+  checkRoles(["admin", "super-admin"]),
+  catchAsync(BAC.editSubject)
+);
+
+// Update subject (PUT)
+router.put(
+  "/admindashboard/kalan/class/:class_id/subject/:subject_id",
+  isLoggedIn,
+  isVerified,
+  checkRoles(["admin", "super-admin"]),
+  catchAsync(BAC.updateSubject)
+);
+
 // Cours Maths Tle D
 
 // ======================== Chapters =====================
@@ -309,13 +326,13 @@ router.get(
   catchAsync(BAC.viewChapterSE)
 );
 
-//Premium content (✅ MODIFIÉ: utilise subjectPremiumAccess au lieu de chapterPremiumAccess)
+// Premium content — access gated at the subject level
 router.get(
   "/class/:class_id/subject/:subject_id/chapter/:chapter_id/PRE",
   isLoggedIn,
   isVerified,
   classCheck,
-  subjectPremiumAccess, // ✅ Changé: accès premium vérifié au niveau matière
+  subjectPremiumAccess,
   catchAsync(BAC.viewChapterPRE)
 );
 

@@ -343,6 +343,7 @@
                       <span class="tip">Votre demande est en cours de traitement. Vous serez notifié une fois approuvée.</span>
                     </div>
                   <% } else { %>
+                    <% const subjPrice = Number(subject.premiumPrice || 2000); %>
                     <div class="dropdown">
                       <button class="subj-btn subj-btn--premium dropdown-toggle" type="button"
                               id="premiumDropdown<%= subject._id %>" data-bs-toggle="dropdown" aria-expanded="false">
@@ -351,12 +352,12 @@
                       <ul class="dropdown-menu premium-dropdown-menu" aria-labelledby="premiumDropdown<%= subject._id %>">
                         <li class="dropdown-header">
                           <strong><%= subject.title %></strong>
-                          <div class="price-info"><span>Prix :</span> <span class="price-value">2000 FCFA</span></div>
+                          <div class="price-info"><span>Prix :</span> <span class="price-value"><%= subjPrice.toLocaleString('fr-FR') %> FCFA</span></div>
                         </li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                           <a class="dropdown-item btn-contact-whatsapp" target="_blank"
-                             href="https://wa.me/22653344444?text=Bonjour,%20je%20souhaite%20obtenir%20l'accès%20premium%20pour%20la%20matière%20<%= encodeURIComponent(subject.title) %>%20(%20Classe:%20<%= encodeURIComponent(schoolClass.title + ' ' + schoolClass.serie) %>).%20Prix:%202000%20FCFA">
+                             href="https://wa.me/22653344444?text=<%= encodeURIComponent(`Bonjour, je souhaite obtenir l'accès premium pour la matière ${subject.title} (Classe: ${schoolClass.title} ${schoolClass.serie}). Prix: ${subjPrice.toLocaleString('fr-FR')} FCFA`) %>">
                             <div class="dropdown-item-content"><i class="bi bi-whatsapp"></i><span>Écrire sur WhatsApp</span></div>
                           </a>
                         </li>

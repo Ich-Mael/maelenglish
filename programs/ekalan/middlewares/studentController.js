@@ -46,23 +46,6 @@ module.exports.classCheck = catchAsync(async (req, res, next) => {
     }
 });
 
-// ❌ DÉPRÉCIÉ: chapterPremiumAccess remplacé par subjectPremiumAccess
-// L'accès premium est maintenant géré au niveau de la matière
-module.exports.chapterPremiumAccess = catchAsync(async (req, res, next) => {
-    // Redirection vers la nouvelle logique sujet pour compatibilité
-    const chapter = await Chapter.findById(req.params.chapter_id).populate('subjectId');
-    if (!chapter || !chapter.subjectId) {
-        return res.render("noAccess");
-    }
-    
-    const subject = chapter.subjectId;
-    if ((subject.premiumStudents && subject.premiumStudents.includes(req.user.highSchool_id)) || req.user.role === "admin") {
-        next();
-    } else {
-        res.render("noAccess");
-    }
-});
-
 // ✅ NOUVEAU: Middleware pour vérifier l'accès premium à une matière
 module.exports.subjectPremiumAccess = catchAsync(async (req, res, next) => {
     const subject = await Subject.findById(req.params.subject_id);

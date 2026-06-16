@@ -314,8 +314,29 @@
               URL optionnelle d'une image représentative de la matière
             </div>
           </div>
+
+          <div class="form-group">
+            <label for="subject-price">
+              <i class="bi bi-currency-exchange"></i>
+              Prix de l'accès premium (FCFA)
+            </label>
+            <input
+              type="number"
+              class="form-control"
+              id="subject-price"
+              name="subject[premiumPrice]"
+              value="2000"
+              min="0"
+              step="100"
+              placeholder="2000"
+            />
+            <div class="help-text">
+              <i class="bi bi-info-circle"></i>
+              Prix payé par l'élève pour débloquer le contenu premium de cette matière
+            </div>
+          </div>
         </div>
-        
+
         <div class="form-actions">
           <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/subjects" class="btn-form btn-secondary-form">
             <i class="bi bi-x-circle"></i>
