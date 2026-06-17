@@ -751,6 +751,10 @@
 
   <!-- Chapters Section -->
   <div class="chapters-section">
+
+    <%# Premium access CTA (demande / statut) %>
+    <%- include('../../../../partials/kalanPremiumCTA', { schoolClass, subject, hasPremiumAccess, hasPendingRequest }) %>
+
     <div class="section-header">
       <h2 class="section-title">
         <i class="bi bi-list-ul"></i>
@@ -789,13 +793,23 @@
                   Contenu du cours
                 </a>
                 
-                <a 
-                  href="/programs/ekalan/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>/chapter/<%= chapter._id %>/SE" 
+                <a
+                  href="/programs/ekalan/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>/chapter/<%= chapter._id %>/SE"
                   class="btn-chapter btn-chapter-outline"
                 >
                   <i class="bi bi-pencil-square"></i>
                   Exercices d'apprentissage
                 </a>
+
+                <% if (hasPremiumAccess) { %>
+                  <a
+                    href="/programs/ekalan/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>/chapter/<%= chapter._id %>/PRE"
+                    class="btn-chapter btn-chapter-warning"
+                  >
+                    <i class="bi bi-stars"></i>
+                    Exercices premium
+                  </a>
+                <% } %>
       </div>
     </div>
         <% }); %>

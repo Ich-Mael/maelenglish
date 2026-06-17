@@ -281,6 +281,44 @@
       margin-bottom: 0.5rem;
     }
     
+    /* Filter / search bar */
+    .filter-bar {
+      background: white; border-radius: 16px; padding: 1.25rem 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); margin-bottom: 1.5rem;
+    }
+    .filter-bar form { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: flex-end; }
+    .filter-field { display: flex; flex-direction: column; gap: 0.35rem; flex: 1; min-width: 180px; }
+    .filter-field label { font-size: 0.78rem; font-weight: 700; color: #2d0370; text-transform: uppercase; letter-spacing: 0.03em; }
+    .filter-field input, .filter-field select {
+      padding: 0.7rem 0.9rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 0.95rem; background: #fafafa;
+    }
+    .filter-field input:focus, .filter-field select:focus { outline: none; border-color: #5d06ba; background: #fff; }
+    .filter-actions { display: flex; gap: 0.5rem; }
+    .btn-filter { padding: 0.7rem 1.25rem; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none; }
+    .btn-filter-apply { background: linear-gradient(135deg, #5d06ba, #2d0370); color: #fff; }
+    .btn-filter-reset { background: #f0f0f0; color: #666; }
+
+    /* Bulk toolbar */
+    .bulk-toolbar { display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.5rem; background: #f6f1ff; border-bottom: 1px solid #ece3ff; flex-wrap: wrap; }
+    .bulk-toolbar .select-all-label { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; cursor: pointer; color: #2d0370; }
+    .bulk-toolbar .sel-count { font-weight: 600; color: #5d06ba; margin-right: auto; }
+    .bulk-toolbar button { padding: 0.55rem 1.1rem; border-radius: 8px; border: none; font-weight: 600; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; }
+    .bulk-toolbar button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .bulk-approve { background: #28a745; color: #fff; }
+    .bulk-reject { background: #dc3545; color: #fff; }
+    .req-check { width: 1.1rem; height: 1.1rem; accent-color: #5d06ba; cursor: pointer; }
+
+    .wait-time { display: inline-block; margin-top: 0.35rem; font-size: 0.76rem; font-weight: 600; color: #9a6700; background: #fff3cd; padding: 0.15rem 0.55rem; border-radius: 50px; }
+    .subject-link { color: #5d06ba; text-decoration: none; }
+    .subject-link:hover { text-decoration: underline; }
+    .student-email { color: #999; font-size: 0.8rem; }
+
+    /* Pagination */
+    .pagination-bar { display: flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 1.25rem; flex-wrap: wrap; }
+    .pagination-bar a, .pagination-bar span { padding: 0.5rem 0.85rem; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9rem; border: 1px solid #e0e0e0; color: #5d06ba; }
+    .pagination-bar .current { background: linear-gradient(135deg, #5d06ba, #2d0370); color: #fff; border-color: #5d06ba; }
+    .pagination-bar .disabled { color: #ccc; pointer-events: none; }
+
     /* Modal Styles */
     .modal-header {
       background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
@@ -377,32 +415,96 @@
       </div>
     </div>
 
+    <%
+      // Construit une query string en conservant les filtres actifs
+      const baseUrl = '/programs/ekalan/kalan/admindashboard/kalan/premium-requests';
+      const qp = (overrides) => {
+        const o = Object.assign(
+          { status: currentStatus, search: filters.search, class: filters.classId, subject: filters.subjectId },
+          overrides
+        );
+        const qs = Object.entries(o)
+          .filter(([, v]) => v !== '' && v != null)
+          .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
+          .join('&');
+        return baseUrl + (qs ? '?' + qs : '');
+      };
+      const timeAgo = (d) => {
+        const ms = Date.now() - new Date(d).getTime();
+        const days = Math.floor(ms / 86400000);
+        if (days >= 1) return `il y a ${days} jour${days > 1 ? 's' : ''}`;
+        const hrs = Math.floor(ms / 3600000);
+        if (hrs >= 1) return `il y a ${hrs} h`;
+        const mins = Math.floor(ms / 60000);
+        return mins >= 1 ? `il y a ${mins} min` : `à l'instant`;
+      };
+    %>
+
     <!-- Filter Tabs -->
     <div class="filter-tabs">
-      <a href="/programs/ekalan/kalan/admindashboard/kalan/premium-requests?status=pending" 
-         class="filter-tab <%= currentStatus === 'pending' ? 'active' : '' %>">
-        En attente (<%= stats.pending %>)
-      </a>
-      <a href="/programs/ekalan/kalan/admindashboard/kalan/premium-requests?status=approved" 
-         class="filter-tab <%= currentStatus === 'approved' ? 'active' : '' %>">
-        Approuvées (<%= stats.approved %>)
-      </a>
-      <a href="/programs/ekalan/kalan/admindashboard/kalan/premium-requests?status=rejected" 
-         class="filter-tab <%= currentStatus === 'rejected' ? 'active' : '' %>">
-        Rejetées (<%= stats.rejected %>)
-      </a>
-      <a href="/programs/ekalan/kalan/admindashboard/kalan/premium-requests?status=all" 
-         class="filter-tab <%= currentStatus === 'all' ? 'active' : '' %>">
-        Toutes
-      </a>
+      <a href="<%= qp({ status: 'pending', page: '' }) %>" class="filter-tab <%= currentStatus === 'pending' ? 'active' : '' %>">En attente (<%= stats.pending %>)</a>
+      <a href="<%= qp({ status: 'approved', page: '' }) %>" class="filter-tab <%= currentStatus === 'approved' ? 'active' : '' %>">Approuvées (<%= stats.approved %>)</a>
+      <a href="<%= qp({ status: 'rejected', page: '' }) %>" class="filter-tab <%= currentStatus === 'rejected' ? 'active' : '' %>">Rejetées (<%= stats.rejected %>)</a>
+      <a href="<%= qp({ status: 'all', page: '' }) %>" class="filter-tab <%= currentStatus === 'all' ? 'active' : '' %>">Toutes</a>
+    </div>
+
+    <!-- Search / Filter Bar -->
+    <div class="filter-bar">
+      <form method="GET" action="<%= baseUrl %>">
+        <input type="hidden" name="status" value="<%= currentStatus %>">
+        <div class="filter-field">
+          <label for="f-search">Rechercher un élève</label>
+          <input type="text" id="f-search" name="search" value="<%= filters.search %>" placeholder="Nom, prénom, username, email">
+        </div>
+        <div class="filter-field">
+          <label for="f-class">Classe</label>
+          <select id="f-class" name="class">
+            <option value="">Toutes les classes</option>
+            <% classes.forEach(c => { %>
+              <option value="<%= c._id %>" <%= filters.classId == c._id.toString() ? 'selected' : '' %>><%= c.title %> <%= c.serie %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="f-subject">Matière</label>
+          <select id="f-subject" name="subject">
+            <option value="">Toutes les matières</option>
+            <% subjects.forEach(s => { %>
+              <option value="<%= s._id %>" data-class="<%= s.classId ? s.classId._id : '' %>" <%= filters.subjectId == s._id.toString() ? 'selected' : '' %>>
+                <%= s.title %><% if (s.classId) { %> — <%= s.classId.title %> <%= s.classId.serie %><% } %>
+              </option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="filter-actions">
+          <button type="submit" class="btn-filter btn-filter-apply"><i class="bi bi-funnel"></i> Filtrer</button>
+          <a href="<%= baseUrl %>?status=<%= currentStatus %>" class="btn-filter btn-filter-reset">Réinitialiser</a>
+        </div>
+      </form>
     </div>
 
     <!-- Requests Table -->
     <div class="requests-container">
+      <% const hasPending = requests.some(r => r.status === 'pending'); %>
       <% if (requests && requests.length > 0) { %>
+        <% if (hasPending) { %>
+          <div class="bulk-toolbar">
+            <label class="select-all-label">
+              <input type="checkbox" class="req-check" id="selectAll"> Tout sélectionner
+            </label>
+            <span class="sel-count" id="selCount">0 sélectionné(s)</span>
+            <button type="button" class="bulk-approve" id="bulkApproveBtn" onclick="submitBulk('approve')" disabled>
+              <i class="bi bi-check-circle"></i> Approuver la sélection
+            </button>
+            <button type="button" class="bulk-reject" id="bulkRejectBtn" onclick="submitBulk('reject')" disabled>
+              <i class="bi bi-x-circle"></i> Rejeter la sélection
+            </button>
+          </div>
+        <% } %>
         <table class="requests-table">
           <thead>
             <tr>
+              <th style="width: 40px;"></th>
               <th>Étudiant</th>
               <th>Matière</th>
               <th>Statut</th>
@@ -412,24 +514,37 @@
           </thead>
           <tbody>
             <% requests.forEach(request => { %>
+              <% const sbi = request.studentId && request.studentId.studentBasicInfo; %>
               <tr>
+                <td>
+                  <% if (request.status === 'pending') { %>
+                    <input type="checkbox" class="req-check row-check" value="<%= request._id %>">
+                  <% } %>
+                </td>
                 <td>
                   <div class="student-info">
                       <div class="student-name">
-                      <%= request.studentId && request.studentId.studentBasicInfo ? 
-                          (request.studentId.studentBasicInfo.name || '') + ' ' + (request.studentId.studentBasicInfo.surname || '') : 
-                          'N/A' %>
+                      <%= sbi ? ((sbi.name || '') + ' ' + (sbi.surname || '')).trim() || sbi.username : 'N/A' %>
                       </div>
                       <div class="student-username">
-                      @<%= request.studentId && request.studentId.studentBasicInfo ? 
-                          request.studentId.studentBasicInfo.username : 'N/A' %>
+                      @<%= sbi ? sbi.username : 'N/A' %>
                     </div>
+                    <% if (sbi && sbi.email) { %>
+                      <div class="student-email"><i class="bi bi-envelope"></i> <%= sbi.email %></div>
+                    <% } %>
                   </div>
                 </td>
                 <td>
                   <div class="subject-info">
                     <div class="subject-title">
-                      <%= request.subjectId ? request.subjectId.title : 'N/A' %>
+                      <% if (request.subjectId && request.subjectId.classId) { %>
+                        <a class="subject-link" title="Gérer le premium de cette matière"
+                           href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= request.subjectId.classId._id %>/subject/<%= request.subjectId._id %>/premium">
+                          <%= request.subjectId.title %> <i class="bi bi-box-arrow-up-right" style="font-size:.75rem;"></i>
+                        </a>
+                      <% } else { %>
+                        <%= request.subjectId ? request.subjectId.title : 'N/A' %>
+                      <% } %>
                     </div>
                     <% if (request.subjectId && request.subjectId.classId) { %>
                       <div class="subject-class">
@@ -454,6 +569,9 @@
                       minute: '2-digit'
                     }) %>
                   </div>
+                  <% if (request.status === 'pending') { %>
+                    <div><span class="wait-time"><i class="bi bi-clock"></i> <%= timeAgo(request.createdAt) %></span></div>
+                  <% } %>
                   <% if (request.reviewedAt) { %>
                     <div class="date-info" style="font-size: 0.8rem; margin-top: 0.25rem; color: #999;">
                       Traitée le <%= new Date(request.reviewedAt).toLocaleDateString('fr-FR') %>
@@ -485,7 +603,8 @@
                   <% } %>
                 </td>
               </tr>
-              
+
+              <% if (request.status === 'pending') { %>
               <!-- Approve Modal -->
               <div class="modal fade" id="approveModal<%= request._id %>" tabindex="-1" aria-labelledby="approveModalLabel<%= request._id %>" aria-hidden="true">
                 <div class="modal-dialog">
@@ -555,16 +674,111 @@
                         </div>
                       </div>
                     </div>
+              <% } %>
             <% }); %>
           </tbody>
         </table>
+
+        <% if (pagination.totalPages > 1) { %>
+          <div class="pagination-bar">
+            <% if (pagination.page > 1) { %>
+              <a href="<%= qp({ page: pagination.page - 1 }) %>">‹ Précédent</a>
+            <% } else { %>
+              <span class="disabled">‹ Précédent</span>
+            <% } %>
+            <% for (let p = 1; p <= pagination.totalPages; p++) { %>
+              <% if (p === pagination.page) { %>
+                <span class="current"><%= p %></span>
+              <% } else { %>
+                <a href="<%= qp({ page: p }) %>"><%= p %></a>
+              <% } %>
+            <% } %>
+            <% if (pagination.page < pagination.totalPages) { %>
+              <a href="<%= qp({ page: pagination.page + 1 }) %>">Suivant ›</a>
+            <% } else { %>
+              <span class="disabled">Suivant ›</span>
+            <% } %>
+          </div>
+        <% } %>
       <% } else { %>
         <div class="empty-state">
           <i class="bi bi-inbox"></i>
           <h3>Aucune demande trouvée</h3>
-          <p>Il n'y a actuellement aucune demande <%= currentStatus === 'pending' ? 'en attente' : currentStatus === 'approved' ? 'approuvée' : currentStatus === 'rejected' ? 'rejetée' : '' %>.</p>
+          <p>Aucune demande ne correspond à votre recherche ou à ce filtre.</p>
         </div>
       <% } %>
     </div>
   </div>
+
+  <%# Formulaire caché pour le traitement en masse (rempli en JS) %>
+  <form id="bulkForm" method="POST" action="/programs/ekalan/kalan/admindashboard/kalan/premium-requests/bulk" style="display:none;"></form>
 </div>
+
+<script>
+  (function () {
+    const selectAll = document.getElementById('selectAll');
+    const selCount = document.getElementById('selCount');
+    const approveBtn = document.getElementById('bulkApproveBtn');
+    const rejectBtn = document.getElementById('bulkRejectBtn');
+    const rowChecks = () => Array.from(document.querySelectorAll('.row-check'));
+
+    function update() {
+      const checks = rowChecks();
+      const checked = checks.filter(c => c.checked);
+      if (selCount) selCount.textContent = checked.length + ' sélectionné(s)';
+      const none = checked.length === 0;
+      if (approveBtn) approveBtn.disabled = none;
+      if (rejectBtn) rejectBtn.disabled = none;
+      if (selectAll) selectAll.checked = checks.length > 0 && checked.length === checks.length;
+    }
+
+    if (selectAll) {
+      selectAll.addEventListener('change', function () {
+        rowChecks().forEach(c => { c.checked = selectAll.checked; });
+        update();
+      });
+    }
+    rowChecks().forEach(c => c.addEventListener('change', update));
+
+    window.submitBulk = function (action) {
+      const checked = rowChecks().filter(c => c.checked).map(c => c.value);
+      if (!checked.length) return;
+      const verb = action === 'approve' ? 'approuver' : 'rejeter';
+      if (!confirm('Voulez-vous ' + verb + ' ' + checked.length + ' demande(s) ?')) return;
+      const form = document.getElementById('bulkForm');
+      form.querySelectorAll('input').forEach(i => i.remove());
+      const a = document.createElement('input');
+      a.type = 'hidden'; a.name = 'action'; a.value = action;
+      form.appendChild(a);
+      checked.forEach(function (id) {
+        const inp = document.createElement('input');
+        inp.type = 'hidden'; inp.name = 'requestIds'; inp.value = id;
+        form.appendChild(inp);
+      });
+      form.submit();
+    };
+
+    // Filtrer les matières selon la classe choisie
+    const classSel = document.getElementById('f-class');
+    const subjSel = document.getElementById('f-subject');
+    if (classSel && subjSel) {
+      const allOptions = Array.from(subjSel.options);
+      function filterSubjects() {
+        const cls = classSel.value;
+        subjSel.innerHTML = '';
+        allOptions.forEach(function (opt) {
+          if (!opt.value || !cls || opt.getAttribute('data-class') === cls) {
+            subjSel.appendChild(opt);
+          }
+        });
+        if (!Array.from(subjSel.options).some(o => o.value === subjSel.value)) {
+          subjSel.value = '';
+        }
+      }
+      classSel.addEventListener('change', filterSubjects);
+      filterSubjects();
+    }
+
+    update();
+  })();
+</script>

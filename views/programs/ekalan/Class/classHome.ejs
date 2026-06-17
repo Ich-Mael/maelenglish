@@ -126,7 +126,6 @@
       background: var(--ch-surface);
       border: 1px solid var(--ch-border);
       border-radius: var(--ch-radius);
-      overflow: hidden;
       display: flex; flex-direction: column;
       box-shadow: var(--ch-shadow);
       transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s, border-color .35s;
@@ -136,8 +135,13 @@
       box-shadow: var(--ch-shadow-lg);
       border-color: var(--ch-brand-50);
     }
+    /* Card with an open premium dropdown must paint above following cards */
+    .subj-card .dropdown.show { position: relative; z-index: 50; }
 
-    .subj-cover { position: relative; height: 158px; overflow: hidden; }
+    .subj-cover {
+      position: relative; height: 158px; overflow: hidden;
+      border-radius: var(--ch-radius) var(--ch-radius) 0 0;
+    }
     .subj-cover img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
     .subj-card:hover .subj-cover img { transform: scale(1.07); }
     .subj-cover--ph {
@@ -241,6 +245,14 @@
     .premium-dropdown-menu .dropdown-item-text i { color: var(--ch-brand); }
     .premium-dropdown-menu .dropdown-divider { margin: 0; border-color: var(--ch-border); }
     .premium-dropdown-menu a { text-decoration: none; }
+    .premium-dropdown-menu .request-form { padding: .65rem .85rem; }
+    .premium-dropdown-menu .dropdown-request-btn {
+      width: 100%; border: none; cursor: pointer; border-radius: 12px; padding: .8rem 1rem;
+      font-weight: 700; font-size: .95rem; color: #fff; display: flex; align-items: center; justify-content: center; gap: .55rem;
+      background: linear-gradient(135deg, var(--ch-brand) 0%, #2d0370 100%); transition: transform .2s, box-shadow .2s;
+    }
+    .premium-dropdown-menu .dropdown-request-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(93,6,186,.35); }
+    .premium-dropdown-menu .contact-label { font-size: .8rem; color: var(--ch-muted); padding: .35rem 1rem 0; display: flex; align-items: center; gap: .4rem; }
 
     /* Empty state */
     .ch-empty {
@@ -355,6 +367,15 @@
                           <div class="price-info"><span>Prix :</span> <span class="price-value"><%= subjPrice.toLocaleString('fr-FR') %> FCFA</span></div>
                         </li>
                         <li><hr class="dropdown-divider"></li>
+                        <li>
+                          <form class="request-form" method="POST"
+                                action="/programs/ekalan/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>/request-premium-access">
+                            <button type="submit" class="dropdown-request-btn">
+                              <i class="bi bi-send-fill"></i> Demander l'accès premium
+                            </button>
+                          </form>
+                        </li>
+                        <li class="contact-label"><i class="bi bi-headset"></i> Ou contactez-nous directement :</li>
                         <li>
                           <a class="dropdown-item btn-contact-whatsapp" target="_blank"
                              href="https://wa.me/22653344444?text=<%= encodeURIComponent(`Bonjour, je souhaite obtenir l'accès premium pour la matière ${subject.title} (Classe: ${schoolClass.title} ${schoolClass.serie}). Prix: ${subjPrice.toLocaleString('fr-FR')} FCFA`) %>">

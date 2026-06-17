@@ -166,6 +166,15 @@ router.get(
   catchAsync(BAC.listPremiumRequests)
 );
 
+// Traitement en masse des demandes premium (admin)
+router.post(
+  "/admindashboard/kalan/premium-requests/bulk",
+  isLoggedIn,
+  isVerified,
+  checkRoles(["admin", "super-admin"]),
+  catchAsync(BAC.bulkPremiumRequests)
+);
+
 // ✅ NOUVEAU: Approuver une demande d'accès premium
 router.post(
   "/admindashboard/kalan/premium-requests/:request_id/approve",
@@ -184,12 +193,30 @@ router.post(
   catchAsync(BAC.rejectPremiumRequest)
 );
 
+// Manage premium access for a subject (requests + premium students) (admin)
+router.get(
+  "/admindashboard/kalan/class/:class_id/subject/:subject_id/premium",
+  isLoggedIn,
+  isVerified,
+  checkRoles(["admin", "super-admin"]),
+  catchAsync(BAC.manageSubjectPremium)
+);
+
 // Give Premium access (admin) - méthode manuelle
 router.post(
   "/admindashboard/kalan/class/:class_id/subject/:subject_id/givepremiumaccess",
   isVerified,
   checkRoles(["admin", "super-admin"]),
   catchAsync(BAC.givePremiumAccess)
+);
+
+// Revoke premium access of a student for a subject (admin)
+router.delete(
+  "/admindashboard/kalan/class/:class_id/subject/:subject_id/premium/revoke/:student_id",
+  isLoggedIn,
+  isVerified,
+  checkRoles(["admin", "super-admin"]),
+  catchAsync(BAC.revokePremiumAccess)
 );
 
 // Adding a Student to a class (an udpdate of student class)

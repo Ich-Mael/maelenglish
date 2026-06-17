@@ -242,5 +242,9 @@
       <% } %>
 
     <% } %>
+
+    <%# Upsell premium — demande d'accès si l'élève n'a pas encore le premium %>
+    <%- include('../../../../partials/kalanPremiumCTA', { schoolClass: serie, subject, hasPremiumAccess, hasPendingRequest }) %>
+
   </main>
 </div>

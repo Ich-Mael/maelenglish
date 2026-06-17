@@ -432,9 +432,31 @@ module.exports.viewSubject = async (req, res) => {
   const subject = await Subject.findById(req.params.subject_id).populate(
     "chapters"
   );
+
+  // Statut premium de l'étudiant pour cette matière (accès / demande en attente)
+  let hasPremiumAccess = false;
+  let hasPendingRequest = false;
+  if (subject && req.user && req.user.highSchool_id) {
+    hasPremiumAccess =
+      subject.premiumStudents &&
+      subject.premiumStudents.some(
+        (id) => id.toString() === req.user.highSchool_id.toString()
+      );
+    if (!hasPremiumAccess) {
+      const pending = await PremiumRequest.findOne({
+        studentId: req.user.highSchool_id,
+        subjectId: subject._id,
+        status: "pending",
+      });
+      hasPendingRequest = !!pending;
+    }
+  }
+
   res.render("programs/ekalan/Class/subjects/viewSubject", {
     schoolClass,
     subject,
+    hasPremiumAccess,
+    hasPendingRequest,
   });
 };
 
@@ -627,12 +649,33 @@ module.exports.viewChapterSE = async (req, res) => {
     return acc;
   }, {});
 
+  // Statut premium de l'étudiant pour cette matière (pour l'upsell premium)
+  let hasPremiumAccess = false;
+  let hasPendingRequest = false;
+  if (subject && req.user && req.user.highSchool_id) {
+    hasPremiumAccess =
+      subject.premiumStudents &&
+      subject.premiumStudents.some(
+        (id) => id.toString() === req.user.highSchool_id.toString()
+      );
+    if (!hasPremiumAccess) {
+      const pending = await PremiumRequest.findOne({
+        studentId: req.user.highSchool_id,
+        subjectId: subject._id,
+        status: "pending",
+      });
+      hasPendingRequest = !!pending;
+    }
+  }
+
   res.render("programs/ekalan/Class/chapters/viewChapterS-E", {
     serie,
     subject,
     chapter,
     freeExercises,
     grouped,
+    hasPremiumAccess,
+    hasPendingRequest,
   });
 };
 
@@ -708,6 +751,61 @@ module.exports.givePremiumAccess = async (req, res) => {
     `Accès premium accordé à ${user.surname} ${user.name} pour la matière ${subject.title}`
     );
     res.redirect("back");
+};
+
+// Révoquer l'accès premium d'un élève à une matière
+module.exports.revokePremiumAccess = async (req, res) => {
+  const subject = await Subject.findById(req.params.subject_id);
+
+  if (!subject) {
+    req.flash("error", "Matière non trouvée");
+    return res.redirect("back");
+  }
+
+  const before = (subject.premiumStudents || []).length;
+  subject.premiumStudents = (subject.premiumStudents || []).filter(
+    (id) => id.toString() !== req.params.student_id
+  );
+
+  if (subject.premiumStudents.length === before) {
+    req.flash("error", "Cet élève n'avait pas d'accès premium à cette matière");
+    return res.redirect("back");
+  }
+
+  await subject.save();
+  req.flash("success", "Accès premium révoqué avec succès");
+  res.redirect("back");
+};
+
+// Page de gestion du premium pour une matière (demandes + élèves premium)
+module.exports.manageSubjectPremium = async (req, res) => {
+  const schoolClass = await Class.findById(req.params.class_id);
+  const subject = await Subject.findById(req.params.subject_id).populate({
+    path: "premiumStudents",
+    populate: { path: "studentBasicInfo", select: "username name surname email" },
+  });
+
+  if (!subject) {
+    req.flash("error", "Matière non trouvée");
+    return res.redirect(
+      `/programs/ekalan/kalan/admindashboard/kalan/class/${req.params.class_id}/subjects`
+    );
+  }
+
+  const requests = await PremiumRequest.find({ subjectId: subject._id })
+    .populate({
+      path: "studentId",
+      populate: { path: "studentBasicInfo", select: "username name surname email" },
+    })
+    .populate("reviewedBy", "username name surname")
+    .sort({ createdAt: -1 });
+
+  res.render("programs/ekalan/Class/subjects/managePremium", {
+    schoolClass,
+    subject,
+    pendingRequests: requests.filter((r) => r.status === "pending"),
+    processedRequests: requests.filter((r) => r.status !== "pending"),
+  });
 };
 
 /*=========================================
@@ -789,12 +887,44 @@ module.exports.requestPremiumAccess = async (req, res) => {
 // ✅ NOUVEAU: Lister toutes les demandes d'accès premium
 module.exports.listPremiumRequests = async (req, res) => {
   const status = req.query.status || "pending"; // pending, approved, rejected, all
-  
+  const search = (req.query.search || "").trim();
+  const classId = req.query.class || "";
+  const subjectId = req.query.subject || "";
+  const limit = 20;
+
   let filter = {};
   if (status !== "all") {
     filter.status = status;
   }
-  
+
+  // Filtre par matière (prioritaire) ou par classe
+  if (subjectId) {
+    filter.subjectId = subjectId;
+  } else if (classId) {
+    const classSubjects = await Subject.find({ classId }).select("_id");
+    filter.subjectId = { $in: classSubjects.map((s) => s._id) };
+  }
+
+  // Recherche par étudiant (nom, prénom, username, email)
+  if (search) {
+    const rx = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+    const users = await User.find({
+      $or: [{ name: rx }, { surname: rx }, { username: rx }, { email: rx }],
+    }).select("_id");
+    const students = await HStudent.find({
+      studentBasicInfo: { $in: users.map((u) => u._id) },
+    }).select("_id");
+    filter.studentId = { $in: students.map((s) => s._id) };
+  }
+
+  // Pagination
+  const totalFiltered = await PremiumRequest.countDocuments(filter);
+  const totalPages = Math.max(1, Math.ceil(totalFiltered / limit));
+  const page = Math.min(Math.max(1, parseInt(req.query.page) || 1), totalPages);
+
+  // Demandes en attente: les plus anciennes d'abord (FIFO); sinon plus récentes d'abord
+  const sort = status === "pending" ? { createdAt: 1 } : { createdAt: -1 };
+
   const requests = await PremiumRequest.find(filter)
     .populate({
       path: "studentId",
@@ -802,20 +932,33 @@ module.exports.listPremiumRequests = async (req, res) => {
     })
     .populate({
       path: "subjectId",
-      select: "title classId",
+      select: "title classId premiumPrice",
       populate: { path: "classId", select: "title serie" }
     })
     .populate("reviewedBy", "username name surname")
-    .sort({ createdAt: -1 });
-  
-  // Compter les demandes par statut
+    .sort(sort)
+    .skip((page - 1) * limit)
+    .limit(limit);
+
+  // Compter les demandes par statut (vue d'ensemble globale)
   const pendingCount = await PremiumRequest.countDocuments({ status: "pending" });
   const approvedCount = await PremiumRequest.countDocuments({ status: "approved" });
   const rejectedCount = await PremiumRequest.countDocuments({ status: "rejected" });
-  
+
+  // Options pour les filtres
+  const classes = await Class.find().select("title serie").sort({ title: 1 });
+  const subjects = await Subject.find()
+    .select("title classId")
+    .populate("classId", "title serie")
+    .sort({ title: 1 });
+
   res.render("programs/ekalan/admin/premium-requests", {
     requests,
     currentStatus: status,
+    filters: { search, classId, subjectId },
+    classes,
+    subjects,
+    pagination: { page, totalPages, total: totalFiltered, limit },
     stats: {
       pending: pendingCount,
       approved: approvedCount,
@@ -823,6 +966,54 @@ module.exports.listPremiumRequests = async (req, res) => {
       total: pendingCount + approvedCount + rejectedCount
     }
   });
+};
+
+// Traitement en masse des demandes premium (approuver / rejeter une sélection)
+module.exports.bulkPremiumRequests = async (req, res) => {
+  const action = req.body.action;
+  let ids = req.body.requestIds || [];
+  if (!Array.isArray(ids)) ids = [ids];
+  ids = ids.filter(Boolean);
+
+  if (!["approve", "reject"].includes(action) || ids.length === 0) {
+    req.flash("error", "Action ou sélection invalide");
+    return res.redirect("back");
+  }
+
+  const requests = await PremiumRequest.find({
+    _id: { $in: ids },
+    status: "pending",
+  }).populate("subjectId");
+
+  let processed = 0;
+  for (const request of requests) {
+    if (action === "approve") {
+      const subject = request.subjectId;
+      if (subject) {
+        if (!subject.premiumStudents) subject.premiumStudents = [];
+        const already = subject.premiumStudents.some(
+          (s) => s.toString() === request.studentId.toString()
+        );
+        if (!already) {
+          subject.premiumStudents.push(request.studentId);
+          await subject.save();
+        }
+      }
+      request.status = "approved";
+    } else {
+      request.status = "rejected";
+    }
+    request.reviewedAt = new Date();
+    request.reviewedBy = req.user._id;
+    await request.save();
+    processed++;
+  }
+
+  req.flash(
+    "success",
+    `${processed} demande(s) ${action === "approve" ? "approuvée(s)" : "rejetée(s)"}`
+  );
+  res.redirect("back");
 };
 
 // ✅ NOUVEAU: Approuver une demande d'accès premium
@@ -864,7 +1055,7 @@ module.exports.approvePremiumRequest = async (req, res) => {
   await request.save();
   
   req.flash("success", `Accès premium accordé à ${student.studentBasicInfo ? student.studentBasicInfo.username : 'l\'étudiant'} pour la matière ${subject.title}`);
-  res.redirect("/programs/ekalan/kalan/admindashboard/kalan/premium-requests");
+  res.redirect("back");
 };
 
 // ✅ NOUVEAU: Rejeter une demande d'accès premium
@@ -893,7 +1084,7 @@ module.exports.rejectPremiumRequest = async (req, res) => {
   await request.save();
 
   req.flash("success", "Demande rejetée");
-  res.redirect("/programs/ekalan/kalan/admindashboard/kalan/premium-requests");
+  res.redirect("back");
 };
 
 //
