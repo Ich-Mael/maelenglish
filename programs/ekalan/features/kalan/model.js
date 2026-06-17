@@ -186,6 +186,18 @@ const classSchema = new Schema({
     ref: "HStudent",
   }, ],
 
+  // Kalan Naaba: élèves ayant l'accès premium à TOUTE la classe (bundle)
+  naabaStudents: [{
+    type: Schema.Types.ObjectId,
+    ref: "HStudent",
+  }, ],
+
+  // Remise (%) appliquée au prix groupé Kalan Naaba (somme des prix matières)
+  naabaDiscountPercent: {
+    type: Number,
+    default: 20,
+  },
+
 }, {
   timestamps: true,
 });
@@ -443,10 +455,22 @@ const premiumRequestSchema = new Schema({
     required: true,
     index: true,
   },
+  // Type de demande: "subject" (Kalan Ba, une matière) ou "class" (Kalan Naaba, toute la classe)
+  kind: {
+    type: String,
+    enum: ["subject", "class"],
+    default: "subject",
+    index: true,
+  },
   subjectId: {
     type: Schema.Types.ObjectId,
     ref: "Subject",
-    required: true,
+    required: function () { return this.kind === "subject"; },
+    index: true,
+  },
+  classId: {
+    type: Schema.Types.ObjectId,
+    ref: "Class",
     index: true,
   },
   status: {
@@ -469,11 +493,17 @@ const premiumRequestSchema = new Schema({
   timestamps: true,
 });
 
-// Index composite pour éviter les doublons de demande en attente
-premiumRequestSchema.index({ studentId: 1, subjectId: 1, status: 1 }, { 
-  unique: true,
-  partialFilterExpression: { status: "pending" }
-});
+// Anti-doublon des demandes en attente, par tier.
+// NOTE migration: l'ancien index { studentId, subjectId, status } (partial status:pending)
+// doit être DROPPÉ en base — Mongoose ne modifie pas un index existant en place.
+premiumRequestSchema.index(
+  { studentId: 1, subjectId: 1, status: 1 },
+  { unique: true, partialFilterExpression: { status: "pending", kind: "subject" } }
+);
+premiumRequestSchema.index(
+  { studentId: 1, classId: 1, status: 1 },
+  { unique: true, partialFilterExpression: { status: "pending", kind: "class" } }
+);
 
 const Class = mongoose.model("Class", classSchema);
 

@@ -60,13 +60,21 @@ module.exports.subjectPremiumAccess = catchAsync(async (req, res, next) => {
         return next();
     }
     
-    // Vérifier si l'étudiant a accès premium à la matière
-    if (subject.premiumStudents && subject.premiumStudents.includes(req.user.highSchool_id)) {
+    const hsId = req.user.highSchool_id;
+
+    // Kalan Ba: accès premium à cette matière
+    if (subject.premiumStudents && subject.premiumStudents.some((id) => id.toString() === hsId.toString())) {
         return next();
-    } else {
-        req.flash('error', 'Vous n\'avez pas accès premium à cette matière');
-        return res.render("noAccess");
     }
+
+    // Kalan Naaba: accès premium à toute la classe (bundle)
+    const schoolClass = subject.classId ? await Class.findById(subject.classId).select("naabaStudents") : null;
+    if (schoolClass && schoolClass.naabaStudents && schoolClass.naabaStudents.some((id) => id.toString() === hsId.toString())) {
+        return next();
+    }
+
+    req.flash('error', 'Vous n\'avez pas accès premium à cette matière');
+    return res.render("noAccess");
 });
 
 /**

@@ -549,20 +549,38 @@
                 </td>
                 <td>
                   <div class="subject-info">
-                    <div class="subject-title">
-                      <% if (request.subjectId && request.subjectId.classId) { %>
-                        <a class="subject-link" title="Gérer le premium de cette matière"
-                           href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= request.subjectId.classId._id %>/subject/<%= request.subjectId._id %>/premium">
-                          <%= request.subjectId.title %> <i class="bi bi-box-arrow-up-right" style="font-size:.75rem;"></i>
-                        </a>
-                      <% } else { %>
-                        <%= request.subjectId ? request.subjectId.title : 'N/A' %>
-                      <% } %>
-                    </div>
-                    <% if (request.subjectId && request.subjectId.classId) { %>
-                      <div class="subject-class">
-                        <%= request.subjectId.classId.title %> - <%= request.subjectId.classId.serie %>
+                    <% if (request.kind === 'class') { %>
+                      <%# Kalan Naaba — toute la classe %>
+                      <div class="subject-title">
+                        <% if (request.classId) { %>
+                          <a class="subject-link" title="Gérer Kalan Naaba de cette classe"
+                             href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= request.classId._id %>/naaba">
+                            <span style="font-size:.7rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:.1rem .45rem;border-radius:999px;background:#ede0ff;color:#5d06ba;"><i class="bi bi-gem"></i> Kalan Naaba</span>
+                            Toute la classe <i class="bi bi-box-arrow-up-right" style="font-size:.75rem;"></i>
+                          </a>
+                        <% } else { %>
+                          Kalan Naaba — toute la classe
+                        <% } %>
                       </div>
+                      <% if (request.classId) { %>
+                        <div class="subject-class"><%= request.classId.title %> - <%= request.classId.serie %></div>
+                      <% } %>
+                    <% } else { %>
+                      <div class="subject-title">
+                        <% if (request.subjectId && request.subjectId.classId) { %>
+                          <a class="subject-link" title="Gérer le premium de cette matière"
+                             href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= request.subjectId.classId._id %>/subject/<%= request.subjectId._id %>/premium">
+                            <%= request.subjectId.title %> <i class="bi bi-box-arrow-up-right" style="font-size:.75rem;"></i>
+                          </a>
+                        <% } else { %>
+                          <%= request.subjectId ? request.subjectId.title : 'N/A' %>
+                        <% } %>
+                      </div>
+                      <% if (request.subjectId && request.subjectId.classId) { %>
+                        <div class="subject-class">
+                          <%= request.subjectId.classId.title %> - <%= request.subjectId.classId.serie %>
+                        </div>
+                      <% } %>
                     <% } %>
                   </div>
                 </td>
@@ -634,7 +652,11 @@
                         <p>Voulez-vous approuver la demande d'accès premium pour :</p>
                         <ul>
                           <li><strong>Étudiant:</strong> <%= request.studentId && request.studentId.studentBasicInfo ? request.studentId.studentBasicInfo.username : 'N/A' %></li>
+                          <% if (request.kind === 'class') { %>
+                          <li><strong>Accès:</strong> Kalan Naaba — toute la classe<%= request.classId ? ` (${request.classId.title} ${request.classId.serie})` : '' %></li>
+                          <% } else { %>
                           <li><strong>Matière:</strong> <%= request.subjectId ? request.subjectId.title : 'N/A' %></li>
+                          <% } %>
                         </ul>
                         <div class="form-group">
                           <label for="approveNotes<%= request._id %>" class="form-label">Notes (optionnel)</label>
@@ -669,7 +691,11 @@
                         <p>Voulez-vous rejeter la demande d'accès premium pour :</p>
                         <ul>
                           <li><strong>Étudiant:</strong> <%= request.studentId && request.studentId.studentBasicInfo ? request.studentId.studentBasicInfo.username : 'N/A' %></li>
+                          <% if (request.kind === 'class') { %>
+                          <li><strong>Accès:</strong> Kalan Naaba — toute la classe<%= request.classId ? ` (${request.classId.title} ${request.classId.serie})` : '' %></li>
+                          <% } else { %>
                           <li><strong>Matière:</strong> <%= request.subjectId ? request.subjectId.title : 'N/A' %></li>
+                          <% } %>
                         </ul>
                         <div class="form-group">
                           <label for="rejectNotes<%= request._id %>" class="form-label">Raison du rejet (optionnel)</label>

@@ -157,6 +157,15 @@ router.post(
   catchAsync(BAC.requestPremiumAccess)
 );
 
+// Kalan Naaba: demander l'accès à toute la classe (étudiant)
+router.post(
+  "/class/:class_id/request-naaba-access",
+  isLoggedIn,
+  isVerified,
+  classCheck,
+  catchAsync(BAC.requestNaabaAccess)
+);
+
 // ✅ NOUVEAU: Liste des demandes d'accès premium (admin)
 router.get(
   "/admindashboard/kalan/premium-requests",
@@ -217,6 +226,42 @@ router.delete(
   isVerified,
   checkRoles(["admin", "super-admin"]),
   catchAsync(BAC.revokePremiumAccess)
+);
+
+// Kalan Naaba management for a class (admin)
+router.get(
+  "/admindashboard/kalan/class/:class_id/naaba",
+  isLoggedIn,
+  isVerified,
+  checkRoles(["admin", "super-admin"]),
+  catchAsync(BAC.manageClassNaaba)
+);
+
+// Update Kalan Naaba discount % for a class (admin)
+router.post(
+  "/admindashboard/kalan/class/:class_id/naaba/discount",
+  isLoggedIn,
+  isVerified,
+  checkRoles(["admin", "super-admin"]),
+  catchAsync(BAC.updateNaabaDiscount)
+);
+
+// Grant Kalan Naaba manually (admin)
+router.post(
+  "/admindashboard/kalan/class/:class_id/givenaaba",
+  isLoggedIn,
+  isVerified,
+  checkRoles(["admin", "super-admin"]),
+  catchAsync(BAC.giveNaabaAccess)
+);
+
+// Revoke Kalan Naaba of a student (admin)
+router.delete(
+  "/admindashboard/kalan/class/:class_id/naaba/revoke/:student_id",
+  isLoggedIn,
+  isVerified,
+  checkRoles(["admin", "super-admin"]),
+  catchAsync(BAC.revokeNaabaAccess)
 );
 
 // Adding a Student to a class (an udpdate of student class)

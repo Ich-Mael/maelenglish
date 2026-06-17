@@ -323,6 +323,9 @@
       <p>Explorez les matières de votre classe et accédez à tout le contenu pédagogique.</p>
     </div>
 
+    <%# Kalan Naaba — accès premium à toute la classe (bundle) %>
+    <%- include('../../../partials/kalanNaabaCTA', { schoolClass, naabaPrice, hasNaaba, naabaPending }) %>
+
     <% if (schoolClass.subjects && schoolClass.subjects.length > 0) { %>
       <div class="ch-grid">
         <% schoolClass.subjects.forEach(subject => { %>

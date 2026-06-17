@@ -9,6 +9,22 @@ const {
   PremiumRequest,
 } = require("./model");
 
+// ── Kalan Naaba helpers ──────────────────────────────────────────────
+// True if the high-school student (hsId) holds Kalan Naaba (whole-class premium).
+const hasNaaba = (classDoc, hsId) =>
+  !!(hsId && classDoc && classDoc.naabaStudents &&
+    classDoc.naabaStudents.some((id) => id.toString() === hsId.toString()));
+
+// Bundle price = (sum of subjects' premiumPrice) discounted by pct (default 20%).
+const computeNaabaPrice = (subjects = [], discountPercent = 20) => {
+  const full = subjects.reduce(
+    (sum, s) => sum + Number(s.premiumPrice != null ? s.premiumPrice : 2000),
+    0
+  );
+  const pct = Number(discountPercent != null ? discountPercent : 20);
+  return { full, discounted: Math.round(full * (1 - pct / 100)), pct };
+};
+
 // Expected class/serie combinations offered on E-Kalan, used to populate the
 // student-creation forms. Seconde: A, C, Ti, AB3, H. Premiere & Terminale: A, D,
 // C, E, F1–F4, G1, G2, H.
@@ -53,37 +69,58 @@ module.exports.showClassHome = async (req, res) => {
     "subjects"
   );
   
+  const hsId = req.user && req.user.highSchool_id;
+  const studentHasNaaba = hasNaaba(schoolClass, hsId);
+
   // ✅ NOUVEAU: Vérifier l'accès premium de l'étudiant pour chaque matière
   let subjectsWithPremiumStatus = [];
-  if (req.user && req.user.highSchool_id) {
+  let naabaPending = false;
+  if (hsId) {
     for (const subject of schoolClass.subjects) {
-      // Vérifier si l'étudiant a accès premium
-      const hasPremiumAccess = subject.premiumStudents && 
-                               subject.premiumStudents.includes(req.user.highSchool_id);
-      
-      // Vérifier si une demande est en attente
+      // Kalan Ba (matière) OU Kalan Naaba (toute la classe) => accès premium
+      const hasPremiumAccess = studentHasNaaba || (subject.premiumStudents &&
+        subject.premiumStudents.some((id) => id.toString() === hsId.toString()));
+
+      // Demande Kalan Ba en attente pour cette matière
       const pendingRequest = await PremiumRequest.findOne({
-        studentId: req.user.highSchool_id,
+        studentId: hsId,
         subjectId: subject._id,
+        kind: "subject",
         status: "pending"
       });
-      
+
       subjectsWithPremiumStatus.push({
         ...subject.toObject(),
         hasPremiumAccess,
         hasPendingRequest: !!pendingRequest
       });
     }
+
+    // Demande Kalan Naaba (classe) en attente
+    if (!studentHasNaaba) {
+      const naabaReq = await PremiumRequest.findOne({
+        studentId: hsId,
+        classId: schoolClass._id,
+        kind: "class",
+        status: "pending"
+      });
+      naabaPending = !!naabaReq;
+    }
   } else {
     // Si pas d'utilisateur connecté, juste passer les sujets sans info premium
     subjectsWithPremiumStatus = schoolClass.subjects;
   }
-  
+
+  const naabaPrice = computeNaabaPrice(schoolClass.subjects, schoolClass.naabaDiscountPercent);
+
   res.render("programs/ekalan/Class/classHome", {
     schoolClass: {
       ...schoolClass.toObject(),
       subjects: subjectsWithPremiumStatus
     },
+    hasNaaba: studentHasNaaba,
+    naabaPending,
+    naabaPrice,
   });
 };
 
@@ -437,15 +474,16 @@ module.exports.viewSubject = async (req, res) => {
   let hasPremiumAccess = false;
   let hasPendingRequest = false;
   if (subject && req.user && req.user.highSchool_id) {
+    const hsId = req.user.highSchool_id;
     hasPremiumAccess =
-      subject.premiumStudents &&
-      subject.premiumStudents.some(
-        (id) => id.toString() === req.user.highSchool_id.toString()
-      );
+      hasNaaba(schoolClass, hsId) ||
+      (subject.premiumStudents &&
+        subject.premiumStudents.some((id) => id.toString() === hsId.toString()));
     if (!hasPremiumAccess) {
       const pending = await PremiumRequest.findOne({
-        studentId: req.user.highSchool_id,
+        studentId: hsId,
         subjectId: subject._id,
+        kind: "subject",
         status: "pending",
       });
       hasPendingRequest = !!pending;
@@ -470,6 +508,8 @@ module.exports.viewAllSubject = async (req, res) => {
   res.render("programs/ekalan/Class/subjects/viewAllSubject", {
     schoolClass,
     subjects,
+    naabaPrice: computeNaabaPrice(subjects, schoolClass.naabaDiscountPercent),
+    naabaCount: (schoolClass.naabaStudents || []).length,
   });
 };
 
@@ -653,15 +693,16 @@ module.exports.viewChapterSE = async (req, res) => {
   let hasPremiumAccess = false;
   let hasPendingRequest = false;
   if (subject && req.user && req.user.highSchool_id) {
+    const hsId = req.user.highSchool_id;
     hasPremiumAccess =
-      subject.premiumStudents &&
-      subject.premiumStudents.some(
-        (id) => id.toString() === req.user.highSchool_id.toString()
-      );
+      hasNaaba(serie, hsId) ||
+      (subject.premiumStudents &&
+        subject.premiumStudents.some((id) => id.toString() === hsId.toString()));
     if (!hasPremiumAccess) {
       const pending = await PremiumRequest.findOne({
-        studentId: req.user.highSchool_id,
+        studentId: hsId,
         subjectId: subject._id,
+        kind: "subject",
         status: "pending",
       });
       hasPendingRequest = !!pending;
@@ -863,24 +904,165 @@ module.exports.requestPremiumAccess = async (req, res) => {
   const existingRequest = await PremiumRequest.findOne({
     studentId: req.user.highSchool_id,
     subjectId: subject._id,
+    kind: "subject",
     status: "pending"
   });
-  
+
   if (existingRequest) {
     req.flash("info", "Vous avez déjà une demande en attente pour cette matière");
     return res.redirect("back");
   }
-  
+
   // Créer la demande
   const newRequest = new PremiumRequest({
     studentId: req.user.highSchool_id,
     subjectId: subject._id,
+    kind: "subject",
     status: "pending"
   });
-  
+
   await newRequest.save();
-  
+
   req.flash("success", "Votre demande d'accès premium a été envoyée. Elle sera traitée par un administrateur.");
+  res.redirect("back");
+};
+
+/* ====================== KALAN NAABA (bundle classe) ====================== */
+
+// Étudiant: demander Kalan Naaba (accès à toute la classe)
+module.exports.requestNaabaAccess = async (req, res) => {
+  const schoolClass = await Class.findById(req.params.class_id);
+  if (!schoolClass) {
+    req.flash("error", "Classe non trouvée");
+    return res.redirect("back");
+  }
+  if (!req.user || !req.user.highSchool_id) {
+    req.flash("error", "Vous devez être connecté pour faire une demande");
+    return res.redirect("back");
+  }
+  const hsId = req.user.highSchool_id;
+
+  if (hasNaaba(schoolClass, hsId)) {
+    req.flash("info", "Vous avez déjà Kalan Naaba pour cette classe");
+    return res.redirect("back");
+  }
+
+  const existing = await PremiumRequest.findOne({
+    studentId: hsId,
+    classId: schoolClass._id,
+    kind: "class",
+    status: "pending",
+  });
+  if (existing) {
+    req.flash("info", "Vous avez déjà une demande Kalan Naaba en attente pour cette classe");
+    return res.redirect("back");
+  }
+
+  await new PremiumRequest({
+    studentId: hsId,
+    classId: schoolClass._id,
+    kind: "class",
+    status: "pending",
+  }).save();
+
+  req.flash("success", "Votre demande Kalan Naaba a été envoyée. Elle sera traitée par un administrateur.");
+  res.redirect("back");
+};
+
+// Admin: page de gestion Kalan Naaba pour une classe
+module.exports.manageClassNaaba = async (req, res) => {
+  const schoolClass = await Class.findById(req.params.class_id)
+    .populate("subjects", "title premiumPrice")
+    .populate({
+      path: "naabaStudents",
+      populate: { path: "studentBasicInfo", select: "username name surname email phoneNumber" },
+    });
+
+  if (!schoolClass) {
+    req.flash("error", "Classe non trouvée");
+    return res.redirect("/programs/ekalan/kalan/admindashboard/kalan/class");
+  }
+
+  const requests = await PremiumRequest.find({ classId: schoolClass._id, kind: "class" })
+    .populate({
+      path: "studentId",
+      populate: { path: "studentBasicInfo", select: "username name surname email phoneNumber" },
+    })
+    .populate("reviewedBy", "username name surname")
+    .sort({ createdAt: -1 });
+
+  res.render("programs/ekalan/Class/subjects/manageNaaba", {
+    schoolClass,
+    naabaPrice: computeNaabaPrice(schoolClass.subjects, schoolClass.naabaDiscountPercent),
+    pendingRequests: requests.filter((r) => r.status === "pending"),
+    processedRequests: requests.filter((r) => r.status !== "pending"),
+  });
+};
+
+// Admin: mettre à jour la remise Kalan Naaba de la classe
+module.exports.updateNaabaDiscount = async (req, res) => {
+  const schoolClass = await Class.findById(req.params.class_id);
+  if (!schoolClass) {
+    req.flash("error", "Classe non trouvée");
+    return res.redirect("back");
+  }
+  let pct = parseFloat(req.body.naabaDiscountPercent);
+  if (isNaN(pct) || pct < 0) pct = 0;
+  if (pct > 100) pct = 100;
+  schoolClass.naabaDiscountPercent = pct;
+  await schoolClass.save();
+  req.flash("success", "Remise Kalan Naaba mise à jour");
+  res.redirect("back");
+};
+
+// Admin: accorder Kalan Naaba manuellement (par username)
+module.exports.giveNaabaAccess = async (req, res) => {
+  const schoolClass = await Class.findById(req.params.class_id);
+  if (!schoolClass) {
+    req.flash("error", "Classe non trouvée");
+    return res.redirect("back");
+  }
+
+  const user = await User.findOne({ username: req.body.student_username });
+  if (!user) {
+    req.flash("error", "Utilisateur non trouvé");
+    return res.redirect("back");
+  }
+  const student = await HStudent.findOne({ studentBasicInfo: user._id });
+  if (!student) {
+    req.flash("error", "Étudiant non trouvé");
+    return res.redirect("back");
+  }
+
+  if (!schoolClass.naabaStudents) schoolClass.naabaStudents = [];
+  if (schoolClass.naabaStudents.some((id) => id.toString() === student._id.toString())) {
+    req.flash("error", "Cet élève a déjà Kalan Naaba pour cette classe");
+    return res.redirect("back");
+  }
+  schoolClass.naabaStudents.push(student._id);
+  await schoolClass.save();
+
+  req.flash("success", `Kalan Naaba accordé à ${user.surname} ${user.name}`);
+  res.redirect("back");
+};
+
+// Admin: révoquer Kalan Naaba d'un élève
+module.exports.revokeNaabaAccess = async (req, res) => {
+  const schoolClass = await Class.findById(req.params.class_id);
+  if (!schoolClass) {
+    req.flash("error", "Classe non trouvée");
+    return res.redirect("back");
+  }
+  const before = (schoolClass.naabaStudents || []).length;
+  schoolClass.naabaStudents = (schoolClass.naabaStudents || []).filter(
+    (id) => id.toString() !== req.params.student_id
+  );
+  if (schoolClass.naabaStudents.length === before) {
+    req.flash("error", "Cet élève n'avait pas Kalan Naaba");
+    return res.redirect("back");
+  }
+  await schoolClass.save();
+  req.flash("success", "Kalan Naaba révoqué avec succès");
   res.redirect("back");
 };
 
@@ -897,12 +1079,15 @@ module.exports.listPremiumRequests = async (req, res) => {
     filter.status = status;
   }
 
-  // Filtre par matière (prioritaire) ou par classe
+  // Filtre par matière (prioritaire) ou par classe (matières + Kalan Naaba)
   if (subjectId) {
     filter.subjectId = subjectId;
   } else if (classId) {
     const classSubjects = await Subject.find({ classId }).select("_id");
-    filter.subjectId = { $in: classSubjects.map((s) => s._id) };
+    filter.$or = [
+      { subjectId: { $in: classSubjects.map((s) => s._id) } },
+      { classId, kind: "class" },
+    ];
   }
 
   // Recherche par étudiant (nom, prénom, username, email)
@@ -935,6 +1120,7 @@ module.exports.listPremiumRequests = async (req, res) => {
       select: "title classId premiumPrice",
       populate: { path: "classId", select: "title serie" }
     })
+    .populate({ path: "classId", select: "title serie" })
     .populate("reviewedBy", "username name surname")
     .sort(sort)
     .skip((page - 1) * limit)
@@ -983,20 +1169,32 @@ module.exports.bulkPremiumRequests = async (req, res) => {
   const requests = await PremiumRequest.find({
     _id: { $in: ids },
     status: "pending",
-  }).populate("subjectId");
+  })
+    .populate("subjectId")
+    .populate("classId");
 
   let processed = 0;
   for (const request of requests) {
     if (action === "approve") {
-      const subject = request.subjectId;
-      if (subject) {
-        if (!subject.premiumStudents) subject.premiumStudents = [];
-        const already = subject.premiumStudents.some(
-          (s) => s.toString() === request.studentId.toString()
-        );
-        if (!already) {
-          subject.premiumStudents.push(request.studentId);
-          await subject.save();
+      if (request.kind === "class") {
+        // Kalan Naaba: ajouter à la classe
+        const schoolClass = request.classId;
+        if (schoolClass) {
+          if (!schoolClass.naabaStudents) schoolClass.naabaStudents = [];
+          if (!schoolClass.naabaStudents.some((s) => s.toString() === request.studentId.toString())) {
+            schoolClass.naabaStudents.push(request.studentId);
+            await schoolClass.save();
+          }
+        }
+      } else {
+        // Kalan Ba: ajouter à la matière
+        const subject = request.subjectId;
+        if (subject) {
+          if (!subject.premiumStudents) subject.premiumStudents = [];
+          if (!subject.premiumStudents.some((s) => s.toString() === request.studentId.toString())) {
+            subject.premiumStudents.push(request.studentId);
+            await subject.save();
+          }
         }
       }
       request.status = "approved";
@@ -1020,8 +1218,9 @@ module.exports.bulkPremiumRequests = async (req, res) => {
 module.exports.approvePremiumRequest = async (req, res) => {
   const request = await PremiumRequest.findById(req.params.request_id)
     .populate("studentId")
-    .populate("subjectId");
-  
+    .populate("subjectId")
+    .populate("classId");
+
   if (!request) {
     req.flash("error", "Demande non trouvée");
     return res.redirect("back");
@@ -1031,30 +1230,36 @@ module.exports.approvePremiumRequest = async (req, res) => {
     req.flash("error", "Cette demande a déjà été traitée");
     return res.redirect("back");
   }
-  
-  const subject = request.subjectId;
+
   const student = request.studentId;
-  
-  // Ajouter l'étudiant à la liste des premium students de la matière
-  if (!subject.premiumStudents) {
-    subject.premiumStudents = [];
+  const who = student.studentBasicInfo ? student.studentBasicInfo.username : "l'étudiant";
+
+  if (request.kind === "class") {
+    // Kalan Naaba: accès à toute la classe
+    const schoolClass = request.classId;
+    if (!schoolClass.naabaStudents) schoolClass.naabaStudents = [];
+    if (!schoolClass.naabaStudents.some((s) => s.toString() === student._id.toString())) {
+      schoolClass.naabaStudents.push(student._id);
+      await schoolClass.save();
+    }
+    req.flash("success", `Kalan Naaba accordé à ${who} (${schoolClass.title} ${schoolClass.serie})`);
+  } else {
+    // Kalan Ba: accès à la matière
+    const subject = request.subjectId;
+    if (!subject.premiumStudents) subject.premiumStudents = [];
+    if (!subject.premiumStudents.some((s) => s.toString() === student._id.toString())) {
+      subject.premiumStudents.push(student._id);
+      await subject.save();
+    }
+    req.flash("success", `Accès premium accordé à ${who} pour la matière ${subject.title}`);
   }
-  
-  if (!subject.premiumStudents.includes(student._id)) {
-    subject.premiumStudents.push(student._id);
-    await subject.save();
-  }
-  
-  // Mettre à jour le statut de la demande
+
   request.status = "approved";
   request.reviewedAt = new Date();
   request.reviewedBy = req.user._id;
-  if (req.body.notes) {
-    request.notes = req.body.notes;
-  }
+  if (req.body.notes) request.notes = req.body.notes;
   await request.save();
-  
-  req.flash("success", `Accès premium accordé à ${student.studentBasicInfo ? student.studentBasicInfo.username : 'l\'étudiant'} pour la matière ${subject.title}`);
+
   res.redirect("back");
 };
 

@@ -230,7 +230,30 @@
         Retour aux classes
       </a>
     </div>
-    
+
+    <%# Kalan Naaba — bundle classe entière %>
+    <div style="background: linear-gradient(135deg, #2d0370 0%, #5d06ba 60%, #7d1fd6 100%); color:#fff; border-radius:18px; padding:1.4rem 1.6rem; margin-bottom:2rem; display:flex; align-items:center; gap:1rem; flex-wrap:wrap; box-shadow:0 8px 28px rgba(45,3,112,.2);">
+      <i class="bi bi-gem" style="font-size:2.2rem; color:#ffd700;"></i>
+      <div style="flex:1; min-width:240px;">
+        <div style="font-weight:800; font-size:1.15rem; display:flex; align-items:center; gap:.5rem; flex-wrap:wrap;">
+          <span style="font-size:.7rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase; padding:.25rem .6rem; border-radius:999px; background:linear-gradient(135deg,#ffd700,#ffb800); color:#2d0370;"><i class="bi bi-gem"></i> Kalan Naaba</span>
+          Bundle toute la classe
+        </div>
+        <div style="opacity:.92; font-size:.9rem; margin-top:.35rem;">
+          Prix groupé : <strong style="color:#ffd700;"><%= Number(naabaPrice.discounted).toLocaleString('fr-FR') %> FCFA</strong>
+          <% if (naabaPrice.pct > 0 && naabaPrice.full > naabaPrice.discounted) { %>
+            <span style="text-decoration:line-through; opacity:.65; margin-left:.4rem;"><%= Number(naabaPrice.full).toLocaleString('fr-FR') %> FCFA</span>
+            <span style="margin-left:.4rem;">(-<%= naabaPrice.pct %>%)</span>
+          <% } %>
+          · <%= naabaCount %> élève(s) abonné(s)
+        </div>
+      </div>
+      <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/naaba"
+         style="padding:.75rem 1.4rem; border-radius:50px; font-weight:700; text-decoration:none; background:linear-gradient(135deg,#ffd700,#ffb800); color:#2d0370; display:inline-flex; align-items:center; gap:.45rem;">
+        <i class="bi bi-sliders"></i> Gérer Kalan Naaba
+      </a>
+    </div>
+
     <% if(subjects && subjects.length > 0) { %>
       <div class="subjects-grid">
         <% for(let subject of subjects) {%>
