@@ -79,7 +79,11 @@ Global locals available in all views: `currentUser`, `success` (flash), `error` 
 
 **First-admin bootstrap** — If no admin exists in the DB, `POST /createaccount` automatically assigns `admin` role and skips email verification.
 
-**Premium access (Kalan)** — Managed at the `Subject` level via `subject.premiumStudents[]`. Individual `HSCourseVideo` documents have an `isPremium` flag defaulting based on `videoType` (e.g. `advanceEx`, `nationalExam`, `CIAM_Premium` are premium by default).
+**Premium access (Kalan)** — Managed at the `Subject` level via `subject.premiumStudents[]` (price: `subject.premiumPrice`, default 2000 FCFA). Gate is `subjectPremiumAccess` (admins pass; others must be in `premiumStudents`), used on the premium chapter route `.../chapter/:id/PRE`. Individual `HSCourseVideo` documents have an `isPremium` flag defaulting based on `videoType` (e.g. `advanceEx`, `nationalExam`, `CIAM_Premium` are premium by default).
+
+Student-facing brand for this per-subject tier is **"Kalan Ba"** (Bambara *ba* = big). Students request access in-app via the `views/partials/kalanPremiumCTA.ejs` partial (locked/pending/unlocked states; used on classHome, viewSubject, free-exercises) which creates a `PremiumRequest` (`{ studentId, subjectId, status }`, unique pending index). Admins manage requests per-subject at `GET .../subject/:id/premium` (manageSubjectPremium: pending requests + premium students w/ revoke + manual grant) and globally at `/admindashboard/kalan/premium-requests` (search/filter/pagination/FIFO + bulk approve-reject via `POST .../premium-requests/bulk`). Granting = pushing the HStudent id into `subject.premiumStudents`.
+
+A second, **planned** tier **"Kalan Naaba"** (Mooré *naaba* = chief) — a class-wide bundle unlocking all subjects of a class at a 20% discount — is NOT built yet (intended as a class-level grant `Class.naabaStudents[]` + dynamic pricing).
 
 **Rate limiting** — Applied only to auth routes (login, password reset, forgot-password): 20 attempts per 15-minute window.
 

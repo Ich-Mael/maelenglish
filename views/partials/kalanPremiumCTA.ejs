@@ -1,26 +1,32 @@
 <%#
   Reusable subject-level premium CTA for Kalan (high-school) student pages.
+  Premium tier brand: "Kalan Ba" (per-subject premium access).
   Expects locals:
     schoolClass        — { _id, title, serie }
     subject            — { _id, title, premiumPrice }
-    hasPremiumAccess   — bool: student already has premium for this subject
-    hasPendingRequest  — bool: student has a pending premium request
+    hasPremiumAccess   — bool: student already has Kalan Ba for this subject
+    hasPendingRequest  — bool: student has a pending Kalan Ba request
   Only shows the "demande" UI to logged-in high-school students who lack access.
 %>
 <% const kpcPrice = Number(subject.premiumPrice != null ? subject.premiumPrice : 2000); %>
-<% const kpcWa = encodeURIComponent(`Bonjour, je souhaite obtenir l'accès premium pour la matière ${subject.title} (Classe: ${schoolClass.title} ${schoolClass.serie}). Prix: ${kpcPrice.toLocaleString('fr-FR')} FCFA`); %>
+<% const kpcWa = encodeURIComponent(`Bonjour, je souhaite obtenir Kalan Ba (accès premium) pour la matière ${subject.title} (Classe: ${schoolClass.title} ${schoolClass.serie}). Prix: ${kpcPrice.toLocaleString('fr-FR')} FCFA`); %>
 
 <style>
   .kpc { max-width: 1000px; margin: 0 auto 2rem; }
   .kpc-card { border-radius: 18px; padding: 1.5rem 1.75rem; display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;
-    box-shadow: 0 6px 24px rgba(45, 3, 112, 0.12); }
+    box-shadow: 0 6px 24px rgba(45, 3, 112, 0.15); position: relative; }
   .kpc-card .kpc-icon { font-size: 2.4rem; flex-shrink: 0; }
   .kpc-text { flex: 1; min-width: 240px; }
-  .kpc-text h3 { margin: 0 0 .3rem; font-size: 1.2rem; font-weight: 700; }
-  .kpc-text p { margin: 0; font-size: .95rem; opacity: .9; }
+  .kpc-text h3 { margin: 0 0 .3rem; font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+  .kpc-text p { margin: 0; font-size: .95rem; opacity: .92; }
   .kpc-price { font-weight: 700; }
   .kpc-actions { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
-  /* Locked (can request) */
+
+  /* "Kalan Ba" wordmark badge */
+  .kpc-badge { display: inline-flex; align-items: center; gap: .35rem; font-size: .72rem; font-weight: 800; letter-spacing: .04em;
+    text-transform: uppercase; padding: .25rem .6rem; border-radius: 999px; background: linear-gradient(135deg, #ffd700, #ffb800); color: #2d0370; }
+
+  /* Locked (can request) — premium "buy" look */
   .kpc-locked { background: linear-gradient(135deg, #1a1033 0%, #2d0370 100%); color: #fff; border: 1px solid rgba(255,215,0,.35); }
   .kpc-locked .kpc-icon { color: #ffd700; }
   .kpc-locked .kpc-price { color: #ffd700; }
@@ -30,27 +36,45 @@
   .kpc-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,215,0,.4); color: #2d0370; }
   .kpc-btn-ghost { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.3); }
   .kpc-btn-ghost:hover { background: rgba(255,255,255,.22); color: #fff; }
+
   /* Pending */
   .kpc-pending { background: #fff8e1; color: #7a5b00; border: 1px solid #ffe08a; }
   .kpc-pending .kpc-icon { color: #c79100; }
-  /* Unlocked */
-  .kpc-unlocked { background: #e8f7ec; color: #1e6b3a; border: 1px solid #b7e4c7; }
-  .kpc-unlocked .kpc-icon { color: #1e7e34; }
+
+  /* Unlocked — premium VIP look (purple + gold) */
+  .kpc-unlocked { background: linear-gradient(135deg, #2d0370 0%, #5d06ba 60%, #7d1fd6 100%); color: #fff;
+    border: 1px solid rgba(255,215,0,.5); overflow: hidden; }
+  .kpc-unlocked::after { content: ''; position: absolute; top: -40%; right: -8%; width: 220px; height: 220px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,215,0,.18), transparent 70%); pointer-events: none; }
+  .kpc-unlocked .kpc-icon { color: #ffd700; }
+  .kpc-unlocked .kpc-text h3 { color: #fff; }
+
+  /* Warning strip (account sharing / illegal download) */
+  .kpc-warn { margin-top: .75rem; display: flex; gap: .65rem; align-items: flex-start; font-size: .82rem; line-height: 1.45;
+    color: #7a5b00; background: #fff8e1; border: 1px solid #ffe08a; border-radius: 12px; padding: .75rem .95rem; }
+  .kpc-warn i { font-size: 1.1rem; color: #c79100; flex-shrink: 0; margin-top: .05rem; }
+
   @media (max-width: 600px) {
     .kpc-card { flex-direction: column; text-align: center; }
+    .kpc-text h3 { justify-content: center; }
     .kpc-actions { width: 100%; justify-content: center; }
     .kpc-btn { width: 100%; justify-content: center; }
+    .kpc-warn { text-align: left; }
   }
 </style>
 
 <% if (hasPremiumAccess) { %>
   <div class="kpc">
     <div class="kpc-card kpc-unlocked">
-      <i class="bi bi-check-circle-fill kpc-icon"></i>
+      <i class="bi bi-patch-check-fill kpc-icon"></i>
       <div class="kpc-text">
-        <h3>Contenu premium débloqué</h3>
-        <p>Vous avez accès aux exercices premium de cette matière. Bon travail !</p>
+        <h3><span class="kpc-badge"><i class="bi bi-stars"></i> Kalan Ba</span> activé pour <%= subject.title %></h3>
+        <p>Vous avez accès à tous les contenus avancés de cette matière. Bon travail !</p>
       </div>
+    </div>
+    <div class="kpc-warn">
+      <i class="bi bi-shield-exclamation"></i>
+      <span><strong>Compte strictement personnel.</strong> Le partage de votre compte, ou le téléchargement et la redistribution des contenus (vidéos, sujets) par un moyen illégal, est interdit et entraîne la suspension immédiate de l'accès, sans remboursement.</span>
     </div>
   </div>
 <% } else if (currentUser && currentUser.highSchool_id) { %>
@@ -59,7 +83,7 @@
       <div class="kpc-card kpc-pending">
         <i class="bi bi-hourglass-split kpc-icon"></i>
         <div class="kpc-text">
-          <h3>Demande d'accès premium en attente</h3>
+          <h3><span class="kpc-badge"><i class="bi bi-stars"></i> Kalan Ba</span> &mdash; demande en attente</h3>
           <p>Votre demande est en cours de traitement. Vous serez notifié une fois approuvée.</p>
         </div>
       </div>
@@ -69,15 +93,15 @@
       <div class="kpc-card kpc-locked">
         <i class="bi bi-stars kpc-icon"></i>
         <div class="kpc-text">
-          <h3>Débloquez les exercices premium</h3>
-          <p>Accédez aux exercices premium de <strong><%= subject.title %></strong> —
+          <h3><span class="kpc-badge"><i class="bi bi-stars"></i> Kalan Ba</span> &mdash; débloquez les contenus avancés</h3>
+          <p>Accédez à tous les contenus premium de <strong><%= subject.title %></strong> —
              <span class="kpc-price"><%= kpcPrice.toLocaleString('fr-FR') %> FCFA</span></p>
         </div>
         <div class="kpc-actions">
           <form method="POST"
                 action="/programs/ekalan/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>/request-premium-access">
             <button type="submit" class="kpc-btn kpc-btn-primary">
-              <i class="bi bi-send-fill"></i> Demander l'accès premium
+              <i class="bi bi-send-fill"></i> Demander Kalan Ba
             </button>
           </form>
           <a class="kpc-btn kpc-btn-ghost" target="_blank" href="https://wa.me/22653344444?text=<%= kpcWa %>">

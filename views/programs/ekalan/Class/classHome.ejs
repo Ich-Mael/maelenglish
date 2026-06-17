@@ -295,7 +295,7 @@
           <div class="ch-meta">
             <span class="ch-meta__item"><i class="bi bi-journal-bookmark-fill"></i> <%= subjectCount %> matière<%= subjectCount > 1 ? 's' : '' %></span>
             <% if (premiumCount > 0) { %>
-              <span class="ch-meta__item"><i class="bi bi-star-fill"></i> <%= premiumCount %> avec accès premium</span>
+              <span class="ch-meta__item"><i class="bi bi-star-fill"></i> <%= premiumCount %> avec Kalan Ba</span>
             <% } %>
           </div>
         </div>
@@ -334,7 +334,7 @@
                 <div class="subj-cover--ph"><i class="bi bi-journal-text"></i></div>
               <% } %>
               <% if (subject.hasPremiumAccess) { %>
-                <span class="subj-pill"><i class="bi bi-star-fill"></i> Premium</span>
+                <span class="subj-pill"><i class="bi bi-star-fill"></i> Kalan Ba</span>
               <% } %>
             </div>
 
@@ -359,11 +359,11 @@
                     <div class="dropdown">
                       <button class="subj-btn subj-btn--premium dropdown-toggle" type="button"
                               id="premiumDropdown<%= subject._id %>" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-star-fill"></i> <span>Débloquer le Premium</span>
+                        <i class="bi bi-star-fill"></i> <span>Débloquer Kalan Ba</span>
                       </button>
                       <ul class="dropdown-menu premium-dropdown-menu" aria-labelledby="premiumDropdown<%= subject._id %>">
                         <li class="dropdown-header">
-                          <strong><%= subject.title %></strong>
+                          <strong><i class="bi bi-stars"></i> Kalan Ba — <%= subject.title %></strong>
                           <div class="price-info"><span>Prix :</span> <span class="price-value"><%= subjPrice.toLocaleString('fr-FR') %> FCFA</span></div>
                         </li>
                         <li><hr class="dropdown-divider"></li>
@@ -371,14 +371,14 @@
                           <form class="request-form" method="POST"
                                 action="/programs/ekalan/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>/request-premium-access">
                             <button type="submit" class="dropdown-request-btn">
-                              <i class="bi bi-send-fill"></i> Demander l'accès premium
+                              <i class="bi bi-send-fill"></i> Demander Kalan Ba
                             </button>
                           </form>
                         </li>
                         <li class="contact-label"><i class="bi bi-headset"></i> Ou contactez-nous directement :</li>
                         <li>
                           <a class="dropdown-item btn-contact-whatsapp" target="_blank"
-                             href="https://wa.me/22653344444?text=<%= encodeURIComponent(`Bonjour, je souhaite obtenir l'accès premium pour la matière ${subject.title} (Classe: ${schoolClass.title} ${schoolClass.serie}). Prix: ${subjPrice.toLocaleString('fr-FR')} FCFA`) %>">
+                             href="https://wa.me/22653344444?text=<%= encodeURIComponent(`Bonjour, je souhaite obtenir Kalan Ba (accès premium) pour la matière ${subject.title} (Classe: ${schoolClass.title} ${schoolClass.serie}). Prix: ${subjPrice.toLocaleString('fr-FR')} FCFA`) %>">
                             <div class="dropdown-item-content"><i class="bi bi-whatsapp"></i><span>Écrire sur WhatsApp</span></div>
                           </a>
                         </li>
