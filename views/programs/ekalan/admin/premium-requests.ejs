@@ -312,6 +312,10 @@
     .subject-link { color: #5d06ba; text-decoration: none; }
     .subject-link:hover { text-decoration: underline; }
     .student-email { color: #999; font-size: 0.8rem; }
+    .student-phone { font-size: 0.8rem; margin-top: 0.15rem; display: flex; align-items: center; gap: 0.5rem; }
+    .student-phone a { color: #5d06ba; text-decoration: none; }
+    .student-phone a:hover { text-decoration: underline; }
+    .student-phone .phone-wa { color: #25D366; }
 
     /* Pagination */
     .pagination-bar { display: flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 1.25rem; flex-wrap: wrap; }
@@ -531,6 +535,15 @@
                     </div>
                     <% if (sbi && sbi.email) { %>
                       <div class="student-email"><i class="bi bi-envelope"></i> <%= sbi.email %></div>
+                    <% } %>
+                    <% if (sbi && sbi.phoneNumber) { %>
+                      <% const waNum = String(sbi.phoneNumber).replace(/\D/g, ''); %>
+                      <div class="student-phone">
+                        <a href="tel:<%= sbi.phoneNumber %>"><i class="bi bi-telephone"></i> <%= sbi.phoneNumber %></a>
+                        <% if (waNum) { %>
+                          <a class="phone-wa" target="_blank" rel="noopener" href="https://wa.me/<%= waNum %>" title="Contacter sur WhatsApp"><i class="bi bi-whatsapp"></i></a>
+                        <% } %>
+                      </div>
                     <% } %>
                   </div>
                 </td>

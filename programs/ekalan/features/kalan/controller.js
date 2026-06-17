@@ -928,7 +928,7 @@ module.exports.listPremiumRequests = async (req, res) => {
   const requests = await PremiumRequest.find(filter)
     .populate({
       path: "studentId",
-      populate: { path: "studentBasicInfo", select: "username name surname email" }
+      populate: { path: "studentBasicInfo", select: "username name surname email phoneNumber" }
     })
     .populate({
       path: "subjectId",
