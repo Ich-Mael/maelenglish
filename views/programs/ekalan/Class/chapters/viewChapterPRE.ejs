@@ -1,386 +1,214 @@
 <% layout('layouts/100bacBoilerplate') %>
+
+<%
+  // Chapter number (subject.chapters holds ObjectIds)
+  const chapIdx = subject.chapters
+    ? subject.chapters.findIndex((id) => id.toString() === chapter._id.toString())
+    : -1;
+  const chapterNo = chapIdx >= 0 ? chapIdx + 1 : null;
+
+  // Catégories premium → libellé + icône. Rendues seulement si non vides.
+  const SECTIONS = [
+    { key: "CIAM_Premium", label: "CIAM — Exercices d'approfondissement", icon: "bi-journal-richtext" },
+    { key: "advanceEx",    label: "Sujets d'autres livres",               icon: "bi-book-half" },
+    { key: "nationalExam", label: "Examens nationaux",                     icon: "bi-mortarboard-fill" },
+    { key: "schoolExam",   label: "Meilleurs établissements",             icon: "bi-building" },
+    { key: "grandeEcole",  label: "Concours grandes écoles",              icon: "bi-trophy-fill" },
+    { key: "bonus_profs",  label: "Bonus des professeurs",                icon: "bi-stars" },
+    { key: "exo_perso",    label: "Exercices personnalisés",              icon: "bi-person-workspace" },
+  ];
+  const activeSections = SECTIONS.filter((s) => grouped && grouped[s.key] && grouped[s.key].length);
+  const totalEx = (premiumExercises || []).length;
+%>
+
 <style>
-    html {
-        font-family: "Times New Roman", Times, serif;
-    }
+  .pre-page { background: #f6f7fb; min-height: 100vh; padding-bottom: 4rem;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
 
-    .chapter-heading {
-        background:
-            url("https://cdn3.vectorstock.com/i/1000x1000/24/97/premium-access-badge-golden-label-design-vector-15362497.jpg") center no-repeat;
-        background-size: cover;
-        height: 40vh;
-    }
+  /* Hero */
+  .pre-hero { position: relative; overflow: hidden; color: #fff;
+    background: linear-gradient(135deg, #160a33 0%, #2d0370 55%, #5d06ba 100%);
+    padding: 2.2rem clamp(1rem, 4vw, 3rem) 2.4rem; }
+  .pre-hero::after { content: ''; position: absolute; top: -45%; right: -5%; width: 360px; height: 360px;
+    border-radius: 50%; background: radial-gradient(circle, rgba(255,215,0,.16), transparent 70%); pointer-events: none; }
+  .pre-hero__inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+  .pre-crumb { display: inline-flex; align-items: center; gap: .45rem; color: rgba(255,255,255,.85);
+    text-decoration: none; font-size: .9rem; font-weight: 600; padding: .4rem .85rem; border-radius: 999px;
+    background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22); transition: background .2s; }
+  .pre-crumb:hover { background: rgba(255,255,255,.22); color: #fff; }
+  .pre-badge { display: inline-flex; align-items: center; gap: .4rem; font-size: .72rem; font-weight: 800;
+    letter-spacing: .05em; text-transform: uppercase; padding: .28rem .7rem; border-radius: 999px;
+    background: linear-gradient(135deg, #ffd700, #ffb800); color: #2d0370; }
+  .pre-hero h1 { margin: .9rem 0 .3rem; font-size: clamp(1.5rem, 3.5vw, 2.2rem); font-weight: 800; line-height: 1.15; }
+  .pre-hero .pre-sub { margin: 0; opacity: .9; font-size: 1rem; }
+  .pre-meta { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 1rem; }
+  .pre-chip { display: inline-flex; align-items: center; gap: .4rem; font-size: .85rem; font-weight: 600;
+    padding: .35rem .8rem; border-radius: 999px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2); }
 
-    .exo-link {
-        font-size: 1.4rem;
-        letter-spacing: 0.123rem;
-        padding: 0.5rem 1rem;
-        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-    }
+  .pre-wrap { max-width: 1100px; margin: 0 auto; padding: 0 clamp(1rem, 4vw, 3rem); }
 
-    .ex-link {
-        font-size: 1.3rem;
-        text-decoration: none;
-        letter-spacing: 0.123rem;
-        color: blueviolet;
-        padding: 0.5rem 1rem;
-    }
+  /* Warning */
+  .pre-warn { display: flex; gap: .7rem; align-items: flex-start; background: #fff8e1; border: 1px solid #ffe08a;
+    border-radius: 14px; padding: .9rem 1.1rem; margin: -1.4rem auto 2rem; position: relative; z-index: 2;
+    color: #7a5b00; font-size: .88rem; line-height: 1.5; box-shadow: 0 6px 18px rgba(0,0,0,.06); }
+  .pre-warn i { font-size: 1.25rem; color: #c79100; flex-shrink: 0; margin-top: .05rem; }
 
-    .subject {
-        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-        color: rgb(72, 26, 116);
-    }
+  /* Category quick-nav */
+  .pre-nav { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+  .pre-nav a { text-decoration: none; font-size: .85rem; font-weight: 600; color: #2d0370;
+    padding: .45rem .9rem; border-radius: 999px; background: #fff; border: 1px solid #e6e1f5; transition: all .2s; }
+  .pre-nav a:hover { background: #5d06ba; color: #fff; border-color: #5d06ba; }
 
-    .heading {
-        color: rgb(72, 26, 116);
-        font-size: 1.5rem;
-        padding: 1rem 0.5rem;
-        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-        letter-spacing: 0.13rem;
-    }
+  /* Section */
+  .pre-section { margin-bottom: 2.5rem; scroll-margin-top: 1rem; }
+  .pre-section__head { display: flex; align-items: center; gap: .7rem; margin-bottom: 1.1rem; }
+  .pre-section__ic { width: 42px; height: 42px; flex-shrink: 0; border-radius: 12px; display: flex;
+    align-items: center; justify-content: center; font-size: 1.25rem; color: #fff;
+    background: linear-gradient(135deg, #5d06ba, #2d0370); }
+  .pre-section__head h2 { margin: 0; font-size: 1.25rem; font-weight: 700; color: #2d0370; }
+  .pre-section__count { margin-left: auto; font-size: .8rem; font-weight: 700; color: #5d06ba;
+    background: #ede0ff; padding: .2rem .7rem; border-radius: 999px; }
 
-    .chapter {
-        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-    }
+  /* Cards grid */
+  .pre-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.1rem; }
+  .ex-card { background: #fff; border: 1px solid #eee; border-radius: 16px; padding: 1.25rem; display: flex;
+    flex-direction: column; gap: .9rem; box-shadow: 0 2px 10px rgba(0,0,0,.04); transition: transform .25s, box-shadow .25s; }
+  .ex-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(93,6,186,.14); border-color: #d9ccf5; }
+  .ex-card__top { display: flex; align-items: flex-start; gap: .75rem; }
+  .ex-card__num { flex-shrink: 0; width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center;
+    justify-content: center; font-weight: 800; font-size: .95rem; background: #f0e8ff; color: #5d06ba; }
+  .ex-card__title { margin: 0; font-size: 1.02rem; font-weight: 700; color: #1f2937; line-height: 1.35; }
+  .ex-card__actions { display: flex; gap: .6rem; margin-top: auto; flex-wrap: wrap; }
+  .ex-btn { flex: 1; min-width: 120px; border: none; cursor: pointer; border-radius: 10px; padding: .65rem .9rem;
+    font-weight: 700; font-size: .88rem; display: inline-flex; align-items: center; justify-content: center; gap: .45rem;
+    text-decoration: none; transition: all .2s; }
+  .ex-btn--pdf { background: #fff; color: #5d06ba; border: 1.5px solid #5d06ba; }
+  .ex-btn--pdf:hover { background: #5d06ba; color: #fff; }
+  .ex-btn--video { background: linear-gradient(135deg, #5d06ba, #2d0370); color: #fff; }
+  .ex-btn--video:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(93,6,186,.35); color: #fff; }
+  .ex-btn--disabled { background: #f3f4f6; color: #9ca3af; pointer-events: none; }
 
-    .course-card {
-        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-    }
+  /* Modal */
+  .pre-modal .modal-content { border: none; border-radius: 18px; overflow: hidden; }
+  .pre-modal .modal-header { background: linear-gradient(135deg, #5d06ba, #2d0370); color: #fff; border: none; padding: 1rem 1.25rem; }
+  .pre-modal .modal-title { font-weight: 700; font-size: 1.05rem; }
+  .pre-modal .btn-close { filter: brightness(0) invert(1); }
+  .pre-modal .modal-body { padding: 0; background: #000; }
 
-    .content-title {
-        font-size: 1.4rem;
-        color: rgb(7, 114, 114);
-        font-weight: 500;
-        font-family: 'Times New Roman', Times, serif;
-        text-align: center;
-        padding: 2rem auto;
-    }
+  /* Empty */
+  .pre-empty { text-align: center; background: #fff; border: 1px dashed #d9ccf5; border-radius: 18px;
+    padding: 3.5rem 1.5rem; color: #6b7280; }
+  .pre-empty i { font-size: 3rem; color: #c9b8ef; }
+  .pre-empty h3 { color: #2d0370; margin: 1rem 0 .35rem; }
 
-    @media (max-width: 750px) {
-        html {
-            font-size: 80%;
-        }
-    }
-
-    @media (max-width: 350px) {
-        html {
-            font-size: 60%;
-        }
-    }
+  @media (max-width: 520px) {
+    .pre-grid { grid-template-columns: 1fr; }
+  }
 </style>
 
-<div class="
-    chapter-heading
-    d-flex
-    flex-column
-    align-items-center
-    justify-content-evenly
-  ">
-
-</div>
-<div class="d-flex justify-content-around py-3" style="background-color: blanchedalmond;">
-    <h3 class="text-center subject">
-        <%= subject.title %> <%= schoolClass.title %>
-    </h3>
-    <h3 class="chapter">
-        Chapitre <%= subject.chapters ? subject.chapters.indexOf(chapter._id)+ 1 : 1 %>: <%= chapter.title
-    %>
-    </h3>
-</div>
-<h3 class="my-3 pb-3 text-center heading" style="border-bottom: 2px solid rgb(82, 4, 105);">
-    <span style="display:inline-flex;align-items:center;gap:.4rem;font-size:.75rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:.25rem .6rem;border-radius:999px;background:linear-gradient(135deg,#ffd700,#ffb800);color:#2d0370;vertical-align:middle;">
-        <i class="bi bi-stars"></i> Kalan Ba
-    </span>
-    Contenus avancés pour une compréhension plus approfondie
-</h3>
-
-<div class="container" style="max-width:1000px;">
-    <div style="display:flex;gap:.7rem;align-items:flex-start;background:#fff8e1;border:1px solid #ffe08a;border-radius:12px;padding:.85rem 1.1rem;margin:0 auto 1.5rem;color:#7a5b00;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:.9rem;line-height:1.5;">
-        <i class="bi bi-shield-exclamation" style="font-size:1.3rem;color:#c79100;flex-shrink:0;margin-top:.1rem;"></i>
-        <span><strong>Contenu réservé à votre usage personnel (Kalan Ba).</strong>
-            Le partage de votre compte, ainsi que le téléchargement, l'enregistrement ou la redistribution des vidéos et sujets
-            par un moyen illégal, sont strictement interdits et entraînent la suspension immédiate de votre accès, sans remboursement.
-        </span>
+<div class="pre-page">
+  <!-- Hero -->
+  <header class="pre-hero">
+    <div class="pre-hero__inner">
+      <a class="pre-crumb" href="/programs/ekalan/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>/chapter/<%= chapter._id %>">
+        <i class="bi bi-arrow-left"></i> Retour au chapitre
+      </a>
+      <h1>
+        <span class="pre-badge"><i class="bi bi-stars"></i> Kalan Ba</span>
+        <span style="display:block; margin-top:.5rem;"><%= chapter.title %></span>
+      </h1>
+      <p class="pre-sub">Contenus avancés pour une compréhension plus approfondie.</p>
+      <div class="pre-meta">
+        <span class="pre-chip"><i class="bi bi-journal-text"></i> <%= subject.title %> · <%= schoolClass.title %> <%= schoolClass.serie %></span>
+        <% if (chapterNo) { %><span class="pre-chip"><i class="bi bi-bookmark-fill"></i> Chapitre <%= chapterNo %></span><% } %>
+        <span class="pre-chip"><i class="bi bi-collection-play-fill"></i> <%= totalEx %> exercice<%= totalEx > 1 ? 's' : '' %></span>
+      </div>
     </div>
-</div>
+  </header>
 
-<!-- CIAM appro-->
-<div class="d-flex ms-5 py-5">
-    <button class="btn exo-link video-btn btn-success mx-2 my-2" type="button" data-bs-toggle="collapse"
-        data-bs-target="#CIAM_app" aria-expanded="false" aria-controls="collapseExample">
-        CIAM Exercices d'approfondissement
-    </button>
-</div>
-<div class="collapse" id="CIAM_app">
-    <div class="card card-body">
-        <div class="container">
-            <div class="row mt-4 mb-5">
-                <% if (typeof grouped !== 'undefined' && grouped.CIAM_Premium) { %>
-                <% for(const [i, content] of grouped.CIAM_Premium.entries()){%>
-                <div class="col-md-4">
-                    <div class="course-card m-3 py-3">
-                        <h3 class="content-title px-2"><span style="font-weight: bolder;">Exercice <%= i + 1%></span>:
-                            <%= content.title %></h3>
-                        <!-- Button trigger modal -->
-                        <div class="d-flex justify-content-evenly ">
-                            <a target="_blank" class="btn mt-3 btn-primary"
-                                href="https://drive.google.com/file/d/10Cf2Sa-0_44FpHthchIfa9BIi0oA2MC8/view?usp=sharing"><i
-                                    class="fa-solid mx-2 fa-pen-clip"></i>Essayer</a>
-                            <a type="button" class="btn mt-3 text-center btn-outline-primary" data-bs-toggle="modal"
-                                data-bs-target="#N<%= content._id %>">
-                                Correction en video
-                            </a>
-                        </div>
-                        <!-- Modal -->
-                        <div class="modal fade" id="N<%= content._id %>" tabindex="-1"
-                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-xl">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel"><%= content.title %></h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div id="tv-container">
-                                            <div id="monitor">
-                                                <div class="afrohk-TV">
-                                                    <h3 class="text-center afrohk-text mb-2 py-0">
-                                                        <span class="afrohk">AfroHK</span><span class="tv">Radar</span>
-                                                    </h3>
-                                                </div>
-                                                <div id="monitorscreen">
-                                                    <iframe id="vimeo-content" src="<%= content.correctionVideoLink %>"
-                                                        frameborder="0" height="500px" width="1000px"
-                                                        allow="autoplay; fullscreen; picture-in-picture"
-                                                        allow="fullscreen" title="High-intensity Classes"></iframe>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-danger"
-                                            data-bs-dismiss="modal">Quitter</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+  <div class="pre-wrap">
+    <!-- Usage warning -->
+    <div class="pre-warn">
+      <i class="bi bi-shield-exclamation"></i>
+      <span><strong>Contenu réservé à votre usage personnel (Kalan Ba).</strong>
+        Le partage de votre compte, ainsi que le téléchargement, l'enregistrement ou la redistribution des vidéos et sujets
+        par un moyen illégal, sont strictement interdits et entraînent la suspension immédiate de votre accès, sans remboursement.</span>
+    </div>
+
+    <% if (totalEx === 0) { %>
+      <div class="pre-empty">
+        <i class="bi bi-inbox"></i>
+        <h3>Aucun contenu premium pour l'instant</h3>
+        <p>Les exercices avancés de ce chapitre seront bientôt ajoutés. Revenez plus tard.</p>
+      </div>
+    <% } else { %>
+
+      <!-- Quick nav -->
+      <% if (activeSections.length > 1) { %>
+        <nav class="pre-nav">
+          <% activeSections.forEach((s) => { %>
+            <a href="#sec-<%= s.key %>"><i class="bi <%= s.icon %>"></i> <%= s.label %></a>
+          <% }); %>
+        </nav>
+      <% } %>
+
+      <!-- Sections -->
+      <% activeSections.forEach((s) => { const items = grouped[s.key]; %>
+        <section class="pre-section" id="sec-<%= s.key %>">
+          <div class="pre-section__head">
+            <span class="pre-section__ic"><i class="bi <%= s.icon %>"></i></span>
+            <h2><%= s.label %></h2>
+            <span class="pre-section__count"><%= items.length %></span>
+          </div>
+          <div class="pre-grid">
+            <% items.forEach((content, i) => { %>
+              <div class="ex-card">
+                <div class="ex-card__top">
+                  <span class="ex-card__num"><%= i + 1 %></span>
+                  <h3 class="ex-card__title"><%= content.title %></h3>
                 </div>
-                <% } %>
-                <% } %>
-            </div>
-        </div>
-    </div>
-</div>
-<hr>
-
-<!-- Autres bouquins -->
-<div class="d-flex  ms-5 py-5">
-
-    <button class="btn  exo-link video-btn btn-outline-success mx-2 my-2" type="button" data-bs-toggle="collapse"
-        data-bs-target="#otherbooks" aria-expanded="false" aria-controls="collapseExample">
-        Sujets d'autres livres de Maths
-    </button>
-</div>
-<div class="collapse" id="otherbooks">
-    <div class="card card-body">
-        <div class="container">
-            <div class="row mt-4 mb-5">
-                <% if (typeof grouped !== 'undefined' && grouped.advanceEx) { %>
-                <% for(const [i, content] of grouped.advanceEx.entries()){%>
-                <div class="col-md-4">
-                    <div class="course-card m-3 py-3">
-                        <h3 class="content-title px-2"><span style="font-weight: bolder;">Exercice <%= i + 1%></span>:
-                            <%= content.title %></h3>
-                        <!-- Button trigger modal -->
-                        <div class="d-flex justify-content-evenly ">
-                            <a class="btn mt-3 btn-primary" href=""><i class="fa-solid mx-2 fa-pen-clip"></i>Essayer</a>
-                            <a type="button" class="btn d-block mt-3  text-center btn-outline-primary"
-                                data-bs-toggle="modal" data-bs-target="#N<%= content._id %>">
-                                Correction Video
-                            </a>
-                        </div>
-                        <!-- Modal -->
-                        <div class="modal fade" id="N<%= content._id %>" tabindex="-1"
-                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-xl">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel"><%= content.title %></h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div id="tv-container">
-                                            <div id="monitor">
-                                                <div class="afrohk-TV">
-                                                    <h3 class="text-center afrohk-text mb-2 py-0">
-                                                        <span class="afrohk">AfroHK</span><span class="tv">Radar</span>
-                                                    </h3>
-                                                </div>
-                                                <div id="monitorscreen">
-                                                    <iframe id="vimeo-content" src="<%= content.correctionVideoLink %>"
-                                                        frameborder="0" height="500px" width="1000px"
-                                                        allow="autoplay; fullscreen; picture-in-picture"
-                                                        allow="fullscreen" title="High-intensity Classes"></iframe>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-danger"
-                                            data-bs-dismiss="modal">Quitter</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="ex-card__actions">
+                  <% if (content.pdf_Link) { %>
+                    <a class="ex-btn ex-btn--pdf" href="<%= content.pdf_Link %>" target="_blank" rel="noopener">
+                      <i class="bi bi-file-earmark-pdf"></i> Sujet (PDF)
+                    </a>
+                  <% } else { %>
+                    <span class="ex-btn ex-btn--pdf ex-btn--disabled"><i class="bi bi-file-earmark"></i> Sujet bientôt</span>
+                  <% } %>
+                  <% if (content.correctionVideoLink) { %>
+                    <button type="button" class="ex-btn ex-btn--video" data-bs-toggle="modal" data-bs-target="#N<%= content._id %>">
+                      <i class="bi bi-play-circle-fill"></i> Correction
+                    </button>
+                  <% } else { %>
+                    <span class="ex-btn ex-btn--video ex-btn--disabled"><i class="bi bi-camera-video-off"></i> À venir</span>
+                  <% } %>
                 </div>
-                <% } %>
-                <% } %>
-            </div>
-        </div>
-    </div>
-</div>
-<hr>
+              </div>
 
-<!-- National Exams -->
-<div class="d-flex ms-5 py-5">
-    <button class="btn exo-link video-btn btn-primary mx-2 my-2" type="button" data-bs-toggle="collapse"
-        data-bs-target="#nationalExam" aria-expanded="false" aria-controls="collapseExample">
-        Sujets des examens nationaux
-    </button>
-</div>
-<div class="collapse" id="nationalExam">
-    <div class="card card-body">
-        <div class="container">
-            <div class="row mt-4 mb-5">
-                <% if (typeof grouped !== 'undefined' && grouped.nationalExam) { %>
-                <% for(const [i, content] of grouped.nationalExam.entries()){%>
-                <div class="col-md-4">
-                    <div class="course-card m-3 py-3">
-                        <h3 class="content-title px-2"><span style="font-weight: bolder;">Exercice
-                                <%= i + 1%></span>:
-                            <%= content.title %></h3>
-                        <!-- Button trigger modal -->
-                        <div class="d-flex justify-content-evenly ">
-                            <a class="btn mt-3 btn-primary" href=""><i class="fa-solid mx-2 fa-pen-clip"></i>Essayer</a>
-                            <a type="button" class="btn d-block mt-3  text-center btn-outline-primary"
-                                data-bs-toggle="modal" data-bs-target="#N<%= content._id %>">
-                                Correction en video
-                            </a>
+              <% if (content.correctionVideoLink) { %>
+                <div class="modal fade pre-modal" id="N<%= content._id %>" tabindex="-1" aria-hidden="true">
+                  <div class="modal-dialog modal-xl modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title"><i class="bi bi-play-circle me-2"></i><%= content.title %></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                      </div>
+                      <div class="modal-body">
+                        <div class="ratio ratio-16x9">
+                          <iframe src="<%= content.correctionVideoLink %>" frameborder="0"
+                                  allow="autoplay; fullscreen; picture-in-picture" allowfullscreen
+                                  title="<%= content.title %>"></iframe>
                         </div>
-
-                        <!-- Modal -->
-                        <div class="modal fade" id="N<%= content._id %>" tabindex="-1"
-                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-xl">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel"><%= content.title %></h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div id="tv-container">
-                                            <div id="monitor">
-                                                <div class="afrohk-TV">
-                                                    <h3 class="text-center afrohk-text mb-2 py-0">
-                                                        <span class="afrohk">AfroHK</span><span class="tv">Radar</span>
-                                                    </h3>
-                                                </div>
-                                                <div id="monitorscreen">
-                                                    <iframe id="vimeo-content" src="<%= content.correctionVideoLink %>"
-                                                        frameborder="0" height="500px" width="1000px"
-                                                        allow="autoplay; fullscreen; picture-in-picture"
-                                                        allow="fullscreen" title="High-intensity Classes"></iframe>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-danger"
-                                            data-bs-dismiss="modal">Quitter</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                      </div>
                     </div>
+                  </div>
                 </div>
-                <% } %>
-                <% } %>
-            </div>
-        </div>
-    </div>
-</div>
-<hr>
+              <% } %>
+            <% }); %>
+          </div>
+        </section>
+      <% }); %>
 
-<!-- School  Exams -->
-<div class="d-flex ms-5 py-5">
-    <button class="btn  exo-link video-btn btn-outline-primary mx-2 my-2" type="button" data-bs-toggle="collapse"
-        data-bs-target="#schoolexams" aria-expanded="false" aria-controls="collapseExample">
-        Sujet des meilleurs Etablissements
-    </button>
-</div>
-<div class="collapse" id="schoolexams">
-    <div class="card card-body">
-        <div class="container">
-            <div class="row mt-4 mb-5">
-                <% if (typeof grouped !== 'undefined' && grouped.schoolExam) { %>
-                <% for(const [i, content] of grouped.schoolExam.entries()){%>
-                <div class="col-md-4">
-                    <div class="course-card m-3 py-3">
-                        <h3 class="content-title px-2"><span style="font-weight: bolder;">Exercice
-                                <%= i + 1%></span>:
-                            <%= content.title %></h3>
-                        <!-- Button trigger modal -->
-                        <div class="d-flex justify-content-evenly ">
-                            <a class="btn mt-3 btn-primary" href=""><i class="fa-solid mx-2 fa-pen-clip"></i>Essayer</a>
-                            <a type="button" class="btn d-block mt-3 text-center btn-outline-primary"
-                                data-bs-toggle="modal" data-bs-target="#N<%= content._id %>">
-                                Correction video
-                            </a>
-                        </div>
-                        <!-- Modal -->
-                        <div class="modal fade" id="N<%= content._id %>" tabindex="-1"
-                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-xl">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel"><%= content.title %></h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div id="tv-container">
-                                            <div id="monitor">
-                                                <div class="afrohk-TV">
-                                                    <h3 class="text-center afrohk-text mb-2 py-0">
-                                                        <span class="afrohk">AfroHK</span><span class="tv">Radar</span>
-                                                    </h3>
-                                                </div>
-                                                <div id="monitorscreen">
-                                                    <iframe id="vimeo-content" src="<%= content.correctionVideoLink %>"
-                                                        frameborder="0" height="500px" width="1000px"
-                                                        allow="autoplay; fullscreen; picture-in-picture"
-                                                        allow="fullscreen" title="High-intensity Classes"></iframe>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-danger"
-                                            data-bs-dismiss="modal">Quitter</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <% } %>
-                <% } %>
-            </div>
-        </div>
-    </div>
+    <% } %>
+  </div>
 </div>
