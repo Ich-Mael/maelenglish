@@ -116,13 +116,50 @@
 }
 
 #header.header-scrolled .navbar-container {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  box-shadow: 0 4px 28px rgba(0, 0, 0, 0.1);
-  border-color: rgba(0, 0, 0, 0.04);
+  background: linear-gradient(135deg, #2d0370 0%, #5d06ba 100%);
+  box-shadow: 0 6px 28px rgba(45, 3, 112, 0.35);
+  border-color: rgba(255, 255, 255, 0.12);
   padding: 10px 36px;
   border-radius: 20px;
+}
+
+/* Scrolled: flip text/links/buttons to light for contrast on the purple pill */
+#header.header-scrolled .navbar-nav a {
+  color: rgba(255, 255, 255, 0.85);
+}
+#header.header-scrolled .navbar-nav a:hover,
+#header.header-scrolled .navbar-nav a.active {
+  color: #ffffff;
+}
+#header.header-scrolled .navbar-nav a::after {
+  background: #ffd700;
+}
+#header.header-scrolled .navbar-cta .btn-link {
+  color: rgba(255, 255, 255, 0.9);
+}
+#header.header-scrolled .navbar-cta .btn-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+}
+#header.header-scrolled .navbar-cta .btn-outline {
+  border-color: rgba(255, 255, 255, 0.55);
+  color: #ffffff;
+}
+#header.header-scrolled .navbar-cta .btn-outline:hover {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+}
+#header.header-scrolled .navbar-cta .btn-primary {
+  background: linear-gradient(135deg, #ffd700 0%, #ffb800 100%);
+  color: #2d0370;
+  box-shadow: 0 2px 12px rgba(255, 215, 0, 0.35);
+}
+#header.header-scrolled .navbar-cta .btn-primary:hover {
+  background: linear-gradient(135deg, #ffe34d 0%, #ffc933 100%);
+  color: #2d0370;
+}
+#header.header-scrolled .mobile-nav-toggle span {
+  background: rgba(255, 255, 255, 0.9);
 }
 
 /* ── Logo ── */
@@ -310,6 +347,20 @@
   box-shadow: 0 4px 16px rgba(93, 6, 186, 0.4);
   transform: translateY(-1px);
   color: #fff;
+}
+
+/* ── Logout button — always red (both top & scrolled states) ── */
+.btn-primary.btn-logout,
+#header.header-scrolled .navbar-cta .btn-primary.btn-logout {
+  background: linear-gradient(135deg, #e23b3b 0%, #c82333 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 12px rgba(200, 35, 51, 0.35);
+}
+.btn-primary.btn-logout:hover,
+#header.header-scrolled .navbar-cta .btn-primary.btn-logout:hover {
+  background: linear-gradient(135deg, #c82333 0%, #a81d2b 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(200, 35, 51, 0.45);
 }
 
 /* ── Mobile toggle ── */
