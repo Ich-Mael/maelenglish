@@ -1,7 +1,7 @@
 <% layout('layouts/main') %>
 <% const loggedIn = (typeof currentUser !== 'undefined' && currentUser); %>
 <% const classHref = (typeof studentClassId !== 'undefined' && studentClassId) ? `/programs/ekalan/kalan/class/${studentClassId}` : '/dashboard'; %>
-<% const primaryCta = loggedIn ? { href: classHref, label: 'Accéder à mon espace', icon: 'bi-mortarboard-fill' } : { href: '/login', label: 'Se connecter', icon: 'bi-box-arrow-in-right' }; %>
+<% const primaryCta = loggedIn ? { href: classHref, label: 'My Kalan Space', icon: 'bi-mortarboard-fill' } : { href: '/login', label: 'Se connecter', icon: 'bi-box-arrow-in-right' }; %>
 
 <% headContent = `
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
@@ -45,6 +45,8 @@
       display:inline-flex; align-items:center; gap:.55rem; text-decoration:none; transition: transform .2s, box-shadow .2s; }
     .kh-btn--gold { background: linear-gradient(135deg,#ffd700,#ffb800); color:#2d0370; box-shadow:0 8px 24px rgba(255,215,0,.35); }
     .kh-btn--gold:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(255,215,0,.45); color:#2d0370; }
+    .kh-btn--space { background:#d3adf7; color:#2d0370; box-shadow:0 8px 24px rgba(211,173,247,.4); }
+    .kh-btn--space:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(211,173,247,.55); color:#2d0370; }
     .kh-btn--ghost { background:rgba(255,255,255,.1); color:#fff; border:1.5px solid rgba(255,255,255,.4); }
     .kh-btn--ghost:hover { background:rgba(255,255,255,.2); color:#fff; }
     .kh-btn--brand { background: linear-gradient(135deg,#5d06ba,#2d0370); color:#fff; }
@@ -177,7 +179,7 @@
       <p class="lead">Des cours clairs, des exercices corrigés et les sujets des meilleurs établissements —
         accessibles partout, à votre rythme, pour exceller dans vos études.</p>
       <div class="kh-cta">
-        <a href="<%= primaryCta.href %>" class="kh-btn kh-btn--gold kh-btn--lead"><i class="bi <%= primaryCta.icon %>"></i> <%= primaryCta.label %></a>
+        <a href="<%= primaryCta.href %>" class="kh-btn kh-btn--space kh-btn--lead"><i class="bi <%= primaryCta.icon %>"></i> <%= primaryCta.label %></a>
         <button type="button" class="kh-btn kh-btn--ghost" id="enSavoirPlusBtn"><i class="bi bi-play-circle"></i> En savoir plus</button>
       </div>
     </div>
@@ -405,7 +407,7 @@
         <h2>Prêt à passer à la vitesse supérieure ?</h2>
         <p>Rejoignez des centaines d'élèves qui préparent leur réussite avec e-kalan.</p>
         <div class="kh-cta" style="justify-content:center;">
-          <a href="<%= primaryCta.href %>" class="kh-btn kh-btn--gold"><i class="bi <%= primaryCta.icon %>"></i> <%= primaryCta.label %></a>
+          <a href="<%= primaryCta.href %>" class="kh-btn kh-btn--space"><i class="bi <%= primaryCta.icon %>"></i> <%= primaryCta.label %></a>
           <a href="#tarifs" class="kh-btn kh-btn--ghost"><i class="bi bi-tag"></i> Revoir les tarifs</a>
         </div>
       </div>
