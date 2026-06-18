@@ -4,6 +4,7 @@
 <% const primaryCta = loggedIn ? { href: classHref, label: 'Accéder à mon espace', icon: 'bi-mortarboard-fill' } : { href: '/login', label: 'Se connecter', icon: 'bi-box-arrow-in-right' }; %>
 
 <% headContent = `
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
     .kh { --brand:#5d06ba; --brand-dark:#2d0370; --ink:#1f2937; --muted:#6b7280; --gold:#ffd700;
       font-family: system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; color: var(--ink); }
@@ -20,7 +21,8 @@
       text-transform:uppercase; padding:.4rem .9rem; border-radius:999px; background:rgba(255,255,255,.12);
       border:1px solid rgba(255,255,255,.22); margin-bottom:1.4rem; }
     .kh-hero h1 { font-size: clamp(2.1rem,5vw,3.4rem); font-weight:800; line-height:1.12; margin:0 0 1.1rem; }
-    .kh-hero h1 .gold { color: var(--gold); }
+    .kh-hero h1 .gold { color: #d3adf7; }
+    .kh-hero h1 .afrohk { font-family: 'Baloo 2', system-ui, sans-serif; font-size: inherit; font-weight: 800; letter-spacing: 0; color: #fff; padding: 0; }
     .kh-hero p.lead { font-size: clamp(1.05rem,2vw,1.3rem); opacity:.95; line-height:1.6; margin:0 0 2rem; max-width: 620px; }
     .kh-cta { display:flex; gap:.9rem; flex-wrap:wrap; align-items:center; }
     .kh-btn--lead { padding:1rem 2.1rem; }
@@ -62,11 +64,36 @@
     /* Section */
     .kh-section { padding: clamp(3.5rem,8vw,6rem) 0; }
     .kh-section--alt { background: linear-gradient(to bottom,#faf8ff,#fff); }
+    .kh-section--dark { position:relative; overflow:hidden; color:#fff;
+      background: radial-gradient(700px 360px at 85% -10%, rgba(255,215,0,.14), transparent 60%),
+                  linear-gradient(135deg,#160a33 0%, #2d0370 55%, #5d06ba 100%); }
     .kh-head { text-align:center; max-width:680px; margin:0 auto clamp(2.5rem,5vw,3.5rem); }
     .kh-head .tag { display:inline-block; font-size:.8rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
       color:var(--brand); background:#ede0ff; padding:.3rem .8rem; border-radius:999px; margin-bottom:1rem; }
     .kh-head h2 { font-size: clamp(1.7rem,3.5vw,2.5rem); font-weight:800; color:var(--brand-dark); margin:0 0 .8rem; }
     .kh-head p { font-size:1.1rem; color:var(--muted); margin:0; line-height:1.6; }
+    .kh-section--dark .kh-head h2 { color:#fff; }
+    .kh-section--dark .kh-head p { color:rgba(255,255,255,.85); }
+    .kh-section--dark .kh-head .tag { background:rgba(255,255,255,.14); color:#ffd700; }
+
+    /* Testimonials */
+    .kh-quotes { position:relative; z-index:1; display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:1.5rem; }
+    .kh-quote { background:#fff; color:#1f2937; border-radius:18px; padding:1.75rem; box-shadow:0 12px 32px rgba(0,0,0,.2);
+      display:flex; flex-direction:column; gap:.9rem; transition:transform .3s, box-shadow .3s; }
+    .kh-quote:hover { transform:translateY(-6px); box-shadow:0 20px 44px rgba(0,0,0,.28); }
+    .kh-quote.kh-quote--win { border:1.5px solid #ffd700; }
+    .kh-quote__top { display:flex; align-items:center; justify-content:space-between; gap:.6rem; }
+    .kh-quote__tag { display:inline-flex; align-items:center; gap:.35rem; font-size:.7rem; font-weight:800; letter-spacing:.03em;
+      text-transform:uppercase; color:#5d06ba; background:#ede0ff; padding:.25rem .6rem; border-radius:999px; }
+    .kh-quote--win .kh-quote__tag { color:#7a5b00; background:linear-gradient(135deg,#ffd700,#ffb800); }
+    .kh-quote__stars { color:#ffb800; font-size:.9rem; letter-spacing:1px; flex-shrink:0; }
+    .kh-quote__text { font-size:1rem; line-height:1.6; color:#374151; flex:1; margin:0; }
+    .kh-quote__text::before { content:'\\201C'; color:#d9c2ff; font-size:1.6rem; font-weight:800; margin-right:.15rem; vertical-align:-.35rem; }
+    .kh-quote__foot { display:flex; align-items:center; gap:.75rem; border-top:1px solid #f1edf9; padding-top:1rem; }
+    .kh-avatar { width:46px; height:46px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+      font-weight:800; font-size:.95rem; color:#fff; background:linear-gradient(135deg,#5d06ba,#2d0370); }
+    .kh-quote__name { font-weight:700; color:#2d0370; font-size:.95rem; }
+    .kh-quote__meta { font-size:.82rem; color:#6b7280; }
 
     /* Value cards */
     .kh-grid3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; }
@@ -146,7 +173,7 @@
   <section id="kalan-hero" class="kh-hero">
     <div class="kh-wrap kh-hero__inner" data-aos="fade-up">
       <span class="kh-eyebrow"><i class="bi bi-mortarboard-fill"></i> Programme e-learning lycée &amp; collège</span>
-      <h1>Assurez votre <span class="gold">réussite scolaire</span> avec <span class="afrohk">e-kalan</span></h1>
+      <h1>Maths, PC, SVT : <span class="gold">de la peur à la réussite</span> avec <span class="afrohk">e-kalan</span></h1>
       <p class="lead">Des cours clairs, des exercices corrigés et les sujets des meilleurs établissements —
         accessibles partout, à votre rythme, pour exceller dans vos études.</p>
       <div class="kh-cta">
@@ -214,6 +241,92 @@
           <h4>Les meilleurs vous aident</h4>
           <p>Sujets corrigés des grands établissements et des examens nationaux, avec corrections en vidéo.</p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section id="temoignages" class="kh-section kh-section--dark">
+    <div class="kh-wrap">
+      <div class="kh-head" data-aos="fade-up">
+        <span class="tag">Témoignages</span>
+        <h2>Ils ont vaincu les matières qui font peur</h2>
+        <p>Maths, Physique-Chimie, SVT — les chapitres les plus redoutés du BAC, enfin maîtrisés.</p>
+      </div>
+      <div class="kh-quotes">
+
+        <div class="kh-quote" data-aos="fade-up" data-aos-delay="50">
+          <div class="kh-quote__top">
+            <span class="kh-quote__tag"><i class="bi bi-calculator"></i> Maths · Probabilités</span>
+            <span class="kh-quote__stars">★★★★★</span>
+          </div>
+          <p class="kh-quote__text">Les probabilités me faisaient perdre des points à chaque devoir. Avec les corrections en vidéo, j'ai enfin compris les arbres et les lois de probabilité. Je suis passée de 08 à 16 en maths.</p>
+          <div class="kh-quote__foot">
+            <span class="kh-avatar">AO</span>
+            <div><div class="kh-quote__name">Aminata Ouédraogo</div><div class="kh-quote__meta">Terminale D · Ouagadougou</div></div>
+          </div>
+        </div>
+
+        <div class="kh-quote" data-aos="fade-up" data-aos-delay="100">
+          <div class="kh-quote__top">
+            <span class="kh-quote__tag"><i class="bi bi-calculator"></i> Maths · Nombres complexes</span>
+            <span class="kh-quote__stars">★★★★★</span>
+          </div>
+          <p class="kh-quote__text">Les nombres complexes, c'était du chinois pour moi. Chaque étape est expliquée clairement, du module à la forme exponentielle. C'est devenu ma partie préférée du programme.</p>
+          <div class="kh-quote__foot">
+            <span class="kh-avatar">BS</span>
+            <div><div class="kh-quote__name">Boukary Sawadogo</div><div class="kh-quote__meta">Terminale C · Bobo-Dioulasso</div></div>
+          </div>
+        </div>
+
+        <div class="kh-quote" data-aos="fade-up" data-aos-delay="150">
+          <div class="kh-quote__top">
+            <span class="kh-quote__tag"><i class="bi bi-lightning-charge"></i> Physique · Lois de Newton</span>
+            <span class="kh-quote__stars">★★★★★</span>
+          </div>
+          <p class="kh-quote__text">La mécanique et les lois de Newton me bloquaient complètement. Les sujets des grands établissements corrigés m'ont préparé comme aucun cahier ne l'avait fait.</p>
+          <div class="kh-quote__foot">
+            <span class="kh-avatar">RK</span>
+            <div><div class="kh-quote__name">Rasmané Kaboré</div><div class="kh-quote__meta">Terminale D · Koudougou</div></div>
+          </div>
+        </div>
+
+        <div class="kh-quote" data-aos="fade-up" data-aos-delay="50">
+          <div class="kh-quote__top">
+            <span class="kh-quote__tag"><i class="bi bi-flower1"></i> SVT</span>
+            <span class="kh-quote__stars">★★★★★</span>
+          </div>
+          <p class="kh-quote__text">La SVT demande beaucoup de méthode. Les exercices d'approfondissement et les corrections détaillées m'ont fait gagner en rigueur et en confiance pour le BAC.</p>
+          <div class="kh-quote__foot">
+            <span class="kh-avatar">FT</span>
+            <div><div class="kh-quote__name">Fatimata Traoré</div><div class="kh-quote__meta">Terminale D · Ouagadougou</div></div>
+          </div>
+        </div>
+
+        <div class="kh-quote kh-quote--win" data-aos="fade-up" data-aos-delay="100">
+          <div class="kh-quote__top">
+            <span class="kh-quote__tag"><i class="bi bi-trophy-fill"></i> Réussite au BAC</span>
+            <span class="kh-quote__stars">★★★★★</span>
+          </div>
+          <p class="kh-quote__text">J'avais tout essayé sans résultat. C'est vraiment e-kalan — et lui seul — qui m'a permis de décrocher mon BAC. Aucun autre programme ne m'avait autant aidé.</p>
+          <div class="kh-quote__foot">
+            <span class="kh-avatar">IZ</span>
+            <div><div class="kh-quote__name">Issouf Zongo</div><div class="kh-quote__meta">Bachelier 2025 · Série D</div></div>
+          </div>
+        </div>
+
+        <div class="kh-quote" data-aos="fade-up" data-aos-delay="150">
+          <div class="kh-quote__top">
+            <span class="kh-quote__tag"><i class="bi bi-stars"></i> Maths · PC · SVT</span>
+            <span class="kh-quote__stars">★★★★★</span>
+          </div>
+          <p class="kh-quote__text">Les trois matières qui font peur au BAC deviennent enfin accessibles. Des professeurs qui expliquent vraiment, pas juste des formules à apprendre par cœur.</p>
+          <div class="kh-quote__foot">
+            <span class="kh-avatar">MN</span>
+            <div><div class="kh-quote__name">Mariam Nikiéma</div><div class="kh-quote__meta">Terminale C · Ouagadougou</div></div>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
