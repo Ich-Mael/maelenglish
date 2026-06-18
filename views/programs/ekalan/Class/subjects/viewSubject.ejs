@@ -429,7 +429,7 @@
       position: relative;
       overflow: hidden;
     }
-    
+
     .btn-chapter-warning::before {
       content: '';
       position: absolute;
@@ -440,11 +440,11 @@
       background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
       transition: left 0.5s ease;
     }
-    
+
     .btn-chapter-warning:hover::before {
       left: 100%;
     }
-    
+
     .btn-chapter-warning:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
@@ -754,6 +754,9 @@
 
     <%# Premium access CTA (demande / statut) %>
     <%- include('../../../../partials/kalanPremiumCTA', { schoolClass, subject, hasPremiumAccess, hasPendingRequest }) %>
+
+    <%# Kalan Naaba — upsell vers le bundle toute la classe %>
+    <%- include('../../../../partials/kalanNaabaCTA', { schoolClass, naabaPrice, hasNaaba, naabaPending }) %>
 
     <div class="section-header">
       <h2 class="section-title">

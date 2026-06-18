@@ -473,10 +473,13 @@ module.exports.viewSubject = async (req, res) => {
   // Statut premium de l'étudiant pour cette matière (accès / demande en attente)
   let hasPremiumAccess = false;
   let hasPendingRequest = false;
+  let studentHasNaaba = false;
+  let naabaPending = false;
   if (subject && req.user && req.user.highSchool_id) {
     const hsId = req.user.highSchool_id;
+    studentHasNaaba = hasNaaba(schoolClass, hsId);
     hasPremiumAccess =
-      hasNaaba(schoolClass, hsId) ||
+      studentHasNaaba ||
       (subject.premiumStudents &&
         subject.premiumStudents.some((id) => id.toString() === hsId.toString()));
     if (!hasPremiumAccess) {
@@ -488,13 +491,29 @@ module.exports.viewSubject = async (req, res) => {
       });
       hasPendingRequest = !!pending;
     }
+    if (!studentHasNaaba) {
+      const naabaReq = await PremiumRequest.findOne({
+        studentId: hsId,
+        classId: schoolClass._id,
+        kind: "class",
+        status: "pending",
+      });
+      naabaPending = !!naabaReq;
+    }
   }
+
+  // Prix du bundle Kalan Naaba (somme des matières de la classe − remise)
+  const classSubjects = await Subject.find({ classId: schoolClass._id }).select("premiumPrice");
+  const naabaPrice = computeNaabaPrice(classSubjects, schoolClass.naabaDiscountPercent);
 
   res.render("programs/ekalan/Class/subjects/viewSubject", {
     schoolClass,
     subject,
     hasPremiumAccess,
     hasPendingRequest,
+    hasNaaba: studentHasNaaba,
+    naabaPending,
+    naabaPrice,
   });
 };
 
@@ -692,10 +711,13 @@ module.exports.viewChapterSE = async (req, res) => {
   // Statut premium de l'étudiant pour cette matière (pour l'upsell premium)
   let hasPremiumAccess = false;
   let hasPendingRequest = false;
+  let studentHasNaaba = false;
+  let naabaPending = false;
   if (subject && req.user && req.user.highSchool_id) {
     const hsId = req.user.highSchool_id;
+    studentHasNaaba = hasNaaba(serie, hsId);
     hasPremiumAccess =
-      hasNaaba(serie, hsId) ||
+      studentHasNaaba ||
       (subject.premiumStudents &&
         subject.premiumStudents.some((id) => id.toString() === hsId.toString()));
     if (!hasPremiumAccess) {
@@ -707,7 +729,20 @@ module.exports.viewChapterSE = async (req, res) => {
       });
       hasPendingRequest = !!pending;
     }
+    if (!studentHasNaaba) {
+      const naabaReq = await PremiumRequest.findOne({
+        studentId: hsId,
+        classId: serie._id,
+        kind: "class",
+        status: "pending",
+      });
+      naabaPending = !!naabaReq;
+    }
   }
+
+  // Prix du bundle Kalan Naaba (somme des matières de la classe − remise)
+  const classSubjects = await Subject.find({ classId: serie._id }).select("premiumPrice");
+  const naabaPrice = computeNaabaPrice(classSubjects, serie.naabaDiscountPercent);
 
   res.render("programs/ekalan/Class/chapters/viewChapterS-E", {
     serie,
@@ -717,6 +752,9 @@ module.exports.viewChapterSE = async (req, res) => {
     grouped,
     hasPremiumAccess,
     hasPendingRequest,
+    hasNaaba: studentHasNaaba,
+    naabaPending,
+    naabaPrice,
   });
 };
 

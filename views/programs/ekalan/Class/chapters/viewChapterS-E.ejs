@@ -246,5 +246,8 @@
     <%# Upsell premium — demande d'accès si l'élève n'a pas encore le premium %>
     <%- include('../../../../partials/kalanPremiumCTA', { schoolClass: serie, subject, hasPremiumAccess, hasPendingRequest }) %>
 
+    <%# Kalan Naaba — upsell vers le bundle toute la classe %>
+    <%- include('../../../../partials/kalanNaabaCTA', { schoolClass: serie, naabaPrice, hasNaaba, naabaPending }) %>
+
   </main>
 </div>
