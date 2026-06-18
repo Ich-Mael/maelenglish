@@ -1,659 +1,332 @@
 <% layout('layouts/main') %>
+<% const loggedIn = (typeof currentUser !== 'undefined' && currentUser); %>
+<% const classHref = (typeof studentClassId !== 'undefined' && studentClassId) ? `/programs/ekalan/kalan/class/${studentClassId}` : '/dashboard'; %>
+<% const primaryCta = loggedIn ? { href: classHref, label: 'Accéder à mon espace', icon: 'bi-mortarboard-fill' } : { href: '/login', label: 'Se connecter', icon: 'bi-box-arrow-in-right' }; %>
 
 <% headContent = `
   <style>
-    /* Enhanced Kalan Home Styles */
-    .kalan-hero {
-      min-height: 85vh;
-      display: flex;
-      align-items: center;
-      position: relative;
-      overflow: hidden;
+    .kh { --brand:#5d06ba; --brand-dark:#2d0370; --ink:#1f2937; --muted:#6b7280; --gold:#ffd700;
+      font-family: system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; color: var(--ink); }
+    .kh-wrap { max-width: 1180px; margin: 0 auto; padding: 0 clamp(1rem,4vw,2.5rem); }
+
+    /* Hero */
+    .kh-hero { position: relative; overflow: hidden; color:#fff; padding: clamp(5rem,12vw,8rem) 0 clamp(3.5rem,8vw,6rem);
+      background: radial-gradient(900px 500px at 80% -10%, rgba(255,215,0,.18), transparent 60%),
+                  linear-gradient(135deg, #160a33 0%, #2d0370 55%, #5d06ba 100%); }
+    .kh-hero::after { content:''; position:absolute; left:-6%; bottom:-40%; width:420px; height:420px; border-radius:50%;
+      background: radial-gradient(circle, rgba(124,58,237,.35), transparent 70%); pointer-events:none; }
+    .kh-hero__inner { position: relative; z-index:2; max-width: 760px; }
+    .kh-eyebrow { display:inline-flex; align-items:center; gap:.5rem; font-size:.8rem; font-weight:700; letter-spacing:.05em;
+      text-transform:uppercase; padding:.4rem .9rem; border-radius:999px; background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.22); margin-bottom:1.4rem; }
+    .kh-hero h1 { font-size: clamp(2.1rem,5vw,3.4rem); font-weight:800; line-height:1.12; margin:0 0 1.1rem; }
+    .kh-hero h1 .gold { color: var(--gold); }
+    .kh-hero p.lead { font-size: clamp(1.05rem,2vw,1.3rem); opacity:.95; line-height:1.6; margin:0 0 2rem; max-width: 620px; }
+    .kh-cta { display:flex; gap:.9rem; flex-wrap:wrap; align-items:center; }
+    .kh-btn--lead { padding:1rem 2.1rem; }
+
+    /* Animated slow-motion waves at the hero bottom */
+    .kh-hero { padding-bottom: clamp(6.5rem, 11vw, 9rem); }
+    .kh-waves { position:absolute; left:0; right:0; bottom:-1px; width:100%; height:90px; z-index:1; line-height:0; }
+    .kh-waves svg { width:100%; height:100%; }
+    .kh-wave { animation: kh-move-forever linear infinite; }
+    .kh-wave-1 { animation-duration: 38s; animation-delay: -2s; }
+    .kh-wave-2 { animation-duration: 30s; animation-delay: -3s; }
+    .kh-wave-3 { animation-duration: 24s; animation-delay: -4s; }
+    .kh-wave-4 { animation-duration: 18s; animation-delay: -5s; }
+    @keyframes kh-move-forever {
+      0%   { transform: translate3d(-90px, 0, 0); }
+      100% { transform: translate3d(85px, 0, 0); }
     }
-    
-    /* Fix: Ensure hero overlay doesn't block clicks */
-    .kalan-hero::before,
-    #hero::before {
-      pointer-events: none;
-      z-index: 1;
-    }
-    
-    /* Ensure content is above overlay */
-    .kalan-hero .container {
-      position: relative;
-      z-index: 2;
-    }
-    
-    .kalan-hero .hero-content {
-      position: relative;
-      z-index: 3;
-    }
-    
-    /* Ensure buttons are clickable */
-    .btn-hero-primary,
-    .btn-hero-secondary {
-      position: relative;
-      z-index: 4;
-      cursor: pointer;
-    }
-    
-    .kalan-hero .hero-content h1 {
-      font-size: 3.5rem;
-      font-weight: 800;
-      line-height: 1.2;
-      margin-bottom: 1.5rem;
-      color: #fff;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
-    
-    .kalan-hero .hero-subtitle {
-      font-size: 1.4rem;
-      color: rgba(255, 255, 255, 0.95);
-      margin-bottom: 2.5rem;
-      font-weight: 400;
-      line-height: 1.6;
-    }
-    
-    .kalan-hero .hero-highlight {
-      color: #FFD700;
-      font-weight: 700;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-    }
-    
-    .hero-cta-wrapper {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    
-    .btn-hero-primary {
-      padding: 16px 40px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      border-radius: 50px;
-      background: linear-gradient(135deg, #5d09cb 0%, #7c3aed 100%);
-      border: 2px solid transparent;
-      color: #fff;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      box-shadow: 0 8px 25px rgba(93, 9, 203, 0.4);
-      display: inline-block;
-    }
-    
-    .btn-hero-primary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 35px rgba(93, 9, 203, 0.6);
-      background: linear-gradient(135deg, #7c3aed 0%, #5d09cb 100%);
-      color: #fff;
-    }
-    
-    .btn-hero-secondary {
-      padding: 16px 40px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      border-radius: 50px;
-      background: transparent;
-      border: 2px solid #fff;
-      color: #fff;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      display: inline-block;
-    }
-    
-    .btn-hero-secondary:hover {
-      background: #fff;
-      color: #5d09cb;
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
-    }
-    
-    /* Video Modal Styles */
-    .video-modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(5px);
-      z-index: 9998;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-    
-    .video-modal-overlay.active {
-      display: block;
-      opacity: 1;
-    }
-    
-    .video-modal {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.9);
-      width: 90%;
-      max-width: 900px;
-      background: #ffffff;
-      padding: 1.5rem 1.5rem 1.25rem 1.5rem; /* extra space at top for close button */
-      border-radius: 20px;
-      z-index: 9999;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-      transition: transform 0.3s ease, opacity 0.3s ease;
-      opacity: 0;
-    }
-    
-    .video-modal.active {
-      display: block;
-      transform: translate(-50%, -50%) scale(1);
-      opacity: 1;
-    }
-    
-    .video-modal-close {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: purple;
-      color: #fff;
-      border: none;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      font-size: 1.5rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s ease;
-      z-index: 10000;
-    }
-    
-    .video-modal-close:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: rotate(90deg) scale(1.1);
-      color: purple;
-    }
-    
-    @media (max-width: 768px) {
-      .video-modal {
-        width: 95%;
-        padding: 1rem 1rem 0.75rem 1rem;
-      }
-      
-      .video-modal-close {
-        width: 35px;
-        height: 35px;
-        font-size: 1.2rem;
-        top: 0.5rem;
-        right: 0.5rem;
-      }
-    }
-    
-    /* Enhanced About Section */
-    .about-enhanced {
-      background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
-      position: relative;
-    }
-    
-    .section-title-enhanced {
-      text-align: center;
-      margin-bottom: 4rem;
-    }
-    
-    .section-title-enhanced h2 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: #2d0370;
-      margin-bottom: 1rem;
-      position: relative;
-      display: inline-block;
-    }
-    
-    .section-title-enhanced h2::after {
-      content: '';
-      position: absolute;
-      bottom: -15px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 80px;
-      height: 4px;
-      background: linear-gradient(90deg, #5d09cb, #FFD700);
-      border-radius: 2px;
-    }
-    
-    .section-title-enhanced p {
-      font-size: 1.2rem;
-      color: #666;
-      margin-top: 2rem;
-    }
-    
-    .icon-box-enhanced {
-      padding: 2.5rem;
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 5px 30px rgba(0,0,0,0.08);
-      transition: all 0.4s ease;
-      height: 100%;
-      border: 1px solid #f0f0f0;
-      margin-bottom: 2rem;
-    }
-    
-    .icon-box-enhanced:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 15px 50px rgba(93, 9, 203, 0.15);
-      border-color: #5d09cb;
-    }
-    
-    .icon-box-enhanced .icon {
-      width: 80px;
-      height: 80px;
-      background: linear-gradient(135deg, #5d09cb 0%, #7c3aed 100%);
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 1.5rem;
-      transition: all 0.3s ease;
-    }
-    
-    .icon-box-enhanced:hover .icon {
-      transform: scale(1.1) rotate(5deg);
-      box-shadow: 0 10px 25px rgba(93, 9, 203, 0.3);
-    }
-    
-    .icon-box-enhanced .icon i {
-      font-size: 2.5rem;
-      color: #fff;
-    }
-    
-    .icon-box-enhanced .title {
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: #2d0370;
-      margin-bottom: 1rem;
-      line-height: 1.4;
-    }
-    
-    .icon-box-enhanced .description {
-      color: #666;
-      line-height: 1.8;
-      font-size: 1rem;
-    }
-    
-    /* Enhanced Video Container for Modal */
-    .video-container-enhanced {
-      position: relative;
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      background: transparent;
-      width: 100%;
-      margin: 0.5rem auto 0; /* push video slightly below close button */
-    }
-    
-    #tv-container {
-      max-width: 100%;
-    }
-    
-    #monitor {
-      margin: 0;
-      padding: 0;
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-      animation: none !important; /* Stop any TV flicker animations */
-      -webkit-animation: none !important;
-      -moz-animation: none !important;
-      -o-animation: none !important;
-    }
-    
-    #monitor:after {
-      display: none !important; /* Remove TV stand indicator */
-    }
-    
-    #monitorscreen {
-      padding-bottom: 56.25%; /* 16:9 aspect ratio */
-      background: transparent !important;
-      border-radius: 15px;
-      overflow: hidden;
-    }
-    
-    /* Ensure video iframe is clickable */
-    #vimeo-content-modal {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 2;
-      border-radius: 15px;
-    }
-    
-    /* Stats in Modal */
-    .modal-stats {
-      margin-top: 1rem;
-      padding-top: 1rem;
-      border-top: 1px solid rgba(0, 0, 0, 0.08);
-    }
-    
-    .modal-stats-title {
-      text-align: center;
-      color: #2d0370;
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 0.75rem;
-    }
-    
-    .modal-stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.75rem;
-    }
-    
-    .count-box-modal {
-      text-align: center;
-      padding: 0.75rem 0.5rem;
-      background: #fff;
-      border-radius: 12px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      transition: all 0.3s ease;
-    }
-    
-    .count-box-modal:hover {
-      transform: translateY(-3px);
-      border-color: rgba(93, 9, 203, 0.5);
-    }
-    
-    .count-box-modal i {
-      font-size: 1.25rem;
-      color: #5d09cb;
-      margin-bottom: 0.25rem;
-      display: block;
-    }
-    
-    .count-box-modal .purecounter {
-      font-size: 1.25rem;
-      font-weight: 800;
-      display: block;
-      color: purple;
-      margin-bottom: 0.15rem;
-      line-height: 1.2;
-    }
-    
-    .count-box-modal p {
-      font-size: 0.7rem;
-      font-weight: 500;
-      color: #555;
-      margin: 0;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-      line-height: 1.2;
-    }
-    
-    @media (max-width: 768px) {
-      .modal-stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.5rem;
-      }
-      
-      .count-box-modal {
-        padding: 0.75rem 0.5rem;
-      }
-      
-      .count-box-modal i {
-        font-size: 1.1rem;
-      }
-      
-      .count-box-modal .purecounter {
-        font-size: 1.1rem;
-      }
-      
-      .count-box-modal p {
-        font-size: 0.65rem;
-      }
-      
-      .modal-stats-title {
-        font-size: 1rem;
-        margin-bottom: 0.5rem;
-      }
-    }
-    
-    /* Ensure all links are clickable */
-    a {
-      position: relative;
-      z-index: 1;
-      cursor: pointer;
-    }
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .kalan-hero .hero-content h1 {
-        font-size: 2.2rem;
-      }
-      
-      .kalan-hero .hero-subtitle {
-        font-size: 1.1rem;
-      }
-      
-      .hero-cta-wrapper {
-        flex-direction: column;
-      }
-      
-      .btn-hero-primary,
-      .btn-hero-secondary {
-        width: 100%;
-        text-align: center;
-      }
-      
-      .section-title-enhanced h2 {
-        font-size: 2rem;
-      }
-      
-      .icon-box-enhanced {
-        padding: 1.5rem;
-      }
+    @media (prefers-reduced-motion: reduce) { .kh-wave { animation: none; } }
+    .kh-btn { border:none; cursor:pointer; border-radius:50px; padding:.95rem 1.9rem; font-weight:700; font-size:1rem;
+      display:inline-flex; align-items:center; gap:.55rem; text-decoration:none; transition: transform .2s, box-shadow .2s; }
+    .kh-btn--gold { background: linear-gradient(135deg,#ffd700,#ffb800); color:#2d0370; box-shadow:0 8px 24px rgba(255,215,0,.35); }
+    .kh-btn--gold:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(255,215,0,.45); color:#2d0370; }
+    .kh-btn--ghost { background:rgba(255,255,255,.1); color:#fff; border:1.5px solid rgba(255,255,255,.4); }
+    .kh-btn--ghost:hover { background:rgba(255,255,255,.2); color:#fff; }
+    .kh-btn--brand { background: linear-gradient(135deg,#5d06ba,#2d0370); color:#fff; }
+    .kh-btn--brand:hover { transform:translateY(-2px); box-shadow:0 10px 26px rgba(93,6,186,.35); color:#fff; }
+    .kh-btn--outline { background:#fff; color:#5d06ba; border:1.5px solid #5d06ba; }
+    .kh-btn--outline:hover { background:#5d06ba; color:#fff; }
+
+    /* Stats band */
+    .kh-stats { background:#fff; margin-top:-2.5rem; position:relative; z-index:3; border-radius:20px;
+      box-shadow:0 12px 40px rgba(45,3,112,.12); padding:1.75rem clamp(1rem,3vw,2.5rem);
+      display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+    .kh-stat { text-align:center; }
+    .kh-stat i { font-size:1.5rem; color:var(--brand); }
+    .kh-stat .num { font-size:1.8rem; font-weight:800; color:var(--brand-dark); line-height:1.1; }
+    .kh-stat .lbl { font-size:.8rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); font-weight:600; }
+
+    /* Section */
+    .kh-section { padding: clamp(3.5rem,8vw,6rem) 0; }
+    .kh-section--alt { background: linear-gradient(to bottom,#faf8ff,#fff); }
+    .kh-head { text-align:center; max-width:680px; margin:0 auto clamp(2.5rem,5vw,3.5rem); }
+    .kh-head .tag { display:inline-block; font-size:.8rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+      color:var(--brand); background:#ede0ff; padding:.3rem .8rem; border-radius:999px; margin-bottom:1rem; }
+    .kh-head h2 { font-size: clamp(1.7rem,3.5vw,2.5rem); font-weight:800; color:var(--brand-dark); margin:0 0 .8rem; }
+    .kh-head p { font-size:1.1rem; color:var(--muted); margin:0; line-height:1.6; }
+
+    /* Value cards */
+    .kh-grid3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; }
+    .kh-value { background:#fff; border:1px solid #eee; border-radius:20px; padding:2.25rem; box-shadow:0 4px 20px rgba(0,0,0,.05);
+      transition: transform .3s, box-shadow .3s, border-color .3s; }
+    .kh-value:hover { transform:translateY(-8px); box-shadow:0 18px 44px rgba(93,6,186,.14); border-color:#d9ccf5; }
+    .kh-value .ic { width:64px; height:64px; border-radius:16px; display:flex; align-items:center; justify-content:center;
+      font-size:1.7rem; color:#fff; background:linear-gradient(135deg,#5d06ba,#2d0370); margin-bottom:1.25rem; }
+    .kh-value h4 { font-size:1.2rem; font-weight:700; color:var(--brand-dark); margin:0 0 .6rem; line-height:1.35; }
+    .kh-value p { color:var(--muted); line-height:1.7; margin:0; font-size:.98rem; }
+
+    /* Pricing tiers */
+    .kh-tiers { display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:1.5rem; align-items:stretch; }
+    .kh-tier { position:relative; background:#fff; border:1.5px solid #ece7f6; border-radius:22px; padding:2rem 1.75rem;
+      display:flex; flex-direction:column; box-shadow:0 4px 20px rgba(0,0,0,.05); transition:transform .3s, box-shadow .3s; }
+    .kh-tier:hover { transform:translateY(-6px); box-shadow:0 18px 44px rgba(93,6,186,.14); }
+    .kh-tier--feature { border-color:transparent; background:linear-gradient(135deg,#2d0370,#5d06ba); color:#fff; box-shadow:0 16px 44px rgba(45,3,112,.3); }
+    .kh-tier__badge { position:absolute; top:-13px; left:50%; transform:translateX(-50%); font-size:.72rem; font-weight:800;
+      letter-spacing:.05em; text-transform:uppercase; padding:.3rem .9rem; border-radius:999px;
+      background:linear-gradient(135deg,#ffd700,#ffb800); color:#2d0370; box-shadow:0 4px 12px rgba(255,184,0,.4); }
+    .kh-tier__name { display:inline-flex; align-items:center; gap:.45rem; font-size:1.3rem; font-weight:800; color:var(--brand-dark); margin-bottom:.3rem; }
+    .kh-tier--feature .kh-tier__name { color:#fff; }
+    .kh-tier__scope { font-size:.88rem; color:var(--muted); margin-bottom:1.1rem; }
+    .kh-tier--feature .kh-tier__scope { color:rgba(255,255,255,.8); }
+    .kh-tier__price { font-size:2rem; font-weight:800; color:var(--brand-dark); line-height:1.1; }
+    .kh-tier--feature .kh-tier__price { color:#ffd700; }
+    .kh-tier__price small { font-size:.9rem; font-weight:600; color:var(--muted); }
+    .kh-tier--feature .kh-tier__price small { color:rgba(255,255,255,.75); }
+    .kh-tier__price .save { display:inline-block; font-size:.72rem; font-weight:700; background:rgba(255,215,0,.2); color:#7a5b00;
+      padding:.12rem .5rem; border-radius:999px; margin-left:.4rem; vertical-align:middle; }
+    .kh-tier--feature .kh-tier__price .save { background:rgba(255,215,0,.22); color:#ffd700; }
+    .kh-feats { list-style:none; padding:0; margin:1.4rem 0; display:flex; flex-direction:column; gap:.7rem; flex:1; }
+    .kh-feats li { display:flex; align-items:flex-start; gap:.6rem; font-size:.95rem; line-height:1.4; }
+    .kh-feats li i { flex-shrink:0; margin-top:.1rem; }
+    .kh-feats .yes { color:#1e9e54; }
+    .kh-feats .yesf { color:#ffd700; }
+    .kh-feats .no { color:#c7ccd4; }
+    .kh-tier--feature .kh-feats li { color:rgba(255,255,255,.92); }
+    .kh-tier .kh-btn { width:100%; justify-content:center; }
+    .kh-tier__note { font-size:.78rem; color:var(--muted); text-align:center; margin-top:.7rem; }
+    .kh-tier--feature .kh-tier__note { color:rgba(255,255,255,.75); }
+    .kh-pricing-foot { text-align:center; margin-top:2rem; color:var(--muted); font-size:.92rem; }
+    .kh-pricing-foot a { color:var(--brand); font-weight:600; text-decoration:none; }
+    .kh-pricing-foot a:hover { text-decoration:underline; }
+
+    /* CTA band */
+    .kh-cta-band { background: radial-gradient(700px 300px at 20% 0%, rgba(255,215,0,.16), transparent 60%),
+      linear-gradient(135deg,#2d0370,#5d06ba); color:#fff; border-radius:24px; padding:clamp(2.5rem,6vw,4rem);
+      text-align:center; box-shadow:0 16px 50px rgba(45,3,112,.25); }
+    .kh-cta-band h2 { font-size:clamp(1.6rem,3.5vw,2.3rem); font-weight:800; margin:0 0 .8rem; }
+    .kh-cta-band p { opacity:.92; font-size:1.1rem; margin:0 auto 1.8rem; max-width:560px; }
+
+    /* Video modal (preserved) */
+    .video-modal-overlay { display:none; position:fixed; inset:0; background:rgba(10,2,30,.7); backdrop-filter:blur(5px);
+      z-index:9998; opacity:0; transition:opacity .3s ease; }
+    .video-modal-overlay.active { display:block; opacity:1; }
+    .video-modal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(.9); width:92%;
+      max-width:880px; background:#fff; padding:1.25rem; border-radius:20px; z-index:9999; box-shadow:0 20px 60px rgba(0,0,0,.35);
+      transition:transform .3s ease, opacity .3s ease; opacity:0; }
+    .video-modal.active { display:block; transform:translate(-50%,-50%) scale(1); opacity:1; }
+    .video-modal-close { position:absolute; top:-18px; right:-18px; background:#5d06ba; color:#fff; border:none; width:42px; height:42px;
+      border-radius:50%; font-size:1.4rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .3s ease; z-index:10000; }
+    .video-modal-close:hover { transform:rotate(90deg) scale(1.08); }
+    .video-modal .ratio-box { position:relative; padding-bottom:56.25%; border-radius:14px; overflow:hidden; background:#000; }
+    .video-modal .ratio-box iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
+
+    @media (max-width: 720px) {
+      .kh-stats { grid-template-columns:repeat(2,1fr); margin-top:-1.5rem; }
+      .video-modal-close { top:-14px; right:-14px; width:36px; height:36px; }
     }
   </style>
 ` %>
 
-<!-- ======= Enhanced Hero Section ======= -->
-<section id="hero" class="kalan-hero">
-    <div class="container">
-    <div class="row justify-content-between align-items-center">
-      <div class="col-lg-7 pt-1 pt-lg-0 order-2 order-lg-1">
-        <div class="hero-content" data-aos="fade-right">
-          <h1>
-            Assurez votre <span class="hero-highlight">réussite scolaire</span> avec 
-            <span class="d-inline-block"><span class="afrohk">e-kalan</span></span>
-          </h1>
-          <p class="hero-subtitle">
-            Une plateforme d'e-learning innovante qui vous accompagne dans votre parcours scolaire. 
-            Accédez à des cours de qualité, des ressources pédagogiques complètes et un suivi personnalisé 
-            pour exceller dans vos études.
-          </p>
-          <div class="hero-cta-wrapper">
-            <% if(typeof currentUser !== 'undefined' && currentUser) { %>
-              <a href="/dashboard" class="btn-hero-primary">
-                <i class="bi bi-arrow-right me-2"></i>Accéder au dashboard
-              </a>
-            <% } else { %>
-              <a href="/login" class="btn-hero-primary">
-                <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
-              </a>
-              <button type="button" class="btn-hero-secondary" id="enSavoirPlusBtn">
-                <i class="bi bi-eye me-2"></i>En savoir plus
-              </button>
-            <% } %>
-              </div>
-            </div>
-                </div>
-              </div>
-            </div>
-  </section><!-- End Hero -->
+<div class="kh">
 
-<!-- Video Modal -->
-<div class="video-modal-overlay" id="videoModalOverlay" style="background: rgba(200, 165, 165, 0.5);">
-<button class="video-modal-close" id="closeVideoModal" aria-label="Fermer">
-  <i class="bi bi-x"></i>
-</button>
-          </div>
-<div class="video-modal" id="videoModal">
-  
-  <div class="video-container-enhanced">
-    <div id="tv-container">
-      <div id="monitor">
-        <div id="monitorscreen">
-          <iframe
-            id="vimeo-content-modal"
-            src="https://player.vimeo.com/video/1064482540?h=2db4f2c774&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
-            frameborder="0"
-            loading="lazy"
-            height="100%"
-            width="100%"
-            allow="autoplay; fullscreen; picture-in-picture"
-            title="e-kalan Platform Presentation"
-            style="position: absolute; top: 0; left: 0;">
-          </iframe>
-                </div>
-              </div>
-            </div>
-          </div>
+  <!-- Hero -->
+  <section id="kalan-hero" class="kh-hero">
+    <div class="kh-wrap kh-hero__inner" data-aos="fade-up">
+      <span class="kh-eyebrow"><i class="bi bi-mortarboard-fill"></i> Programme e-learning lycée &amp; collège</span>
+      <h1>Assurez votre <span class="gold">réussite scolaire</span> avec <span class="afrohk">e-kalan</span></h1>
+      <p class="lead">Des cours clairs, des exercices corrigés et les sujets des meilleurs établissements —
+        accessibles partout, à votre rythme, pour exceller dans vos études.</p>
+      <div class="kh-cta">
+        <a href="<%= primaryCta.href %>" class="kh-btn kh-btn--gold kh-btn--lead"><i class="bi <%= primaryCta.icon %>"></i> <%= primaryCta.label %></a>
+        <button type="button" class="kh-btn kh-btn--ghost" id="enSavoirPlusBtn"><i class="bi bi-play-circle"></i> En savoir plus</button>
+      </div>
+    </div>
 
-  <!-- Stats Section in Modal -->
-  <div class="modal-stats">
-    <h3 class="modal-stats-title">Notre impact en chiffres</h3>
-    <div class="modal-stats-grid">
-      <div class="count-box-modal">
-        <i class="bi bi-emoji-smile"></i>
-        <span data-purecounter-start="0" data-purecounter-end="549" data-purecounter-duration="1" class="purecounter"></span>
-        <p>Élèves</p>
-          </div>
+    <!-- Animated slow-motion waves -->
+    <div class="kh-waves" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+           viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+        <defs>
+          <path id="kh-wave-path" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+        </defs>
+        <g class="kh-wave-group">
+          <use href="#kh-wave-path" xlink:href="#kh-wave-path" x="48" y="0" fill="rgba(255,255,255,.05)" class="kh-wave kh-wave-1" />
+          <use href="#kh-wave-path" xlink:href="#kh-wave-path" x="48" y="3" fill="rgba(216,180,254,.10)" class="kh-wave kh-wave-2" />
+          <use href="#kh-wave-path" xlink:href="#kh-wave-path" x="48" y="5" fill="rgba(124,58,237,.20)" class="kh-wave kh-wave-3" />
+          <use href="#kh-wave-path" xlink:href="#kh-wave-path" x="48" y="7" fill="#faf8ff" class="kh-wave kh-wave-4" />
+        </g>
+      </svg>
+    </div>
+  </section>
 
-      <div class="count-box-modal">
-        <i class="bi bi-journal-richtext"></i>
-        <span data-purecounter-start="0" data-purecounter-end="321" data-purecounter-duration="1" class="purecounter"></span>
-        <p>Étudiants</p>
-          </div>
+  <!-- Stats band -->
+  <div class="kh-wrap">
+    <div class="kh-stats" data-aos="fade-up">
+      <div class="kh-stat"><i class="bi bi-emoji-smile"></i>
+        <div class="num"><span data-purecounter-start="0" data-purecounter-end="549" data-purecounter-duration="1" class="purecounter"></span>+</div>
+        <div class="lbl">Élèves</div></div>
+      <div class="kh-stat"><i class="bi bi-journal-richtext"></i>
+        <div class="num"><span data-purecounter-start="0" data-purecounter-end="321" data-purecounter-duration="1" class="purecounter"></span>+</div>
+        <div class="lbl">Étudiants</div></div>
+      <div class="kh-stat"><i class="bi bi-building"></i>
+        <div class="num"><span data-purecounter-start="0" data-purecounter-end="10" data-purecounter-duration="1" class="purecounter"></span></div>
+        <div class="lbl">Écoles</div></div>
+      <div class="kh-stat"><i class="bi bi-geo-alt"></i>
+        <div class="num"><span data-purecounter-start="0" data-purecounter-end="3" data-purecounter-duration="1" class="purecounter"></span></div>
+        <div class="lbl">Villes</div></div>
+    </div>
+  </div>
 
-      <div class="count-box-modal">
-        <i class="bi bi-building"></i>
-        <span data-purecounter-start="0" data-purecounter-end="10" data-purecounter-duration="1" class="purecounter"></span>
-        <p>Écoles</p>
+  <!-- Why e-kalan -->
+  <section id="about" class="kh-section">
+    <div class="kh-wrap">
+      <div class="kh-head" data-aos="fade-up">
+        <span class="tag">Pourquoi e-kalan</span>
+        <h2>Tout pour réussir, au même endroit</h2>
+        <p>Un programme pensé pour les élèves du Burkina, du collège à la terminale.</p>
+      </div>
+      <div class="kh-grid3">
+        <div class="kh-value" data-aos="zoom-in" data-aos-delay="100">
+          <div class="ic"><i class="bi bi-phone"></i></div>
+          <h4>Étudiez à votre rythme</h4>
+          <p>Accessible sur ordinateur, tablette et smartphone — apprenez quand et où vous voulez, à tout moment.</p>
         </div>
-
-      <div class="count-box-modal">
-        <i class="bi bi-geo-alt"></i>
-        <span data-purecounter-start="0" data-purecounter-end="3" data-purecounter-duration="1" class="purecounter"></span>
-        <p>Villes</p>
-              </div>
-            </div>
-          </div>
+        <div class="kh-value" data-aos="zoom-in" data-aos-delay="200">
+          <div class="ic"><i class="bi bi-easel2"></i></div>
+          <h4>Des cours bien expliqués</h4>
+          <p>Des professeurs passionnés et expérimentés. Chaque leçon est claire, complète et facile à comprendre.</p>
         </div>
-<!-- End Video Modal -->
-
-<!-- ======= Enhanced About Section ======= -->
-<section id="about" class="about about-enhanced">
-      <div class="container">
-    <div class="section-title-enhanced" data-aos="fade-up">
-      <h2>À propos</h2>
-      <p>Ce qu'il faut savoir sur <span class="d-inline-block"><span class="afrohk-2">e-kalan</span></span></p>
-        </div>
-
-    <!-- Restructured Cards Grid -->
-    <div class="about-cards-grid">
-      <div class="icon-box-enhanced" data-aos="zoom-in" data-aos-delay="100">
-        <div class="icon">
-          <i class="fa-solid fa-book-open-reader"></i>
-              </div>
-        <h4 class="title">Étudiez à votre rythme, quand et où vous le souhaitez</h4>
-        <p class="description">
-          La plateforme e-kalan est accessible sur tous les supports digitaux (ordinateur, tablette, smartphone) 
-          afin que vous puissiez étudier dans les conditions qui vous conviennent le mieux, à tout moment de la journée.
-                </p>
-              </div>
-
-      <div class="icon-box-enhanced" data-aos="zoom-in" data-aos-delay="200">
-        <div class="icon">
-          <i class="fa-solid fa-person-chalkboard"></i>
-              </div>
-        <h4 class="title">Des cours bien expliqués avec tous les détails</h4>
-        <p class="description">
-          Les cours sont expliqués par des professeurs passionnés et expérimentés qui maîtrisent parfaitement 
-          leur domaine. Chaque leçon est conçue pour être claire, complète et facile à comprendre.
-                </p>
-              </div>
-
-      <div class="icon-box-enhanced" data-aos="zoom-in" data-aos-delay="300">
-        <div class="icon">
-          <i class="fa-solid fa-brain"></i>
-        </div>
-        <h4 class="title">Les meilleurs vous viennent en aide</h4>
-        <p class="description">
-          Accédez aux sujets corrigés des grands établissements par les meilleurs élèves et étudiants. 
-          Apprenez des meilleures pratiques et des techniques qui mènent à l'excellence académique.
-                </p>
-              </div>
+        <div class="kh-value" data-aos="zoom-in" data-aos-delay="300">
+          <div class="ic"><i class="bi bi-trophy"></i></div>
+          <h4>Les meilleurs vous aident</h4>
+          <p>Sujets corrigés des grands établissements et des examens nationaux, avec corrections en vidéo.</p>
         </div>
       </div>
-</section><!-- End About Section -->
+    </div>
+  </section>
 
+  <!-- Pricing / tiers -->
+  <section id="tarifs" class="kh-section kh-section--alt">
+    <div class="kh-wrap">
+      <div class="kh-head" data-aos="fade-up">
+        <span class="tag">Tarifs</span>
+        <h2>Choisissez votre formule</h2>
+        <p>Commencez gratuitement, puis débloquez les contenus premium par matière (<strong>Kalan Ba</strong>)
+          ou pour toute la classe avec <strong>Kalan Naaba</strong> — et économisez 20 %.</p>
+      </div>
+
+      <div class="kh-tiers">
+        <!-- Gratuit -->
+        <div class="kh-tier" data-aos="fade-up" data-aos-delay="50">
+          <div class="kh-tier__name"><i class="bi bi-unlock"></i> Gratuit</div>
+          <div class="kh-tier__scope">Pour découvrir le programme</div>
+          <div class="kh-tier__price">0 <small>FCFA</small></div>
+          <ul class="kh-feats">
+            <li><i class="bi bi-check-circle-fill yes"></i> Cours du programme national</li>
+            <li><i class="bi bi-check-circle-fill yes"></i> Exercices d'apprentissage</li>
+            <li><i class="bi bi-x-circle-fill no"></i> Exercices d'approfondissement</li>
+            <li><i class="bi bi-x-circle-fill no"></i> Sujets d'examens &amp; corrections vidéo</li>
+          </ul>
+          <a href="<%= primaryCta.href %>" class="kh-btn kh-btn--outline"><i class="bi bi-arrow-right"></i> Commencer</a>
+        </div>
+
+        <!-- Kalan Ba (featured) -->
+        <div class="kh-tier kh-tier--feature" data-aos="fade-up" data-aos-delay="150">
+          <span class="kh-tier__badge">Populaire</span>
+          <div class="kh-tier__name"><i class="bi bi-stars"></i> Kalan Ba</div>
+          <div class="kh-tier__scope">Une matière au choix</div>
+          <div class="kh-tier__price">2 000 <small>FCFA / matière</small></div>
+          <ul class="kh-feats">
+            <li><i class="bi bi-check-circle-fill yesf"></i> Tout le Gratuit, plus :</li>
+            <li><i class="bi bi-check-circle-fill yesf"></i> Exercices d'approfondissement (CIAM)</li>
+            <li><i class="bi bi-check-circle-fill yesf"></i> Sujets d'examens nationaux</li>
+            <li><i class="bi bi-check-circle-fill yesf"></i> Sujets des meilleurs établissements</li>
+            <li><i class="bi bi-check-circle-fill yesf"></i> Corrections en vidéo</li>
+          </ul>
+          <a href="<%= primaryCta.href %>" class="kh-btn kh-btn--gold"><i class="bi bi-stars"></i> Choisir une matière</a>
+          <div class="kh-tier__note">Prix indicatif — défini par matière</div>
+        </div>
+
+        <!-- Kalan Naaba -->
+        <div class="kh-tier" data-aos="fade-up" data-aos-delay="250">
+          <span class="kh-tier__badge" style="background:linear-gradient(135deg,#34d399,#10b981); color:#04361f;">Meilleure valeur</span>
+          <div class="kh-tier__name"><i class="bi bi-gem"></i> Kalan Naaba</div>
+          <div class="kh-tier__scope">Toute la classe</div>
+          <div class="kh-tier__price">−20 % <small>sur toutes les matières</small> <span class="save">Économie</span></div>
+          <ul class="kh-feats">
+            <li><i class="bi bi-check-circle-fill yes"></i> Tout Kalan Ba, plus :</li>
+            <li><i class="bi bi-check-circle-fill yes"></i> <strong>Toutes les matières</strong> de la classe</li>
+            <li><i class="bi bi-check-circle-fill yes"></i> Un seul accès, prix réduit</li>
+            <li><i class="bi bi-check-circle-fill yes"></i> Nouvelles matières incluses</li>
+          </ul>
+          <a href="<%= primaryCta.href %>" class="kh-btn kh-btn--brand"><i class="bi bi-gem"></i> Débloquer ma classe</a>
+          <div class="kh-tier__note">Prix = somme des matières − 20 %</div>
+        </div>
+      </div>
+
+      <p class="kh-pricing-foot">
+        Paiement et activation via WhatsApp.
+        <a href="https://wa.me/22653344444" target="_blank" rel="noopener"><i class="bi bi-whatsapp"></i> Nous contacter</a>
+        pour toute question sur les tarifs.
+      </p>
+    </div>
+  </section>
+
+  <!-- CTA band -->
+  <section class="kh-section">
+    <div class="kh-wrap" data-aos="fade-up">
+      <div class="kh-cta-band">
+        <h2>Prêt à passer à la vitesse supérieure ?</h2>
+        <p>Rejoignez des centaines d'élèves qui préparent leur réussite avec e-kalan.</p>
+        <div class="kh-cta" style="justify-content:center;">
+          <a href="<%= primaryCta.href %>" class="kh-btn kh-btn--gold"><i class="bi <%= primaryCta.icon %>"></i> <%= primaryCta.label %></a>
+          <a href="#tarifs" class="kh-btn kh-btn--ghost"><i class="bi bi-tag"></i> Revoir les tarifs</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Video Modal -->
+<div class="video-modal-overlay" id="videoModalOverlay"></div>
+<div class="video-modal" id="videoModal">
+  <button class="video-modal-close" id="closeVideoModal" aria-label="Fermer"><i class="bi bi-x-lg"></i></button>
+  <div class="ratio-box">
+    <iframe id="vimeo-content-modal"
+      src="https://player.vimeo.com/video/1064482540?h=2db4f2c774&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+      frameborder="0" loading="lazy" allow="autoplay; fullscreen; picture-in-picture"
+      title="Présentation du programme e-kalan"></iframe>
+  </div>
+</div>
+<!-- End Video Modal -->
 
 <% scripts = `
   <script>
-    // Video Modal Functionality
-    document.addEventListener('DOMContentLoaded', function() {
-      const enSavoirPlusBtn = document.getElementById('enSavoirPlusBtn');
-      const videoModal = document.getElementById('videoModal');
-      const videoModalOverlay = document.getElementById('videoModalOverlay');
-      const closeVideoModal = document.getElementById('closeVideoModal');
-      
-      function openModal() {
-        if (videoModal && videoModalOverlay) {
-          document.body.style.overflow = 'hidden'; // Prevent body scroll
-          videoModalOverlay.classList.add('active');
-          videoModal.classList.add('active');
-        }
-      }
-      
-      function closeModal() {
-        if (videoModal && videoModalOverlay) {
-          document.body.style.overflow = ''; // Restore body scroll
-          videoModal.classList.remove('active');
-          videoModalOverlay.classList.remove('active');
-        }
-      }
-      
-      if (enSavoirPlusBtn && videoModal) {
-        // Open modal on button click
-        enSavoirPlusBtn.addEventListener('click', function(e) {
-          e.preventDefault();
-          openModal();
-        });
-        
-        // Close modal on close button click
-        if (closeVideoModal) {
-          closeVideoModal.addEventListener('click', function(e) {
-            e.preventDefault();
-            closeModal();
-          });
-        }
-        
-        // Close modal when clicking on overlay
-        if (videoModalOverlay) {
-          videoModalOverlay.addEventListener('click', function(e) {
-            if (e.target === videoModalOverlay) {
-              closeModal();
-            }
-          });
-        }
-        
-        // Close modal on ESC key
-        document.addEventListener('keydown', function(e) {
-          if (e.key === 'Escape' && videoModal.classList.contains('active')) {
-            closeModal();
-          }
-        });
-      }
+    document.addEventListener('DOMContentLoaded', function () {
+      const openBtn  = document.getElementById('enSavoirPlusBtn');
+      const modal    = document.getElementById('videoModal');
+      const overlay  = document.getElementById('videoModalOverlay');
+      const closeBtn = document.getElementById('closeVideoModal');
+      function open()  { if (modal && overlay) { document.body.style.overflow='hidden'; overlay.classList.add('active'); modal.classList.add('active'); } }
+      function close() { if (modal && overlay) { document.body.style.overflow='';       overlay.classList.remove('active'); modal.classList.remove('active'); } }
+      if (openBtn)  openBtn.addEventListener('click', function (e) { e.preventDefault(); open(); });
+      if (closeBtn) closeBtn.addEventListener('click', function (e) { e.preventDefault(); close(); });
+      if (overlay)  overlay.addEventListener('click', close);
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal.classList.contains('active')) close(); });
     });
   </script>
 ` %>

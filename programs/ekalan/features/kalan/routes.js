@@ -23,9 +23,14 @@ const { HighSchool, HStudent, Class, Subject } = require("./model");
 router.get(
   "/",
   catchAsync(async (req, res) => {
-    res.render("programs/ekalan/kalan_home", {
-      isProgramPage: true
-    });
+    // For a logged-in high-school student, the primary CTA goes to their class.
+    let studentClassId = null;
+    if (req.user && req.user.isHighSchoolStudent && req.user.highSchool_id) {
+      const student = await HStudent.findById(req.user.highSchool_id).select("class_id");
+      if (student && student.class_id) studentClassId = student.class_id;
+    }
+    // Use the main site navbar (same as /user/:id) instead of the program navbar
+    res.render("programs/ekalan/kalan_home", { studentClassId });
   })
 );
 
