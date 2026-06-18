@@ -186,10 +186,12 @@ const classSchema = new Schema({
     ref: "HStudent",
   }, ],
 
-  // Kalan Naaba: élèves ayant l'accès premium à TOUTE la classe (bundle)
+  // Kalan Naaba: élèves ayant l'accès premium à TOUTE la classe (bundle).
+  // Accès limité dans le temps (aligné sur l'année scolaire) — cf. premiumAccess.js
   naabaStudents: [{
-    type: Schema.Types.ObjectId,
-    ref: "HStudent",
+    student: { type: Schema.Types.ObjectId, ref: "HStudent" },
+    grantedAt: { type: Date, default: Date.now },
+    expiresAt: { type: Date },
   }, ],
 
   // Remise (%) appliquée au prix groupé Kalan Naaba (somme des prix matières)
@@ -260,10 +262,12 @@ const subjectSchema = new Schema({
     default: 2000,
   },
 
-  // ✅ NOUVEAU: Liste des étudiants ayant accès premium à cette matière
+  // Liste des étudiants ayant accès premium à cette matière.
+  // Accès limité dans le temps (aligné sur l'année scolaire) — cf. premiumAccess.js
   premiumStudents: [{
-    type: Schema.Types.ObjectId,
-    ref: "HStudent",
+    student: { type: Schema.Types.ObjectId, ref: "HStudent" },
+    grantedAt: { type: Date, default: Date.now },
+    expiresAt: { type: Date },
   }, ],
 }, {
   timestamps: true,

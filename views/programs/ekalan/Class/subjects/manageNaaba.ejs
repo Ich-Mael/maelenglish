@@ -168,20 +168,30 @@
         <div class="empty">Aucun élève n'a encore Kalan Naaba pour cette classe.</div>
       <% } else { %>
         <table class="data-table">
-          <thead><tr><th>Élève</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Élève</th><th>Accès</th><th>Actions</th></tr></thead>
           <tbody>
-            <% schoolClass.naabaStudents.forEach(function(s) { const u = s && s.studentBasicInfo; %>
+            <% schoolClass.naabaStudents.forEach(function(s) { const u = s && s.student && s.student.studentBasicInfo; const active = s.expiresAt && new Date(s.expiresAt) > new Date(); %>
               <tr>
                 <td>
                   <div class="stu-name"><%= u ? `${u.surname || ''} ${u.name || ''}`.trim() || u.username : 'Élève inconnu' %></div>
                   <% if (u) { %><div class="stu-sub">@<%= u.username %><% if (u.email) { %> · <%= u.email %><% } %></div><% } %>
                 </td>
                 <td>
+                  <% if (active) { %>
+                    <span class="status-pill status-approved">Actif</span>
+                  <% } else { %>
+                    <span class="status-pill status-rejected">Expiré</span>
+                  <% } %>
+                  <% if (s.expiresAt) { %><div class="stu-sub"><%= active ? 'Expire le' : 'Expiré le' %> <%= new Date(s.expiresAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) %></div><% } %>
+                </td>
+                <td>
+                  <% if (s.student) { %>
                   <form class="inline-form" method="POST"
-                        action="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/naaba/revoke/<%= s._id %>?_method=DELETE"
+                        action="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/naaba/revoke/<%= s.student._id %>?_method=DELETE"
                         onsubmit="return confirm('Révoquer Kalan Naaba de cet élève ?');">
                     <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-x-circle"></i> Révoquer</button>
                   </form>
+                  <% } %>
                 </td>
               </tr>
             <% }); %>

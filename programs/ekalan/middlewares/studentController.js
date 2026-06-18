@@ -9,6 +9,7 @@ const {
     HTeacher,
     HSCourseVideo,
 } = require("../features/kalan/model");
+const { hasActiveAccess } = require("../features/kalan/premiumAccess");
 
 const isAdmin = (user) => user && (user.role === "admin" || user.role === "super-admin");
 
@@ -62,14 +63,14 @@ module.exports.subjectPremiumAccess = catchAsync(async (req, res, next) => {
     
     const hsId = req.user.highSchool_id;
 
-    // Kalan Ba: accès premium à cette matière
-    if (subject.premiumStudents && subject.premiumStudents.some((id) => id.toString() === hsId.toString())) {
+    // Kalan Ba: accès premium actif à cette matière
+    if (hasActiveAccess(subject.premiumStudents, hsId)) {
         return next();
     }
 
-    // Kalan Naaba: accès premium à toute la classe (bundle)
+    // Kalan Naaba: accès premium actif à toute la classe (bundle)
     const schoolClass = subject.classId ? await Class.findById(subject.classId).select("naabaStudents") : null;
-    if (schoolClass && schoolClass.naabaStudents && schoolClass.naabaStudents.some((id) => id.toString() === hsId.toString())) {
+    if (schoolClass && hasActiveAccess(schoolClass.naabaStudents, hsId)) {
         return next();
     }
 
@@ -111,11 +112,15 @@ async function hasPremiumAccessToExercise(studentId, exerciseId) {
         return true;
     }
     
-    // 4. Vérifier l'accès premium à la matière
+    // 4. Vérifier l'accès premium actif à la matière (Kalan Ba) ou à la classe (Kalan Naaba)
     const chapter = exercise.chapterId;
     if (chapter && chapter.subjectId) {
         const subject = chapter.subjectId;
-        if (subject.premiumStudents && subject.premiumStudents.includes(studentId)) {
+        if (hasActiveAccess(subject.premiumStudents, studentId)) {
+            return true;
+        }
+        const schoolClass = subject.classId ? await Class.findById(subject.classId).select("naabaStudents") : null;
+        if (schoolClass && hasActiveAccess(schoolClass.naabaStudents, studentId)) {
             return true;
         }
     }
