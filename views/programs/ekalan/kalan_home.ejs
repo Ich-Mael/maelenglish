@@ -77,10 +77,27 @@
     .kh-section--dark .kh-head h2 { color:#fff; }
     .kh-section--dark .kh-head p { color:rgba(255,255,255,.85); }
     .kh-section--dark .kh-head .tag { background:rgba(255,255,255,.14); color:#ffd700; }
+    @media (min-width: 992px) {
+      .kh-section--dark .kh-head { max-width: none; }
+      .kh-section--dark .kh-head h2 { white-space: nowrap; }
+    }
 
     /* Testimonials */
-    .kh-quotes { position:relative; z-index:1; display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:1.5rem; }
-    .kh-quote { background:#fff; color:#1f2937; border-radius:18px; padding:1.75rem; box-shadow:0 12px 32px rgba(0,0,0,.2);
+    .kh-carousel { position:relative; z-index:1; }
+    .kh-quotes { display:flex; gap:1.5rem; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth;
+      padding:.5rem .25rem 1.25rem; -ms-overflow-style:none; scrollbar-width:none; }
+    .kh-quotes::-webkit-scrollbar { display:none; }
+    .kh-carousel__nav { position:absolute; top:44%; transform:translateY(-50%); z-index:4; width:46px; height:46px;
+      border:none; border-radius:50%; cursor:pointer; background:rgba(255,255,255,.95); color:#2d0370;
+      box-shadow:0 8px 22px rgba(0,0,0,.3); display:flex; align-items:center; justify-content:center; font-size:1.25rem;
+      transition:transform .2s, background .2s, opacity .2s; }
+    .kh-carousel__nav:hover { background:#fff; transform:translateY(-50%) scale(1.08); }
+    .kh-carousel__nav:disabled { opacity:.3; cursor:default; }
+    .kh-carousel__prev { left:-12px; }
+    .kh-carousel__next { right:-12px; }
+    @media (max-width:600px){ .kh-carousel__prev{ left:2px } .kh-carousel__next{ right:2px } }
+    .kh-quote { flex:0 0 340px; max-width:86vw; scroll-snap-align:start;
+      background:#fff; color:#1f2937; border-radius:18px; padding:1.75rem; box-shadow:0 12px 32px rgba(0,0,0,.2);
       display:flex; flex-direction:column; gap:.9rem; transition:transform .3s, box-shadow .3s; }
     .kh-quote:hover { transform:translateY(-6px); box-shadow:0 20px 44px rgba(0,0,0,.28); }
     .kh-quote.kh-quote--win { border:1.5px solid #ffd700; }
@@ -255,7 +272,9 @@
         <h2>Ils ont vaincu les matières qui font peur</h2>
         <p>Maths, Physique-Chimie, SVT — les chapitres les plus redoutés du BAC, enfin maîtrisés.</p>
       </div>
-      <div class="kh-quotes">
+      <div class="kh-carousel" data-aos="fade-up">
+        <button type="button" class="kh-carousel__nav kh-carousel__prev" id="khQuotesPrev" aria-label="Précédent"><i class="bi bi-chevron-left"></i></button>
+        <div class="kh-quotes" id="khQuotes">
 
         <div class="kh-quote" data-aos="fade-up" data-aos-delay="50">
           <div class="kh-quote__top">
@@ -329,6 +348,8 @@
           </div>
         </div>
 
+        </div>
+        <button type="button" class="kh-carousel__nav kh-carousel__next" id="khQuotesNext" aria-label="Suivant"><i class="bi bi-chevron-right"></i></button>
       </div>
     </div>
   </section>
@@ -352,8 +373,9 @@
           <ul class="kh-feats">
             <li><i class="bi bi-check-circle-fill yes"></i> Cours du programme national</li>
             <li><i class="bi bi-check-circle-fill yes"></i> Exercices d'apprentissage</li>
+            <li><i class="bi bi-check-circle-fill yes"></i> Corrections en vidéo</li>
             <li><i class="bi bi-x-circle-fill no"></i> Exercices d'approfondissement</li>
-            <li><i class="bi bi-x-circle-fill no"></i> Sujets d'examens &amp; corrections vidéo</li>
+            <li><i class="bi bi-x-circle-fill no"></i> Sujets d'examens nationaux</li>
           </ul>
           <a href="<%= primaryCta.href %>" class="kh-btn kh-btn--outline"><i class="bi bi-arrow-right"></i> Commencer</a>
         </div>
@@ -366,10 +388,11 @@
           <div class="kh-tier__price">2 000 <small>FCFA / matière</small></div>
           <ul class="kh-feats">
             <li><i class="bi bi-check-circle-fill yesf"></i> Tout le Gratuit, plus :</li>
-            <li><i class="bi bi-check-circle-fill yesf"></i> Exercices d'approfondissement (CIAM)</li>
+            <li><i class="bi bi-check-circle-fill yesf"></i> Exercices d'approfondissement</li>
             <li><i class="bi bi-check-circle-fill yesf"></i> Sujets d'examens nationaux</li>
             <li><i class="bi bi-check-circle-fill yesf"></i> Sujets des meilleurs établissements</li>
-            <li><i class="bi bi-check-circle-fill yesf"></i> Corrections en vidéo</li>
+            <li><i class="bi bi-check-circle-fill yesf"></i> Correction des Olympiades</li>
+            <li><i class="bi bi-check-circle-fill yesf"></i> Correction des Examens internationaux</li>
           </ul>
           <a href="<%= primaryCta.href %>" class="kh-btn kh-btn--gold"><i class="bi bi-stars"></i> Choisir une matière</a>
           <div class="kh-tier__note">Prix indicatif — défini par matière</div>
@@ -442,6 +465,45 @@
       if (closeBtn) closeBtn.addEventListener('click', function (e) { e.preventDefault(); close(); });
       if (overlay)  overlay.addEventListener('click', close);
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal.classList.contains('active')) close(); });
+
+      // ── Testimonials carousel ──
+      const track = document.getElementById('khQuotes');
+      const prevBtn = document.getElementById('khQuotesPrev');
+      const nextBtn = document.getElementById('khQuotesNext');
+      if (track && prevBtn && nextBtn) {
+        const step = () => {
+          const card = track.querySelector('.kh-quote');
+          const gap = parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap || 24) || 24;
+          return card ? card.offsetWidth + gap : track.clientWidth;
+        };
+        const update = () => {
+          const maxScroll = track.scrollWidth - track.clientWidth - 4;
+          prevBtn.disabled = track.scrollLeft <= 4;
+          nextBtn.disabled = track.scrollLeft >= maxScroll;
+        };
+        prevBtn.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
+        nextBtn.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'smooth' }));
+        track.addEventListener('scroll', update, { passive: true });
+        window.addEventListener('resize', update);
+        update();
+
+        // Slow autoplay; pauses on hover / touch
+        let timer = null;
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const play = () => {
+          if (reduceMotion || timer) return;
+          timer = setInterval(() => {
+            const maxScroll = track.scrollWidth - track.clientWidth - 4;
+            if (track.scrollLeft >= maxScroll) track.scrollTo({ left: 0, behavior: 'smooth' });
+            else track.scrollBy({ left: step(), behavior: 'smooth' });
+          }, 5000);
+        };
+        const stop = () => { if (timer) { clearInterval(timer); timer = null; } };
+        track.addEventListener('mouseenter', stop);
+        track.addEventListener('mouseleave', play);
+        track.addEventListener('touchstart', stop, { passive: true });
+        play();
+      }
     });
   </script>
 ` %>
