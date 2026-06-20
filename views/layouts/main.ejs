@@ -5,14 +5,33 @@
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 
-  <title><%= typeof title !== 'undefined' ? title : 'Afro House of Knowledge' %></title>
-  <meta content="Afro House of Knowledge - Plateforme éducative en ligne proposant des formations d'excellence académique, accompagnement scolaire et apprentissage des langues. Le savoir sans barrières. Découvrir, Développer, Devenir." name="description" />
+  <%
+    const _ogBase = (typeof process !== 'undefined' && process.env && process.env.APP_URL) ? process.env.APP_URL.replace(/\/+$/, '') : '';
+    const _defaultDesc = "Afro House of Knowledge - Plateforme éducative en ligne proposant des formations d'excellence académique, accompagnement scolaire et apprentissage des langues. Le savoir sans barrières. Découvrir, Développer, Devenir.";
+    const _title = typeof title !== 'undefined' ? title : 'Afro House of Knowledge';
+    const _desc = typeof ogDescription !== 'undefined' ? ogDescription : (typeof metaDescription !== 'undefined' ? metaDescription : _defaultDesc);
+    const _ogTitle = typeof ogTitle !== 'undefined' ? ogTitle : _title;
+    const _ogImgPath = typeof ogImage !== 'undefined' ? ogImage : '/assets/img/afrohk_logo_2.png';
+    const _ogImg = /^https?:/i.test(_ogImgPath) ? _ogImgPath : (_ogBase + _ogImgPath);
+  %>
+
+  <title><%= _title %></title>
+  <meta name="description" content="<%= _desc %>" />
   <meta content="" name="keywords" />
 
   <!-- Favicons -->
   <link href="/assets/img/afrohk_logo_2.png" rel="icon"/>
 
-<meta property="og:image" content="/assets/img/afrohk_logo_2.png" />
+  <!-- Open Graph / social preview -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Afro House of Knowledge" />
+  <meta property="og:title" content="<%= _ogTitle %>" />
+  <meta property="og:description" content="<%= _desc %>" />
+  <meta property="og:image" content="<%= _ogImg %>" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="<%= _ogTitle %>" />
+  <meta name="twitter:description" content="<%= _desc %>" />
+  <meta name="twitter:image" content="<%= _ogImg %>" />
   <!-- Font awesome -->
   <script src="https://kit.fontawesome.com/9ecb022092.js"></script>
 
