@@ -6,13 +6,13 @@
 <% headContent = `
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
-    .kh { --brand:#5d06ba; --brand-dark:#2d0370; --ink:#1f2937; --muted:#6b7280; --gold:#ffd700;
+    .kh { --brand:#5d06ba; --brand-dark:#2d0370; --ink:#1f2937; --muted:#6b7280; --gold:#d3adf7;
       font-family: system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; color: var(--ink); }
     .kh-wrap { max-width: 1180px; margin: 0 auto; padding: 0 clamp(1rem,4vw,2.5rem); }
 
     /* Hero */
     .kh-hero { position: relative; overflow: hidden; color:#fff; padding: clamp(5rem,12vw,8rem) 0 clamp(3.5rem,8vw,6rem);
-      background: radial-gradient(900px 500px at 80% -10%, rgba(255,215,0,.18), transparent 60%),
+      background: radial-gradient(900px 500px at 80% -10%, rgba(211,173,247,.18), transparent 60%),
                   linear-gradient(135deg, #160a33 0%, #2d0370 55%, #5d06ba 100%); }
     .kh-hero::after { content:''; position:absolute; left:-6%; bottom:-40%; width:420px; height:420px; border-radius:50%;
       background: radial-gradient(circle, rgba(124,58,237,.35), transparent 70%); pointer-events:none; }
@@ -43,8 +43,8 @@
     @media (prefers-reduced-motion: reduce) { .kh-wave { animation: none; } }
     .kh-btn { border:none; cursor:pointer; border-radius:50px; padding:.95rem 1.9rem; font-weight:700; font-size:1rem;
       display:inline-flex; align-items:center; gap:.55rem; text-decoration:none; transition: transform .2s, box-shadow .2s; }
-    .kh-btn--gold { background: linear-gradient(135deg,#ffd700,#ffb800); color:#2d0370; box-shadow:0 8px 24px rgba(255,215,0,.35); }
-    .kh-btn--gold:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(255,215,0,.45); color:#2d0370; }
+    .kh-btn--gold { background: linear-gradient(135deg,#d3adf7,#b794f4); color:#2d0370; box-shadow:0 8px 24px rgba(211,173,247,.35); }
+    .kh-btn--gold:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(211,173,247,.45); color:#2d0370; }
     .kh-btn--space { background:#d3adf7; color:#2d0370; box-shadow:0 8px 24px rgba(211,173,247,.4); }
     .kh-btn--space:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(211,173,247,.55); color:#2d0370; }
     .kh-btn--ghost { background:rgba(255,255,255,.1); color:#fff; border:1.5px solid rgba(255,255,255,.4); }
@@ -67,7 +67,7 @@
     .kh-section { padding: clamp(3.5rem,8vw,6rem) 0; }
     .kh-section--alt { background: linear-gradient(to bottom,#faf8ff,#fff); }
     .kh-section--dark { position:relative; overflow:hidden; color:#fff;
-      background: radial-gradient(700px 360px at 85% -10%, rgba(255,215,0,.14), transparent 60%),
+      background: radial-gradient(700px 360px at 85% -10%, rgba(211,173,247,.14), transparent 60%),
                   linear-gradient(135deg,#160a33 0%, #2d0370 55%, #5d06ba 100%); }
     .kh-head { text-align:center; max-width:680px; margin:0 auto clamp(2.5rem,5vw,3.5rem); }
     .kh-head .tag { display:inline-block; font-size:.8rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
@@ -76,7 +76,7 @@
     .kh-head p { font-size:1.1rem; color:var(--muted); margin:0; line-height:1.6; }
     .kh-section--dark .kh-head h2 { color:#fff; }
     .kh-section--dark .kh-head p { color:rgba(255,255,255,.85); }
-    .kh-section--dark .kh-head .tag { background:rgba(255,255,255,.14); color:#ffd700; }
+    .kh-section--dark .kh-head .tag { background:rgba(255,255,255,.14); color:#d3adf7; }
     @media (min-width: 992px) {
       .kh-section--dark .kh-head { max-width: none; }
       .kh-section--dark .kh-head h2 { white-space: nowrap; }
@@ -100,12 +100,12 @@
       background:#fff; color:#1f2937; border-radius:18px; padding:1.75rem; box-shadow:0 12px 32px rgba(0,0,0,.2);
       display:flex; flex-direction:column; gap:.9rem; transition:transform .3s, box-shadow .3s; }
     .kh-quote:hover { transform:translateY(-6px); box-shadow:0 20px 44px rgba(0,0,0,.28); }
-    .kh-quote.kh-quote--win { border:1.5px solid #ffd700; }
+    .kh-quote.kh-quote--win { border:1.5px solid #d3adf7; }
     .kh-quote__top { display:flex; align-items:center; justify-content:space-between; gap:.6rem; }
     .kh-quote__tag { display:inline-flex; align-items:center; gap:.35rem; font-size:.7rem; font-weight:800; letter-spacing:.03em;
       text-transform:uppercase; color:#5d06ba; background:#ede0ff; padding:.25rem .6rem; border-radius:999px; }
-    .kh-quote--win .kh-quote__tag { color:#7a5b00; background:linear-gradient(135deg,#ffd700,#ffb800); }
-    .kh-quote__stars { color:#ffb800; font-size:.9rem; letter-spacing:1px; flex-shrink:0; }
+    .kh-quote--win .kh-quote__tag { color:#2d0370; background:linear-gradient(135deg,#d3adf7,#b794f4); }
+    .kh-quote__stars { color:#a855f7; font-size:.9rem; letter-spacing:1px; flex-shrink:0; }
     .kh-quote__text { font-size:1rem; line-height:1.6; color:#374151; flex:1; margin:0; }
     .kh-quote__text::before { content:'\\201C'; color:#d9c2ff; font-size:1.6rem; font-weight:800; margin-right:.15rem; vertical-align:-.35rem; }
     .kh-quote__foot { display:flex; align-items:center; gap:.75rem; border-top:1px solid #f1edf9; padding-top:1rem; }
@@ -132,23 +132,23 @@
     .kh-tier--feature { border-color:transparent; background:linear-gradient(135deg,#2d0370,#5d06ba); color:#fff; box-shadow:0 16px 44px rgba(45,3,112,.3); }
     .kh-tier__badge { position:absolute; top:-13px; left:50%; transform:translateX(-50%); font-size:.72rem; font-weight:800;
       letter-spacing:.05em; text-transform:uppercase; padding:.3rem .9rem; border-radius:999px;
-      background:linear-gradient(135deg,#ffd700,#ffb800); color:#2d0370; box-shadow:0 4px 12px rgba(255,184,0,.4); }
+      background:linear-gradient(135deg,#d3adf7,#b794f4); color:#2d0370; box-shadow:0 4px 12px rgba(183,148,244,.4); }
     .kh-tier__name { display:inline-flex; align-items:center; gap:.45rem; font-size:1.3rem; font-weight:800; color:var(--brand-dark); margin-bottom:.3rem; }
     .kh-tier--feature .kh-tier__name { color:#fff; }
     .kh-tier__scope { font-size:.88rem; color:var(--muted); margin-bottom:1.1rem; }
     .kh-tier--feature .kh-tier__scope { color:rgba(255,255,255,.8); }
     .kh-tier__price { font-size:2rem; font-weight:800; color:var(--brand-dark); line-height:1.1; }
-    .kh-tier--feature .kh-tier__price { color:#ffd700; }
+    .kh-tier--feature .kh-tier__price { color:#d3adf7; }
     .kh-tier__price small { font-size:.9rem; font-weight:600; color:var(--muted); }
     .kh-tier--feature .kh-tier__price small { color:rgba(255,255,255,.75); }
-    .kh-tier__price .save { display:inline-block; font-size:.72rem; font-weight:700; background:rgba(255,215,0,.2); color:#7a5b00;
+    .kh-tier__price .save { display:inline-block; font-size:.72rem; font-weight:700; background:rgba(211,173,247,.2); color:#2d0370;
       padding:.12rem .5rem; border-radius:999px; margin-left:.4rem; vertical-align:middle; }
-    .kh-tier--feature .kh-tier__price .save { background:rgba(255,215,0,.22); color:#ffd700; }
+    .kh-tier--feature .kh-tier__price .save { background:rgba(211,173,247,.22); color:#d3adf7; }
     .kh-feats { list-style:none; padding:0; margin:1.4rem 0; display:flex; flex-direction:column; gap:.7rem; flex:1; }
     .kh-feats li { display:flex; align-items:flex-start; gap:.6rem; font-size:.95rem; line-height:1.4; }
     .kh-feats li i { flex-shrink:0; margin-top:.1rem; }
     .kh-feats .yes { color:#1e9e54; }
-    .kh-feats .yesf { color:#ffd700; }
+    .kh-feats .yesf { color:#d3adf7; }
     .kh-feats .no { color:#c7ccd4; }
     .kh-tier--feature .kh-feats li { color:rgba(255,255,255,.92); }
     .kh-tier .kh-btn { width:100%; justify-content:center; }
@@ -159,7 +159,7 @@
     .kh-pricing-foot a:hover { text-decoration:underline; }
 
     /* CTA band */
-    .kh-cta-band { background: radial-gradient(700px 300px at 20% 0%, rgba(255,215,0,.16), transparent 60%),
+    .kh-cta-band { background: radial-gradient(700px 300px at 20% 0%, rgba(211,173,247,.16), transparent 60%),
       linear-gradient(135deg,#2d0370,#5d06ba); color:#fff; border-radius:24px; padding:clamp(2.5rem,6vw,4rem);
       text-align:center; box-shadow:0 16px 50px rgba(45,3,112,.25); }
     .kh-cta-band h2 { font-size:clamp(1.6rem,3.5vw,2.3rem); font-weight:800; margin:0 0 .8rem; }
