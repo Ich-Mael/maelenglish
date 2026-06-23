@@ -85,18 +85,11 @@ async function trackDevice(req, res, next) {
         isActive: true
       };
 
-      // Vérifier la limite d'appareils
-      const activeDevices = user.devices.filter(d => d.isActive).length;
-
-      if (activeDevices >= user.maxDevices) {
-        req.logout((err) => {
-          if (err) return next(err);
-          return res.redirect('/device-limit-reached');
-        });
-        return;
-      }
-
-      // Ajouter le nouvel appareil
+      // NON-BLOQUANT : on enregistre tous les appareils (visibilité admin /
+      // signal d'anomalie) mais on NE déconnecte PLUS l'utilisateur quand la
+      // limite est dépassée. `user.maxDevices` reste un repère indicatif côté
+      // admin ; l'anti-partage est assuré par l'expiration premium + le
+      // filigrane (watermark) à venir.
       user.devices.push(deviceInfo);
       await user.save();
 
