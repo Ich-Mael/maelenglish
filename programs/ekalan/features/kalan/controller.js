@@ -15,7 +15,7 @@ const {
   activeCount,
   grantOrRenew,
 } = require("./premiumAccess");
-const { explainSteps, OPERATIONS } = require("./mathsLab");
+const { explainSteps, OPERATIONS, COMPLEX_OPERATIONS, ARITH_LABELS } = require("./mathsLab");
 
 // ── Kalan Naaba helpers ──────────────────────────────────────────────
 // True if the high-school student (hsId) holds active Kalan Naaba (whole-class premium).
@@ -1340,28 +1340,65 @@ module.exports.mathsLab = async (req, res) => {
 // Endpoint JSON : explication pas-à-pas (cache + Claude). Renvoie toujours du JSON.
 module.exports.explainMath = async (req, res) => {
   try {
-    const functionStr = typeof req.body.function === "string" ? req.body.function.trim() : "";
+    const domain = req.body.domain === "complex" ? "complex" : "function";
     const operation = req.body.operation;
     const casResult = typeof req.body.casResult === "string" ? req.body.casResult.trim() : "";
 
-    if (!functionStr || functionStr.length > 200) {
-      return res.status(400).json({ ok: false, error: "Fonction invalide." });
-    }
-    if (!OPERATIONS[operation]) {
-      return res.status(400).json({ ok: false, error: "Opération inconnue." });
-    }
     if (!casResult || casResult.length > 500) {
       return res.status(400).json({ ok: false, error: "Résultat invalide." });
     }
 
-    const key = `${functionStr}|${operation}|${casResult}`;
+    let key;
+    let input;
+    let params = {};
+
+    if (domain === "complex") {
+      // input = expression canonique (z₁, (3+4i)^3, ou la liste d'affixes pour la géométrie)
+      input = typeof req.body.expression === "string" ? req.body.expression.trim() : "";
+      if (!input || input.length > 400) {
+        return res.status(400).json({ ok: false, error: "Nombre complexe invalide." });
+      }
+      if (!COMPLEX_OPERATIONS[operation]) {
+        return res.status(400).json({ ok: false, error: "Opération inconnue." });
+      }
+
+      const z2 = typeof req.body.z2 === "string" ? req.body.z2.trim() : "";
+      const n = Number.parseInt(req.body.n, 10);
+      const arithOp = req.body.arithOp;
+
+      if (operation === "arithmetic") {
+        if (!z2 || z2.length > 120) {
+          return res.status(400).json({ ok: false, error: "Second nombre complexe invalide." });
+        }
+        if (!ARITH_LABELS[arithOp]) {
+          return res.status(400).json({ ok: false, error: "Opération arithmétique inconnue." });
+        }
+        params = { z2, arithOp };
+      } else if (operation === "power" || operation === "nth_roots") {
+        if (!Number.isInteger(n) || n < 2 || n > 12) {
+          return res.status(400).json({ ok: false, error: "Exposant n invalide (2 à 12)." });
+        }
+        params = { n };
+      }
+
+      key = `complex|${input}|${operation}|${casResult}`;
+    } else {
+      input = typeof req.body.function === "string" ? req.body.function.trim() : "";
+      if (!input || input.length > 200) {
+        return res.status(400).json({ ok: false, error: "Fonction invalide." });
+      }
+      if (!OPERATIONS[operation]) {
+        return res.status(400).json({ ok: false, error: "Opération inconnue." });
+      }
+      key = `${input}|${operation}|${casResult}`;
+    }
 
     const cached = await MathExplanation.findOne({ key });
     if (cached) {
       return res.json({ ok: true, cached: true, casResult, steps: cached.steps, finalAnswerLatex: cached.finalAnswerLatex });
     }
 
-    const result = await explainSteps({ functionStr, operation, casResult });
+    const result = await explainSteps({ domain, input, operation, casResult, params });
     if (!result.ok) {
       return res.json({
         ok: false,
@@ -1371,7 +1408,7 @@ module.exports.explainMath = async (req, res) => {
     }
 
     try {
-      await MathExplanation.create({ key, functionStr, operation, casResult, steps: result.steps, finalAnswerLatex: result.finalAnswerLatex });
+      await MathExplanation.create({ key, domain, functionStr: input, operation, casResult, steps: result.steps, finalAnswerLatex: result.finalAnswerLatex });
     } catch (e) {
       /* ignore duplicate-key race */
     }

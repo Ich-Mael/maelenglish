@@ -19,6 +19,7 @@ function getClient() {
 const MATHS_LAB_MODEL = process.env.MATHS_LAB_MODEL || "claude-haiku-4-5";
 
 // Allow-listed operations (also the anti-abuse allow-list in the controller).
+// Function-analysis domain (default).
 const OPERATIONS = {
   derivative: "la dérivée f'(x)",
   asymptotes: "les asymptotes de la courbe",
@@ -30,7 +31,20 @@ const OPERATIONS = {
   expand: "le développement de l'expression",
 };
 
-const SYSTEM_PROMPT = [
+// Complex-numbers domain (Nombres complexes).
+const COMPLEX_OPERATIONS = {
+  modulus: "le module |z|",
+  argument: "un argument de z",
+  conjugate: "le conjugué de z",
+  exp_form: "les formes trigonométrique et exponentielle de z",
+  power: "la puissance z^n",
+  nth_roots: "les racines n-ièmes",
+  arithmetic: "le résultat de l'opération entre z₁ et z₂",
+  triangle_nature: "la nature du triangle",
+  quad_nature: "la nature du quadrilatère",
+};
+
+const SYSTEM_PROMPT_FUNCTION = [
   "Tu es un professeur de mathématiques de lycée au Burkina Faso : clair, rigoureux et pédagogue.",
   "On te donne une fonction f(x), une opération à effectuer, et LE RÉSULTAT CORRECT déjà calculé.",
   "Ta tâche : expliquer, étape par étape et en français (niveau Terminale), le raisonnement qui mène EXACTEMENT à ce résultat.",
@@ -40,6 +54,25 @@ const SYSTEM_PROMPT = [
   "- Reste concis : 2 à 6 étapes, chacune avec un titre court, l'expression LaTeX de l'étape, et une courte explication en français.",
   "- N'utilise que des notions de niveau lycée (règles de dérivation, limites, factorisation, etc.).",
 ].join("\n");
+
+const SYSTEM_PROMPT_COMPLEX = [
+  "Tu es un professeur de mathématiques de Terminale au Burkina Faso, spécialiste du chapitre des NOMBRES COMPLEXES : clair, rigoureux et pédagogue.",
+  "On te donne un (ou deux) nombre(s) complexe(s), une opération à effectuer, et LE RÉSULTAT CORRECT déjà calculé.",
+  "Ta tâche : expliquer, étape par étape et en français, le raisonnement qui mène EXACTEMENT à ce résultat.",
+  "Utilise les notions du chapitre : partie réelle/imaginaire, module |z|, argument arg(z), conjugué, forme algébrique/trigonométrique/exponentielle, formule de Moivre, racines n-ièmes.",
+  "Pour la NATURE d'un triangle ou d'un quadrilatère défini par les affixes de ses points : calcule les longueurs avec les modules de différences (AB = |z_B - z_A|) et les angles avec les arguments de quotients (arg((z_C - z_A)/(z_B - z_A))) ; déduis les égalités de longueurs, le parallélisme et les angles droits, puis justifie la nature FOURNIE sans la changer.",
+  "Règles impératives :",
+  "- N'invente JAMAIS un résultat final différent de celui fourni ; ton explication doit y aboutir.",
+  "- Écris les mathématiques en LaTeX SANS délimiteurs ($, \\[ \\]) dans les champs 'latex' et 'finalAnswerLatex'. Note l'unité imaginaire i et utilise e^{i\\theta} pour la forme exponentielle.",
+  "- Reste concis : 2 à 6 étapes, chacune avec un titre court, l'expression LaTeX de l'étape, et une courte explication en français.",
+].join("\n");
+
+// French names for the arithmetic sub-operations between z₁ and z₂.
+const ARITH_LABELS = {
+  sum: "la somme z₁ + z₂",
+  product: "le produit z₁ × z₂",
+  quotient: "le quotient z₁ / z₂",
+};
 
 // Structured-outputs schema (all objects need additionalProperties:false).
 const RESULT_SCHEMA = {
@@ -73,17 +106,60 @@ function normalize(s) {
     .toLowerCase();
 }
 
-/**
- * Returns { ok, steps, finalAnswerLatex, verified } or { ok:false, reason }.
- * Never throws — callers get a structured failure to fall back on.
- */
-async function explainSteps({ functionStr, operation, casResult }) {
+// Builds the per-domain system prompt + user message for the Claude call.
+function buildPrompt({ domain, input, operation, casResult, params }) {
+  if (domain === "complex") {
+    const opLabel = COMPLEX_OPERATIONS[operation] || operation;
+
+    // Geometry: input already lists the affixes ("z_A = … ; z_B = … ; …").
+    if (operation === "triangle_nature" || operation === "quad_nature") {
+      const geo = [
+        `Points du plan complexe (affixes) : ${input}`,
+        `Opération : déterminer ${opLabel}.`,
+        `Résultat correct (fourni — à justifier, ne pas modifier) : ${casResult}`,
+        ``,
+        `Donne les étapes (longueurs via modules de différences, angles via arguments de quotients) qui justifient cette nature.`,
+      ];
+      return { system: SYSTEM_PROMPT_COMPLEX, userMsg: geo.join("\n") };
+    }
+
+    const lines = [`z = z₁ = ${input}`];
+    if (operation === "arithmetic") {
+      lines[0] = `z₁ = ${input}`;
+      if (params.z2) lines.push(`z₂ = ${params.z2}`);
+      lines.push(`Opération : calculer ${ARITH_LABELS[params.arithOp] || opLabel}.`);
+    } else if (operation === "power" || operation === "nth_roots") {
+      lines.push(`n = ${params.n}`);
+      lines.push(`Opération : calculer ${opLabel} (n = ${params.n}).`);
+    } else {
+      lines.push(`Opération : calculer ${opLabel}.`);
+    }
+    lines.push(
+      `Résultat correct (fourni — à expliquer, ne pas modifier) : ${casResult}`,
+      ``,
+      `Donne les étapes du raisonnement qui mènent à ce résultat.`
+    );
+    return { system: SYSTEM_PROMPT_COMPLEX, userMsg: lines.join("\n") };
+  }
+
   const opLabel = OPERATIONS[operation] || operation;
   const userMsg =
-    `Fonction : f(x) = ${functionStr}\n` +
+    `Fonction : f(x) = ${input}\n` +
     `Opération : calculer ${opLabel}.\n` +
     `Résultat correct (fourni — à expliquer, ne pas modifier) : ${casResult}\n\n` +
     `Donne les étapes du raisonnement qui mènent à ce résultat.`;
+  return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
+}
+
+/**
+ * Returns { ok, steps, finalAnswerLatex, verified } or { ok:false, reason }.
+ * Never throws — callers get a structured failure to fall back on.
+ *
+ * domain: 'function' (default) or 'complex'. input = f(x) expression or z₁.
+ * params: { z2, n, arithOp } for the complex domain.
+ */
+async function explainSteps({ domain = "function", input, operation, casResult, params = {} }) {
+  const { system, userMsg } = buildPrompt({ domain, input, operation, casResult, params });
 
   const client = getClient();
   if (!client) return { ok: false, reason: "no_key" };
@@ -93,7 +169,7 @@ async function explainSteps({ functionStr, operation, casResult }) {
       model: MATHS_LAB_MODEL,
       max_tokens: 2000,
       system: [
-        { type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } },
+        { type: "text", text: system, cache_control: { type: "ephemeral" } },
       ],
       messages: [{ role: "user", content: userMsg }],
       output_config: { format: { type: "json_schema", schema: RESULT_SCHEMA } },
@@ -121,4 +197,4 @@ async function explainSteps({ functionStr, operation, casResult }) {
   }
 }
 
-module.exports = { explainSteps, MATHS_LAB_MODEL, OPERATIONS };
+module.exports = { explainSteps, MATHS_LAB_MODEL, OPERATIONS, COMPLEX_OPERATIONS, ARITH_LABELS };

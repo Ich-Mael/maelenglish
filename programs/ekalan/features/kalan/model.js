@@ -531,6 +531,7 @@ const HighSchool = mongoose.model("HighSchool", HighSchoolSchema);
 // pour éviter de re-payer l'API Claude sur des questions identiques.
 const mathExplanationSchema = new Schema({
   key: { type: String, required: true, unique: true, index: true },
+  domain: { type: String, default: "function" }, // 'function' | 'complex'
   functionStr: String,
   operation: String,
   casResult: String,
