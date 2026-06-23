@@ -7,6 +7,7 @@ const {
   HTeacher,
   HSCourseVideo,
   PremiumRequest,
+  MathExplanation,
 } = require("./model");
 const {
   findEntry,
@@ -14,6 +15,7 @@ const {
   activeCount,
   grantOrRenew,
 } = require("./premiumAccess");
+const { explainSteps, OPERATIONS } = require("./mathsLab");
 
 // ── Kalan Naaba helpers ──────────────────────────────────────────────
 // True if the high-school student (hsId) holds active Kalan Naaba (whole-class premium).
@@ -117,6 +119,11 @@ module.exports.showClassHome = async (req, res) => {
 
   const naabaPrice = computeNaabaPrice(schoolClass.subjects, schoolClass.naabaDiscountPercent);
 
+  // Espace Maths : accessible si Kalan Naaba OU premium Maths (Kalan Ba) actif.
+  const hasMathsLab = studentHasNaaba || subjectsWithPremiumStatus.some(
+    (s) => s.hasPremiumAccess && /math/i.test(s.title || "")
+  );
+
   res.render("programs/ekalan/Class/classHome", {
     schoolClass: {
       ...schoolClass.toObject(),
@@ -125,6 +132,7 @@ module.exports.showClassHome = async (req, res) => {
     hasNaaba: studentHasNaaba,
     naabaPending,
     naabaPrice,
+    hasMathsLab,
   });
 };
 
@@ -1315,6 +1323,64 @@ module.exports.rejectPremiumRequest = async (req, res) => {
 
   req.flash("success", "Demande rejetée");
   res.redirect("back");
+};
+
+/* ====================== ESPACE MATHS ====================== */
+
+// Page de l'Espace Maths (GeoGebra + explications IA)
+module.exports.mathsLab = async (req, res) => {
+  const schoolClass = await Class.findById(req.params.class_id);
+  if (!schoolClass) {
+    req.flash("error", "Classe non trouvée");
+    return res.redirect("back");
+  }
+  res.render("programs/ekalan/Class/maths-lab", { schoolClass });
+};
+
+// Endpoint JSON : explication pas-à-pas (cache + Claude). Renvoie toujours du JSON.
+module.exports.explainMath = async (req, res) => {
+  try {
+    const functionStr = typeof req.body.function === "string" ? req.body.function.trim() : "";
+    const operation = req.body.operation;
+    const casResult = typeof req.body.casResult === "string" ? req.body.casResult.trim() : "";
+
+    if (!functionStr || functionStr.length > 200) {
+      return res.status(400).json({ ok: false, error: "Fonction invalide." });
+    }
+    if (!OPERATIONS[operation]) {
+      return res.status(400).json({ ok: false, error: "Opération inconnue." });
+    }
+    if (!casResult || casResult.length > 500) {
+      return res.status(400).json({ ok: false, error: "Résultat invalide." });
+    }
+
+    const key = `${functionStr}|${operation}|${casResult}`;
+
+    const cached = await MathExplanation.findOne({ key });
+    if (cached) {
+      return res.json({ ok: true, cached: true, casResult, steps: cached.steps, finalAnswerLatex: cached.finalAnswerLatex });
+    }
+
+    const result = await explainSteps({ functionStr, operation, casResult });
+    if (!result.ok) {
+      return res.json({
+        ok: false,
+        casResult,
+        error: "Explication indisponible pour le moment — le résultat ci-dessus reste correct.",
+      });
+    }
+
+    try {
+      await MathExplanation.create({ key, functionStr, operation, casResult, steps: result.steps, finalAnswerLatex: result.finalAnswerLatex });
+    } catch (e) {
+      /* ignore duplicate-key race */
+    }
+
+    return res.json({ ok: true, cached: false, casResult, steps: result.steps, finalAnswerLatex: result.finalAnswerLatex, verified: result.verified });
+  } catch (err) {
+    console.error("[explainMath]", err && err.message);
+    return res.status(500).json({ ok: false, error: "Erreur serveur." });
+  }
 };
 
 //

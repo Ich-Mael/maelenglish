@@ -16,6 +16,7 @@ const {
   checkStudentStatus,
   subjectPremiumAccess, // Accès premium au niveau matière
   checkExercisePremiumAccess,
+  mathsLabAccess,
 } = require("../../middlewares/studentController");
 const { HighSchool, HStudent, Class, Subject } = require("./model");
 
@@ -169,6 +170,27 @@ router.post(
   isVerified,
   classCheck,
   catchAsync(BAC.requestNaabaAccess)
+);
+
+// Espace Maths — page (élève premium Maths / Kalan Naaba)
+router.get(
+  "/class/:class_id/maths-lab",
+  isLoggedIn,
+  isVerified,
+  classCheck,
+  mathsLabAccess,
+  catchAsync(BAC.mathsLab)
+);
+
+// Espace Maths — explication IA (JSON, rate-limited)
+router.post(
+  "/class/:class_id/maths-lab/explain",
+  isLoggedIn,
+  isVerified,
+  classCheck,
+  mathsLabAccess,
+  (req, res, next) => req.app.get("authLimiter")(req, res, next),
+  catchAsync(BAC.explainMath)
 );
 
 // ✅ NOUVEAU: Liste des demandes d'accès premium (admin)

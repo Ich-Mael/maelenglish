@@ -527,6 +527,19 @@ const PremiumRequest = mongoose.model("PremiumRequest", premiumRequestSchema);
 
 const HighSchool = mongoose.model("HighSchool", HighSchoolSchema);
 
+// Espace Maths: cache des explications pas-à-pas (clé = fonction|opération)
+// pour éviter de re-payer l'API Claude sur des questions identiques.
+const mathExplanationSchema = new Schema({
+  key: { type: String, required: true, unique: true, index: true },
+  functionStr: String,
+  operation: String,
+  casResult: String,
+  steps: { type: Array, default: [] },
+  finalAnswerLatex: String,
+}, { timestamps: true });
+
+const MathExplanation = mongoose.model("MathExplanation", mathExplanationSchema);
+
 module.exports = {
   Class,
   Chapter,
@@ -536,5 +549,6 @@ module.exports = {
   HSCourseVideo,
   PremiumContent,
   PremiumRequest,
+  MathExplanation,
   HighSchool
 };

@@ -78,6 +78,28 @@ module.exports.subjectPremiumAccess = catchAsync(async (req, res, next) => {
     return res.render("noAccess");
 });
 
+// Accès à l'Espace Maths : réservé aux élèves ayant un premium Maths actif
+// (Kalan Ba sur la matière Maths de leur classe) OU Kalan Naaba. Admins inclus.
+module.exports.mathsLabAccess = catchAsync(async (req, res, next) => {
+    if (isAdmin(req.user)) return next();
+    const hsId = req.user && req.user.highSchool_id;
+    if (!hsId) return res.render("noAccess");
+
+    // Kalan Naaba (toute la classe)
+    const schoolClass = await Class.findById(req.params.class_id).select("naabaStudents");
+    if (schoolClass && hasActiveAccess(schoolClass.naabaStudents, hsId)) return next();
+
+    // Kalan Ba sur une matière de Maths de cette classe
+    const mathsSubjects = await Subject.find({
+        classId: req.params.class_id,
+        title: { $regex: /math/i },
+    }).select("premiumStudents");
+    if (mathsSubjects.some((s) => hasActiveAccess(s.premiumStudents, hsId))) return next();
+
+    req.flash('error', "L'Espace Maths est réservé aux élèves ayant Kalan Ba (Maths) ou Kalan Naaba.");
+    return res.render("noAccess");
+});
+
 /**
  * ✅ MODIFIÉ: Vérifie si un étudiant a accès premium à un exercice spécifique
  * Nouvelle hiérarchie de vérification:

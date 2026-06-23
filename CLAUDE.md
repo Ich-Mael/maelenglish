@@ -105,4 +105,10 @@ EMAIL_HOST      # SMTP host (Brevo: smtp-relay.brevo.com)
 EMAIL_PORT      # SMTP port (587)
 EMAIL_USERNAME  # SMTP username
 EMAIL_PASSWORD  # SMTP password
+ANTHROPIC_API_KEY  # Claude API key — required by the "Espace Maths" feature
+                   # (programs/ekalan/features/kalan/mathsLab.js). Without it the
+                   # step-by-step explanations fall back gracefully but won't generate.
+MATHS_LAB_MODEL    # optional — Claude model for Espace Maths (default claude-haiku-4-5)
 ```
+
+**Espace Maths (Kalan)** — `GET /programs/ekalan/kalan/class/:class_id/maths-lab`, gated by `mathsLabAccess` (active Maths Kalan Ba **or** Kalan Naaba). GeoGebra CAS (embedded, client-side) computes the authoritative answer + graph; `mathsLab.js` calls Claude (Haiku) to generate French worked steps **anchored to that answer**, rendered with KaTeX. Explanations are cached in the `MathExplanation` model (key = `function|operation|casResult`) so repeat questions cost nothing. The `/explain` JSON endpoint is rate-limited (`authLimiter`).

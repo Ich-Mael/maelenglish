@@ -1,0 +1,218 @@
+<% layout('layouts/main') %>
+
+<% headContent = `
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <style>
+    #main { margin-top: 0 !important; padding-top: 0 !important; }
+    .ml-page { background:#f6f7fb; min-height:100vh; padding-bottom:4rem;
+      font-family: system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; color:#1f2937; }
+    .ml-hero { color:#fff; padding:2.2rem clamp(1rem,4vw,3rem);
+      background: radial-gradient(800px 400px at 85% -10%, rgba(168,85,247,.25), transparent 60%),
+                  linear-gradient(135deg,#160a33 0%,#2d0370 55%,#5d06ba 100%); position:relative; overflow:hidden; }
+    .ml-hero__inner { max-width:1180px; margin:0 auto; position:relative; z-index:1; }
+    .ml-crumb { display:inline-flex; align-items:center; gap:.45rem; color:rgba(255,255,255,.85); text-decoration:none;
+      font-size:.9rem; font-weight:600; padding:.4rem .85rem; border-radius:999px; background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.22); }
+    .ml-crumb:hover { background:rgba(255,255,255,.22); color:#fff; }
+    .ml-badge { display:inline-flex; align-items:center; gap:.4rem; font-size:.72rem; font-weight:800; letter-spacing:.04em;
+      text-transform:uppercase; padding:.28rem .7rem; border-radius:999px; background:#ede0ff; color:#5d06ba; }
+    .ml-hero h1 { margin:.9rem 0 .3rem; font-size:clamp(1.6rem,3.5vw,2.3rem); font-weight:800; }
+    .ml-hero p { margin:0; opacity:.9; }
+    .ml-wrap { max-width:1180px; margin:0 auto; padding:0 clamp(1rem,4vw,3rem); }
+    .ml-grid { display:grid; grid-template-columns: 1.1fr .9fr; gap:1.5rem; margin-top:-1.5rem; position:relative; z-index:2; }
+    @media (max-width:900px){ .ml-grid { grid-template-columns:1fr; } }
+    .ml-card { background:#fff; border-radius:18px; box-shadow:0 10px 30px rgba(45,3,112,.1); padding:1.25rem; }
+    .ml-card h2 { font-size:1.05rem; font-weight:700; color:#2d0370; margin:0 0 .9rem; display:flex; align-items:center; gap:.5rem; }
+    #ggb { width:100%; min-height:420px; border-radius:12px; overflow:hidden; }
+    .ml-input-row { display:flex; gap:.6rem; align-items:center; margin-bottom:1rem; flex-wrap:wrap; }
+    .ml-input-row label { font-weight:700; color:#5d06ba; }
+    .ml-input-row input { flex:1; min-width:180px; padding:.7rem .9rem; border:2px solid #e0e0e0; border-radius:10px;
+      font-size:1.05rem; font-family:'Courier New',monospace; background:#fafafa; }
+    .ml-input-row input:focus { outline:none; border-color:#5d06ba; background:#fff; }
+    .ml-ops { display:flex; flex-wrap:wrap; gap:.5rem; }
+    .ml-op { border:1px solid #d9ccf5; background:#f4eefe; color:#5d06ba; border-radius:10px; padding:.55rem .9rem;
+      font-weight:600; font-size:.9rem; cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; gap:.4rem; }
+    .ml-op:hover { background:#5d06ba; color:#fff; border-color:#5d06ba; }
+    .ml-op:disabled { opacity:.5; cursor:not-allowed; }
+    .ml-answer { margin-top:1rem; background:linear-gradient(135deg,#2d0370,#5d06ba); color:#fff; border-radius:14px; padding:1rem 1.2rem; }
+    .ml-answer .lbl { font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; opacity:.85; }
+    .ml-answer .val { font-size:1.4rem; margin-top:.25rem; }
+    .ml-steps { margin-top:1rem; }
+    .ml-step { border:1px solid #eee; border-left:4px solid #5d06ba; border-radius:10px; padding:.9rem 1.1rem; margin-bottom:.8rem; background:#fff; }
+    .ml-step__title { font-weight:700; color:#2d0370; font-size:.95rem; margin-bottom:.4rem; }
+    .ml-step__latex { margin:.3rem 0; font-size:1.05rem; }
+    .ml-step__exp { color:#4b5563; font-size:.92rem; line-height:1.5; }
+    .ml-state { color:#6b7280; font-size:.92rem; padding:.6rem 0; }
+    .ml-spinner { display:inline-block; width:16px; height:16px; border:2px solid #d9ccf5; border-top-color:#5d06ba; border-radius:50%; animation:mlspin .7s linear infinite; vertical-align:-3px; margin-right:.4rem; }
+    @keyframes mlspin { to { transform:rotate(360deg); } }
+    .ml-warn { margin-top:1rem; display:flex; gap:.6rem; align-items:flex-start; background:#f3effc; border:1px solid #d9ccf5;
+      border-radius:12px; padding:.7rem .9rem; color:#4a3a6b; font-size:.82rem; line-height:1.45; }
+    .ml-warn i { color:#5d06ba; font-size:1.05rem; flex-shrink:0; margin-top:.05rem; }
+    .ml-hint { font-size:.82rem; color:#6b7280; margin-top:.4rem; }
+  </style>
+` %>
+
+<div class="ml-page">
+  <header class="ml-hero">
+    <div class="ml-hero__inner">
+      <a class="ml-crumb" href="/programs/ekalan/kalan/class/<%= schoolClass._id %>"><i class="bi bi-arrow-left"></i> Retour à la classe</a>
+      <h1><span class="ml-badge"><i class="bi bi-calculator"></i> Espace Maths</span> Calculs &amp; explications</h1>
+      <p>Dérivées, asymptotes, limites, intégrales… avec les étapes du raisonnement, propulsées par l'IA.</p>
+    </div>
+  </header>
+
+  <div class="ml-wrap">
+    <div class="ml-grid">
+      <!-- Graph -->
+      <div class="ml-card">
+        <h2><i class="bi bi-graph-up"></i> Représentation graphique</h2>
+        <div id="ggb"></div>
+        <div class="ml-hint">Saisissez une fonction puis choisissez une opération. La courbe se met à jour automatiquement.</div>
+      </div>
+
+      <!-- Controls + results -->
+      <div class="ml-card">
+        <h2><i class="bi bi-input-cursor-text"></i> Votre fonction</h2>
+        <div class="ml-input-row">
+          <label for="fx">f(x) =</label>
+          <input id="fx" type="text" value="x^2" placeholder="ex : (x^2+1)/(x-1)" autocomplete="off" />
+        </div>
+
+        <div class="ml-ops" id="ops">
+          <button class="ml-op" data-op="derivative"><i class="bi bi-slash-lg"></i> Dérivée f'(x)</button>
+          <button class="ml-op" data-op="asymptotes"><i class="bi bi-arrows-collapse"></i> Asymptotes</button>
+          <button class="ml-op" data-op="limit"><i class="bi bi-infinity"></i> Limite en +∞</button>
+          <button class="ml-op" data-op="integral"><i class="bi bi-integral"></i> Intégrale</button>
+          <button class="ml-op" data-op="solve"><i class="bi bi-check2-square"></i> Résoudre = 0</button>
+          <button class="ml-op" data-op="factor"><i class="bi bi-diagram-2"></i> Factoriser</button>
+          <button class="ml-op" data-op="expand"><i class="bi bi-arrows-angle-expand"></i> Développer</button>
+        </div>
+
+        <div id="answer"></div>
+        <div id="steps" class="ml-steps"></div>
+        <div id="state" class="ml-state"></div>
+
+        <div class="ml-warn">
+          <i class="bi bi-shield-exclamation"></i>
+          <span><strong>Aide à l'étude, usage personnel.</strong> Vérifiez toujours les résultats vous-même — l'IA peut se tromper dans les explications, mais le résultat affiché provient du moteur de calcul.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% scripts = `
+  <script src="https://www.geogebra.org/apps/deployggb.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script>
+  (function () {
+    var EXPLAIN_URL = "/programs/ekalan/kalan/class/${schoolClass._id}/maths-lab/explain";
+    var ggb = null;
+    var fxInput = document.getElementById('fx');
+    var opsEl = document.getElementById('ops');
+    var answerEl = document.getElementById('answer');
+    var stepsEl = document.getElementById('steps');
+    var stateEl = document.getElementById('state');
+
+    function setOpsEnabled(on){ opsEl.querySelectorAll('.ml-op').forEach(function(b){ b.disabled = !on; }); }
+    function renderKatex(el, latex){ try { katex.render(latex, el, { throwOnError:false, displayMode:false }); } catch(e){ el.textContent = latex; } }
+
+    // CAS command per operation, against the raw expression
+    function casCommand(op, expr){
+      switch(op){
+        case 'derivative': return 'Derivative(' + expr + ')';
+        case 'asymptotes': return 'Asymptote(' + expr + ')';
+        case 'limit':      return 'Limit(' + expr + ', Infinity)';
+        case 'integral':   return 'Integral(' + expr + ')';
+        case 'solve':      return 'Solve(' + expr + '=0)';
+        case 'factor':     return 'Factor(' + expr + ')';
+        case 'expand':     return 'Expand(' + expr + ')';
+        default: return null;
+      }
+    }
+
+    function plot(expr){
+      if(!ggb) return;
+      try {
+        ggb.evalCommand('f(x)=' + expr);
+        ggb.setColor('f', 93, 6, 186);
+      } catch(e){}
+    }
+
+    function escapeHtml(s){ return String(s).replace(/[&<>]/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;'})[c]; }); }
+
+    function showSteps(data){
+      stepsEl.innerHTML = '';
+      if(data.finalAnswerLatex){
+        answerEl.innerHTML = '<div class="ml-answer"><div class="lbl">Résultat</div><div class="val" id="ml-final"></div></div>';
+        renderKatex(document.getElementById('ml-final'), data.finalAnswerLatex);
+      } else if (data.casResult){
+        answerEl.innerHTML = '<div class="ml-answer"><div class="lbl">Résultat</div><div class="val">' + escapeHtml(data.casResult) + '</div></div>';
+      }
+      if(Array.isArray(data.steps) && data.steps.length){
+        data.steps.forEach(function(st){
+          var div = document.createElement('div');
+          div.className = 'ml-step';
+          var t = document.createElement('div'); t.className = 'ml-step__title'; t.textContent = st.title || '';
+          var l = document.createElement('div'); l.className = 'ml-step__latex';
+          var e = document.createElement('div'); e.className = 'ml-step__exp'; e.textContent = st.explanation || '';
+          div.appendChild(t); div.appendChild(l); div.appendChild(e);
+          stepsEl.appendChild(div);
+          if(st.latex) renderKatex(l, st.latex);
+        });
+      }
+    }
+
+    async function run(op){
+      var expr = (fxInput.value || '').trim();
+      if(!expr){ stateEl.textContent = 'Saisissez une fonction.'; return; }
+      var cmd = casCommand(op, expr);
+      if(!cmd || !ggb){ return; }
+
+      plot(expr);
+      answerEl.innerHTML = ''; stepsEl.innerHTML = '';
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Calcul en cours…';
+      setOpsEnabled(false);
+
+      var casResult = '';
+      try { casResult = ggb.evalCommandCAS(cmd); } catch(e){ casResult = ''; }
+      if(!casResult){ stateEl.textContent = "Impossible de calculer — vérifiez la syntaxe de la fonction."; setOpsEnabled(true); return; }
+
+      // Show the CAS result immediately (source of truth)
+      answerEl.innerHTML = '<div class="ml-answer"><div class="lbl">Résultat</div><div class="val">' + escapeHtml(casResult) + '</div></div>';
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
+
+      try {
+        var resp = await fetch(EXPLAIN_URL, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ function: expr, operation: op, casResult: casResult })
+        });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data); stateEl.textContent = data.cached ? '' : ''; }
+        else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){
+        stateEl.textContent = 'Connexion impossible — réessayez.';
+      } finally {
+        setOpsEnabled(true);
+      }
+    }
+
+    opsEl.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.ml-op'); if(!btn || btn.disabled) return;
+      run(btn.getAttribute('data-op'));
+    });
+
+    // GeoGebra applet
+    setOpsEnabled(false);
+    var applet = new GGBApplet({
+      appName: 'classic',
+      width: 600, height: 420,
+      showToolBar: false, showAlgebraInput: false, showMenuBar: false,
+      enableRightClick: false, showResetIcon: true,
+      perspective: 'AG',
+      appletOnLoad: function(api){ ggb = api; setOpsEnabled(true); plot((fxInput.value||'').trim()); }
+    }, true);
+    applet.inject('ggb');
+  })();
+  </script>
+` %>

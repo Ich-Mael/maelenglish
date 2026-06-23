@@ -123,18 +123,19 @@ app.use(helmet({
         directives: {
             defaultSrc: ["'self'"],
             // 'unsafe-eval' is required by the Desmos calculator API (it uses `new Function`).
-            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "kit.fontawesome.com", "*.fontawesome.com", "https://www.desmos.com", "unpkg.com"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "kit.fontawesome.com", "*.fontawesome.com", "https://www.desmos.com", "unpkg.com", "https://www.geogebra.org", "https://cdn.geogebra.org"],
             // Allow inline event-handler attributes (onclick, etc.) used across the
             // EJS views. Helmet defaults script-src-attr to 'none', which would
             // otherwise block them even though inline <script> is allowed above.
             scriptSrcAttr: ["'unsafe-inline'"],
-            styleSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "fonts.googleapis.com", "unpkg.com"],
-            fontSrc: ["'self'", "data:", "fonts.gstatic.com", "cdnjs.cloudflare.com", "*.fontawesome.com", "https://www.desmos.com"],
+            styleSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "fonts.googleapis.com", "unpkg.com", "https://www.geogebra.org", "https://cdn.geogebra.org"],
+            fontSrc: ["'self'", "data:", "fonts.gstatic.com", "cdnjs.cloudflare.com", "*.fontawesome.com", "https://www.desmos.com", "cdn.jsdelivr.net", "https://www.geogebra.org", "https://cdn.geogebra.org"],
             imgSrc: ["'self'", "data:", "blob:", "https:"],
-            connectSrc: ["'self'", "*.fontawesome.com", "https://www.desmos.com", "https://saved-work.desmos.com"],
-            // Desmos graphing/scientific calculators spin up web workers from blob: URLs.
-            workerSrc: ["'self'", "blob:"],
-            frameSrc: ["player.vimeo.com", "www.youtube.com", "www.youtube-nocookie.com", "maps.google.com", "www.google.com"],
+            // GeoGebra (Espace Maths) fetches app resources + spins workers from its CDN.
+            connectSrc: ["'self'", "*.fontawesome.com", "https://www.desmos.com", "https://saved-work.desmos.com", "https://www.geogebra.org", "https://cdn.geogebra.org"],
+            // Desmos + GeoGebra calculators spin up web workers from blob: URLs.
+            workerSrc: ["'self'", "blob:", "https://www.geogebra.org", "https://cdn.geogebra.org"],
+            frameSrc: ["player.vimeo.com", "www.youtube.com", "www.youtube-nocookie.com", "maps.google.com", "www.google.com", "https://www.geogebra.org"],
         },
     },
 }));
@@ -150,6 +151,7 @@ const authLimiter = rateLimit({
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); // JSON bodies (e.g. Espace Maths /explain fetch)
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser(process.env.SECRET || 'thisshouldbeabettersecret!')); // Parse cookies needed for device tracking
 app.use(useragent.express()); // Parse User-Agent for device tracking
