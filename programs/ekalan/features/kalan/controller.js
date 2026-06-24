@@ -1337,6 +1337,15 @@ module.exports.mathsLab = async (req, res) => {
   res.render("programs/ekalan/Class/maths-lab", { schoolClass });
 };
 
+// Detect cache entries whose LaTeX was corrupted by lone-backslash JSON escapes
+// (a control char where a command like \frac/\text was meant). Such an entry is
+// re-generated with the repaired parser instead of being served.
+function cacheLooksCorrupted(doc) {
+  const latexes = [doc.finalAnswerLatex || ""];
+  (doc.steps || []).forEach((s) => { if (s && s.latex) latexes.push(s.latex); });
+  return latexes.some((s) => { for (let i = 0; i < s.length; i++) { if (s.charCodeAt(i) < 32) return true; } return false; });
+}
+
 // Endpoint JSON : explication pas-à-pas (cache + Claude). Renvoie toujours du JSON.
 module.exports.explainMath = async (req, res) => {
   try {
@@ -1365,7 +1374,9 @@ module.exports.explainMath = async (req, res) => {
       const z2 = typeof req.body.z2 === "string" ? req.body.z2.trim() : "";
       const n = Number.parseInt(req.body.n, 10);
       const arithOp = req.body.arithOp;
+      const z0 = typeof req.body.z0 === "string" ? req.body.z0.trim().slice(0, 120) : "";
 
+      let opKeyPart = operation;
       if (operation === "arithmetic") {
         if (!z2 || z2.length > 120) {
           return res.status(400).json({ ok: false, error: "Second nombre complexe invalide." });
@@ -1379,9 +1390,15 @@ module.exports.explainMath = async (req, res) => {
           return res.status(400).json({ ok: false, error: "Exposant n invalide (2 à 12)." });
         }
         params = { n };
+      } else if (operation === "eval_at" || operation === "quotient" || operation === "solve_quotient") {
+        if (!z0) {
+          return res.status(400).json({ ok: false, error: "Valeur z₀ manquante." });
+        }
+        params = { z0 };
+        opKeyPart = `${operation}:${z0}`; // distinct cache per z₀
       }
 
-      key = `complex|${input}|${operation}|${casResult}`;
+      key = `complex|${input}|${opKeyPart}|${casResult}`;
     } else {
       input = typeof req.body.function === "string" ? req.body.function.trim() : "";
       if (!input || input.length > 200) {
@@ -1390,12 +1407,25 @@ module.exports.explainMath = async (req, res) => {
       if (!OPERATIONS[operation]) {
         return res.status(400).json({ ok: false, error: "Opération inconnue." });
       }
-      key = `${input}|${operation}|${casResult}`;
+      let opKeyPart = operation;
+      if (operation === "limit") {
+        const point = typeof req.body.point === "string" ? req.body.point.trim().slice(0, 40) : "";
+        const side = req.body.side === "+" || req.body.side === "-" ? req.body.side : "";
+        if (point) {
+          params = { point, side };
+          opKeyPart = `limit:${point}${side}`; // distinct cache key per target/side
+        }
+      }
+      key = `${input}|${opKeyPart}|${casResult}`;
     }
 
     const cached = await MathExplanation.findOne({ key });
-    if (cached) {
+    if (cached && !cacheLooksCorrupted(cached)) {
       return res.json({ ok: true, cached: true, casResult, steps: cached.steps, finalAnswerLatex: cached.finalAnswerLatex });
+    }
+    if (cached) {
+      // Older entry with LaTeX corrupted by lone-backslash JSON escapes — drop it and regenerate.
+      try { await MathExplanation.deleteOne({ key }); } catch (e) { /* ignore */ }
     }
 
     const result = await explainSteps({ domain, input, operation, casResult, params });
