@@ -22,6 +22,15 @@
   .badge-failed   { background: #fee2e2; color: #991b1b; }
   .badge-pending  { background: #f3f4f6; color: #6b7280; }
   .badge-submitted { background: #dbeafe; color: #1e40af; }
+  /* Rich-text module intro — normalize editor colors so it's always readable on the white card */
+  .module-intro { color: #374151; line-height: 1.75; font-size: 1rem; }
+  .module-intro * { color: #374151 !important; background-color: transparent !important; }
+  .module-intro strong, .module-intro b { font-weight: 700; color: #2d0370 !important; }
+  .module-intro p { margin: 0 0 .85rem; }
+  .module-intro p:last-child { margin-bottom: 0; }
+  .module-intro ul, .module-intro ol { margin: 0 0 .85rem; padding-left: 1.4rem; }
+  .module-intro li { margin-bottom: .35rem; }
+  .module-intro a { color: #5d06ba !important; text-decoration: underline; }
 </style>` %>
 
 <div class="page-wrapper">
@@ -32,13 +41,19 @@
         <div>
           <p style="opacity:.7;font-size:.85rem;margin:0 0 .3rem;"><%= course.title %></p>
           <h1><%= courseModule.title %></h1>
-          <p><%= courseModule.willLearnModule %></p>
         </div>
         <a href="/programs/language-learning/general-english-boost/<%= course._id %>" class="btn btn-light btn-sm">← Cours</a>
       </div>
     </div>
 
     <%- include('../../../../partials/flash') %>
+
+    <% if (courseModule.willLearnModule && courseModule.willLearnModule.trim()) { %>
+    <div class="section-card">
+      <h3>📖 À propos de ce module</h3>
+      <div class="module-intro"><%- courseModule.willLearnModule %></div>
+    </div>
+    <% } %>
 
     <!-- Lessons list -->
     <div class="section-card">
