@@ -84,6 +84,9 @@
     .ml-key[data-lpoint] { font-family:system-ui,sans-serif; font-size:.85rem; font-weight:700; }
     .ml-subsection { margin-top:1.4rem; padding-top:1.2rem; border-top:1px dashed #e0d7f4; }
     .ml-subtitle { font-size:.98rem; font-weight:700; color:#2d0370; margin:0 0 .2rem; display:flex; align-items:center; gap:.45rem; }
+    .ml-block { background:#faf8ff; border:1px solid #ece4fb; border-radius:14px; padding:1.05rem 1.1rem .95rem; margin-bottom:1.1rem; }
+    .ml-block:last-child { margin-bottom:0; }
+    .ml-block > h2:first-child, .ml-block > .ml-subtitle:first-child { margin-top:0; }
     .ml-coefs { display:flex; flex-wrap:wrap; gap:.6rem; margin:.9rem 0; }
     .ml-coef { display:flex; align-items:center; gap:.4rem; flex:1 1 130px; }
     .ml-coef label { font-weight:800; color:#5d06ba; font-style:italic; min-width:1rem; }
@@ -225,7 +228,8 @@
         </div><%# /mode-function %>
 
         <div id="mode-complex" hidden>
-          <h2><i class="bi bi-asterisk"></i> Vos nombres complexes</h2>
+          <div class="ml-block">
+          <h2><i class="bi bi-asterisk"></i> Opérations dans ℂ</h2>
           <div class="ml-input-row">
             <label for="z1">z₁ =</label>
             <input id="z1" type="text" value="3+4i" placeholder="ex : 3+4i" autocomplete="off" />
@@ -267,8 +271,9 @@
           </div>
 
           <div class="ml-hint">Notez l'unité imaginaire <strong>i</strong> (ex : <code>3+4i</code>). « n » sert aux puissances et racines ; z₂ apparaît pour les opérations entre deux nombres.</div>
+          </div><%# /ml-block — Opérations dans ℂ %>
 
-          <div class="ml-subsection">
+          <div class="ml-block">
             <h3 class="ml-subtitle"><i class="bi bi-asterisk"></i> Équation polynomiale dans ℂ</h3>
             <div class="ml-hint" style="margin-top:.1rem">Résolvez <strong>a·z³ + b·z² + c·z + d = 0</strong>. Les coefficients peuvent être complexes ; mettez <strong>a = 0</strong> pour une équation du second degré.</div>
             <div class="ml-coefs">
@@ -292,9 +297,10 @@
               <button class="ml-op" data-eqop="solve_quotient"><i class="bi bi-check2-square"></i> Résoudre Q(z)=0</button>
             </div>
 
-            <div class="ml-ops" style="margin-top:.55rem">
+            <div class="ml-ops" style="margin-top:.55rem" id="eq-direct-row">
               <button class="ml-op" id="eq-solve" type="button"><i class="bi bi-check2-circle"></i> Résoudre directement dans ℂ</button>
             </div>
+            <div class="ml-hint" id="eq-cubic-hint" style="margin-top:.55rem" hidden>Équation du 3<sup>e</sup> degré : utilisez la démarche guidée ci-dessus (racine évidente → Q(z) → résoudre Q(z)=0).</div>
           </div>
         </div><%# /mode-complex %>
 
@@ -874,33 +880,44 @@
       return '(' + a + ')*z^3 + (' + b + ')*z^2 + (' + c + ')*z + (' + d + ')';
     }
 
+    // Shown only for degree ≤ 2 (a = 0). Solved with the reliable JS quadratic formula.
+    function eqIsCubic(){ return !cIsZero(coefVal(eqaInput.value)); }
+    function refreshDirectSolve(){
+      var cubic = eqIsCubic();
+      document.getElementById('eq-direct-row').hidden = cubic;
+      document.getElementById('eq-cubic-hint').hidden = !cubic;
+    }
+    eqaInput.addEventListener('input', refreshDirectSolve);
+
     async function runSolve(){
-      var a = (eqaInput.value || '').trim(), b = (eqbInput.value || '').trim();
-      var c = (eqcInput.value || '').trim(), d = (eqdInput.value || '').trim();
-      if(!a && !b && !c && !d){ stateEl.textContent = 'Renseignez les coefficients.'; return; }
+      if(eqIsCubic()){ return; } // direct solve is for degree ≤ 2 only
+      var b = (eqbInput.value || '').trim(), c = (eqcInput.value || '').trim(), d = (eqdInput.value || '').trim();
       if(!ggb){ return; }
-      var poly = buildEquation();
+      var qb = coefVal(eqbInput.value), qc = coefVal(eqcInput.value), qd = coefVal(eqdInput.value);
+      if(cIsZero(qb) && cIsZero(qc)){ stateEl.textContent = 'Renseignez au moins le coefficient b ou c (équation en z).'; return; }
 
       clearComplexPlot(); try { ggb.deleteObject('f'); } catch(e){}
       answerEl.innerHTML = ''; stepsEl.innerHTML = '';
       stateEl.innerHTML = '<span class="ml-spinner"></span> Résolution en cours…';
       eqSolveBtn.disabled = true; setCOpsEnabled(false);
 
-      var casResult = '';
-      try { casResult = ggb.evalCommandCAS('CSolutions(' + poly + ' = 0, z)'); } catch(e){ casResult = ''; }
-      casResult = ggbToText(casResult).trim();
-      if(!casResult || casResult === '{}'){ stateEl.textContent = 'Impossible de résoudre — vérifiez les coefficients (ex : 1, 0, 0, -8).'; eqSolveBtn.disabled = false; setCOpsEnabled(true); return; }
+      var roots = solveQuad(qb, qc, qd); // numeric, for plotting
+      var exact = exactQuadRoots(qb, qc, qd); // exact with √, if integer coeffs
+      var rootStrs = exact || roots.map(function(r){ return fmtComplexVal(r.re, r.im); });
+      var casResult = rootStrs.length ? ('{' + rootStrs.join(', ') + '}') : '';
+      if(!casResult){ stateEl.textContent = 'Impossible de résoudre — vérifiez les coefficients.'; eqSolveBtn.disabled = false; setCOpsEnabled(true); return; }
 
-      // Plot the solutions on the Argand plane.
-      defObj('Rq', 'CSolutions(' + poly + ' = 0, z)'); colour('Rq', 255, 184, 0);
+      // Plot the roots on the Argand plane.
+      roots.forEach(function(r, idx){ var nm = 'rqs' + (idx + 1); defObj(nm, '(' + r.re + ',' + r.im + ')'); colour(nm, 255, 184, 0); });
 
       setEqAnswer('Solutions dans ℂ', casResult);
       stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
 
+      var expr = '(' + (b || '0') + ')*z^2 + (' + (c || '0') + ')*z + (' + (d || '0') + ')';
       try {
         var resp = await fetch(EXPLAIN_URL, {
           method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ domain:'complex', operation:'solve_poly', expression: poly, casResult: casResult })
+          body: JSON.stringify({ domain:'complex', operation:'solve_poly', expression: expr, casResult: casResult })
         });
         var data = await resp.json();
         if(data.ok){ showSteps(data); }
@@ -908,13 +925,12 @@
       } catch(e){
         stateEl.textContent = 'Connexion impossible — réessayez.';
       } finally {
-        // The GeoGebra CAS roots are authoritative & complete — always display them
-        // (the model can abbreviate or leave the last root "à déterminer").
-        setEqAnswer('Solutions dans ℂ', casResult);
+        setEqAnswer('Solutions dans ℂ', casResult); // authoritative computed roots
         eqSolveBtn.disabled = false; setCOpsEnabled(true);
       }
     }
     eqSolveBtn.addEventListener('click', runSolve);
+    refreshDirectSolve();
 
     /* --- Résolution guidée pas à pas : f(z₀), racine évidente, Q(z), Q(z)=0 --- */
     var eqz0Input = document.getElementById('eqz0');
@@ -1138,7 +1154,7 @@
           label = 'f(z₀)';
         } else if(op === 'find_root'){
           var fr = findSpecialRoot(poly);
-          if(!fr){ stateEl.textContent = 'Aucune racine réelle ou imaginaire pure évidente — utilisez « Résoudre directement dans ℂ ».'; reenable(); return; }
+          if(!fr){ stateEl.textContent = 'Aucune racine réelle ou imaginaire pure évidente pour cette équation.'; reenable(); return; }
           eqz0Input.value = fr.value; z0 = fr.value; casResult = fr.value; label = 'Racine évidente z₀'; plotAll = true;
           var frv = evalComplex('(' + fr.value + ')'); if(frv) eqRoots = [frv];
         } else if(op === 'quotient'){
