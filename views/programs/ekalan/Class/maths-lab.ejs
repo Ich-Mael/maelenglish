@@ -186,6 +186,7 @@
           <button type="button" class="ml-mode" data-mode="complex"><i class="bi bi-asterisk"></i> Nombres complexes</button>
           <button type="button" class="ml-mode" data-mode="geometry"><i class="bi bi-triangle"></i> Géométrie</button>
           <button type="button" class="ml-mode" data-mode="limit"><i class="bi bi-arrow-bar-right"></i> Limites</button>
+          <button type="button" class="ml-mode" data-mode="integral"><i class="bi bi-integral"></i> Intégrales</button>
         </div>
 
         <div id="mode-function">
@@ -224,7 +225,7 @@
           <button class="ml-op" data-op="derivative"><i class="bi bi-slash-lg"></i> Dérivée f'(x)</button>
           <button class="ml-op" data-op="asymptotes"><i class="bi bi-arrows-collapse"></i> Asymptotes</button>
           <button class="ml-op" data-op="limit"><i class="bi bi-infinity"></i> Limite en +∞</button>
-          <button class="ml-op" data-op="integral"><i class="bi bi-integral"></i> Intégrale</button>
+          <button class="ml-op" data-op="integral"><i class="bi bi-integral"></i> Primitive</button>
           <button class="ml-op" data-op="solve"><i class="bi bi-check2-square"></i> Résoudre = 0</button>
           <button class="ml-op" data-op="factor"><i class="bi bi-diagram-2"></i> Factoriser</button>
           <button class="ml-op" data-op="expand"><i class="bi bi-arrows-angle-expand"></i> Développer</button>
@@ -266,6 +267,8 @@
             <button class="ml-op" data-cop="modulus"><i class="bi bi-rulers"></i> Module |z|</button>
             <button class="ml-op" data-cop="argument"><i class="bi bi-compass"></i> Argument</button>
             <button class="ml-op" data-cop="conjugate"><i class="bi bi-arrow-left-right"></i> Conjugué</button>
+            <button class="ml-op" data-cop="algebraic_form"><i class="bi bi-plus-slash-minus"></i> Forme algébrique</button>
+            <button class="ml-op" data-cop="trig_form"><i class="bi bi-circle"></i> Forme trigo.</button>
             <button class="ml-op" data-cop="exp_form"><i class="bi bi-arrow-repeat"></i> Forme exp.</button>
             <button class="ml-op" data-cop="power" data-needs="n"><i class="bi bi-superscript"></i> Puissance zⁿ</button>
             <button class="ml-op" data-cop="nth_roots" data-needs="n"><i class="bi bi-diagram-3"></i> Racines n-ièmes</button>
@@ -398,6 +401,53 @@
 
           <div class="ml-hint">Indiquez la valeur vers laquelle x tend (un nombre, +∞ ou −∞). Choisissez « à gauche » / « à droite » pour les asymptotes verticales et les formes indéterminées.</div>
         </div><%# /mode-limit %>
+
+        <div id="mode-integral" hidden>
+          <h2><i class="bi bi-integral"></i> Calcul d'intégrale</h2>
+          <div class="ml-input-row">
+            <label for="ifx">f(x) =</label>
+            <input id="ifx" type="text" value="x^2" placeholder="ex : x^2, 1/x, cos(x)" autocomplete="off" />
+          </div>
+
+          <div class="ml-side" id="iside">
+            <button type="button" class="ml-sidebtn is-active" data-itype="indef">∫ Primitive (indéfinie)</button>
+            <button type="button" class="ml-sidebtn" data-itype="def">∫ₐᵇ Intégrale définie</button>
+          </div>
+
+          <div class="ml-input-row" id="ibounds" hidden>
+            <label for="ia">a =</label>
+            <input id="ia" type="text" value="0" placeholder="borne inf." autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:120px;" />
+            <label for="ib" style="margin-left:.5rem">b =</label>
+            <input id="ib" type="text" value="1" placeholder="borne sup." autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:120px;" />
+          </div>
+
+          <div class="ml-preview is-empty" id="iPreview">Aperçu de l'intégrale…</div>
+
+          <div class="ml-keys" id="ikeys">
+            <button type="button" class="ml-key" data-ins="x">x</button>
+            <button type="button" class="ml-key" data-ins="x^2">x²</button>
+            <button type="button" class="ml-key" data-ins="^">xⁿ</button>
+            <button type="button" class="ml-key" data-ins="(|)/(|)">a⁄b</button>
+            <button type="button" class="ml-key" data-ins="sqrt(|)">√</button>
+            <button type="button" class="ml-key" data-ins="(|)">(&nbsp;)</button>
+            <button type="button" class="ml-key" data-ins="+">+</button>
+            <button type="button" class="ml-key" data-ins="-">−</button>
+            <button type="button" class="ml-key" data-ins="*">×</button>
+            <button type="button" class="ml-key" data-ins="pi">π</button>
+            <button type="button" class="ml-key" data-ins="exp(|)">eˣ</button>
+            <button type="button" class="ml-key is-fn" data-ins="ln(|)">ln</button>
+            <button type="button" class="ml-key is-fn" data-ins="sin(|)">sin</button>
+            <button type="button" class="ml-key is-fn" data-ins="cos(|)">cos</button>
+            <button type="button" class="ml-key is-util" data-act="back">⌫</button>
+            <button type="button" class="ml-key is-util" data-act="clear">C</button>
+          </div>
+
+          <div class="ml-ops" id="iops">
+            <button class="ml-op" data-iop="integral"><i class="bi bi-integral"></i> Calculer l'intégrale</button>
+          </div>
+
+          <div class="ml-hint">« Primitive » donne ∫ f(x) dx (avec la constante). « Intégrale définie » calcule ∫ de a à b de f(x) dx par F(b) − F(a) ; l'aire correspondante est colorée sur le graphique.</div>
+        </div><%# /mode-integral %>
 
         <div id="answer"></div>
         <div id="steps" class="ml-steps"></div>
@@ -606,6 +656,7 @@
           if(st.latex) renderKatex(l, st.latex);
         });
       }
+      stateEl.textContent = ''; // steps rendered — stop the spinner
     }
 
     async function run(op){
@@ -767,7 +818,7 @@
         defObj('z_3', '(' + z1 + ')' + sym + '(' + z2 + ')');
         colour('z_2', 168, 85, 247); colour('z_3', 255, 184, 0);
       } else if(op === 'conjugate'){
-        defObj('z_c', 'Conjugate(z_1)'); colour('z_c', 255, 184, 0);
+        defObj('z_c', '(x(z_1), -y(z_1))'); colour('z_c', 255, 184, 0);
       } else if(op === 'power'){
         defObj('z_p', 'z_1^(' + n + ')'); colour('z_p', 255, 184, 0);
       } else if(op === 'nth_roots'){
@@ -813,6 +864,16 @@
           var r  = ggb.evalCommandCAS('abs((' + z1 + '))');
           var th = ggb.evalCommandCAS('arg((' + z1 + '))');
           if(r && th){ casResult = r + '*e^(i*(' + th + ')) = ' + r + '*(cos(' + th + ') + i*sin(' + th + '))'; }
+        } else if(op === 'algebraic_form'){
+          var v = evalComplex('(' + z1 + ')'); // reliable real/imag extraction
+          if(v){ casResult = fmtComplexVal(v.re, v.im); }
+        } else if(op === 'conjugate'){
+          var vc = evalComplex('(' + z1 + ')'); // conjugate = a − bi (no GeoGebra Conjugate command)
+          if(vc){ casResult = fmtComplexVal(vc.re, -vc.im); }
+        } else if(op === 'trig_form'){
+          var rt = ggb.evalCommandCAS('abs((' + z1 + '))');
+          var tt = ggb.evalCommandCAS('arg((' + z1 + '))');
+          if(rt && tt){ casResult = rt + '*(cos(' + tt + ') + i*sin(' + tt + '))'; }
         } else {
           var cmd = complexCAS(op, z1, z2, n, arith);
           if(cmd){ casResult = ggb.evalCommandCAS(cmd); }
@@ -1593,18 +1654,148 @@
     });
     setLimSide(''); refreshSideButtons();
 
+    /* ============ INTÉGRALES ============ */
+    var modeIntegral = document.getElementById('mode-integral');
+    var ifxInput   = document.getElementById('ifx');
+    var iaInput    = document.getElementById('ia');
+    var ibInput    = document.getElementById('ib');
+    var ikeysEl    = document.getElementById('ikeys');
+    var iopsEl     = document.getElementById('iops');
+    var iPreviewEl = document.getElementById('iPreview');
+    var isideEl    = document.getElementById('iside');
+    var iboundsEl  = document.getElementById('ibounds');
+    var intObjs    = [];
+    var intType    = 'indef';
+    var activeInt  = ifxInput;
+
+    function setIOpsEnabled(on){ iopsEl.querySelectorAll('.ml-op').forEach(function(b){ b.disabled = !on; }); }
+    function defInt(name, fullCmd){ try { ggb.evalCommand(fullCmd); intObjs.push(name); } catch(e){} }
+    function clearIntPlot(){ intObjs.forEach(function(nm){ try { ggb.deleteObject(nm); } catch(e){} }); intObjs = []; }
+
+    function integralLatex(){
+      var f = (ifxInput.value || '').trim();
+      var fTex = null; try { fTex = toLatex(f); } catch(e){ return null; }
+      if(fTex == null) return null;
+      if(intType === 'def'){
+        var a = (iaInput.value || '').trim() || 'a', b = (ibInput.value || '').trim() || 'b';
+        var aTex, bTex;
+        try { aTex = toLatex(a); } catch(e){ aTex = a; }
+        try { bTex = toLatex(b); } catch(e){ bTex = b; }
+        return BS + 'int_{' + aTex + '}^{' + bTex + '} ' + fTex + BS + ',dx';
+      }
+      return BS + 'int ' + fTex + BS + ',dx';
+    }
+    function updateIntPreview(){
+      var raw = (ifxInput.value || '').trim();
+      if(!raw){ iPreviewEl.className = 'ml-preview is-empty'; iPreviewEl.textContent = 'Aperçu de l’intégrale…'; return; }
+      var tex = null; try { tex = integralLatex(); } catch(e){ tex = null; }
+      if(tex == null){ iPreviewEl.className = 'ml-preview is-empty'; iPreviewEl.textContent = '…en cours de saisie'; return; }
+      try { katex.render(tex, iPreviewEl, { throwOnError:true, displayMode:false }); iPreviewEl.className = 'ml-preview'; }
+      catch(e){ iPreviewEl.className = 'ml-preview is-empty'; iPreviewEl.textContent = '…en cours de saisie'; }
+    }
+
+    function setIType(t){
+      intType = t;
+      isideEl.querySelectorAll('.ml-sidebtn').forEach(function(b){ b.classList.toggle('is-active', b.getAttribute('data-itype') === t); });
+      iboundsEl.hidden = (t !== 'def');
+      updateIntPreview();
+    }
+    isideEl.addEventListener('click', function(ev){ var b = ev.target.closest('.ml-sidebtn'); if(!b) return; setIType(b.getAttribute('data-itype')); });
+
+    [ifxInput, iaInput, ibInput].forEach(function(inp){
+      inp.addEventListener('focus', function(){ activeInt = inp; });
+      inp.addEventListener('input', updateIntPreview);
+      inp.addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); runIntegral(); } });
+    });
+
+    ikeysEl.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.ml-key'); if(!btn) return;
+      var inp = activeInt || ifxInput;
+      var act = btn.getAttribute('data-act');
+      if(act === 'clear'){ inp.value = ''; inp.focus(); }
+      else if(act === 'back'){
+        var v = inp.value, s = inp.selectionStart, e = inp.selectionEnd;
+        if(s == null){ inp.value = v.slice(0,-1); }
+        else if(s !== e){ inp.value = v.slice(0,s) + v.slice(e); inp.setSelectionRange(s,s); }
+        else if(s > 0){ inp.value = v.slice(0,s-1) + v.slice(s); inp.setSelectionRange(s-1,s-1); }
+        inp.focus();
+      }
+      else { insertInto(inp, btn.getAttribute('data-ins')); }
+      updateIntPreview();
+    });
+
+    function integralCAS(f){
+      if(intType === 'def'){
+        var a = (iaInput.value || '').trim(), b = (ibInput.value || '').trim();
+        return 'Integral(' + f + ', ' + a + ', ' + b + ')';
+      }
+      return 'Integral(' + f + ')';
+    }
+
+    async function runIntegral(){
+      var f = (ifxInput.value || '').trim();
+      if(!f){ stateEl.textContent = 'Saisissez une fonction.'; return; }
+      if(!ggb) return;
+      var a = '', b = '';
+      if(intType === 'def'){
+        a = (iaInput.value || '').trim(); b = (ibInput.value || '').trim();
+        if(!a || !b){ stateEl.textContent = 'Renseignez les bornes a et b.'; return; }
+      }
+
+      clearIntPlot();
+      plot(f);
+      answerEl.innerHTML = ''; stepsEl.innerHTML = '';
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Calcul en cours…';
+      setIOpsEnabled(false);
+
+      var casResult = '';
+      try { casResult = ggb.evalCommandCAS(integralCAS(f)); } catch(e){ casResult = ''; }
+      casResult = ggbToText(casResult).trim();
+      if(!casResult || casResult === '?'){ stateEl.textContent = 'Impossible de calculer — vérifiez la fonction' + (intType === 'def' ? ' et les bornes.' : '.'); setIOpsEnabled(true); return; }
+
+      // Shade the area under the curve for a definite integral.
+      if(intType === 'def'){ defInt('iarea', 'iarea=Integral(f, ' + a + ', ' + b + ')'); colour('iarea', 255, 184, 0); }
+
+      answerEl.innerHTML = '<div class="ml-answer"><div class="lbl"><i class="bi bi-stars"></i> Résultat</div><div class="val">' + escapeHtml(casResult) + '</div></div>';
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
+
+      var op = (intType === 'def') ? 'integral_def' : 'integral';
+      var body = { function: f, operation: op, casResult: casResult };
+      if(intType === 'def'){ body.a = a; body.b = b; }
+      try {
+        var resp = await fetch(EXPLAIN_URL, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(body)
+        });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data); }
+        else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){
+        stateEl.textContent = 'Connexion impossible — réessayez.';
+      } finally {
+        setIOpsEnabled(true);
+      }
+    }
+
+    iopsEl.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.ml-op'); if(!btn || btn.disabled) return;
+      runIntegral();
+    });
+    setIType('indef');
+
     function switchMode(m){
       if(m === currentMode) return;
       currentMode = m;
       modesEl.querySelectorAll('.ml-mode').forEach(function(b){ b.classList.toggle('is-active', b.getAttribute('data-mode') === m); });
-      modeFunc.hidden  = (m !== 'function');
-      modeCplx.hidden  = (m !== 'complex');
-      modeGeo.hidden   = (m !== 'geometry');
-      modeLimit.hidden = (m !== 'limit');
+      modeFunc.hidden     = (m !== 'function');
+      modeCplx.hidden     = (m !== 'complex');
+      modeGeo.hidden      = (m !== 'geometry');
+      modeLimit.hidden    = (m !== 'limit');
+      modeIntegral.hidden = (m !== 'integral');
       answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = '';
       if(ggb){
-        try { ggb.setPerspective((m === 'function' || m === 'limit') ? 'AG' : 'G'); } catch(e){}
-        clearComplexPlot(); clearGeoPlot(); clearLimPlot();
+        try { ggb.setPerspective((m === 'function' || m === 'limit' || m === 'integral') ? 'AG' : 'G'); } catch(e){}
+        clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot();
         if(m === 'function'){
           graphTitle.textContent = 'Représentation graphique';
           graphHint.textContent = 'La courbe se met à jour quand vous tracez ou lancez un calcul. Utilisez « Tracer » après avoir modifié la fonction.';
@@ -1619,11 +1810,16 @@
           graphHint.textContent = 'Placez les affixes des points puis « Tracer la figure » ou déterminez la nature de la figure.';
           try { ggb.deleteObject('f'); } catch(e){}
           updateGeoPreview();
-        } else {
+        } else if(m === 'limit'){
           graphTitle.textContent = 'Courbe & limite';
           graphHint.textContent = 'La courbe de f et l’asymptote au point étudié apparaissent quand vous lancez le calcul.';
           plot((lfxInput.value || '').trim());
           updateLimPreview();
+        } else {
+          graphTitle.textContent = 'Aire & intégrale';
+          graphHint.textContent = 'La courbe de f s’affiche ; pour une intégrale définie, l’aire entre a et b est colorée.';
+          plot((ifxInput.value || '').trim());
+          updateIntPreview();
         }
         setTimeout(fitGraph, 60);
       }
@@ -1645,7 +1841,7 @@
     window.addEventListener('resize', function(){ clearTimeout(ggbResizeTimer); ggbResizeTimer = setTimeout(fitGraph, 200); });
 
     // GeoGebra applet
-    setOpsEnabled(false); setCOpsEnabled(false); setGOpsEnabled(false); setLOpsEnabled(false);
+    setOpsEnabled(false); setCOpsEnabled(false); setGOpsEnabled(false); setLOpsEnabled(false); setIOpsEnabled(false);
     if(eqSolveBtn) eqSolveBtn.disabled = true;
     setEqStepsEnabled(false);
     var initW = Math.max(320, ggbHost.clientWidth || 700);
@@ -1656,13 +1852,14 @@
       showToolBar: false, showAlgebraInput: false, showMenuBar: false,
       enableRightClick: false, showResetIcon: true,
       perspective: 'AG',
-      appletOnLoad: function(api){ ggb = api; setOpsEnabled(true); setCOpsEnabled(true); setGOpsEnabled(true); setLOpsEnabled(true); if(eqSolveBtn) eqSolveBtn.disabled = false; setEqStepsEnabled(true); fitGraph(); plot((fxInput.value||'').trim()); }
+      appletOnLoad: function(api){ ggb = api; setOpsEnabled(true); setCOpsEnabled(true); setGOpsEnabled(true); setLOpsEnabled(true); setIOpsEnabled(true); if(eqSolveBtn) eqSolveBtn.disabled = false; setEqStepsEnabled(true); fitGraph(); plot((fxInput.value||'').trim()); }
     }, true);
     applet.inject('ggb');
     updatePreview();
     updateZPreview();
     updateGeoPreview();
     updateLimPreview();
+    updateIntPreview();
     updateEqPreview();
   })();
   </script>

@@ -1415,6 +1415,14 @@ module.exports.explainMath = async (req, res) => {
           params = { point, side };
           opKeyPart = `limit:${point}${side}`; // distinct cache key per target/side
         }
+      } else if (operation === "integral_def") {
+        const a = typeof req.body.a === "string" ? req.body.a.trim().slice(0, 40) : "";
+        const b = typeof req.body.b === "string" ? req.body.b.trim().slice(0, 40) : "";
+        if (!a || !b) {
+          return res.status(400).json({ ok: false, error: "Bornes a et b manquantes." });
+        }
+        params = { a, b };
+        opKeyPart = `integral_def:${a},${b}`; // distinct cache key per bounds
       }
       key = `${input}|${opKeyPart}|${casResult}`;
     }
