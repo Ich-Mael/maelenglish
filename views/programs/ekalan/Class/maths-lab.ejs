@@ -102,12 +102,19 @@
     .vt-deriv { font-size:.92rem; color:#374151; margin:.1rem 0 .55rem; }
     .ml-vartable-wrap { overflow-x:auto; }
     .ml-vartable { border-collapse:collapse; font-size:.95rem; min-width:max-content; background:#fff; }
-    .ml-vartable th { text-align:left; padding:.45rem .7rem; color:#2d0370; font-weight:700; border:1px solid #e2d7f5; background:#f7f4fe; white-space:nowrap; }
-    .ml-vartable td { border:1px solid #e2d7f5; padding:.45rem .7rem; text-align:center; min-width:44px; }
+    .ml-vartable th { text-align:left; padding:.45rem .7rem; color:#2d0370; font-weight:700; border:1px solid #d9ccf2; background:#f7f4fe; white-space:nowrap; }
+    .ml-vartable td { border:1px solid #d9ccf2; padding:.4rem .8rem; text-align:center; min-width:54px; }
     .vt-pt { font-weight:600; color:#1f2937; }
-    .vt-sign { color:#5d06ba; font-weight:700; }
-    .vt-arrow { font-size:1.3rem; line-height:1; color:#7c3aed; }
-    .vt-val { color:#1f2937; }
+    .vt-sign { color:#5d06ba; font-weight:700; font-size:1.05rem; }
+    /* f(x) row — taller so extrema/limits can sit high (max) or low (min) with diagonal arrows */
+    .ml-vartable td.vt-fpt, .ml-vartable tr:last-child td.vt-gap { height:74px; position:relative; padding:0 .8rem; }
+    .vt-fval { position:absolute; left:0; right:0; font-weight:600; color:#1f2937; }
+    .vt-fval.vt-top { top:7px; }
+    .vt-fval.vt-bottom { bottom:7px; }
+    .vt-arrow { font-size:1.9rem; line-height:1; color:#5d06ba; }
+    /* dotted vertical guide under each critical point (f'(x)=0 → f(x)) */
+    .vt-crit { position:relative; }
+    .vt-crit::after { content:''; position:absolute; top:0; bottom:0; left:50%; border-left:1px dotted #a98fe0; pointer-events:none; }
     .ml-coefs { display:flex; flex-wrap:wrap; gap:.6rem; margin:.9rem 0; }
     .ml-coef { display:flex; align-items:center; gap:.4rem; flex:1 1 130px; }
     .ml-coef label { font-weight:800; color:#5d06ba; font-style:italic; min-width:1rem; }
@@ -853,32 +860,34 @@
     function vtFmt(x){
       if(!isFinite(x)) return '?';
       var r = Math.round(x * 1000) / 1000;
-      if(Math.abs(r - Math.round(r)) < 1e-9) r = Math.round(r);
+      if(Math.abs(r - Math.round(r)) < 1e-3) r = Math.round(r); // snap near-integers (numeric noise)
       return String(r);
     }
     function vtFmtLim(v){
-      if(v === Infinity || v > 1e10) return '+∞';
-      if(v === -Infinity || v < -1e10) return '−∞';
+      if(v === Infinity || v > 1e8) return '+∞';
+      if(v === -Infinity || v < -1e8) return '−∞';
       if(!isFinite(v)) return '?';
       return vtFmt(v);
     }
-    function renderVariationTable(pts, fLO, fHI, fp){
-      function segDir(i){
-        var leftY  = (i === 0) ? fLO : pts[i].yn;
-        var rightY = (i === pts.length - 2) ? fHI : pts[i + 1].yn;
-        return rightY - leftY;
+    function renderVariationTable(pts, fp){
+      function segDir(i){ return pts[i + 1].yn - pts[i].yn; }
+      // A point sits high (top) or low (bottom) depending on the adjacent variation.
+      function place(i){
+        if(i === 0) return segDir(0) < 0 ? 'top' : 'bottom';      // start high if it then decreases
+        return segDir(i - 1) > 0 ? 'top' : 'bottom';              // arrived increasing → it's a peak
       }
       var xRow = '<tr><th>x</th>', fpRow = '<tr><th>f&#8242;(x)</th>', fRow = '<tr><th>f(x)</th>';
       for(var i = 0; i < pts.length; i++){
         var atEnd = (i === 0 || i === pts.length - 1);
+        var critCls = atEnd ? '' : ' vt-crit';
         xRow  += '<td class="vt-pt">' + escapeHtml(pts[i].x) + '</td>';
-        fpRow += '<td class="vt-pt">' + (atEnd ? '' : '0') + '</td>';
-        fRow  += '<td class="vt-pt vt-val">' + escapeHtml(pts[i].y) + '</td>';
+        fpRow += '<td class="vt-pt' + critCls + '">' + (atEnd ? '' : '0') + '</td>';
+        fRow  += '<td class="vt-fpt' + critCls + '"><div class="vt-fval vt-' + place(i) + '">' + escapeHtml(pts[i].y) + '</div></td>';
         if(i < pts.length - 1){
           var d = segDir(i);
           xRow  += '<td class="vt-gap"></td>';
           fpRow += '<td class="vt-gap vt-sign">' + (d > 0 ? '+' : (d < 0 ? '−' : '')) + '</td>';
-          fRow  += '<td class="vt-gap vt-arrow">' + (d > 0 ? '↗' : (d < 0 ? '↘' : '→')) + '</td>';
+          fRow  += '<td class="vt-gap"><span class="vt-arrow">' + (d > 0 ? '↗' : (d < 0 ? '↘' : '→')) + '</span></td>';
         }
       }
       var html = '';
@@ -896,50 +905,54 @@
       stateEl.innerHTML = '<span class="ml-spinner"></span> Construction du tableau…';
       setOpsEnabled(false);
 
-      var LO = -50, HI = 50;
-      function def(label, cmd){ try { ggb.evalCommand(label + '=' + cmd); return true; } catch(e){ return false; } }
-      function num(label){ try { var v = ggb.getValue(label); return v; } catch(e){ return NaN; } }
-      function del(label){ try { ggb.deleteObject(label); } catch(e){} }
-      function fAt(x){ if(def('vtFA', 'f(' + x + ')')){ var v = num('vtFA'); del('vtFA'); return v; } return NaN; }
+      function ev(c){ try { ggb.evalCommand(c); return true; } catch(e){ return false; } }
+      function gv(l){ try { return ggb.getValue(l); } catch(e){ return NaN; } }
+      // Numeric evaluator: one free arg + one dependent result, updated via SetValue
+      // (reliable — unlike GeoGebra Extremum/Limit which return undefined for ±∞ here).
+      ev('vtArg=0'); ev('vtRes=f(vtArg)');
+      function fAt(x){ ev('SetValue(vtArg,' + x + ')'); return gv('vtRes'); }
 
-      // Derivative (for display)
       var fp = '';
       try { fp = ggbToText(ggb.evalCommandCAS('Derivative(' + expr + ')')); } catch(e){ fp = ''; }
 
-      // Local extrema on [LO, HI] via GeoGebra Extremum → readable points.
-      var crit = [];
-      try {
-        if(def('vtEx', 'Extremum(f, ' + LO + ', ' + HI + ')')){
-          var len = NaN;
-          if(def('vtLen', 'Length(vtEx)')){ len = num('vtLen'); del('vtLen'); }
-          if(isFinite(len) && len >= 1){
-            for(var k = 1; k <= len; k++){
-              def('vtX', 'x(Element(vtEx,' + k + '))'); def('vtY', 'y(Element(vtEx,' + k + '))');
-              var cx = num('vtX'), cy = num('vtY'); del('vtX'); del('vtY');
-              if(isFinite(cx) && isFinite(cy)) crit.push({ x: cx, y: cy });
-            }
-          } else {
-            var sx = ggb.getXcoord('vtEx'), sy = ggb.getYcoord('vtEx');
-            if(isFinite(sx) && isFinite(sy) && !(sx === 0 && sy === 0)) crit.push({ x: sx, y: sy });
-          }
+      // Sample f over [LO, HI], detect monotony changes → local extrema (refined by ternary search).
+      var LO = -50, HI = 50, N = 400, step = (HI - LO) / N;
+      var ys = new Array(N + 1);
+      for(var i = 0; i <= N; i++) ys[i] = fAt(LO + i * step);
+
+      function refine(xa, xb, wantMax){
+        for(var it = 0; it < 50; it++){
+          var m1 = xa + (xb - xa) / 3, m2 = xb - (xb - xa) / 3, f1 = fAt(m1), f2 = fAt(m2);
+          if(wantMax ? (f1 < f2) : (f1 > f2)) xa = m1; else xb = m2;
         }
-      } catch(e){}
-      del('vtEx');
-      crit.sort(function(a, b){ return a.x - b.x; });
-      crit = crit.filter(function(c, i){ return i === 0 || Math.abs(c.x - crit[i - 1].x) > 1e-4; });
+        var xm = (xa + xb) / 2; return { x: xm, y: fAt(xm) };
+      }
+
+      var crit = [], lastSign = 0;
+      for(var j = 1; j <= N; j++){
+        if(!isFinite(ys[j]) || !isFinite(ys[j - 1])){ lastSign = 0; continue; }
+        var s = ys[j] - ys[j - 1], sg = s > 1e-12 ? 1 : (s < -1e-12 ? -1 : 0);
+        if(sg !== 0){
+          if(lastSign !== 0 && sg !== lastSign){
+            var wantMax = (lastSign > 0 && sg < 0);
+            var ex = refine(LO + (j - 2) * step, LO + j * step, wantMax);
+            if(isFinite(ex.x) && isFinite(ex.y)) crit.push({ x: ex.x, y: ex.y });
+          }
+          lastSign = sg;
+        }
+      }
+      crit = crit.filter(function(c, k){ return k === 0 || Math.abs(c.x - crit[k - 1].x) > 1e-3; });
       if(crit.length > 8) crit = crit.slice(0, 8);
 
-      // Limits at ±∞
-      function limAt(dir){ if(def('vtL', 'Limit(f, ' + dir + ')')){ var v = num('vtL'); del('vtL'); return v; } return NaN; }
-      var limNeg = limAt('-Infinity'), limPos = limAt('Infinity');
-      var fLO = fAt(LO), fHI = fAt(HI);
+      // End behaviour from far samples (handles +∞/−∞ and horizontal asymptotes).
+      var endNeg = fAt(-1e7), endPos = fAt(1e7);
+      try { ggb.deleteObject('vtRes'); ggb.deleteObject('vtArg'); } catch(e){}
 
-      // Points row: -∞, critical points, +∞
-      var pts = [{ x: '−∞', y: vtFmtLim(limNeg), yn: limNeg }];
+      var pts = [{ x: '−∞', y: vtFmtLim(endNeg), yn: endNeg }];
       crit.forEach(function(c){ pts.push({ x: vtFmt(c.x), y: vtFmt(c.y), yn: c.y }); });
-      pts.push({ x: '+∞', y: vtFmtLim(limPos), yn: limPos });
+      pts.push({ x: '+∞', y: vtFmtLim(endPos), yn: endPos });
 
-      renderVariationTable(pts, fLO, fHI, fp);
+      renderVariationTable(pts, fp);
       stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
 
       // Anchored summary for Claude (kept short for the 500-char cache limit).
@@ -947,7 +960,7 @@
       if(fp) parts.push("f'(x) = " + fp);
       if(crit.length === 0) parts.push('aucun extremum sur [' + LO + ';' + HI + '], f monotone');
       else parts.push('extrema : ' + crit.map(function(c){ return 'x=' + vtFmt(c.x) + ' (f=' + vtFmt(c.y) + ')'; }).join(', '));
-      parts.push('limites : ' + vtFmtLim(limNeg) + ' en −∞, ' + vtFmtLim(limPos) + ' en +∞');
+      parts.push('limites : ' + vtFmtLim(endNeg) + ' en −∞, ' + vtFmtLim(endPos) + ' en +∞');
       var summary = parts.join(' ; ').slice(0, 480);
 
       try {
