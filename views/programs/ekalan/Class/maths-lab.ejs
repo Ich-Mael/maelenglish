@@ -90,6 +90,14 @@
     .ml-block--eq { background:#fff8ec; border-color:#f3e4c4; }
     .ml-block:last-child { margin-bottom:0; }
     .ml-block > h2:first-child, .ml-block > .ml-subtitle:first-child { margin-top:0; }
+    /* Collapsible blocks (Opérations dans ℂ / Équation) */
+    details.ml-block { padding:0; }
+    details.ml-block > .ml-block-body { padding:0 1.1rem 1rem; }
+    details.ml-block > summary { list-style:none; cursor:pointer; padding:.95rem 1.1rem; display:flex; align-items:center; gap:.5rem; font-weight:700; color:#2d0370; user-select:none; }
+    details.ml-block > summary::-webkit-details-marker { display:none; }
+    details.ml-block > summary h2, details.ml-block > summary .ml-subtitle { margin:0; flex:1; }
+    details.ml-block > summary .ml-caret { margin-left:auto; transition:transform .2s; font-size:.9rem; color:#7c5fd0; }
+    details.ml-block[open] > summary .ml-caret { transform:rotate(180deg); }
     .ml-coefs { display:flex; flex-wrap:wrap; gap:.6rem; margin:.9rem 0; }
     .ml-coef { display:flex; align-items:center; gap:.4rem; flex:1 1 130px; }
     .ml-coef label { font-weight:800; color:#5d06ba; font-style:italic; min-width:1rem; }
@@ -252,8 +260,9 @@
         </div><%# /mode-function %>
 
         <div id="mode-complex" hidden>
-          <div class="ml-block">
-          <h2><i class="bi bi-asterisk"></i> Opérations dans ℂ</h2>
+          <details class="ml-block" open>
+          <summary><h2><i class="bi bi-asterisk"></i> Opérations dans ℂ</h2><i class="bi bi-chevron-down ml-caret"></i></summary>
+          <div class="ml-block-body">
           <div class="ml-input-row">
             <label for="z1" id="z1-label">z =</label>
             <input id="z1" type="text" value="3+4i" placeholder="ex : 3+4i" autocomplete="off" />
@@ -297,10 +306,12 @@
           </div>
 
           <div class="ml-hint">Saisissez <strong>z</strong> pour le module, l'argument, le conjugué, les formes… Pour <strong>z₁∘z₂</strong> (somme, produit, quotient), un deuxième champ <strong>z₂</strong> apparaît. Notez l'unité imaginaire <strong>i</strong> (ex : <code>3+4i</code>) ; « n » sert aux puissances et racines.</div>
-          </div><%# /ml-block — Opérations dans ℂ %>
+          </div><%# /ml-block-body %>
+          </details><%# /ml-block — Opérations dans ℂ %>
 
-          <div class="ml-block ml-block--eq">
-            <h3 class="ml-subtitle"><i class="bi bi-asterisk"></i> Équation polynomiale dans ℂ</h3>
+          <details class="ml-block ml-block--eq">
+            <summary><h3 class="ml-subtitle"><i class="bi bi-asterisk"></i> Équation polynomiale dans ℂ</h3><i class="bi bi-chevron-down ml-caret"></i></summary>
+            <div class="ml-block-body">
             <div class="ml-hint" style="margin-top:.1rem">Résolvez <strong>a·z³ + b·z² + c·z + d = 0</strong>. Les coefficients peuvent être complexes ; mettez <strong>a = 0</strong> pour une équation du second degré.</div>
             <div class="ml-coefs">
               <div class="ml-coef"><label for="eqa">a</label><input id="eqa" type="text" value="1" placeholder="ex : 1" autocomplete="off" /></div>
@@ -327,7 +338,8 @@
               <button class="ml-op" id="eq-solve" type="button"><i class="bi bi-check2-circle"></i> Résoudre directement dans ℂ</button>
             </div>
             <div class="ml-hint" id="eq-cubic-hint" style="margin-top:.55rem" hidden>Équation du 3<sup>e</sup> degré : utilisez la démarche guidée ci-dessus (racine évidente → Q(z) → résoudre Q(z)=0).</div>
-          </div>
+            </div><%# /ml-block-body %>
+          </details><%# /ml-block — Équation %>
         </div><%# /mode-complex %>
 
         <div id="mode-geometry" hidden>
