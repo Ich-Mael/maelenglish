@@ -98,6 +98,16 @@
     details.ml-block > summary h2, details.ml-block > summary .ml-subtitle { margin:0; flex:1; }
     details.ml-block > summary .ml-caret { margin-left:auto; transition:transform .2s; font-size:.9rem; color:#7c5fd0; }
     details.ml-block[open] > summary .ml-caret { transform:rotate(180deg); }
+    /* Tableau de variation */
+    .vt-deriv { font-size:.92rem; color:#374151; margin:.1rem 0 .55rem; }
+    .ml-vartable-wrap { overflow-x:auto; }
+    .ml-vartable { border-collapse:collapse; font-size:.95rem; min-width:max-content; background:#fff; }
+    .ml-vartable th { text-align:left; padding:.45rem .7rem; color:#2d0370; font-weight:700; border:1px solid #e2d7f5; background:#f7f4fe; white-space:nowrap; }
+    .ml-vartable td { border:1px solid #e2d7f5; padding:.45rem .7rem; text-align:center; min-width:44px; }
+    .vt-pt { font-weight:600; color:#1f2937; }
+    .vt-sign { color:#5d06ba; font-weight:700; }
+    .vt-arrow { font-size:1.3rem; line-height:1; color:#7c3aed; }
+    .vt-val { color:#1f2937; }
     .ml-coefs { display:flex; flex-wrap:wrap; gap:.6rem; margin:.9rem 0; }
     .ml-coef { display:flex; align-items:center; gap:.4rem; flex:1 1 130px; }
     .ml-coef label { font-weight:800; color:#5d06ba; font-style:italic; min-width:1rem; }
@@ -250,6 +260,7 @@
 
         <div class="ml-ops" id="ops">
           <button class="ml-op" data-op="derivative"><i class="bi bi-slash-lg"></i> Dérivée f'(x)</button>
+          <button class="ml-op" data-op="variations"><i class="bi bi-table"></i> Tableau de variation</button>
           <button class="ml-op" data-op="asymptotes"><i class="bi bi-arrows-collapse"></i> Asymptotes</button>
           <button class="ml-op" data-op="limit"><i class="bi bi-infinity"></i> Limite en +∞</button>
           <button class="ml-op" data-op="integral"><i class="bi bi-integral"></i> Primitive</button>
@@ -777,13 +788,15 @@
 
     function escapeHtml(s){ return String(s).replace(/[&<>]/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;'})[c]; }); }
 
-    function showSteps(data){
+    function showSteps(data, keepAnswer){
       stepsEl.innerHTML = '';
-      if(data.finalAnswerLatex){
-        answerEl.innerHTML = '<div class="ml-answer"><div class="lbl"><i class="bi bi-stars"></i> Résultat</div><div class="val" id="ml-final"></div></div>';
-        renderKatex(document.getElementById('ml-final'), data.finalAnswerLatex);
-      } else if (data.casResult){
-        answerEl.innerHTML = '<div class="ml-answer"><div class="lbl"><i class="bi bi-stars"></i> Résultat</div><div class="val">' + escapeHtml(data.casResult) + '</div></div>';
+      if(!keepAnswer){
+        if(data.finalAnswerLatex){
+          answerEl.innerHTML = '<div class="ml-answer"><div class="lbl"><i class="bi bi-stars"></i> Résultat</div><div class="val" id="ml-final"></div></div>';
+          renderKatex(document.getElementById('ml-final'), data.finalAnswerLatex);
+        } else if (data.casResult){
+          answerEl.innerHTML = '<div class="ml-answer"><div class="lbl"><i class="bi bi-stars"></i> Résultat</div><div class="val">' + escapeHtml(data.casResult) + '</div></div>';
+        }
       }
       if(Array.isArray(data.steps) && data.steps.length){
         data.steps.forEach(function(st){
@@ -836,9 +849,127 @@
       }
     }
 
+    /* ---- Tableau de variation ---- */
+    function vtFmt(x){
+      if(!isFinite(x)) return '?';
+      var r = Math.round(x * 1000) / 1000;
+      if(Math.abs(r - Math.round(r)) < 1e-9) r = Math.round(r);
+      return String(r);
+    }
+    function vtFmtLim(v){
+      if(v === Infinity || v > 1e10) return '+∞';
+      if(v === -Infinity || v < -1e10) return '−∞';
+      if(!isFinite(v)) return '?';
+      return vtFmt(v);
+    }
+    function renderVariationTable(pts, fLO, fHI, fp){
+      function segDir(i){
+        var leftY  = (i === 0) ? fLO : pts[i].yn;
+        var rightY = (i === pts.length - 2) ? fHI : pts[i + 1].yn;
+        return rightY - leftY;
+      }
+      var xRow = '<tr><th>x</th>', fpRow = '<tr><th>f&#8242;(x)</th>', fRow = '<tr><th>f(x)</th>';
+      for(var i = 0; i < pts.length; i++){
+        var atEnd = (i === 0 || i === pts.length - 1);
+        xRow  += '<td class="vt-pt">' + escapeHtml(pts[i].x) + '</td>';
+        fpRow += '<td class="vt-pt">' + (atEnd ? '' : '0') + '</td>';
+        fRow  += '<td class="vt-pt vt-val">' + escapeHtml(pts[i].y) + '</td>';
+        if(i < pts.length - 1){
+          var d = segDir(i);
+          xRow  += '<td class="vt-gap"></td>';
+          fpRow += '<td class="vt-gap vt-sign">' + (d > 0 ? '+' : (d < 0 ? '−' : '')) + '</td>';
+          fRow  += '<td class="vt-gap vt-arrow">' + (d > 0 ? '↗' : (d < 0 ? '↘' : '→')) + '</td>';
+        }
+      }
+      var html = '';
+      if(fp) html += '<div class="vt-deriv">f&#8242;(x) = ' + escapeHtml(fp) + '</div>';
+      html += '<div class="ml-vartable-wrap"><table class="ml-vartable">' + xRow + '</tr>' + fpRow + '</tr>' + fRow + '</tr></table></div>';
+      answerEl.innerHTML = '<div class="ml-answer"><div class="lbl"><i class="bi bi-table"></i> Tableau de variation</div>' + html + '</div>';
+    }
+
+    async function runVariation(){
+      var expr = (fxInput.value || '').trim();
+      if(!expr){ stateEl.textContent = 'Saisissez une fonction.'; return; }
+      if(!ggb){ return; }
+      plot(expr); // defines f(x)=expr
+      answerEl.innerHTML = ''; stepsEl.innerHTML = '';
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Construction du tableau…';
+      setOpsEnabled(false);
+
+      var LO = -50, HI = 50;
+      function def(label, cmd){ try { ggb.evalCommand(label + '=' + cmd); return true; } catch(e){ return false; } }
+      function num(label){ try { var v = ggb.getValue(label); return v; } catch(e){ return NaN; } }
+      function del(label){ try { ggb.deleteObject(label); } catch(e){} }
+      function fAt(x){ if(def('vtFA', 'f(' + x + ')')){ var v = num('vtFA'); del('vtFA'); return v; } return NaN; }
+
+      // Derivative (for display)
+      var fp = '';
+      try { fp = ggbToText(ggb.evalCommandCAS('Derivative(' + expr + ')')); } catch(e){ fp = ''; }
+
+      // Local extrema on [LO, HI] via GeoGebra Extremum → readable points.
+      var crit = [];
+      try {
+        if(def('vtEx', 'Extremum(f, ' + LO + ', ' + HI + ')')){
+          var len = NaN;
+          if(def('vtLen', 'Length(vtEx)')){ len = num('vtLen'); del('vtLen'); }
+          if(isFinite(len) && len >= 1){
+            for(var k = 1; k <= len; k++){
+              def('vtX', 'x(Element(vtEx,' + k + '))'); def('vtY', 'y(Element(vtEx,' + k + '))');
+              var cx = num('vtX'), cy = num('vtY'); del('vtX'); del('vtY');
+              if(isFinite(cx) && isFinite(cy)) crit.push({ x: cx, y: cy });
+            }
+          } else {
+            var sx = ggb.getXcoord('vtEx'), sy = ggb.getYcoord('vtEx');
+            if(isFinite(sx) && isFinite(sy) && !(sx === 0 && sy === 0)) crit.push({ x: sx, y: sy });
+          }
+        }
+      } catch(e){}
+      del('vtEx');
+      crit.sort(function(a, b){ return a.x - b.x; });
+      crit = crit.filter(function(c, i){ return i === 0 || Math.abs(c.x - crit[i - 1].x) > 1e-4; });
+      if(crit.length > 8) crit = crit.slice(0, 8);
+
+      // Limits at ±∞
+      function limAt(dir){ if(def('vtL', 'Limit(f, ' + dir + ')')){ var v = num('vtL'); del('vtL'); return v; } return NaN; }
+      var limNeg = limAt('-Infinity'), limPos = limAt('Infinity');
+      var fLO = fAt(LO), fHI = fAt(HI);
+
+      // Points row: -∞, critical points, +∞
+      var pts = [{ x: '−∞', y: vtFmtLim(limNeg), yn: limNeg }];
+      crit.forEach(function(c){ pts.push({ x: vtFmt(c.x), y: vtFmt(c.y), yn: c.y }); });
+      pts.push({ x: '+∞', y: vtFmtLim(limPos), yn: limPos });
+
+      renderVariationTable(pts, fLO, fHI, fp);
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
+
+      // Anchored summary for Claude (kept short for the 500-char cache limit).
+      var parts = [];
+      if(fp) parts.push("f'(x) = " + fp);
+      if(crit.length === 0) parts.push('aucun extremum sur [' + LO + ';' + HI + '], f monotone');
+      else parts.push('extrema : ' + crit.map(function(c){ return 'x=' + vtFmt(c.x) + ' (f=' + vtFmt(c.y) + ')'; }).join(', '));
+      parts.push('limites : ' + vtFmtLim(limNeg) + ' en −∞, ' + vtFmtLim(limPos) + ' en +∞');
+      var summary = parts.join(' ; ').slice(0, 480);
+
+      try {
+        var resp = await fetch(EXPLAIN_URL, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ function: expr, operation: 'variations', casResult: summary })
+        });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data, true); }
+        else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){
+        stateEl.textContent = 'Connexion impossible — réessayez.';
+      } finally {
+        setOpsEnabled(true);
+      }
+    }
+
     opsEl.addEventListener('click', function(ev){
       var btn = ev.target.closest('.ml-op'); if(!btn || btn.disabled) return;
-      run(btn.getAttribute('data-op'));
+      var op = btn.getAttribute('data-op');
+      if(op === 'variations'){ runVariation(); return; }
+      run(op);
     });
 
     // Manual "Tracer" — redraw the curve from the current input.
