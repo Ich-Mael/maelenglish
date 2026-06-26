@@ -106,12 +106,13 @@
     .ml-vartable td { border:1px solid #d9ccf2; padding:.4rem .8rem; text-align:center; min-width:54px; }
     .vt-pt { font-weight:600; color:#1f2937; }
     .vt-sign { color:#5d06ba; font-weight:700; font-size:1.05rem; }
-    /* f(x) row — taller so extrema/limits can sit high (max) or low (min) with diagonal arrows */
-    .ml-vartable td.vt-fpt, .ml-vartable tr:last-child td.vt-gap { height:74px; position:relative; padding:0 .8rem; }
+    /* f(x) row — taller so extrema/limits can sit high (max) or low (min) with long diagonal arrows */
+    .ml-vartable td.vt-fpt, .ml-vartable tr:last-child td.vt-gap { height:104px; position:relative; padding:0 .8rem; }
+    .ml-vartable tr:last-child td.vt-gap { min-width:64px; }
     .vt-fval { position:absolute; left:0; right:0; font-weight:600; color:#1f2937; }
-    .vt-fval.vt-top { top:7px; }
-    .vt-fval.vt-bottom { bottom:7px; }
-    .vt-arrow { font-size:1.9rem; line-height:1; color:#5d06ba; }
+    .vt-fval.vt-top { top:10px; }
+    .vt-fval.vt-bottom { bottom:10px; }
+    .vt-arr { display:block; width:54px; height:90px; margin:0 auto; }
     /* dotted vertical guide under each critical point (f'(x)=0 → f(x)) */
     .vt-crit { position:relative; }
     .vt-crit::after { content:''; position:absolute; top:0; bottom:0; left:50%; border-left:1px dotted #a98fe0; pointer-events:none; }
@@ -129,6 +130,10 @@
     .vt-asym-cell .vt-lim.vt-bottom { bottom:9px; }
     .vt-domain { font-size:.92rem; color:#2d0370; font-weight:600; margin:.1rem 0 .5rem; }
     .vt-note { font-size:.82rem; color:#6b7280; margin-top:.5rem; }
+    /* boundary limits, listed separately */
+    .vt-lims { margin-top:.7rem; background:#f7f4fe; border:1px solid #e9e0fb; border-radius:10px; padding:.6rem .85rem; }
+    .vt-lims-t { font-weight:700; color:#2d0370; font-size:.9rem; margin-bottom:.3rem; }
+    .vt-lim-line { font-size:.9rem; color:#374151; padding:.1rem 0; }
     .ml-coefs { display:flex; flex-wrap:wrap; gap:.6rem; margin:.9rem 0; }
     .ml-coef { display:flex; align-items:center; gap:.4rem; flex:1 1 130px; }
     .ml-coef label { font-weight:800; color:#5d06ba; font-style:italic; min-width:1rem; }
@@ -871,17 +876,43 @@
     }
 
     /* ---- Tableau de variation ---- */
+    // Recognise a simple fraction p/q (q ≤ 36) so the table shows exact values (4/3, 1/2…).
+    function vtFrac(x){
+      if(!isFinite(x)) return null;
+      var sign = x < 0 ? '-' : ''; x = Math.abs(x);
+      if(Math.abs(x - Math.round(x)) < 1e-9) return null; // integer → handled elsewhere
+      for(var q = 2; q <= 36; q++){
+        var p = x * q;
+        if(Math.abs(p - Math.round(p)) < 1e-6){
+          p = Math.round(p);
+          var a = p, b = q; while(b){ var t = a % b; a = b; b = t; } // gcd
+          var P = p / a, Q = q / a;
+          if(Q === 1) return null;
+          return sign + P + '/' + Q;
+        }
+      }
+      return null;
+    }
     function vtFmt(x){
       if(!isFinite(x)) return '?';
-      var r = Math.round(x * 1000) / 1000;
-      if(Math.abs(r - Math.round(r)) < 1e-3) r = Math.round(r); // snap near-integers (numeric noise)
-      return String(r);
+      if(Math.abs(x - Math.round(x)) < 1e-3) return String(Math.round(x)); // snap near-integers
+      var f = vtFrac(x);
+      if(f) return f;
+      return String(Math.round(x * 1000) / 1000);
     }
     function vtFmtLim(v){
       if(v === Infinity || v > 1e8) return '+∞';
       if(v === -Infinity || v < -1e8) return '−∞';
       if(!isFinite(v)) return '?';
       return vtFmt(v);
+    }
+    // Long diagonal arrow (SVG) for the f(x) row — far more readable than a glyph.
+    function vtArrow(d){
+      var c = '#5d06ba', head;
+      if(d > 0) head = 'M7 80 L47 9 M47 9 L33 12 M47 9 L44 25';        // ↗ croissante
+      else if(d < 0) head = 'M7 9 L47 80 M47 80 L33 77 M47 80 L44 64'; // ↘ décroissante
+      else head = 'M7 45 L47 45 M47 45 L38 41 M47 45 L38 49';          // → constante
+      return '<svg class="vt-arr" viewBox="0 0 54 90"><path d="' + head + '" fill="none" stroke="' + c + '" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     }
     function renderVariationTable(pts, fp, info){
       info = info || {};
@@ -919,13 +950,17 @@
           var d = segDir(i);
           xRow  += '<td class="vt-gap"></td>';
           fpRow += '<td class="vt-gap vt-sign">' + (d > 0 ? '+' : (d < 0 ? '−' : '')) + '</td>';
-          fRow  += '<td class="vt-gap"><span class="vt-arrow">' + (d > 0 ? '↗' : (d < 0 ? '↘' : '→')) + '</span></td>';
+          fRow  += '<td class="vt-gap">' + vtArrow(d) + '</td>';
         }
       }
       var html = '';
       if(info.domain) html += '<div class="vt-domain">D<sub>f</sub> = ' + escapeHtml(info.domain) + '</div>';
       if(fp && fp !== '?' && fp.indexOf('?') < 0) html += '<div class="vt-deriv">f&#8242;(x) = ' + escapeHtml(fp) + '</div>';
       html += '<div class="ml-vartable-wrap"><table class="ml-vartable">' + xRow + '</tr>' + fpRow + '</tr>' + fRow + '</tr></table></div>';
+      if(info.limLines && info.limLines.length){
+        html += '<div class="vt-lims"><div class="vt-lims-t">Limites aux bornes du domaine</div>'
+             + info.limLines.map(function(l){ return '<div class="vt-lim-line">' + escapeHtml(l) + '</div>'; }).join('') + '</div>';
+      }
       var notes = (info.hNotes || []).slice();
       if(hasAsym) notes.push('Double barre rouge = asymptote verticale (valeur interdite) ; limites à gauche / à droite indiquées.');
       if(notes.length) html += '<div class="vt-note">' + notes.map(escapeHtml).join('<br>') + '</div>';
@@ -1025,7 +1060,26 @@
 
       // End behaviour from far samples (handles +∞/−∞ and horizontal asymptotes).
       var endNeg = fAt(-1e7), endPos = fAt(1e7);
+
+      // Best-effort EXACT extrema via CAS (e.g. 4/3, ln(2)/3) — falls back to fraction/decimal.
+      function exactCrit(){
+        var raw = ''; try { raw = ggbToText(ggb.evalCommandCAS('Solutions(Derivative(f)=0,x)')); } catch(e){ raw = ''; }
+        if(!raw || raw === '?' || raw.indexOf('?') >= 0 || raw === '{}') return [];
+        var out = [];
+        splitTopLevel(raw).forEach(function(r){
+          r = (r || '').trim(); if(!r) return;
+          var nx = NaN; try { ev('vtRn=' + r); nx = gv('vtRn'); ggb.deleteObject('vtRn'); } catch(e){}
+          if(!isFinite(nx)) return;
+          var ys2 = ''; try { ys2 = ggbToText(ggb.evalCommandCAS('f(' + r + ')')); } catch(e){ ys2 = ''; }
+          ys2 = (ys2 || '').trim(); if(ys2 === '?' || ys2.indexOf('?') >= 0) ys2 = '';
+          out.push({ n: nx, xs: r, ys: ys2 });
+        });
+        return out;
+      }
+      var exList = exactCrit();
       try { ggb.deleteObject('vtRes'); ggb.deleteObject('vtArg'); } catch(e){}
+      function exClean(s){ return s && s.length <= 22 && s.indexOf('?') < 0; }
+      function exMatch(numx){ for(var ei = 0; ei < exList.length; ei++){ if(Math.abs(exList[ei].n - numx) < 1e-2) return exList[ei]; } return null; }
 
       // Merge extrema + asymptotes into one sorted list of "stops".
       var stops = [];
@@ -1039,7 +1093,10 @@
           pts.push({ x: vtFmt(st.x), kind: 'asym', leftSign: st.leftSign, rightSign: st.rightSign,
                      inYn: st.leftSign * 1e15, outYn: st.rightSign * 1e15 });
         } else {
-          pts.push({ x: vtFmt(st.x), y: vtFmt(st.y), inYn: st.y, outYn: st.y, kind: 'pt' });
+          var em = exMatch(st.x);
+          var xD = (em && exClean(em.xs)) ? em.xs : vtFmt(st.x);
+          var yD = (em && exClean(em.ys)) ? em.ys : vtFmt(st.y);
+          pts.push({ x: xD, y: yD, inYn: st.y, outYn: st.y, kind: 'pt' });
         }
       });
       pts.push({ x: '+∞', y: vtFmtLim(endPos), inYn: endPos, outYn: endPos, kind: 'pt' });
@@ -1059,7 +1116,15 @@
       if(lnFin && lpFin && vtFmt(endNeg) === vtFmt(endPos)) hNotes.push('Asymptote horizontale : y = ' + vtFmt(endNeg) + ' (en −∞ et +∞)');
       else { if(lnFin) hNotes.push('Asymptote horizontale : y = ' + vtFmt(endNeg) + ' (en −∞)'); if(lpFin) hNotes.push('Asymptote horizontale : y = ' + vtFmt(endPos) + ' (en +∞)'); }
 
-      renderVariationTable(pts, fp, { domain: domain, hNotes: hNotes });
+      // Each boundary limit listed separately (−∞, both sides of every pole, +∞).
+      var limLines = ['lim(x→−∞) f(x) = ' + vtFmtLim(endNeg)];
+      poles.slice().sort(function(a4, b4){ return a4.x - b4.x; }).forEach(function(p){
+        limLines.push('lim(x→' + vtFmt(p.x) + '⁻) f(x) = ' + (p.leftSign > 0 ? '+∞' : '−∞')
+                    + '   ;   lim(x→' + vtFmt(p.x) + '⁺) f(x) = ' + (p.rightSign > 0 ? '+∞' : '−∞'));
+      });
+      limLines.push('lim(x→+∞) f(x) = ' + vtFmtLim(endPos));
+
+      renderVariationTable(pts, fp, { domain: domain, hNotes: hNotes, limLines: limLines });
       stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
 
       // Anchored summary for Claude (kept short for the 500-char cache limit).
