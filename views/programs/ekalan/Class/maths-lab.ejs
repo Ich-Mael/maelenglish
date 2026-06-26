@@ -117,8 +117,17 @@
     .vt-crit::after { content:''; position:absolute; top:0; bottom:0; left:50%; border-left:1px dotted #a98fe0; pointer-events:none; }
     /* vertical asymptote — red double bar + red x value */
     .vt-asym-x { color:#dc2626; font-weight:700; }
-    .vt-asym-bar { position:relative; }
-    .vt-asym-bar::after { content:''; position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%); width:5px; border-left:2px solid #dc2626; border-right:2px solid #dc2626; pointer-events:none; }
+    .vt-asym-bar, .vt-asym-cell { position:relative; }
+    .vt-asym-bar::after, .vt-asym-cell::after { content:''; position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%); width:5px; border-left:2px solid #dc2626; border-right:2px solid #dc2626; pointer-events:none; }
+    .vt-asym-cell { min-width:108px; }
+    /* limit values (vertical & horizontal asymptotes) shown in a red pill/circle */
+    .vt-lim { display:inline-block; border:1.5px solid #dc2626; color:#dc2626; background:#fff5f5; border-radius:999px; padding:.03rem .45rem; font-size:.82rem; font-weight:700; line-height:1.4; }
+    .vt-asym-cell .vt-lim { position:absolute; }
+    .vt-lim-L { left:7px; }     /* left-hand limit, just left of the bar */
+    .vt-lim-R { right:7px; }    /* right-hand limit, just right of the bar */
+    .vt-asym-cell .vt-lim.vt-top { top:9px; }
+    .vt-asym-cell .vt-lim.vt-bottom { bottom:9px; }
+    .vt-domain { font-size:.92rem; color:#2d0370; font-weight:600; margin:.1rem 0 .5rem; }
     .vt-note { font-size:.82rem; color:#6b7280; margin-top:.5rem; }
     .ml-coefs { display:flex; flex-wrap:wrap; gap:.6rem; margin:.9rem 0; }
     .ml-coef { display:flex; align-items:center; gap:.4rem; flex:1 1 130px; }
@@ -874,7 +883,8 @@
       if(!isFinite(v)) return '?';
       return vtFmt(v);
     }
-    function renderVariationTable(pts, fp){
+    function renderVariationTable(pts, fp, info){
+      info = info || {};
       function segDir(i){ return pts[i + 1].inYn - pts[i].outYn; }
       // A regular point sits high (top) or low (bottom) depending on the adjacent variation.
       function place(i){
@@ -887,17 +897,23 @@
         var atEnd = (i === 0 || i === pts.length - 1);
         if(pts[i].kind === 'asym'){
           hasAsym = true;
-          // Vertical asymptote: x in red, red double bar, left/right limits (±∞) stacked.
-          var topV = (pts[i].leftSign > 0 || pts[i].rightSign > 0) ? '+∞' : '';
-          var botV = (pts[i].leftSign < 0 || pts[i].rightSign < 0) ? '−∞' : '';
+          // Vertical asymptote: x in red, red double bar; the LEFT limit sits left of the bar,
+          // the RIGHT limit right of it — each high/low by its sign, in a red badge.
+          var lP = pts[i].leftSign  > 0 ? 'top' : 'bottom', lT = pts[i].leftSign  > 0 ? '+∞' : '−∞';
+          var rP = pts[i].rightSign > 0 ? 'top' : 'bottom', rT = pts[i].rightSign > 0 ? '+∞' : '−∞';
           xRow  += '<td class="vt-pt vt-asym-x">' + escapeHtml(pts[i].x) + '</td>';
           fpRow += '<td class="vt-asym-bar"></td>';
-          fRow  += '<td class="vt-fpt vt-asym-bar"><div class="vt-fval vt-top">' + topV + '</div><div class="vt-fval vt-bottom">' + botV + '</div></td>';
+          fRow  += '<td class="vt-fpt vt-asym-cell">'
+                +  '<span class="vt-lim vt-lim-L vt-' + lP + '">' + lT + '</span>'
+                +  '<span class="vt-lim vt-lim-R vt-' + rP + '">' + rT + '</span></td>';
         } else {
           var critCls = atEnd ? '' : ' vt-crit';
+          // A finite limit at ±∞ is a horizontal asymptote → highlight it in a red badge.
+          var isHLim = atEnd && pts[i].y && pts[i].y !== '+∞' && pts[i].y !== '−∞' && pts[i].y !== '?';
+          var valHtml = isHLim ? '<span class="vt-lim">' + escapeHtml(pts[i].y) + '</span>' : escapeHtml(pts[i].y);
           xRow  += '<td class="vt-pt">' + escapeHtml(pts[i].x) + '</td>';
           fpRow += '<td class="vt-pt' + critCls + '">' + (atEnd ? '' : '0') + '</td>';
-          fRow  += '<td class="vt-fpt' + critCls + '"><div class="vt-fval vt-' + place(i) + '">' + escapeHtml(pts[i].y) + '</div></td>';
+          fRow  += '<td class="vt-fpt' + critCls + '"><div class="vt-fval vt-' + place(i) + '">' + valHtml + '</div></td>';
         }
         if(i < pts.length - 1){
           var d = segDir(i);
@@ -907,9 +923,12 @@
         }
       }
       var html = '';
-      if(fp) html += '<div class="vt-deriv">f&#8242;(x) = ' + escapeHtml(fp) + '</div>';
+      if(info.domain) html += '<div class="vt-domain">D<sub>f</sub> = ' + escapeHtml(info.domain) + '</div>';
+      if(fp && fp !== '?' && fp.indexOf('?') < 0) html += '<div class="vt-deriv">f&#8242;(x) = ' + escapeHtml(fp) + '</div>';
       html += '<div class="ml-vartable-wrap"><table class="ml-vartable">' + xRow + '</tr>' + fpRow + '</tr>' + fRow + '</tr></table></div>';
-      if(hasAsym) html += '<div class="vt-note">Double barre rouge = asymptote verticale (valeur interdite) ; limites à gauche / à droite indiquées.</div>';
+      var notes = (info.hNotes || []).slice();
+      if(hasAsym) notes.push('Double barre rouge = asymptote verticale (valeur interdite) ; limites à gauche / à droite indiquées.');
+      if(notes.length) html += '<div class="vt-note">' + notes.map(escapeHtml).join('<br>') + '</div>';
       answerEl.innerHTML = '<div class="ml-answer"><div class="lbl"><i class="bi bi-table"></i> Tableau de variation</div>' + html + '</div>';
     }
 
@@ -929,8 +948,17 @@
       ev('vtArg=0'); ev('vtRes=f(vtArg)');
       function fAt(x){ ev('SetValue(vtArg,' + x + ')'); return gv('vtRes'); }
 
-      var fp = '';
-      try { fp = ggbToText(ggb.evalCommandCAS('Derivative(' + expr + ')')); } catch(e){ fp = ''; }
+      // Derivative for display — try a few forms, drop GeoGebra's "?" (undefined).
+      function deriv(){
+        var tries = ['Derivative(' + expr + ')', 'Derivative(f)', 'Derivative(f(x),x)'];
+        for(var t = 0; t < tries.length; t++){
+          var r = ''; try { r = ggbToText(ggb.evalCommandCAS(tries[t])); } catch(e){ r = ''; }
+          r = (r || '').trim();
+          if(r && r !== '?' && r.indexOf('?') < 0) return r;
+        }
+        return '';
+      }
+      var fp = deriv();
 
       // Sample f over [LO, HI].
       var LO = -50, HI = 50, N = 400, step = (HI - LO) / N;
@@ -1016,17 +1044,34 @@
       });
       pts.push({ x: '+∞', y: vtFmtLim(endPos), inYn: endPos, outYn: endPos, kind: 'pt' });
 
-      renderVariationTable(pts, fp);
+      // Domain of definition (ℝ minus the poles) and horizontal asymptotes.
+      function isFiniteLim(v){ return isFinite(v) && Math.abs(v) <= 1e8; }
+      var poleXs = poles.map(function(p){ return p.x; }).sort(function(a3, b3){ return a3 - b3; });
+      var domain;
+      if(!poleXs.length){ domain = 'ℝ'; }
+      else {
+        var ds = [']−∞ ; ' + vtFmt(poleXs[0]) + '['];
+        for(var di = 0; di < poleXs.length - 1; di++) ds.push(']' + vtFmt(poleXs[di]) + ' ; ' + vtFmt(poleXs[di + 1]) + '[');
+        ds.push(']' + vtFmt(poleXs[poleXs.length - 1]) + ' ; +∞[');
+        domain = ds.join(' ∪ ');
+      }
+      var hNotes = [], lnFin = isFiniteLim(endNeg), lpFin = isFiniteLim(endPos);
+      if(lnFin && lpFin && vtFmt(endNeg) === vtFmt(endPos)) hNotes.push('Asymptote horizontale : y = ' + vtFmt(endNeg) + ' (en −∞ et +∞)');
+      else { if(lnFin) hNotes.push('Asymptote horizontale : y = ' + vtFmt(endNeg) + ' (en −∞)'); if(lpFin) hNotes.push('Asymptote horizontale : y = ' + vtFmt(endPos) + ' (en +∞)'); }
+
+      renderVariationTable(pts, fp, { domain: domain, hNotes: hNotes });
       stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
 
       // Anchored summary for Claude (kept short for the 500-char cache limit).
       var parts = [];
+      parts.push('Df = ' + domain);
       if(fp) parts.push("f'(x) = " + fp);
       if(poles.length) parts.push('asymptote(s) verticale(s) : ' + poles.map(function(p){
         return 'x=' + vtFmt(p.x) + ' (lim ' + (p.leftSign > 0 ? '+∞' : '−∞') + ' à gauche, ' + (p.rightSign > 0 ? '+∞' : '−∞') + ' à droite)'; }).join(', '));
       if(crit.length === 0) parts.push('aucun extremum, f monotone par morceaux');
       else parts.push('extrema : ' + crit.map(function(c){ return 'x=' + vtFmt(c.x) + ' (f=' + vtFmt(c.y) + ')'; }).join(', '));
       parts.push('limites : ' + vtFmtLim(endNeg) + ' en −∞, ' + vtFmtLim(endPos) + ' en +∞');
+      if(hNotes.length) parts.push(hNotes.join(' ; '));
       var summary = parts.join(' ; ').slice(0, 480);
 
       try {
