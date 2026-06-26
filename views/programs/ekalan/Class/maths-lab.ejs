@@ -140,6 +140,24 @@
       border-radius:12px; padding:.7rem .9rem; color:#4a3a6b; font-size:.82rem; line-height:1.45; }
     .ml-warn i { color:#5d06ba; font-size:1.05rem; flex-shrink:0; margin-top:.05rem; }
     .ml-hint { font-size:.82rem; color:#6b7280; margin-top:.4rem; }
+    /* Cercle trigonométrique */
+    .trig-wrap { display:flex; gap:1.5rem; flex-wrap:wrap; align-items:center; justify-content:center; }
+    #trig-svg { width:min(360px,82vw); height:auto; touch-action:none; cursor:crosshair; user-select:none; flex:0 0 auto; }
+    .trig-readout { flex:1 1 190px; min-width:180px; display:flex; flex-direction:column; gap:.55rem; }
+    .trig-rv { background:#faf8ff; border:1px solid #ece4fb; border-radius:12px; padding:.6rem .9rem; }
+    .trig-rv .lbl { font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; font-weight:700; color:#6b7280; }
+    .trig-rv .val { font-size:1.3rem; margin-top:.1rem; color:#1f2937; }
+    .trig-rv.is-ang { border-left:4px solid #5d06ba; }
+    .trig-rv.is-cos { border-left:4px solid #2563eb; }
+    .trig-rv.is-sin { border-left:4px solid #dc2626; }
+    .trig-rv.is-tan { border-left:4px solid #16a34a; }
+    .trig-formulas { margin-top:1.4rem; padding-top:1.2rem; border-top:1px dashed #e0d7f4; }
+    .trig-formulas h3 { font-size:1rem; font-weight:700; color:#2d0370; margin:0 0 .8rem; }
+    .trig-fgrid { display:grid; grid-template-columns:repeat(2,1fr); gap:.6rem; }
+    @media (max-width:640px){ .trig-fgrid { grid-template-columns:1fr; } }
+    .trig-f { background:#fff8ec; border:1px solid #f3e4c4; border-radius:10px; padding:.7rem .9rem; overflow-x:auto; color:#374151; }
+    .trig-f--cos { background:#eff6ff; border-color:#bfdbfe; }   /* cosinus → bleu */
+    .trig-f--sin { background:#fef2f2; border-color:#fecaca; }   /* sinus → rouge */
   </style>
 ` %>
 
@@ -187,6 +205,7 @@
           <button type="button" class="ml-mode" data-mode="geometry"><i class="bi bi-triangle"></i> Géométrie</button>
           <button type="button" class="ml-mode" data-mode="limit"><i class="bi bi-arrow-bar-right"></i> Limites</button>
           <button type="button" class="ml-mode" data-mode="integral"><i class="bi bi-integral"></i> Intégrales</button>
+          <button type="button" class="ml-mode" data-mode="trig"><i class="bi bi-record-circle"></i> Trigonométrie</button>
         </div>
 
         <div id="mode-function">
@@ -236,7 +255,7 @@
           <div class="ml-block">
           <h2><i class="bi bi-asterisk"></i> Opérations dans ℂ</h2>
           <div class="ml-input-row">
-            <label for="z1">z₁ =</label>
+            <label for="z1" id="z1-label">z =</label>
             <input id="z1" type="text" value="3+4i" placeholder="ex : 3+4i" autocomplete="off" />
           </div>
           <div class="ml-input-row" id="z2-row" hidden>
@@ -277,7 +296,7 @@
             <button class="ml-op" data-cop="arithmetic" data-arith="quotient" data-needs="z2"><i class="bi bi-slash-lg"></i> z₁÷z₂</button>
           </div>
 
-          <div class="ml-hint">Notez l'unité imaginaire <strong>i</strong> (ex : <code>3+4i</code>). « n » sert aux puissances et racines ; z₂ apparaît pour les opérations entre deux nombres.</div>
+          <div class="ml-hint">Saisissez <strong>z</strong> pour le module, l'argument, le conjugué, les formes… Pour <strong>z₁∘z₂</strong> (somme, produit, quotient), un deuxième champ <strong>z₂</strong> apparaît. Notez l'unité imaginaire <strong>i</strong> (ex : <code>3+4i</code>) ; « n » sert aux puissances et racines.</div>
           </div><%# /ml-block — Opérations dans ℂ %>
 
           <div class="ml-block ml-block--eq">
@@ -449,21 +468,111 @@
           <div class="ml-hint">« Primitive » donne ∫ f(x) dx (avec la constante). « Intégrale définie » calcule ∫ de a à b de f(x) dx par F(b) − F(a) ; l'aire correspondante est colorée sur le graphique.</div>
         </div><%# /mode-integral %>
 
+        <div id="mode-trig" hidden>
+          <h2><i class="bi bi-record-circle"></i> Trigonométrie</h2>
+          <div class="ml-side" id="trig-optype">
+            <button type="button" class="ml-sidebtn is-active" data-top="equation">Équation</button>
+            <button type="button" class="ml-sidebtn" data-top="linearize">Linéarisation</button>
+            <button type="button" class="ml-sidebtn" data-top="duplicate">Duplication</button>
+          </div>
+
+          <div id="trig-eq-fields">
+            <div class="ml-input-row">
+              <label for="trig-eq">Équation</label>
+              <input id="trig-eq" type="text" value="cos(x) = 1/2" placeholder="ex : cos(x) = 1/2" autocomplete="off" />
+            </div>
+            <div class="ml-input-row">
+              <label for="trig-int">x ∈</label>
+              <input id="trig-int" type="text" value="]-pi ; pi]" placeholder="ex : ]-pi ; pi]  ou  [0 ; 2pi[" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:220px;" />
+            </div>
+          </div>
+          <div id="trig-expr-fields" hidden>
+            <div class="ml-input-row">
+              <label for="trig-expr">Expression</label>
+              <input id="trig-expr" type="text" value="cos(x)^2" placeholder="ex : cos(x)^2, sin(x)^3, cos(2x)" autocomplete="off" />
+            </div>
+          </div>
+
+          <div class="ml-preview is-empty" id="trig-preview">Aperçu…</div>
+
+          <div class="ml-keys" id="trig-keys">
+            <button type="button" class="ml-key is-fn" data-ins="cos(|)">cos</button>
+            <button type="button" class="ml-key is-fn" data-ins="sin(|)">sin</button>
+            <button type="button" class="ml-key is-fn" data-ins="tan(|)">tan</button>
+            <button type="button" class="ml-key" data-ins="x">x</button>
+            <button type="button" class="ml-key" data-ins="pi">π</button>
+            <button type="button" class="ml-key" data-ins="^2">x²</button>
+            <button type="button" class="ml-key" data-ins="^">xⁿ</button>
+            <button type="button" class="ml-key" data-ins="(|)">(&nbsp;)</button>
+            <button type="button" class="ml-key" data-ins="(|)/(|)">a⁄b</button>
+            <button type="button" class="ml-key" data-ins="sqrt(|)">√</button>
+            <button type="button" class="ml-key" data-ins="+">+</button>
+            <button type="button" class="ml-key" data-ins="-">−</button>
+            <button type="button" class="ml-key" data-ins="=">=</button>
+            <button type="button" class="ml-key is-util" data-act="back">⌫</button>
+            <button type="button" class="ml-key is-util" data-act="clear">C</button>
+          </div>
+
+          <div class="ml-ops">
+            <button class="ml-op" id="trig-run" type="button"><i class="bi bi-check2-circle"></i> Calculer</button>
+          </div>
+
+          <div class="ml-hint" id="trig-hint">Résous une équation trigonométrique sur un intervalle (ex : cos(x) = 1/2 sur ]-π ; π]).</div>
+        </div><%# /mode-trig %>
+
         <div id="answer"></div>
         <div id="steps" class="ml-steps"></div>
         <div id="state" class="ml-state"></div>
 
-        <div class="ml-warn">
+        <div class="ml-warn" id="ml-warn">
           <i class="bi bi-shield-exclamation"></i>
           <span><strong>Aide à l'étude, usage personnel.</strong> Vérifiez toujours les résultats vous-même — l'IA peut se tromper dans les explications, mais le résultat affiché provient du moteur de calcul.</span>
         </div>
       </div>
 
       <!-- Graph (below) -->
-      <div class="ml-card">
+      <div class="ml-card" id="graph-card">
         <h2><i class="bi bi-graph-up"></i> <span id="graph-title">Représentation graphique</span></h2>
         <div id="ggb"></div>
         <div class="ml-hint" id="graph-hint">La courbe se met à jour quand vous tracez ou lancez un calcul. Utilisez « Tracer » après avoir modifié la fonction.</div>
+      </div>
+
+      <!-- Cercle trigonométrique (Trigonométrie mode only) -->
+      <div class="ml-card" id="trig-circle-card" hidden>
+        <h2><i class="bi bi-record-circle"></i> Cercle trigonométrique</h2>
+        <div class="ml-hint" style="margin:-.3rem 0 1rem">Déplacez la souris (ou le doigt) sur le cercle : le point suit l'angle et affiche cos, sin et tan. Les valeurs exactes apparaissent sur les angles remarquables (30°, 45°, 60°…).</div>
+        <div class="trig-wrap">
+          <svg id="trig-svg" viewBox="0 0 340 340" role="img" aria-label="Cercle trigonométrique interactif">
+            <line x1="20" y1="170" x2="320" y2="170" stroke="#cbd5e1" stroke-width="1"/>
+            <line x1="170" y1="20" x2="170" y2="320" stroke="#cbd5e1" stroke-width="1"/>
+            <line x1="300" y1="40" x2="300" y2="300" stroke="#bbf7d0" stroke-width="1.5"/>
+            <text x="305" y="36" font-size="11" fill="#16a34a">tan</text>
+            <circle cx="170" cy="170" r="130" fill="rgba(93,6,186,.04)" stroke="#5d06ba" stroke-width="2"/>
+            <line id="tc-tanconn" stroke="#16a34a" stroke-width="1.2" stroke-dasharray="4 3"/>
+            <line id="tc-vproj" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <line id="tc-hproj" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <line id="tc-cos" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/>
+            <line id="tc-sin" stroke="#dc2626" stroke-width="4" stroke-linecap="round"/>
+            <line id="tc-tan" stroke="#16a34a" stroke-width="4" stroke-linecap="round"/>
+            <line id="tc-radius" stroke="#5d06ba" stroke-width="2"/>
+            <circle id="tc-tanpoint" r="4" fill="#16a34a"/>
+            <circle id="tc-point" r="7" fill="#5d06ba" stroke="#fff" stroke-width="2"/>
+          </svg>
+          <div class="trig-readout">
+            <div class="trig-rv is-ang"><div class="lbl">Angle θ</div><div class="val" id="tc-angle"></div></div>
+            <div class="trig-rv is-cos"><div class="lbl">cosinus</div><div class="val" id="tc-cosv"></div></div>
+            <div class="trig-rv is-sin"><div class="lbl">sinus</div><div class="val" id="tc-sinv"></div></div>
+            <div class="trig-rv is-tan"><div class="lbl">tangente</div><div class="val" id="tc-tanv"></div></div>
+          </div>
+        </div>
+        <div class="trig-formulas">
+          <h3>Formules utiles</h3>
+          <div class="trig-fgrid" id="tc-formulas"></div>
+          <h3 style="margin-top:1.3rem">Produit → Somme</h3>
+          <div class="trig-fgrid" id="tc-prod2sum"></div>
+          <h3 style="margin-top:1.3rem">Somme → Produit</h3>
+          <div class="trig-fgrid" id="tc-sum2prod"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -612,6 +721,26 @@
       catch(e){ el.textContent = s; }
     }
 
+    // Render prose that may contain inline math ($…$ or \(…\)) — the model sometimes
+    // puts LaTeX in the explanation field; without this it shows raw "$\cos x$".
+    function renderExplanation(el, text){
+      el.textContent = '';
+      var s = String(text == null ? '' : text)
+        .split(BS + '(').join('$').split(BS + ')').join('$')
+        .split(BS + '[').join('$').split(BS + ']').join('$');
+      var parts = s.split('$');
+      for(var i = 0; i < parts.length; i++){
+        if(i % 2 === 1 && parts[i] !== ''){
+          var span = document.createElement('span');
+          try { katex.render(parts[i], span, { throwOnError:false, displayMode:false }); }
+          catch(e){ span.textContent = parts[i]; }
+          el.appendChild(span);
+        } else if(parts[i] !== ''){
+          el.appendChild(document.createTextNode(parts[i]));
+        }
+      }
+    }
+
     // CAS command per operation, against the raw expression
     function casCommand(op, expr){
       switch(op){
@@ -650,7 +779,7 @@
           div.className = 'ml-step';
           var t = document.createElement('div'); t.className = 'ml-step__title'; t.textContent = st.title || '';
           var l = document.createElement('div'); l.className = 'ml-step__latex';
-          var e = document.createElement('div'); e.className = 'ml-step__exp'; e.textContent = st.explanation || '';
+          var e = document.createElement('div'); e.className = 'ml-step__exp'; renderExplanation(e, st.explanation || '');
           div.appendChild(t); div.appendChild(l); div.appendChild(e);
           stepsEl.appendChild(div);
           if(st.latex) renderKatex(l, st.latex);
@@ -722,6 +851,7 @@
     var z2Input   = document.getElementById('z2');
     var cnInput   = document.getElementById('cn');
     var z2Row     = document.getElementById('z2-row');
+    var z1Label   = document.getElementById('z1-label');
     var nRow      = document.getElementById('n-row');
     var zPreviewEl= document.getElementById('zPreview');
     var ckeysEl   = document.getElementById('ckeys');
@@ -732,13 +862,26 @@
 
     function setCOpsEnabled(on){ copsEl.querySelectorAll('.ml-op').forEach(function(b){ b.disabled = !on; }); }
 
+    // Single operand "z" by default; binary ops (z₁∘z₂) reveal z₂ and relabel z₁.
+    function setComplexArity(binary){
+      z2Row.hidden = !binary;
+      if(z1Label) z1Label.textContent = binary ? 'z₁ =' : 'z =';
+      updateZPreview();
+    }
+
     function updateZPreview(){
       var raw = (z1Input.value || '').trim();
       if(!raw){ zPreviewEl.className='ml-preview is-empty'; zPreviewEl.textContent='Aperçu du nombre complexe…'; return; }
       var latex = null;
       try { latex = toLatex(raw); } catch(e){ latex = null; }
       if(latex == null){ zPreviewEl.className='ml-preview is-empty'; zPreviewEl.textContent='…en cours de saisie'; return; }
-      try { katex.render('z_1 = ' + latex, zPreviewEl, { throwOnError:true, displayMode:false }); zPreviewEl.className='ml-preview'; }
+      var binary = !z2Row.hidden;
+      var tex = (binary ? 'z_1' : 'z') + ' = ' + latex;
+      if(binary){
+        var raw2 = (z2Input.value || '').trim();
+        if(raw2){ var l2 = null; try { l2 = toLatex(raw2); } catch(e){ l2 = null; } if(l2 != null) tex += BS + 'quad z_2 = ' + l2; }
+      }
+      try { katex.render(tex, zPreviewEl, { throwOnError:true, displayMode:false }); zPreviewEl.className='ml-preview'; }
       catch(e){ zPreviewEl.className='ml-preview is-empty'; zPreviewEl.textContent='…en cours de saisie'; }
     }
 
@@ -853,7 +996,8 @@
       if(needs === 'n' && !(n >= 2 && n <= 12)){ stateEl.textContent = 'n doit être un entier entre 2 et 12.'; cnInput.focus(); return; }
       if(!ggb){ return; }
 
-      plotComplex(op, z1, z2, n, arith);
+      var gz1 = normCplx(z1), gz2 = normCplx(z2); // GeoGebra-safe (explicit multiplication)
+      plotComplex(op, gz1, gz2, n, arith);
       answerEl.innerHTML = ''; stepsEl.innerHTML = '';
       stateEl.innerHTML = '<span class="ml-spinner"></span> Calcul en cours…';
       setCOpsEnabled(false);
@@ -861,21 +1005,21 @@
       var casResult = '';
       try {
         if(op === 'exp_form'){
-          var r  = ggb.evalCommandCAS('abs((' + z1 + '))');
-          var th = ggb.evalCommandCAS('arg((' + z1 + '))');
+          var r  = ggb.evalCommandCAS('abs((' + gz1 + '))');
+          var th = ggb.evalCommandCAS('arg((' + gz1 + '))');
           if(r && th){ casResult = r + '*e^(i*(' + th + ')) = ' + r + '*(cos(' + th + ') + i*sin(' + th + '))'; }
         } else if(op === 'algebraic_form'){
-          var v = evalComplex('(' + z1 + ')'); // reliable real/imag extraction
+          var v = evalComplex('(' + gz1 + ')'); // reliable real/imag extraction
           if(v){ casResult = fmtComplexVal(v.re, v.im); }
         } else if(op === 'conjugate'){
-          var vc = evalComplex('(' + z1 + ')'); // conjugate = a − bi (no GeoGebra Conjugate command)
+          var vc = evalComplex('(' + gz1 + ')'); // conjugate = a − bi (no GeoGebra Conjugate command)
           if(vc){ casResult = fmtComplexVal(vc.re, -vc.im); }
         } else if(op === 'trig_form'){
-          var rt = ggb.evalCommandCAS('abs((' + z1 + '))');
-          var tt = ggb.evalCommandCAS('arg((' + z1 + '))');
+          var rt = ggb.evalCommandCAS('abs((' + gz1 + '))');
+          var tt = ggb.evalCommandCAS('arg((' + gz1 + '))');
           if(rt && tt){ casResult = rt + '*(cos(' + tt + ') + i*sin(' + tt + '))'; }
         } else {
-          var cmd = complexCAS(op, z1, z2, n, arith);
+          var cmd = complexCAS(op, gz1, gz2, n, arith);
           if(cmd){ casResult = ggb.evalCommandCAS(cmd); }
         }
       } catch(e){ casResult = ''; }
@@ -905,6 +1049,7 @@
 
     copsEl.addEventListener('click', function(ev){
       var btn = ev.target.closest('.ml-op'); if(!btn || btn.disabled) return;
+      setComplexArity(btn.getAttribute('data-needs') === 'z2');
       runComplex(btn.getAttribute('data-cop'), btn.getAttribute('data-arith'), btn.getAttribute('data-needs'));
     });
 
@@ -1007,9 +1152,29 @@
     // GeoGebra may print the imaginary unit as ί (U+03AF) or ⅈ (U+2148); show plain "i".
     function ggbToText(s){ return String(s == null ? '' : s).split(String.fromCharCode(0x3AF)).join('i').split(String.fromCharCode(0x2148)).join('i'); }
 
+    // Insert explicit multiplication so GeoGebra never reads implicit products as
+    // function calls — e.g. "4i(1-i)^4" → "4i*(1-i)^4" (else "i(…)" throws "Unknown command : i").
+    function normCplx(s){
+      s = String(s == null ? '' : s).split(String.fromCharCode(0x2212)).join('-');
+      function dig(c){ return c >= '0' && c <= '9'; }
+      var out = '';
+      for(var k = 0; k < s.length; k++){
+        var c = s.charAt(k), n = (k + 1 < s.length) ? s.charAt(k + 1) : '';
+        out += c;
+        if(n === '') continue;
+        var ins = false;
+        if(n === '(' && (dig(c) || c === ')' || c === 'i')) ins = true;        // 4( , )( , i(
+        else if(c === ')' && (dig(n) || n === 'i' || n === '(')) ins = true;   // )4 , )i , )(
+        else if(c === 'i' && dig(n)) ins = true;                               // i2
+        if(ins) out += '*';
+      }
+      return out;
+    }
+
     // Evaluate a complex expression via the graphics view (native complex support,
     // reliable even when evalCommandCAS chokes on the imaginary unit). Returns {re,im} or null.
     function evalComplex(expr){
+      expr = normCplx(expr);
       var re = NaN, im = NaN;
       // real()/imaginary() handle BOTH real numbers and complex values uniformly
       // (getXcoord returns 0 for a real Number, which silently dropped real coefficients).
@@ -1783,6 +1948,226 @@
     });
     setIType('indef');
 
+    /* ============ CERCLE TRIGONOMÉTRIQUE ============ */
+    var modeTrig = document.getElementById('mode-trig');
+    var tcSvg = document.getElementById('trig-svg');
+    var TC_CX = 170, TC_CY = 170, TC_R = 130;
+    var tcEls = {};
+    ['tc-vproj','tc-hproj','tc-cos','tc-sin','tc-tan','tc-tanconn','tc-radius','tc-point','tc-tanpoint','tc-angle','tc-cosv','tc-sinv','tc-tanv'].forEach(function(id){ tcEls[id] = document.getElementById(id); });
+    var tcDeg = 45;
+    // Angle measured in ]-π, π]  (i.e. ]-180°, 180°]).
+    function norm180(d){ d = ((d % 360) + 360) % 360; if(d > 180) d -= 360; return d; }
+    var NICE_DEG = [0,30,45,60,90,120,135,150,180,-30,-45,-60,-90,-120,-135,-150];
+    var RAD_LATEX = {
+      0:'0', 30:BS+'frac{'+BS+'pi}{6}', 45:BS+'frac{'+BS+'pi}{4}', 60:BS+'frac{'+BS+'pi}{3}', 90:BS+'frac{'+BS+'pi}{2}',
+      120:BS+'frac{2'+BS+'pi}{3}', 135:BS+'frac{3'+BS+'pi}{4}', 150:BS+'frac{5'+BS+'pi}{6}', 180:BS+'pi',
+      '-30':'-'+BS+'frac{'+BS+'pi}{6}', '-45':'-'+BS+'frac{'+BS+'pi}{4}', '-60':'-'+BS+'frac{'+BS+'pi}{3}', '-90':'-'+BS+'frac{'+BS+'pi}{2}',
+      '-120':'-'+BS+'frac{2'+BS+'pi}{3}', '-135':'-'+BS+'frac{3'+BS+'pi}{4}', '-150':'-'+BS+'frac{5'+BS+'pi}{6}'
+    };
+    function tcExact(x){
+      var s3 = Math.sqrt(3), h = Math.SQRT1_2;
+      var t = [[0,'0'],[1,'1'],[-1,'-1'],[0.5,BS+'frac{1}{2}'],[-0.5,'-'+BS+'frac{1}{2}'],
+        [h,BS+'frac{'+BS+'sqrt{2}}{2}'],[-h,'-'+BS+'frac{'+BS+'sqrt{2}}{2}'],
+        [s3/2,BS+'frac{'+BS+'sqrt{3}}{2}'],[-s3/2,'-'+BS+'frac{'+BS+'sqrt{3}}{2}'],
+        [s3/3,BS+'frac{'+BS+'sqrt{3}}{3}'],[-s3/3,'-'+BS+'frac{'+BS+'sqrt{3}}{3}'],
+        [s3,BS+'sqrt{3}'],[-s3,'-'+BS+'sqrt{3}']];
+      for(var i=0;i<t.length;i++){ if(Math.abs(x - t[i][0]) < 1e-9) return t[i][1]; }
+      return null;
+    }
+    function snapNice(deg){
+      deg = norm180(deg);
+      for(var i=0;i<NICE_DEG.length;i++){ var d = NICE_DEG[i], diff = Math.abs(deg - d); diff = Math.min(diff, 360 - diff); if(diff <= 4) return d; }
+      return null;
+    }
+    function tcLine(el, x1, y1, x2, y2){ el.setAttribute('x1', x1); el.setAttribute('y1', y1); el.setAttribute('x2', x2); el.setAttribute('y2', y2); }
+    function tcDot(el, x, y){ el.setAttribute('cx', x); el.setAttribute('cy', y); }
+    function tcShow(el, on){ el.setAttribute('opacity', on ? '1' : '0'); }
+
+    function tcRender(deg){
+      var snap = snapNice(deg);
+      var useDeg = (snap != null) ? snap : norm180(deg);
+      var th = useDeg * Math.PI / 180, c = Math.cos(th), s = Math.sin(th);
+      var px = TC_CX + TC_R * c, py = TC_CY - TC_R * s;
+      tcLine(tcEls['tc-radius'], TC_CX, TC_CY, px, py);
+      tcDot(tcEls['tc-point'], px, py);
+      tcLine(tcEls['tc-cos'], TC_CX, TC_CY, px, TC_CY);
+      tcLine(tcEls['tc-sin'], TC_CX, TC_CY, TC_CX, py);
+      tcLine(tcEls['tc-vproj'], px, py, px, TC_CY);
+      tcLine(tcEls['tc-hproj'], px, py, TC_CX, py);
+      var tanVal = (Math.abs(c) < 1e-9) ? null : s / c;
+      if(tanVal == null){ tcShow(tcEls['tc-tan'], false); tcShow(tcEls['tc-tanconn'], false); tcShow(tcEls['tc-tanpoint'], false); }
+      else {
+        var clampY = Math.max(34, Math.min(306, TC_CY - TC_R * tanVal));
+        tcShow(tcEls['tc-tan'], true); tcShow(tcEls['tc-tanconn'], true); tcShow(tcEls['tc-tanpoint'], true);
+        tcLine(tcEls['tc-tan'], TC_CX + TC_R, TC_CY, TC_CX + TC_R, clampY);
+        tcLine(tcEls['tc-tanconn'], TC_CX, TC_CY, TC_CX + TC_R, clampY);
+        tcDot(tcEls['tc-tanpoint'], TC_CX + TC_R, clampY);
+      }
+      if(snap != null){
+        renderKatex(tcEls['tc-angle'], BS + 'theta = ' + (RAD_LATEX[snap] || '0') + BS + ';(' + snap + '^' + BS + 'circ)');
+        renderKatex(tcEls['tc-cosv'], tcExact(c) || c.toFixed(3));
+        renderKatex(tcEls['tc-sinv'], tcExact(s) || s.toFixed(3));
+        if(tanVal == null) tcEls['tc-tanv'].textContent = 'non défini';
+        else renderKatex(tcEls['tc-tanv'], tcExact(tanVal) || tanVal.toFixed(3));
+      } else {
+        tcEls['tc-angle'].textContent = useDeg.toFixed(1) + '°  (' + (useDeg * Math.PI / 180).toFixed(2) + ' rad)';
+        tcEls['tc-cosv'].textContent = c.toFixed(3);
+        tcEls['tc-sinv'].textContent = s.toFixed(3);
+        tcEls['tc-tanv'].textContent = (tanVal == null) ? 'non défini' : tanVal.toFixed(3);
+      }
+    }
+    function tcAngleFromEvent(ev){
+      var rect = tcSvg.getBoundingClientRect();
+      if(!rect.width) return tcDeg;
+      var sx = (ev.clientX - rect.left) / rect.width * 340, sy = (ev.clientY - rect.top) / rect.height * 340;
+      return Math.atan2(-(sy - TC_CY), sx - TC_CX) * 180 / Math.PI;
+    }
+    tcSvg.addEventListener('pointermove', function(ev){ tcDeg = tcAngleFromEvent(ev); tcRender(tcDeg); });
+    tcSvg.addEventListener('pointerdown', function(ev){ tcDeg = tcAngleFromEvent(ev); tcRender(tcDeg); });
+
+    // Interleaved cos/sin so the 2-column grid puts cos (blue) left, sin (red) right.
+    var TC_FORMULAS = [
+      { k:'gen', t: BS+'cos^2'+BS+'theta + '+BS+'sin^2'+BS+'theta = 1' },
+      { k:'gen', t: BS+'tan'+BS+'theta = '+BS+'frac{'+BS+'sin'+BS+'theta}{'+BS+'cos'+BS+'theta}' },
+      { k:'cos', t: BS+'cos(-'+BS+'theta) = '+BS+'cos'+BS+'theta' },
+      { k:'sin', t: BS+'sin(-'+BS+'theta) = -'+BS+'sin'+BS+'theta' },
+      { k:'cos', t: BS+'cos('+BS+'pi - '+BS+'theta) = -'+BS+'cos'+BS+'theta' },
+      { k:'sin', t: BS+'sin('+BS+'pi - '+BS+'theta) = '+BS+'sin'+BS+'theta' },
+      { k:'cos', t: BS+'cos('+BS+'tfrac{'+BS+'pi}{2} - '+BS+'theta) = '+BS+'sin'+BS+'theta' },
+      { k:'sin', t: BS+'sin('+BS+'tfrac{'+BS+'pi}{2} - '+BS+'theta) = '+BS+'cos'+BS+'theta' },
+      { k:'cos', t: BS+'cos('+BS+'tfrac{'+BS+'pi}{2} + '+BS+'theta) = -'+BS+'sin'+BS+'theta' },
+      { k:'sin', t: BS+'sin('+BS+'tfrac{'+BS+'pi}{2} + '+BS+'theta) = '+BS+'cos'+BS+'theta' },
+      { k:'cos', t: BS+'cos(a+b) = '+BS+'cos a'+BS+'cos b - '+BS+'sin a'+BS+'sin b' },
+      { k:'sin', t: BS+'sin(a+b) = '+BS+'sin a'+BS+'cos b + '+BS+'cos a'+BS+'sin b' },
+      { k:'cos', t: BS+'cos(a-b) = '+BS+'cos a'+BS+'cos b + '+BS+'sin a'+BS+'sin b' },
+      { k:'sin', t: BS+'sin(a-b) = '+BS+'sin a'+BS+'cos b - '+BS+'cos a'+BS+'sin b' },
+      { k:'cos', t: BS+'cos(2a) = 2'+BS+'cos^2 a - 1' },
+      { k:'sin', t: BS+'sin(2a) = 2'+BS+'sin a'+BS+'cos a' }
+    ];
+    // Produit → Somme (cos·cos / sin·sin → cos ; sin·cos → sin)
+    var TC_PROD2SUM = [
+      { k:'cos', t: BS+'cos a'+BS+'cos b = '+BS+'tfrac{1}{2}'+BS+'big['+BS+'cos(a-b) + '+BS+'cos(a+b)'+BS+'big]' },
+      { k:'sin', t: BS+'sin a'+BS+'sin b = '+BS+'tfrac{1}{2}'+BS+'big['+BS+'cos(a-b) - '+BS+'cos(a+b)'+BS+'big]' },
+      { k:'cos', t: BS+'sin a'+BS+'cos b = '+BS+'tfrac{1}{2}'+BS+'big['+BS+'sin(a+b) + '+BS+'sin(a-b)'+BS+'big]' },
+      { k:'sin', t: BS+'cos a'+BS+'sin b = '+BS+'tfrac{1}{2}'+BS+'big['+BS+'sin(a+b) - '+BS+'sin(a-b)'+BS+'big]' }
+    ];
+    // Somme → Produit
+    var TC_SUM2PROD = [
+      { k:'cos', t: BS+'cos p + '+BS+'cos q = 2'+BS+'cos'+BS+'tfrac{p+q}{2}'+BS+'cos'+BS+'tfrac{p-q}{2}' },
+      { k:'sin', t: BS+'sin p + '+BS+'sin q = 2'+BS+'sin'+BS+'tfrac{p+q}{2}'+BS+'cos'+BS+'tfrac{p-q}{2}' },
+      { k:'cos', t: BS+'cos p - '+BS+'cos q = -2'+BS+'sin'+BS+'tfrac{p+q}{2}'+BS+'sin'+BS+'tfrac{p-q}{2}' },
+      { k:'sin', t: BS+'sin p - '+BS+'sin q = 2'+BS+'cos'+BS+'tfrac{p+q}{2}'+BS+'sin'+BS+'tfrac{p-q}{2}' }
+    ];
+    function renderFormulaGrid(boxId, arr){
+      var box = document.getElementById(boxId); if(!box) return;
+      arr.forEach(function(f){ var d = document.createElement('div'); d.className = 'trig-f trig-f--' + f.k; box.appendChild(d); renderKatex(d, f.t); });
+    }
+    renderFormulaGrid('tc-formulas', TC_FORMULAS);
+    renderFormulaGrid('tc-prod2sum', TC_PROD2SUM);
+    renderFormulaGrid('tc-sum2prod', TC_SUM2PROD);
+    tcRender(tcDeg);
+
+    /* --- Trigonométrie : opérations (équation / linéarisation / duplication) --- */
+    var trigCircleCard = document.getElementById('trig-circle-card');
+    var trigOptype = document.getElementById('trig-optype');
+    var trigEqFields = document.getElementById('trig-eq-fields');
+    var trigExprFields = document.getElementById('trig-expr-fields');
+    var trigEq = document.getElementById('trig-eq');
+    var trigInt = document.getElementById('trig-int');
+    var trigExpr = document.getElementById('trig-expr');
+    var trigKeysEl = document.getElementById('trig-keys');
+    var trigRun = document.getElementById('trig-run');
+    var trigHint = document.getElementById('trig-hint');
+    var trigPrev = document.getElementById('trig-preview');
+    var trigOp = 'equation';
+    var activeTrig = trigEq;
+
+    function intervalLatex(iv){ return (iv || '').split('π').join('pi').split('pi').join(BS + 'pi'); }
+    function eqToLatex(eq){
+      var i = eq.indexOf('=');
+      if(i < 0) return toLatex(eq);
+      var L = toLatex(eq.slice(0, i).trim());
+      var rr = eq.slice(i + 1).trim();
+      return L + ' = ' + (rr === '' ? '' : toLatex(rr));
+    }
+    function updateTrigPreview(){
+      var raw = (trigOp === 'equation') ? (trigEq.value || '').trim() : (trigExpr.value || '').trim();
+      if(!raw){ trigPrev.className = 'ml-preview is-empty'; trigPrev.textContent = 'Aperçu…'; return; }
+      var tex = null;
+      try {
+        if(trigOp === 'equation'){
+          tex = eqToLatex(raw);
+          var iv = (trigInt.value || '').trim();
+          if(iv) tex += BS + 'quad x ' + BS + 'in ' + intervalLatex(iv);
+        } else { tex = toLatex(raw); }
+      } catch(e){ tex = null; }
+      if(tex == null){ trigPrev.className = 'ml-preview is-empty'; trigPrev.textContent = '…en cours de saisie'; return; }
+      try { katex.render(tex, trigPrev, { throwOnError:true, displayMode:false }); trigPrev.className = 'ml-preview'; }
+      catch(e){ trigPrev.className = 'ml-preview is-empty'; trigPrev.textContent = '…en cours de saisie'; }
+    }
+
+    function setTrigOp(t){
+      trigOp = t;
+      trigOptype.querySelectorAll('.ml-sidebtn').forEach(function(b){ b.classList.toggle('is-active', b.getAttribute('data-top') === t); });
+      trigEqFields.hidden = (t !== 'equation');
+      trigExprFields.hidden = (t === 'equation');
+      activeTrig = (t === 'equation') ? trigEq : trigExpr;
+      trigHint.textContent = (t === 'equation')
+        ? 'Résous une équation trigonométrique sur un intervalle (ex : cos(x) = 1/2 sur ]-π ; π]).'
+        : (t === 'linearize')
+        ? 'Linéarise : exprime cosⁿx, sinⁿx comme combinaison de cos(kx) et sin(kx) (ex : cos(x)^2, sin(x)^3).'
+        : 'Développe avec les formules de duplication / d’addition, en fonction de cos x et sin x (ex : cos(2x)).';
+      updateTrigPreview();
+    }
+    trigOptype.addEventListener('click', function(ev){ var b = ev.target.closest('.ml-sidebtn'); if(b) setTrigOp(b.getAttribute('data-top')); });
+
+    [trigEq, trigInt, trigExpr].forEach(function(inp){
+      inp.addEventListener('focus', function(){ activeTrig = inp; });
+      inp.addEventListener('input', updateTrigPreview);
+      inp.addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); runTrigOp(); } });
+    });
+
+    trigKeysEl.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.ml-key'); if(!btn) return;
+      var inp = activeTrig || trigEq;
+      var act = btn.getAttribute('data-act');
+      if(act === 'clear'){ inp.value = ''; inp.focus(); }
+      else if(act === 'back'){
+        var v = inp.value, s = inp.selectionStart, e = inp.selectionEnd;
+        if(s == null){ inp.value = v.slice(0,-1); }
+        else if(s !== e){ inp.value = v.slice(0,s) + v.slice(e); inp.setSelectionRange(s,s); }
+        else if(s > 0){ inp.value = v.slice(0,s-1) + v.slice(s); inp.setSelectionRange(s-1,s-1); }
+        inp.focus();
+      } else { insertInto(inp, btn.getAttribute('data-ins')); }
+      updateTrigPreview();
+    });
+
+    async function runTrigOp(){
+      var op = (trigOp === 'equation') ? 'trig_equation' : (trigOp === 'linearize') ? 'trig_linearize' : 'trig_duplicate';
+      var body = { domain:'trig', operation: op };
+      if(trigOp === 'equation'){
+        var eq = (trigEq.value || '').trim();
+        if(!eq){ stateEl.textContent = 'Saisissez une équation.'; return; }
+        body.expression = eq; body.interval = (trigInt.value || '').trim();
+      } else {
+        var ex = (trigExpr.value || '').trim();
+        if(!ex){ stateEl.textContent = 'Saisissez une expression.'; return; }
+        body.expression = ex;
+      }
+      answerEl.innerHTML = ''; stepsEl.innerHTML = '';
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Calcul en cours…';
+      trigRun.disabled = true;
+      try {
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data); }
+        else { stateEl.textContent = data.error || 'Indisponible pour le moment.'; }
+      } catch(e){ stateEl.textContent = 'Connexion impossible — réessayez.'; }
+      finally { trigRun.disabled = false; }
+    }
+    trigRun.addEventListener('click', runTrigOp);
+    setTrigOp('equation');
+
     function switchMode(m){
       if(m === currentMode) return;
       currentMode = m;
@@ -1792,7 +2177,13 @@
       modeGeo.hidden      = (m !== 'geometry');
       modeLimit.hidden    = (m !== 'limit');
       modeIntegral.hidden = (m !== 'integral');
+      modeTrig.hidden     = (m !== 'trig');
       answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = '';
+      var isTrig = (m === 'trig');
+      // Trigonométrie: hide the GeoGebra graph, show the unit-circle card below.
+      var gcard = document.getElementById('graph-card'); if(gcard) gcard.hidden = isTrig;
+      if(trigCircleCard) trigCircleCard.hidden = !isTrig;
+      if(isTrig){ tcRender(tcDeg); return; }
       if(ggb){
         try { ggb.setPerspective((m === 'function' || m === 'limit' || m === 'integral') ? 'AG' : 'G'); } catch(e){}
         clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot();
@@ -1852,7 +2243,7 @@
       showToolBar: false, showAlgebraInput: false, showMenuBar: false,
       enableRightClick: false, showResetIcon: true,
       perspective: 'AG',
-      appletOnLoad: function(api){ ggb = api; setOpsEnabled(true); setCOpsEnabled(true); setGOpsEnabled(true); setLOpsEnabled(true); setIOpsEnabled(true); if(eqSolveBtn) eqSolveBtn.disabled = false; setEqStepsEnabled(true); fitGraph(); plot((fxInput.value||'').trim()); }
+      appletOnLoad: function(api){ ggb = api; try { ggb.setErrorDialogsActive(false); } catch(e){} setOpsEnabled(true); setCOpsEnabled(true); setGOpsEnabled(true); setLOpsEnabled(true); setIOpsEnabled(true); if(eqSolveBtn) eqSolveBtn.disabled = false; setEqStepsEnabled(true); fitGraph(); plot((fxInput.value||'').trim()); }
     }, true);
     applet.inject('ggb');
     updatePreview();

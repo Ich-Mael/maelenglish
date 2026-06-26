@@ -15,7 +15,7 @@ const {
   activeCount,
   grantOrRenew,
 } = require("./premiumAccess");
-const { explainSteps, OPERATIONS, COMPLEX_OPERATIONS, ARITH_LABELS } = require("./mathsLab");
+const { explainSteps, OPERATIONS, COMPLEX_OPERATIONS, ARITH_LABELS, TRIG_OPERATIONS } = require("./mathsLab");
 
 // ── Kalan Naaba helpers ──────────────────────────────────────────────
 // True if the high-school student (hsId) holds active Kalan Naaba (whole-class premium).
@@ -1349,11 +1349,13 @@ function cacheLooksCorrupted(doc) {
 // Endpoint JSON : explication pas-à-pas (cache + Claude). Renvoie toujours du JSON.
 module.exports.explainMath = async (req, res) => {
   try {
-    const domain = req.body.domain === "complex" ? "complex" : "function";
+    const domain = req.body.domain === "complex" ? "complex"
+      : req.body.domain === "trig" ? "trig" : "function";
     const operation = req.body.operation;
     const casResult = typeof req.body.casResult === "string" ? req.body.casResult.trim() : "";
 
-    if (!casResult || casResult.length > 500) {
+    // Trig: Claude computes the result itself, so no casResult is supplied.
+    if (domain !== "trig" && (!casResult || casResult.length > 500)) {
       return res.status(400).json({ ok: false, error: "Résultat invalide." });
     }
 
@@ -1361,7 +1363,22 @@ module.exports.explainMath = async (req, res) => {
     let input;
     let params = {};
 
-    if (domain === "complex") {
+    if (domain === "trig") {
+      input = typeof req.body.expression === "string" ? req.body.expression.trim() : "";
+      if (!input || input.length > 300) {
+        return res.status(400).json({ ok: false, error: "Expression invalide." });
+      }
+      if (!TRIG_OPERATIONS[operation]) {
+        return res.status(400).json({ ok: false, error: "Opération inconnue." });
+      }
+      if (operation === "trig_equation") {
+        const interval = typeof req.body.interval === "string" ? req.body.interval.trim().slice(0, 60) : "";
+        params = { interval };
+        key = `trig|${operation}|${input}|${interval}`;
+      } else {
+        key = `trig|${operation}|${input}`;
+      }
+    } else if (domain === "complex") {
       // input = expression canonique (z₁, (3+4i)^3, ou la liste d'affixes pour la géométrie)
       input = typeof req.body.expression === "string" ? req.body.expression.trim() : "";
       if (!input || input.length > 400) {
