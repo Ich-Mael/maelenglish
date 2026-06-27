@@ -201,9 +201,10 @@
     .ml-state { color:#6b7280; font-size:.92rem; padding:.6rem 0; }
     .ml-spinner { display:inline-block; width:16px; height:16px; border:2px solid #d9ccf5; border-top-color:#5d06ba; border-radius:50%; animation:mlspin .7s linear infinite; vertical-align:-3px; margin-right:.4rem; }
     @keyframes mlspin { to { transform:rotate(360deg); } }
-    .ml-warn { margin-top:1rem; display:flex; gap:.6rem; align-items:flex-start; background:#f3effc; border:1px solid #d9ccf5;
-      border-radius:12px; padding:.7rem .9rem; color:#4a3a6b; font-size:.82rem; line-height:1.45; }
-    .ml-warn i { color:#5d06ba; font-size:1.05rem; flex-shrink:0; margin-top:.05rem; }
+    .ml-warn { margin-top:1rem; display:flex; gap:.6rem; align-items:flex-start; background:#fef2f2; border:1px solid #f4b4b4;
+      border-left:4px solid #dc2626; border-radius:12px; padding:.7rem .9rem; color:#7f1d1d; font-size:.82rem; line-height:1.45; }
+    .ml-warn i { color:#dc2626; font-size:1.05rem; flex-shrink:0; margin-top:.05rem; }
+    .ml-warn strong { color:#991b1b; }
     .ml-hint { font-size:.82rem; color:#6b7280; margin-top:.4rem; }
     /* Cercle trigonométrique */
     .trig-wrap { display:flex; gap:1.5rem; flex-wrap:wrap; align-items:center; justify-content:center; }
@@ -224,10 +225,20 @@
     .trig-f--cos { background:#eff6ff; border-color:#bfdbfe; }   /* cosinus → bleu */
     .trig-f--sin { background:#fef2f2; border-color:#fecaca; }   /* sinus → rouge */
     /* Formulaire dropdown (per topic) */
-    .ml-form { margin-top:1rem; border:1px solid #e9e0fb; border-radius:12px; background:#faf8ff; overflow:hidden; }
-    .ml-form > summary { cursor:pointer; padding:.7rem 1rem; font-weight:700; color:#2d0370; list-style:none; display:flex; align-items:center; gap:.5rem; user-select:none; }
+    .ml-form { margin-top:1rem; border:1px solid #e9e0fb; border-radius:12px; background:#faf8ff; overflow:hidden; transition:box-shadow .25s, transform .25s, border-color .25s; }
+    .ml-form:hover { box-shadow:0 6px 18px rgba(93,6,186,.14); border-color:#cdb8f5; transform:translateY(-1px); }
+    .ml-form > summary { cursor:pointer; padding:.8rem 1rem; font-weight:700; color:#2d0370; list-style:none; display:flex; align-items:center; gap:.6rem;
+      user-select:none; background:linear-gradient(135deg,#f7f4fe,#efe7fc); transition:background .25s, padding-left .25s, letter-spacing .25s; }
     .ml-form > summary::-webkit-details-marker { display:none; }
-    .ml-form[open] > summary { border-bottom:1px solid #e9e0fb; background:#f3eefc; }
+    .ml-form > summary .bi-journal-text { font-size:1.05rem; color:#7c3aed; transition:transform .3s; }
+    .ml-form > summary:hover { background:linear-gradient(135deg,#efe6fd,#e6d8fb); padding-left:1.25rem; letter-spacing:.01em; }
+    .ml-form > summary:hover .bi-journal-text { transform:scale(1.18) rotate(-8deg); }
+    /* CSS chevron (no icon-font dependency) — rotates on open */
+    .ml-form > summary::after { content:''; margin-left:auto; width:9px; height:9px; border-right:2.5px solid #7c3aed; border-bottom:2.5px solid #7c3aed;
+      transform:rotate(45deg); transition:transform .3s; margin-right:4px; }
+    .ml-form[open] > summary { border-bottom:1px solid #e9e0fb; }
+    .ml-form[open] > summary::after { transform:rotate(225deg); }
+    .ml-form[open]:hover { transform:none; }
     .ml-form-grid { padding:.7rem 1rem 1rem; }
     .ml-form-sec { font-size:.74rem; text-transform:uppercase; letter-spacing:.04em; font-weight:700; color:#7c3aed; margin:.9rem 0 .45rem; }
     .ml-form-sec:first-child { margin-top:0; }
