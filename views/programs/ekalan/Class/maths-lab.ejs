@@ -292,6 +292,7 @@
           <button type="button" class="ml-mode" data-mode="geometry"><i class="bi bi-triangle"></i> Géométrie</button>
           <button type="button" class="ml-mode" data-mode="integral"><i class="bi bi-integral"></i> Intégrales</button>
           <button type="button" class="ml-mode" data-mode="suite"><i class="bi bi-list-ol"></i> Suites</button>
+          <button type="button" class="ml-mode" data-mode="proba"><i class="bi bi-dice-5"></i> Probabilités</button>
           <button type="button" class="ml-mode" data-mode="trig"><i class="bi bi-record-circle"></i> Trigonométrie</button>
         </div>
 
@@ -653,6 +654,39 @@
             <div class="ml-form-grid" id="form-grid-suite"></div>
           </details>
         </div><%# /mode-suite %>
+
+        <div id="mode-proba" hidden>
+          <h2><i class="bi bi-dice-5"></i> Probabilités</h2>
+          <div class="ml-side" id="proba-type">
+            <button type="button" class="ml-sidebtn is-active" data-ptype="binom">Loi binomiale</button>
+            <button type="button" class="ml-sidebtn" data-ptype="cond">Conditionnelle (arbre)</button>
+          </div>
+
+          <div id="proba-binom-fields">
+            <div class="ml-input-row">
+              <label for="pb-n">n =</label>
+              <input id="pb-n" type="number" value="10" min="1" max="300" step="1" style="flex:0 0 auto; min-width:0; max-width:90px" />
+              <label for="pb-p" style="margin-left:.6rem">p =</label>
+              <input id="pb-p" type="text" value="0.5" placeholder="ex : 0.3, 1/6" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:100px" />
+              <label for="pb-k" style="margin-left:.6rem">k =</label>
+              <input id="pb-k" type="number" value="5" min="0" max="300" step="1" style="flex:0 0 auto; min-width:0; max-width:90px" />
+            </div>
+            <div class="ml-hint" style="margin:.1rem 0 0">X ~ B(n, p) : n épreuves, probabilité de succès p ; k = nombre de succès.</div>
+          </div>
+
+          <div id="proba-cond-fields" hidden>
+            <div class="ml-input-row"><label for="pc-a">P(A) =</label><input id="pc-a" type="text" value="0.4" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:120px" /></div>
+            <div class="ml-input-row"><label for="pc-ba">P(B|A) =</label><input id="pc-ba" type="text" value="0.7" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:120px" /></div>
+            <div class="ml-input-row"><label for="pc-bna">P(B|Ā) =</label><input id="pc-bna" type="text" value="0.2" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:120px" /></div>
+            <div class="ml-hint" style="margin:.1rem 0 0">Arbre à deux niveaux : on calcule P(B), P(A∩B) et P(A|B) (Bayes).</div>
+          </div>
+
+          <div class="ml-preview is-empty" id="proba-preview">Aperçu…</div>
+
+          <div class="ml-ops" id="proba-ops">
+            <button class="ml-op ml-op--hero" data-pop="study"><i class="bi bi-clipboard2-data"></i> Calculer</button>
+          </div>
+        </div><%# /mode-proba %>
 
         <div id="answer"></div>
         <div id="steps" class="ml-steps"></div>
@@ -3341,6 +3375,112 @@
     }
     suiteOpsEl.addEventListener('click', function(ev){ var btn = ev.target.closest('.ml-op'); if(!btn || btn.disabled) return; runSuiteOp(btn.getAttribute('data-sop')); });
 
+    /* ============ PROBABILITÉS ============ */
+    var modeProba    = document.getElementById('mode-proba');
+    var probaTypeEl  = document.getElementById('proba-type');
+    var probaBinomF  = document.getElementById('proba-binom-fields');
+    var probaCondF   = document.getElementById('proba-cond-fields');
+    var probaPrevEl  = document.getElementById('proba-preview');
+    var probaOpsEl   = document.getElementById('proba-ops');
+    var pbN = document.getElementById('pb-n'), pbP = document.getElementById('pb-p'), pbK = document.getElementById('pb-k');
+    var pcA = document.getElementById('pc-a'), pcBA = document.getElementById('pc-ba'), pcBnA = document.getElementById('pc-bna');
+    var probaType = 'binom';
+    var probaObjs = [];
+
+    function setProbaOpsEnabled(on){ probaOpsEl.querySelectorAll('.ml-op').forEach(function(b){ b.disabled = !on; }); }
+    function parseProb(s){ s = (s || '').trim(); if(!s) return NaN; if(s.indexOf('/') > 0){ var a = s.split('/'); return Number(a[0]) / Number(a[1]); } return Number(s); }
+    function pf(x){ if(!isFinite(x)) return '?'; var r = Math.round(x * 1e5) / 1e5; return String(r); }
+    function nCk(n, k){ if(k < 0 || k > n) return 0; k = Math.min(k, n - k); var r = 1; for(var i = 0; i < k; i++) r = r * (n - i) / (i + 1); return r; }
+    function bPmf(n, p, k){ if(k < 0 || k > n) return 0; return nCk(n, k) * Math.pow(p, k) * Math.pow(1 - p, n - k); }
+    function bCdf(n, p, k){ var s = 0; for(var i = 0; i <= k && i <= n; i++) s += bPmf(n, p, i); return s; }
+
+    function setProbaType(t){
+      probaType = t;
+      probaTypeEl.querySelectorAll('.ml-sidebtn').forEach(function(b){ b.classList.toggle('is-active', b.getAttribute('data-ptype') === t); });
+      probaBinomF.hidden = (t !== 'binom'); probaCondF.hidden = (t !== 'cond');
+      updateProbaPreview();
+    }
+    probaTypeEl.addEventListener('click', function(ev){ var b = ev.target.closest('.ml-sidebtn'); if(b) setProbaType(b.getAttribute('data-ptype')); });
+    function updateProbaPreview(){
+      var tex = null;
+      try {
+        if(probaType === 'binom'){ var n = parseInt(pbN.value, 10), p = parseProb(pbP.value); if(!(n >= 1) || !(p >= 0 && p <= 1)) throw 0; tex = 'X ' + BS + 'sim ' + BS + 'mathcal{B}(' + n + ',\\ ' + pf(p) + ')'; }
+        else { tex = 'P(A) = ' + pf(parseProb(pcA.value)) + ',\\ \\ P(B|A) = ' + pf(parseProb(pcBA.value)) + ',\\ \\ P(B|' + BS + 'bar A) = ' + pf(parseProb(pcBnA.value)); }
+      } catch(e){ tex = null; }
+      if(tex == null){ probaPrevEl.className = 'ml-preview is-empty'; probaPrevEl.textContent = '…'; return; }
+      try { renderKatex(probaPrevEl, tex); probaPrevEl.className = 'ml-preview'; }
+      catch(e){ probaPrevEl.className = 'ml-preview is-empty'; probaPrevEl.textContent = '…'; }
+    }
+    [pbN, pbP, pbK, pcA, pcBA, pcBnA].forEach(function(inp){ inp.addEventListener('input', updateProbaPreview); });
+
+    function clearProbaPlot(){ probaObjs.forEach(function(nm){ try { ggb.deleteObject(nm); } catch(e){} }); probaObjs = []; }
+    function plotBinom(n, p, k){
+      if(!ggb) return; clearProbaPlot(); try { ggb.deleteObject('f'); } catch(e){}
+      if(n > 60) return; // too many bars to draw cleanly
+      var maxP = 0;
+      for(var i = 0; i <= n; i++){
+        var pi = bPmf(n, p, i); if(pi > maxP) maxP = pi;
+        var nm = 'pbar' + i;
+        try { ggb.evalCommand(nm + '=Segment((' + i + ',0),(' + i + ',' + pi + '))'); probaObjs.push(nm);
+          if(i === k){ ggb.setColor(nm, 245, 158, 11); } else { ggb.setColor(nm, 93, 6, 186); }
+          ggb.setLineThickness(nm, n > 30 ? 4 : 7); } catch(e){}
+      }
+      try { ggb.setCoordSystem(-1, n + 1, -0.04 * maxP - 0.01, maxP * 1.18 + 0.01); } catch(e){}
+      setTimeout(fitGraph, 50);
+    }
+
+    async function runProba(){
+      if(!ggb){ return; }
+      answerEl.innerHTML = ''; stepsEl.innerHTML = '';
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Calcul…';
+      setProbaOpsEnabled(false);
+      var kq = [], kid = 0;
+      function km(l){ var id = 'prk' + (kid++); kq.push({ id: id, latex: l }); return '<span class="study-math" id="' + id + '"></span>'; }
+      function line(label, l){ var s = '<div class="study-line">'; if(label) s += '<span class="study-lbl">' + label + '</span> '; if(l) s += km(l); return s + '</div>'; }
+      var title, body = '', op, defStr, summary;
+
+      if(probaType === 'binom'){
+        var n = parseInt(pbN.value, 10), p = parseProb(pbP.value), k = parseInt(pbK.value, 10);
+        if(!(n >= 1) || !(p >= 0 && p <= 1) || !(k >= 0)){ stateEl.textContent = 'Vérifiez n, p (0 ≤ p ≤ 1) et k.'; setProbaOpsEnabled(true); return; }
+        if(k > n) k = n;
+        var pmf = bPmf(n, p, k), cdf = bCdf(n, p, k), pge = 1 - (k > 0 ? bCdf(n, p, k - 1) : 0), E = n * p, sd = Math.sqrt(n * p * (1 - p));
+        plotBinom(n, p, k);
+        title = 'Loi binomiale B(' + n + ', ' + pf(p) + ')';
+        body += line('', 'X ' + BS + 'sim ' + BS + 'mathcal{B}(' + n + ',\\ ' + pf(p) + ')');
+        body += line('P(X = ' + k + ') :', BS + 'binom{' + n + '}{' + k + '}\\,p^{' + k + '}(1-p)^{' + (n - k) + '} = ' + pf(pmf));
+        body += line('P(X ' + BS + 'le ' + k + ') :', pf(cdf));
+        body += line('P(X ' + BS + 'ge ' + k + ') :', pf(pge));
+        body += line('Espérance :', 'E(X) = np = ' + pf(E));
+        body += line('Écart-type :', BS + 'sigma(X) = ' + BS + 'sqrt{np(1-p)} = ' + pf(sd));
+        op = 'binomial_law'; defStr = 'n=' + n + ', p=' + pf(p) + ', k=' + k;
+        summary = ('P(X=' + k + ')=' + pf(pmf) + ' ; P(X<=' + k + ')=' + pf(cdf) + ' ; P(X>=' + k + ')=' + pf(pge) + ' ; E(X)=' + pf(E) + ' ; sigma=' + pf(sd)).slice(0, 480);
+      } else {
+        var pa = parseProb(pcA.value), pba = parseProb(pcBA.value), pbna = parseProb(pcBnA.value);
+        if(![pa, pba, pbna].every(function(x){ return x >= 0 && x <= 1; })){ stateEl.textContent = 'Les probabilités doivent être comprises entre 0 et 1.'; setProbaOpsEnabled(true); return; }
+        var pan = 1 - pa, pB = pa * pba + pan * pbna, pAB = pa * pba, pAgB = pB > 0 ? pAB / pB : NaN;
+        clearProbaPlot(); try { ggb.deleteObject('f'); } catch(e){}
+        title = 'Probabilités conditionnelles';
+        body += line('P(' + BS + 'bar A) :', '1 - P(A) = ' + pf(pan));
+        body += line('P(A ' + BS + 'cap B) :', 'P(A)' + BS + 'cdot P(B|A) = ' + pf(pAB));
+        body += line('P(B) :', 'P(A)P(B|A) + P(' + BS + 'bar A)P(B|' + BS + 'bar A) = ' + pf(pB));
+        body += line('P(A | B) :', BS + 'dfrac{P(A ' + BS + 'cap B)}{P(B)} = ' + pf(pAgB));
+        op = 'conditional_prob'; defStr = 'P(A)=' + pf(pa) + ', P(B|A)=' + pf(pba) + ', P(B|Ā)=' + pf(pbna);
+        summary = ('P(B)=' + pf(pB) + ' ; P(A∩B)=' + pf(pAB) + ' ; P(A|B)=' + pf(pAgB)).slice(0, 480);
+      }
+
+      answerEl.innerHTML = '<div class="ml-study" style="padding:.9rem 1.1rem"><div class="study-head"><i class="bi bi-dice-5"></i> ' + escapeHtml(title) + '</div><div class="study-body">' + body + '</div></div>';
+      kq.forEach(function(it){ var el = document.getElementById(it.id); if(el){ try { renderKatex(el, it.latex); } catch(e){} } });
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
+      try {
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: defStr, operation: op, casResult: summary }) });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data, true); }
+        else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){ stateEl.textContent = 'Connexion impossible — réessayez.'; }
+      finally { setProbaOpsEnabled(true); }
+    }
+    probaOpsEl.addEventListener('click', function(ev){ var btn = ev.target.closest('.ml-op'); if(!btn || btn.disabled) return; runProba(); });
+
     /* ============ FORMULAIRES (per-topic dropdowns) ============ */
     (function(){
       function fxL(s){ return s.split('#').join(BS); } // '#' stands in for backslash (EJS-safe)
@@ -3467,6 +3607,7 @@
       modeGeo.hidden      = (m !== 'geometry');
       modeIntegral.hidden = (m !== 'integral');
       modeSuite.hidden    = (m !== 'suite');
+      modeProba.hidden    = (m !== 'proba');
       modeTrig.hidden     = (m !== 'trig');
       answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = '';
       var isTrig = (m === 'trig');
@@ -3476,8 +3617,13 @@
       if(isTrig){ tcRender(tcDeg); return; }
       if(ggb){
         try { ggb.setPerspective((m === 'function' || m === 'integral' || m === 'suite') ? 'AG' : 'G'); } catch(e){}
-        clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot(); clearSuitePlot();
-        if(m === 'suite'){
+        clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot(); clearSuitePlot(); clearProbaPlot();
+        if(m === 'proba'){
+          graphTitle.textContent = 'Distribution de probabilité';
+          graphHint.textContent = 'Loi binomiale : le diagramme en bâtons de la distribution s’affiche (la barre du k demandé est en orange).';
+          try { ggb.deleteObject('f'); } catch(e){}
+          updateProbaPreview();
+        } else if(m === 'suite'){
           graphTitle.textContent = 'Termes & convergence';
           graphHint.textContent = 'Suite explicite : les termes (n, uₙ) sont tracés. Suite récurrente : l’escalier de convergence vers la limite.';
           try { ggb.deleteObject('f'); } catch(e){}
@@ -3522,8 +3668,8 @@
     window.addEventListener('resize', function(){ clearTimeout(ggbResizeTimer); ggbResizeTimer = setTimeout(fitGraph, 200); });
 
     // GeoGebra applet
-    setOpsEnabled(false); setCOpsEnabled(false); setGOpsEnabled(false); setLOpsEnabled(false); setIOpsEnabled(false); setSuiteOpsEnabled(false);
-    setSuiteType('explicit');
+    setOpsEnabled(false); setCOpsEnabled(false); setGOpsEnabled(false); setLOpsEnabled(false); setIOpsEnabled(false); setSuiteOpsEnabled(false); setProbaOpsEnabled(false);
+    setSuiteType('explicit'); setProbaType('binom');
     if(eqSolveBtn) eqSolveBtn.disabled = true;
     setEqStepsEnabled(false);
     var initW = Math.max(320, ggbHost.clientWidth || 700);
@@ -3534,7 +3680,7 @@
       showToolBar: false, showAlgebraInput: false, showMenuBar: false,
       enableRightClick: false, showResetIcon: true,
       perspective: 'AG',
-      appletOnLoad: function(api){ ggb = api; try { ggb.setErrorDialogsActive(false); } catch(e){} setOpsEnabled(true); setCOpsEnabled(true); setGOpsEnabled(true); setLOpsEnabled(true); setIOpsEnabled(true); setSuiteOpsEnabled(true); if(eqSolveBtn) eqSolveBtn.disabled = false; setEqStepsEnabled(true); fitGraph(); plot((fxInput.value||'').trim()); }
+      appletOnLoad: function(api){ ggb = api; try { ggb.setErrorDialogsActive(false); } catch(e){} setOpsEnabled(true); setCOpsEnabled(true); setGOpsEnabled(true); setLOpsEnabled(true); setIOpsEnabled(true); setSuiteOpsEnabled(true); setProbaOpsEnabled(true); if(eqSolveBtn) eqSolveBtn.disabled = false; setEqStepsEnabled(true); fitGraph(); plot((fxInput.value||'').trim()); }
     }, true);
     applet.inject('ggb');
     updatePreview();
