@@ -926,6 +926,26 @@
       else head = 'M7 45 L47 45 M47 45 L38 41 M47 45 L38 49';          // → constante
       return '<svg class="vt-arr" viewBox="0 0 54 90"><path d="' + head + '" fill="none" stroke="' + c + '" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     }
+    // Symbolic derivative as a string. Tries CAS first; falls back to defining the
+    // derivative as a graphing-view function and reading its formula (CAS returns "?" here
+    // for some functions). Returns '' if nothing usable.
+    function derivExpr(expr){
+      var tries = ['Derivative(' + expr + ')', 'Derivative(f)', 'Derivative(f(x),x)'];
+      for(var t = 0; t < tries.length; t++){
+        var r = ''; try { r = ggbToText(ggb.evalCommandCAS(tries[t])); } catch(e){ r = ''; }
+        r = (r || '').trim();
+        if(r && r !== '?' && r.indexOf('?') < 0) return r;
+      }
+      try {
+        ggb.evalCommand('gDrv(x)=Derivative(f)');
+        var gs = ggbToText(ggb.getValueString('gDrv') || '');
+        ggb.deleteObject('gDrv');
+        var eqp = gs.indexOf('=');
+        if(eqp >= 0) gs = gs.slice(eqp + 1).trim();
+        if(gs && gs !== '?' && gs.indexOf('?') < 0) return gs;
+      } catch(e){}
+      return '';
+    }
     function variationTableHTML(pts, fp, info){
       info = info || {};
       function segDir(i){ return pts[i + 1].inYn - pts[i].outYn; }
@@ -999,16 +1019,7 @@
       function fAt(x){ ev('SetValue(vtArg,' + x + ')'); return gv('vtRes'); }
 
       // Derivative for display — try a few forms, drop GeoGebra's "?" (undefined).
-      function deriv(){
-        var tries = ['Derivative(' + expr + ')', 'Derivative(f)', 'Derivative(f(x),x)'];
-        for(var t = 0; t < tries.length; t++){
-          var r = ''; try { r = ggbToText(ggb.evalCommandCAS(tries[t])); } catch(e){ r = ''; }
-          r = (r || '').trim();
-          if(r && r !== '?' && r.indexOf('?') < 0) return r;
-        }
-        return '';
-      }
-      var fp = deriv();
+      var fp = derivExpr(expr);
 
       // Sample f over [LO, HI].
       var LO = -50, HI = 50, N = 400, step = (HI - LO) / N;
@@ -1366,8 +1377,7 @@
       if(roots.length > 8) roots = roots.slice(0, 8);
 
       // ---- Derivative + variation pts (exact extrema best-effort) ----
-      function deriv(){ var tries = ['Derivative(' + expr + ')', 'Derivative(f)']; for(var t2 = 0; t2 < tries.length; t2++){ var r = ''; try { r = ggbToText(ggb.evalCommandCAS(tries[t2])); } catch(e){ r = ''; } r = (r || '').trim(); if(r && r !== '?' && r.indexOf('?') < 0) return r; } return ''; }
-      var fp = deriv();
+      var fp = derivExpr(expr);
       function exactCrit(){ var raw = ''; try { raw = ggbToText(ggb.evalCommandCAS('Solutions(Derivative(f)=0,x)')); } catch(e){ raw = ''; } if(!raw || raw === '?' || raw.indexOf('?') >= 0 || raw === '{}') return []; var out = []; splitTopLevel(raw).forEach(function(r){ r = (r || '').trim(); if(!r) return; var nx = NaN; try { ev('vtRn=' + r); nx = gv('vtRn'); ggb.deleteObject('vtRn'); } catch(e){} if(!isFinite(nx)) return; var ys2 = ''; try { ys2 = ggbToText(ggb.evalCommandCAS('f(' + r + ')')); } catch(e){ ys2 = ''; } ys2 = (ys2 || '').trim(); if(ys2 === '?' || ys2.indexOf('?') >= 0) ys2 = ''; out.push({ n: nx, xs: r, ys: ys2 }); }); return out; }
       var exList = exactCrit();
       try { ggb.deleteObject('vtRes'); ggb.deleteObject('vtArg'); } catch(e){}
