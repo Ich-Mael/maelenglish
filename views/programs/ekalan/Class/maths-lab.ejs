@@ -304,11 +304,19 @@
           <button type="button" class="ml-key is-util" data-act="clear">C</button>
         </div>
 
+        <div class="ml-input-row" style="margin:.2rem 0 .1rem">
+          <label for="tanx0">Point x₀ =</label>
+          <input id="tanx0" type="text" value="1" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:130px" />
+          <span class="ml-hint" style="margin:0">pour la tangente</span>
+        </div>
+
         <div class="ml-ops" id="ops">
           <button class="ml-op ml-op--hero" data-op="study"><i class="bi bi-clipboard2-data"></i> Étude complète</button>
           <button class="ml-op" data-op="domain"><i class="bi bi-bounding-box"></i> Domaine de définition</button>
            <button class="ml-op" data-op="limit"><i class="bi bi-infinity"></i> Limite en +∞</button>
           <button class="ml-op" data-op="derivative"><i class="bi bi-slash-lg"></i> Dérivée f'(x)</button>
+          <button class="ml-op" data-op="tangent"><i class="bi bi-rulers"></i> Tangente en x₀</button>
+          <button class="ml-op" data-op="convexity"><i class="bi bi-graph-up-arrow"></i> Convexité</button>
           <button class="ml-op" data-op="variations"><i class="bi bi-table"></i> Tableau de variation</button>
           <button class="ml-op" data-op="asymptotes"><i class="bi bi-arrows-collapse"></i> Asymptotes</button>
           <button class="ml-op" data-op="integral"><i class="bi bi-integral"></i> Primitive</button>
@@ -1612,12 +1620,153 @@
       finally { setOpsEnabled(true); }
     }
 
+    /* ---- Tangente en x₀ ---- */
+    async function runTangent(){
+      var expr = (fxInput.value || '').trim();
+      if(!expr){ stateEl.textContent = 'Saisissez une fonction.'; return; }
+      if(!ggb){ return; }
+      var x0s = (document.getElementById('tanx0').value || '').trim();
+      if(!x0s){ stateEl.textContent = 'Indiquez le point x₀.'; return; }
+      plot(expr);
+      answerEl.innerHTML = ''; stepsEl.innerHTML = '';
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Calcul de la tangente…';
+      setOpsEnabled(false);
+
+      function ev(c){ try { ggb.evalCommand(c); return true; } catch(e){ return false; } }
+      function gv(l){ try { return ggb.getValue(l); } catch(e){ return NaN; } }
+      ev('vtArg=0'); ev('vtRes=f(vtArg)');
+      function fAt(x){ ev('SetValue(vtArg,' + x + ')'); return gv('vtRes'); }
+      var x0 = Number(x0s);
+      if(!isFinite(x0)){ if(ev('vtX0=' + x0s)){ x0 = gv('vtX0'); try { ggb.deleteObject('vtX0'); } catch(e){} } }
+      if(!isFinite(x0)){ stateEl.textContent = 'Point x₀ invalide.'; try { ggb.deleteObject('vtRes'); ggb.deleteObject('vtArg'); } catch(e){} setOpsEnabled(true); return; }
+      var y0 = fAt(x0);
+      if(!isFinite(y0)){ stateEl.textContent = "f n'est pas définie en x₀ = " + vtFmt(x0) + '.'; try { ggb.deleteObject('vtRes'); ggb.deleteObject('vtArg'); } catch(e){} setOpsEnabled(true); return; }
+      var h = 1e-5, m = (fAt(x0 + h) - fAt(x0 - h)) / (2 * h);
+      try { ggb.deleteObject('vtRes'); ggb.deleteObject('vtArg'); } catch(e){}
+      // snap to clean values for display
+      function sn(v){ var r = Math.round(v * 1e4) / 1e4; if(Math.abs(r - Math.round(r)) < 1e-3) r = Math.round(r); return r; }
+      m = sn(m); y0 = sn(y0); var bb = sn(y0 - m * x0);
+      // plot tangent + point
+      try { ggb.deleteObject('TLine'); } catch(e){}
+      try { ggb.deleteObject('TPt'); } catch(e){}
+      try { ggb.evalCommand('TLine: y = ' + m + '*(x - ' + x0 + ') + ' + y0); ggb.setColor('TLine', 245, 158, 11); ggb.setLineThickness('TLine', 4); } catch(e){}
+      try { ggb.evalCommand('TPt = (' + x0 + ', ' + y0 + ')'); ggb.setColor('TPt', 93, 6, 186); ggb.setPointSize('TPt', 5); } catch(e){}
+
+      function lineEqL(a2, b2){ var sx = a2 === 1 ? 'x' : (a2 === -1 ? '-x' : vtFmt(a2) + 'x'); if(b2 > 0) sx += ' + ' + vtFmt(b2); else if(b2 < 0) sx += ' - ' + vtFmt(Math.abs(b2)); else if(a2 === 0) sx = vtFmt(b2); return sx; }
+      var eqStr = 'y = ' + lineEqL(m, bb);
+      answerEl.innerHTML = '<div class="ml-answer"><div class="lbl"><i class="bi bi-rulers"></i> Tangente en x₀ = ' + escapeHtml(vtFmt(x0)) + '</div>'
+        + '<div class="val" id="tan-eq"></div>'
+        + '<div class="vt-deriv" id="tan-det"></div></div>';
+      try { renderKatex(document.getElementById('tan-eq'), eqStr); } catch(e){}
+      try { renderKatex(document.getElementById('tan-det'), "f(" + vtFmt(x0) + ") = " + vtFmt(y0) + " " + BS + "qquad f'(" + vtFmt(x0) + ") = " + vtFmt(m)); } catch(e){}
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
+
+      try {
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: expr, operation: 'tangent', x0: x0s, casResult: eqStr }) });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data, true); }
+        else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){ stateEl.textContent = 'Connexion impossible — réessayez.'; }
+      finally { setOpsEnabled(true); }
+    }
+
+    /* ---- Convexité / points d'inflexion (f'') ---- */
+    async function runConvexity(){
+      var expr = (fxInput.value || '').trim();
+      if(!expr){ stateEl.textContent = 'Saisissez une fonction.'; return; }
+      if(!ggb){ return; }
+      plot(expr);
+      answerEl.innerHTML = ''; stepsEl.innerHTML = '';
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Étude de la convexité…';
+      setOpsEnabled(false);
+
+      // f''(x) symbolic (for display) via the JS differentiator, twice.
+      var fpp = '';
+      try { var ast = dxParse(dxTok(expr)); if(ast){ var d2 = dxDiff(dxDiff(ast)); if(d2){ d2 = dxSimp(dxSimp(dxSimp(d2))); var s2 = dxPretty(d2); if(s2 && s2.indexOf('?') < 0) fpp = s2; } } } catch(e){}
+
+      function ev(c){ try { ggb.evalCommand(c); return true; } catch(e){ return false; } }
+      function gv(l){ try { return ggb.getValue(l); } catch(e){ return NaN; } }
+      ev('vtArg=0'); ev('vtRes=f(vtArg)');
+      function fAt(x){ ev('SetValue(vtArg,' + x + ')'); return gv('vtRes'); }
+      var hh = 1e-3;
+      function f2(x){ var a = fAt(x - hh), b = fAt(x), c = fAt(x + hh); if(!isFinite(a) || !isFinite(b) || !isFinite(c)) return NaN; return (a - 2 * b + c) / (hh * hh); }
+      function snap(x){ return Math.abs(x - Math.round(x)) < 1e-4 ? Math.round(x) : x; }
+
+      var LO = -50, HI = 50, N = 800, step = (HI - LO) / N;
+      var s2v = []; for(var i = 0; i <= N; i++) s2v[i] = f2(LO + i * step);
+      // inflection points: f'' changes sign between two FINITE, moderate samples (not a pole).
+      // Bracket from the last definite-sign sample (handles f''=0 landing on a grid point).
+      var infl = [], lastSign = 0, prevIdx = 0;
+      for(var j = 1; j <= N; j++){
+        var a = s2v[j - 1], b = s2v[j];
+        if(!isFinite(a) || !isFinite(b) || Math.abs(a) > 1e6 || Math.abs(b) > 1e6){ lastSign = 0; continue; }
+        var sg = b > 1e-9 ? 1 : (b < -1e-9 ? -1 : 0);
+        if(sg !== 0){
+          if(lastSign !== 0 && sg !== lastSign){
+            var xa = LO + prevIdx * step, xb = LO + j * step, fa = s2v[prevIdx];
+            for(var it = 0; it < 44; it++){ var mx = (xa + xb) / 2, fm = f2(mx); if(!isFinite(fm)){ xb = mx; continue; } if((fa < 0) !== (fm < 0)) xb = mx; else { xa = mx; fa = fm; } }
+            var rx = snap((xa + xb) / 2);
+            var yr = fAt(rx);
+            if(isFinite(yr) && !infl.some(function(p){ return Math.abs(p.x - rx) < 1e-2; })) infl.push({ x: rx, y: snap(yr) });
+          }
+          lastSign = sg; prevIdx = j;
+        }
+      }
+      if(infl.length > 8) infl = infl.slice(0, 8);
+      try { ggb.deleteObject('vtRes'); ggb.deleteObject('vtArg'); } catch(e){}
+
+      // Convexity intervals between consecutive inflection points (sample the midpoint sign).
+      var cuts = infl.map(function(p){ return p.x; }).sort(function(a, b){ return a - b; });
+      ev('vtArg=0'); ev('vtRes=f(vtArg)');
+      var bounds = [-Infinity].concat(cuts).concat([Infinity]), convLines = [];
+      for(var s = 0; s < bounds.length - 1; s++){
+        var L = bounds[s], R = bounds[s + 1];
+        var mid = (isFinite(L) && isFinite(R)) ? (L + R) / 2 : (isFinite(L) ? L + 1 : (isFinite(R) ? R - 1 : 0));
+        var v = f2(mid); if(!isFinite(v) || v === 0) continue;
+        var lo = isFinite(L) ? vtFmt(L) : '-∞', hi = isFinite(R) ? vtFmt(R) : '+∞';
+        convLines.push({ conv: v > 0, lo: lo, hi: hi });
+      }
+      try { ggb.deleteObject('vtRes'); ggb.deleteObject('vtArg'); } catch(e){}
+
+      // Render (KaTeX; BS for backslashes)
+      var IN2 = BS + 'infty', SEMI2 = BS + ',;' + BS + ',';
+      function tx2(s){ return String(s).split('-∞').join('-' + IN2).split('+∞').join('+' + IN2).split('−').join('-'); }
+      var kq = [], kid = 0;
+      function km(latex){ var id = 'cvk' + (kid++); kq.push({ id: id, latex: latex }); return '<span class="study-math" id="' + id + '"></span>'; }
+      function line(label, latex){ var s = '<div class="study-line">'; if(label) s += '<span class="study-lbl">' + label + '</span> '; if(latex) s += km(latex); return s + '</div>'; }
+      var body = '';
+      if(fpp){ var fppL = ''; try { fppL = toLatex(fpp.split(' ').join('')); } catch(e){ fppL = ''; } body += line('', "f''(x) = " + (fppL || (BS + 'text{' + fpp + '}'))); }
+      if(!convLines.length) body += '<div class="study-line"><span class="study-lbl">f a une convexité constante sur son domaine.</span></div>';
+      convLines.forEach(function(c){ body += line(c.conv ? 'f est convexe sur' : 'f est concave sur', ']' + tx2(c.lo) + SEMI2 + tx2(c.hi) + '['); });
+      infl.forEach(function(p){ body += line('Point d\\'inflexion :', 'x = ' + tx2(vtFmt(p.x)) + ',\\quad f(x) = ' + tx2(vtFmt(p.y))); });
+
+      answerEl.innerHTML = '<div class="ml-study" style="padding:.9rem 1.1rem"><div class="study-head"><i class="bi bi-graph-up-arrow"></i> Convexité &amp; points d\\'inflexion</div><div class="study-body">' + body + '</div></div>';
+      kq.forEach(function(it){ var el = document.getElementById(it.id); if(el){ try { renderKatex(el, it.latex); } catch(e){} } });
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
+
+      var parts = [];
+      if(fpp) parts.push("f''(x) = " + fpp);
+      convLines.forEach(function(c){ parts.push((c.conv ? 'convexe' : 'concave') + ' sur ]' + c.lo + ';' + c.hi + '['); });
+      if(infl.length) parts.push('inflexion : ' + infl.map(function(p){ return 'x=' + vtFmt(p.x) + ' (f=' + vtFmt(p.y) + ')'; }).join(', '));
+      var summary = parts.join(' ; ').slice(0, 480) || 'convexité constante';
+
+      try {
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: expr, operation: 'convexity', casResult: summary }) });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data, true); }
+        else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){ stateEl.textContent = 'Connexion impossible — réessayez.'; }
+      finally { setOpsEnabled(true); }
+    }
+
     opsEl.addEventListener('click', function(ev){
       var btn = ev.target.closest('.ml-op'); if(!btn || btn.disabled) return;
       var op = btn.getAttribute('data-op');
       if(op === 'study'){ runStudy(); return; }
       if(op === 'variations'){ runVariation(); return; }
       if(op === 'domain'){ runDomain(); return; }
+      if(op === 'tangent'){ runTangent(); return; }
+      if(op === 'convexity'){ runConvexity(); return; }
       run(op);
     });
 

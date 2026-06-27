@@ -1442,6 +1442,13 @@ module.exports.explainMath = async (req, res) => {
         opKeyPart = `integral_def:${a},${b}`; // distinct cache key per bounds
       } else if (operation === "study") {
         opKeyPart = "study:v2"; // bump when the étude prompt changes (busts old cached studies)
+      } else if (operation === "tangent") {
+        const x0 = typeof req.body.x0 === "string" ? req.body.x0.trim().slice(0, 40) : "";
+        if (!x0) {
+          return res.status(400).json({ ok: false, error: "Point x₀ manquant." });
+        }
+        params = { x0 };
+        opKeyPart = `tangent:${x0}`; // distinct cache key per point
       }
       key = `${input}|${opKeyPart}|${casResult}`;
     }
