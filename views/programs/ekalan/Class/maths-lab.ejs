@@ -223,6 +223,17 @@
     .trig-f { background:#fff8ec; border:1px solid #f3e4c4; border-radius:10px; padding:.7rem .9rem; overflow-x:auto; color:#374151; }
     .trig-f--cos { background:#eff6ff; border-color:#bfdbfe; }   /* cosinus → bleu */
     .trig-f--sin { background:#fef2f2; border-color:#fecaca; }   /* sinus → rouge */
+    /* Formulaire dropdown (per topic) */
+    .ml-form { margin-top:1rem; border:1px solid #e9e0fb; border-radius:12px; background:#faf8ff; overflow:hidden; }
+    .ml-form > summary { cursor:pointer; padding:.7rem 1rem; font-weight:700; color:#2d0370; list-style:none; display:flex; align-items:center; gap:.5rem; user-select:none; }
+    .ml-form > summary::-webkit-details-marker { display:none; }
+    .ml-form[open] > summary { border-bottom:1px solid #e9e0fb; background:#f3eefc; }
+    .ml-form-grid { padding:.7rem 1rem 1rem; }
+    .ml-form-sec { font-size:.74rem; text-transform:uppercase; letter-spacing:.04em; font-weight:700; color:#7c3aed; margin:.9rem 0 .45rem; }
+    .ml-form-sec:first-child { margin-top:0; }
+    .ml-form-cards { display:grid; grid-template-columns:repeat(2,1fr); gap:.5rem; }
+    @media (max-width:640px){ .ml-form-cards { grid-template-columns:1fr; } }
+    .ml-form-card { background:#fff; border:1px solid #ece4fb; border-radius:9px; padding:.5rem .7rem; overflow-x:auto; color:#374151; font-size:.95rem; }
   </style>
 ` %>
 
@@ -343,6 +354,10 @@
           <button class="ml-op" data-op="factor"><i class="bi bi-diagram-2"></i> Factoriser</button>
           <button class="ml-op" data-op="expand"><i class="bi bi-arrows-angle-expand"></i> Développer</button>
         </div>
+          <details class="ml-form">
+            <summary><i class="bi bi-journal-text"></i> Formulaire — dérivées, limites, primitives</summary>
+            <div class="ml-form-grid" id="form-grid-function"></div>
+          </details>
         </div><%# /mode-function %>
 
         <div id="mode-complex" hidden>
@@ -426,6 +441,10 @@
             <div class="ml-hint" id="eq-cubic-hint" style="margin-top:.55rem" hidden>Équation du 3<sup>e</sup> degré : utilisez la démarche guidée ci-dessus (racine évidente → Q(z) → résoudre Q(z)=0).</div>
             </div><%# /ml-block-body %>
           </details><%# /ml-block — Équation %>
+          <details class="ml-form">
+            <summary><i class="bi bi-journal-text"></i> Formulaire — module, argument, Moivre, Euler</summary>
+            <div class="ml-form-grid" id="form-grid-complex"></div>
+          </details>
         </div><%# /mode-complex %>
 
         <div id="mode-geometry" hidden>
@@ -470,6 +489,10 @@
           </div>
 
           <div class="ml-hint">Saisissez les affixes des points (A, B, C, …) puis tracez la figure. La nature se détermine pour <strong>3 points</strong> (triangle) ou <strong>4 points</strong> pris dans l'ordre (quadrilatère).</div>
+          <details class="ml-form">
+            <summary><i class="bi bi-journal-text"></i> Formulaire — affixes &amp; distances</summary>
+            <div class="ml-form-grid" id="form-grid-geometry"></div>
+          </details>
         </div><%# /mode-geometry %>
 
         <div id="mode-integral" hidden>
@@ -517,6 +540,10 @@
           </div>
 
           <div class="ml-hint">« Primitive » donne ∫ f(x) dx (avec la constante). « Intégrale définie » calcule ∫ de a à b de f(x) dx par F(b) − F(a) ; l'aire correspondante est colorée sur le graphique.</div>
+          <details class="ml-form">
+            <summary><i class="bi bi-journal-text"></i> Formulaire — primitives &amp; intégration</summary>
+            <div class="ml-form-grid" id="form-grid-integral"></div>
+          </details>
         </div><%# /mode-integral %>
 
         <div id="mode-trig" hidden>
@@ -610,6 +637,10 @@
           </div>
 
           <div class="ml-hint">Suite <strong>récurrente</strong> : utilisez <strong>u</strong> pour uₙ (ex : <code>0.5u+1</code>) et donnez u₀. Le graphique trace les termes (points) ou l'escalier de convergence.</div>
+          <details class="ml-form">
+            <summary><i class="bi bi-journal-text"></i> Formulaire — suites arithmétiques &amp; géométriques</summary>
+            <div class="ml-form-grid" id="form-grid-suite"></div>
+          </details>
         </div><%# /mode-suite %>
 
         <div id="answer"></div>
@@ -3298,6 +3329,121 @@
       finally { setSuiteOpsEnabled(true); }
     }
     suiteOpsEl.addEventListener('click', function(ev){ var btn = ev.target.closest('.ml-op'); if(!btn || btn.disabled) return; runSuiteOp(btn.getAttribute('data-sop')); });
+
+    /* ============ FORMULAIRES (per-topic dropdowns) ============ */
+    (function(){
+      function fxL(s){ return s.split('#').join(BS); } // '#' stands in for backslash (EJS-safe)
+      var FORMULAS = {
+        'function': [
+          { t:'Dérivées usuelles', f:[
+            "(x^n)' = n#,x^{n-1}",
+            "(#sqrt{x})' = #frac{1}{2#sqrt{x}}",
+            "#left(#frac{1}{x}#right)' = -#frac{1}{x^2}",
+            "(e^x)' = e^x",
+            "(#ln x)' = #frac{1}{x}",
+            "(#sin x)' = #cos x",
+            "(#cos x)' = -#sin x",
+            "(#tan x)' = 1 + #tan^2 x = #frac{1}{#cos^2 x}"
+          ]},
+          { t:'Opérations sur les dérivées', f:[
+            "(u+v)' = u' + v'",
+            "(uv)' = u'v + uv'",
+            "#left(#frac{u}{v}#right)' = #frac{u'v - uv'}{v^2}",
+            "(u^n)' = n#,u'#,u^{n-1}",
+            "(e^u)' = u'#,e^u",
+            "(#ln u)' = #frac{u'}{u}",
+            "(#sqrt{u})' = #frac{u'}{2#sqrt{u}}"
+          ]},
+          { t:'Limites usuelles', f:[
+            "#lim_{x #to +#infty} #frac{#ln x}{x} = 0",
+            "#lim_{x #to 0^+} x#,#ln x = 0",
+            "#lim_{x #to +#infty} #frac{e^x}{x} = +#infty",
+            "#lim_{x #to -#infty} x#,e^x = 0",
+            "#lim_{x #to 0} #frac{e^x - 1}{x} = 1",
+            "#lim_{x #to 0} #frac{#ln(1+x)}{x} = 1"
+          ]},
+          { t:'Primitives usuelles', f:[
+            "#int x^n#,dx = #frac{x^{n+1}}{n+1} + k",
+            "#int #frac{1}{x}#,dx = #ln|x| + k",
+            "#int e^x#,dx = e^x + k",
+            "#int #cos x#,dx = #sin x + k",
+            "#int #sin x#,dx = -#cos x + k",
+            "#int #frac{1}{#sqrt{x}}#,dx = 2#sqrt{x} + k"
+          ]}
+        ],
+        'complex': [
+          { t:'Module & argument', f:[
+            "|z| = #sqrt{a^2 + b^2}",
+            "|z_1 z_2| = |z_1|#,|z_2|",
+            "#left|#frac{z_1}{z_2}#right| = #frac{|z_1|}{|z_2|}",
+            "#arg(z_1 z_2) = #arg z_1 + #arg z_2",
+            "#arg#!#left(#frac{z_1}{z_2}#right) = #arg z_1 - #arg z_2",
+            "#arg(z^n) = n#,#arg z"
+          ]},
+          { t:'Conjugué & formes', f:[
+            "#overline{z} = a - bi,#quad z#,#overline{z} = |z|^2",
+            "z = a + bi = r(#cos#theta + i#sin#theta)",
+            "z = r#,e^{i#theta}#quad (r = |z|,#; #theta = #arg z)"
+          ]},
+          { t:'Moivre & Euler', f:[
+            "(#cos#theta + i#sin#theta)^n = #cos(n#theta) + i#sin(n#theta)",
+            "e^{i#theta} = #cos#theta + i#sin#theta",
+            "#cos#theta = #frac{e^{i#theta} + e^{-i#theta}}{2}",
+            "#sin#theta = #frac{e^{i#theta} - e^{-i#theta}}{2i}"
+          ]}
+        ],
+        'geometry': [
+          { t:'Affixes & distances', f:[
+            "AB = |z_B - z_A|",
+            "#text{Milieu I de [AB] : } z_I = #frac{z_A + z_B}{2}",
+            "#vec{AB} #text{ a pour affixe } z_B - z_A",
+            "#left(#vec{u},#,#vec{v}#right) = #arg#!#left(#frac{z_{#vec v}}{z_{#vec u}}#right)"
+          ]}
+        ],
+        'integral': [
+          { t:'Propriétés', f:[
+            "#int_a^b f(x)#,dx = F(b) - F(a)",
+            "#int_a^b (#alpha f + #beta g) = #alpha#!#int_a^b f + #beta#!#int_a^b g",
+            "#int_a^b f + #int_b^c f = #int_a^c f",
+            "#int_a^b u'v = #big[uv#big]_a^b - #int_a^b uv'",
+            "#mu = #frac{1}{b-a}#int_a^b f(x)#,dx#quad(#text{moyenne})"
+          ]},
+          { t:'Primitives usuelles', f:[
+            "#int x^n#,dx = #frac{x^{n+1}}{n+1} + k",
+            "#int #frac{1}{x}#,dx = #ln|x| + k",
+            "#int e^x#,dx = e^x + k",
+            "#int #cos x#,dx = #sin x + k",
+            "#int #sin x#,dx = -#cos x + k"
+          ]}
+        ],
+        'suite': [
+          { t:'Suite arithmétique (raison r)', f:[
+            "u_n = u_0 + n#,r",
+            "u_n = u_p + (n - p)#,r",
+            "u_0 + #cdots + u_n = #frac{(n+1)(u_0 + u_n)}{2}"
+          ]},
+          { t:'Suite géométrique (raison q)', f:[
+            "u_n = u_0#,q^{#,n}",
+            "u_n = u_p#,q^{#,n-p}",
+            "u_0 + #cdots + u_n = u_0#,#frac{1 - q^{#,n+1}}{1 - q}#quad(q #neq 1)",
+            "#lim_{n #to +#infty} q^n = 0#quad(|q| < 1)"
+          ]}
+        ]
+      };
+      Object.keys(FORMULAS).forEach(function(key){
+        var grid = document.getElementById('form-grid-' + key); if(!grid) return;
+        var det = grid.closest('details');
+        function build(){
+          if(grid.getAttribute('data-built')) return; grid.setAttribute('data-built', '1');
+          FORMULAS[key].forEach(function(group){
+            var h = document.createElement('div'); h.className = 'ml-form-sec'; h.textContent = group.t; grid.appendChild(h);
+            var cards = document.createElement('div'); cards.className = 'ml-form-cards'; grid.appendChild(cards);
+            group.f.forEach(function(item){ var c = document.createElement('div'); c.className = 'ml-form-card'; cards.appendChild(c); try { renderKatex(c, fxL(item)); } catch(e){ c.textContent = item; } });
+          });
+        }
+        if(det){ det.addEventListener('toggle', function(){ if(det.open) build(); }); } else { build(); }
+      });
+    })();
 
     function switchMode(m){
       if(m === currentMode) return;
