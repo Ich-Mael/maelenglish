@@ -128,6 +128,16 @@
     .vt-lim-R { left:calc(50% + 8px); right:auto; }  /* right-hand limit starts just right of the bar */
     .vt-asym-cell .vt-lim.vt-top { top:9px; }
     .vt-asym-cell .vt-lim.vt-bottom { bottom:9px; }
+    /* Étude complète — flagship op button + report */
+    .ml-op--hero { background:linear-gradient(135deg,#2d0370,#5d06ba); color:#fff; border-color:#5d06ba; font-weight:700; }
+    .ml-op--hero:hover:not(:disabled) { color:#fff; box-shadow:0 4px 14px rgba(93,6,186,.35); }
+    .ml-study { margin-top:1rem; background:linear-gradient(135deg,#2d0370,#5d06ba); color:#fff; border-radius:14px; padding:1rem 1.1rem 1.15rem; }
+    .study-head { color:#ffd24a; font-size:.95rem; font-weight:800; margin-bottom:.4rem; }
+    .study-sec { padding:.7rem 0; border-top:1px solid rgba(255,255,255,.16); }
+    .study-t { font-weight:700; color:#ffd24a; font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; margin-bottom:.35rem; }
+    .study-body { color:#f1ebff; font-size:.96rem; line-height:1.55; }
+    .study-body strong { color:#fff; }
+    .study-hr { border:none; border-top:1px dashed rgba(255,255,255,.25); margin:.45rem 0; }
     .vt-domain { font-size:.92rem; color:#fff; font-weight:700; margin:.1rem 0 .5rem; }
     .vt-note { font-size:.82rem; color:#d9c9f5; margin-top:.5rem; }
     /* boundary limits, listed separately */
@@ -285,6 +295,7 @@
         </div>
 
         <div class="ml-ops" id="ops">
+          <button class="ml-op ml-op--hero" data-op="study"><i class="bi bi-clipboard2-data"></i> Étude complète</button>
           <button class="ml-op" data-op="domain"><i class="bi bi-bounding-box"></i> Domaine de définition</button>
            <button class="ml-op" data-op="limit"><i class="bi bi-infinity"></i> Limite en +∞</button>
           <button class="ml-op" data-op="derivative"><i class="bi bi-slash-lg"></i> Dérivée f'(x)</button>
@@ -915,7 +926,7 @@
       else head = 'M7 45 L47 45 M47 45 L38 41 M47 45 L38 49';          // → constante
       return '<svg class="vt-arr" viewBox="0 0 54 90"><path d="' + head + '" fill="none" stroke="' + c + '" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     }
-    function renderVariationTable(pts, fp, info){
+    function variationTableHTML(pts, fp, info){
       info = info || {};
       function segDir(i){ return pts[i + 1].inYn - pts[i].outYn; }
       // A regular point sits high (top) or low (bottom) depending on the adjacent variation.
@@ -965,7 +976,10 @@
       var notes = (info.hNotes || []).slice();
       if(hasAsym) notes.push('Double barre rouge = asymptote verticale (valeur interdite) ; limites à gauche / à droite indiquées.');
       if(notes.length) html += '<div class="vt-note">' + notes.map(escapeHtml).join('<br>') + '</div>';
-      answerEl.innerHTML = '<div class="ml-answer"><div class="lbl"><i class="bi bi-table"></i> Tableau de variation</div>' + html + '</div>';
+      return html;
+    }
+    function renderVariationTable(pts, fp, info){
+      answerEl.innerHTML = '<div class="ml-answer"><div class="lbl"><i class="bi bi-table"></i> Tableau de variation</div>' + variationTableHTML(pts, fp, info) + '</div>';
     }
 
     async function runVariation(){
@@ -1255,9 +1269,170 @@
       }
     }
 
+    /* ---- Étude de fonction complète ---- */
+    async function runStudy(){
+      var expr = (fxInput.value || '').trim();
+      if(!expr){ stateEl.textContent = 'Saisissez une fonction.'; return; }
+      if(!ggb){ return; }
+      plot(expr);
+      answerEl.innerHTML = ''; stepsEl.innerHTML = '';
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Étude de la fonction…';
+      setOpsEnabled(false);
+
+      function ev(c){ try { ggb.evalCommand(c); return true; } catch(e){ return false; } }
+      function gv(l){ try { return ggb.getValue(l); } catch(e){ return NaN; } }
+      ev('vtArg=0'); ev('vtRes=f(vtArg)');
+      function fAt(x){ ev('SetValue(vtArg,' + x + ')'); return gv('vtRes'); }
+      function snap(x){ return Math.abs(x - Math.round(x)) < 1e-4 ? Math.round(x) : x; }
+
+      var LO = -100, HI = 100, N = 1600, step = (HI - LO) / N;
+      var ys = [], dd = [];
+      for(var i = 0; i <= N; i++){ var v = fAt(LO + i * step); ys[i] = v; dd[i] = isFinite(v); }
+
+      // ---- Domain (definedness edges + poles) ----
+      var cuts = [];
+      function pushCut(x, closed){ for(var k = 0; k < cuts.length; k++){ if(Math.abs(cuts[k].x - x) < 2 * step){ if(!closed) cuts[k].closed = false; return; } } cuts.push({ x: x, closed: closed }); }
+      for(var t = 1; t <= N; t++){
+        if(dd[t] !== dd[t - 1]){
+          var xa = LO + (t - 1) * step, xb = LO + t * step, want = dd[t - 1];
+          for(var it = 0; it < 44; it++){ var m = (xa + xb) / 2; if(isFinite(fAt(m)) === want) xa = m; else xb = m; }
+          var bx = snap((xa + xb) / 2);
+          pushCut(bx, isFinite(fAt(bx)));
+        }
+      }
+      function poleRefine(xa, xb){ function g(x){ var v = fAt(x); return (isFinite(v) && v !== 0) ? 1 / v : 0; } var ga = g(xa); for(var i2 = 0; i2 < 50; i2++){ var m = (xa + xb) / 2, gm = g(m); if(gm === 0) return m; if((ga < 0) !== (gm < 0)) xb = m; else { xa = m; ga = gm; } } return (xa + xb) / 2; }
+      var poles = [], poleBracket = {};
+      function addPole(loI, hiI, br){ var a0 = poleRefine(LO + loI * step, LO + hiI * step); var lL = fAt(a0 - 1e-6), rL = fAt(a0 + 1e-6); if(Math.max(Math.abs(lL), Math.abs(rL)) <= 1e4) return; if(poles.some(function(p){ return Math.abs(p.x - a0) < step; })) return; poles.push({ x: snap(a0), leftSign: lL < 0 ? -1 : 1, rightSign: rL < 0 ? -1 : 1 }); br.forEach(function(j){ poleBracket[j] = true; }); pushCut(snap(a0), false); }
+      for(var j = 1; j <= N; j++){
+        var a = ys[j - 1], b = ys[j];
+        if(isFinite(a) && isFinite(b)){ if(a * b < 0 && Math.min(Math.abs(a), Math.abs(b)) > 5) addPole(j - 1, j, [j]); }
+        else if(!isFinite(b) && isFinite(a) && j < N && isFinite(ys[j + 1]) && (Math.abs(a) > 3 || Math.abs(ys[j + 1]) > 3)) addPole(j - 1, j + 1, [j, j + 1]);
+      }
+      cuts.sort(function(c1, c2){ return c1.x - c2.x; });
+      var bounds = [{ x: -Infinity }].concat(cuts).concat([{ x: Infinity }]), intervals = [], excluded = [];
+      for(var s = 0; s < bounds.length - 1; s++){
+        var L = bounds[s], R = bounds[s + 1];
+        var mx = (isFinite(L.x) && isFinite(R.x)) ? (L.x + R.x) / 2 : (isFinite(L.x) ? L.x + 1 : (isFinite(R.x) ? R.x - 1 : 0));
+        if(!isFinite(fAt(mx))) continue;
+        var lo = isFinite(L.x) ? ((L.closed ? '[' : ']') + vtFmt(L.x)) : ']−∞';
+        var hi = isFinite(R.x) ? (vtFmt(R.x) + (R.closed ? ']' : '[')) : '+∞[';
+        intervals.push(lo + ' ; ' + hi);
+      }
+      cuts.forEach(function(c){ if(!c.closed) excluded.push(vtFmt(c.x)); });
+      var domain = !intervals.length ? '∅' : (intervals.length === 1 && !cuts.length ? 'ℝ' : intervals.join(' ∪ '));
+
+      // ---- Extrema (skip pole brackets), refined ----
+      function refine(xa, xb, wantMax){ for(var i3 = 0; i3 < 50; i3++){ var m1 = xa + (xb - xa) / 3, m2 = xb - (xb - xa) / 3, f1 = fAt(m1), f2 = fAt(m2); if(wantMax ? (f1 < f2) : (f1 > f2)) xa = m1; else xb = m2; } var xm = (xa + xb) / 2; return { x: xm, y: fAt(xm) }; }
+      var crit = [], lastSign = 0;
+      for(var j3 = 1; j3 <= N; j3++){
+        if(poleBracket[j3] || !isFinite(ys[j3]) || !isFinite(ys[j3 - 1])){ lastSign = 0; continue; }
+        var sl = ys[j3] - ys[j3 - 1], sg = sl > 1e-12 ? 1 : (sl < -1e-12 ? -1 : 0);
+        if(sg !== 0){ if(lastSign !== 0 && sg !== lastSign){ var exr = refine(LO + (j3 - 2) * step, LO + j3 * step, lastSign > 0 && sg < 0); if(isFinite(exr.x) && isFinite(exr.y)) crit.push({ x: exr.x, y: exr.y }); } lastSign = sg; }
+      }
+      crit = crit.filter(function(c){ return !poles.some(function(p){ return Math.abs(c.x - p.x) < 2 * step; }); });
+      crit = crit.filter(function(c, k){ return k === 0 || Math.abs(c.x - crit[k - 1].x) > 1e-3; });
+      if(crit.length > 8) crit = crit.slice(0, 8);
+
+      // ---- End behaviour, asymptotes (vertical / horizontal / oblique) ----
+      function endBehavior(sgn){ var fa = fAt(sgn * 1e4), fb = fAt(sgn * 1e8); if(!isFinite(fb)) return fb > 0 ? Infinity : (fb < 0 ? -Infinity : NaN); if(!isFinite(fa)) fa = fb; if(Math.abs(fb - fa) < 1e-3) return fb; return fb > 0 ? Infinity : -Infinity; }
+      var endNeg = endBehavior(-1), endPos = endBehavior(1);
+      function oblique(sgn){ var X1 = sgn * 1e6, X2 = sgn * 1e8; var f1 = fAt(X1), f2 = fAt(X2); if(!isFinite(f1) || !isFinite(f2)) return null; var aa = (f2 - f1) / (X2 - X1), bb = f2 - aa * X2; var X3 = sgn * 5e7, f3 = fAt(X3); if(!isFinite(f3)) return null; if(Math.abs(f3 - (aa * X3 + bb)) > 1e-2 * Math.max(1, Math.abs(f3))) return null; return { a: snap(aa), b: snap(bb) }; }
+      function lineEq(aa, bb){ var sx = aa === 1 ? 'x' : (aa === -1 ? '−x' : vtFmt(aa) + 'x'); if(bb > 0) sx += ' + ' + vtFmt(bb); else if(bb < 0) sx += ' − ' + vtFmt(Math.abs(bb)); return sx; }
+      var asymLines = [];
+      poles.slice().sort(function(p1, p2){ return p1.x - p2.x; }).forEach(function(p){ asymLines.push('Asymptote verticale : x = ' + vtFmt(p.x)); });
+      [{ s: -1, lbl: '−∞', end: endNeg }, { s: 1, lbl: '+∞', end: endPos }].forEach(function(o){
+        var ob = oblique(o.s);
+        if(ob && Math.abs(ob.a) > 1e-9) asymLines.push('Asymptote oblique en ' + o.lbl + ' : y = ' + lineEq(ob.a, ob.b));
+        else if(ob && isFinite(o.end) && Math.abs(o.end) <= 1e8) asymLines.push('Asymptote horizontale en ' + o.lbl + ' : y = ' + vtFmt(o.end));
+        else if(!isFinite(o.end) || Math.abs(o.end) > 1e8) asymLines.push('Branche parabolique en ' + o.lbl + ' (pas d\\'asymptote linéaire)');
+      });
+
+      // ---- Parity (needs a symmetric domain) ----
+      function parity(){ var even = true, odd = true, n2 = 0; for(var k = 0; k < 12; k++){ var x = 0.7 + k * 1.3, fp1 = fAt(x), fm = fAt(-x); if(!isFinite(fp1) || !isFinite(fm)) return null; n2++; var sc = Math.max(1, Math.abs(fp1)); if(Math.abs(fm - fp1) > 1e-6 * sc) even = false; if(Math.abs(fm + fp1) > 1e-6 * sc) odd = false; } if(n2 < 4) return null; return even ? 'paire' : (odd ? 'impaire' : 'ni paire ni impaire'); }
+      var par = parity();
+
+      // ---- Intersections with the axes ----
+      var y0 = isFinite(fAt(0)) ? vtFmt(fAt(0)) : null;
+      var roots = [];
+      for(var j4 = 1; j4 <= N; j4++){
+        var a4 = ys[j4 - 1], b4 = ys[j4];
+        if(isFinite(a4) && isFinite(b4) && a4 * b4 < 0){
+          var xa4 = LO + (j4 - 1) * step, xb4 = LO + j4 * step, fa4 = a4;
+          for(var i5 = 0; i5 < 46; i5++){ var m4 = (xa4 + xb4) / 2, fm4 = fAt(m4); if(!isFinite(fm4)){ xb4 = m4; continue; } if((fa4 < 0) !== (fm4 < 0)) xb4 = m4; else { xa4 = m4; fa4 = fm4; } }
+          var rx = snap((xa4 + xb4) / 2);
+          if(Math.abs(fAt(rx)) < 1e-3 && !poles.some(function(p){ return Math.abs(p.x - rx) < 2 * step; }) && !roots.some(function(r){ return Math.abs(r - rx) < 1e-3; })) roots.push(rx);
+        }
+      }
+      if(roots.length > 8) roots = roots.slice(0, 8);
+
+      // ---- Derivative + variation pts (exact extrema best-effort) ----
+      function deriv(){ var tries = ['Derivative(' + expr + ')', 'Derivative(f)']; for(var t2 = 0; t2 < tries.length; t2++){ var r = ''; try { r = ggbToText(ggb.evalCommandCAS(tries[t2])); } catch(e){ r = ''; } r = (r || '').trim(); if(r && r !== '?' && r.indexOf('?') < 0) return r; } return ''; }
+      var fp = deriv();
+      function exactCrit(){ var raw = ''; try { raw = ggbToText(ggb.evalCommandCAS('Solutions(Derivative(f)=0,x)')); } catch(e){ raw = ''; } if(!raw || raw === '?' || raw.indexOf('?') >= 0 || raw === '{}') return []; var out = []; splitTopLevel(raw).forEach(function(r){ r = (r || '').trim(); if(!r) return; var nx = NaN; try { ev('vtRn=' + r); nx = gv('vtRn'); ggb.deleteObject('vtRn'); } catch(e){} if(!isFinite(nx)) return; var ys2 = ''; try { ys2 = ggbToText(ggb.evalCommandCAS('f(' + r + ')')); } catch(e){ ys2 = ''; } ys2 = (ys2 || '').trim(); if(ys2 === '?' || ys2.indexOf('?') >= 0) ys2 = ''; out.push({ n: nx, xs: r, ys: ys2 }); }); return out; }
+      var exList = exactCrit();
+      try { ggb.deleteObject('vtRes'); ggb.deleteObject('vtArg'); } catch(e){}
+      function exClean(s){ return s && s.length <= 22 && s.indexOf('?') < 0; }
+      function exMatch(nx){ for(var e2 = 0; e2 < exList.length; e2++){ if(Math.abs(exList[e2].n - nx) < 1e-2) return exList[e2]; } return null; }
+
+      var stops = [];
+      crit.forEach(function(c){ stops.push({ kind: 'pt', x: c.x, y: c.y }); });
+      poles.forEach(function(p){ stops.push({ kind: 'asym', x: p.x, leftSign: p.leftSign, rightSign: p.rightSign }); });
+      stops.sort(function(a5, b5){ return a5.x - b5.x; });
+      var pts = [{ x: '−∞', y: vtFmtLim(endNeg), inYn: endNeg, outYn: endNeg, kind: 'pt' }];
+      stops.forEach(function(st){
+        if(st.kind === 'asym'){ pts.push({ x: vtFmt(st.x), kind: 'asym', leftSign: st.leftSign, rightSign: st.rightSign, inYn: st.leftSign * 1e15, outYn: st.rightSign * 1e15 }); }
+        else { var em = exMatch(st.x); pts.push({ x: (em && exClean(em.xs)) ? em.xs : vtFmt(st.x), y: (em && exClean(em.ys)) ? em.ys : vtFmt(st.y), inYn: st.y, outYn: st.y, kind: 'pt' }); }
+      });
+      pts.push({ x: '+∞', y: vtFmtLim(endPos), inYn: endPos, outYn: endPos, kind: 'pt' });
+
+      var limLines = ['lim(x→−∞) f(x) = ' + vtFmtLim(endNeg)];
+      poles.slice().sort(function(p1, p2){ return p1.x - p2.x; }).forEach(function(p){ limLines.push('lim(x→' + vtFmt(p.x) + '⁻) f(x) = ' + (p.leftSign > 0 ? '+∞' : '−∞') + '   ;   lim(x→' + vtFmt(p.x) + '⁺) f(x) = ' + (p.rightSign > 0 ? '+∞' : '−∞')); });
+      limLines.push('lim(x→+∞) f(x) = ' + vtFmtLim(endPos));
+
+      // ---- Render the étude report ----
+      function sec(title, body){ return '<div class="study-sec"><div class="study-t">' + title + '</div><div class="study-body">' + body + '</div></div>'; }
+      var domHtml = 'D<sub>f</sub> = ' + escapeHtml(domain) + (excluded.length ? ' &nbsp;<span style="color:#ffb3b3">(x ≠ ' + escapeHtml(excluded.join(', ')) + ')</span>' : '');
+      var limAsym = (asymLines.length ? asymLines.map(escapeHtml).join('<br>') + '<hr class="study-hr">' : '') + limLines.map(escapeHtml).join('<br>');
+      var ptsHtml = [];
+      if(y0 !== null) ptsHtml.push('Ordonnée à l\\'origine : f(0) = ' + escapeHtml(y0));
+      if(roots.length) ptsHtml.push('Intersection(s) avec l\\'axe (Ox) : x = ' + escapeHtml(roots.map(vtFmt).join(', ')));
+      else ptsHtml.push('Pas d\\'intersection simple avec l\\'axe (Ox) détectée.');
+
+      var report = '<div class="ml-study"><div class="study-head"><i class="bi bi-clipboard2-data"></i> Étude complète — f(x) = ' + escapeHtml(expr) + '</div>'
+        + sec('1 · Domaine de définition', domHtml)
+        + (par ? sec('2 · Parité', 'f est <strong>' + par + '</strong>' + (par === 'paire' ? ' (courbe symétrique par rapport à l\\'axe des ordonnées)' : (par === 'impaire' ? ' (courbe symétrique par rapport à l\\'origine)' : '')) + '.') : '')
+        + sec('3 · Limites et asymptotes', limAsym)
+        + sec('4 · Dérivée', (fp ? 'f&#8242;(x) = ' + escapeHtml(fp) : 'Voir le signe dans le tableau ci-dessous.'))
+        + '<div class="study-sec"><div class="study-t">5 · Tableau de variation</div>' + variationTableHTML(pts, '', {}) + '</div>'
+        + sec('6 · Points caractéristiques', ptsHtml.join('<br>'))
+        + '</div>';
+      answerEl.innerHTML = report;
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Rédaction de l\\'étude…';
+
+      // ---- Anchored summary for Claude ----
+      var parts = ['Df = ' + domain];
+      if(par) parts.push('parité : ' + par);
+      if(asymLines.length) parts.push('asymptotes : ' + asymLines.join(' ; '));
+      parts.push('limites : ' + vtFmtLim(endNeg) + ' en −∞, ' + vtFmtLim(endPos) + ' en +∞');
+      if(fp) parts.push("f'(x) = " + fp);
+      if(crit.length) parts.push('extrema : ' + crit.map(function(c){ return 'x=' + vtFmt(c.x) + ' (f=' + vtFmt(c.y) + ')'; }).join(', '));
+      if(y0 !== null) parts.push('f(0) = ' + y0);
+      if(roots.length) parts.push('racines : ' + roots.map(vtFmt).join(', '));
+      var summary = parts.join(' ; ').slice(0, 490);
+
+      try {
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: expr, operation: 'study', casResult: summary }) });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data, true); }
+        else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){ stateEl.textContent = 'Connexion impossible — réessayez.'; }
+      finally { setOpsEnabled(true); }
+    }
+
     opsEl.addEventListener('click', function(ev){
       var btn = ev.target.closest('.ml-op'); if(!btn || btn.disabled) return;
       var op = btn.getAttribute('data-op');
+      if(op === 'study'){ runStudy(); return; }
       if(op === 'variations'){ runVariation(); return; }
       if(op === 'domain'){ runDomain(); return; }
       run(op);
