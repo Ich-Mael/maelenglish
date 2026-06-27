@@ -99,7 +99,7 @@
     details.ml-block > summary .ml-caret { margin-left:auto; transition:transform .2s; font-size:.9rem; color:#7c5fd0; }
     details.ml-block[open] > summary .ml-caret { transform:rotate(180deg); }
     /* Tableau de variation */
-    .vt-deriv { font-size:.92rem; color:#374151; margin:.1rem 0 .55rem; }
+    .vt-deriv { font-size:.92rem; color:#e9defb; margin:.1rem 0 .55rem; }
     .ml-vartable-wrap { overflow-x:auto; }
     .ml-vartable { border-collapse:collapse; font-size:.95rem; min-width:max-content; background:#fff; }
     .ml-vartable th { text-align:left; padding:.45rem .7rem; color:#2d0370; font-weight:700; border:1px solid #d9ccf2; background:#f7f4fe; white-space:nowrap; }
@@ -128,8 +128,8 @@
     .vt-lim-R { left:calc(50% + 8px); right:auto; }  /* right-hand limit starts just right of the bar */
     .vt-asym-cell .vt-lim.vt-top { top:9px; }
     .vt-asym-cell .vt-lim.vt-bottom { bottom:9px; }
-    .vt-domain { font-size:.92rem; color:#2d0370; font-weight:600; margin:.1rem 0 .5rem; }
-    .vt-note { font-size:.82rem; color:#6b7280; margin-top:.5rem; }
+    .vt-domain { font-size:.92rem; color:#fff; font-weight:700; margin:.1rem 0 .5rem; }
+    .vt-note { font-size:.82rem; color:#d9c9f5; margin-top:.5rem; }
     /* boundary limits, listed separately */
     .vt-lims { margin-top:.7rem; background:#f7f4fe; border:1px solid #e9e0fb; border-radius:10px; padding:.6rem .85rem; }
     .vt-lims-t { font-weight:700; color:#2d0370; font-size:.9rem; margin-bottom:.3rem; }
@@ -286,10 +286,10 @@
 
         <div class="ml-ops" id="ops">
           <button class="ml-op" data-op="domain"><i class="bi bi-bounding-box"></i> Domaine de définition</button>
+           <button class="ml-op" data-op="limit"><i class="bi bi-infinity"></i> Limite en +∞</button>
           <button class="ml-op" data-op="derivative"><i class="bi bi-slash-lg"></i> Dérivée f'(x)</button>
           <button class="ml-op" data-op="variations"><i class="bi bi-table"></i> Tableau de variation</button>
           <button class="ml-op" data-op="asymptotes"><i class="bi bi-arrows-collapse"></i> Asymptotes</button>
-          <button class="ml-op" data-op="limit"><i class="bi bi-infinity"></i> Limite en +∞</button>
           <button class="ml-op" data-op="integral"><i class="bi bi-integral"></i> Primitive</button>
           <button class="ml-op" data-op="solve"><i class="bi bi-check2-square"></i> Résoudre f(x)= 0</button>
           <button class="ml-op" data-op="factor"><i class="bi bi-diagram-2"></i> Factoriser</button>
