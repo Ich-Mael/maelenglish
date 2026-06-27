@@ -300,6 +300,7 @@
           <button type="button" class="ml-mode" data-mode="suite"><i class="bi bi-list-ol"></i> Suites</button>
           <button type="button" class="ml-mode" data-mode="proba"><i class="bi bi-dice-5"></i> Probabilités</button>
           <button type="button" class="ml-mode" data-mode="stats"><i class="bi bi-bar-chart-line"></i> Statistiques</button>
+          <button type="button" class="ml-mode" data-mode="diffeq"><i class="bi bi-arrow-left-right"></i> Éq. différentielles</button>
           <button type="button" class="ml-mode" data-mode="trig"><i class="bi bi-record-circle"></i> Trigonométrie</button>
         </div>
 
@@ -719,6 +720,40 @@
           </div>
           <div class="ml-hint">Séparez les nombres par des virgules ou des espaces. Régression : x et y doivent avoir le même nombre de valeurs.</div>
         </div><%# /mode-stats %>
+
+        <div id="mode-diffeq" hidden>
+          <h2><i class="bi bi-arrow-left-right"></i> Équation différentielle</h2>
+          <div class="ml-side" id="deq-type">
+            <button type="button" class="ml-sidebtn is-active" data-dtype="first">y′ = a·y + b</button>
+            <button type="button" class="ml-sidebtn" data-dtype="second">y″ + ω²·y = 0</button>
+          </div>
+
+          <div id="deq-first-fields">
+            <div class="ml-input-row">
+              <label for="dq-a">a =</label><input id="dq-a" type="text" value="2" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:90px" />
+              <label for="dq-b" style="margin-left:.6rem">b =</label><input id="dq-b" type="text" value="-6" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:90px" />
+            </div>
+            <div class="ml-input-row">
+              <label for="dq-x0">Condition : y(</label><input id="dq-x0" type="text" value="0" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:70px" />
+              <label for="dq-y0" style="margin:0 .3rem">) =</label><input id="dq-y0" type="text" value="1" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:80px" />
+            </div>
+          </div>
+
+          <div id="deq-second-fields" hidden>
+            <div class="ml-input-row"><label for="dq-w">ω =</label><input id="dq-w" type="text" value="2" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:90px" /></div>
+            <div class="ml-input-row">
+              <label for="dq-sy0">y(0) =</label><input id="dq-sy0" type="text" value="1" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:80px" />
+              <label for="dq-sy1" style="margin-left:.6rem">y′(0) =</label><input id="dq-sy1" type="text" value="0" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:80px" />
+            </div>
+          </div>
+
+          <div class="ml-preview is-empty" id="deq-preview">Aperçu…</div>
+
+          <div class="ml-ops" id="deq-ops">
+            <button class="ml-op ml-op--hero" data-dop="solve"><i class="bi bi-check2-circle"></i> Résoudre</button>
+          </div>
+          <div class="ml-hint">La solution générale et la solution particulière (vérifiant la condition initiale) sont données ; la courbe de la solution particulière est tracée.</div>
+        </div><%# /mode-diffeq %>
 
         <div id="answer"></div>
         <div id="steps" class="ml-steps"></div>
@@ -3645,6 +3680,110 @@
     }
     statsOpsEl.addEventListener('click', function(ev){ var btn = ev.target.closest('.ml-op'); if(!btn || btn.disabled) return; runStats(); });
 
+    /* ============ ÉQUATIONS DIFFÉRENTIELLES ============ */
+    var modeDiffeq  = document.getElementById('mode-diffeq');
+    var deqTypeEl   = document.getElementById('deq-type');
+    var deqFirstF   = document.getElementById('deq-first-fields');
+    var deqSecondF  = document.getElementById('deq-second-fields');
+    var deqPrevEl   = document.getElementById('deq-preview');
+    var deqOpsEl    = document.getElementById('deq-ops');
+    var dqA = document.getElementById('dq-a'), dqB = document.getElementById('dq-b'), dqX0 = document.getElementById('dq-x0'), dqY0 = document.getElementById('dq-y0');
+    var dqW = document.getElementById('dq-w'), dqSy0 = document.getElementById('dq-sy0'), dqSy1 = document.getElementById('dq-sy1');
+    var deqType = 'first';
+
+    function setDeqOpsEnabled(on){ deqOpsEl.querySelectorAll('.ml-op').forEach(function(b){ b.disabled = !on; }); }
+    function dNum(s){ s = (s || '').trim(); if(s.indexOf('/') > 0){ var p = s.split('/'); return Number(p[0]) / Number(p[1]); } return Number(s); }
+    function termPM(v){ if(Math.abs(v) < 1e-12) return ''; return v > 0 ? ' + ' + vtFmt(v) : ' - ' + vtFmt(-v); }
+    function fmtAx(a){ if(Math.abs(a - 1) < 1e-12) return 'x'; if(Math.abs(a + 1) < 1e-12) return '-x'; return vtFmt(a) + 'x'; }
+    function expTerm(c, ax){ if(Math.abs(c) < 1e-12) return '0'; var coef = Math.abs(Math.abs(c) - 1) < 1e-12 ? (c < 0 ? '-' : '') : vtFmt(c) + BS + ','; return coef + 'e^{' + ax + '}'; }
+    function twoTerms(c1, b1, c2, b2){
+      function t(c, b){ if(Math.abs(c) < 1e-12) return null; var a = Math.abs(c); var coef = Math.abs(a - 1) < 1e-12 ? '' : vtFmt(a) + BS + ','; return { s: c < 0 ? '-' : '+', str: coef + b }; }
+      var arr = [t(c1, b1), t(c2, b2)], out = '';
+      arr.forEach(function(x){ if(!x) return; out = out === '' ? (x.s === '-' ? '-' : '') + x.str : out + ' ' + x.s + ' ' + x.str; });
+      return out || '0';
+    }
+
+    function setDeqType(t){
+      deqType = t;
+      deqTypeEl.querySelectorAll('.ml-sidebtn').forEach(function(b){ b.classList.toggle('is-active', b.getAttribute('data-dtype') === t); });
+      deqFirstF.hidden = (t !== 'first'); deqSecondF.hidden = (t !== 'second');
+      updateDeqPreview();
+    }
+    deqTypeEl.addEventListener('click', function(ev){ var b = ev.target.closest('.ml-sidebtn'); if(b) setDeqType(b.getAttribute('data-dtype')); });
+    function updateDeqPreview(){
+      var tex = null;
+      try {
+        if(deqType === 'first'){ var a = dNum(dqA.value), b = dNum(dqB.value); if(!isFinite(a) || !isFinite(b)) throw 0; tex = "y' = " + vtFmt(a) + 'y' + termPM(b); }
+        else { var w = dNum(dqW.value); if(!(w > 0)) throw 0; tex = "y'' + " + vtFmt(w * w) + 'y = 0'; }
+      } catch(e){ tex = null; }
+      if(tex == null){ deqPrevEl.className = 'ml-preview is-empty'; deqPrevEl.textContent = '…'; return; }
+      try { renderKatex(deqPrevEl, tex); deqPrevEl.className = 'ml-preview'; }
+      catch(e){ deqPrevEl.className = 'ml-preview is-empty'; deqPrevEl.textContent = '…'; }
+    }
+    [dqA, dqB, dqX0, dqY0, dqW, dqSy0, dqSy1].forEach(function(inp){ inp.addEventListener('input', updateDeqPreview); });
+
+    async function runDiffEq(){
+      if(!ggb){ return; }
+      answerEl.innerHTML = ''; stepsEl.innerHTML = '';
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Résolution…';
+      setDeqOpsEnabled(false);
+      var kq = [], kid = 0;
+      function km(l){ var id = 'dqk' + (kid++); kq.push({ id: id, latex: l }); return '<span class="study-math" id="' + id + '"></span>'; }
+      function line(label, l){ var s = '<div class="study-line">'; if(label) s += '<span class="study-lbl">' + label + '</span> '; if(l) s += km(l); return s + '</div>'; }
+      var title, body = '', defStr, summary, plotF = '', cx0 = 0;
+
+      if(deqType === 'first'){
+        var a = dNum(dqA.value), b = dNum(dqB.value), x0 = dNum(dqX0.value), y0 = dNum(dqY0.value);
+        if(![a, b, x0, y0].every(isFinite)){ stateEl.textContent = 'Vérifiez a, b et la condition initiale.'; setDeqOpsEnabled(true); return; }
+        title = 'y′ = a·y + b'; cx0 = x0;
+        body += line('Équation :', "y' = " + vtFmt(a) + 'y' + termPM(b));
+        if(Math.abs(a) > 1e-12){
+          var ba = b / a, ax = fmtAx(a), C = (y0 + ba) * Math.exp(-a * x0);
+          body += line('Solution générale :', 'y = C' + BS + ',e^{' + ax + '}' + termPM(-ba) + ',' + BS + 'quad C ' + BS + 'in ' + BS + 'mathbb{R}');
+          body += line('Solution particulière :', 'y = ' + expTerm(C, ax) + termPM(-ba));
+          plotF = C + '*exp(' + a + '*x)+(' + (-ba) + ')';
+          summary = ('y=' + vtFmt(C) + 'e^(' + ax + ')' + termPM(-ba) + ' ; gen: y=Ce^(' + ax + ')' + termPM(-ba) + ' ; CI y(' + vtFmt(x0) + ')=' + vtFmt(y0)).slice(0, 480);
+        } else {
+          var K = y0 - b * x0;
+          body += line('Solution générale :', 'y = ' + vtFmt(b) + 'x + C');
+          body += line('Solution particulière :', 'y = ' + (Math.abs(b) < 1e-12 ? vtFmt(K) : vtFmt(b) + 'x' + termPM(K)));
+          plotF = b + '*x+(' + K + ')';
+          summary = ('a=0 : y=' + vtFmt(b) + 'x' + termPM(K) + ' ; CI y(' + vtFmt(x0) + ')=' + vtFmt(y0)).slice(0, 480);
+        }
+        defStr = "y' = " + vtFmt(a) + 'y' + termPM(b) + ', y(' + vtFmt(x0) + ')=' + vtFmt(y0);
+      } else {
+        var w = dNum(dqW.value), sy0 = dNum(dqSy0.value), sy1 = dNum(dqSy1.value);
+        if(!(w > 0) || ![sy0, sy1].every(isFinite)){ stateEl.textContent = 'ω doit être > 0 ; vérifiez les conditions initiales.'; setDeqOpsEnabled(true); return; }
+        title = 'y″ + ω²·y = 0'; cx0 = 0;
+        var wx = (Math.abs(w - 1) < 1e-12 ? '' : vtFmt(w)) + 'x', B2 = sy1 / w;
+        body += line('Équation :', "y'' + " + vtFmt(w * w) + 'y = 0' + BS + 'quad (' + BS + 'omega = ' + vtFmt(w) + ')');
+        body += line('Solution générale :', 'y = A' + BS + 'cos(' + wx + ') + B' + BS + 'sin(' + wx + ')');
+        body += line('Solution particulière :', 'y = ' + twoTerms(sy0, BS + 'cos(' + wx + ')', B2, BS + 'sin(' + wx + ')'));
+        plotF = sy0 + '*cos(' + w + '*x)+(' + B2 + ')*sin(' + w + '*x)';
+        defStr = "y'' + " + vtFmt(w * w) + "y = 0, y(0)=" + vtFmt(sy0) + ", y'(0)=" + vtFmt(sy1);
+        summary = ('y=' + twoTerms(sy0, 'cos(' + wx + ')', B2, 'sin(' + wx + ')') + ' ; omega=' + vtFmt(w) + ' ; y(0)=' + vtFmt(sy0) + " ; y'(0)=" + vtFmt(sy1)).slice(0, 480);
+      }
+
+      // plot the particular solution
+      try { ggb.deleteObject('f'); } catch(e){}
+      try { ggb.evalCommand('f(x)=' + plotF); ggb.setColor('f', 93, 6, 186); ggb.setLineThickness('f', 4); } catch(e){}
+      try { ggb.evalCommand('dqP=(' + cx0 + ', f(' + cx0 + '))'); ggb.setColor('dqP', 245, 158, 11); ggb.setPointSize('dqP', 4); ggb.setLabelVisible('dqP', false); } catch(e){}
+      try { ggb.setCoordSystem(cx0 - 5, cx0 + 5, -8, 8); } catch(e){}
+      setTimeout(fitGraph, 50);
+
+      answerEl.innerHTML = '<div class="ml-study" style="padding:.9rem 1.1rem"><div class="study-head"><i class="bi bi-arrow-left-right"></i> Équation différentielle — ' + escapeHtml(title) + '</div><div class="study-body">' + body + '</div></div>';
+      kq.forEach(function(it){ var el = document.getElementById(it.id); if(el){ try { renderKatex(el, it.latex); } catch(e){} } });
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
+      try {
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: defStr, operation: 'diff_eq', casResult: summary }) });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data, true); }
+        else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){ stateEl.textContent = 'Connexion impossible — réessayez.'; }
+      finally { setDeqOpsEnabled(true); }
+    }
+    deqOpsEl.addEventListener('click', function(ev){ var btn = ev.target.closest('.ml-op'); if(!btn || btn.disabled) return; runDiffEq(); });
+
     /* ============ FORMULAIRES (per-topic dropdowns) ============ */
     (function(){
       function fxL(s){ return s.split('#').join(BS); } // '#' stands in for backslash (EJS-safe)
@@ -3773,6 +3912,7 @@
       modeSuite.hidden    = (m !== 'suite');
       modeProba.hidden    = (m !== 'proba');
       modeStats.hidden    = (m !== 'stats');
+      modeDiffeq.hidden   = (m !== 'diffeq');
       modeTrig.hidden     = (m !== 'trig');
       answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = '';
       var isTrig = (m === 'trig');
@@ -3781,7 +3921,7 @@
       if(trigCircleCard) trigCircleCard.hidden = !isTrig;
       if(isTrig){ tcRender(tcDeg); return; }
       if(ggb){
-        try { ggb.setPerspective((m === 'function' || m === 'integral' || m === 'suite') ? 'AG' : 'G'); } catch(e){}
+        try { ggb.setPerspective((m === 'function' || m === 'integral' || m === 'suite' || m === 'diffeq') ? 'AG' : 'G'); } catch(e){}
         clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot(); clearSuitePlot(); clearProbaPlot(); clearStatsPlot();
         if(m === 'proba'){
           graphTitle.textContent = 'Distribution de probabilité';
@@ -3793,6 +3933,11 @@
           graphHint.textContent = 'Série : la boîte à moustaches (Q₁, médiane, Q₃, min, max). Régression : le nuage de points et la droite d’ajustement.';
           try { ggb.deleteObject('f'); } catch(e){}
           updateStatsPreview();
+        } else if(m === 'diffeq'){
+          graphTitle.textContent = 'Courbe solution';
+          graphHint.textContent = 'La courbe de la solution particulière (vérifiant la condition initiale) s’affiche après « Résoudre ».';
+          try { ggb.deleteObject('f'); } catch(e){}
+          updateDeqPreview();
         } else if(m === 'suite'){
           graphTitle.textContent = 'Termes & convergence';
           graphHint.textContent = 'Suite explicite : les termes (n, uₙ) sont tracés. Suite récurrente : l’escalier de convergence vers la limite.';
@@ -3838,8 +3983,8 @@
     window.addEventListener('resize', function(){ clearTimeout(ggbResizeTimer); ggbResizeTimer = setTimeout(fitGraph, 200); });
 
     // GeoGebra applet
-    setOpsEnabled(false); setCOpsEnabled(false); setGOpsEnabled(false); setLOpsEnabled(false); setIOpsEnabled(false); setSuiteOpsEnabled(false); setProbaOpsEnabled(false); setStatsOpsEnabled(false);
-    setSuiteType('explicit'); setProbaType('binom'); setStatsType('series');
+    setOpsEnabled(false); setCOpsEnabled(false); setGOpsEnabled(false); setLOpsEnabled(false); setIOpsEnabled(false); setSuiteOpsEnabled(false); setProbaOpsEnabled(false); setStatsOpsEnabled(false); setDeqOpsEnabled(false);
+    setSuiteType('explicit'); setProbaType('binom'); setStatsType('series'); setDeqType('first');
     if(eqSolveBtn) eqSolveBtn.disabled = true;
     setEqStepsEnabled(false);
     var initW = Math.max(320, ggbHost.clientWidth || 700);
@@ -3850,7 +3995,7 @@
       showToolBar: false, showAlgebraInput: false, showMenuBar: false,
       enableRightClick: false, showResetIcon: true,
       perspective: 'AG',
-      appletOnLoad: function(api){ ggb = api; try { ggb.setErrorDialogsActive(false); } catch(e){} setOpsEnabled(true); setCOpsEnabled(true); setGOpsEnabled(true); setLOpsEnabled(true); setIOpsEnabled(true); setSuiteOpsEnabled(true); setProbaOpsEnabled(true); setStatsOpsEnabled(true); if(eqSolveBtn) eqSolveBtn.disabled = false; setEqStepsEnabled(true); fitGraph(); plot((fxInput.value||'').trim()); }
+      appletOnLoad: function(api){ ggb = api; try { ggb.setErrorDialogsActive(false); } catch(e){} setOpsEnabled(true); setCOpsEnabled(true); setGOpsEnabled(true); setLOpsEnabled(true); setIOpsEnabled(true); setSuiteOpsEnabled(true); setProbaOpsEnabled(true); setStatsOpsEnabled(true); setDeqOpsEnabled(true); if(eqSolveBtn) eqSolveBtn.disabled = false; setEqStepsEnabled(true); fitGraph(); plot((fxInput.value||'').trim()); }
     }, true);
     applet.inject('ggb');
     updatePreview();
