@@ -1398,15 +1398,17 @@
       if(roots.length) ptsHtml.push('Intersection(s) avec l\\'axe (Ox) : x = ' + escapeHtml(roots.map(vtFmt).join(', ')));
       else ptsHtml.push('Pas d\\'intersection simple avec l\\'axe (Ox) détectée.');
 
-      var report = '<div class="ml-study"><div class="study-head"><i class="bi bi-clipboard2-data"></i> Étude complète — f(x) = ' + escapeHtml(expr) + '</div>'
+      var report = '<div class="ml-study"><div class="study-head"><i class="bi bi-clipboard2-data"></i> Étude complète — <span id="study-fx">f(x) = ' + escapeHtml(expr) + '</span></div>'
         + sec('1 · Domaine de définition', domHtml)
         + (par ? sec('2 · Parité', 'f est <strong>' + par + '</strong>' + (par === 'paire' ? ' (courbe symétrique par rapport à l\\'axe des ordonnées)' : (par === 'impaire' ? ' (courbe symétrique par rapport à l\\'origine)' : '')) + '.') : '')
         + sec('3 · Limites et asymptotes', limAsym)
-        + sec('4 · Dérivée', (fp ? 'f&#8242;(x) = ' + escapeHtml(fp) : 'Voir le signe dans le tableau ci-dessous.'))
+        + sec('4 · Dérivée', (fp ? '<span id="study-fp">f&#8242;(x) = ' + escapeHtml(fp) + '</span>' : 'Voir le signe dans le tableau ci-dessous.'))
         + '<div class="study-sec"><div class="study-t">5 · Tableau de variation</div>' + variationTableHTML(pts, '', {}) + '</div>'
         + sec('6 · Points caractéristiques', ptsHtml.join('<br>'))
         + '</div>';
       answerEl.innerHTML = report;
+      try { var fxEl = document.getElementById('study-fx'); if(fxEl) renderKatex(fxEl, 'f(x) = ' + toLatex(expr)); } catch(e){}
+      if(fp){ try { var fpEl = document.getElementById('study-fp'); if(fpEl) renderKatex(fpEl, "f'(x) = " + toLatex(fp.split(' ').join(''))); } catch(e){} }
       stateEl.innerHTML = '<span class="ml-spinner"></span> Rédaction de l\\'étude…';
 
       // ---- Anchored summary for Claude ----
