@@ -293,6 +293,7 @@
           <button type="button" class="ml-mode" data-mode="integral"><i class="bi bi-integral"></i> Intégrales</button>
           <button type="button" class="ml-mode" data-mode="suite"><i class="bi bi-list-ol"></i> Suites</button>
           <button type="button" class="ml-mode" data-mode="proba"><i class="bi bi-dice-5"></i> Probabilités</button>
+          <button type="button" class="ml-mode" data-mode="stats"><i class="bi bi-bar-chart-line"></i> Statistiques</button>
           <button type="button" class="ml-mode" data-mode="trig"><i class="bi bi-record-circle"></i> Trigonométrie</button>
         </div>
 
@@ -687,6 +688,31 @@
             <button class="ml-op ml-op--hero" data-pop="study"><i class="bi bi-clipboard2-data"></i> Calculer</button>
           </div>
         </div><%# /mode-proba %>
+
+        <div id="mode-stats" hidden>
+          <h2><i class="bi bi-bar-chart-line"></i> Statistiques</h2>
+          <div class="ml-side" id="stats-type">
+            <button type="button" class="ml-sidebtn is-active" data-stype="series">Série (1 variable)</button>
+            <button type="button" class="ml-sidebtn" data-stype="reg">Régression (x, y)</button>
+          </div>
+
+          <div id="stats-series-fields">
+            <div class="ml-input-row"><label for="st-vals">Valeurs</label><input id="st-vals" type="text" value="8, 12, 12, 15, 16, 18, 20" placeholder="ex : 8, 12, 15, 18" autocomplete="off" /></div>
+            <div class="ml-input-row"><label for="st-eff">Effectifs</label><input id="st-eff" type="text" value="" placeholder="optionnel — ex : 2, 5, 3 (même nombre)" autocomplete="off" /></div>
+          </div>
+
+          <div id="stats-reg-fields" hidden>
+            <div class="ml-input-row"><label for="st-x">x :</label><input id="st-x" type="text" value="1, 2, 3, 4, 5" placeholder="ex : 1, 2, 3, 4" autocomplete="off" /></div>
+            <div class="ml-input-row"><label for="st-y">y :</label><input id="st-y" type="text" value="2.1, 3.9, 6.2, 7.8, 10.1" placeholder="ex : 2, 4, 6, 8" autocomplete="off" /></div>
+          </div>
+
+          <div class="ml-preview is-empty" id="stats-preview">Aperçu…</div>
+
+          <div class="ml-ops" id="stats-ops">
+            <button class="ml-op ml-op--hero" data-stop="study"><i class="bi bi-clipboard2-data"></i> Calculer</button>
+          </div>
+          <div class="ml-hint">Séparez les nombres par des virgules ou des espaces. Régression : x et y doivent avoir le même nombre de valeurs.</div>
+        </div><%# /mode-stats %>
 
         <div id="answer"></div>
         <div id="steps" class="ml-steps"></div>
@@ -3481,6 +3507,140 @@
     }
     probaOpsEl.addEventListener('click', function(ev){ var btn = ev.target.closest('.ml-op'); if(!btn || btn.disabled) return; runProba(); });
 
+    /* ============ STATISTIQUES ============ */
+    var modeStats   = document.getElementById('mode-stats');
+    var statsTypeEl = document.getElementById('stats-type');
+    var statsSeriesF = document.getElementById('stats-series-fields');
+    var statsRegF   = document.getElementById('stats-reg-fields');
+    var statsPrevEl = document.getElementById('stats-preview');
+    var statsOpsEl  = document.getElementById('stats-ops');
+    var stVals = document.getElementById('st-vals'), stEff = document.getElementById('st-eff');
+    var stX = document.getElementById('st-x'), stY = document.getElementById('st-y');
+    var statsType = 'series';
+    var statsObjs = [];
+
+    function setStatsOpsEnabled(on){ statsOpsEl.querySelectorAll('.ml-op').forEach(function(b){ b.disabled = !on; }); }
+    function parseNums(s){
+      s = (s || '').trim();
+      s = s.split(';').join(',').split(String.fromCharCode(10)).join(',').split(String.fromCharCode(9)).join(',').split(' ').join(',');
+      return s.split(',').map(function(t){ return t.trim(); }).filter(function(t){ return t !== ''; }).map(Number).filter(function(v){ return isFinite(v); });
+    }
+    function setStatsType(t){
+      statsType = t;
+      statsTypeEl.querySelectorAll('.ml-sidebtn').forEach(function(b){ b.classList.toggle('is-active', b.getAttribute('data-stype') === t); });
+      statsSeriesF.hidden = (t !== 'series'); statsRegF.hidden = (t !== 'reg');
+      updateStatsPreview();
+    }
+    statsTypeEl.addEventListener('click', function(ev){ var b = ev.target.closest('.ml-sidebtn'); if(b) setStatsType(b.getAttribute('data-stype')); });
+    function updateStatsPreview(){
+      var txt;
+      if(statsType === 'series'){ var v = parseNums(stVals.value); txt = v.length ? (v.length + ' valeur(s) — min ' + pf(Math.min.apply(null, v)) + ', max ' + pf(Math.max.apply(null, v))) : 'Saisissez la série…'; }
+      else { var xs = parseNums(stX.value), ys = parseNums(stY.value); txt = (xs.length && ys.length) ? (xs.length + ' valeur(s) en x, ' + ys.length + ' en y' + (xs.length !== ys.length ? ' — tailles différentes !' : '')) : 'Saisissez les couples (x, y)…'; }
+      statsPrevEl.className = 'ml-preview is-empty'; statsPrevEl.textContent = txt;
+    }
+    [stVals, stEff, stX, stY].forEach(function(inp){ inp.addEventListener('input', updateStatsPreview); });
+
+    function seriesStats(vals, effs){
+      var ns = (effs && effs.length === vals.length) ? effs.slice() : vals.map(function(){ return 1; });
+      var N = 0; for(var i = 0; i < ns.length; i++) N += ns[i];
+      if(N <= 0) return null;
+      var sum = 0, sum2 = 0; for(var i2 = 0; i2 < vals.length; i2++){ sum += ns[i2] * vals[i2]; sum2 += ns[i2] * vals[i2] * vals[i2]; }
+      var mean = sum / N, V = Math.max(0, sum2 / N - mean * mean), sd = Math.sqrt(V);
+      var flat = [], cap = 200000;
+      for(var i3 = 0; i3 < vals.length && flat.length < cap; i3++){ var c = Math.round(ns[i3]); for(var j = 0; j < c && flat.length < cap; j++) flat.push(vals[i3]); }
+      flat.sort(function(a, b){ return a - b; });
+      var n = flat.length;
+      function rankVal(q){ var r = Math.ceil(q * n); if(r < 1) r = 1; if(r > n) r = n; return flat[r - 1]; }
+      var med = n % 2 ? flat[(n - 1) / 2] : (flat[n / 2 - 1] + flat[n / 2]) / 2;
+      return { N: N, mean: mean, V: V, sd: sd, med: med, Q1: rankVal(0.25), Q3: rankVal(0.75), min: flat[0], max: flat[n - 1], etendue: flat[n - 1] - flat[0] };
+    }
+    function regStats(xs, ys){
+      var n = xs.length; if(n < 2 || ys.length !== n) return null;
+      var mx = 0, my = 0; for(var i = 0; i < n; i++){ mx += xs[i]; my += ys[i]; } mx /= n; my /= n;
+      var cov = 0, vx = 0, vy = 0; for(var i2 = 0; i2 < n; i2++){ var dx = xs[i2] - mx, dy = ys[i2] - my; cov += dx * dy; vx += dx * dx; vy += dy * dy; } cov /= n; vx /= n; vy /= n;
+      if(vx === 0) return null;
+      return { n: n, a: cov / vx, b: my - (cov / vx) * mx, r: (vx > 0 && vy > 0) ? cov / Math.sqrt(vx * vy) : 0, mx: mx, my: my };
+    }
+
+    function clearStatsPlot(){ statsObjs.forEach(function(nm){ try { ggb.deleteObject(nm); } catch(e){} }); statsObjs = []; }
+    function sDefS(name, cmd){ try { ggb.evalCommand(name + '=' + cmd); statsObjs.push(name); return true; } catch(e){ return false; } }
+    function plotReg(xs, ys, a, b){
+      clearStatsPlot(); try { ggb.deleteObject('f'); } catch(e){}
+      var pts = []; for(var i = 0; i < xs.length; i++) pts.push('(' + xs[i] + ',' + ys[i] + ')');
+      if(sDefS('stPts', '{' + pts.join(',') + '}')){ try { ggb.setColor('stPts', 93, 6, 186); ggb.setPointSize('stPts', 4); } catch(e){} }
+      if(sDefS('stLine', 'y = ' + a + '*x + ' + b)){ try { ggb.setColor('stLine', 245, 158, 11); ggb.setLineThickness('stLine', 4); } catch(e){} }
+      var minx = Math.min.apply(null, xs), maxx = Math.max.apply(null, xs), miny = Math.min.apply(null, ys), maxy = Math.max.apply(null, ys);
+      var px = (maxx - minx) * 0.15 + 1, py = (maxy - miny) * 0.15 + 1;
+      try { ggb.setCoordSystem(minx - px, maxx + px, miny - py, maxy + py); } catch(e){}
+      setTimeout(fitGraph, 50);
+    }
+    function plotBox(s){
+      clearStatsPlot(); try { ggb.deleteObject('f'); } catch(e){}
+      var y0 = 0.7, y1 = 1.3, ym = 1;
+      if(sDefS('stBox', 'Polygon((' + s.Q1 + ',' + y0 + '),(' + s.Q3 + ',' + y0 + '),(' + s.Q3 + ',' + y1 + '),(' + s.Q1 + ',' + y1 + '))')){ try { ggb.setColor('stBox', 93, 6, 186); ggb.setFilling('stBox', 0.12); } catch(e){} }
+      if(sDefS('stMed', 'Segment((' + s.med + ',' + y0 + '),(' + s.med + ',' + y1 + '))')){ try { ggb.setColor('stMed', 220, 38, 38); ggb.setLineThickness('stMed', 4); } catch(e){} }
+      if(sDefS('stW1', 'Segment((' + s.min + ',' + ym + '),(' + s.Q1 + ',' + ym + '))')){ try { ggb.setColor('stW1', 120, 120, 120); } catch(e){} }
+      if(sDefS('stW2', 'Segment((' + s.Q3 + ',' + ym + '),(' + s.max + ',' + ym + '))')){ try { ggb.setColor('stW2', 120, 120, 120); } catch(e){} }
+      var pad = (s.max - s.min) * 0.15 + 1;
+      try { ggb.setCoordSystem(s.min - pad, s.max + pad, -0.6, 2.6); } catch(e){}
+      setTimeout(fitGraph, 50);
+    }
+
+    async function runStats(){
+      if(!ggb){ return; }
+      answerEl.innerHTML = ''; stepsEl.innerHTML = '';
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Calcul…';
+      setStatsOpsEnabled(false);
+      var kq = [], kid = 0;
+      function km(l){ var id = 'sxk' + (kid++); kq.push({ id: id, latex: l }); return '<span class="study-math" id="' + id + '"></span>'; }
+      function line(label, l){ var s = '<div class="study-line">'; if(label) s += '<span class="study-lbl">' + label + '</span> '; if(l) s += km(l); return s + '</div>'; }
+      var title, body = '', op, defStr, summary;
+
+      if(statsType === 'series'){
+        var vals = parseNums(stVals.value), effs = parseNums(stEff.value);
+        if(vals.length < 1){ stateEl.textContent = 'Saisissez au moins une valeur.'; setStatsOpsEnabled(true); return; }
+        if(effs.length && effs.length !== vals.length){ stateEl.textContent = 'Valeurs et effectifs doivent avoir le même nombre.'; setStatsOpsEnabled(true); return; }
+        var s = seriesStats(vals, effs.length ? effs : null);
+        if(!s){ stateEl.textContent = 'Série invalide.'; setStatsOpsEnabled(true); return; }
+        plotBox(s);
+        title = 'Série statistique (N = ' + s.N + ')';
+        body += line('Moyenne :', BS + 'bar{x} = ' + pf(s.mean));
+        body += line('Variance :', 'V = ' + pf(s.V));
+        body += line('Écart-type :', BS + 'sigma = ' + BS + 'sqrt{V} = ' + pf(s.sd));
+        body += line('Médiane :', 'M_e = ' + pf(s.med));
+        body += line('Quartiles :', 'Q_1 = ' + pf(s.Q1) + ',\\quad Q_3 = ' + pf(s.Q3) + ',\\quad Q_3 - Q_1 = ' + pf(s.Q3 - s.Q1));
+        body += line('Étendue :', BS + 'max - ' + BS + 'min = ' + pf(s.max) + ' - ' + pf(s.min) + ' = ' + pf(s.etendue));
+        op = 'stats_series'; defStr = 'valeurs : ' + vals.join(', ') + (effs.length ? ' ; effectifs : ' + effs.join(', ') : '');
+        summary = ('moyenne=' + pf(s.mean) + ' ; variance=' + pf(s.V) + ' ; ecart-type=' + pf(s.sd) + ' ; mediane=' + pf(s.med) + ' ; Q1=' + pf(s.Q1) + ' ; Q3=' + pf(s.Q3) + ' ; etendue=' + pf(s.etendue)).slice(0, 480);
+      } else {
+        var xs = parseNums(stX.value), ys = parseNums(stY.value);
+        if(xs.length < 2 || ys.length !== xs.length){ stateEl.textContent = 'x et y doivent avoir le même nombre de valeurs (≥ 2).'; setStatsOpsEnabled(true); return; }
+        var r = regStats(xs, ys);
+        if(!r){ stateEl.textContent = 'Régression impossible (x constant ?).'; setStatsOpsEnabled(true); return; }
+        plotReg(xs, ys, r.a, r.b);
+        var bsign = r.b >= 0 ? ' + ' + pf(r.b) : ' - ' + pf(-r.b);
+        title = 'Ajustement affine (' + r.n + ' points)';
+        body += line('Moyennes :', BS + 'bar{x} = ' + pf(r.mx) + ',\\quad ' + BS + 'bar{y} = ' + pf(r.my));
+        body += line('Droite de régression :', 'y = ' + pf(r.a) + 'x' + bsign);
+        body += line('Coefficient a :', 'a = ' + BS + 'dfrac{' + BS + 'mathrm{Cov}(x,y)}{V(x)} = ' + pf(r.a));
+        body += line('Corrélation :', 'r = ' + pf(r.r) + '\\quad (r^2 = ' + pf(r.r * r.r) + ')');
+        op = 'stats_regression'; defStr = 'x : ' + xs.join(', ') + ' ; y : ' + ys.join(', ');
+        summary = ('droite : y=' + pf(r.a) + 'x' + (r.b >= 0 ? '+' : '') + pf(r.b) + ' ; a=' + pf(r.a) + ' ; b=' + pf(r.b) + ' ; r=' + pf(r.r) + ' ; moyennes x=' + pf(r.mx) + ' y=' + pf(r.my)).slice(0, 480);
+      }
+
+      answerEl.innerHTML = '<div class="ml-study" style="padding:.9rem 1.1rem"><div class="study-head"><i class="bi bi-bar-chart-line"></i> ' + escapeHtml(title) + '</div><div class="study-body">' + body + '</div></div>';
+      kq.forEach(function(it){ var el = document.getElementById(it.id); if(el){ try { renderKatex(el, it.latex); } catch(e){} } });
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
+      try {
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: defStr, operation: op, casResult: summary }) });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data, true); }
+        else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){ stateEl.textContent = 'Connexion impossible — réessayez.'; }
+      finally { setStatsOpsEnabled(true); }
+    }
+    statsOpsEl.addEventListener('click', function(ev){ var btn = ev.target.closest('.ml-op'); if(!btn || btn.disabled) return; runStats(); });
+
     /* ============ FORMULAIRES (per-topic dropdowns) ============ */
     (function(){
       function fxL(s){ return s.split('#').join(BS); } // '#' stands in for backslash (EJS-safe)
@@ -3608,6 +3768,7 @@
       modeIntegral.hidden = (m !== 'integral');
       modeSuite.hidden    = (m !== 'suite');
       modeProba.hidden    = (m !== 'proba');
+      modeStats.hidden    = (m !== 'stats');
       modeTrig.hidden     = (m !== 'trig');
       answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = '';
       var isTrig = (m === 'trig');
@@ -3617,12 +3778,17 @@
       if(isTrig){ tcRender(tcDeg); return; }
       if(ggb){
         try { ggb.setPerspective((m === 'function' || m === 'integral' || m === 'suite') ? 'AG' : 'G'); } catch(e){}
-        clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot(); clearSuitePlot(); clearProbaPlot();
+        clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot(); clearSuitePlot(); clearProbaPlot(); clearStatsPlot();
         if(m === 'proba'){
           graphTitle.textContent = 'Distribution de probabilité';
           graphHint.textContent = 'Loi binomiale : le diagramme en bâtons de la distribution s’affiche (la barre du k demandé est en orange).';
           try { ggb.deleteObject('f'); } catch(e){}
           updateProbaPreview();
+        } else if(m === 'stats'){
+          graphTitle.textContent = 'Graphique statistique';
+          graphHint.textContent = 'Série : la boîte à moustaches (Q₁, médiane, Q₃, min, max). Régression : le nuage de points et la droite d’ajustement.';
+          try { ggb.deleteObject('f'); } catch(e){}
+          updateStatsPreview();
         } else if(m === 'suite'){
           graphTitle.textContent = 'Termes & convergence';
           graphHint.textContent = 'Suite explicite : les termes (n, uₙ) sont tracés. Suite récurrente : l’escalier de convergence vers la limite.';
@@ -3668,8 +3834,8 @@
     window.addEventListener('resize', function(){ clearTimeout(ggbResizeTimer); ggbResizeTimer = setTimeout(fitGraph, 200); });
 
     // GeoGebra applet
-    setOpsEnabled(false); setCOpsEnabled(false); setGOpsEnabled(false); setLOpsEnabled(false); setIOpsEnabled(false); setSuiteOpsEnabled(false); setProbaOpsEnabled(false);
-    setSuiteType('explicit'); setProbaType('binom');
+    setOpsEnabled(false); setCOpsEnabled(false); setGOpsEnabled(false); setLOpsEnabled(false); setIOpsEnabled(false); setSuiteOpsEnabled(false); setProbaOpsEnabled(false); setStatsOpsEnabled(false);
+    setSuiteType('explicit'); setProbaType('binom'); setStatsType('series');
     if(eqSolveBtn) eqSolveBtn.disabled = true;
     setEqStepsEnabled(false);
     var initW = Math.max(320, ggbHost.clientWidth || 700);
@@ -3680,7 +3846,7 @@
       showToolBar: false, showAlgebraInput: false, showMenuBar: false,
       enableRightClick: false, showResetIcon: true,
       perspective: 'AG',
-      appletOnLoad: function(api){ ggb = api; try { ggb.setErrorDialogsActive(false); } catch(e){} setOpsEnabled(true); setCOpsEnabled(true); setGOpsEnabled(true); setLOpsEnabled(true); setIOpsEnabled(true); setSuiteOpsEnabled(true); setProbaOpsEnabled(true); if(eqSolveBtn) eqSolveBtn.disabled = false; setEqStepsEnabled(true); fitGraph(); plot((fxInput.value||'').trim()); }
+      appletOnLoad: function(api){ ggb = api; try { ggb.setErrorDialogsActive(false); } catch(e){} setOpsEnabled(true); setCOpsEnabled(true); setGOpsEnabled(true); setLOpsEnabled(true); setIOpsEnabled(true); setSuiteOpsEnabled(true); setProbaOpsEnabled(true); setStatsOpsEnabled(true); if(eqSolveBtn) eqSolveBtn.disabled = false; setEqStepsEnabled(true); fitGraph(); plot((fxInput.value||'').trim()); }
     }, true);
     applet.inject('ggb');
     updatePreview();
