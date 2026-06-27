@@ -269,6 +269,7 @@
           <button type="button" class="ml-mode" data-mode="geometry"><i class="bi bi-triangle"></i> Géométrie</button>
           <button type="button" class="ml-mode" data-mode="limit"><i class="bi bi-arrow-bar-right"></i> Limites</button>
           <button type="button" class="ml-mode" data-mode="integral"><i class="bi bi-integral"></i> Intégrales</button>
+          <button type="button" class="ml-mode" data-mode="suite"><i class="bi bi-list-ol"></i> Suites</button>
           <button type="button" class="ml-mode" data-mode="trig"><i class="bi bi-record-circle"></i> Trigonométrie</button>
         </div>
 
@@ -598,6 +599,47 @@
 
           <div class="ml-hint" id="trig-hint">Résous une équation trigonométrique sur un intervalle (ex : cos(x) = 1/2 sur ]-π ; π]).</div>
         </div><%# /mode-trig %>
+
+        <div id="mode-suite" hidden>
+          <h2><i class="bi bi-list-ol"></i> Votre suite</h2>
+          <div class="ml-side" id="suite-type">
+            <button type="button" class="ml-sidebtn is-active" data-stype="explicit">Explicite uₙ = f(n)</button>
+            <button type="button" class="ml-sidebtn" data-stype="recurrent">Récurrente uₙ₊₁ = f(uₙ)</button>
+          </div>
+          <div id="suite-exp-fields">
+            <div class="ml-input-row"><label for="suite-un">uₙ =</label><input id="suite-un" type="text" value="2n+3" placeholder="ex : 2n+3, 3*2^n, 1/n" autocomplete="off" /></div>
+          </div>
+          <div id="suite-rec-fields" hidden>
+            <div class="ml-input-row"><label for="suite-fu">uₙ₊₁ =</label><input id="suite-fu" type="text" value="0.5*u+1" placeholder="ex : 0.5u+1, sqrt(u+2)" autocomplete="off" /></div>
+            <div class="ml-input-row"><label for="suite-u0">u₀ =</label><input id="suite-u0" type="text" value="0" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:130px" /></div>
+          </div>
+          <div class="ml-input-row"><label for="suite-n">Rang n =</label><input id="suite-n" type="number" value="10" min="1" max="40" step="1" style="flex:0 0 auto; min-width:0; max-width:120px" /><span class="ml-hint" style="margin:0">nombre de termes affichés</span></div>
+
+          <div class="ml-preview is-empty" id="suite-preview">Aperçu de la suite…</div>
+
+          <div class="ml-keys" id="suite-keys">
+            <button type="button" class="ml-key" data-sins="n">n</button>
+            <button type="button" class="ml-key" data-sins="u">u</button>
+            <button type="button" class="ml-key" data-sins="+">+</button>
+            <button type="button" class="ml-key" data-sins="-">−</button>
+            <button type="button" class="ml-key" data-sins="*">×</button>
+            <button type="button" class="ml-key" data-sins="/">÷</button>
+            <button type="button" class="ml-key" data-sins="^">^</button>
+            <button type="button" class="ml-key" data-sins="(|)">(&nbsp;)</button>
+            <button type="button" class="ml-key" data-sins="sqrt(|)">√</button>
+            <button type="button" class="ml-key is-util" data-sact="back">⌫</button>
+            <button type="button" class="ml-key is-util" data-sact="clear">C</button>
+          </div>
+
+          <div class="ml-ops" id="suite-ops">
+            <button class="ml-op ml-op--hero" data-sop="study"><i class="bi bi-clipboard2-data"></i> Étude de la suite</button>
+            <button class="ml-op" data-sop="terms"><i class="bi bi-123"></i> Premiers termes</button>
+            <button class="ml-op" data-sop="nature"><i class="bi bi-diagram-3"></i> Nature</button>
+            <button class="ml-op" data-sop="limit"><i class="bi bi-infinity"></i> Limite</button>
+          </div>
+
+          <div class="ml-hint">Suite <strong>récurrente</strong> : utilisez <strong>u</strong> pour uₙ (ex : <code>0.5u+1</code>) et donnez u₀. Le graphique trace les termes (points) ou l'escalier de convergence.</div>
+        </div><%# /mode-suite %>
 
         <div id="answer"></div>
         <div id="steps" class="ml-steps"></div>
@@ -3109,6 +3151,200 @@
     trigRun.addEventListener('click', runTrigOp);
     setTrigOp('equation');
 
+    /* ============ SUITES NUMÉRIQUES ============ */
+    var modeSuite     = document.getElementById('mode-suite');
+    var suiteTypeEl   = document.getElementById('suite-type');
+    var suiteUn       = document.getElementById('suite-un');
+    var suiteFu       = document.getElementById('suite-fu');
+    var suiteU0       = document.getElementById('suite-u0');
+    var suiteNEl      = document.getElementById('suite-n');
+    var suiteExpF     = document.getElementById('suite-exp-fields');
+    var suiteRecF     = document.getElementById('suite-rec-fields');
+    var suitePrevEl   = document.getElementById('suite-preview');
+    var suiteKeysEl   = document.getElementById('suite-keys');
+    var suiteOpsEl    = document.getElementById('suite-ops');
+    var suiteType     = 'explicit';
+    var activeSuite   = suiteUn;
+    var suiteObjs     = [];
+
+    function setSuiteOpsEnabled(on){ suiteOpsEl.querySelectorAll('.ml-op').forEach(function(b){ b.disabled = !on; }); }
+    function setSuiteType(t){
+      suiteType = t;
+      suiteTypeEl.querySelectorAll('.ml-sidebtn').forEach(function(b){ b.classList.toggle('is-active', b.getAttribute('data-stype') === t); });
+      suiteExpF.hidden = (t !== 'explicit'); suiteRecF.hidden = (t !== 'recurrent');
+      activeSuite = (t === 'explicit') ? suiteUn : suiteFu;
+      updateSuitePreview();
+    }
+    suiteTypeEl.addEventListener('click', function(ev){ var b = ev.target.closest('.ml-sidebtn'); if(b) setSuiteType(b.getAttribute('data-stype')); });
+
+    function updateSuitePreview(){
+      var tex = null;
+      try {
+        if(suiteType === 'explicit'){ var f = (suiteUn.value || '').trim(); if(!f) throw 0; tex = 'u_n = ' + toLatex(f); }
+        else { var g = (suiteFu.value || '').trim(); if(!g) throw 0; tex = 'u_{n+1} = ' + toLatex(g).split('u').join('u_n'); }
+      } catch(e){ tex = null; }
+      if(tex == null){ suitePrevEl.className = 'ml-preview is-empty'; suitePrevEl.textContent = (suiteType === 'explicit' ? 'Aperçu de la suite…' : '…en cours de saisie'); return; }
+      try { renderKatex(suitePrevEl, tex); suitePrevEl.className = 'ml-preview'; }
+      catch(e){ suitePrevEl.className = 'ml-preview is-empty'; suitePrevEl.textContent = '…en cours de saisie'; }
+    }
+    [suiteUn, suiteFu, suiteU0].forEach(function(inp){
+      inp.addEventListener('focus', function(){ if(inp !== suiteU0) activeSuite = inp; });
+      inp.addEventListener('input', updateSuitePreview);
+    });
+    suiteKeysEl.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.ml-key'); if(!btn) return;
+      var inp = activeSuite || suiteUn, act = btn.getAttribute('data-sact');
+      if(act === 'clear'){ inp.value = ''; inp.focus(); }
+      else if(act === 'back'){ var v = inp.value, s = inp.selectionStart, e = inp.selectionEnd; if(s == null){ inp.value = v.slice(0, -1); } else if(s !== e){ inp.value = v.slice(0, s) + v.slice(e); inp.setSelectionRange(s, s); } else if(s > 0){ inp.value = v.slice(0, s - 1) + v.slice(s); inp.setSelectionRange(s - 1, s - 1); } inp.focus(); }
+      else { insertInto(inp, btn.getAttribute('data-sins')); }
+      updateSuitePreview();
+    });
+
+    // --- numeric evaluator: define the sequence function in GeoGebra, evaluate via SetValue ---
+    function sEv(c){ try { ggb.evalCommand(c); return true; } catch(e){ return false; } }
+    function sGv(l){ try { return ggb.getValue(l); } catch(e){ return NaN; } }
+    function suiteCleanup(){ try { ggb.deleteObject('suRes'); } catch(e){} try { ggb.deleteObject('suArg'); } catch(e){} try { ggb.deleteObject('suFn'); } catch(e){} }
+    function suiteEvaluator(){
+      suiteCleanup();
+      var formula, vn;
+      if(suiteType === 'explicit'){ formula = (suiteUn.value || '').trim(); vn = 'n'; }
+      else { formula = (suiteFu.value || '').trim(); vn = 'u'; }
+      if(!formula) return null;
+      if(!sEv('suFn(' + vn + ')=' + formula)) return null;
+      sEv('suArg=0'); sEv('suRes=suFn(suArg)');
+      return function(x){ sEv('SetValue(suArg,' + x + ')'); return sGv('suRes'); };
+    }
+    function suiteU0val(){ var u0 = Number((suiteU0.value || '').trim()); if(!isFinite(u0)){ if(sEv('suU0=' + ((suiteU0.value || '0').trim() || '0'))){ u0 = sGv('suU0'); try { ggb.deleteObject('suU0'); } catch(e){} } } return isFinite(u0) ? u0 : 0; }
+    function suiteTerms(count){
+      var f = suiteEvaluator(); if(!f) return null;
+      var t = [];
+      if(suiteType === 'explicit'){ var start = isFinite(f(0)) ? 0 : 1; for(var k = 0; k <= count; k++) t.push({ n: start + k, v: f(start + k) }); }
+      else { var u = suiteU0val(); t.push({ n: 0, v: u }); for(var k = 1; k <= count; k++){ u = f(u); t.push({ n: k, v: u }); if(!isFinite(u)) break; } }
+      suiteCleanup();
+      return t;
+    }
+    function suiteVals(t){ return t.map(function(x){ return x.v; }).filter(function(v){ return isFinite(v); }); }
+    function suiteNature(t){
+      var vs = suiteVals(t); if(vs.length < 3) return { type: 'none' };
+      var d = vs[1] - vs[0], ar = true;
+      for(var k = 1; k < vs.length - 1; k++){ if(Math.abs((vs[k + 1] - vs[k]) - d) > 1e-6 * Math.max(1, Math.abs(d))){ ar = false; break; } }
+      if(ar) return { type: 'arith', r: d };
+      var ge = vs[0] !== 0, q = vs[0] !== 0 ? vs[1] / vs[0] : 0;
+      for(var k2 = 0; ge && k2 < vs.length - 1; k2++){ if(vs[k2] === 0){ ge = false; break; } if(Math.abs(vs[k2 + 1] / vs[k2] - q) > 1e-6 * Math.max(1, Math.abs(q))){ ge = false; break; } }
+      if(ge) return { type: 'geo', q: q };
+      return { type: 'none' };
+    }
+    function suiteSens(t){
+      var vs = suiteVals(t), inc = true, dec = true;
+      for(var k = 0; k < vs.length - 1; k++){ if(vs[k + 1] > vs[k] + 1e-9) dec = false; if(vs[k + 1] < vs[k] - 1e-9) inc = false; }
+      return inc && dec ? 'constante' : (inc ? 'croissante' : (dec ? 'décroissante' : 'non monotone'));
+    }
+    function suiteLimit(){
+      var f = suiteEvaluator(); if(!f){ return { kind: '?' }; }
+      var res = null;
+      if(suiteType === 'explicit'){
+        var a = f(2000), b = f(200000);
+        if(!isFinite(b)) res = { kind: 'inf', s: b > 0 ? 1 : -1 };
+        else if(Math.abs(b - a) < 1e-4) res = { kind: 'fin', v: b };
+        else if(Math.abs(b) > 1e8) res = { kind: 'inf', s: b > 0 ? 1 : -1 };
+        else res = (Math.abs(b) > Math.abs(a) + 1e-3) ? { kind: 'inf', s: b > 0 ? 1 : -1 } : { kind: 'fin', v: b };
+      } else {
+        var u = suiteU0val(), ok = true;
+        for(var k = 0; k < 3000; k++){ u = f(u); if(!isFinite(u)){ ok = false; break; } if(Math.abs(u) > 1e10){ ok = false; res = { kind: 'inf', s: u > 0 ? 1 : -1 }; break; } }
+        if(ok){ var u2 = f(u); res = (isFinite(u2) && Math.abs(u2 - u) < 1e-6) ? { kind: 'fin', v: u } : { kind: 'div' }; }
+        else if(!res) res = { kind: 'div' };
+      }
+      suiteCleanup();
+      return res;
+    }
+    function suiteSum(t, nat){
+      var vs = suiteVals(t), c = vs.length - 1;
+      if(nat.type === 'arith') return { tex: 'S_n = ' + BS + 'dfrac{(n+1)(u_0 + u_n)}{2} = ' + vtFmt((c + 1) * (vs[0] + vs[c]) / 2), n: c };
+      if(nat.type === 'geo' && Math.abs(nat.q - 1) > 1e-9){ var q = nat.q; return { tex: 'S_n = u_0' + BS + 'dfrac{1 - q^{n+1}}{1 - q} = ' + vtFmt(vs[0] * (1 - Math.pow(q, c + 1)) / (1 - q)), n: c }; }
+      return null;
+    }
+
+    function clearSuitePlot(){ suiteObjs.forEach(function(nm){ try { ggb.deleteObject(nm); } catch(e){} }); suiteObjs = []; }
+    function plotSuite(t){
+      if(!ggb || !t) return;
+      clearSuitePlot();
+      try { ggb.deleteObject('f'); } catch(e){}
+      try {
+        if(suiteType === 'explicit'){
+          var pts = t.filter(function(x){ return isFinite(x.v); }).map(function(x){ return '(' + x.n + ',' + x.v + ')'; });
+          if(pts.length){ ggb.evalCommand('suPts={' + pts.join(',') + '}'); suiteObjs.push('suPts'); ggb.setColor('suPts', 93, 6, 186); ggb.setPointSize('suPts', 4); }
+        } else {
+          var plotF = (suiteFu.value || '').trim().split('u').join('x');
+          ggb.evalCommand('suCurve(x)=' + plotF); suiteObjs.push('suCurve'); ggb.setColor('suCurve', 93, 6, 186);
+          ggb.evalCommand('suLine(x)=x'); suiteObjs.push('suLine'); ggb.setColor('suLine', 150, 150, 150);
+          var vals = suiteVals(t), web = [];
+          if(vals.length){ web.push('(' + vals[0] + ',0)'); for(var k = 0; k < vals.length - 1 && k < 14; k++){ web.push('(' + vals[k] + ',' + vals[k + 1] + ')'); web.push('(' + vals[k + 1] + ',' + vals[k + 1] + ')'); } ggb.evalCommand('suWeb=Polyline({' + web.join(',') + '})'); suiteObjs.push('suWeb'); ggb.setColor('suWeb', 245, 158, 11); }
+        }
+        setTimeout(fitGraph, 50);
+      } catch(e){}
+    }
+
+    function suiteDefStr(){ return suiteType === 'explicit' ? ('u(n) = ' + (suiteUn.value || '').trim()) : ('u(n+1) = ' + (suiteFu.value || '').trim() + ', u(0) = ' + (suiteU0.value || '').trim()); }
+    function limText(lim){ return lim.kind === 'fin' ? vtFmt(lim.v) : (lim.kind === 'inf' ? (lim.s > 0 ? '+∞' : '−∞') : (lim.kind === 'div' ? 'diverge (pas de limite)' : '?')); }
+
+    async function runSuiteOp(op){
+      var formula = (suiteType === 'explicit' ? suiteUn.value : suiteFu.value || '').trim();
+      if(!formula){ stateEl.textContent = 'Saisissez la suite.'; return; }
+      if(!ggb){ return; }
+      answerEl.innerHTML = ''; stepsEl.innerHTML = '';
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Calcul…';
+      setSuiteOpsEnabled(false);
+      var N = Math.max(3, Math.min(40, parseInt(suiteNEl.value, 10) || 10));
+      var t = suiteTerms(N);
+      if(!t || !t.length || !isFinite(t[0].v)){ stateEl.textContent = 'Suite invalide — vérifiez l’écriture.'; setSuiteOpsEnabled(true); return; }
+      plotSuite(t);
+
+      var nat = suiteNature(t), sens = suiteSens(t), lim = suiteLimit(), sum = suiteSum(t, nat);
+      var BSlim = limText(lim);
+
+      // ---- terms / nature / limit quick ops ----
+      var kq = [], kid = 0;
+      function km(latex){ var id = 'suk' + (kid++); kq.push({ id: id, latex: latex }); return '<span class="study-math" id="' + id + '"></span>'; }
+      function line(label, latex){ var s = '<div class="study-line">'; if(label) s += '<span class="study-lbl">' + label + '</span> '; if(latex) s += km(latex); return s + '</div>'; }
+      function termsLatex(maxShow){ var parts = t.slice(0, maxShow).map(function(x){ return 'u_{' + x.n + '} = ' + (isFinite(x.v) ? vtFmt(x.v) : '?'); }); if(t.length > maxShow) parts.push(BS + 'dots'); return parts.join(', '); }
+      function natLatex(){ if(nat.type === 'arith') return BS + 'text{arithmétique, raison } r = ' + vtFmt(nat.r) + ' ' + BS + 'quad u_n = u_0 + n' + BS + 'cdot r'; if(nat.type === 'geo') return BS + 'text{géométrique, raison } q = ' + vtFmt(nat.q) + ' ' + BS + 'quad u_n = u_0 ' + BS + 'cdot q^{n}'; return BS + 'text{ni arithmétique ni géométrique}'; }
+      function limLatex(){ return BS + 'lim' + BS + 'limits_{n ' + BS + 'to +' + BS + 'infty} u_n = ' + (lim.kind === 'fin' ? vtFmt(lim.v) : (lim.kind === 'inf' ? (lim.s > 0 ? '+' + BS + 'infty' : '-' + BS + 'infty') : BS + 'text{ (diverge) }')); }
+
+      var title, body = '';
+      if(op === 'terms'){ title = 'Premiers termes'; body = line('', termsLatex(t.length)); }
+      else if(op === 'nature'){ title = 'Nature de la suite'; body = line('', natLatex()); }
+      else if(op === 'limit'){ title = 'Limite'; body = line('', limLatex()); }
+      else { // study
+        title = 'Étude de la suite';
+        body += line('Premiers termes :', termsLatex(7));
+        body += line('Nature :', natLatex());
+        body += '<div class="study-line"><span class="study-lbl">Sens de variation : <strong>' + sens + '</strong></span></div>';
+        body += line('Limite :', limLatex());
+        if(sum) body += line('Somme :', sum.tex);
+      }
+      answerEl.innerHTML = '<div class="ml-study" style="padding:.9rem 1.1rem"><div class="study-head"><i class="bi bi-list-ol"></i> ' + title + ' — <span id="suite-def"></span></div><div class="study-body">' + body + '</div></div>';
+      try { renderKatex(document.getElementById('suite-def'), suiteType === 'explicit' ? ('u_n = ' + toLatex((suiteUn.value || '').trim())) : ('u_{n+1} = ' + toLatex((suiteFu.value || '').trim()).split('u').join('u_n'))); } catch(e){}
+      kq.forEach(function(it){ var el = document.getElementById(it.id); if(el){ try { renderKatex(el, it.latex); } catch(e){} } });
+
+      if(op !== 'study'){ stateEl.textContent = ''; setSuiteOpsEnabled(true); return; }
+
+      // ---- Claude explanation for the full study ----
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
+      var parts = ['termes : ' + t.slice(0, 6).map(function(x){ return 'u' + x.n + '=' + vtFmt(x.v); }).join(', ')];
+      parts.push('nature : ' + (nat.type === 'arith' ? 'arithmétique r=' + vtFmt(nat.r) : (nat.type === 'geo' ? 'géométrique q=' + vtFmt(nat.q) : 'ni arithmétique ni géométrique')));
+      parts.push('sens : ' + sens);
+      parts.push('limite : ' + BSlim);
+      var summary = parts.join(' ; ').slice(0, 480);
+      try {
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: suiteDefStr(), operation: 'suite_study', casResult: summary }) });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data, true); }
+        else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){ stateEl.textContent = 'Connexion impossible — réessayez.'; }
+      finally { setSuiteOpsEnabled(true); }
+    }
+    suiteOpsEl.addEventListener('click', function(ev){ var btn = ev.target.closest('.ml-op'); if(!btn || btn.disabled) return; runSuiteOp(btn.getAttribute('data-sop')); });
+
     function switchMode(m){
       if(m === currentMode) return;
       currentMode = m;
@@ -3118,6 +3354,7 @@
       modeGeo.hidden      = (m !== 'geometry');
       modeLimit.hidden    = (m !== 'limit');
       modeIntegral.hidden = (m !== 'integral');
+      modeSuite.hidden    = (m !== 'suite');
       modeTrig.hidden     = (m !== 'trig');
       answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = '';
       var isTrig = (m === 'trig');
@@ -3126,9 +3363,14 @@
       if(trigCircleCard) trigCircleCard.hidden = !isTrig;
       if(isTrig){ tcRender(tcDeg); return; }
       if(ggb){
-        try { ggb.setPerspective((m === 'function' || m === 'limit' || m === 'integral') ? 'AG' : 'G'); } catch(e){}
-        clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot();
-        if(m === 'function'){
+        try { ggb.setPerspective((m === 'function' || m === 'limit' || m === 'integral' || m === 'suite') ? 'AG' : 'G'); } catch(e){}
+        clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot(); clearSuitePlot();
+        if(m === 'suite'){
+          graphTitle.textContent = 'Termes & convergence';
+          graphHint.textContent = 'Suite explicite : les termes (n, uₙ) sont tracés. Suite récurrente : l’escalier de convergence vers la limite.';
+          try { ggb.deleteObject('f'); } catch(e){}
+          updateSuitePreview();
+        } else if(m === 'function'){
           graphTitle.textContent = 'Représentation graphique';
           graphHint.textContent = 'La courbe se met à jour quand vous tracez ou lancez un calcul. Utilisez « Tracer » après avoir modifié la fonction.';
           plot((fxInput.value || '').trim());
@@ -3173,7 +3415,8 @@
     window.addEventListener('resize', function(){ clearTimeout(ggbResizeTimer); ggbResizeTimer = setTimeout(fitGraph, 200); });
 
     // GeoGebra applet
-    setOpsEnabled(false); setCOpsEnabled(false); setGOpsEnabled(false); setLOpsEnabled(false); setIOpsEnabled(false);
+    setOpsEnabled(false); setCOpsEnabled(false); setGOpsEnabled(false); setLOpsEnabled(false); setIOpsEnabled(false); setSuiteOpsEnabled(false);
+    setSuiteType('explicit');
     if(eqSolveBtn) eqSolveBtn.disabled = true;
     setEqStepsEnabled(false);
     var initW = Math.max(320, ggbHost.clientWidth || 700);
@@ -3184,7 +3427,7 @@
       showToolBar: false, showAlgebraInput: false, showMenuBar: false,
       enableRightClick: false, showResetIcon: true,
       perspective: 'AG',
-      appletOnLoad: function(api){ ggb = api; try { ggb.setErrorDialogsActive(false); } catch(e){} setOpsEnabled(true); setCOpsEnabled(true); setGOpsEnabled(true); setLOpsEnabled(true); setIOpsEnabled(true); if(eqSolveBtn) eqSolveBtn.disabled = false; setEqStepsEnabled(true); fitGraph(); plot((fxInput.value||'').trim()); }
+      appletOnLoad: function(api){ ggb = api; try { ggb.setErrorDialogsActive(false); } catch(e){} setOpsEnabled(true); setCOpsEnabled(true); setGOpsEnabled(true); setLOpsEnabled(true); setIOpsEnabled(true); setSuiteOpsEnabled(true); if(eqSolveBtn) eqSolveBtn.disabled = false; setEqStepsEnabled(true); fitGraph(); plot((fxInput.value||'').trim()); }
     }, true);
     applet.inject('ggb');
     updatePreview();
