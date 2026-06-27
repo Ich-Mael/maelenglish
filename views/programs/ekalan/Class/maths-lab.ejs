@@ -1533,15 +1533,16 @@
       }
       function sec(title, body){ return '<div class="study-sec"><div class="study-t">' + title + '</div><div class="study-body">' + body + '</div></div>'; }
       // Convert our unicode-math strings (∞, ∪, ≠, ;, ±superscripts…) to LaTeX.
+      var IN = BS + 'infty', LIM = BS + 'lim' + BS + 'limits', TO = BS + 'to ', SEMI = BS + ',;' + BS + ',';
       function tx(s){ return String(s)
-        .split('−∞').join('-\\infty').split('+∞').join('+\\infty').split('∞').join('\\infty')
-        .split('∪').join('\\cup ').split('≠').join('\\neq ').split('×').join('\\times ')
-        .split('⁻').join('^{-}').split('⁺').join('^{+}').split('−').join('-').split(' ; ').join('\\,;\\,'); }
+        .split('−∞').join('-' + IN).split('+∞').join('+' + IN).split('∞').join(IN)
+        .split('∪').join(BS + 'cup ').split('≠').join(BS + 'neq ').split('×').join(BS + 'times ')
+        .split('⁻').join('^{-}').split('⁺').join('^{+}').split('−').join('-').split(' ; ').join(SEMI); }
       function axLatex(aa){ return aa === 1 ? 'x' : (aa === -1 ? '-x' : tx(vtFmt(aa)) + 'x'); }
       function lineEqLatex(aa, bb){ var sx = axLatex(aa); if(bb > 0) sx += ' + ' + tx(vtFmt(bb)); else if(bb < 0) sx += ' - ' + tx(vtFmt(Math.abs(bb))); return sx; }
 
       // 1 · Domaine
-      var domLatex = 'D_f = ' + tx(domain) + (excluded.length ? '\\quad (x \\neq ' + excluded.map(tx).join(',\\ ') + ')' : '');
+      var domLatex = 'D_f = ' + tx(domain) + (excluded.length ? BS + 'quad (x ' + BS + 'neq ' + excluded.map(tx).join(', ') + ')' : '');
       var bodyDom = line('', domLatex);
       // 2 · Parité
       var bodyPar = par ? '<div class="study-line"><span class="study-lbl">f est <strong>' + par + '</strong>'
@@ -1549,30 +1550,30 @@
       // 3 · Limites et asymptotes
       var bodyAsym = '';
       poles.slice().sort(function(p1, p2){ return p1.x - p2.x; }).forEach(function(p){ bodyAsym += line('Asymptote verticale :', 'x = ' + tx(vtFmt(p.x))); });
-      [{ s: -1, lbl: '−∞', sL: '-\\infty', end: endNeg }, { s: 1, lbl: '+∞', sL: '+\\infty', end: endPos }].forEach(function(o){
+      [{ s: -1, lbl: '−∞', sL: '-' + IN, end: endNeg }, { s: 1, lbl: '+∞', sL: '+' + IN, end: endPos }].forEach(function(o){
         var inf = !isFinite(o.end) || Math.abs(o.end) > 1e8, ob = oblique(o.s);
         if(inf && ob && Math.abs(ob.a) > 1e-9){
-          var work = 'a = \\lim\\limits_{x \\to ' + o.sL + '}\\dfrac{f(x)}{x} = ' + tx(vtFmt(ob.a))
-            + ' \\quad b = \\lim\\limits_{x \\to ' + o.sL + '}\\big(f(x) - ' + axLatex(ob.a) + '\\big) = ' + tx(vtFmt(ob.b));
+          var work = 'a = ' + LIM + '_{x ' + TO + o.sL + '}' + BS + 'dfrac{f(x)}{x} = ' + tx(vtFmt(ob.a))
+            + ' ' + BS + 'quad b = ' + LIM + '_{x ' + TO + o.sL + '}' + BS + 'big(f(x) - ' + axLatex(ob.a) + BS + 'big) = ' + tx(vtFmt(ob.b));
           bodyAsym += line('Asymptote oblique en ' + o.lbl + ' :', 'y = ' + lineEqLatex(ob.a, ob.b), work);
         } else if(!inf && ob) bodyAsym += line('Asymptote horizontale en ' + o.lbl + ' :', 'y = ' + tx(vtFmt(o.end)));
         else if(inf) bodyAsym += '<div class="study-line"><span class="study-lbl">Branche parabolique en ' + o.lbl + ' (pas d\\'asymptote linéaire).</span></div>';
       });
       bodyAsym += '<hr class="study-hr">';
-      bodyAsym += line('', '\\lim\\limits_{x \\to -\\infty} f(x) = ' + tx(vtFmtLim(endNeg)));
+      bodyAsym += line('', LIM + '_{x ' + TO + '-' + IN + '} f(x) = ' + tx(vtFmtLim(endNeg)));
       poles.slice().sort(function(p1, p2){ return p1.x - p2.x; }).forEach(function(p){
-        bodyAsym += line('', '\\lim\\limits_{x \\to ' + tx(vtFmt(p.x)) + '^{-}} f(x) = ' + (p.leftSign > 0 ? '+\\infty' : '-\\infty')
-          + ' \\qquad \\lim\\limits_{x \\to ' + tx(vtFmt(p.x)) + '^{+}} f(x) = ' + (p.rightSign > 0 ? '+\\infty' : '-\\infty'));
+        bodyAsym += line('', LIM + '_{x ' + TO + tx(vtFmt(p.x)) + '^{-}} f(x) = ' + (p.leftSign > 0 ? '+' + IN : '-' + IN)
+          + ' ' + BS + 'qquad ' + LIM + '_{x ' + TO + tx(vtFmt(p.x)) + '^{+}} f(x) = ' + (p.rightSign > 0 ? '+' + IN : '-' + IN));
       });
-      bodyAsym += line('', '\\lim\\limits_{x \\to +\\infty} f(x) = ' + tx(vtFmtLim(endPos)));
+      bodyAsym += line('', LIM + '_{x ' + TO + '+' + IN + '} f(x) = ' + tx(vtFmtLim(endPos)));
       // 4 · Dérivée
       var fpLatex = ''; if(fp){ try { fpLatex = toLatex(fp.split(' ').join('')); } catch(e){ fpLatex = ''; } }
-      var bodyDer = fp ? line('', "f'(x) = " + (fpLatex || ('\\text{' + fp + '}'))) : '<div class="study-line"><span class="study-lbl">Voir le signe dans le tableau ci-dessous.</span></div>';
+      var bodyDer = fp ? line('', "f'(x) = " + (fpLatex || (BS + 'text{' + fp + '}'))) : '<div class="study-line"><span class="study-lbl">Voir le signe dans le tableau ci-dessous.</span></div>';
       // 5 · Sens de variation (text, not the full table — that has its own button)
       var bodySens = '';
       (function(){
         function segd(i){ return pts[i + 1].inYn - pts[i].outYn; }
-        for(var i = 0; i < pts.length - 1; i++){ var d = segd(i); if(d === 0) continue; bodySens += line(d > 0 ? 'f est croissante sur' : 'f est décroissante sur', ']' + tx(pts[i].x) + '\\,;\\,' + tx(pts[i + 1].x) + '['); }
+        for(var i = 0; i < pts.length - 1; i++){ var d = segd(i); if(d === 0) continue; bodySens += line(d > 0 ? 'f est croissante sur' : 'f est décroissante sur', ']' + tx(pts[i].x) + SEMI + tx(pts[i + 1].x) + '['); }
         for(var i2 = 1; i2 < pts.length - 1; i2++){ if(pts[i2].kind !== 'pt') continue; var din = segd(i2 - 1), dout = segd(i2), type = null; if(din > 0 && dout < 0) type = 'Maximum'; else if(din < 0 && dout > 0) type = 'Minimum'; if(type) bodySens += line(type + ' :', 'f(' + tx(pts[i2].x) + ') = ' + tx(pts[i2].y)); }
       })();
       if(!bodySens) bodySens = '<div class="study-line"><span class="study-lbl">f est monotone sur son domaine.</span></div>';
@@ -1580,7 +1581,7 @@
       // 6 · Points caractéristiques
       var bodyPts = '';
       if(y0 !== null) bodyPts += line('Ordonnée à l\\'origine :', 'f(0) = ' + tx(y0));
-      if(roots.length) bodyPts += line('Intersections avec (Ox) :', 'x = ' + roots.map(function(r){ return tx(vtFmt(r)); }).join(' \\;;\\; '));
+      if(roots.length) bodyPts += line('Intersections avec (Ox) :', 'x = ' + roots.map(function(r){ return tx(vtFmt(r)); }).join(' ' + BS + ';;' + BS + '; '));
       else bodyPts += '<div class="study-line"><span class="study-lbl">Pas d\\'intersection simple avec (Ox) détectée.</span></div>';
 
       var report = '<div class="ml-study"><div class="study-head"><i class="bi bi-clipboard2-data"></i> Étude complète — <span id="study-fx">f(x) = ' + escapeHtml(expr) + '</span></div>'
