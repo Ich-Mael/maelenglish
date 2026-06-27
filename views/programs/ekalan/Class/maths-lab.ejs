@@ -3339,6 +3339,7 @@
             "(x^n)' = n#,x^{n-1}",
             "(#sqrt{x})' = #frac{1}{2#sqrt{x}}",
             "#left(#frac{1}{x}#right)' = -#frac{1}{x^2}",
+            "#left(#frac{1}{x^n}#right)' = -#frac{n}{x^{n+1}}",
             "(e^x)' = e^x",
             "(#ln x)' = #frac{1}{x}",
             "(#sin x)' = #cos x",
@@ -3365,6 +3366,7 @@
           { t:'Primitives usuelles', f:[
             "#int x^n#,dx = #frac{x^{n+1}}{n+1} + k",
             "#int #frac{1}{x}#,dx = #ln|x| + k",
+            "#int #frac{dx}{x^n} = -#frac{1}{(n-1)#,x^{n-1}} + k #;#; (n #neq 1)",
             "#int e^x#,dx = e^x + k",
             "#int #cos x#,dx = #sin x + k",
             "#int #sin x#,dx = -#cos x + k",
