@@ -57,13 +57,14 @@
     .ml-grid { display:flex; flex-direction:column; gap:1.5rem; margin-top:-1.5rem; position:relative; z-index:2; }
     .ml-card { background:#fff; border-radius:18px; box-shadow:0 10px 30px rgba(45,3,112,.1); padding:1.25rem; }
     .ml-card h2 { font-size:1.05rem; font-weight:700; color:#2d0370; margin:0 0 .9rem; display:flex; align-items:center; gap:.5rem; }
+    /* ===== Main topics (domain tabs) — brand PURPLE ===== */
     .ml-modes { display:inline-flex; gap:.3rem; padding:.3rem; background:#f1ecfb; border:1px solid #e5dbf7;
       border-radius:12px; margin-bottom:1.1rem; flex-wrap:wrap; }
     .ml-mode { display:inline-flex; align-items:center; gap:.45rem; border:none; cursor:pointer; background:transparent;
       color:#5d06ba; font-weight:700; font-size:.9rem; padding:.55rem 1rem; border-radius:9px; transition:all .2s; }
     .ml-mode:hover { background:rgba(93,6,186,.08); }
-    .ml-mode.is-active { background:linear-gradient(135deg,#ffe680,#ffb800); color:#2d0370;
-      box-shadow:0 4px 14px rgba(255,184,0,.4); }
+    .ml-mode.is-active { background:linear-gradient(135deg,#5d06ba,#2d0370); color:#fff;
+      box-shadow:0 4px 14px rgba(93,6,186,.35); }
     .geo-row { display:flex; align-items:center; gap:.6rem; margin-bottom:.55rem; }
     .geo-row .geo-label { font-weight:700; color:#5d06ba; min-width:3.4rem; }
     .geo-row input { flex:1; min-width:140px; padding:.6rem .8rem; border:2px solid #e0e0e0; border-radius:10px;
@@ -129,8 +130,10 @@
     .vt-asym-cell .vt-lim.vt-top { top:9px; }
     .vt-asym-cell .vt-lim.vt-bottom { bottom:9px; }
     /* Étude complète — flagship op button + report */
-    .ml-op--hero { background:linear-gradient(135deg,#2d0370,#5d06ba); color:#fff; border-color:#5d06ba; font-weight:700; }
-    .ml-op--hero:hover:not(:disabled) { color:#fff; box-shadow:0 4px 14px rgba(93,6,186,.35); }
+    .ml-op--hero { background:linear-gradient(135deg,#f7b733,#ee8c00); color:#2d0370; border-color:#e98a00; font-weight:800;
+      box-shadow:0 3px 10px rgba(238,140,0,.3); }
+    .ml-op--hero:hover:not(:disabled) { background:linear-gradient(135deg,#ffc44d,#ff9d0a); color:#2d0370; border-color:#e98a00;
+      box-shadow:0 5px 16px rgba(238,140,0,.45); }
     .ml-study { margin-top:1rem; background:linear-gradient(135deg,#2d0370,#5d06ba); color:#fff; border-radius:14px; padding:1rem 1.1rem 1.15rem;
                 font-family:'Cambria','Georgia','Times New Roman',serif; }
     .study-head { color:#ffd24a; font-size:.98rem; font-weight:800; margin-bottom:.4rem; }
@@ -177,11 +180,12 @@
     .ml-key:hover { background:#5d06ba; color:#fff; border-color:#5d06ba; }
     .ml-key.is-fn { font-family:system-ui,sans-serif; font-size:.82rem; font-style:italic; }
     .ml-key.is-util { font-family:system-ui,sans-serif; font-size:.78rem; color:#9b87c4; }
+    /* ===== Features (operations) — brand GOLD/amber ===== */
     .ml-ops { display:flex; flex-wrap:wrap; gap:.5rem; }
-    .ml-op { border:1px solid #d9ccf5; background:#f4eefe; color:#5d06ba; border-radius:10px; padding:.55rem .9rem;
+    .ml-op { border:1px solid #f0d68c; background:#fff8e6; color:#8a5a00; border-radius:10px; padding:.55rem .9rem;
       font-weight:600; font-size:.9rem; cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; gap:.4rem; }
-    .ml-op:hover { background:linear-gradient(135deg,#ffd700,#ffb800); color:#2d0370; border-color:#ffb800;
-      box-shadow:0 4px 14px rgba(255,184,0,.35); }
+    .ml-op:hover:not(:disabled) { background:linear-gradient(135deg,#ffd24a,#f5a623); color:#2d0370; border-color:#f5a623;
+      box-shadow:0 4px 14px rgba(245,158,11,.32); }
     .ml-op:disabled { opacity:.5; cursor:not-allowed; }
     .ml-answer { margin-top:1rem; background:linear-gradient(135deg,#2d0370,#5d06ba); color:#fff; border-radius:14px;
       padding:1rem 1.2rem; border-left:4px solid #ffc400; box-shadow:0 6px 22px rgba(45,3,112,.18); }
