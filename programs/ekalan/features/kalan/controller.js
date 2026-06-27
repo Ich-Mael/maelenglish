@@ -1440,6 +1440,8 @@ module.exports.explainMath = async (req, res) => {
         }
         params = { a, b };
         opKeyPart = `integral_def:${a},${b}`; // distinct cache key per bounds
+      } else if (operation === "study") {
+        opKeyPart = "study:v2"; // bump when the étude prompt changes (busts old cached studies)
       }
       key = `${input}|${opKeyPart}|${casResult}`;
     }

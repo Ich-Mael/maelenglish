@@ -1569,15 +1569,6 @@
       // 4 · Dérivée
       var fpLatex = ''; if(fp){ try { fpLatex = toLatex(fp.split(' ').join('')); } catch(e){ fpLatex = ''; } }
       var bodyDer = fp ? line('', "f'(x) = " + (fpLatex || (BS + 'text{' + fp + '}'))) : '<div class="study-line"><span class="study-lbl">Voir le signe dans le tableau ci-dessous.</span></div>';
-      // 5 · Sens de variation (text, not the full table — that has its own button)
-      var bodySens = '';
-      (function(){
-        function segd(i){ return pts[i + 1].inYn - pts[i].outYn; }
-        for(var i = 0; i < pts.length - 1; i++){ var d = segd(i); if(d === 0) continue; bodySens += line(d > 0 ? 'f est croissante sur' : 'f est décroissante sur', ']' + tx(pts[i].x) + SEMI + tx(pts[i + 1].x) + '['); }
-        for(var i2 = 1; i2 < pts.length - 1; i2++){ if(pts[i2].kind !== 'pt') continue; var din = segd(i2 - 1), dout = segd(i2), type = null; if(din > 0 && dout < 0) type = 'Maximum'; else if(din < 0 && dout > 0) type = 'Minimum'; if(type) bodySens += line(type + ' :', 'f(' + tx(pts[i2].x) + ') = ' + tx(pts[i2].y)); }
-      })();
-      if(!bodySens) bodySens = '<div class="study-line"><span class="study-lbl">f est monotone sur son domaine.</span></div>';
-
       // 6 · Points caractéristiques
       var bodyPts = '';
       if(y0 !== null) bodyPts += line('Ordonnée à l\\'origine :', 'f(0) = ' + tx(y0));
@@ -1589,7 +1580,7 @@
         + (bodyPar ? sec('2 · Parité', bodyPar) : '')
         + sec('3 · Limites et asymptotes', bodyAsym)
         + sec('4 · Dérivée', bodyDer)
-        + sec('5 · Sens de variation', bodySens)
+        + '<div class="study-sec"><div class="study-t">5 · Tableau de variation</div>' + variationTableHTML(pts, '', {}) + '</div>'
         + sec('6 · Points caractéristiques', bodyPts)
         + '</div>';
       answerEl.innerHTML = report;
