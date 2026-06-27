@@ -582,7 +582,7 @@
           </div>
           <div id="suite-rec-fields" hidden>
             <div class="ml-input-row"><label for="suite-fu">uₙ₊₁ =</label><input id="suite-fu" type="text" value="0.5*u+1" placeholder="ex : 0.5u+1, sqrt(u+2)" autocomplete="off" /></div>
-            <div class="ml-input-row"><label for="suite-u0">u₀ =</label><input id="suite-u0" type="text" value="0" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:130px" /></div>
+            <div class="ml-input-row"><label for="suite-u0">u₀ =</label><input id="suite-u0" type="text" value="1" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:130px" /></div>
           </div>
           <div class="ml-input-row"><label for="suite-n">Rang n =</label><input id="suite-n" type="number" value="10" min="1" max="40" step="1" style="flex:0 0 auto; min-width:0; max-width:120px" /><span class="ml-hint" style="margin:0">nombre de termes affichés</span></div>
 
@@ -3178,6 +3178,8 @@
     function suiteVals(t){ return t.map(function(x){ return x.v; }).filter(function(v){ return isFinite(v); }); }
     function suiteNature(t){
       var vs = suiteVals(t); if(vs.length < 3) return { type: 'none' };
+      // constant sequence (e.g. uₙ₊₁=0.5uₙ with u₀=0 → all 0) — report as constant, not arithmétique r=0
+      if(vs.every(function(v){ return Math.abs(v - vs[0]) < 1e-9 * Math.max(1, Math.abs(vs[0])); })) return { type: 'const', c: vs[0] };
       var d = vs[1] - vs[0], ar = true;
       for(var k = 1; k < vs.length - 1; k++){ if(Math.abs((vs[k + 1] - vs[k]) - d) > 1e-6 * Math.max(1, Math.abs(d))){ ar = false; break; } }
       if(ar) return { type: 'arith', r: d };
@@ -3259,7 +3261,7 @@
       function km(latex){ var id = 'suk' + (kid++); kq.push({ id: id, latex: latex }); return '<span class="study-math" id="' + id + '"></span>'; }
       function line(label, latex){ var s = '<div class="study-line">'; if(label) s += '<span class="study-lbl">' + label + '</span> '; if(latex) s += km(latex); return s + '</div>'; }
       function termsLatex(maxShow){ var parts = t.slice(0, maxShow).map(function(x){ return 'u_{' + x.n + '} = ' + (isFinite(x.v) ? vtFmt(x.v) : '?'); }); if(t.length > maxShow) parts.push(BS + 'dots'); return parts.join(', '); }
-      function natLatex(){ if(nat.type === 'arith') return BS + 'text{arithmétique, raison } r = ' + vtFmt(nat.r) + ' ' + BS + 'quad u_n = u_0 + n' + BS + 'cdot r'; if(nat.type === 'geo') return BS + 'text{géométrique, raison } q = ' + vtFmt(nat.q) + ' ' + BS + 'quad u_n = u_0 ' + BS + 'cdot q^{n}'; return BS + 'text{ni arithmétique ni géométrique}'; }
+      function natLatex(){ if(nat.type === 'const') return BS + 'text{suite constante : } u_n = ' + vtFmt(nat.c); if(nat.type === 'arith') return BS + 'text{arithmétique, raison } r = ' + vtFmt(nat.r) + ' ' + BS + 'quad u_n = u_0 + n' + BS + 'cdot r'; if(nat.type === 'geo') return BS + 'text{géométrique, raison } q = ' + vtFmt(nat.q) + ' ' + BS + 'quad u_n = u_0 ' + BS + 'cdot q^{n}'; return BS + 'text{ni arithmétique ni géométrique}'; }
       function limLatex(){ return BS + 'lim' + BS + 'limits_{n ' + BS + 'to +' + BS + 'infty} u_n = ' + (lim.kind === 'fin' ? vtFmt(lim.v) : (lim.kind === 'inf' ? (lim.s > 0 ? '+' + BS + 'infty' : '-' + BS + 'infty') : BS + 'text{ (diverge) }')); }
 
       var title, body = '';
@@ -3283,7 +3285,7 @@
       // ---- Claude explanation for the full study ----
       stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
       var parts = ['termes : ' + t.slice(0, 6).map(function(x){ return 'u' + x.n + '=' + vtFmt(x.v); }).join(', ')];
-      parts.push('nature : ' + (nat.type === 'arith' ? 'arithmétique r=' + vtFmt(nat.r) : (nat.type === 'geo' ? 'géométrique q=' + vtFmt(nat.q) : 'ni arithmétique ni géométrique')));
+      parts.push('nature : ' + (nat.type === 'const' ? 'constante (uₙ=' + vtFmt(nat.c) + ')' : (nat.type === 'arith' ? 'arithmétique r=' + vtFmt(nat.r) : (nat.type === 'geo' ? 'géométrique q=' + vtFmt(nat.q) : 'ni arithmétique ni géométrique'))));
       parts.push('sens : ' + sens);
       parts.push('limite : ' + BSlim);
       var summary = parts.join(' ; ').slice(0, 480);
