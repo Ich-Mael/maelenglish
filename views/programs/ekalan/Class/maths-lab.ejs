@@ -131,13 +131,19 @@
     /* Étude complète — flagship op button + report */
     .ml-op--hero { background:linear-gradient(135deg,#2d0370,#5d06ba); color:#fff; border-color:#5d06ba; font-weight:700; }
     .ml-op--hero:hover:not(:disabled) { color:#fff; box-shadow:0 4px 14px rgba(93,6,186,.35); }
-    .ml-study { margin-top:1rem; background:linear-gradient(135deg,#2d0370,#5d06ba); color:#fff; border-radius:14px; padding:1rem 1.1rem 1.15rem; }
-    .study-head { color:#ffd24a; font-size:.95rem; font-weight:800; margin-bottom:.4rem; }
+    .ml-study { margin-top:1rem; background:linear-gradient(135deg,#2d0370,#5d06ba); color:#fff; border-radius:14px; padding:1rem 1.1rem 1.15rem;
+                font-family:'Cambria','Georgia','Times New Roman',serif; }
+    .study-head { color:#ffd24a; font-size:.98rem; font-weight:800; margin-bottom:.4rem; }
     .study-sec { padding:.7rem 0; border-top:1px solid rgba(255,255,255,.16); }
-    .study-t { font-weight:700; color:#ffd24a; font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; margin-bottom:.35rem; }
-    .study-body { color:#f1ebff; font-size:.96rem; line-height:1.55; }
+    .study-t { font-weight:700; color:#ffd24a; font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; margin-bottom:.4rem; font-family:system-ui,sans-serif; }
+    .study-body { color:#f1ebff; font-size:1rem; line-height:1.55; }
     .study-body strong { color:#fff; }
-    .study-hr { border:none; border-top:1px dashed rgba(255,255,255,.25); margin:.45rem 0; }
+    .study-line { margin:.32rem 0; }
+    .study-lbl { color:#efe7ff; }
+    .study-math { color:#fff; }
+    .study-line .katex, .study-math .katex, .study-work .katex { color:inherit; }
+    .study-work { font-size:.9rem; color:#cdbff0; margin:.12rem 0 .25rem .3rem; }
+    .study-hr { border:none; border-top:1px dashed rgba(255,255,255,.25); margin:.5rem 0; }
     .vt-domain { font-size:.92rem; color:#fff; font-weight:700; margin:.1rem 0 .5rem; }
     .vt-note { font-size:.82rem; color:#d9c9f5; margin-top:.5rem; }
     /* boundary limits, listed separately */
@@ -1008,9 +1014,27 @@
         case '+': return dxStr(n.l) + ' + ' + dxStr(n.r); case '-': return dxStr(n.l) + ' - ' + wrapM(n.r);
       } return ''; }
 
+    // Polynomial expansion so the derivative shows its simplified final form
+    // (e.g. ((2x)(x+2) − (x²−3))/(x+2)² → (x²+4x+3)/(x+2)²): numerator collected, denom kept factored.
+    function dxPAdd(a, b){ var r = [], m = Math.max(a.length, b.length); for(var i = 0; i < m; i++) r[i] = (a[i] || 0) + (b[i] || 0); return r; }
+    function dxPMul(a, b){ var r = []; for(var i = 0; i < a.length; i++) for(var j = 0; j < b.length; j++) r[i + j] = (r[i + j] || 0) + a[i] * b[j]; return r; }
+    function dxPoly(n){ if(!n) return null;
+      if(n.t === 'num') return [n.v];
+      if(n.t === 'var') return [0, 1];
+      if(n.t === 'const') return null;
+      if(n.t === 'neg'){ var p = dxPoly(n.a); return p ? p.map(function(c){ return -c; }) : null; }
+      if(n.t === '+'){ var a = dxPoly(n.l), b = dxPoly(n.r); return (a && b) ? dxPAdd(a, b) : null; }
+      if(n.t === '-'){ var a2 = dxPoly(n.l), b2 = dxPoly(n.r); return (a2 && b2) ? dxPAdd(a2, b2.map(function(c){ return -c; })) : null; }
+      if(n.t === '*'){ var a3 = dxPoly(n.l), b3 = dxPoly(n.r); return (a3 && b3) ? dxPMul(a3, b3) : null; }
+      if(n.t === '^'){ var ba = dxPoly(n.l); if(!ba || n.r.t !== 'num') return null; var e = n.r.v; if(e < 0 || Math.round(e) !== e) return null; var rr = [1]; for(var k = 0; k < e; k++) rr = dxPMul(rr, ba); return rr; }
+      return null; }
+    function dxPolyStr(c){ var d = c.length - 1; while(d > 0 && Math.abs(c[d]) < 1e-12) d--; if(d === 0) return vtFmt(c[0]);
+      var out = ''; for(var k = d; k >= 0; k--){ var v = c[k]; if(Math.abs(v) < 1e-12) continue; var av = Math.abs(v), sign = v < 0 ? '-' : '+'; var coef = (Math.abs(av - 1) < 1e-12 && k > 0) ? '' : vtFmt(av); var xp = k === 0 ? '' : (k === 1 ? 'x' : 'x^' + k); var term = coef + xp; if(out === '') out = (sign === '-' ? '-' : '') + term; else out += ' ' + sign + ' ' + term; } return out || '0'; }
+    function dxPretty(d){ if(d.t === '/'){ var nP = dxPoly(d.l); if(nP){ var ns = dxPolyStr(nP); if(ns === '0') return '0'; return '(' + ns + ')/' + dxStr(d.r); } return dxStr(d); } var p = dxPoly(d); if(p) return dxPolyStr(p); return dxStr(d); }
+
     // Symbolic derivative as a string. JS differentiator first (reliable), GeoGebra as fallback.
     function derivExpr(expr){
-      try { var ast = dxParse(dxTok(expr)); if(ast){ var d = dxDiff(ast); if(d){ d = dxSimp(dxSimp(dxSimp(d))); var str = dxStr(d); if(str && str.indexOf('?') < 0) return str; } } } catch(e){}
+      try { var ast = dxParse(dxTok(expr)); if(ast){ var d = dxDiff(ast); if(d){ d = dxSimp(dxSimp(dxSimp(d))); var str = dxPretty(d); if(str && str.indexOf('?') < 0) return str; } } } catch(e){}
       var tries = ['Derivative(' + expr + ')', 'Derivative(f)', 'Derivative(f(x),x)'];
       for(var t = 0; t < tries.length; t++){
         var r = ''; try { r = ggbToText(ggb.evalCommandCAS(tries[t])); } catch(e){ r = ''; }
@@ -1497,26 +1521,79 @@
       poles.slice().sort(function(p1, p2){ return p1.x - p2.x; }).forEach(function(p){ limLines.push('lim(x→' + vtFmt(p.x) + '⁻) f(x) = ' + (p.leftSign > 0 ? '+∞' : '−∞') + '   ;   lim(x→' + vtFmt(p.x) + '⁺) f(x) = ' + (p.rightSign > 0 ? '+∞' : '−∞')); });
       limLines.push('lim(x→+∞) f(x) = ' + vtFmtLim(endPos));
 
-      // ---- Render the étude report ----
+      // ---- Render the étude report (math via KaTeX; French labels in a serif font) ----
+      var kq = [], kid = 0;
+      function km(latex){ var id = 'sk' + (kid++); kq.push({ id: id, latex: latex }); return '<span class="study-math" id="' + id + '"></span>'; }
+      function line(label, latex, work){
+        var s = '<div class="study-line">';
+        if(label) s += '<span class="study-lbl">' + label + '</span> ';
+        if(latex) s += km(latex);
+        if(work) s += '<div class="study-work">' + km(work) + '</div>';
+        return s + '</div>';
+      }
       function sec(title, body){ return '<div class="study-sec"><div class="study-t">' + title + '</div><div class="study-body">' + body + '</div></div>'; }
-      var domHtml = 'D<sub>f</sub> = ' + escapeHtml(domain) + (excluded.length ? ' &nbsp;<span style="color:#ffb3b3">(x ≠ ' + escapeHtml(excluded.join(', ')) + ')</span>' : '');
-      var limAsym = (asymLines.length ? asymLines.map(escapeHtml).join('<br>') + '<hr class="study-hr">' : '') + limLines.map(escapeHtml).join('<br>');
-      var ptsHtml = [];
-      if(y0 !== null) ptsHtml.push('Ordonnée à l\\'origine : f(0) = ' + escapeHtml(y0));
-      if(roots.length) ptsHtml.push('Intersection(s) avec l\\'axe (Ox) : x = ' + escapeHtml(roots.map(vtFmt).join(', ')));
-      else ptsHtml.push('Pas d\\'intersection simple avec l\\'axe (Ox) détectée.');
+      // Convert our unicode-math strings (∞, ∪, ≠, ;, ±superscripts…) to LaTeX.
+      function tx(s){ return String(s)
+        .split('−∞').join('-\\infty').split('+∞').join('+\\infty').split('∞').join('\\infty')
+        .split('∪').join('\\cup ').split('≠').join('\\neq ').split('×').join('\\times ')
+        .split('⁻').join('^{-}').split('⁺').join('^{+}').split('−').join('-').split(' ; ').join('\\,;\\,'); }
+      function axLatex(aa){ return aa === 1 ? 'x' : (aa === -1 ? '-x' : tx(vtFmt(aa)) + 'x'); }
+      function lineEqLatex(aa, bb){ var sx = axLatex(aa); if(bb > 0) sx += ' + ' + tx(vtFmt(bb)); else if(bb < 0) sx += ' - ' + tx(vtFmt(Math.abs(bb))); return sx; }
+
+      // 1 · Domaine
+      var domLatex = 'D_f = ' + tx(domain) + (excluded.length ? '\\quad (x \\neq ' + excluded.map(tx).join(',\\ ') + ')' : '');
+      var bodyDom = line('', domLatex);
+      // 2 · Parité
+      var bodyPar = par ? '<div class="study-line"><span class="study-lbl">f est <strong>' + par + '</strong>'
+        + (par === 'paire' ? ' — courbe symétrique par rapport à l\\'axe des ordonnées.' : (par === 'impaire' ? ' — courbe symétrique par rapport à l\\'origine.' : '.')) + '</span></div>' : '';
+      // 3 · Limites et asymptotes
+      var bodyAsym = '';
+      poles.slice().sort(function(p1, p2){ return p1.x - p2.x; }).forEach(function(p){ bodyAsym += line('Asymptote verticale :', 'x = ' + tx(vtFmt(p.x))); });
+      [{ s: -1, lbl: '−∞', sL: '-\\infty', end: endNeg }, { s: 1, lbl: '+∞', sL: '+\\infty', end: endPos }].forEach(function(o){
+        var inf = !isFinite(o.end) || Math.abs(o.end) > 1e8, ob = oblique(o.s);
+        if(inf && ob && Math.abs(ob.a) > 1e-9){
+          var work = 'a = \\lim\\limits_{x \\to ' + o.sL + '}\\dfrac{f(x)}{x} = ' + tx(vtFmt(ob.a))
+            + ' \\quad b = \\lim\\limits_{x \\to ' + o.sL + '}\\big(f(x) - ' + axLatex(ob.a) + '\\big) = ' + tx(vtFmt(ob.b));
+          bodyAsym += line('Asymptote oblique en ' + o.lbl + ' :', 'y = ' + lineEqLatex(ob.a, ob.b), work);
+        } else if(!inf && ob) bodyAsym += line('Asymptote horizontale en ' + o.lbl + ' :', 'y = ' + tx(vtFmt(o.end)));
+        else if(inf) bodyAsym += '<div class="study-line"><span class="study-lbl">Branche parabolique en ' + o.lbl + ' (pas d\\'asymptote linéaire).</span></div>';
+      });
+      bodyAsym += '<hr class="study-hr">';
+      bodyAsym += line('', '\\lim\\limits_{x \\to -\\infty} f(x) = ' + tx(vtFmtLim(endNeg)));
+      poles.slice().sort(function(p1, p2){ return p1.x - p2.x; }).forEach(function(p){
+        bodyAsym += line('', '\\lim\\limits_{x \\to ' + tx(vtFmt(p.x)) + '^{-}} f(x) = ' + (p.leftSign > 0 ? '+\\infty' : '-\\infty')
+          + ' \\qquad \\lim\\limits_{x \\to ' + tx(vtFmt(p.x)) + '^{+}} f(x) = ' + (p.rightSign > 0 ? '+\\infty' : '-\\infty'));
+      });
+      bodyAsym += line('', '\\lim\\limits_{x \\to +\\infty} f(x) = ' + tx(vtFmtLim(endPos)));
+      // 4 · Dérivée
+      var fpLatex = ''; if(fp){ try { fpLatex = toLatex(fp.split(' ').join('')); } catch(e){ fpLatex = ''; } }
+      var bodyDer = fp ? line('', "f'(x) = " + (fpLatex || ('\\text{' + fp + '}'))) : '<div class="study-line"><span class="study-lbl">Voir le signe dans le tableau ci-dessous.</span></div>';
+      // 5 · Sens de variation (text, not the full table — that has its own button)
+      var bodySens = '';
+      (function(){
+        function segd(i){ return pts[i + 1].inYn - pts[i].outYn; }
+        for(var i = 0; i < pts.length - 1; i++){ var d = segd(i); if(d === 0) continue; bodySens += line(d > 0 ? 'f est croissante sur' : 'f est décroissante sur', ']' + tx(pts[i].x) + '\\,;\\,' + tx(pts[i + 1].x) + '['); }
+        for(var i2 = 1; i2 < pts.length - 1; i2++){ if(pts[i2].kind !== 'pt') continue; var din = segd(i2 - 1), dout = segd(i2), type = null; if(din > 0 && dout < 0) type = 'Maximum'; else if(din < 0 && dout > 0) type = 'Minimum'; if(type) bodySens += line(type + ' :', 'f(' + tx(pts[i2].x) + ') = ' + tx(pts[i2].y)); }
+      })();
+      if(!bodySens) bodySens = '<div class="study-line"><span class="study-lbl">f est monotone sur son domaine.</span></div>';
+
+      // 6 · Points caractéristiques
+      var bodyPts = '';
+      if(y0 !== null) bodyPts += line('Ordonnée à l\\'origine :', 'f(0) = ' + tx(y0));
+      if(roots.length) bodyPts += line('Intersections avec (Ox) :', 'x = ' + roots.map(function(r){ return tx(vtFmt(r)); }).join(' \\;;\\; '));
+      else bodyPts += '<div class="study-line"><span class="study-lbl">Pas d\\'intersection simple avec (Ox) détectée.</span></div>';
 
       var report = '<div class="ml-study"><div class="study-head"><i class="bi bi-clipboard2-data"></i> Étude complète — <span id="study-fx">f(x) = ' + escapeHtml(expr) + '</span></div>'
-        + sec('1 · Domaine de définition', domHtml)
-        + (par ? sec('2 · Parité', 'f est <strong>' + par + '</strong>' + (par === 'paire' ? ' (courbe symétrique par rapport à l\\'axe des ordonnées)' : (par === 'impaire' ? ' (courbe symétrique par rapport à l\\'origine)' : '')) + '.') : '')
-        + sec('3 · Limites et asymptotes', limAsym)
-        + sec('4 · Dérivée', (fp ? '<span id="study-fp">f&#8242;(x) = ' + escapeHtml(fp) + '</span>' : 'Voir le signe dans le tableau ci-dessous.'))
-        + '<div class="study-sec"><div class="study-t">5 · Tableau de variation</div>' + variationTableHTML(pts, '', {}) + '</div>'
-        + sec('6 · Points caractéristiques', ptsHtml.join('<br>'))
+        + sec('1 · Domaine de définition', bodyDom)
+        + (bodyPar ? sec('2 · Parité', bodyPar) : '')
+        + sec('3 · Limites et asymptotes', bodyAsym)
+        + sec('4 · Dérivée', bodyDer)
+        + sec('5 · Sens de variation', bodySens)
+        + sec('6 · Points caractéristiques', bodyPts)
         + '</div>';
       answerEl.innerHTML = report;
       try { var fxEl = document.getElementById('study-fx'); if(fxEl) renderKatex(fxEl, 'f(x) = ' + toLatex(expr)); } catch(e){}
-      if(fp){ try { var fpEl = document.getElementById('study-fp'); if(fpEl) renderKatex(fpEl, "f'(x) = " + toLatex(fp.split(' ').join(''))); } catch(e){} }
+      kq.forEach(function(it){ var el = document.getElementById(it.id); if(el){ try { renderKatex(el, it.latex); } catch(e){} } });
       stateEl.innerHTML = '<span class="ml-spinner"></span> Rédaction de l\\'étude…';
 
       // ---- Anchored summary for Claude ----
