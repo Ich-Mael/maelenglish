@@ -58,13 +58,15 @@
     .ml-card { background:#fff; border-radius:18px; box-shadow:0 10px 30px rgba(45,3,112,.1); padding:1.25rem; }
     .ml-card h2 { font-size:1.05rem; font-weight:700; color:#2d0370; margin:0 0 .9rem; display:flex; align-items:center; gap:.5rem; }
     /* ===== Main topics (domain tabs) — brand PURPLE ===== */
-    .ml-modes { display:inline-flex; gap:.3rem; padding:.3rem; background:#f1ecfb; border:1px solid #e5dbf7;
-      border-radius:12px; margin-bottom:1.1rem; flex-wrap:wrap; }
-    .ml-mode { display:inline-flex; align-items:center; gap:.45rem; border:none; cursor:pointer; background:transparent;
-      color:#5d06ba; font-weight:700; font-size:.9rem; padding:.55rem 1rem; border-radius:9px; transition:all .2s; }
-    .ml-mode:hover { background:rgba(93,6,186,.08); }
-    .ml-mode.is-active { background:linear-gradient(135deg,#5d06ba,#2d0370); color:#fff;
-      box-shadow:0 4px 14px rgba(93,6,186,.35); }
+    .ml-modes { display:flex; gap:.45rem; padding:.45rem; background:#f1ecfb; border:1px solid #e5dbf7;
+      border-radius:14px; margin-bottom:1.1rem; flex-wrap:wrap; }
+    .ml-mode { display:inline-flex; align-items:center; gap:.45rem; cursor:pointer;
+      background:#fff; border:1px solid #d9caf6; color:#5d06ba; font-weight:700; font-size:.9rem;
+      padding:.5rem .95rem; border-radius:10px; transition:all .18s; box-shadow:0 1px 2px rgba(45,3,112,.06); }
+    .ml-mode:hover { background:#f6f1ff; border-color:#b99cf0; transform:translateY(-1px); box-shadow:0 4px 10px rgba(93,6,186,.16); }
+    .ml-mode.is-active { background:linear-gradient(135deg,#5d06ba,#2d0370); color:#fff; border-color:#2d0370;
+      box-shadow:0 5px 16px rgba(93,6,186,.38); transform:none; }
+    .ml-mode.is-active:hover { transform:translateY(-1px); }
     .geo-row { display:flex; align-items:center; gap:.6rem; margin-bottom:.55rem; }
     .geo-row .geo-label { font-weight:700; color:#5d06ba; min-width:3.4rem; }
     .geo-row input { flex:1; min-width:140px; padding:.6rem .8rem; border:2px solid #e0e0e0; border-radius:10px;
@@ -286,6 +288,10 @@
     <div class="ml-grid">
       <!-- Controls + results -->
       <div class="ml-card">
+        <div class="ml-warn" id="ml-warn" style="margin:0 0 1rem">
+          <i class="bi bi-shield-exclamation"></i>
+          <span><strong>Aide à l'étude, usage personnel.</strong> Vérifiez toujours les résultats vous-même — l'IA peut se tromper dans les explications, mais le résultat affiché provient du moteur de calcul.</span>
+        </div>
         <div class="ml-modes" id="modes">
           <button type="button" class="ml-mode is-active" data-mode="function"><i class="bi bi-graph-up"></i> Fonctions</button>
           <button type="button" class="ml-mode" data-mode="complex"><i class="bi bi-asterisk"></i> Nombres complexes</button>
@@ -717,11 +723,6 @@
         <div id="answer"></div>
         <div id="steps" class="ml-steps"></div>
         <div id="state" class="ml-state"></div>
-
-        <div class="ml-warn" id="ml-warn">
-          <i class="bi bi-shield-exclamation"></i>
-          <span><strong>Aide à l'étude, usage personnel.</strong> Vérifiez toujours les résultats vous-même — l'IA peut se tromper dans les explications, mais le résultat affiché provient du moteur de calcul.</span>
-        </div>
       </div>
 
       <!-- Graph (below) -->
