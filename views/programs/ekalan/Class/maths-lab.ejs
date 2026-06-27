@@ -285,12 +285,13 @@
         </div>
 
         <div class="ml-ops" id="ops">
+          <button class="ml-op" data-op="domain"><i class="bi bi-bounding-box"></i> Domaine de définition</button>
           <button class="ml-op" data-op="derivative"><i class="bi bi-slash-lg"></i> Dérivée f'(x)</button>
           <button class="ml-op" data-op="variations"><i class="bi bi-table"></i> Tableau de variation</button>
           <button class="ml-op" data-op="asymptotes"><i class="bi bi-arrows-collapse"></i> Asymptotes</button>
           <button class="ml-op" data-op="limit"><i class="bi bi-infinity"></i> Limite en +∞</button>
           <button class="ml-op" data-op="integral"><i class="bi bi-integral"></i> Primitive</button>
-          <button class="ml-op" data-op="solve"><i class="bi bi-check2-square"></i> Résoudre = 0</button>
+          <button class="ml-op" data-op="solve"><i class="bi bi-check2-square"></i> Résoudre f(x)= 0</button>
           <button class="ml-op" data-op="factor"><i class="bi bi-diagram-2"></i> Factoriser</button>
           <button class="ml-op" data-op="expand"><i class="bi bi-arrows-angle-expand"></i> Développer</button>
         </div>
@@ -1163,10 +1164,102 @@
       }
     }
 
+    /* ---- Domaine de définition ---- */
+    async function runDomain(){
+      var expr = (fxInput.value || '').trim();
+      if(!expr){ stateEl.textContent = 'Saisissez une fonction.'; return; }
+      if(!ggb){ return; }
+      plot(expr);
+      answerEl.innerHTML = ''; stepsEl.innerHTML = '';
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Calcul du domaine…';
+      setOpsEnabled(false);
+
+      function ev(c){ try { ggb.evalCommand(c); return true; } catch(e){ return false; } }
+      function gv(l){ try { return ggb.getValue(l); } catch(e){ return NaN; } }
+      ev('vtArg=0'); ev('vtRes=f(vtArg)');
+      function fAt(x){ ev('SetValue(vtArg,' + x + ')'); return gv('vtRes'); }
+      function snap(x){ return Math.abs(x - Math.round(x)) < 1e-4 ? Math.round(x) : x; }
+
+      var LO = -100, HI = 100, N = 2000, step = (HI - LO) / N;
+      var ys = [], dd = [];
+      for(var i = 0; i <= N; i++){ var v = fAt(LO + i * step); ys[i] = v; dd[i] = isFinite(v); }
+
+      // Cut points: closed=true → the point belongs to D_f (e.g. √ at 0); false → excluded (pole, ln bound).
+      var cuts = [];
+      function pushCut(x, closed){
+        for(var k = 0; k < cuts.length; k++){ if(Math.abs(cuts[k].x - x) < 2 * step){ if(!closed) cuts[k].closed = false; return; } }
+        cuts.push({ x: x, closed: closed });
+      }
+      // Definedness transitions (√/ln edges, and poles that land on a sampled point).
+      for(var t = 1; t <= N; t++){
+        if(dd[t] !== dd[t - 1]){
+          var xa = LO + (t - 1) * step, xb = LO + t * step, want = dd[t - 1];
+          for(var it = 0; it < 44; it++){ var m = (xa + xb) / 2; if(isFinite(fAt(m)) === want) xa = m; else xb = m; }
+          var bx = snap((xa + xb) / 2);
+          pushCut(bx, isFinite(fAt(bx)));
+        }
+      }
+      // Poles between two finite samples (sign flip with large magnitude).
+      function poleRefine(xa, xb){
+        function g(x){ var v = fAt(x); return (isFinite(v) && v !== 0) ? 1 / v : 0; }
+        var ga = g(xa);
+        for(var it = 0; it < 50; it++){ var m = (xa + xb) / 2, gm = g(m); if(gm === 0) return m; if((ga < 0) !== (gm < 0)) xb = m; else { xa = m; ga = gm; } }
+        return (xa + xb) / 2;
+      }
+      for(var p1 = 1; p1 <= N; p1++){
+        var a = ys[p1 - 1], b = ys[p1];
+        if(isFinite(a) && isFinite(b) && a * b < 0 && Math.min(Math.abs(a), Math.abs(b)) > 5){
+          var px = poleRefine(LO + (p1 - 1) * step, LO + p1 * step);
+          if(Math.max(Math.abs(fAt(px - 1e-6)), Math.abs(fAt(px + 1e-6))) > 1e4) pushCut(snap(px), false);
+        }
+      }
+      cuts.sort(function(c1, c2){ return c1.x - c2.x; });
+      if(cuts.length > 12) cuts = cuts.slice(0, 12);
+
+      // Walk segments between cuts; a segment is in D_f if its interior point is defined.
+      var bounds = [{ x: -Infinity }].concat(cuts).concat([{ x: Infinity }]);
+      var intervals = [], excluded = [];
+      for(var s = 0; s < bounds.length - 1; s++){
+        var L = bounds[s], R = bounds[s + 1];
+        var mx = (isFinite(L.x) && isFinite(R.x)) ? (L.x + R.x) / 2 : (isFinite(L.x) ? L.x + 1 : (isFinite(R.x) ? R.x - 1 : 0));
+        if(!isFinite(fAt(mx))) continue;
+        var lo = isFinite(L.x) ? ((L.closed ? '[' : ']') + vtFmt(L.x)) : ']−∞';
+        var hi = isFinite(R.x) ? (vtFmt(R.x) + (R.closed ? ']' : '[')) : '+∞[';
+        intervals.push(lo + ' ; ' + hi);
+      }
+      cuts.forEach(function(c){ if(!c.closed) excluded.push(vtFmt(c.x)); });
+      try { ggb.deleteObject('vtRes'); ggb.deleteObject('vtArg'); } catch(e){}
+
+      var domain;
+      if(!intervals.length) domain = '∅';
+      else if(intervals.length === 1 && !cuts.length) domain = 'ℝ';
+      else domain = intervals.join(' ∪ ');
+
+      var extra = excluded.length ? '<div class="vt-note">Valeur(s) exclue(s) : x ≠ ' + escapeHtml(excluded.join(', ')) + '</div>' : '';
+      answerEl.innerHTML = '<div class="ml-answer"><div class="lbl"><i class="bi bi-bounding-box"></i> Domaine de définition</div>'
+        + '<div class="vt-domain" style="font-size:1.1rem">D<sub>f</sub> = ' + escapeHtml(domain) + '</div>' + extra + '</div>';
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
+
+      try {
+        var resp = await fetch(EXPLAIN_URL, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ function: expr, operation: 'domain', casResult: domain.slice(0, 480) })
+        });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data, true); }
+        else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){
+        stateEl.textContent = 'Connexion impossible — réessayez.';
+      } finally {
+        setOpsEnabled(true);
+      }
+    }
+
     opsEl.addEventListener('click', function(ev){
       var btn = ev.target.closest('.ml-op'); if(!btn || btn.disabled) return;
       var op = btn.getAttribute('data-op');
       if(op === 'variations'){ runVariation(); return; }
+      if(op === 'domain'){ runDomain(); return; }
       run(op);
     });
 
