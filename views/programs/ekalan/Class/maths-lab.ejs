@@ -926,10 +926,91 @@
       else head = 'M7 45 L47 45 M47 45 L38 41 M47 45 L38 49';          // → constante
       return '<svg class="vt-arr" viewBox="0 0 54 90"><path d="' + head + '" fill="none" stroke="' + c + '" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     }
-    // Symbolic derivative as a string. Tries CAS first; falls back to defining the
-    // derivative as a graphing-view function and reading its formula (CAS returns "?" here
-    // for some functions). Returns '' if nothing usable.
+    /* --- Pure-JS symbolic differentiation (GeoGebra CAS is unreliable in this deployment) --- */
+    function dxTok(s){
+      s = String(s || ''); var toks = [], i = 0, n = s.length;
+      function D(c){ return c >= '0' && c <= '9'; }
+      function A(c){ return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'); }
+      while(i < n){
+        var c = s.charAt(i);
+        if(c === ' '){ i++; continue; }
+        if(D(c) || c === '.'){ var j = i; while(j < n && (D(s.charAt(j)) || s.charAt(j) === '.')) j++; toks.push({ t:'num', v:parseFloat(s.slice(i, j)) }); i = j; continue; }
+        if(A(c)){ var j2 = i; while(j2 < n && (A(s.charAt(j2)) || D(s.charAt(j2)))) j2++; toks.push({ t:'name', v:s.slice(i, j2) }); i = j2; continue; }
+        if('+-*/^(),'.indexOf(c) >= 0){ toks.push({ t:c }); i++; continue; }
+        return null;
+      }
+      return toks;
+    }
+    function dxParse(toks){
+      if(!toks) return null; var pos = 0;
+      function peek(){ return toks[pos]; } function nx(){ return toks[pos++]; }
+      function startsF(tk){ return tk && (tk.t === 'num' || tk.t === 'name' || tk.t === '('); }
+      function pExpr(){ var nd = pTerm(); while(peek() && (peek().t === '+' || peek().t === '-')){ var op = nx().t; nd = { t:op, l:nd, r:pTerm() }; } return nd; }
+      function pTerm(){ var nd = pFactor(); while(true){ var tk = peek(); if(tk && (tk.t === '*' || tk.t === '/')){ var op = nx().t; nd = { t:op, l:nd, r:pFactor() }; } else if(startsF(tk)){ nd = { t:'*', l:nd, r:pFactor() }; } else break; } return nd; }
+      function pFactor(){ var tk = peek(); if(tk && tk.t === '-'){ nx(); return { t:'neg', a:pFactor() }; } if(tk && tk.t === '+'){ nx(); return pFactor(); } return pPow(); }
+      function pPow(){ var b = pAtom(); if(peek() && peek().t === '^'){ nx(); return { t:'^', l:b, r:pFactor() }; } return b; }
+      function pAtom(){ var tk = nx(); if(!tk) return null;
+        if(tk.t === 'num') return { t:'num', v:tk.v };
+        if(tk.t === '('){ var e = pExpr(); if(peek() && peek().t === ')') nx(); return e; }
+        if(tk.t === 'name'){ if(peek() && peek().t === '('){ nx(); var a = pExpr(); if(peek() && peek().t === ')') nx(); return { t:'fn', name:tk.v, a:a }; }
+          if(tk.v === 'x') return { t:'var' }; if(tk.v === 'e') return { t:'num', v:Math.E }; if(tk.v === 'pi') return { t:'num', v:Math.PI }; return { t:'const', name:tk.v }; }
+        return null;
+      }
+      var ast = pExpr(); if(pos < toks.length) return null; return ast;
+    }
+    function dxConst(n){ if(!n) return true; if(n.t === 'var') return false; if(n.t === 'num' || n.t === 'const') return true; if(n.t === 'neg') return dxConst(n.a); if(n.t === 'fn') return dxConst(n.a); if(n.l !== undefined) return dxConst(n.l) && dxConst(n.r); return true; }
+    function dxMul(a, b){ return { t:'*', l:a, r:b }; }
+    function dxDiff(n){ if(!n) return null; switch(n.t){
+      case 'num': case 'const': return { t:'num', v:0 };
+      case 'var': return { t:'num', v:1 };
+      case 'neg': return { t:'neg', a:dxDiff(n.a) };
+      case '+': return { t:'+', l:dxDiff(n.l), r:dxDiff(n.r) };
+      case '-': return { t:'-', l:dxDiff(n.l), r:dxDiff(n.r) };
+      case '*': return { t:'+', l:dxMul(dxDiff(n.l), n.r), r:dxMul(n.l, dxDiff(n.r)) };
+      case '/': return { t:'/', l:{ t:'-', l:dxMul(dxDiff(n.l), n.r), r:dxMul(n.l, dxDiff(n.r)) }, r:{ t:'^', l:n.r, r:{ t:'num', v:2 } } };
+      case '^': if(dxConst(n.r)) return dxMul(dxMul(n.r, { t:'^', l:n.l, r:{ t:'-', l:n.r, r:{ t:'num', v:1 } } }), dxDiff(n.l));
+                return dxMul(n, { t:'+', l:dxMul(dxDiff(n.r), { t:'fn', name:'ln', a:n.l }), r:dxMul(n.r, { t:'/', l:dxDiff(n.l), r:n.l }) });
+      case 'fn': { var u = n.a, du = dxDiff(u), m = n.name;
+        if(m === 'sin') return dxMul(du, { t:'fn', name:'cos', a:u });
+        if(m === 'cos') return dxMul(du, { t:'neg', a:{ t:'fn', name:'sin', a:u } });
+        if(m === 'tan') return { t:'/', l:du, r:{ t:'^', l:{ t:'fn', name:'cos', a:u }, r:{ t:'num', v:2 } } };
+        if(m === 'ln') return { t:'/', l:du, r:u };
+        if(m === 'log') return { t:'/', l:du, r:dxMul(u, { t:'fn', name:'ln', a:{ t:'num', v:10 } }) };
+        if(m === 'exp') return dxMul(du, { t:'fn', name:'exp', a:u });
+        if(m === 'sqrt') return { t:'/', l:du, r:dxMul({ t:'num', v:2 }, { t:'fn', name:'sqrt', a:u }) };
+        return null; }
+      } return null; }
+    function dxZero(n){ return n.t === 'num' && Math.abs(n.v) < 1e-12; }
+    function dxOne(n){ return n.t === 'num' && Math.abs(n.v - 1) < 1e-12; }
+    function dxNeg1(n){ return n.t === 'num' && Math.abs(n.v + 1) < 1e-12; }
+    function dxSimp(n){ if(!n) return null;
+      if(n.t === 'neg'){ var a0 = dxSimp(n.a); if(a0.t === 'num') return { t:'num', v:-a0.v }; if(a0.t === 'neg') return a0.a; return { t:'neg', a:a0 }; }
+      if(n.t === 'fn') return { t:'fn', name:n.name, a:dxSimp(n.a) };
+      if(n.t === '^'){ var b = dxSimp(n.l), e = dxSimp(n.r); if(e.t === 'num' && e.v === 1) return b; if(e.t === 'num' && e.v === 0) return { t:'num', v:1 }; if(b.t === 'num' && e.t === 'num') return { t:'num', v:Math.pow(b.v, e.v) }; return { t:'^', l:b, r:e }; }
+      if(n.t === '+' || n.t === '-' || n.t === '*' || n.t === '/'){ var l = dxSimp(n.l), r = dxSimp(n.r);
+        if(l.t === 'num' && r.t === 'num'){ var v = null; if(n.t === '+') v = l.v + r.v; else if(n.t === '-') v = l.v - r.v; else if(n.t === '*') v = l.v * r.v; else if(r.v !== 0) v = l.v / r.v; if(v !== null && isFinite(v)) return { t:'num', v:v }; }
+        if(n.t === '+'){ if(dxZero(l)) return r; if(dxZero(r)) return l; }
+        if(n.t === '-'){ if(dxZero(r)) return l; if(dxZero(l)) return { t:'neg', a:r }; }
+        if(n.t === '*'){ if(dxZero(l) || dxZero(r)) return { t:'num', v:0 }; if(dxOne(l)) return r; if(dxOne(r)) return l; if(dxNeg1(l)) return { t:'neg', a:r }; if(dxNeg1(r)) return { t:'neg', a:l };
+          if(l.t === 'num' && r.t === '*' && r.l.t === 'num') return dxSimp({ t:'*', l:{ t:'num', v:l.v * r.l.v }, r:r.r });
+          if(r.t === 'num' && l.t === '*' && l.l.t === 'num') return dxSimp({ t:'*', l:{ t:'num', v:r.v * l.l.v }, r:l.r }); }
+        if(n.t === '/'){ if(dxZero(l)) return { t:'num', v:0 }; if(dxOne(r)) return l; }
+        return { t:n.t, l:l, r:r }; }
+      return n; }
+    function dxStr(n){ if(!n) return '';
+      function wrap(x){ if(x.t === 'num') return x.v < 0 ? '(' + dxStr(x) + ')' : dxStr(x); if(x.t === 'var' || x.t === 'const' || x.t === 'fn') return dxStr(x); return '(' + dxStr(x) + ')'; }
+      function wrapM(x){ if(x.t === '+' || x.t === '-') return '(' + dxStr(x) + ')'; return wrap(x); }
+      switch(n.t){
+        case 'num': { var v = n.v; if(Math.abs(v - Math.round(v)) < 1e-9) v = Math.round(v); return String(v); }
+        case 'const': return n.name; case 'var': return 'x';
+        case 'neg': return '-' + wrap(n.a); case 'fn': return n.name + '(' + dxStr(n.a) + ')';
+        case '^': return wrap(n.l) + '^' + wrap(n.r); case '*': return wrap(n.l) + '*' + wrap(n.r); case '/': return wrap(n.l) + '/' + wrap(n.r);
+        case '+': return dxStr(n.l) + ' + ' + dxStr(n.r); case '-': return dxStr(n.l) + ' - ' + wrapM(n.r);
+      } return ''; }
+
+    // Symbolic derivative as a string. JS differentiator first (reliable), GeoGebra as fallback.
     function derivExpr(expr){
+      try { var ast = dxParse(dxTok(expr)); if(ast){ var d = dxDiff(ast); if(d){ d = dxSimp(dxSimp(dxSimp(d))); var str = dxStr(d); if(str && str.indexOf('?') < 0) return str; } } } catch(e){}
       var tries = ['Derivative(' + expr + ')', 'Derivative(f)', 'Derivative(f(x),x)'];
       for(var t = 0; t < tries.length; t++){
         var r = ''; try { r = ggbToText(ggb.evalCommandCAS(tries[t])); } catch(e){ r = ''; }
@@ -1347,15 +1428,32 @@
       // ---- End behaviour, asymptotes (vertical / horizontal / oblique) ----
       function endBehavior(sgn){ var fa = fAt(sgn * 1e4), fb = fAt(sgn * 1e8); if(!isFinite(fb)) return fb > 0 ? Infinity : (fb < 0 ? -Infinity : NaN); if(!isFinite(fa)) fa = fb; if(Math.abs(fb - fa) < 1e-3) return fb; return fb > 0 ? Infinity : -Infinity; }
       var endNeg = endBehavior(-1), endPos = endBehavior(1);
-      function oblique(sgn){ var X1 = sgn * 1e6, X2 = sgn * 1e8; var f1 = fAt(X1), f2 = fAt(X2); if(!isFinite(f1) || !isFinite(f2)) return null; var aa = (f2 - f1) / (X2 - X1), bb = f2 - aa * X2; var X3 = sgn * 5e7, f3 = fAt(X3); if(!isFinite(f3)) return null; if(Math.abs(f3 - (aa * X3 + bb)) > 1e-2 * Math.max(1, Math.abs(f3))) return null; return { a: snap(aa), b: snap(bb) }; }
+      // Oblique asymptote by the textbook method: a = lim f(x)/x, b = lim [f(x) − a·x].
+      // (a via the secant slope = de-biased lim f/x; b verified to converge, else parabolic.)
+      function oblique(sgn){
+        var X1 = sgn * 1e6, X2 = sgn * 1e8, X3 = sgn * 1e4;
+        var f1 = fAt(X1), f2 = fAt(X2), f3 = fAt(X3);
+        if(!isFinite(f1) || !isFinite(f2) || !isFinite(f3)) return null;
+        var a = (f2 - f1) / (X2 - X1);             // a = lim f(x)/x (secant = de-biased)
+        if(!isFinite(a)) return null;
+        var aLo = (f1 - f3) / (X1 - X3);           // a on a different scale — must agree (else f/x diverges)
+        if(Math.abs(a - aLo) > 1e-3 * Math.max(1, Math.abs(a))) return null;
+        var bFar = f2 - a * X2, bNear = f3 - a * X3; // b = lim [f(x) − a·x] — must converge across scales
+        if(!isFinite(bFar) || Math.abs(bFar - bNear) > 1e-3 * Math.max(1, Math.abs(bFar))) return null;
+        return { a: snap(a), b: snap(bFar) };
+      }
       function lineEq(aa, bb){ var sx = aa === 1 ? 'x' : (aa === -1 ? '−x' : vtFmt(aa) + 'x'); if(bb > 0) sx += ' + ' + vtFmt(bb); else if(bb < 0) sx += ' − ' + vtFmt(Math.abs(bb)); return sx; }
+      function axTerm(aa){ return aa === 1 ? 'x' : (aa === -1 ? '−x' : vtFmt(aa) + 'x'); }
       var asymLines = [];
       poles.slice().sort(function(p1, p2){ return p1.x - p2.x; }).forEach(function(p){ asymLines.push('Asymptote verticale : x = ' + vtFmt(p.x)); });
       [{ s: -1, lbl: '−∞', end: endNeg }, { s: 1, lbl: '+∞', end: endPos }].forEach(function(o){
+        var inf = !isFinite(o.end) || Math.abs(o.end) > 1e8;
         var ob = oblique(o.s);
-        if(ob && Math.abs(ob.a) > 1e-9) asymLines.push('Asymptote oblique en ' + o.lbl + ' : y = ' + lineEq(ob.a, ob.b));
-        else if(ob && isFinite(o.end) && Math.abs(o.end) <= 1e8) asymLines.push('Asymptote horizontale en ' + o.lbl + ' : y = ' + vtFmt(o.end));
-        else if(!isFinite(o.end) || Math.abs(o.end) > 1e8) asymLines.push('Branche parabolique en ' + o.lbl + ' (pas d\\'asymptote linéaire)');
+        if(inf && ob && Math.abs(ob.a) > 1e-9){
+          asymLines.push('Asymptote oblique en ' + o.lbl + ' : y = ' + lineEq(ob.a, ob.b)
+            + '   (a = lim f(x)/x = ' + vtFmt(ob.a) + ' ; b = lim[f(x) − ' + axTerm(ob.a) + '] = ' + vtFmt(ob.b) + ')');
+        } else if(!inf && ob) asymLines.push('Asymptote horizontale en ' + o.lbl + ' : y = ' + vtFmt(o.end));
+        else if(inf) asymLines.push('Branche parabolique en ' + o.lbl + ' (lim f = ±∞, a = lim f(x)/x non finie — pas d\\'asymptote)');
       });
 
       // ---- Parity (needs a symmetric domain) ----
