@@ -187,6 +187,7 @@
     .ml-op:hover:not(:disabled) { background:linear-gradient(135deg,#ffd24a,#f5a623); color:#2d0370; border-color:#f5a623;
       box-shadow:0 4px 14px rgba(245,158,11,.32); }
     .ml-op:disabled { opacity:.5; cursor:not-allowed; }
+    .ml-op.is-open { box-shadow:inset 0 0 0 2px #f5a623; background:#fff2cc; }
     .ml-answer { margin-top:1rem; background:linear-gradient(135deg,#2d0370,#5d06ba); color:#fff; border-radius:14px;
       padding:1rem 1.2rem; border-left:4px solid #ffc400; box-shadow:0 6px 22px rgba(45,3,112,.18); }
     .ml-answer .lbl { font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; font-weight:700; color:#ffd24a;
@@ -267,7 +268,6 @@
           <button type="button" class="ml-mode is-active" data-mode="function"><i class="bi bi-graph-up"></i> Fonctions</button>
           <button type="button" class="ml-mode" data-mode="complex"><i class="bi bi-asterisk"></i> Nombres complexes</button>
           <button type="button" class="ml-mode" data-mode="geometry"><i class="bi bi-triangle"></i> Géométrie</button>
-          <button type="button" class="ml-mode" data-mode="limit"><i class="bi bi-arrow-bar-right"></i> Limites</button>
           <button type="button" class="ml-mode" data-mode="integral"><i class="bi bi-integral"></i> Intégrales</button>
           <button type="button" class="ml-mode" data-mode="suite"><i class="bi bi-list-ol"></i> Suites</button>
           <button type="button" class="ml-mode" data-mode="trig"><i class="bi bi-record-circle"></i> Trigonométrie</button>
@@ -311,10 +311,28 @@
           <span class="ml-hint" style="margin:0">pour la tangente</span>
         </div>
 
+        <div id="fn-limit-panel" class="ml-block" hidden style="margin:.2rem 0 .7rem">
+          <h3 class="ml-subtitle"><i class="bi bi-arrow-bar-right"></i> Limite de f</h3>
+          <div class="ml-input-row">
+            <label for="lpoint">x →</label>
+            <input id="lpoint" type="text" value="+∞" placeholder="ex : 0, 2, +∞" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:150px;" />
+            <button type="button" class="ml-key" data-lpoint="+∞">+∞</button>
+            <button type="button" class="ml-key" data-lpoint="-∞">−∞</button>
+          </div>
+          <div class="ml-side" id="lside">
+            <button type="button" class="ml-sidebtn is-active" data-side="">↔ Bilatérale</button>
+            <button type="button" class="ml-sidebtn" data-side="-">← À gauche (x→a⁻)</button>
+            <button type="button" class="ml-sidebtn" data-side="+">→ À droite (x→a⁺)</button>
+          </div>
+          <div class="ml-preview is-empty" id="lPreview">Aperçu de la limite…</div>
+          <div class="ml-ops" id="lops"><button class="ml-op" data-lop="limit"><i class="bi bi-arrow-bar-right"></i> Calculer la limite</button></div>
+          <div class="ml-hint" style="margin-top:.3rem">Indiquez la valeur vers laquelle x tend (nombre, +∞ ou −∞). « à gauche / à droite » pour les asymptotes verticales et les formes indéterminées.</div>
+        </div>
+
         <div class="ml-ops" id="ops">
           <button class="ml-op ml-op--hero" data-op="study"><i class="bi bi-clipboard2-data"></i> Étude complète</button>
           <button class="ml-op" data-op="domain"><i class="bi bi-bounding-box"></i> Domaine de définition</button>
-           <button class="ml-op" data-op="limit"><i class="bi bi-infinity"></i> Limite en +∞</button>
+           <button class="ml-op" data-op="limit"><i class="bi bi-arrow-bar-right"></i> Limite</button>
           <button class="ml-op" data-op="derivative"><i class="bi bi-slash-lg"></i> Dérivée f'(x)</button>
           <button class="ml-op" data-op="tangent"><i class="bi bi-rulers"></i> Tangente en x₀</button>
           <button class="ml-op" data-op="convexity"><i class="bi bi-graph-up-arrow"></i> Convexité</button>
@@ -453,53 +471,6 @@
 
           <div class="ml-hint">Saisissez les affixes des points (A, B, C, …) puis tracez la figure. La nature se détermine pour <strong>3 points</strong> (triangle) ou <strong>4 points</strong> pris dans l'ordre (quadrilatère).</div>
         </div><%# /mode-geometry %>
-
-        <div id="mode-limit" hidden>
-          <h2><i class="bi bi-arrow-bar-right"></i> Limite d'une fonction</h2>
-          <div class="ml-input-row">
-            <label for="lfx">f(x) =</label>
-            <input id="lfx" type="text" value="(x^2-1)/(x-1)" placeholder="ex : (x^2-1)/(x-1)" autocomplete="off" />
-          </div>
-          <div class="ml-input-row">
-            <label for="lpoint">x →</label>
-            <input id="lpoint" type="text" value="1" placeholder="ex : 0, 2, +∞" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:160px;" />
-            <button type="button" class="ml-key" data-lpoint="+∞">+∞</button>
-            <button type="button" class="ml-key" data-lpoint="-∞">−∞</button>
-          </div>
-
-          <div class="ml-side" id="lside">
-            <button type="button" class="ml-sidebtn is-active" data-side="">↔ Bilatérale</button>
-            <button type="button" class="ml-sidebtn" data-side="-">← À gauche (x→a⁻)</button>
-            <button type="button" class="ml-sidebtn" data-side="+">→ À droite (x→a⁺)</button>
-          </div>
-
-          <div class="ml-preview is-empty" id="lPreview">Aperçu de la limite…</div>
-
-          <div class="ml-keys" id="lkeys">
-            <button type="button" class="ml-key" data-ins="x">x</button>
-            <button type="button" class="ml-key" data-ins="x^2">x²</button>
-            <button type="button" class="ml-key" data-ins="^">xⁿ</button>
-            <button type="button" class="ml-key" data-ins="(|)/(|)">a⁄b</button>
-            <button type="button" class="ml-key" data-ins="sqrt(|)">√</button>
-            <button type="button" class="ml-key" data-ins="(|)">(&nbsp;)</button>
-            <button type="button" class="ml-key" data-ins="+">+</button>
-            <button type="button" class="ml-key" data-ins="-">−</button>
-            <button type="button" class="ml-key" data-ins="*">×</button>
-            <button type="button" class="ml-key" data-ins="pi">π</button>
-            <button type="button" class="ml-key" data-ins="exp(|)">eˣ</button>
-            <button type="button" class="ml-key is-fn" data-ins="ln(|)">ln</button>
-            <button type="button" class="ml-key is-fn" data-ins="sin(|)">sin</button>
-            <button type="button" class="ml-key is-fn" data-ins="cos(|)">cos</button>
-            <button type="button" class="ml-key is-util" data-act="back">⌫</button>
-            <button type="button" class="ml-key is-util" data-act="clear">C</button>
-          </div>
-
-          <div class="ml-ops" id="lops">
-            <button class="ml-op" data-lop="limit"><i class="bi bi-arrow-bar-right"></i> Calculer la limite</button>
-          </div>
-
-          <div class="ml-hint">Indiquez la valeur vers laquelle x tend (un nombre, +∞ ou −∞). Choisissez « à gauche » / « à droite » pour les asymptotes verticales et les formes indéterminées.</div>
-        </div><%# /mode-limit %>
 
         <div id="mode-integral" hidden>
           <h2><i class="bi bi-integral"></i> Calcul d'intégrale</h2>
@@ -1809,6 +1780,7 @@
       if(op === 'domain'){ runDomain(); return; }
       if(op === 'tangent'){ runTangent(); return; }
       if(op === 'convexity'){ runConvexity(); return; }
+      if(op === 'limit'){ fnLimitPanel.hidden = !fnLimitPanel.hidden; if(!fnLimitPanel.hidden){ refreshSideButtons(); updateLimPreview(); lpointInput.focus(); } btn.classList.toggle('is-open', !fnLimitPanel.hidden); return; }
       run(op);
     });
 
@@ -2652,16 +2624,15 @@
     renumberGeo();
 
     /* ============ LIMITES ============ */
-    var modeLimit   = document.getElementById('mode-limit');
-    var lfxInput    = document.getElementById('lfx');
+    // Limite — now embedded in the Fonctions panel (uses fxInput as the function).
+    var lfxInput    = fxInput;
+    var fnLimitPanel = document.getElementById('fn-limit-panel');
     var lpointInput = document.getElementById('lpoint');
-    var lkeysEl     = document.getElementById('lkeys');
     var lopsEl      = document.getElementById('lops');
     var lPreviewEl  = document.getElementById('lPreview');
     var lsideEl     = document.getElementById('lside');
     var limObjs     = [];
     var limSide     = '';
-    var activeLim   = lfxInput;
 
     function setLOpsEnabled(on){ lopsEl.querySelectorAll('.ml-op').forEach(function(b){ b.disabled = !on; }); }
 
@@ -2724,30 +2695,11 @@
       setLimSide(b.getAttribute('data-side')); updateLimPreview();
     });
 
-    [lfxInput, lpointInput].forEach(function(inp){
-      inp.addEventListener('focus', function(){ activeLim = inp; });
-      inp.addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); runLimit(); } });
-    });
-    lfxInput.addEventListener('input', updateLimPreview);
+    lpointInput.addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); runLimit(); } });
+    fxInput.addEventListener('input', updateLimPreview);
     lpointInput.addEventListener('input', function(){ refreshSideButtons(); updateLimPreview(); });
-    Array.prototype.slice.call(modeLimit.querySelectorAll('[data-lpoint]')).forEach(function(b){
+    Array.prototype.slice.call(fnLimitPanel.querySelectorAll('[data-lpoint]')).forEach(function(b){
       b.addEventListener('click', function(){ lpointInput.value = b.getAttribute('data-lpoint'); refreshSideButtons(); updateLimPreview(); });
-    });
-
-    lkeysEl.addEventListener('click', function(ev){
-      var btn = ev.target.closest('.ml-key'); if(!btn || btn.hasAttribute('data-lpoint')) return;
-      var inp = activeLim || lfxInput;
-      var act = btn.getAttribute('data-act');
-      if(act === 'clear'){ inp.value = ''; inp.focus(); }
-      else if(act === 'back'){
-        var v = inp.value, s = inp.selectionStart, e = inp.selectionEnd;
-        if(s == null){ inp.value = v.slice(0,-1); }
-        else if(s !== e){ inp.value = v.slice(0,s) + v.slice(e); inp.setSelectionRange(s,s); }
-        else if(s > 0){ inp.value = v.slice(0,s-1) + v.slice(s); inp.setSelectionRange(s-1,s-1); }
-        inp.focus();
-      }
-      else { insertInto(inp, btn.getAttribute('data-ins')); }
-      updateLimPreview();
     });
 
     function defLim(name, fullCmd){ try { ggb.evalCommand(fullCmd); limObjs.push(name); } catch(e){} }
@@ -3352,7 +3304,6 @@
       modeFunc.hidden     = (m !== 'function');
       modeCplx.hidden     = (m !== 'complex');
       modeGeo.hidden      = (m !== 'geometry');
-      modeLimit.hidden    = (m !== 'limit');
       modeIntegral.hidden = (m !== 'integral');
       modeSuite.hidden    = (m !== 'suite');
       modeTrig.hidden     = (m !== 'trig');
@@ -3363,7 +3314,7 @@
       if(trigCircleCard) trigCircleCard.hidden = !isTrig;
       if(isTrig){ tcRender(tcDeg); return; }
       if(ggb){
-        try { ggb.setPerspective((m === 'function' || m === 'limit' || m === 'integral' || m === 'suite') ? 'AG' : 'G'); } catch(e){}
+        try { ggb.setPerspective((m === 'function' || m === 'integral' || m === 'suite') ? 'AG' : 'G'); } catch(e){}
         clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot(); clearSuitePlot();
         if(m === 'suite'){
           graphTitle.textContent = 'Termes & convergence';
@@ -3384,11 +3335,6 @@
           graphHint.textContent = 'Placez les affixes des points puis « Tracer la figure » ou déterminez la nature de la figure.';
           try { ggb.deleteObject('f'); } catch(e){}
           updateGeoPreview();
-        } else if(m === 'limit'){
-          graphTitle.textContent = 'Courbe & limite';
-          graphHint.textContent = 'La courbe de f et l’asymptote au point étudié apparaissent quand vous lancez le calcul.';
-          plot((lfxInput.value || '').trim());
-          updateLimPreview();
         } else {
           graphTitle.textContent = 'Aire & intégrale';
           graphHint.textContent = 'La courbe de f s’affiche ; pour une intégrale définie, l’aire entre a et b est colorée.';
