@@ -301,6 +301,7 @@
           <button type="button" class="ml-mode" data-mode="proba"><i class="bi bi-dice-5"></i> Probabilités</button>
           <button type="button" class="ml-mode" data-mode="stats"><i class="bi bi-bar-chart-line"></i> Statistiques</button>
           <button type="button" class="ml-mode" data-mode="diffeq"><i class="bi bi-arrow-left-right"></i> Éq. différentielles</button>
+          <button type="button" class="ml-mode" data-mode="arith"><i class="bi bi-123"></i> Arithmétique</button>
           <button type="button" class="ml-mode" data-mode="trig"><i class="bi bi-record-circle"></i> Trigonométrie</button>
         </div>
 
@@ -754,6 +755,26 @@
           </div>
           <div class="ml-hint">La solution générale et la solution particulière (vérifiant la condition initiale) sont données ; la courbe de la solution particulière est tracée.</div>
         </div><%# /mode-diffeq %>
+
+        <div id="mode-arith" hidden>
+          <h2><i class="bi bi-123"></i> Arithmétique</h2>
+          <div class="ml-input-row">
+            <label for="ar-a">a =</label><input id="ar-a" type="text" value="48" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:110px" />
+            <label for="ar-b" style="margin-left:.6rem">b =</label><input id="ar-b" type="text" value="36" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:110px" />
+            <label for="ar-n" style="margin-left:.6rem">n =</label><input id="ar-n" type="text" value="7" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:90px" />
+          </div>
+          <div class="ml-hint" style="margin:.1rem 0 0">a, b : entiers (PGCD, PPCM, Bézout, division). n : modulo, pour aᵇ mod n.</div>
+
+          <div class="ml-preview is-empty" id="arith-preview">Aperçu…</div>
+
+          <div class="ml-ops" id="arith-ops">
+            <button class="ml-op ml-op--hero" data-aop="gcd"><i class="bi bi-diagram-3"></i> PGCD &amp; PPCM</button>
+            <button class="ml-op" data-aop="bezout"><i class="bi bi-link-45deg"></i> Bézout (u, v)</button>
+            <button class="ml-op" data-aop="diveucl"><i class="bi bi-slash-square"></i> Division euclidienne</button>
+            <button class="ml-op" data-aop="factor"><i class="bi bi-asterisk"></i> Facteurs premiers</button>
+            <button class="ml-op" data-aop="modpow"><i class="bi bi-arrow-repeat"></i> aᵇ mod n</button>
+          </div>
+        </div><%# /mode-arith %>
 
         <div id="answer"></div>
         <div id="steps" class="ml-steps"></div>
@@ -3784,6 +3805,93 @@
     }
     deqOpsEl.addEventListener('click', function(ev){ var btn = ev.target.closest('.ml-op'); if(!btn || btn.disabled) return; runDiffEq(); });
 
+    /* ============ ARITHMÉTIQUE (série C) ============ */
+    var modeArith   = document.getElementById('mode-arith');
+    var arithPrevEl = document.getElementById('arith-preview');
+    var arithOpsEl  = document.getElementById('arith-ops');
+    var arA = document.getElementById('ar-a'), arB = document.getElementById('ar-b'), arN = document.getElementById('ar-n');
+
+    function setArithOpsEnabled(on){ arithOpsEl.querySelectorAll('.ml-op').forEach(function(b){ b.disabled = !on; }); }
+    function intVal(s){ s = (s || '').trim(); var v = Number(s); return (isFinite(v) && Math.abs(v) < 1e15 && Math.floor(v) === v) ? v : NaN; }
+    function gcdN(a, b){ a = Math.abs(a); b = Math.abs(b); while(b){ var t = a % b; a = b; b = t; } return a; }
+    function euclidSteps(x, y){ var st = [], guard = 0; while(y !== 0 && guard++ < 100){ var q = Math.floor(x / y), r = x - q * y; st.push(x + ' = ' + y + ' ' + BS + 'times ' + q + ' + ' + r); x = y; y = r; } return st; }
+    function extGcd(a, b){ var or = Math.abs(a), r = Math.abs(b), os = 1, s = 0, ot = 0, t = 1; while(r !== 0){ var q = Math.floor(or / r), tmp; tmp = or - q * r; or = r; r = tmp; tmp = os - q * s; os = s; s = tmp; tmp = ot - q * t; ot = t; t = tmp; } return { g: or, u: os * (a < 0 ? -1 : 1), v: ot * (b < 0 ? -1 : 1) }; }
+    function factorize(x){ x = Math.abs(x); var f = []; if(x < 2) return f; for(var d = 2; d * d <= x; d++){ if(x % d === 0){ var e = 0; while(x % d === 0){ x = x / d; e++; } f.push([d, e]); } } if(x > 1) f.push([x, 1]); return f; }
+    function factorLatex(f){ if(!f.length) return '1'; return f.map(function(pr){ return pr[1] === 1 ? String(pr[0]) : pr[0] + '^{' + pr[1] + '}'; }).join(' ' + BS + 'times '); }
+    function modpow(a, b, n){ var m = BigInt(n); if(m === 1n) return 0n; var base = ((BigInt(a) % m) + m) % m, e = BigInt(b), r = 1n; while(e > 0n){ if(e & 1n) r = (r * base) % m; base = (base * base) % m; e >>= 1n; } return r; }
+
+    function updateArithPreview(){
+      var a = intVal(arA.value), b = intVal(arB.value);
+      arithPrevEl.className = 'ml-preview is-empty';
+      arithPrevEl.textContent = (isFinite(a) && isFinite(b)) ? ('a = ' + a + ',  b = ' + b + (isFinite(intVal(arN.value)) ? ',  n = ' + intVal(arN.value) : '')) : 'Saisissez des entiers a et b…';
+    }
+    [arA, arB, arN].forEach(function(inp){ inp.addEventListener('input', updateArithPreview); });
+
+    async function runArith(aop){
+      answerEl.innerHTML = ''; stepsEl.innerHTML = '';
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Calcul…';
+      setArithOpsEnabled(false);
+      var a = intVal(arA.value), b = intVal(arB.value), n = intVal(arN.value);
+      var kq = [], kid = 0;
+      function km(l){ var id = 'ark' + (kid++); kq.push({ id: id, latex: l }); return '<span class="study-math" id="' + id + '"></span>'; }
+      function line(label, l){ var s = '<div class="study-line">'; if(label) s += '<span class="study-lbl">' + label + '</span> '; if(l) s += km(l); return s + '</div>'; }
+      var title, body = '', defStr, summary;
+
+      if(aop === 'gcd' || aop === 'bezout' || aop === 'diveucl'){
+        if(!isFinite(a) || !isFinite(b)){ stateEl.textContent = 'Saisissez des entiers a et b.'; setArithOpsEnabled(true); return; }
+      }
+
+      if(aop === 'gcd'){
+        if(a === 0 && b === 0){ stateEl.textContent = 'a et b non tous deux nuls.'; setArithOpsEnabled(true); return; }
+        var g = gcdN(a, b), l = g ? Math.abs(a / g * b) : 0;
+        title = 'PGCD & PPCM';
+        euclidSteps(Math.abs(a), Math.abs(b)).forEach(function(stp){ body += line('', stp); });
+        body += line('PGCD :', BS + 'mathrm{PGCD}(' + a + ', ' + b + ') = ' + g);
+        body += line('PPCM :', BS + 'mathrm{PPCM}(' + a + ', ' + b + ') = ' + BS + 'dfrac{|a ' + BS + 'times b|}{' + BS + 'mathrm{PGCD}} = ' + l);
+        defStr = 'PGCD et PPCM de ' + a + ' et ' + b; summary = ('PGCD(' + a + ',' + b + ')=' + g + ' ; PPCM=' + l).slice(0, 480);
+      } else if(aop === 'bezout'){
+        var e = extGcd(a, b);
+        title = 'Identité de Bézout';
+        body += line('PGCD :', BS + 'mathrm{PGCD}(' + a + ', ' + b + ') = ' + e.g);
+        body += line('Coefficients :', 'u = ' + e.u + ', ' + BS + 'quad v = ' + e.v);
+        body += line('Vérification :', a + ' ' + BS + 'times (' + e.u + ') + ' + b + ' ' + BS + 'times (' + e.v + ') = ' + e.g);
+        defStr = 'Coefficients de Bézout pour ' + a + ' et ' + b; summary = ('u=' + e.u + ' ; v=' + e.v + ' ; ' + a + 'u+' + b + 'v=' + e.g).slice(0, 480);
+      } else if(aop === 'diveucl'){
+        if(b === 0){ stateEl.textContent = 'b doit être non nul.'; setArithOpsEnabled(true); return; }
+        var ab = Math.abs(b), r2 = ((a % ab) + ab) % ab, q2 = (a - r2) / b;
+        title = 'Division euclidienne';
+        body += line('', a + ' = ' + b + ' ' + BS + 'times ' + q2 + ' + ' + r2);
+        body += line('', 'q = ' + q2 + ', ' + BS + 'quad r = ' + r2 + ' ' + BS + 'quad (0 ' + BS + 'le r < ' + ab + ')');
+        defStr = 'Division euclidienne de ' + a + ' par ' + b; summary = (a + '=' + b + '*' + q2 + '+' + r2 + ' ; q=' + q2 + ' ; r=' + r2).slice(0, 480);
+      } else if(aop === 'factor'){
+        if(!isFinite(a) || Math.abs(a) < 2){ stateEl.textContent = 'Saisissez un entier a (|a| ≥ 2) à décomposer.'; setArithOpsEnabled(true); return; }
+        var f = factorize(a);
+        title = 'Décomposition en facteurs premiers';
+        body += line('', (a < 0 ? '-' : '') + Math.abs(a) + ' = ' + (a < 0 ? '-' : '') + factorLatex(f));
+        if(f.length === 1 && f[0][1] === 1) body += line('', Math.abs(a) + ' ' + BS + 'text{ est premier.}');
+        defStr = 'Décomposition en facteurs premiers de ' + a; summary = (Math.abs(a) + ' = ' + f.map(function(pr){ return pr[1] === 1 ? pr[0] : pr[0] + '^' + pr[1]; }).join(' x ')).slice(0, 480);
+      } else { // modpow
+        if(!isFinite(a) || !isFinite(b) || !isFinite(n) || b < 0 || n < 1){ stateEl.textContent = 'Pour aᵇ mod n : b ≥ 0 et n ≥ 1.'; setArithOpsEnabled(true); return; }
+        var res = modpow(a, b, n).toString();
+        title = 'Puissance modulaire';
+        body += line('', a + '^{' + b + '} ' + BS + 'equiv ' + res + ' ' + BS + 'pmod{' + n + '}');
+        body += line('', a + '^{' + b + '} ' + BS + 'bmod ' + n + ' = ' + res);
+        defStr = a + '^' + b + ' mod ' + n; summary = (a + '^' + b + ' = ' + res + ' (mod ' + n + ')').slice(0, 480);
+      }
+
+      answerEl.innerHTML = '<div class="ml-study" style="padding:.9rem 1.1rem"><div class="study-head"><i class="bi bi-123"></i> ' + escapeHtml(title) + '</div><div class="study-body">' + body + '</div></div>';
+      kq.forEach(function(it){ var el = document.getElementById(it.id); if(el){ try { renderKatex(el, it.latex); } catch(e){} } });
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
+      try {
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: defStr, operation: 'arithmetique', casResult: summary }) });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data, true); }
+        else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){ stateEl.textContent = 'Connexion impossible — réessayez.'; }
+      finally { setArithOpsEnabled(true); }
+    }
+    arithOpsEl.addEventListener('click', function(ev){ var btn = ev.target.closest('.ml-op'); if(!btn || btn.disabled) return; runArith(btn.getAttribute('data-aop')); });
+
     /* ============ FORMULAIRES (per-topic dropdowns) ============ */
     (function(){
       function fxL(s){ return s.split('#').join(BS); } // '#' stands in for backslash (EJS-safe)
@@ -3913,13 +4021,15 @@
       modeProba.hidden    = (m !== 'proba');
       modeStats.hidden    = (m !== 'stats');
       modeDiffeq.hidden   = (m !== 'diffeq');
+      modeArith.hidden    = (m !== 'arith');
       modeTrig.hidden     = (m !== 'trig');
       answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = '';
       var isTrig = (m === 'trig');
-      // Trigonométrie: hide the GeoGebra graph, show the unit-circle card below.
-      var gcard = document.getElementById('graph-card'); if(gcard) gcard.hidden = isTrig;
+      // Trigonométrie & Arithmétique have no GeoGebra graph — hide the graph card.
+      var gcard = document.getElementById('graph-card'); if(gcard) gcard.hidden = isTrig || (m === 'arith');
       if(trigCircleCard) trigCircleCard.hidden = !isTrig;
       if(isTrig){ tcRender(tcDeg); return; }
+      if(m === 'arith'){ updateArithPreview(); return; }
       if(ggb){
         try { ggb.setPerspective((m === 'function' || m === 'integral' || m === 'suite' || m === 'diffeq') ? 'AG' : 'G'); } catch(e){}
         clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot(); clearSuitePlot(); clearProbaPlot(); clearStatsPlot();
