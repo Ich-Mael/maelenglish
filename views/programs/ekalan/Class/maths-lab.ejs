@@ -1889,7 +1889,7 @@
       if(fpp){ var fppL = ''; try { fppL = toLatex(fpp.split(' ').join('')); } catch(e){ fppL = ''; } body += line('', "f''(x) = " + (fppL || (BS + 'text{' + fpp + '}'))); }
       if(!convLines.length) body += '<div class="study-line"><span class="study-lbl">f a une convexité constante sur son domaine.</span></div>';
       convLines.forEach(function(c){ body += line(c.conv ? 'f est convexe sur' : 'f est concave sur', ']' + tx2(c.lo) + SEMI2 + tx2(c.hi) + '['); });
-      infl.forEach(function(p){ body += line('Point d\\'inflexion :', 'x = ' + tx2(vtFmt(p.x)) + ',\\quad f(x) = ' + tx2(vtFmt(p.y))); });
+      infl.forEach(function(p){ body += line('Point d\\'inflexion :', 'x = ' + tx2(vtFmt(p.x)) + ', ' + BS + 'quad f(x) = ' + tx2(vtFmt(p.y))); });
 
       answerEl.innerHTML = '<div class="ml-study" style="padding:.9rem 1.1rem"><div class="study-head"><i class="bi bi-graph-up-arrow"></i> Convexité &amp; points d\\'inflexion</div><div class="study-body">' + body + '</div></div>';
       kq.forEach(function(it){ var el = document.getElementById(it.id); if(el){ try { renderKatex(el, it.latex); } catch(e){} } });
@@ -3466,8 +3466,8 @@
     function updateProbaPreview(){
       var tex = null;
       try {
-        if(probaType === 'binom'){ var n = parseInt(pbN.value, 10), p = parseProb(pbP.value); if(!(n >= 1) || !(p >= 0 && p <= 1)) throw 0; tex = 'X ' + BS + 'sim ' + BS + 'mathcal{B}(' + n + ',\\ ' + pf(p) + ')'; }
-        else { tex = 'P(A) = ' + pf(parseProb(pcA.value)) + ',\\ \\ P(B|A) = ' + pf(parseProb(pcBA.value)) + ',\\ \\ P(B|' + BS + 'bar A) = ' + pf(parseProb(pcBnA.value)); }
+        if(probaType === 'binom'){ var n = parseInt(pbN.value, 10), p = parseProb(pbP.value); if(!(n >= 1) || !(p >= 0 && p <= 1)) throw 0; tex = 'X ' + BS + 'sim ' + BS + 'mathcal{B}(' + n + ', ' + pf(p) + ')'; }
+        else { tex = 'P(A) = ' + pf(parseProb(pcA.value)) + ', ' + BS + 'quad P(B|A) = ' + pf(parseProb(pcBA.value)) + ', ' + BS + 'quad P(B|' + BS + 'bar A) = ' + pf(parseProb(pcBnA.value)); }
       } catch(e){ tex = null; }
       if(tex == null){ probaPrevEl.className = 'ml-preview is-empty'; probaPrevEl.textContent = '…'; return; }
       try { renderKatex(probaPrevEl, tex); probaPrevEl.className = 'ml-preview'; }
@@ -3508,8 +3508,8 @@
         var pmf = bPmf(n, p, k), cdf = bCdf(n, p, k), pge = 1 - (k > 0 ? bCdf(n, p, k - 1) : 0), E = n * p, sd = Math.sqrt(n * p * (1 - p));
         plotBinom(n, p, k);
         title = 'Loi binomiale B(' + n + ', ' + pf(p) + ')';
-        body += line('', 'X ' + BS + 'sim ' + BS + 'mathcal{B}(' + n + ',\\ ' + pf(p) + ')');
-        body += line('P(X = ' + k + ') :', BS + 'binom{' + n + '}{' + k + '}\\,p^{' + k + '}(1-p)^{' + (n - k) + '} = ' + pf(pmf));
+        body += line('', 'X ' + BS + 'sim ' + BS + 'mathcal{B}(' + n + ', ' + pf(p) + ')');
+        body += line('P(X = ' + k + ') :', BS + 'binom{' + n + '}{' + k + '}' + BS + ',p^{' + k + '}(1-p)^{' + (n - k) + '} = ' + pf(pmf));
         body += line('P(X ' + BS + 'le ' + k + ') :', pf(cdf));
         body += line('P(X ' + BS + 'ge ' + k + ') :', pf(pge));
         body += line('Espérance :', 'E(X) = np = ' + pf(E));
@@ -3647,7 +3647,7 @@
         body += line('Variance :', 'V = ' + pf(s.V));
         body += line('Écart-type :', BS + 'sigma = ' + BS + 'sqrt{V} = ' + pf(s.sd));
         body += line('Médiane :', 'M_e = ' + pf(s.med));
-        body += line('Quartiles :', 'Q_1 = ' + pf(s.Q1) + ',\\quad Q_3 = ' + pf(s.Q3) + ',\\quad Q_3 - Q_1 = ' + pf(s.Q3 - s.Q1));
+        body += line('Quartiles :', 'Q_1 = ' + pf(s.Q1) + ', ' + BS + 'quad Q_3 = ' + pf(s.Q3) + ', ' + BS + 'quad Q_3 - Q_1 = ' + pf(s.Q3 - s.Q1));
         body += line('Étendue :', BS + 'max - ' + BS + 'min = ' + pf(s.max) + ' - ' + pf(s.min) + ' = ' + pf(s.etendue));
         op = 'stats_series'; defStr = 'valeurs : ' + vals.join(', ') + (effs.length ? ' ; effectifs : ' + effs.join(', ') : '');
         summary = ('moyenne=' + pf(s.mean) + ' ; variance=' + pf(s.V) + ' ; ecart-type=' + pf(s.sd) + ' ; mediane=' + pf(s.med) + ' ; Q1=' + pf(s.Q1) + ' ; Q3=' + pf(s.Q3) + ' ; etendue=' + pf(s.etendue)).slice(0, 480);
@@ -3659,10 +3659,10 @@
         plotReg(xs, ys, r.a, r.b);
         var bsign = r.b >= 0 ? ' + ' + pf(r.b) : ' - ' + pf(-r.b);
         title = 'Ajustement affine (' + r.n + ' points)';
-        body += line('Moyennes :', BS + 'bar{x} = ' + pf(r.mx) + ',\\quad ' + BS + 'bar{y} = ' + pf(r.my));
+        body += line('Moyennes :', BS + 'bar{x} = ' + pf(r.mx) + ', ' + BS + 'quad ' + BS + 'bar{y} = ' + pf(r.my));
         body += line('Droite de régression :', 'y = ' + pf(r.a) + 'x' + bsign);
         body += line('Coefficient a :', 'a = ' + BS + 'dfrac{' + BS + 'mathrm{Cov}(x,y)}{V(x)} = ' + pf(r.a));
-        body += line('Corrélation :', 'r = ' + pf(r.r) + '\\quad (r^2 = ' + pf(r.r * r.r) + ')');
+        body += line('Corrélation :', 'r = ' + pf(r.r) + ' ' + BS + 'quad (r^2 = ' + pf(r.r * r.r) + ')');
         op = 'stats_regression'; defStr = 'x : ' + xs.join(', ') + ' ; y : ' + ys.join(', ');
         summary = ('droite : y=' + pf(r.a) + 'x' + (r.b >= 0 ? '+' : '') + pf(r.b) + ' ; a=' + pf(r.a) + ' ; b=' + pf(r.b) + ' ; r=' + pf(r.r) + ' ; moyennes x=' + pf(r.mx) + ' y=' + pf(r.my)).slice(0, 480);
       }
