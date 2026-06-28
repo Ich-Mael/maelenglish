@@ -3449,7 +3449,7 @@
       parts.push('limite : ' + BSlim);
       var summary = parts.join(' ; ').slice(0, 480);
       try {
-        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: suiteDefStr(), operation: 'suite_study', casResult: summary }) });
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: suiteDefStr().slice(0, 190), operation: 'suite_study', casResult: summary }) });
         var data = await resp.json();
         if(data.ok){ showSteps(data, true); }
         else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
@@ -3555,7 +3555,7 @@
       kq.forEach(function(it){ var el = document.getElementById(it.id); if(el){ try { renderKatex(el, it.latex); } catch(e){} } });
       stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
       try {
-        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: defStr, operation: op, casResult: summary }) });
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: defStr.slice(0, 190), operation: op, casResult: summary }) });
         var data = await resp.json();
         if(data.ok){ showSteps(data, true); }
         else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
@@ -3692,7 +3692,7 @@
       kq.forEach(function(it){ var el = document.getElementById(it.id); if(el){ try { renderKatex(el, it.latex); } catch(e){} } });
       stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
       try {
-        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: defStr, operation: op, casResult: summary }) });
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: defStr.slice(0, 190), operation: op, casResult: summary }) });
         var data = await resp.json();
         if(data.ok){ showSteps(data, true); }
         else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
@@ -3796,7 +3796,7 @@
       kq.forEach(function(it){ var el = document.getElementById(it.id); if(el){ try { renderKatex(el, it.latex); } catch(e){} } });
       stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
       try {
-        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: defStr, operation: 'diff_eq', casResult: summary }) });
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: defStr.slice(0, 190), operation: 'diff_eq', casResult: summary }) });
         var data = await resp.json();
         if(data.ok){ showSteps(data, true); }
         else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
@@ -3883,7 +3883,7 @@
       kq.forEach(function(it){ var el = document.getElementById(it.id); if(el){ try { renderKatex(el, it.latex); } catch(e){} } });
       stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
       try {
-        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: defStr, operation: 'arithmetique', casResult: summary }) });
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: defStr.slice(0, 190), operation: 'arithmetique', casResult: summary }) });
         var data = await resp.json();
         if(data.ok){ showSteps(data, true); }
         else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
