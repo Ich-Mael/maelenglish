@@ -237,11 +237,12 @@ h6 {
 
 #values-c {
   font-size: 4rem;
-  color: rgba(255, 255, 255, 0.697);
+  color: rgba(255, 255, 255, 0.85);
   margin-bottom: 1rem;
   text-shadow: 2px 1px 1px rgb(22, 7, 7);
   line-height: 1.4;
   text-align: start;
+  font-family: var(--font-heading);
 }
 
 @media (max-width: 992px) {
@@ -257,21 +258,28 @@ h6 {
 @media (max-width: 768px) {
 
   #values-c {
-    color: rgba(255, 255, 255, 0.697);
-    margin-bottom: 1rem;
-    text-shadow: 2px 1px 1px rgb(22, 7, 7);
-    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.92);
+    margin-bottom: 1.25rem;
+    text-shadow: 0 2px 6px rgba(15, 4, 4, 0.55);
+    line-height: 1.2;
     text-align: center;
+    font-size: clamp(1.9rem, 7.5vw, 2.6rem);
+    letter-spacing: 0.3px;
+    padding: 0 0.5rem 1rem;
   }
 }
 
 @media (max-width: 480px) {
 
-  #values-c,
   #values-a,
   .values-b {
     font-size: 2rem;
     line-height: 1.4;
+  }
+
+  #values-c {
+    font-size: clamp(1.75rem, 8vw, 2.2rem);
+    line-height: 1.2;
   }
 }
 
@@ -842,6 +850,32 @@ hero h2 {
   #hero {
     text-align: center;
     padding-top: 58px;
+  }
+
+  #hero .container {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  #hero .row {
+    margin-top: 0 !important;
+  }
+
+  #hero .col-xl-9 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #hero .slogan {
+    margin: 0 0 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  #hero .btn-get-started {
+    margin-top: 1.25rem;
+    font-size: 15px;
+    padding: 14px 28px;
   }
 
   #hero h1 {
@@ -2794,16 +2828,22 @@ section {
 #hero {
   width: 100%;
   height: 100vh;
-  /* background image set in inline or previous css, assuming hero-bg-4.jpg */
-  background-size: cover;
-  background: url("../img/hero-bg-4.jpg") top center cover no-repeat;
+  /* Large-screen banner image */
+  background: url("https://images.pexels.com/photos/5896928/pexels-photo-5896928.jpeg") center center / cover no-repeat;
   position: relative;
   padding: 0;
 }
 
+/* Small-screen banner image */
+@media (max-width: 768px) {
+  #hero {
+    background: url("https://images.pexels.com/photos/12911773/pexels-photo-12911773.jpeg") center center / cover no-repeat;
+  }
+}
+
 #hero:before {
   content: "";
-  background: rgba(25, 14, 58, 0.6);
+  background: rgba(46, 25, 106, 0.36);
   /* Darker purple overlay for better text contrast */
   position: absolute;
   bottom: 0;
