@@ -119,10 +119,13 @@ module.exports.showClassHome = async (req, res) => {
 
   const naabaPrice = computeNaabaPrice(schoolClass.subjects, schoolClass.naabaDiscountPercent);
 
-  // Espace Maths : accessible si Kalan Naaba OU premium Maths (Kalan Ba) actif.
-  const hasMathsLab = studentHasNaaba || subjectsWithPremiumStatus.some(
-    (s) => s.hasPremiumAccess && /math/i.test(s.title || "")
-  );
+  // Kalan Maths Lab : accessible si accès autonome Maths Lab, OU Kalan Naaba,
+  // OU premium Maths (Kalan Ba) actif.
+  const hasMathsLab = studentHasNaaba
+    || hasActiveAccess(schoolClass.mathsLabStudents, hsId)
+    || subjectsWithPremiumStatus.some(
+      (s) => s.hasPremiumAccess && /math/i.test(s.title || "")
+    );
 
   res.render("programs/ekalan/Class/classHome", {
     schoolClass: {
@@ -539,6 +542,8 @@ module.exports.viewAllSubject = async (req, res) => {
     subjects,
     naabaPrice: computeNaabaPrice(subjects, schoolClass.naabaDiscountPercent),
     naabaCount: activeCount(schoolClass.naabaStudents),
+    mathsLabCount: activeCount(schoolClass.mathsLabStudents),
+    mathsLabPrice: schoolClass.mathsLabPrice != null ? schoolClass.mathsLabPrice : 2000,
   });
 };
 
@@ -1105,6 +1110,111 @@ module.exports.revokeNaabaAccess = async (req, res) => {
   await schoolClass.save();
   req.flash("success", "Kalan Naaba révoqué avec succès");
   res.redirect("back");
+};
+
+// ── Kalan Maths Lab (produit autonome) ───────────────────────────────
+// Page de gestion : prix + octroi manuel + liste des accès actifs.
+module.exports.manageClassMathsLab = async (req, res) => {
+  const schoolClass = await Class.findById(req.params.class_id)
+    .populate({
+      path: "mathsLabStudents.student",
+      populate: { path: "studentBasicInfo", select: "username name surname email phoneNumber" },
+    });
+
+  if (!schoolClass) {
+    req.flash("error", "Classe non trouvée");
+    return res.redirect("/programs/ekalan/kalan/admindashboard/kalan/class");
+  }
+
+  res.render("programs/ekalan/Class/subjects/manageMathsLab", { schoolClass });
+};
+
+// Admin: mettre à jour le prix de la Kalan Maths Lab (produit autonome)
+module.exports.updateMathsLabPrice = async (req, res) => {
+  const schoolClass = await Class.findById(req.params.class_id);
+  if (!schoolClass) {
+    req.flash("error", "Classe non trouvée");
+    return res.redirect("back");
+  }
+  let price = parseFloat(req.body.mathsLabPrice);
+  if (isNaN(price) || price < 0) price = 0;
+  schoolClass.mathsLabPrice = price;
+  await schoolClass.save();
+  req.flash("success", "Prix Kalan Maths Lab mis à jour");
+  res.redirect("back");
+};
+
+// Admin: accorder l'accès autonome Kalan Maths Lab manuellement (par username)
+module.exports.giveMathsLabAccess = async (req, res) => {
+  const schoolClass = await Class.findById(req.params.class_id);
+  if (!schoolClass) {
+    req.flash("error", "Classe non trouvée");
+    return res.redirect("back");
+  }
+
+  const user = await User.findOne({ username: req.body.student_username });
+  if (!user) {
+    req.flash("error", "Utilisateur non trouvé");
+    return res.redirect("back");
+  }
+  const student = await HStudent.findOne({ studentBasicInfo: user._id });
+  if (!student) {
+    req.flash("error", "Étudiant non trouvé");
+    return res.redirect("back");
+  }
+
+  if (!schoolClass.mathsLabStudents) schoolClass.mathsLabStudents = [];
+  const status = grantOrRenew(schoolClass.mathsLabStudents, student._id);
+  if (status === "active") {
+    req.flash("error", "Cet élève a déjà la Kalan Maths Lab active pour cette classe");
+    return res.redirect("back");
+  }
+  await schoolClass.save();
+
+  req.flash("success", `Kalan Maths Lab ${status === "renewed" ? "renouvelée" : "accordée"} à ${user.surname} ${user.name}`);
+  res.redirect("back");
+};
+
+// Admin: révoquer l'accès autonome Kalan Maths Lab d'un élève
+module.exports.revokeMathsLabAccess = async (req, res) => {
+  const schoolClass = await Class.findById(req.params.class_id);
+  if (!schoolClass) {
+    req.flash("error", "Classe non trouvée");
+    return res.redirect("back");
+  }
+  const before = (schoolClass.mathsLabStudents || []).length;
+  schoolClass.mathsLabStudents = (schoolClass.mathsLabStudents || []).filter(
+    (e) => e.student && e.student.toString() !== req.params.student_id
+  );
+  if (schoolClass.mathsLabStudents.length === before) {
+    req.flash("error", "Cet élève n'avait pas la Kalan Maths Lab");
+    return res.redirect("back");
+  }
+  await schoolClass.save();
+  req.flash("success", "Kalan Maths Lab révoquée avec succès");
+  res.redirect("back");
+};
+
+// API: rechercher les élèves d'une classe (nom / prénom / username / email)
+// pour l'autocomplétion du formulaire d'octroi Kalan Maths Lab.
+module.exports.searchClassStudents = async (req, res) => {
+  const q = (req.query.q || "").trim();
+  if (q.length < 2) return res.json({ students: [] });
+
+  const schoolClass = await Class.findById(req.params.class_id).select("students");
+  if (!schoolClass) return res.json({ students: [] });
+
+  const students = await HStudent.find({ _id: { $in: schoolClass.students || [] } })
+    .populate("studentBasicInfo", "username name surname email");
+
+  const rx = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+  const results = students
+    .map((s) => s.studentBasicInfo)
+    .filter((u) => u && (rx.test(u.username || "") || rx.test(u.name || "") || rx.test(u.surname || "") || rx.test(u.email || "")))
+    .slice(0, 12)
+    .map((u) => ({ username: u.username, name: u.name, surname: u.surname, email: u.email }));
+
+  res.json({ students: results });
 };
 
 // ✅ NOUVEAU: Lister toutes les demandes d'accès premium

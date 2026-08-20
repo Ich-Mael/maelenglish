@@ -64,6 +64,19 @@ router.get(
   })
 );
 
+// Kalan Maths Lab — sélecteur de classe (admin).
+// Point d'entrée global pour gérer l'accès autonome à la Maths Lab, classe par classe.
+router.get(
+  "/admindashboard/kalan/maths-lab",
+  isLoggedIn,
+  isVerified,
+  checkRoles(["admin", "super-admin"]),
+  catchAsync(async (req, res) => {
+    const allClasses = await Class.find({}).sort({ serie: 1, title: 1 });
+    res.render("programs/ekalan/admin/maths-lab-classes", { allClasses });
+  })
+);
+
 // create a new class
 router.post(
   "/admindashboard/kalan/class",
@@ -289,6 +302,51 @@ router.delete(
   isVerified,
   checkRoles(["admin", "super-admin"]),
   catchAsync(BAC.revokeNaabaAccess)
+);
+
+// Kalan Maths Lab (produit autonome) — page de gestion pour une classe (admin)
+router.get(
+  "/admindashboard/kalan/class/:class_id/maths-lab-access",
+  isLoggedIn,
+  isVerified,
+  checkRoles(["admin", "super-admin"]),
+  catchAsync(BAC.manageClassMathsLab)
+);
+
+// API: rechercher les élèves d'une classe (autocomplétion octroi Maths Lab) (admin)
+router.get(
+  "/admindashboard/kalan/class/:class_id/students/search",
+  isLoggedIn,
+  isVerified,
+  checkRoles(["admin", "super-admin"]),
+  catchAsync(BAC.searchClassStudents)
+);
+
+// Update Kalan Maths Lab price for a class (admin)
+router.post(
+  "/admindashboard/kalan/class/:class_id/maths-lab-access/price",
+  isLoggedIn,
+  isVerified,
+  checkRoles(["admin", "super-admin"]),
+  catchAsync(BAC.updateMathsLabPrice)
+);
+
+// Grant Kalan Maths Lab (standalone) manually (admin)
+router.post(
+  "/admindashboard/kalan/class/:class_id/give-maths-lab",
+  isLoggedIn,
+  isVerified,
+  checkRoles(["admin", "super-admin"]),
+  catchAsync(BAC.giveMathsLabAccess)
+);
+
+// Revoke Kalan Maths Lab (standalone) of a student (admin)
+router.delete(
+  "/admindashboard/kalan/class/:class_id/maths-lab-access/revoke/:student_id",
+  isLoggedIn,
+  isVerified,
+  checkRoles(["admin", "super-admin"]),
+  catchAsync(BAC.revokeMathsLabAccess)
 );
 
 // Adding a Student to a class (an udpdate of student class)

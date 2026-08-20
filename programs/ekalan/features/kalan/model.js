@@ -200,6 +200,21 @@ const classSchema = new Schema({
     default: 20,
   },
 
+  // Kalan Maths Lab : élèves ayant l'accès AUTONOME à la Maths Lab de cette classe.
+  // Produit indépendant — l'accès est AUSSI accordé implicitement par Kalan Ba (Maths)
+  // ou Kalan Naaba (cf. mathsLabAccess). Accès limité dans le temps — cf. premiumAccess.js
+  mathsLabStudents: [{
+    student: { type: Schema.Types.ObjectId, ref: "HStudent" },
+    grantedAt: { type: Date, default: Date.now },
+    expiresAt: { type: Date },
+  }, ],
+
+  // Prix de l'accès autonome à la Kalan Maths Lab (FCFA)
+  mathsLabPrice: {
+    type: Number,
+    default: 2000,
+  },
+
 }, {
   timestamps: true,
 });

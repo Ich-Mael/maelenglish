@@ -1,0 +1,250 @@
+<% layout('layouts/main') %>
+
+<% headContent = `
+  <style>
+    #main { margin-top: 0 !important; padding-top: 0 !important; }
+    .premium-page {
+      padding: 2rem 0 4rem; min-height: calc(100vh - 200px);
+      background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%); margin-top: 80px !important;
+    }
+    .page-header {
+      background: linear-gradient(135deg, #2d0370 0%, #5d06ba 60%, #7d1fd6 100%); color: white;
+      padding: 2.5rem 2rem; border-radius: 20px; margin-bottom: 2rem;
+      box-shadow: 0 10px 40px rgba(93, 6, 186, 0.3);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    }
+    .page-header h1 { margin: 0 0 0.5rem 0; font-size: 2rem; font-weight: 700; display: flex; align-items: center; gap: 1rem; }
+    .page-header p { margin: 0; opacity: 0.95; font-size: 1.1rem; font-weight: 300; }
+    .class-badge {
+      display: inline-block; background: rgba(255, 255, 255, 0.2); padding: 0.5rem 1rem; border-radius: 50px;
+      font-size: 0.9rem; margin-top: 0.5rem; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .btn-header {
+      padding: 0.75rem 1.5rem; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease;
+      display: inline-flex; align-items: center; gap: 0.5rem; background: white; color: #5d06ba; border: 2px solid white;
+    }
+    .btn-header:hover { background: rgba(255,255,255,0.9); transform: translateY(-2px); color: #2d0370; text-decoration: none; }
+    .card-panel { background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 2rem; }
+    .panel-title { font-size: 1.35rem; font-weight: 700; color: #2d0370; margin: 0 0 1.25rem; padding-bottom: .9rem; border-bottom: 2px solid #f0f0f0; display: flex; align-items: center; gap: .6rem; }
+    .panel-title i { color: #5d06ba; }
+    .panel-title .count { margin-left: auto; background: #ede0ff; color: #5d06ba; font-size: .85rem; padding: .2rem .7rem; border-radius: 50px; }
+    .price-row { display: flex; align-items: baseline; gap: .9rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .price-row .now { font-size: 2rem; font-weight: 800; color: #2d0370; }
+    .price-hint { font-size: .85rem; color: #777; margin-bottom: 1.25rem; }
+    .info-note { background:#f3eaff; border:1px solid #d9c2ff; color:#4a2a86; border-radius:12px; padding:.9rem 1.1rem; font-size:.9rem; margin-bottom:1.25rem; display:flex; gap:.6rem; align-items:flex-start; }
+    .info-note i { color:#7d1fd6; font-size:1.1rem; margin-top:.1rem; }
+    .grant-form { display: flex; gap: .75rem; flex-wrap: wrap; align-items: flex-end; }
+    .grant-form .field { flex: 1; min-width: 220px; }
+    .grant-form label { display: block; font-weight: 600; color: #2d0370; margin-bottom: .5rem; font-size: .95rem; }
+    .grant-form input { width: 100%; padding: .85rem 1rem; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 1rem; background: #fafafa; }
+    .grant-form input:focus { outline: none; border-color: #5d06ba; background: white; box-shadow: 0 0 0 4px rgba(93,6,186,.1); }
+    .btn { padding: .8rem 1.4rem; border-radius: 50px; font-weight: 600; font-size: .95rem; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: .45rem; text-decoration: none; transition: all .25s ease; }
+    .btn-primary { background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%); color: white; }
+    .btn-primary:hover { transform: translateY(-2px); color: white; }
+    .btn-outline-danger { background: #fff; color: #c82333; border: 1px solid #f1aeb5; }
+    .btn-sm { padding: .45rem .9rem; font-size: .85rem; }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th { text-align: left; font-size: .8rem; text-transform: uppercase; letter-spacing: .03em; color: #888; padding: .6rem .75rem; border-bottom: 2px solid #f0f0f0; }
+    .data-table td { padding: .85rem .75rem; border-bottom: 1px solid #f4f4f4; vertical-align: middle; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .stu-name { font-weight: 600; color: #2d0370; }
+    .stu-sub { font-size: .85rem; color: #777; }
+    .status-pill { font-size: .78rem; font-weight: 600; padding: .2rem .7rem; border-radius: 50px; }
+    .status-approved { background: #d4edda; color: #155724; }
+    .status-rejected { background: #f8d7da; color: #721c24; }
+    .empty { text-align: center; color: #999; padding: 1.5rem; font-style: italic; }
+    .inline-form { display: inline; }
+    .row-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+    .ac-wrap { position: relative; }
+    .ac-results { position: absolute; top: 100%; left: 0; right: 0; z-index: 30; background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; margin-top: .3rem; box-shadow: 0 8px 24px rgba(0,0,0,.12); max-height: 300px; overflow-y: auto; display: none; }
+    .ac-results.show { display: block; }
+    .ac-item { padding: .7rem .9rem; cursor: pointer; border-bottom: 1px solid #f4f4f4; }
+    .ac-item:last-child { border-bottom: none; }
+    .ac-item:hover, .ac-item.active { background: #f3eaff; }
+    .ac-item .ac-name { font-weight: 600; color: #2d0370; }
+    .ac-item .ac-sub { font-size: .82rem; color: #777; }
+    .ac-empty { padding: .8rem .9rem; color: #999; font-style: italic; }
+    .ac-selected { margin-top: .5rem; font-size: .9rem; color: #155724; background: #d4edda; border-radius: 8px; padding: .4rem .7rem; display: none; }
+    .ac-selected.show { display: inline-block; }
+    @media (max-width: 768px) {
+      .page-header { padding: 2rem 1.5rem; }
+      .card-panel { padding: 1.5rem; }
+      .data-table thead { display: none; }
+      .data-table, .data-table tbody, .data-table tr, .data-table td { display: block; width: 100%; }
+      .data-table tr { border: 1px solid #f0f0f0; border-radius: 12px; margin-bottom: 1rem; padding: .5rem; }
+      .data-table td { border-bottom: none; }
+    }
+  </style>
+` %>
+
+<div class="premium-page">
+  <div class="container">
+    <div class="page-header">
+      <div>
+        <h1><i class="bi bi-calculator"></i> Kalan Maths Lab — accès autonome</h1>
+        <p>Produit indépendant : accès à la Maths Lab de cette classe</p>
+        <span class="class-badge"><i class="bi bi-mortarboard"></i> <%= schoolClass.title %> - <%= schoolClass.serie %></span>
+      </div>
+      <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/subjects" class="btn-header">
+        <i class="bi bi-arrow-left"></i> Retour aux matières
+      </a>
+    </div>
+
+    <div class="info-note">
+      <i class="bi bi-info-circle-fill"></i>
+      <span>La Kalan Maths Lab est aussi débloquée automatiquement par <strong>Kalan Ba (Maths)</strong> et par <strong>Kalan Naaba</strong>. Cette page gère uniquement l'accès <strong>autonome</strong> (élèves qui achètent la Maths Lab seule). L'accès est valable jusqu'à la fin de l'année scolaire.</span>
+    </div>
+
+    <%# ── Pricing ──────────────────────────────────── %>
+    <div class="card-panel">
+      <h2 class="panel-title"><i class="bi bi-currency-exchange"></i> Prix de la Kalan Maths Lab</h2>
+      <div class="price-row">
+        <span class="now"><%= Number(schoolClass.mathsLabPrice != null ? schoolClass.mathsLabPrice : 2000).toLocaleString('fr-FR') %> FCFA</span>
+      </div>
+      <div class="price-hint">Prix de l'accès autonome (produit vendu séparément de Kalan Ba / Kalan Naaba).</div>
+      <form class="grant-form" method="POST"
+            action="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/maths-lab-access/price">
+        <div class="field" style="max-width: 240px;">
+          <label for="mathsLabPrice">Prix (FCFA)</label>
+          <input type="number" id="mathsLabPrice" name="mathsLabPrice"
+                 value="<%= schoolClass.mathsLabPrice != null ? schoolClass.mathsLabPrice : 2000 %>"
+                 min="0" step="100" />
+        </div>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Enregistrer le prix</button>
+      </form>
+    </div>
+
+    <%# ── Manual grant ─────────────────────────────── %>
+    <div class="card-panel">
+      <h2 class="panel-title"><i class="bi bi-person-plus"></i> Accorder la Kalan Maths Lab</h2>
+      <form class="grant-form" id="ml-grant-form" method="POST"
+            action="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/give-maths-lab">
+        <div class="field ac-wrap"
+             data-search-url="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/students/search">
+          <label for="ml-student-search">Rechercher un élève (nom ou nom d'utilisateur)</label>
+          <input type="text" id="ml-student-search" autocomplete="off" placeholder="ex: Aminata, Diallo, aminata.diallo…" />
+          <input type="hidden" id="ml-student-username" name="student_username" />
+          <div class="ac-results" id="ml-student-results"></div>
+          <div class="ac-selected" id="ml-student-selected"></div>
+        </div>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> Accorder l'accès</button>
+      </form>
+    </div>
+
+    <%# ── Current holders ──────────────────────────── %>
+    <div class="card-panel">
+      <h2 class="panel-title">
+        <i class="bi bi-people-fill"></i> Élèves avec la Kalan Maths Lab (autonome)
+        <span class="count"><%= (schoolClass.mathsLabStudents || []).length %></span>
+      </h2>
+      <% if (!schoolClass.mathsLabStudents || schoolClass.mathsLabStudents.length === 0) { %>
+        <div class="empty">Aucun élève n'a l'accès autonome à la Kalan Maths Lab pour cette classe.</div>
+      <% } else { %>
+        <table class="data-table">
+          <thead><tr><th>Élève</th><th>Accès</th><th>Actions</th></tr></thead>
+          <tbody>
+            <% schoolClass.mathsLabStudents.forEach(function(s) { const u = s && s.student && s.student.studentBasicInfo; const active = s.expiresAt && new Date(s.expiresAt) > new Date(); %>
+              <tr>
+                <td>
+                  <div class="stu-name"><%= u ? `${u.surname || ''} ${u.name || ''}`.trim() || u.username : 'Élève inconnu' %></div>
+                  <% if (u) { %><div class="stu-sub">@<%= u.username %><% if (u.email) { %> · <%= u.email %><% } %></div><% } %>
+                </td>
+                <td>
+                  <% if (active) { %>
+                    <span class="status-pill status-approved">Actif</span>
+                  <% } else { %>
+                    <span class="status-pill status-rejected">Expiré</span>
+                  <% } %>
+                  <% if (s.expiresAt) { %><div class="stu-sub"><%= active ? 'Expire le' : 'Expiré le' %> <%= new Date(s.expiresAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) %></div><% } %>
+                </td>
+                <td>
+                  <% if (s.student) { %>
+                  <form class="inline-form" method="POST"
+                        action="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/maths-lab-access/revoke/<%= s.student._id %>?_method=DELETE"
+                        onsubmit="return confirm('Révoquer la Kalan Maths Lab de cet élève ?');">
+                    <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-x-circle"></i> Révoquer</button>
+                  </form>
+                  <% } %>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var wrap = document.querySelector('.ac-wrap');
+  if (!wrap) return;
+  var url = wrap.getAttribute('data-search-url');
+  var input = document.getElementById('ml-student-search');
+  var hidden = document.getElementById('ml-student-username');
+  var results = document.getElementById('ml-student-results');
+  var selected = document.getElementById('ml-student-selected');
+  var form = document.getElementById('ml-grant-form');
+  var timer = null;
+
+  function clearSelection() {
+    hidden.value = '';
+    selected.className = 'ac-selected';
+    selected.textContent = '';
+  }
+  function hideResults() { results.className = 'ac-results'; results.innerHTML = ''; }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+  }); }
+
+  function render(list) {
+    if (!list.length) {
+      results.innerHTML = '<div class="ac-empty">Aucun élève trouvé dans cette classe.</div>';
+      results.className = 'ac-results show';
+      return;
+    }
+    results.innerHTML = list.map(function (s) {
+      var full = ((s.surname || '') + ' ' + (s.name || '')).trim() || s.username;
+      var sub = '@' + esc(s.username) + (s.email ? ' · ' + esc(s.email) : '');
+      return '<div class="ac-item" data-username="' + esc(s.username) + '" data-full="' + esc(full) + '">' +
+             '<div class="ac-name">' + esc(full) + '</div><div class="ac-sub">' + sub + '</div></div>';
+    }).join('');
+    results.className = 'ac-results show';
+    Array.prototype.forEach.call(results.querySelectorAll('.ac-item'), function (item) {
+      item.addEventListener('click', function () {
+        var uname = item.getAttribute('data-username');
+        var full = item.getAttribute('data-full');
+        hidden.value = uname;
+        input.value = full;
+        selected.textContent = 'Sélectionné : ' + full + ' (@' + uname + ')';
+        selected.className = 'ac-selected show';
+        hideResults();
+      });
+    });
+  }
+
+  input.addEventListener('input', function () {
+    clearSelection();
+    var q = input.value.trim();
+    if (timer) clearTimeout(timer);
+    if (q.length < 2) { hideResults(); return; }
+    timer = setTimeout(function () {
+      fetch(url + '?q=' + encodeURIComponent(q), { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(function (r) { return r.json(); })
+        .then(function (d) { render(d.students || []); })
+        .catch(function () { hideResults(); });
+    }, 220);
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!wrap.contains(e.target)) hideResults();
+  });
+
+  form.addEventListener('submit', function (e) {
+    if (!hidden.value) {
+      e.preventDefault();
+      alert('Veuillez sélectionner un élève dans la liste de recherche.');
+    }
+  });
+})();
+</script>

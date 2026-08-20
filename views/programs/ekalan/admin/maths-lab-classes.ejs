@@ -1,0 +1,75 @@
+<% layout('layouts/main') %>
+
+<% headContent = `
+  <style>
+    #main { margin-top: 0 !important; padding-top: 0 !important; }
+    .mlp-page {
+      padding: 2rem 0 4rem; min-height: calc(100vh - 200px);
+      background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%); margin-top: 80px !important;
+    }
+    .page-header {
+      background: linear-gradient(135deg, #0d2a4d 0%, #12507d 55%, #1f7fb8 100%); color: white;
+      padding: 2.5rem 2rem; border-radius: 20px; margin-bottom: 2rem;
+      box-shadow: 0 10px 40px rgba(13, 42, 77, 0.3);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    }
+    .page-header h1 { margin: 0 0 0.5rem 0; font-size: 2rem; font-weight: 700; display: flex; align-items: center; gap: 1rem; }
+    .page-header p { margin: 0; opacity: 0.95; font-size: 1.05rem; font-weight: 300; }
+    .btn-header {
+      padding: 0.75rem 1.5rem; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease;
+      display: inline-flex; align-items: center; gap: 0.5rem; background: white; color: #12507d; border: 2px solid white;
+    }
+    .btn-header:hover { background: rgba(255,255,255,0.9); transform: translateY(-2px); color: #0d2a4d; text-decoration: none; }
+    .class-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem; }
+    .class-card {
+      background: white; border-radius: 16px; padding: 1.4rem 1.5rem; box-shadow: 0 4px 18px rgba(0,0,0,0.07);
+      display: flex; flex-direction: column; gap: .8rem; border: 1px solid #eef1f5; transition: all .25s ease;
+    }
+    .class-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(13,42,77,.14); }
+    .class-title { font-size: 1.2rem; font-weight: 800; color: #0d2a4d; display: flex; align-items: center; gap: .5rem; }
+    .serie-badge { font-size: .7rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; padding: .2rem .6rem; border-radius: 999px; background: #e6f3fb; color: #12507d; }
+    .class-meta { font-size: .9rem; color: #667; }
+    .class-meta strong { color: #12507d; }
+    .btn { padding: .7rem 1.2rem; border-radius: 50px; font-weight: 700; font-size: .9rem; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: .45rem; text-decoration: none; transition: all .25s ease; }
+    .btn-primary { background: linear-gradient(135deg, #12507d 0%, #0d2a4d 100%); color: white; margin-top: auto; }
+    .btn-primary:hover { transform: translateY(-2px); color: white; }
+    .empty { text-align: center; color: #999; padding: 2rem; font-style: italic; background: white; border-radius: 16px; }
+  </style>
+` %>
+
+<div class="mlp-page">
+  <div class="container">
+    <div class="page-header">
+      <div>
+        <h1><i class="bi bi-calculator"></i> Kalan Maths Lab — accès autonome</h1>
+        <p>Choisissez une classe pour accorder / révoquer l'accès à la Maths Lab (produit indépendant)</p>
+      </div>
+      <a href="/admin/dashboard" class="btn-header"><i class="bi bi-arrow-left"></i> Tableau de bord</a>
+    </div>
+
+    <% if (!allClasses || allClasses.length === 0) { %>
+      <div class="empty">Aucune classe pour le moment.</div>
+    <% } else { %>
+      <div class="class-grid">
+        <% allClasses.forEach(function(c) {
+             const now = new Date();
+             const activeCount = (c.mathsLabStudents || []).filter(s => s.expiresAt && new Date(s.expiresAt) > now).length;
+        %>
+          <div class="class-card">
+            <div class="class-title">
+              <i class="bi bi-mortarboard" style="color:#1f7fb8;"></i> <%= c.title %>
+              <span class="serie-badge"><%= c.serie || '—' %></span>
+            </div>
+            <div class="class-meta">
+              <strong><%= activeCount %></strong> élève(s) avec accès autonome actif<br>
+              Prix : <strong><%= Number(c.mathsLabPrice != null ? c.mathsLabPrice : 2000).toLocaleString('fr-FR') %> FCFA</strong>
+            </div>
+            <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= c._id %>/maths-lab-access" class="btn btn-primary">
+              <i class="bi bi-sliders"></i> Gérer l'accès
+            </a>
+          </div>
+        <% }); %>
+      </div>
+    <% } %>
+  </div>
+</div>

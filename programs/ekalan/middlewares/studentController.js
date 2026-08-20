@@ -78,15 +78,21 @@ module.exports.subjectPremiumAccess = catchAsync(async (req, res, next) => {
     return res.render("noAccess");
 });
 
-// Accès à l'Espace Maths : réservé aux élèves ayant un premium Maths actif
-// (Kalan Ba sur la matière Maths de leur classe) OU Kalan Naaba. Admins inclus.
+// Accès à la Kalan Maths Lab. Réservé aux élèves ayant :
+//  - l'accès autonome Maths Lab (class.mathsLabStudents — produit indépendant), OU
+//  - Kalan Ba sur une matière Maths de leur classe, OU
+//  - Kalan Naaba (toute la classe). Admins inclus.
 module.exports.mathsLabAccess = catchAsync(async (req, res, next) => {
     if (isAdmin(req.user)) return next();
     const hsId = req.user && req.user.highSchool_id;
     if (!hsId) return res.render("noAccess");
 
+    const schoolClass = await Class.findById(req.params.class_id).select("naabaStudents mathsLabStudents");
+
+    // Accès autonome Kalan Maths Lab (produit indépendant)
+    if (schoolClass && hasActiveAccess(schoolClass.mathsLabStudents, hsId)) return next();
+
     // Kalan Naaba (toute la classe)
-    const schoolClass = await Class.findById(req.params.class_id).select("naabaStudents");
     if (schoolClass && hasActiveAccess(schoolClass.naabaStudents, hsId)) return next();
 
     // Kalan Ba sur une matière de Maths de cette classe
@@ -96,7 +102,7 @@ module.exports.mathsLabAccess = catchAsync(async (req, res, next) => {
     }).select("premiumStudents");
     if (mathsSubjects.some((s) => hasActiveAccess(s.premiumStudents, hsId))) return next();
 
-    req.flash('error', "L'Espace Maths est réservé aux élèves ayant Kalan Ba (Maths) ou Kalan Naaba.");
+    req.flash('error', "La Kalan Maths Lab est réservée aux élèves ayant l'accès Maths Lab, Kalan Ba (Maths) ou Kalan Naaba.");
     return res.render("noAccess");
 });
 

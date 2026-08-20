@@ -254,6 +254,26 @@
       </a>
     </div>
 
+    <%# Kalan Maths Lab — produit autonome %>
+    <div style="background: linear-gradient(135deg, #0d2a4d 0%, #12507d 55%, #1f7fb8 100%); color:#fff; border-radius:18px; padding:1.4rem 1.6rem; margin-bottom:2rem; display:flex; align-items:center; gap:1rem; flex-wrap:wrap; box-shadow:0 8px 28px rgba(13,42,77,.22);">
+      <i class="bi bi-calculator" style="font-size:2.2rem; color:#8fd6ff;"></i>
+      <div style="flex:1; min-width:240px;">
+        <div style="font-weight:800; font-size:1.15rem; display:flex; align-items:center; gap:.5rem; flex-wrap:wrap;">
+          <span style="font-size:.7rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase; padding:.25rem .6rem; border-radius:999px; background:linear-gradient(135deg,#8fd6ff,#3ea9e0); color:#0d2a4d;"><i class="bi bi-calculator"></i> Kalan Maths Lab</span>
+          Accès autonome (produit indépendant)
+        </div>
+        <div style="opacity:.92; font-size:.9rem; margin-top:.35rem;">
+          Prix : <strong style="color:#8fd6ff;"><%= Number(mathsLabPrice != null ? mathsLabPrice : 2000).toLocaleString('fr-FR') %> FCFA</strong>
+          · <%= mathsLabCount %> élève(s) avec accès autonome
+          · aussi inclus dans Kalan Ba (Maths) &amp; Kalan Naaba
+        </div>
+      </div>
+      <a href="/programs/ekalan/kalan/admindashboard/kalan/class/<%= schoolClass._id %>/maths-lab-access"
+         style="padding:.75rem 1.4rem; border-radius:50px; font-weight:700; text-decoration:none; background:linear-gradient(135deg,#8fd6ff,#3ea9e0); color:#0d2a4d; display:inline-flex; align-items:center; gap:.45rem;">
+        <i class="bi bi-sliders"></i> Gérer Kalan Maths Lab
+      </a>
+    </div>
+
     <% if(subjects && subjects.length > 0) { %>
       <div class="subjects-grid">
         <% for(let subject of subjects) {%>
