@@ -1,20 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 
-  <title>Afro House of Knowledge</title>
-  <meta
-    content="Afro House of Knowledge - Plateforme éducative en ligne proposant des formations d'excellence académique, accompagnement scolaire et apprentissage des langues. Le savoir sans barrières. Découvrir, Développer, Devenir."
-    name="description" />
+  <%
+    const _base = (typeof baseUrl !== 'undefined' && baseUrl) ? String(baseUrl).replace(/\/+$/, '') : '';
+    const _canonical = _base + '/';
+    const _ogImg = _base + '/assets/img/afrohk_logo_2.png';
+    const _title = "Afro House of Knowledge — Éducation, accompagnement scolaire & anglais";
+    const _desc = "Afro House of Knowledge — plateforme éducative en ligne : formations d'excellence académique, accompagnement scolaire (e-Kalan) et apprentissage de l'anglais (English Boost) en Afrique. Le savoir sans barrières.";
+    const _ld = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "EducationalOrganization",
+          "@id": _base + "/#organization",
+          "name": "Afro House of Knowledge",
+          "alternateName": "AfroHK",
+          "url": _canonical,
+          "logo": _ogImg,
+          "description": _desc,
+          "sameAs": [
+            "https://web.facebook.com/Afro-House-Of-Knowledge-104795908266730",
+            "https://www.instagram.com/afro_h_k/",
+            "https://www.youtube.com/channel/UCoyOQOqSqRGjH8FrkvT4b0g",
+            "https://twitter.com/afro__HK"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": _base + "/#website",
+          "url": _canonical,
+          "name": "Afro House of Knowledge",
+          "inLanguage": "fr",
+          "publisher": { "@id": _base + "/#organization" }
+        }
+      ]
+    };
+  %>
 
-  <meta content="" name="keywords" />
+  <title><%= _title %></title>
+  <meta name="description" content="<%= _desc %>" />
+  <meta name="keywords"
+    content="Afro House of Knowledge, AfroHK, éducation Afrique, accompagnement scolaire, cours en ligne, apprentissage anglais, e-Kalan, English Boost, formations en ligne, EdTech Afrique" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="<%= _canonical %>" />
 
   <!-- Favicons -->
   <link href="/assets/img/afrohk_logo_2.png" rel="icon" />
-  <meta property="og:image" content="/assets/img/afrohk_logo_2.png" />
+
+  <!-- Open Graph / social preview -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Afro House of Knowledge" />
+  <meta property="og:title" content="<%= _title %>" />
+  <meta property="og:description" content="<%= _desc %>" />
+  <meta property="og:url" content="<%= _canonical %>" />
+  <meta property="og:image" content="<%= _ogImg %>" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="<%= _title %>" />
+  <meta name="twitter:description" content="<%= _desc %>" />
+  <meta name="twitter:image" content="<%= _ogImg %>" />
+
+  <%# LCP: preload the hero background image (matches #hero in Home.css, per breakpoint) %>
+  <link rel="preload" as="image" href="https://images.pexels.com/photos/5896928/pexels-photo-5896928.jpeg"
+    media="(min-width: 769px)" />
+  <link rel="preload" as="image" href="https://images.pexels.com/photos/12911773/pexels-photo-12911773.jpeg"
+    media="(max-width: 768px)" />
+
+  <%# Structured data (JSON.stringify guarantees valid JSON) %>
+  <script type="application/ld+json"><%- JSON.stringify(_ld) %></script>
+
   <!-- Font awesome -->
   <script src="https://kit.fontawesome.com/9ecb022092.js" defer></script>
 
@@ -981,9 +1039,9 @@
         <div class="container" data-aos="zoom-out" data-aos-delay="100">
           <div class="row mt-5">
             <div class="col-xl-9">
-              <h3 class="slogan" id="values-c" data-aos="fade-down" data-aos-delay="200">
+              <h1 class="slogan" id="values-c" data-aos="fade-down" data-aos-delay="200">
                 <span class="purple">L'innovation digitale <br> au service de l'éducation</span>
-              </h3>
+              </h1>
               <a href="#programs" class="btn-get-started scrollto" data-aos="zoom-in" data-aos-delay="600">
                 Explorer nos Programmes & Services
               </a>
@@ -1183,7 +1241,7 @@
           <div class="container">
             <div class="programs-header-modern" data-aos="fade-up">
 
-              <h3 class="slogan mb-5" id="values-b">
+              <h3 class="slogan mb-5 values-b">
                 <span class="purple">Nos programmes</span>
               </h3>
               <p class="programs-subtitle-modern">Des solutions éducatives complètes adaptées à vos besoins</p>
@@ -1346,7 +1404,7 @@
         <section id="our-services" class="programs-section-modern" style="padding-top: 0;">
           <div class="container">
             <div class="programs-header-modern" data-aos="fade-up">
-              <h3 class="slogan mb-5" id="values-b">
+              <h3 class="slogan mb-5 values-b">
                 <span class="purple">Nos services</span>
               </h3>
               <p class="programs-subtitle-modern">Services de transformation digitale pour les institutions éducatives
@@ -1611,7 +1669,7 @@
           <div class="container" data-aos="fade-up">
             <div class="section-title">
               <h2>Nos Atouts</h2>
-              <h3 class="slogan" id="values-a">
+              <h3 class="slogan values-a">
                 <span class="purple">Pourquoi AfroHK ?</span>
               </h3>
             </div>
@@ -1666,7 +1724,7 @@
         <section id="clients" class="clients">
 
           <div class="container" data-aos="zoom-in">
-            <h3 class="slogan mb-3" id="values-b">
+            <h3 class="slogan mb-3 values-b">
               <span class="purple">Nos partenaires</span>
             </h3>
             <p class="text-center text-muted mb-5 fs-5">
@@ -1675,13 +1733,16 @@
             <div class="clients-slider swiper">
               <div class="swiper-wrapper align-items-center">
                 <div class="swiper-slide">
-                  <img loading="lazy" src="assets/img/clients/all_white bg.jpeg" class="img-fluid" alt="" />
+                  <img loading="lazy" src="assets/img/clients/all_white bg.jpeg" class="img-fluid"
+                    width="200" height="100" alt="Logo d'un partenaire d'Afro House of Knowledge" />
                 </div>
                 <div class="swiper-slide">
-                  <img loading="lazy" src="assets/img/clients/Afritechka-logo.jpeg" class="img-fluid" alt="" />
+                  <img loading="lazy" src="assets/img/clients/Afritechka-logo.jpeg" class="img-fluid"
+                    width="200" height="100" alt="Logo Afritechka, partenaire d'Afro House of Knowledge" />
                 </div>
                 <div class="swiper-slide">
-                  <img loading="lazy" src="assets/img/clients/afroeschool.png" class="img-fluid" alt="" />
+                  <img loading="lazy" src="assets/img/clients/afroeschool.png" class="img-fluid"
+                    width="200" height="100" alt="Logo Afro eSchool, partenaire d'Afro House of Knowledge" />
                 </div>
               </div>
               <div class="swiper-pagination"></div>
@@ -1695,7 +1756,7 @@
           <div class="container" data-aos="fade-up">
             <div class="section-title">
               <h2>Témoignages</h2>
-              <h3 class="slogan mb-5" id="values-a">
+              <h3 class="slogan mb-5 values-a">
                 <span class="purple">Ils nous font confiance</span>
               </h3>
             </div>
@@ -1720,9 +1781,9 @@
                         américaine le mois dernier !"
                       </p>
                       <hr class="mx-auto" style="width: 50px; height: 3px; background: #5d06ba; opacity: 1;">
-                      <h3 class="fw-bold mt-3 h5">Sarah K.</h3>
-                      <h4 class="text-secondary small text-uppercase fw-bold">English Boost • Gestionnaire de Projet
-                      </h4>
+                      <p class="fw-bold mt-3 h5 mb-1">Sarah K.</p>
+                      <p class="text-secondary small text-uppercase fw-bold">English Boost • Gestionnaire de Projet
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -1745,8 +1806,8 @@
                         cadeau. Il s'épanouit vraiment."
                       </p>
                       <hr class="mx-auto" style="width: 50px; height: 3px; background: #5d06ba; opacity: 1;">
-                      <h3 class="fw-bold mt-3 h5">Mariam T.</h3>
-                      <h4 class="text-secondary small text-uppercase fw-bold">Maman de Liam (English Biiga)</h4>
+                      <p class="fw-bold mt-3 h5 mb-1">Mariam T.</p>
+                      <p class="text-secondary small text-uppercase fw-bold">Maman de Liam (English Biiga)</p>
                     </div>
                   </div>
                 </div>
@@ -1769,8 +1830,8 @@
                         semaines. C'est du concret !"
                       </p>
                       <hr class="mx-auto" style="width: 50px; height: 3px; background: #5d06ba; opacity: 1;">
-                      <h3 class="fw-bold mt-3 h5">Aminata D.</h3>
-                      <h4 class="text-secondary small text-uppercase fw-bold">Étudiante (e-Kalan)</h4>
+                      <p class="fw-bold mt-3 h5 mb-1">Aminata D.</p>
+                      <p class="text-secondary small text-uppercase fw-bold">Étudiante (e-Kalan)</p>
                     </div>
                   </div>
                 </div>
@@ -1793,8 +1854,8 @@
                         boule au ventre."
                       </p>
                       <hr class="mx-auto" style="width: 50px; height: 3px; background: #5d06ba; opacity: 1;">
-                      <h3 class="fw-bold mt-3 h5">Marc O.</h3>
-                      <h4 class="text-secondary small text-uppercase fw-bold">English Boost • Entrepreneur</h4>
+                      <p class="fw-bold mt-3 h5 mb-1">Marc O.</p>
+                      <p class="text-secondary small text-uppercase fw-bold">English Boost • Entrepreneur</p>
                     </div>
                   </div>
                 </div>
@@ -1817,8 +1878,8 @@
                         monde de demain."
                       </p>
                       <hr class="mx-auto" style="width: 50px; height: 3px; background: #5d06ba; opacity: 1;">
-                      <h3 class="fw-bold mt-3 h5">M. et Mme Ouedraogo</h3>
-                      <h4 class="text-secondary small text-uppercase fw-bold">Parents d'élève (English Biiga)</h4>
+                      <p class="fw-bold mt-3 h5 mb-1">M. et Mme Ouedraogo</p>
+                      <p class="text-secondary small text-uppercase fw-bold">Parents d'élève (English Biiga)</p>
                     </div>
                   </div>
                 </div>
@@ -1840,8 +1901,8 @@
                         vraiment aidé à rattraper mon retard dans certaines matières. C'est un soutien énorme."
                       </p>
                       <hr class="mx-auto" style="width: 50px; height: 3px; background: #5d06ba; opacity: 1;">
-                      <h3 class="fw-bold mt-3 h5">Jean-Paul S.</h3>
-                      <h4 class="text-secondary small text-uppercase fw-bold">Étudiant (e-Kalan)</h4>
+                      <p class="fw-bold mt-3 h5 mb-1">Jean-Paul S.</p>
+                      <p class="text-secondary small text-uppercase fw-bold">Étudiant (e-Kalan)</p>
                     </div>
                   </div>
                 </div>
@@ -1856,7 +1917,7 @@
         <!-- ======= Reflection Gallery Section ======= -->
         <section id="gallery" class="reflection-gallery-section">
           <div class="section-title">
-            <h3 class="slogan mb-5" id="values-a">
+            <h3 class="slogan mb-5 values-a">
               <span class="text-white" style="text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);">Médiathèque</span>
             </h3>
           </div>
@@ -2087,7 +2148,7 @@
 
       <%- include('partials/footer') %>
 
-        <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+        <a href="#" class="back-to-top d-flex align-items-center justify-content-center" aria-label="Retour en haut"><i
             class="bi bi-arrow-up-short"></i></a>
 
         <!-- Vendor JS Files -->

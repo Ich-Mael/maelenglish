@@ -39,6 +39,7 @@ const InstitutionLesson = require("./programs/institution/models/Lesson");
 const InstitutionEnrollmentRequest = require("./programs/institution/models/EnrollmentRequest");
 const InstitutionEnrollment = require("./programs/institution/models/Enrollment");
 const VisitorMessage = require("./shared/models/visitorMessage");
+const { getBaseUrl } = require("./shared/utilities/url");
 
 // Import program routes
 const eKalanRoutes = require("./programs/ekalan");
@@ -215,7 +216,50 @@ app.get('/', async (req, res) => {
         InstitutionCourse.countDocuments({ isActive: true }),
         InstitutionCourse.distinct('institutionId', { isActive: true })
     ]);
-    res.render('home', { institutionCourseCount: courseCount, institutionCount: institutionIds.length });
+    res.render('home', {
+        institutionCourseCount: courseCount,
+        institutionCount: institutionIds.length,
+        baseUrl: getBaseUrl(req)
+    });
+});
+
+// SEO: robots.txt — allow all, point crawlers at the sitemap
+app.get('/robots.txt', (req, res) => {
+    const baseUrl = getBaseUrl(req);
+    res.type('text/plain').send(
+        `User-agent: *\nAllow: /\n\nSitemap: ${baseUrl}/sitemap.xml\n`
+    );
+});
+
+// SEO: dynamic sitemap.xml — home, catalog, and every active institution course
+app.get('/sitemap.xml', async (req, res) => {
+    const baseUrl = getBaseUrl(req);
+    const courses = await InstitutionCourse
+        .find({ isActive: true })
+        .select('_id updatedAt')
+        .lean();
+
+    const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const urlEntry = (loc, { lastmod, changefreq, priority } = {}) =>
+        `  <url>\n    <loc>${esc(loc)}</loc>\n` +
+        (lastmod ? `    <lastmod>${new Date(lastmod).toISOString().slice(0, 10)}</lastmod>\n` : '') +
+        (changefreq ? `    <changefreq>${changefreq}</changefreq>\n` : '') +
+        (priority ? `    <priority>${priority}</priority>\n` : '') +
+        `  </url>`;
+
+    const entries = [
+        urlEntry(`${baseUrl}/`, { changefreq: 'weekly', priority: '1.0' }),
+        urlEntry(`${baseUrl}/formations`, { changefreq: 'weekly', priority: '0.8' }),
+        ...courses.map((c) =>
+            urlEntry(`${baseUrl}/formations/${c._id}`, { lastmod: c.updatedAt, changefreq: 'monthly', priority: '0.7' })
+        ),
+    ];
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n` +
+        `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+        entries.join('\n') + `\n</urlset>\n`;
+
+    res.type('application/xml').send(xml);
 });
 
 app.get('/formations', async (req, res) => {
