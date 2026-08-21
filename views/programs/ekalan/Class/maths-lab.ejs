@@ -961,7 +961,20 @@
 
     function setOpsEnabled(on){ opsEl.querySelectorAll('.ml-op').forEach(function(b){ b.disabled = !on; }); }
     function renderKatex(el, latex){
-      var s = String(latex == null ? '' : latex);
+      var s = String(latex == null ? '' : latex).trim();
+      // The model sometimes wraps LaTeX in code fences or $…$ / \(…\) / \[…\]
+      // delimiters — strip them so KaTeX gets a clean expression instead of showing raw.
+      // (Backtick built from a char code: literal backticks would end this EJS literal.)
+      var BT3 = String.fromCharCode(96) + String.fromCharCode(96) + String.fromCharCode(96);
+      s = s.split(BT3 + 'math').join('').split(BT3 + 'latex').join('').split(BT3).join('').trim();
+      if(s.indexOf(BS + '(') === 0) s = s.slice(2);
+      else if(s.indexOf(BS + '[') === 0) s = s.slice(2);
+      var _tail = s.slice(-2);
+      if(_tail === BS + ')' || _tail === BS + ']') s = s.slice(0, -2);
+      s = s.trim();
+      while(s.length > 1 && s.charAt(0) === '$'){ s = s.slice(1); }
+      while(s.length > 1 && s.charAt(s.length - 1) === '$'){ s = s.slice(0, -1); }
+      s = s.trim();
       // KaTeX rejects the top-level align/gather/eqnarray envs — map them to the
       // supported aligned/gathered so multi-line worked steps render instead of erroring.
       s = s.split('{align*}').join('{aligned}').split('{align}').join('{aligned}')
@@ -981,15 +994,41 @@
         .split(BS + '[').join('$').split(BS + ']').join('$');
       var parts = s.split('$');
       for(var i = 0; i < parts.length; i++){
-        if(i % 2 === 1 && parts[i] !== ''){
-          var span = document.createElement('span');
-          try { katex.render(parts[i], span, { throwOnError:false, displayMode:false }); }
-          catch(e){ span.textContent = parts[i]; }
-          el.appendChild(span);
-        } else if(parts[i] !== ''){
-          el.appendChild(document.createTextNode(parts[i]));
-        }
+        if(parts[i] === '') continue;
+        if(i % 2 === 1){ appendInlineMath(el, parts[i]); }   // inside $…$
+        else { appendProseWithMath(el, parts[i]); }          // prose (may hold bare \latex)
       }
+    }
+    function appendInlineMath(el, latex){
+      var span = document.createElement('span');
+      try { katex.render(latex, span, { throwOnError:false, displayMode:false }); }
+      catch(e){ span.textContent = latex; }
+      el.appendChild(span);
+    }
+    // Render prose where the model left LaTeX commands (\frac{…}, \sqrt{…}, \lim_{…})
+    // undelimited: turn each backslash-run into inline math, keep the rest as text.
+    function _isAlpha(c){ return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'); }
+    function _skipBraces(t, i, n){ var d = 0; for(; i < n; i++){ var c = t.charAt(i); if(c === '{') d++; else if(c === '}'){ d--; if(d === 0) return i + 1; } } return i; }
+    function _consumeArgs(t, i, n){
+      for(;;){ var c = t.charAt(i);
+        if(c === '{'){ i = _skipBraces(t, i, n); continue; }
+        if(c === '^' || c === '_'){ i++; if(t.charAt(i) === '{'){ i = _skipBraces(t, i, n); } else if(i < n && t.charAt(i) !== ' '){ i++; } continue; }
+        break; }
+      return i;
+    }
+    function appendProseWithMath(el, text){
+      if(text.indexOf(BS) < 0){ el.appendChild(document.createTextNode(text)); return; }
+      var i = 0, n = text.length, buf = '';
+      function flush(){ if(buf){ el.appendChild(document.createTextNode(buf)); buf = ''; } }
+      while(i < n){
+        if(text.charAt(i) === BS){
+          var start = i; i++;
+          while(i < n && _isAlpha(text.charAt(i))) i++;   // \command name
+          i = _consumeArgs(text, i, n);                   // {…} groups, ^/_ tokens
+          flush(); appendInlineMath(el, text.slice(start, i));
+        } else { buf += text.charAt(i++); }
+      }
+      flush();
     }
 
     // CAS command per operation, against the raw expression
@@ -4083,29 +4122,37 @@
 
     // Keep the GeoGebra applet sized to its (now full-width) container.
     var ggbHost = document.getElementById('ggb');
+    // Applet size, clamped to the viewport so it never overflows on phones.
+    function ggbSize(){
+      var vw = window.innerWidth || 700;
+      var w = Math.max(300, Math.min(ggbHost.clientWidth || (vw - 32), vw - 16));
+      var h = Math.min(540, Math.max(400, Math.round(w * 0.55)));
+      return { w: w, h: h };
+    }
     function fitGraph(){
       if(!ggb) return;
-      var w = Math.max(320, ggbHost.clientWidth || 700);
-      var h = Math.min(540, Math.max(420, Math.round(w * 0.52)));
-      try { ggb.setSize(w, h); } catch(e){}
+      var s = ggbSize();
+      try { ggb.setSize(s.w, s.h); } catch(e){}
     }
     var ggbResizeTimer = null;
     window.addEventListener('resize', function(){ clearTimeout(ggbResizeTimer); ggbResizeTimer = setTimeout(fitGraph, 200); });
+    window.addEventListener('orientationchange', function(){ setTimeout(fitGraph, 300); });
 
     // GeoGebra applet
     setOpsEnabled(false); setCOpsEnabled(false); setGOpsEnabled(false); setLOpsEnabled(false); setIOpsEnabled(false); setSuiteOpsEnabled(false); setProbaOpsEnabled(false); setStatsOpsEnabled(false); setDeqOpsEnabled(false);
     setSuiteType('explicit'); setProbaType('binom'); setStatsType('series'); setDeqType('first');
     if(eqSolveBtn) eqSolveBtn.disabled = true;
     setEqStepsEnabled(false);
-    var initW = Math.max(320, ggbHost.clientWidth || 700);
-    var initH = Math.min(540, Math.max(420, Math.round(initW * 0.52)));
+    var _s0 = ggbSize();
     var applet = new GGBApplet({
       appName: 'classic',
-      width: initW, height: initH,
+      width: _s0.w, height: _s0.h,
       showToolBar: false, showAlgebraInput: false, showMenuBar: false,
       enableRightClick: false, showResetIcon: true,
-      perspective: 'AG',
-      appletOnLoad: function(api){ ggb = api; try { ggb.setErrorDialogsActive(false); } catch(e){} setOpsEnabled(true); setCOpsEnabled(true); setGOpsEnabled(true); setLOpsEnabled(true); setIOpsEnabled(true); setSuiteOpsEnabled(true); setProbaOpsEnabled(true); setStatsOpsEnabled(true); setDeqOpsEnabled(true); if(eqSolveBtn) eqSolveBtn.disabled = false; setEqStepsEnabled(true); fitGraph(); plot((fxInput.value||'').trim()); }
+      // Graphics-only view: the algebra pane would otherwise halve the width on
+      // phones and hide the curve. CAS (evalCommandCAS) works headless regardless.
+      perspective: 'G',
+      appletOnLoad: function(api){ ggb = api; try { ggb.setErrorDialogsActive(false); } catch(e){} setOpsEnabled(true); setCOpsEnabled(true); setGOpsEnabled(true); setLOpsEnabled(true); setIOpsEnabled(true); setSuiteOpsEnabled(true); setProbaOpsEnabled(true); setStatsOpsEnabled(true); setDeqOpsEnabled(true); if(eqSolveBtn) eqSolveBtn.disabled = false; setEqStepsEnabled(true); fitGraph(); plot((fxInput.value||'').trim()); setTimeout(fitGraph, 400); }
     }, true);
     applet.inject('ggb');
     updatePreview();
