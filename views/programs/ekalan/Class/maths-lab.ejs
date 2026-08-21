@@ -148,6 +148,11 @@
     .study-math { color:#fff; }
     .study-line .katex, .study-math .katex, .study-work .katex { color:inherit; }
     .study-work { font-size:.9rem; color:#cdbff0; margin:.12rem 0 .25rem .3rem; }
+    /* Mobile: long formulas scroll horizontally instead of clipping / overflowing the page. */
+    .ml-step__latex, .ml-answer .val, .study-line, .study-math, .study-work {
+      max-width:100%; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; }
+    .katex-display { overflow-x:auto; overflow-y:hidden; margin:.3em 0; }
+    .ml-step__exp { overflow-wrap:anywhere; }
     .study-hr { border:none; border-top:1px dashed rgba(255,255,255,.25); margin:.5rem 0; }
     .vt-domain { font-size:.92rem; color:#fff; font-weight:700; margin:.1rem 0 .5rem; }
     .vt-note { font-size:.82rem; color:#d9c9f5; margin-top:.5rem; }
@@ -980,6 +985,11 @@
       s = s.split('{align*}').join('{aligned}').split('{align}').join('{aligned}')
            .split('{eqnarray*}').join('{aligned}').split('{eqnarray}').join('{aligned}')
            .split('{gather*}').join('{gathered}').split('{gather}').join('{gathered}');
+      // French interval notation: an infinite/open bound uses ] … [ , never ( … ).
+      // (Covers ASCII '-' and the unicode minus '−' the model may emit.)
+      var INF = BS + 'infty', MN = String.fromCharCode(0x2212);
+      s = s.split('(-' + INF).join(']-' + INF).split('(' + MN + INF).join(']' + MN + INF)
+           .split(INF + ')').join(INF + '[');
       var display = (s.indexOf(BS + 'begin') >= 0) || (s.indexOf(BS + BS) >= 0);
       try { katex.render(s, el, { throwOnError:false, displayMode: display }); }
       catch(e){ el.textContent = s; }
