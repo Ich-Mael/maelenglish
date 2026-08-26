@@ -10,12 +10,10 @@
           <li><a href="#about" class="scrollto">À propos</a></li>
           <li><a href="#programs" class="scrollto">Nos programmes</a></li>
           <li><a href="#gallery" class="scrollto">Galerie</a></li>
+          <li><a href="#contact" class="scrollto">Contact</a></li>
           <% } else { %>
             <li><a href="/">Accueil</a></li>
             <% } %>
-          <% if(!currentUser) { %>
-            <li><a href="/formations">Formations</a></li>
-          <% } %>
       </ul>
 
       <!-- Center: Logo -->
@@ -133,8 +131,8 @@
             <!-- Visitor CTA -->
             <div class="navbar-cta">
               <a href="/login" class="btn-outline">Connexion</a>
-              <a href="#contact" class="btn-primary scrollto">
-                Contact
+              <a href="/formations" class="btn-primary">
+                Formations
                 <i class="bi bi-arrow-right"></i>
               </a>
             </div>
@@ -163,12 +161,10 @@
       <li><a href="#about" class="scrollto">À propos</a></li>
       <li><a href="#programs" class="scrollto">Nos programmes</a></li>
       <li><a href="#gallery" class="scrollto">Galerie</a></li>
+      <li><a href="#contact" class="scrollto">Contact</a></li>
       <% } else { %>
         <li><a href="/">Accueil</a></li>
         <% } %>
-      <% if(!currentUser) { %>
-        <li><a href="/formations">Formations</a></li>
-      <% } %>
   </nav>
 
   <% if(userCheck) { %>
@@ -185,8 +181,8 @@
     <% } else { %>
       <div class="navbar-cta">
         <a href="/login" class="btn-outline">Connexion</a>
-        <a href="#contact" class="btn-primary scrollto">
-          Contact
+        <a href="/formations" class="btn-primary">
+          Formations
           <i class="bi bi-arrow-right"></i>
         </a>
       </div>

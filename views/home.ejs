@@ -190,6 +190,27 @@
       flex-direction: column;
     }
 
+    .program-audience {
+      align-self: flex-start;
+      font-size: .68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: .28rem .7rem;
+      border-radius: 999px;
+      margin-bottom: .8rem;
+    }
+
+    .program-audience.aud-students {
+      background: rgba(93, 6, 186, .1);
+      color: #5d06ba;
+    }
+
+    .program-audience.aud-pro {
+      background: rgba(245, 158, 11, .16);
+      color: #b45309;
+    }
+
     .program-card-header {
       display: flex;
       align-items: center;
@@ -739,150 +760,154 @@
       background-clip: text;
     }
 
-    /* Vision / Mission */
-    .abt-top-grid {
+    /* Audience paths — compact two-path strip directly under the hero */
+    .aud-paths { padding: 44px 0 40px; background: #f4f0fb; }
+    .aud-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 900px; margin: 0 auto; }
+    .aud-card {
+      display: flex; align-items: center; gap: 16px; text-decoration: none;
+      background: #fff; border: 1px solid #ece7f6; border-radius: 16px;
+      padding: 18px 22px;
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    }
+    .aud-card:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(45, 3, 112, .12); border-color: #d9ccf5; }
+    .aud-inst:hover { border-color: #f6cf8a; }
+    .aud-ico { flex-shrink: 0; width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; background: rgba(93, 6, 186, .1); color: #5d06ba; }
+    .aud-inst .aud-ico { background: rgba(245, 158, 11, .14); color: #d97706; }
+    .aud-txt { display: flex; flex-direction: column; line-height: 1.25; }
+    .aud-title { font-size: 1.05rem; font-weight: 800; color: #2d0370; }
+    .aud-sub { font-size: .84rem; color: #8a83a0; }
+    .aud-arrow { margin-left: auto; color: #5d06ba; font-size: 1.1rem; transition: transform .25s ease; }
+    .aud-inst .aud-arrow { color: #d97706; }
+    .aud-card:hover .aud-arrow { transform: translateX(4px); }
+    @media (max-width: 760px) { .aud-grid { grid-template-columns: 1fr; } .aud-paths { padding: 32px 0 28px; } }
+
+    /* Vision / Mission — redesign (alternating image / text rows) */
+    .vm-wrap {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .vm-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 48px;
       align-items: center;
-      margin-bottom: 80px;
+    }
+
+    .vm-row--reverse .vm-figure {
+      order: 2;
+    }
+
+    .vm-figure {
       position: relative;
-      z-index: 1;
-    }
-
-    .abt-vm-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .abt-vm-card {
-      display: flex;
-      gap: 20px;
-      align-items: flex-start;
-      background: rgba(255, 255, 255, .05);
-      border-radius: 18px;
-      padding: 28px;
-      border: 1px solid rgba(255, 255, 255, .09);
-      backdrop-filter: blur(8px);
-      transition: background .3s, transform .3s;
-    }
-
-    .abt-vm-card:hover {
-      background: rgba(255, 255, 255, .08);
-      transform: translateY(-3px);
-    }
-
-    .abt-vm-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      flex-shrink: 0;
-    }
-
-    .abt-vision .abt-vm-icon {
-      background: rgba(167, 139, 250, .15);
-      color: #a78bfa;
-    }
-
-    .abt-mission .abt-vm-icon {
-      background: rgba(245, 158, 11, .12);
-      color: #fbbf24;
-    }
-
-    .abt-vm-label {
-      font-size: .72rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      color: rgba(255, 255, 255, .35);
-      margin: 0 0 6px;
-    }
-
-    .abt-vm-text {
-      font-size: .95rem;
-      color: rgba(255, 255, 255, .72);
-      line-height: 1.7;
-      margin: 0;
-    }
-
-    /* Photo side */
-    .abt-photos-wrap {
-      position: relative;
-      padding-bottom: 18px;
-    }
-
-    .abt-photos-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 200px 200px;
-      gap: 12px;
-    }
-
-    .abt-photo {
+      height: 360px;
+      border-radius: 24px;
       overflow: hidden;
-      border-radius: 14px;
-      position: relative;
+      border: 1px solid rgba(255, 255, 255, .10);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .35);
     }
 
-    .abt-photo img {
+    .vm-figure img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform .5s ease;
       display: block;
+      transition: transform .7s ease;
     }
 
-    .abt-photo:hover img {
-      transform: scale(1.07);
+    .vm-figure:hover img {
+      transform: scale(1.05);
     }
 
-    .abt-photo-tall {
-      grid-row: span 2;
-    }
-
-    .abt-photos-badge {
+    .vm-figure::after {
+      content: '';
       position: absolute;
-      bottom: 0;
-      right: 20px;
-      background: rgba(255, 255, 255, .08);
-      border: 1px solid rgba(255, 255, 255, .15);
+      inset: 0;
+      background: linear-gradient(120deg, rgba(45, 3, 112, .42), rgba(15, 7, 32, 0) 60%);
+    }
+
+    .vm-badge {
+      position: absolute;
+      left: 20px;
+      bottom: 20px;
+      z-index: 2;
+      background: rgba(20, 10, 40, .55);
+      border: 1px solid rgba(255, 255, 255, .18);
       backdrop-filter: blur(14px);
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 12px 20px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       white-space: nowrap;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .3);
     }
 
-    .abt-photos-badge-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
+    .vm-badge-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
       background: linear-gradient(135deg, #7c3aed, #4b08a1);
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
-      font-size: 1rem;
+      font-size: 1.1rem;
       flex-shrink: 0;
     }
 
-    .abt-photos-badge-text {
-      font-size: .78rem;
-      color: rgba(255, 255, 255, .6);
+    .vm-badge-text {
+      font-size: .8rem;
+      color: rgba(255, 255, 255, .65);
     }
 
-    .abt-photos-badge-text strong {
+    .vm-badge-text strong {
       display: block;
-      font-size: .9rem;
+      font-size: 1.05rem;
       color: #fff;
       font-weight: 800;
+    }
+
+    .vm-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      padding: .4rem .9rem;
+      border-radius: 999px;
+      margin-bottom: 1.1rem;
+    }
+
+    .vm-vision .vm-eyebrow {
+      background: rgba(167, 139, 250, .16);
+      color: #c4b5fd;
+    }
+
+    .vm-mission .vm-eyebrow {
+      background: rgba(251, 191, 36, .14);
+      color: #fcd34d;
+    }
+
+    .vm-title {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.25;
+      margin: 0 0 1rem;
+    }
+
+    .vm-desc {
+      font-size: 1rem;
+      color: rgba(255, 255, 255, .75);
+      line-height: 1.75;
+      margin: 0;
     }
 
     /* Values */
@@ -956,9 +981,13 @@
     }
 
     @media (max-width: 992px) {
-      .abt-top-grid {
+      .vm-row {
         grid-template-columns: 1fr;
-        gap: 40px;
+        gap: 28px;
+      }
+
+      .vm-row--reverse .vm-figure {
+        order: 0;
       }
 
       .abt-values-grid {
@@ -979,8 +1008,8 @@
         grid-template-columns: 1fr;
       }
 
-      .abt-photos-grid {
-        grid-template-rows: 160px 160px;
+      .vm-figure {
+        height: 260px;
       }
     }
 
@@ -1036,15 +1065,18 @@
     <%-include('./partials/flash')%>
       <section id="hero" class="d-flex align-items-center">
 
-        <div class="container" data-aos="zoom-out" data-aos-delay="100">
+        <div class="container">
           <div class="row mt-5">
             <div class="col-xl-9">
-              <h1 class="slogan" id="values-c" data-aos="fade-down" data-aos-delay="200">
-                <span class="purple">L'innovation digitale <br> au service de l'éducation</span>
+              <h1 class="slogan" id="values-c">
+                <span class="purple">Innover pour révéler  <br> le potentiel humain</span>
               </h1>
-              <a href="#programs" class="btn-get-started scrollto" data-aos="zoom-in" data-aos-delay="600">
-                Explorer nos Programmes & Services
-              </a>
+              <p class="hero-sub">Accompagnement scolaire, anglais et formations certifiantes — accessibles partout en Afrique. Découvrez, développez, devenez.</p>
+              <div class="hero-cta">
+                <a href="/formations" class="btn-get-started">
+                  Explorer les formations <i class="bi bi-arrow-right"></i>
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -1052,59 +1084,239 @@
       <!-- End Hero -->
 
       <main id="main">
+        <!-- ======= Audience Paths ======= -->
+        <section id="audience-paths" class="aud-paths">
+          <div class="container">
+            <div class="aud-grid">
+              <a href="/formations" class="aud-card aud-learn" data-aos="fade-up">
+                <div class="aud-ico"><i class="bi bi-mortarboard-fill"></i></div>
+                <div class="aud-txt">
+                  <span class="aud-title">Je veux apprendre</span>
+                  <span class="aud-sub">Programmes &amp; formations</span>
+                </div>
+                <i class="bi bi-arrow-right aud-arrow"></i>
+              </a>
+              <a href="/services" class="aud-card aud-inst" data-aos="fade-up" data-aos-delay="100">
+                <div class="aud-ico"><i class="bi bi-buildings-fill"></i></div>
+                <div class="aud-txt">
+                  <span class="aud-title">Je représente une institution</span>
+                  <span class="aud-sub">Nos services digitaux</span>
+                </div>
+                <i class="bi bi-arrow-right aud-arrow"></i>
+              </a>
+            </div>
+          </div>
+        </section>
+        <!-- End Audience Paths -->
+
+        <!-- ======= Our Programs ======= -->
+        <section id="programs" class="programs-section-modern">
+          <div class="container">
+            <div class="programs-header-modern" data-aos="fade-up">
+
+              <h3 class="slogan mb-5 values-b">
+                <span class="purple">Nos programmes</span>
+              </h3>
+              <p class="programs-subtitle-modern">Pour les élèves, les étudiants et les professionnels — apprenez et
+                certifiez-vous.</p>
+            </div>
+            <div class="programs-grid-modern">
+              <!-- 2. E-Kalan -->
+              <div class="program-card-modern" data-aos="zoom-in" data-aos-delay="200">
+                <div class="program-card-image">
+                  <img loading="lazy" src="https://images.pexels.com/photos/5896928/pexels-photo-5896928.jpeg"
+                    alt="E-Kalan - Accompagnement scolaire">
+                  <div class="program-card-overlay"></div>
+                </div>
+                <div class="program-card-content">
+                  <span class="program-audience aud-students">Élèves &amp; étudiants</span>
+                  <div class="program-card-header">
+                    <div class="program-card-icon">
+                      <i class="bi bi-mortarboard"></i>
+                    </div>
+                    <h3 class="program-card-title">e-Kalan</h3>
+                  </div>
+                  <p class="program-card-description">
+                    e-Kalan est le programme d'accompagnement scolaire digitale dédié aux élèves, étudiants et parents
+                    d'élèves. Du collège à l’université, nous transformons les méthodes d'apprentissage pour garantir
+                    une réussite académique durable.
+                  </p>
+                  <p class="program-promise small text-muted mb-3">
+                    <i class="bi bi-star-fill text-warning me-1"></i> <strong style="color: #4b08a1;">Notre promesse
+                      :</strong> Apprendre
+                    mieux aujourd’hui pour réussir demain.
+                  </p>
+                  <a href="/programs/ekalan/kalan" class="program-card-link">
+                    En savoir plus <i class="bi bi-arrow-right"></i>
+                  </a>
+                </div>
+              </div>
+
+              <!-- 3. English Boost -->
+              <div class="program-card-modern" data-aos="zoom-in" data-aos-delay="300">
+                <div class="program-card-image">
+                  <img loading="lazy" src="https://images.pexels.com/photos/7490843/pexels-photo-7490843.jpeg"
+                    alt="English Boost - Apprentissage de l'anglais">
+                  <div class="program-card-overlay"></div>
+                </div>
+                <div class="program-card-content">
+                  <span class="program-audience aud-pro">Professionnels</span>
+                  <div class="program-card-header">
+                    <div class="program-card-icon">
+                      <i class="bi bi-translate"></i>
+                    </div>
+                    <h3 class="program-card-title">English Boost</h3>
+                  </div>
+                  <p class="program-card-description">
+                    Propulsez votre carrière grâce à un anglais utile et adapté à votre réalité professionnelle.
+                    Développez vos compétences en communication, préparez vos entretiens avec assurance et bénéficiez
+                    d’un accompagnement personnalisé pour atteindre vos objectifs.
+                  </p>
+                  <p class="program-promise small text-muted mb-3">
+                    <i class="bi bi-star-fill text-warning me-1"></i> <strong style="color: #4b08a1;">Notre promesse
+                      :</strong> Maîtriser l’anglais de votre métier, gagner en confiance et saisir de nouvelles
+                    opportunités professionnelles.
+                  </p>
+                  <a href="/programs/language-learning/english4all" class="program-card-link">
+                    En savoir plus <i class="bi bi-arrow-right"></i>
+                  </a>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+        <!-- End Programs Section -->
+
+        <!-- ======= Institution Courses Teaser ======= -->
+        <section id="institution-formations">
+          <div class="container">
+            <div class="inst-teaser-inner" data-aos="fade-up">
+
+              <!-- Left: copy -->
+              <div class="inst-teaser-left">
+                <span class="inst-teaser-pill"><i class="bi bi-buildings-fill"></i> Formations Institutionnelles</span>
+                <h2 class="inst-teaser-heading">Apprenez avec<br><span>nos institutions<br></span><span>Partenaires</span></h2>
+                <p class="inst-teaser-desc">
+                  Développez des compétences reconnues avec des formations certifiées dispensées par des institutions
+                  partenaires d'AfroHK. Chaque programme est conçu pour vous rendre opérationnel — pas juste instruit.
+                </p>
+                <ul class="inst-teaser-features">
+                  <li><i class="bi bi-check-circle-fill"></i> Cours structurés en modules et leçons</li>
+                  <li><i class="bi bi-check-circle-fill"></i> Quiz, devoirs et projets finaux</li>
+                  <li><i class="bi bi-check-circle-fill"></i> Accès en ligne, tous appareils</li>
+                  <li><i class="bi bi-check-circle-fill"></i> Suivi de progression en temps réel</li>
+                </ul>
+                <% if ((typeof institutionCount !=='undefined' && institutionCount> 0) ||
+                  (typeof institutionCourseCount !== 'undefined' && institutionCourseCount > 0)) { %>
+                  <div class="inst-teaser-stats">
+                    <% if (typeof institutionCount !=='undefined' && institutionCount> 0) { %>
+                      <div class="inst-stat">
+                        <span class="inst-stat-num">
+                          <%= institutionCount %>
+                        </span>
+                        <span class="inst-stat-label">Institution<%= institutionCount> 1 ? 's' : '' %></span>
+                      </div>
+                      <% } %>
+                        <% if (typeof institutionCourseCount !=='undefined' && institutionCourseCount> 0) { %>
+                          <div class="inst-stat">
+                            <span class="inst-stat-num">
+                              <%= institutionCourseCount %>
+                            </span>
+                            <span class="inst-stat-label">Cours disponible<%= institutionCourseCount> 1 ? 's' : ''
+                                %></span>
+                          </div>
+                          <% } %>
+                  </div>
+                  <% } %>
+                    <a href="/formations" class="inst-teaser-cta">
+                      <span>Explorer le catalogue</span> <i class="bi bi-arrow-right"></i>
+                    </a>
+              </div>
+
+              <!-- Right: glassmorphism preview panel -->
+              <div class="inst-teaser-right" aria-hidden="true">
+                <div class="inst-glass-panel">
+                  <p class="igp-label">Formations disponibles</p>
+                  <div class="igp-course">
+                    <div class="igp-thumb igp-t1"></div>
+                    <div class="igp-info">
+                      <div class="igp-title">Développement Web</div>
+                      <div class="igp-inst">Institut Tech Afrique</div>
+                    </div>
+                    <span class="igp-badge">6 modules</span>
+                  </div>
+                  <div class="igp-course">
+                    <div class="igp-thumb igp-t2"></div>
+                    <div class="igp-info">
+                      <div class="igp-title">Gestion de Projet</div>
+                      <div class="igp-inst">Business School BF</div>
+                    </div>
+                    <span class="igp-badge">4 modules</span>
+                  </div>
+                  <div class="igp-course">
+                    <div class="igp-thumb igp-t3"></div>
+                    <div class="igp-info">
+                      <div class="igp-title">Marketing Digital</div>
+                      <div class="igp-inst">AfroHK Academy</div>
+                    </div>
+                    <span class="igp-badge">5 modules</span>
+                  </div>
+                  <hr class="igp-divider">
+                  <div class="igp-footer">
+                    <span class="igp-footer-text">Mis à jour aujourd'hui</span>
+                    <a href="/formations" class="igp-footer-link">Voir tout <i class="bi bi-arrow-right"></i></a>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+        <!-- End Institution Courses Teaser -->
+
+
         <!-- ======= About Section ======= -->
         <section id="about" class="abt-section">
           <div class="container">
             <!-- Header -->
             <div class="abt-header" data-aos="fade-up">
               <span class="abt-pill"><i class="bi bi-info-circle-fill"></i> Qui sommes-nous</span>
-              <h2 class="abt-heading">Bâtir l’éducation africaine<br>de <em>demain</em>, aujourd’hui.</h2>
+              <h2 class="abt-heading">Révéler le potentiel humain <br> <em>de demain</em>, aujourd’hui</h2>
             </div>
 
-            <!-- Vision / Mission + Photos -->
-            <div class="abt-top-grid">
+            <!-- Vision / Mission — redesign (alternating rows) -->
+            <div class="vm-wrap">
 
-              <div class="abt-vm-stack" data-aos="fade-right">
-                <div class="abt-vm-card abt-vision">
-                  <div class="abt-vm-icon"><i class="bi bi-eye-fill"></i></div>
-                  <div>
-                    <p class="abt-vm-label">Notre Vision</p>
-                    <p class="abt-vm-text">Devenir une référence africaine en transformation digitale de l’éducation, en
-                      créant un écosystème de produits éducatifs à fort impact.</p>
+              <div class="vm-row vm-vision" data-aos="fade-up">
+                <div class="vm-figure">
+                  <img loading="lazy" src="https://images.pexels.com/photos/6077709/pexels-photo-6077709.jpeg"
+                    alt="Notre vision : révéler le potentiel humain en Afrique">
+                  <div class="vm-badge">
+                    <div class="vm-badge-icon"><i class="bi bi-mortarboard-fill"></i></div>
+                    <div class="vm-badge-text">
+                      <strong>+2 000</strong>
+                      apprenants accompagnés
+                    </div>
                   </div>
                 </div>
-                <div class="abt-vm-card abt-mission">
-                  <div class="abt-vm-icon"><i class="bi bi-bullseye"></i></div>
-                  <div>
-                    <p class="abt-vm-label">Notre Mission</p>
-                    <p class="abt-vm-text">Développer des solutions éducatives numériques accessibles, innovantes et
-                      adaptées au contexte africain pour former des apprenants confiants, compétents et prêts pour le
-                      monde de demain.</p>
-                  </div>
+                <div class="vm-content">
+                  <span class="vm-eyebrow"><i class="bi bi-eye-fill"></i> Notre Vision</span>
+                  <h3 class="vm-title">Une référence africaine du potentiel humain</h3>
+                  <p class="vm-desc">Devenir une référence africaine dans le développement du potentiel humain par le digital, en créant des solutions innovantes qui renforcent les compétences et la performance des individus et des organisations.</p>
                 </div>
               </div>
 
-              <div class="abt-photos-wrap" data-aos="fade-left" data-aos-delay="100">
-                <div class="abt-photos-grid">
-                  <div class="abt-photo abt-photo-tall">
-                    <img loading="lazy" src="https://images.pexels.com/photos/6894013/pexels-photo-6894013.jpeg"
-                      alt="Éducation">
-                  </div>
-                  <div class="abt-photo">
-                    <img loading="lazy" src="https://images.pexels.com/photos/27178154/pexels-photo-27178154.jpeg"
-                      alt="Apprentissage collaboratif">
-                  </div>
-                  <div class="abt-photo">
-                    <img loading="lazy" src="https://images.pexels.com/photos/7605859/pexels-photo-7605859.jpeg"
-                      alt="Étudiants en action">
-                  </div>
+              <div class="vm-row vm-row--reverse vm-mission" data-aos="fade-up" data-aos-delay="100">
+                <div class="vm-figure">
+                  <img loading="lazy" src="https://images.pexels.com/photos/12911700/pexels-photo-12911700.jpeg"
+                    alt="Notre mission : des solutions digitales adaptées aux réalités africaines">
                 </div>
-                <div class="abt-photos-badge">
-                  <div class="abt-photos-badge-icon"><i class="bi bi-mortarboard-fill"></i></div>
-                  <div class="abt-photos-badge-text">
-                    <strong>+2 000</strong>
-                    apprenants accompagnés
-                  </div>
+                <div class="vm-content">
+                  <span class="vm-eyebrow"><i class="bi bi-bullseye"></i> Notre Mission</span>
+                  <h3 class="vm-title">Des solutions digitales pour révéler les talents</h3>
+                  <p class="vm-desc">Développer des solutions digitales innovantes, accessibles et adaptées aux réalités africaines pour renforcer les compétences, révéler le potentiel humain et améliorer la performance des individus et des organisations.</p>
                 </div>
               </div>
 
@@ -1229,440 +1441,15 @@
             <div class="row justify-content-center text-center">
               <div class="col-lg-10">
                 <h2 class="fw-bold mb-5 focus-title" style="color: #ffffff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
-                  Nous bâtissons l’avenir de l’éducation en Afrique par la puissance du numérique</h2>
+                  Nous bâtissons l’avenir des compétences en Afrique par la puissance du numérique</h2>
               </div>
             </div>
           </div>
         </section>
         <!-- End Focus Section -->
 
-        <!-- ======= Our Programs ======= -->
-        <section id="programs" class="programs-section-modern">
-          <div class="container">
-            <div class="programs-header-modern" data-aos="fade-up">
-
-              <h3 class="slogan mb-5 values-b">
-                <span class="purple">Nos programmes</span>
-              </h3>
-              <p class="programs-subtitle-modern">Des solutions éducatives complètes adaptées à vos besoins</p>
-            </div>
-            <div class="programs-grid-modern">
-              <!-- 2. E-Kalan -->
-              <div class="program-card-modern" data-aos="zoom-in" data-aos-delay="200">
-                <div class="program-card-image">
-                  <img loading="lazy" src="assets/img/mathematics-1.jpg" alt="E-Kalan - Accompagnement scolaire">
-                  <div class="program-card-overlay"></div>
-                </div>
-                <div class="program-card-content">
-                  <div class="program-card-header">
-                    <div class="program-card-icon">
-                      <i class="bi bi-mortarboard"></i>
-                    </div>
-                    <h3 class="program-card-title">e-Kalan</h3>
-                  </div>
-                  <p class="program-card-description">
-                    e-Kalan est le programme d'accompagnement scolaire digitale dédié aux élèves, étudiants et parents
-                    d'élèves. Du primaire à l’université, nous transformons les méthodes d'apprentissage pour garantir
-                    une réussite académique durable.
-                  </p>
-                  <p class="program-promise small text-muted mb-3">
-                    <i class="bi bi-star-fill text-warning me-1"></i> <strong style="color: #4b08a1;">Notre promesse
-                      :</strong> Apprendre
-                    mieux aujourd’hui pour réussir demain.
-                  </p>
-                  <a href="/programs/ekalan/kalan" class="program-card-link">
-                    En savoir plus <i class="bi bi-arrow-right"></i>
-                  </a>
-                </div>
-              </div>
-
-              <!-- 3. English Boost -->
-              <div class="program-card-modern" data-aos="zoom-in" data-aos-delay="300">
-                <div class="program-card-image">
-                  <img loading="lazy" src="https://images.pexels.com/photos/7550542/pexels-photo-7550542.jpeg"
-                    alt="English Boost - Apprentissage de l'anglais">
-                  <div class="program-card-overlay"></div>
-                </div>
-                <div class="program-card-content">
-                  <div class="program-card-header">
-                    <div class="program-card-icon">
-                      <i class="bi bi-translate"></i>
-                    </div>
-                    <h3 class="program-card-title">English Boost</h3>
-                  </div>
-                  <p class="program-card-description">
-                    Propulsez votre carrière grâce à un anglais utile et adapté à votre réalité professionnelle.
-                    Développez vos compétences en communication, préparez vos entretiens avec assurance et bénéficiez
-                    d’un accompagnement personnalisé pour atteindre vos objectifs.
-                  </p>
-                  <p class="program-promise small text-muted mb-3">
-                    <i class="bi bi-star-fill text-warning me-1"></i> <strong style="color: #4b08a1;">Notre promesse
-                      :</strong> Maîtriser l’anglais de votre métier, gagner en confiance et saisir de nouvelles
-                    opportunités professionnelles.
-                  </p>
-                  <a href="/programs/language-learning/english4all" class="program-card-link">
-                    En savoir plus <i class="bi bi-arrow-right"></i>
-                  </a>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-        </section>
-        <!-- End Programs Section -->
-
-        <!-- ======= Institution Courses Teaser ======= -->
-        <section id="institution-formations">
-          <div class="container">
-            <div class="inst-teaser-inner" data-aos="fade-up">
-
-              <!-- Left: copy -->
-              <div class="inst-teaser-left">
-                <span class="inst-teaser-pill"><i class="bi bi-buildings-fill"></i> Formations Institutionnelles</span>
-                <h2 class="inst-teaser-heading">Apprenez avec<br><span>nos institutions<br></span><span>Partenaires</span></h2>
-                <p class="inst-teaser-desc">
-                  Développez des compétences reconnues avec des formations certifiées dispensées par des institutions
-                  partenaires d'AfroHK. Chaque programme est conçu pour vous rendre opérationnel — pas juste instruit.
-                </p>
-                <ul class="inst-teaser-features">
-                  <li><i class="bi bi-check-circle-fill"></i> Cours structurés en modules et leçons</li>
-                  <li><i class="bi bi-check-circle-fill"></i> Quiz, devoirs et projets finaux</li>
-                  <li><i class="bi bi-check-circle-fill"></i> Accès en ligne, tous appareils</li>
-                  <li><i class="bi bi-check-circle-fill"></i> Suivi de progression en temps réel</li>
-                </ul>
-                <% if ((typeof institutionCount !=='undefined' && institutionCount> 0) ||
-                  (typeof institutionCourseCount !== 'undefined' && institutionCourseCount > 0)) { %>
-                  <div class="inst-teaser-stats">
-                    <% if (typeof institutionCount !=='undefined' && institutionCount> 0) { %>
-                      <div class="inst-stat">
-                        <span class="inst-stat-num">
-                          <%= institutionCount %>
-                        </span>
-                        <span class="inst-stat-label">Institution<%= institutionCount> 1 ? 's' : '' %></span>
-                      </div>
-                      <% } %>
-                        <% if (typeof institutionCourseCount !=='undefined' && institutionCourseCount> 0) { %>
-                          <div class="inst-stat">
-                            <span class="inst-stat-num">
-                              <%= institutionCourseCount %>
-                            </span>
-                            <span class="inst-stat-label">Cours disponible<%= institutionCourseCount> 1 ? 's' : ''
-                                %></span>
-                          </div>
-                          <% } %>
-                  </div>
-                  <% } %>
-                    <a href="/formations" class="inst-teaser-cta">
-                      <span>Explorer le catalogue</span> <i class="bi bi-arrow-right"></i>
-                    </a>
-              </div>
-
-              <!-- Right: glassmorphism preview panel -->
-              <div class="inst-teaser-right" aria-hidden="true">
-                <div class="inst-glass-panel">
-                  <p class="igp-label">Formations disponibles</p>
-                  <div class="igp-course">
-                    <div class="igp-thumb igp-t1"></div>
-                    <div class="igp-info">
-                      <div class="igp-title">Développement Web</div>
-                      <div class="igp-inst">Institut Tech Afrique</div>
-                    </div>
-                    <span class="igp-badge">6 modules</span>
-                  </div>
-                  <div class="igp-course">
-                    <div class="igp-thumb igp-t2"></div>
-                    <div class="igp-info">
-                      <div class="igp-title">Gestion de Projet</div>
-                      <div class="igp-inst">Business School BF</div>
-                    </div>
-                    <span class="igp-badge">4 modules</span>
-                  </div>
-                  <div class="igp-course">
-                    <div class="igp-thumb igp-t3"></div>
-                    <div class="igp-info">
-                      <div class="igp-title">Marketing Digital</div>
-                      <div class="igp-inst">AfroHK Academy</div>
-                    </div>
-                    <span class="igp-badge">5 modules</span>
-                  </div>
-                  <hr class="igp-divider">
-                  <div class="igp-footer">
-                    <span class="igp-footer-text">Mis à jour aujourd'hui</span>
-                    <a href="/formations" class="igp-footer-link">Voir tout <i class="bi bi-arrow-right"></i></a>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </section>
-        <!-- End Institution Courses Teaser -->
 
 
-        <!-- ======= Our Services Section ======= -->
-        <section id="our-services" class="programs-section-modern" style="padding-top: 0;">
-          <div class="container">
-            <div class="programs-header-modern" data-aos="fade-up">
-              <h3 class="slogan mb-5 values-b">
-                <span class="purple">Nos services</span>
-              </h3>
-              <p class="programs-subtitle-modern">Services de transformation digitale pour les institutions éducatives
-              </p>
-            </div>
-
-            <div class="programs-grid-modern">
-              <!-- 1. Formation des Enseignants -->
-              <div class="program-card-modern" data-aos="zoom-in" data-aos-delay="200">
-                <div class="program-card-image">
-                  <img loading="lazy" src="assets/img/teacher_training.png" alt="Formation Enseignants">
-                  <div class="program-card-overlay"></div>
-                </div>
-                <div class="program-card-content">
-                  <div class="program-card-header">
-                    <div class="program-card-icon"><i class="bi bi-people"></i></div>
-                    <h3 class="program-card-title">Formation Enseignants</h3>
-                  </div>
-                  <p class="program-card-description">
-                    Maîtrise des outils (Google, Zoom), pédagogie numérique, classe inversée et création de contenus.
-                  </p>
-                  <p class="program-promise small text-muted mb-3"><i
-                      class="bi bi-arrow-right-circle-fill text-primary me-1"></i> <strong>Objectif :</strong> Cœur de
-                    la transformation.</p>
-                </div>
-              </div>
-
-              <!-- 2. Plateformes Digitales -->
-              <div class="program-card-modern" data-aos="zoom-in" data-aos-delay="300">
-                <div class="program-card-image">
-                  <img loading="lazy" src="assets/img/digital_platforms.png" alt="Plateformes Digitales">
-                  <div class="program-card-overlay"></div>
-                </div>
-                <div class="program-card-content">
-                  <div class="program-card-header">
-                    <div class="program-card-icon"><i class="bi bi-laptop"></i></div>
-                    <h3 class="program-card-title">Plateformes Digitales</h3>
-                  </div>
-                  <p class="program-card-description">
-                    Mise en place de LMS, Google Workspace, comptes élèves/profs et portails parents.
-                  </p>
-                  <p class="program-promise small text-muted mb-3"><i
-                      class="bi bi-arrow-right-circle-fill text-primary me-1"></i> <strong>Objectif :</strong>
-                    Infrastructure solide.</p>
-                </div>
-              </div>
-
-              <!-- 3. Digitalisation Contenus -->
-              <div class="program-card-modern" data-aos="zoom-in" data-aos-delay="400">
-                <div class="program-card-image">
-                  <img loading="lazy" src="assets/img/digital_content.png" alt="Digitalisation Contenus">
-                  <div class="program-card-overlay"></div>
-                </div>
-                <div class="program-card-content">
-                  <div class="program-card-header">
-                    <div class="program-card-icon"><i class="bi bi-file-earmark-richtext"></i></div>
-                    <h3 class="program-card-title">Contenus Digitaux</h3>
-                  </div>
-                  <p class="program-card-description">
-                    Conversion de cours, création de vidéos, quiz interactifs et supports mobiles.
-                  </p>
-                  <p class="program-promise small text-muted mb-3"><i
-                      class="bi bi-arrow-right-circle-fill text-primary me-1"></i> <strong>Objectif :</strong> Contenu
-                    engageant.</p>
-                </div>
-              </div>
-
-              <!-- 4. Accompagnement Changement 
-              <div class="program-card-modern" data-aos="zoom-in" data-aos-delay="500">
-                <div class="program-card-image">
-                  <img loading="lazy" src="assets/img/change_management.png"
-                    alt="Accompagnement Changement">
-                  <div class="program-card-overlay"></div>
-                </div>
-                <div class="program-card-content">
-                  <div class="program-card-header">
-                    <div class="program-card-icon"><i class="bi bi-heart"></i></div>
-                    <h3 class="program-card-title">Conduite du Changement</h3>
-                  </div>
-                  <p class="program-card-description">
-                    Coaching, sensibilisation des parents et gestion de la transition pour une adoption réussie.
-                  </p>
-                  <p class="program-promise small text-muted mb-3"><i
-                      class="bi bi-arrow-right-circle-fill text-primary me-1"></i> <strong>Objectif :</strong> Humain
-                    avant tout.</p>
-                </div>
-              </div>
-
-               Equipement 
-              <div class="program-card-modern" data-aos="zoom-in" data-aos-delay="600">
-                <div class="program-card-image">
-                  <img loading="lazy" src="assets/img/equipment.png" alt="Equipements">
-                  <div class="program-card-overlay"></div>
-                </div>
-                <div class="program-card-content">
-                  <div class="program-card-header">
-                    <div class="program-card-icon"><i class="bi bi-wifi"></i></div>
-                    <h3 class="program-card-title">Equipements & Réseaux</h3>
-                  </div>
-                  <p class="program-card-description">
-                    Conseil achat, installation de classes numériques, réseaux et solutions hors-ligne.
-                  </p>
-                  <p class="program-promise small text-muted mb-3"><i
-                      class="bi bi-arrow-right-circle-fill text-primary me-1"></i> <strong>Objectif :</strong> Matériel
-                    adapté.</p>
-                </div>
-              </div>
-            -->
-              <!-- 6. Innovation & IA -->
-              <div class="program-card-modern" data-aos="zoom-in" data-aos-delay="800">
-                <div class="program-card-image">
-                  <img loading="lazy" src="assets/img/innovation_ai.png" alt="Innovation & IA">
-                  <div class="program-card-overlay"></div>
-                </div>
-                <div class="program-card-content">
-                  <div class="program-card-header">
-                    <div class="program-card-icon"><i class="bi bi-cpu"></i></div>
-                    <h3 class="program-card-title">Innovation & IA</h3>
-                  </div>
-                  <p class="program-card-description">
-                    Intégration de l’IA, tuteurs intelligents et personnalisation de l’apprentissage.
-                  </p>
-                  <p class="program-promise small text-muted mb-3"><i
-                      class="bi bi-arrow-right-circle-fill text-primary me-1"></i> <strong>Objectif :</strong> Futur de
-                    l'éducation.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        <!-- End Our Services Section -->
-
-
-        <!-- ======= English Biiga Section ======= -->
-        <section id="english-biiga"
-          style="background: linear-gradient(135deg, #0a0618 0%, #150930 50%, #0f1f3d 100%); padding: 110px 0; overflow: hidden; position: relative;">
-
-          <!-- Ambient glows -->
-          <div
-            style="position:absolute;top:-100px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(74,163,255,.12) 0%,transparent 70%);pointer-events:none;">
-          </div>
-          <div
-            style="position:absolute;bottom:-80px;left:-80px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(255,75,75,.1) 0%,transparent 70%);pointer-events:none;">
-          </div>
-          <div
-            style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(93,6,186,.06) 0%,transparent 65%);pointer-events:none;">
-          </div>
-
-          <div class="container position-relative" style="z-index:2;">
-            <div class="row align-items-center g-5">
-
-              <!-- Image -->
-              <div class="col-lg-5 mb-5 mb-lg-0" data-aos="fade-right" data-aos-delay="150">
-                <div class="position-relative">
-                  <div class="position-absolute top-0 start-0 w-100 h-100 rounded-4"
-                    style="background:linear-gradient(45deg,#4aa3ff,#ff4b4b);transform:rotate(-4deg);opacity:.6;filter:blur(18px);z-index:0;">
-                  </div>
-                  <img loading="lazy"
-                    src="https://res.cloudinary.com/dccibzcxp/image/upload/v1768972885/Afro%20Language%20lab/WhatsApp_Image_2025-10-01_at_08.10.51_qksnjf.jpg"
-                    class="img-fluid rounded-4 shadow-lg position-relative"
-                    style="z-index:1;border:2px solid rgba(255,255,255,.15);" alt="English Biiga">
-                  <!-- Startup badge overlay -->
-                  <div
-                    style="position:absolute;bottom:-16px;left:24px;z-index:2;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(12px);border-radius:14px;padding:10px 18px;display:flex;align-items:center;gap:10px;">
-                    <div
-                      style="width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px #4ade80;flex-shrink:0;">
-                    </div>
-                    <span style="color:#fff;font-size:.78rem;font-weight:700;">Startup active · englishbiiga.com</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Content -->
-              <div class="col-lg-7 ps-lg-5" data-aos="fade-left" data-aos-delay="250">
-
-                <!-- Label -->
-                <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
-                  <span
-                    style="display:inline-flex;align-items:center;gap:6px;background:rgba(74,163,255,.12);border:1px solid rgba(74,163,255,.25);color:#4aa3ff;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;padding:5px 14px;border-radius:50px;">
-                    <i class="bi bi-rocket-takeoff-fill"></i> Startup EdTech
-                  </span>
-                  <span
-                    style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,75,75,.1);border:1px solid rgba(255,75,75,.2);color:#ff6b6b;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;padding:5px 14px;border-radius:50px;">
-                    <i class="bi bi-buildings-fill"></i> Fondée par AfroHK
-                  </span>
-                </div>
-
-                <!-- Name -->
-                <h3 class="fw-bold lh-1 mb-3" style="font-family:’Outfit’,sans-serif;font-size:3.2rem;">
-                  <span style="color:#4aa3ff;text-shadow:0 0 40px rgba(74,163,255,.4);">English</span><span
-                    style="color:#ff4b4b;text-shadow:0 0 40px rgba(255,75,75,.4);">Biiga</span>
-                </h3>
-
-                <!-- Tagline -->
-                <p
-                  style="font-size:1.15rem;color:rgba(255,255,255,.55);font-style:italic;border-left:3px solid #ff4b4b;padding-left:16px;margin-bottom:24px;line-height:1.6;">
-                  "Former des enfants africains bilingues, compétents en numérique et prêts à diriger."
-                </p>
-
-                <!-- Description -->
-                <p style="font-size:.97rem;color:rgba(255,255,255,.65);line-height:1.8;margin-bottom:32px;">
-                  AfroHK a fondé <strong style="color:#fff;">English Biiga</strong> comme une startup EdTech à part
-                  entière, dotée de sa propre marque, plateforme et stratégie de croissance. Sa mission : aller au-delà
-                  de l’apprentissage de l’anglais pour bâtir chez chaque enfant les compétences du 21ème siècle —
-                  langue, leadership, numérique — à travers une expérience éducative immersive et technologique.
-                </p>
-
-                <!-- Pillars -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:36px;">
-                  <div
-                    style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;">
-                    <div
-                      style="width:36px;height:36px;border-radius:9px;background:rgba(74,163,255,.12);display:flex;align-items:center;justify-content:center;color:#4aa3ff;flex-shrink:0;">
-                      <i class="bi bi-translate"></i>
-                    </div>
-                    <span style="color:#fff;font-size:.88rem;font-weight:600;">Anglais intensif</span>
-                  </div>
-                  <div
-                    style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;">
-                    <div
-                      style="width:36px;height:36px;border-radius:9px;background:rgba(255,75,75,.1);display:flex;align-items:center;justify-content:center;color:#ff6b6b;flex-shrink:0;">
-                      <i class="bi bi-trophy-fill"></i>
-                    </div>
-                    <span style="color:#fff;font-size:.88rem;font-weight:600;">Leadership</span>
-                  </div>
-                  <div
-                    style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;">
-                    <div
-                      style="width:36px;height:36px;border-radius:9px;background:rgba(74,163,255,.12);display:flex;align-items:center;justify-content:center;color:#4aa3ff;flex-shrink:0;">
-                      <i class="bi bi-mic-fill"></i>
-                    </div>
-                    <span style="color:#fff;font-size:.88rem;font-weight:600;">Tuteur IA Vocal</span>
-                  </div>
-                  <div
-                    style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;">
-                    <div
-                      style="width:36px;height:36px;border-radius:9px;background:rgba(255,75,75,.1);display:flex;align-items:center;justify-content:center;color:#ff6b6b;flex-shrink:0;">
-                      <i class="bi bi-laptop-fill"></i>
-                    </div>
-                    <span style="color:#fff;font-size:.88rem;font-weight:600;">Compétences Digitales</span>
-                  </div>
-                </div>
-
-                <!-- CTA -->
-                <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-                  <a href="https://www.englishbiiga.com" target="_blank" rel="noopener noreferrer"
-                    style="display:inline-flex;align-items:center;gap:8px;padding:14px 32px;background:linear-gradient(90deg,#4aa3ff,#ff4b4b);color:#fff;text-decoration:none;border-radius:50px;font-weight:800;font-size:.95rem;box-shadow:0 8px 28px rgba(74,163,255,.3);transition:all .3s;">
-                    Visiter English Biiga <i class="bi bi-box-arrow-up-right"></i>
-                  </a>
-                  <span style="font-size:.8rem;color:rgba(255,255,255,.3);">Une startup fondée par <strong
-                      style="color:rgba(255,255,255,.55);">Afro House of Knowledge</strong></span>
-                </div>
-
-              </div>
-            </div>
-          </div>
-        </section>
-        <!-- End English Biiga Section -->
 
         <!-- ======= Services Section (Why Choose Us) -->
         <section id="services" class="services section-bg">

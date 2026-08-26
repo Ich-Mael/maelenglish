@@ -250,6 +250,7 @@ app.get('/sitemap.xml', async (req, res) => {
     const entries = [
         urlEntry(`${baseUrl}/`, { changefreq: 'weekly', priority: '1.0' }),
         urlEntry(`${baseUrl}/formations`, { changefreq: 'weekly', priority: '0.8' }),
+        urlEntry(`${baseUrl}/services`, { changefreq: 'monthly', priority: '0.6' }),
         ...courses.map((c) =>
             urlEntry(`${baseUrl}/formations/${c._id}`, { lastmod: c.updatedAt, changefreq: 'monthly', priority: '0.7' })
         ),
@@ -260,6 +261,11 @@ app.get('/sitemap.xml', async (req, res) => {
         entries.join('\n') + `\n</urlset>\n`;
 
     res.type('application/xml').send(xml);
+});
+
+// Public institution-services page (B2B offering moved off the home page).
+app.get('/services', (req, res) => {
+    res.render('services', { baseUrl: getBaseUrl(req) });
 });
 
 app.get('/formations', async (req, res) => {

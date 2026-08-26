@@ -148,6 +148,7 @@
       if (hidden || !p) return;
       hidden = true;
       p.classList.add('done');
+      document.body.classList.add('is-ready'); // triggers on-page entrance animations
       setTimeout(function () { if (p.parentNode) p.remove(); }, 750);
     }
 
