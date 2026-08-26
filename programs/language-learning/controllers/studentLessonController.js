@@ -4,6 +4,9 @@ const LessonProgress = require('../../../shared/models/lessonProgress');
 const QuizAttempt = require('../../../shared/models/quizAttempt');
 const AssignmentSubmission = require('../../../shared/models/assignmentSubmission');
 const catchAsync = require('../../../shared/utilities/catchAsync');
+const { getChallengeState } = require('../middlewares/challengeGate');
+
+const GEB_BASE = '/programs/language-learning/general-english-boost';
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
@@ -29,6 +32,24 @@ function isLessonUnlocked(lesson, lessons, completedLessonIds) {
     if (idx === 0) return true;
     return completedLessonIds.has(sorted[idx - 1]._id.toString());
 }
+
+// ─── CHALLENGE DASHBOARD (day timeline) ─────────────────────────────────────────
+
+module.exports.showChallenge = catchAsync(async (req, res) => {
+    const { course_id } = req.params;
+    const course = await Course.findById(course_id).populate('modules', 'title order isCheckpointRequired');
+    if (!course) {
+        req.flash('error', 'Cours introuvable.');
+        return res.redirect(`${GEB_BASE}/my-courses`);
+    }
+    // Non-challenge courses use the normal course page.
+    if (!course.isChallenge) {
+        return res.redirect(`${GEB_BASE}/${course_id}`);
+    }
+
+    const state = await getChallengeState(req.user, course);
+    res.render('programs/language-learning/courses/challenge', { course, state });
+});
 
 // ─── MODULE OVERVIEW ──────────────────────────────────────────────────────────
 // Replaces / enhances the existing showModule for the new lesson-based structure

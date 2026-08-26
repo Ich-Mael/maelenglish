@@ -3,7 +3,45 @@ const Lesson = require('../../../shared/models/lesson');
 const LessonProgress = require('../../../shared/models/lessonProgress');
 const QuizAttempt = require('../../../shared/models/quizAttempt');
 const AssignmentSubmission = require('../../../shared/models/assignmentSubmission');
+const User = require('../../../shared/models/user');
 const catchAsync = require('../../../shared/utilities/catchAsync');
+const Emailer = require('../../../shared/utilities/sendEmail');
+const { getBaseUrl } = require('../../../shared/utilities/url');
+
+const GEB_BASE = '/programs/language-learning/general-english-boost';
+
+// ─── CHALLENGE NOTIFICATIONS ────────────────────────────────────────────────────
+
+// Notify the course's coaches/instructors that a challenge checkpoint awaits review.
+async function notifyCheckpointSubmitted(req, course, courseModule) {
+    const instructorIds = (course.instructors || []).map(i => i._id || i);
+    if (!instructorIds.length) return;
+    const coaches = await User.find({ _id: { $in: instructorIds }, email: { $ne: null } }).select('name email');
+    const student = req.user;
+    const studentName = `${student.surname || ''} ${student.name || ''}`.trim() || student.username;
+    const gradingUrl = `${getBaseUrl(req)}${GEB_BASE}/admindashboard/${course._id}/grading`;
+    await Promise.all(coaches.map(coach =>
+        new Emailer(coach, gradingUrl).sendChallengeSubmission({
+            courseTitle: course.title,
+            dayTitle: courseModule.title,
+            studentName,
+        }).catch(e => console.error('challenge submit email failed:', e.message))
+    ));
+}
+
+// Notify the student that their checkpoint was approved (next day unlocked) or returned (redo).
+async function notifyGradeResult(req, submission, isReturn) {
+    const student = submission.userId; // populated {name,surname,username,email}
+    if (!student || !student.email) return;
+    const course = await Course.findById(submission.courseId).select('title');
+    const challengeUrl = `${getBaseUrl(req)}${GEB_BASE}/${submission.courseId}/challenge`;
+    await new Emailer(student, challengeUrl).sendChallengeResult({
+        courseTitle: course ? course.title : 'English Challenge',
+        dayTitle: submission.moduleId ? submission.moduleId.title : 'le point de contrôle',
+        approved: !isReturn,
+        feedback: submission.feedback || '',
+    });
+}
 
 // ─── MODULE QUIZ ──────────────────────────────────────────────────────────────
 
@@ -154,6 +192,16 @@ module.exports.submitModuleAssignment = catchAsync(async (req, res) => {
         { upsert: true }
     );
 
+    // On a challenge, this is the day's checkpoint → notify the coach(es) and send
+    // the student back to the day timeline (the next day stays locked until review).
+    const course = await Course.findById(course_id).select('title isChallenge instructors');
+    if (course && course.isChallenge) {
+        try { await notifyCheckpointSubmitted(req, course, courseModule); }
+        catch (e) { console.error('challenge submit email failed:', e.message); }
+        req.flash('success', 'Point de contrôle soumis. En attente de la validation de votre coach.');
+        return res.redirect(`/programs/language-learning/general-english-boost/${course_id}/challenge`);
+    }
+
     req.flash('success', 'Devoir soumis avec succès. En attente de correction.');
     res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}/overview`);
 });
@@ -302,16 +350,31 @@ module.exports.gradingQueue = catchAsync(async (req, res) => {
 
 module.exports.gradeSubmission = catchAsync(async (req, res) => {
     const { course_id, submission_id } = req.params;
-    const { grade, feedback } = req.body;
+    const { grade, feedback, action } = req.body;
 
-    await AssignmentSubmission.findByIdAndUpdate(submission_id, {
-        grade:    parseFloat(grade),
-        feedback: feedback || '',
-        status:   'graded',
-        gradedBy: req.user._id,
-        gradedAt: new Date()
-    });
+    // `action === 'return'` sends the checkpoint back for redo (status 'returned'),
+    // which keeps the next challenge day locked. Otherwise it is approved
+    // (status 'graded'), which unlocks the next day. Grade is optional on approve.
+    const isReturn = action === 'return';
+    const update = isReturn
+        ? { status: 'returned', feedback: feedback || '', gradedBy: req.user._id, gradedAt: new Date() }
+        : {
+            status:   'graded',
+            grade:    (grade !== undefined && grade !== '' && grade !== null) ? parseFloat(grade) : 100,
+            feedback: feedback || '',
+            gradedBy: req.user._id,
+            gradedAt: new Date()
+          };
 
-    req.flash('success', 'Devoir noté.');
+    const submission = await AssignmentSubmission.findByIdAndUpdate(submission_id, update, { new: true })
+        .populate('userId', 'name surname username email')
+        .populate('moduleId', 'title');
+
+    // Notify the student of the outcome (approved → next day unlocked / returned → redo).
+    if (submission) {
+        try { await notifyGradeResult(req, submission, isReturn); } catch (e) { console.error('challenge grade email failed:', e.message); }
+    }
+
+    req.flash('success', isReturn ? "Devoir renvoyé à l'élève pour correction." : 'Devoir validé — le jour suivant est débloqué.');
     res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/grading`);
 });

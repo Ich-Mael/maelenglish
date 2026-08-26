@@ -132,6 +132,22 @@ const courseSchema = new Schema({
     instructions:   { type: String, default: '' },
     submissionType: { type: String, enum: ['text', 'link'], default: 'text' },
     maxScore:       { type: Number, default: 100 }
+  },
+
+  // ── English Challenge (time-boxed, drip, checkpoint-gated) ─────────
+  // When true, the course runs as a day-by-day challenge: each Module is a
+  // "Day" (ordered by `order`), content is revealed relative to the student's
+  // enrollment start date, and a day's instructor-reviewed checkpoint
+  // (its module assignment) must be approved before the next day unlocks.
+  // See programs/language-learning/middlewares/challengeGate.js
+  isChallenge: {
+    type: Boolean,
+    default: false,
+  },
+
+  challenge: {
+    themeLabel:   { type: String, default: '' },   // e.g. "Anglais pour le Marketing"
+    durationDays: { type: Number, default: 0 },     // informational; real day count = number of modules
   }
 }, {
   timestamps: true,
@@ -205,6 +221,11 @@ const moduleSchema = new Schema({
 
   // ── NEW: structured module fields ──────────────────────────────────
   order: { type: Number, default: 0 },
+
+  // English Challenge: when the parent course is a challenge, this module is
+  // "Day (order)". If true, its checkpoint (module assignment) must be approved
+  // by an instructor before the next day unlocks. Set false for a "rest day".
+  isCheckpointRequired: { type: Boolean, default: true },
 
   // Lessons (new atomic content units replacing videoLinks + Assignment)
   lessons: [{

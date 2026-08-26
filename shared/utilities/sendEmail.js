@@ -84,6 +84,36 @@ module.exports = class Emailer {
     await this.send("welcome_mail", "Welcome to the Afrohk Family!");
   }
 
+  // ── English Challenge notifications ──────────────────────────────
+  // Render with a rich data object (send() only passes user/url/subject).
+  async _sendRich(template, subject, data = {}) {
+    const html = await ejs.renderFile(
+      path.join(__dirname, "../../views/emails", `${template}.ejs`),
+      { user: this.user, url: this.url, subject, ...data }
+    );
+    await this.newTransport().sendMail({
+      from: this.from,
+      to: this.to,
+      subject,
+      html,
+      text: htmlToText.convert(html, { wordwrap: 130 }),
+    });
+  }
+
+  // To a coach/instructor: a checkpoint awaits review.
+  async sendChallengeSubmission(data) {
+    await this._sendRich("challengeSubmission",
+      `À corriger : ${data.dayTitle} — ${data.courseTitle}`, data);
+  }
+
+  // To the student: checkpoint approved (next day unlocked) or returned (redo).
+  async sendChallengeResult(data) {
+    const subject = data.approved
+      ? `✅ Validé : ${data.dayTitle} — ${data.courseTitle}`
+      : `🔁 À refaire : ${data.dayTitle} — ${data.courseTitle}`;
+    await this._sendRich("challengeResult", subject, data);
+  }
+
   async sendPasswordReset(url) {
     this.url = url;
     const template = "passwordReset";

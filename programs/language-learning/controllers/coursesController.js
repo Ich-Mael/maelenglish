@@ -49,6 +49,9 @@ module.exports.createCourse = catchAsync(async (req, res) => {
       return res.redirect("/programs/language-learning/general-english-boost/admindashboard/new");
     }
 
+    // Checkbox → explicit boolean (absent when unchecked)
+    req.body.course.isChallenge = req.body.course.isChallenge === 'true' || req.body.course.isChallenge === 'on';
+
     const course = new Course({ ...req.body.course, source: 'english-boost' });
     const instructorsList = req.body.instructors;
 
@@ -101,6 +104,10 @@ module.exports.editCourse = catchAsync(async (req, res) => {
 });
 
 module.exports.updateCourse = catchAsync(async(req, res)=>{
+  // Checkbox → explicit boolean (absent when unchecked, so it can be turned off)
+  if (req.body.course) {
+    req.body.course.isChallenge = req.body.course.isChallenge === 'true' || req.body.course.isChallenge === 'on';
+  }
   const course = await Course.findByIdAndUpdate(req.params.course_id, {...req.body.course, session: {...req.body.session}});
   await course.save();
   req.flash("success", "Cours mis à jour avec succès");

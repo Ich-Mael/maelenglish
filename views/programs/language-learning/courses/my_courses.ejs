@@ -434,6 +434,10 @@
                   <a href="/programs/language-learning/general-english-boost/enroll-contact" class="btn-continue btn-expired">
                     <i class="bi bi-envelope-fill"></i> Contactez l'administration
                   </a>
+              <% } else if (course.isChallenge) { %>
+                  <a href="/programs/language-learning/general-english-boost/<%= course._id %>/challenge" class="btn-continue">
+                    <i class="bi bi-lightning-charge-fill"></i> Reprendre le défi
+                  </a>
               <% } else { %>
                   <a href="/programs/language-learning/general-english-boost/<%= course._id %>" class="btn-continue">
                     <i class="bi bi-play-circle-fill"></i> Continuer

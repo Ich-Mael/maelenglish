@@ -17,6 +17,9 @@ const {
 const {
     checkCourseAccess
 } = require('../middlewares/courseAccess');
+const {
+    checkChallengeDayAccess
+} = require('../middlewares/challengeGate');
 
 /*
  ************************* COURSES ROUTES *******************************************
@@ -91,16 +94,19 @@ router.post('/admindashboard/:course_id/modules/reorder', isLoggedIn, isVerified
 // Creating a new module
 router.post('/admindashboard/:course_id/module', isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), CourseModules.createModule);
 
+// English Challenge — student day-timeline dashboard
+router.get('/:course_id/challenge', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, StudentLessons.showChallenge);
+
 // Show module content (legacy — kept for backward compat)
-router.get('/:course_id/modules/:module_id', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, CourseModules.showModule);
+router.get('/:course_id/modules/:module_id', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, checkChallengeDayAccess, CourseModules.showModule);
 
 // Mark module as completed (legacy)
 router.post('/:course_id/modules/:module_id/complete', isLoggedIn, isVerified, CourseModules.markComplete);
 
 // New structured lesson routes
-router.get('/:course_id/modules/:module_id/overview', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, StudentLessons.showModuleOverview);
-router.get('/:course_id/modules/:module_id/lessons/:lesson_id', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, StudentLessons.showLesson);
-router.post('/:course_id/modules/:module_id/lessons/:lesson_id/complete', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, StudentLessons.completeLesson);
+router.get('/:course_id/modules/:module_id/overview', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, checkChallengeDayAccess, StudentLessons.showModuleOverview);
+router.get('/:course_id/modules/:module_id/lessons/:lesson_id', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, checkChallengeDayAccess, StudentLessons.showLesson);
+router.post('/:course_id/modules/:module_id/lessons/:lesson_id/complete', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, checkChallengeDayAccess, StudentLessons.completeLesson);
 
 // Edit module
 router.get("/admindashboard/:course_id/modules/:module_id/edit", isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), CourseModules.editModule);
@@ -153,12 +159,12 @@ router.post('/admindashboard/:course_id/modules/:module_id/assignment', isLogged
 router.post('/:course_id/modules/:module_id/evaluation/submit', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, CourseModules.submitEvaluation);
 
 // Student: module quiz (new)
-router.get( '/:course_id/modules/:module_id/module-quiz',        isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, Assessments.showModuleQuiz);
-router.post('/:course_id/modules/:module_id/module-quiz/submit', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, Assessments.submitModuleQuiz);
+router.get( '/:course_id/modules/:module_id/module-quiz',        isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, checkChallengeDayAccess, Assessments.showModuleQuiz);
+router.post('/:course_id/modules/:module_id/module-quiz/submit', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, checkChallengeDayAccess, Assessments.submitModuleQuiz);
 
 // Student: module assignment
-router.get( '/:course_id/modules/:module_id/assignment',        isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, Assessments.showModuleAssignment);
-router.post('/:course_id/modules/:module_id/assignment/submit', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, Assessments.submitModuleAssignment);
+router.get( '/:course_id/modules/:module_id/assignment',        isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, checkChallengeDayAccess, Assessments.showModuleAssignment);
+router.post('/:course_id/modules/:module_id/assignment/submit', isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, checkChallengeDayAccess, Assessments.submitModuleAssignment);
 
 // Student: final exam
 router.get( '/:course_id/final-exam',        isLoggedIn, isVerified, checkCourseOwnership, checkCourseAccess, Assessments.showFinalExam);

@@ -304,6 +304,29 @@
              </div>
           </div>
 
+          <%# ── English Challenge mode ─────────────────────────────── %>
+          <div class="form-group mb-4" style="background:#f7f4ff; border:1px solid #e5dbf7; border-radius:12px; padding:1rem 1.1rem;">
+             <div class="form-check form-switch p-0 d-flex align-items-center gap-2">
+                 <input class="form-check-input ms-0" type="checkbox" id="isChallenge" name="course[isChallenge]" value="true" style="width: 2.5em; height: 1.25em;" onchange="document.getElementById('challenge-fields').style.display = this.checked ? 'block' : 'none';">
+                 <label class="form-check-label pt-1 pointer" for="isChallenge">
+                     <i class="bi bi-lightning-charge-fill" style="color:#7c3aed;"></i> &nbsp; Mode English Challenge (jour par jour, point de contrôle validé par un coach)
+                 </label>
+             </div>
+             <div id="challenge-fields" style="display:none; margin-top:.9rem;">
+               <div class="row g-3">
+                 <div class="col-md-8">
+                   <label class="form-label small fw-semibold" for="challengeTheme">Thème du défi</label>
+                   <input type="text" id="challengeTheme" name="course[challenge][themeLabel]" class="form-control" placeholder="ex : Anglais pour le Marketing">
+                 </div>
+                 <div class="col-md-4">
+                   <label class="form-label small fw-semibold" for="challengeDays">Durée (jours)</label>
+                   <input type="number" id="challengeDays" name="course[challenge][durationDays]" class="form-control" min="1" placeholder="30">
+                 </div>
+               </div>
+               <p class="text-muted small mb-0 mt-2"><i class="bi bi-info-circle"></i> Chaque module devient un « Jour ». Ajoutez un devoir (point de contrôle) à chaque jour à valider pour débloquer le suivant.</p>
+             </div>
+          </div>
+
           <div class="form-group">
             <label for="description" class="form-label">
               <i class="bi bi-file-text"></i>
