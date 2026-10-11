@@ -296,6 +296,7 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 1.2rem; flex-shrink: 0;
   }
+  .ud-card-logo { display: block; height: 42px; width: auto; max-width: 100%; object-fit: contain; }
   .ud-card-title   { font-size: .95rem; font-weight: 700; color: #1e1b4b; margin: 0; line-height: 1.3; }
   .ud-card-subtitle { font-size: .75rem; color: #94a3b8; font-weight: 500; margin-top: .12rem; }
   .ud-card-status {
@@ -514,7 +515,7 @@
         const kr = typeof studentClassId !== 'undefined' && studentClassId
           ? `/programs/ekalan/kalan/class/${studentClassId}`
           : '/programs/ekalan/kalan';
-        afroProg.push({ name: 'Kalan', sub: 'Plateforme lycée', icon: 'mortarboard-fill', color: '#7c3aed', route: kr });
+        afroProg.push({ name: 'Kalan', sub: 'Plateforme lycée', icon: 'mortarboard-fill', color: '#7c3aed', route: kr, logo: '/assets/img/logos/e-Kalan_logo/ekalan-card.png' });
       }
       if (user.isClubMember)
         afroProg.push({ name: 'English4All', sub: 'Club linguistique', icon: 'translate', color: '#0891b2', route: '/programs/language-learning/english4all' });
@@ -541,6 +542,12 @@
             <div class="ud-card">
               <div class="ud-card-accent" style="background:<%= p.color %>;"></div>
               <div class="ud-card-body">
+                <% if (p.logo) { %>
+                  <div>
+                    <img src="<%= p.logo %>" alt="<%= p.name %>" class="ud-card-logo">
+                    <p class="ud-card-subtitle"><%= p.sub %></p>
+                  </div>
+                <% } else { %>
                 <div class="ud-card-header">
                   <div class="ud-card-icon" style="background:color-mix(in srgb,<%= p.color %> 12%,#fff);color:<%= p.color %>;">
                     <i class="bi bi-<%= p.icon %>"></i>
@@ -550,6 +557,7 @@
                     <p class="ud-card-subtitle"><%= p.sub %></p>
                   </div>
                 </div>
+                <% } %>
                 <span class="ud-card-status ud-status-active">
                   <i class="bi bi-check-circle-fill"></i> Programme actif
                 </span>
