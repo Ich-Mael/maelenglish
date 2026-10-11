@@ -14,45 +14,49 @@
 <style>
   .kpc { max-width: 1000px; margin: 0 auto 2rem; }
   .kpc-card { border-radius: 18px; padding: 1.5rem 1.75rem; display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;
-    box-shadow: 0 6px 24px rgba(45, 3, 112, 0.15); position: relative; }
+    box-shadow: 0 10px 30px rgba(50, 44, 77, 0.18); position: relative; overflow: hidden; }
   .kpc-card .kpc-icon { font-size: 2.4rem; flex-shrink: 0; }
   .kpc-text { flex: 1; min-width: 240px; }
-  .kpc-text h3 { margin: 0 0 .3rem; font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+  .kpc-text h3 { margin: 0 0 .3rem; font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
   .kpc-text p { margin: 0; font-size: .95rem; opacity: .92; }
   .kpc-price { font-weight: 700; }
   .kpc-actions { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
 
   /* "Kalan Ba" wordmark badge */
   .kpc-badge { display: inline-flex; align-items: center; gap: .35rem; font-size: .72rem; font-weight: 800; letter-spacing: .04em;
-    text-transform: uppercase; padding: .25rem .6rem; border-radius: 999px; background: linear-gradient(135deg, #ffd700, #ffb800); color: #2d0370; }
+    text-transform: uppercase; padding: .25rem .6rem; border-radius: 999px; background: #ffc23a; color: #322c4d; }
 
-  /* Locked (can request) — premium "buy" look */
-  .kpc-locked { background: linear-gradient(135deg, #1a1033 0%, #2d0370 100%); color: #fff; border: 1px solid rgba(255,215,0,.35); }
-  .kpc-locked .kpc-icon { color: #ffd700; }
-  .kpc-locked .kpc-price { color: #ffd700; }
+  /* Locked (can request) — navy with the logo's sun yellow */
+  .kpc-locked { background: #322c4d; color: #fff; border: 1px solid rgba(255,194,58,.4); }
+  .kpc-locked::after { content: ''; position: absolute; top: -45%; right: -6%; width: 220px; height: 220px; border-radius: 50%;
+    background: #ffc23a; opacity: .14; pointer-events: none; }
+  .kpc-locked > * { position: relative; z-index: 1; }
+  .kpc-locked .kpc-icon { color: #ffc23a; }
+  .kpc-locked .kpc-price { color: #ffc23a; }
   .kpc-btn { border: none; cursor: pointer; border-radius: 50px; padding: .8rem 1.5rem; font-weight: 700; font-size: .95rem;
     display: inline-flex; align-items: center; gap: .5rem; text-decoration: none; transition: transform .2s, box-shadow .2s; }
-  .kpc-btn-primary { background: linear-gradient(135deg, #ffd700 0%, #ffb800 100%); color: #2d0370; }
-  .kpc-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,215,0,.4); color: #2d0370; }
+  .kpc-btn-primary { background: #ffc23a; color: #322c4d; }
+  .kpc-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,194,58,.45); color: #322c4d; }
   .kpc-btn-ghost { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.3); }
   .kpc-btn-ghost:hover { background: rgba(255,255,255,.22); color: #fff; }
 
   /* Pending */
-  .kpc-pending { background: #fff8e1; color: #7a5b00; border: 1px solid #ffe08a; }
-  .kpc-pending .kpc-icon { color: #c79100; }
+  .kpc-pending { background: #fff3d6; color: #7a5b00; border: 1px solid #ffe3a3; box-shadow: none; }
+  .kpc-pending .kpc-icon { color: #d99a00; }
 
-  /* Unlocked — premium VIP look (purple + gold) */
-  .kpc-unlocked { background: linear-gradient(135deg, #2d0370 0%, #5d06ba 60%, #7d1fd6 100%); color: #fff;
-    border: 1px solid rgba(255,215,0,.5); overflow: hidden; }
+  /* Unlocked — violet + sun yellow */
+  .kpc-unlocked { background: #5e17eb; color: #fff;
+    border: 1px solid rgba(255,194,58,.5); overflow: hidden; }
   .kpc-unlocked::after { content: ''; position: absolute; top: -40%; right: -8%; width: 220px; height: 220px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,215,0,.18), transparent 70%); pointer-events: none; }
-  .kpc-unlocked .kpc-icon { color: #ffd700; }
+    background: #ffc23a; opacity: .2; pointer-events: none; }
+  .kpc-unlocked > * { position: relative; z-index: 1; }
+  .kpc-unlocked .kpc-icon { color: #ffc23a; }
   .kpc-unlocked .kpc-text h3 { color: #fff; }
 
   /* Warning strip (account sharing / illegal download) */
   .kpc-warn { margin-top: .75rem; display: flex; gap: .65rem; align-items: flex-start; font-size: .82rem; line-height: 1.45;
-    color: #7a5b00; background: #fff8e1; border: 1px solid #ffe08a; border-radius: 12px; padding: .75rem .95rem; }
-  .kpc-warn i { font-size: 1.1rem; color: #c79100; flex-shrink: 0; margin-top: .05rem; }
+    color: #7a5b00; background: #fff3d6; border: 1px solid #ffe3a3; border-radius: 12px; padding: .75rem .95rem; }
+  .kpc-warn i { font-size: 1.1rem; color: #d99a00; flex-shrink: 0; margin-top: .05rem; }
 
   @media (max-width: 600px) {
     .kpc-card { flex-direction: column; text-align: center; }

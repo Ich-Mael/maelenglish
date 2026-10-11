@@ -1,756 +1,313 @@
 <% layout('layouts/main') %>
 
 <% headContent = `
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
-    #main {
-      margin-top: 0 !important;
-      padding-top: 0 !important;
+    /* Palette from the e-Kalan logo (same as the Kalan landing + class pages) */
+    :root {
+      --sp-sun: #ffc23a;
+      --sp-sun-soft: #fff3d6;
+      --sp-violet: #5e17eb;
+      --sp-violet-dark: #4710c0;
+      --sp-violet-soft: #efe7ff;
+      --sp-navy: #322c4d;
+      --sp-navy-deep: #231e38;
+      --sp-cream: #fffaf0;
+      --sp-muted: #6b6880;
+      --sp-border: #ece9f3;
+      --sp-radius: 22px;
     }
-    
+
+    #main { margin-top: 0 !important; padding-top: 0 !important; }
+
     .subject-page {
-      padding: 0;
-      min-height: calc(100vh - 200px);
-      background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
-      margin-top: 80px !important;
+      margin-top: 72px;
+      background: #fff;
+      min-height: calc(100vh - 72px);
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      color: var(--sp-navy);
     }
-    
-    /* Hero Banner */
-    .subject-hero {
-      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
-      color: white;
-      padding: 2rem 2rem 2rem;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 10px 40px rgba(93, 6, 186, 0.2);
+    .subject-page h1, .subject-page h2, .subject-page h3 { font-family: 'Baloo 2', system-ui, sans-serif; }
+
+    /* ───── Hero (light, logo-led) ───── */
+    .sp-hero {
+      position: relative; overflow: hidden;
+      background: var(--sp-cream);
+      padding: 1.75rem clamp(1rem, 4vw, 3rem) clamp(2.4rem, 5vw, 3.4rem);
     }
-    
-    .subject-hero::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -10%;
-      width: 600px;
-      height: 600px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 50%;
-      animation: float 20s infinite ease-in-out;
+    /* yellow disc echoes the "e" circle of the logo */
+    .sp-hero::before {
+      content: ''; position: absolute; right: -150px; top: -190px;
+      width: 440px; height: 440px; border-radius: 50%;
+      background: var(--sp-sun); opacity: .9; pointer-events: none;
     }
-    
-    .subject-hero::after {
-      content: '';
-      position: absolute;
-      bottom: -30%;
-      left: -5%;
-      width: 400px;
-      height: 400px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 50%;
-      animation: float 25s infinite ease-in-out reverse;
+    .sp-hero::after {
+      content: ''; position: absolute; left: -90px; bottom: -130px;
+      width: 240px; height: 240px; border-radius: 50%;
+      border: 30px solid var(--sp-violet-soft); pointer-events: none;
     }
-    
-    @keyframes float {
-      0%, 100% { transform: translate(0, 0) rotate(0deg); }
-      50% { transform: translate(-30px, -30px) rotate(180deg); }
+    .sp-hero__inner { max-width: 1240px; margin: 0 auto; position: relative; z-index: 2; }
+
+    .sp-hero__top {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; flex-wrap: wrap; margin-bottom: 1.8rem;
     }
-    
-    .subject-hero-content {
-      position: relative;
-      z-index: 2;
-      max-width: 1200px;
-      margin: 0 auto;
+    .sp-breadcrumb {
+      display: inline-flex; align-items: center; gap: .55rem; flex-wrap: wrap;
+      font-size: .9rem; font-weight: 500; color: var(--sp-muted);
     }
-    
-    .hero-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1.5rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
+    .sp-breadcrumb a {
+      display: inline-flex; align-items: center; gap: .45rem;
+      color: var(--sp-navy); text-decoration: none; font-weight: 600;
+      background: #fff; border: 1px solid var(--sp-border);
+      padding: .5rem .95rem; border-radius: 999px;
+      box-shadow: 0 4px 14px rgba(50,44,77,.06);
+      transition: transform .2s, border-color .2s, color .2s;
     }
-    
-    .back-button {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1.5rem;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50px;
-      color: white;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.95rem;
-      transition: all 0.3s ease;
-      flex-shrink: 0;
+    .sp-breadcrumb a:hover { transform: translateX(-3px); border-color: var(--sp-violet); color: var(--sp-violet); }
+    .sp-breadcrumb .sep { opacity: .5; }
+    .sp-breadcrumb .current { font-weight: 600; color: var(--sp-navy); }
+
+    .sp-brand {
+      display: inline-flex; align-items: center;
+      background: #fff; border-radius: 16px; padding: .45rem .95rem;
+      box-shadow: 0 12px 28px rgba(50,44,77,.16);
+      transition: transform .2s;
     }
-    
-    .back-button:hover {
-      background: rgba(255, 255, 255, 0.25);
-      border-color: rgba(255, 255, 255, 0.5);
-      transform: translateX(-5px);
-      color: white;
-      text-decoration: none;
+    .sp-brand:hover { transform: translateY(-2px); }
+    .sp-brand img { display: block; height: 42px; width: auto; }
+
+    .sp-hero__head {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: 2rem; flex-wrap: wrap;
     }
-    
-    .subject-title-wrapper {
-      text-align: center;
-      margin-bottom: 0.75rem;
-      flex: 1;
-      display: flex;
-      justify-content: center;
+    .sp-eyebrow {
+      display: inline-flex; align-items: center; gap: .45rem;
+      font-size: .76rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
+      color: var(--sp-violet); margin-bottom: .6rem;
     }
-    
-    .subject-title {
-      font-size: 3.5rem;
-      font-weight: 700;
-      margin: 0;
-      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
-      letter-spacing: -1px;
-      text-align: center;
+    .sp-eyebrow::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--sp-sun); }
+    .sp-title {
+      font-size: clamp(2.2rem, 5vw, 3.3rem); font-weight: 800; color: var(--sp-navy);
+      margin: 0; line-height: 1.05;
     }
-    
-    .subject-meta {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin-top: 0.75rem;
-      margin-bottom: 1rem;
+    .sp-subtitle {
+      margin: .9rem 0 0; max-width: 580px;
+      font-size: 1.04rem; line-height: 1.6; color: var(--sp-muted);
     }
-    
-    .subject-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(10px);
-      padding: 0.5rem 1.5rem;
-      border-radius: 50px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      border: 2px solid rgba(255, 255, 255, 0.3);
+    .sp-subtitle strong { color: var(--sp-navy); }
+    .sp-meta { display: flex; gap: .6rem; margin-top: 1.3rem; flex-wrap: wrap; }
+    .sp-meta__item {
+      display: inline-flex; align-items: center; gap: .45rem;
+      font-size: .86rem; font-weight: 600; color: var(--sp-navy);
+      background: #fff; border: 1px solid var(--sp-border);
+      padding: .42rem .85rem; border-radius: 999px;
     }
-    
-    .instruction-section {
-      text-align: center;
-      padding: 1.75rem;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(15px);
-      border-radius: 20px;
-      margin-top: 1.5rem;
-      border: 2px solid rgba(255, 255, 255, 0.25);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    .sp-meta__item i { color: var(--sp-violet); }
+    .sp-meta__item--sun { background: var(--sp-sun-soft); border-color: #ffe3a3; }
+    .sp-meta__item--sun i { color: #d99a00; }
+
+    /* Tools */
+    .sp-tools { display: flex; gap: .7rem; flex-wrap: wrap; }
+    .sp-tool {
+      display: inline-flex; align-items: center; gap: .6rem;
+      padding: .8rem 1.25rem; border-radius: 50px; cursor: pointer;
+      background: #fff; color: var(--sp-navy);
+      border: 1.5px solid var(--sp-border);
+      font-weight: 700; font-size: .92rem; font-family: inherit;
+      box-shadow: 0 4px 14px rgba(50,44,77,.06);
+      transition: background .2s, color .2s, border-color .2s, transform .2s, box-shadow .2s;
     }
-    
-    /* Calculators in Hero */
-    .hero-calculators {
-      margin-top: 1rem;
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
+    .sp-tool:hover {
+      background: var(--sp-navy); color: #fff; border-color: var(--sp-navy);
+      transform: translateY(-2px); box-shadow: 0 10px 24px rgba(50,44,77,.22);
     }
-    
-    .btn-calculator-hero {
-      padding: 0.875rem 1.75rem;
-      border-radius: 50px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      color: white;
-      font-weight: 600;
-      font-size: 0.95rem;
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.75rem;
-      text-decoration: none;
-      cursor: pointer;
-    }
-    
-    .btn-calculator-hero:hover {
-      background: rgba(255, 255, 255, 0.25);
-      border-color: rgba(255, 255, 255, 0.5);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-      color: white;
-    }
-    
-    .btn-calculator-hero i {
-      font-size: 1.3rem;
-    }
-    
-    .instruction-text {
-      font-size: 1.1rem;
-      line-height: 1.8;
-      margin: 0;
-      opacity: 0.95;
-    }
-    
-    /* Chapters Section */
+    .sp-tool i { font-size: 1.15rem; }
+
+    /* ───── Chapters ───── */
     .chapters-section {
-      padding: 4rem 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
+      max-width: 1040px; margin: 0 auto;
+      padding: clamp(2rem, 4vw, 3rem) clamp(1rem, 4vw, 2rem) 4rem;
     }
-    
-    .section-header {
-      text-align: center;
-      margin-bottom: 3rem;
+    /* keep the Kalan Ba / Naaba cards aligned with the chapter list */
+    .chapters-section .kpc, .chapters-section .kn { max-width: none; }
+
+    .sp-section-head { margin: .5rem 0 1.8rem; text-align: left; }
+    .sp-section-head .tag {
+      display: inline-flex; align-items: center; gap: .45rem;
+      font-size: .76rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
+      color: var(--sp-violet); margin-bottom: .4rem;
     }
-    
-    .section-title {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: #2d0370;
-      margin-bottom: 0.75rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
+    .sp-section-head .tag::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--sp-sun); }
+    .sp-section-head h2 {
+      font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; margin: 0; padding: 0; line-height: 1.15; color: var(--sp-navy);
     }
-    
-    .section-title i {
-      font-size: 2rem;
-    }
-    
-    /* Chapters Grid */
-    .chapters-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-    
+    .sp-section-head h2::before, .sp-section-head h2::after { display: none; }
+    .sp-section-head p { margin: .45rem 0 0; color: var(--sp-muted); font-size: 1rem; }
+
+    .chapters-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+
     .chapter-card {
-      background: white;
-      border-radius: 20px;
+      background: #fff;
+      border: 1px solid var(--sp-border);
+      border-radius: var(--sp-radius);
       overflow: hidden;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 2px solid transparent;
-      display: flex;
-      flex-direction: row;
-      align-items: stretch;
-      position: relative;
+      display: flex; align-items: stretch;
+      box-shadow: 0 4px 20px rgba(50,44,77,.06);
+      transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s, border-color .35s;
     }
-    
-    .chapter-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, #5d06ba 0%, #2d0370 100%);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.4s ease;
-    }
-    
     .chapter-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 16px 48px rgba(93, 6, 186, 0.25), 0 0 0 1px rgba(93, 6, 186, 0.1);
-      border-color: rgba(93, 6, 186, 0.2);
+      transform: translateY(-5px);
+      box-shadow: 0 20px 44px rgba(50,44,77,.14);
+      border-color: #ddd4f5;
     }
-    
-    .chapter-card:hover::before {
-      transform: scaleX(1);
-    }
-    
+
     .chapter-image-wrapper {
-      position: relative;
-      width: 280px;
-      min-width: 280px;
-      flex-shrink: 0;
-      overflow: hidden;
-      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
+      position: relative; width: 250px; min-width: 250px; flex-shrink: 0; overflow: hidden;
+      background: var(--sp-violet);
     }
-    
-    .chapter-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .chapter-card:hover .chapter-image {
-      transform: scale(1.08);
-    }
-    
+    .chapter-image { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+    .chapter-card:hover .chapter-image { transform: scale(1.07); }
+
     .chapter-image-placeholder {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
-      position: relative;
+      position: relative; overflow: hidden;
+      width: 100%; height: 100%; min-height: 180px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--sp-violet);
     }
-    
     .chapter-image-placeholder::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
-      opacity: 0.3;
+      content: ''; position: absolute; right: -45px; bottom: -55px;
+      width: 160px; height: 160px; border-radius: 50%;
+      background: var(--sp-sun); opacity: .9;
     }
-    
-    .chapter-image-placeholder i {
-      font-size: 4rem;
-      color: rgba(255, 255, 255, 0.9);
-      position: relative;
-      z-index: 1;
-    }
-    
+    .chapter-image-placeholder i { position: relative; font-size: 3.2rem; color: #fff; }
+    .chapter-card:nth-child(3n+2) .chapter-image-placeholder { background: var(--sp-navy); }
+    .chapter-card:nth-child(3n+2) .chapter-image-placeholder i { color: var(--sp-sun); }
+    .chapter-card:nth-child(3n) .chapter-image-placeholder { background: var(--sp-sun); }
+    .chapter-card:nth-child(3n) .chapter-image-placeholder::before { background: var(--sp-violet); opacity: .85; }
+    .chapter-card:nth-child(3n) .chapter-image-placeholder i { color: var(--sp-navy); }
+
     .chapter-number {
-      position: absolute;
-      top: 1rem;
-      left: 1rem;
-      background: rgba(255, 255, 255, 0.95);
-      color: #2d0370;
-      padding: 0.5rem 1rem;
-      border-radius: 50px;
-      font-weight: 700;
-      font-size: 0.875rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      backdrop-filter: blur(10px);
-      z-index: 2;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      position: absolute; top: .85rem; left: .85rem; z-index: 2;
+      display: inline-flex; align-items: center; gap: .35rem;
+      font-size: .78rem; font-weight: 800; letter-spacing: .02em;
+      padding: .35rem .8rem; border-radius: 999px;
+      background: #fff; color: var(--sp-navy);
+      box-shadow: 0 4px 12px rgba(0,0,0,.16);
     }
-    
-    .chapter-number::before {
-      content: '📖';
-      font-size: 1rem;
-    }
-    
+    .chapter-number b { color: var(--sp-violet); }
+
     .chapter-content {
-      padding: 2rem;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
+      padding: 1.5rem 1.6rem; flex: 1; min-width: 0;
+      display: flex; flex-direction: column;
     }
-    
-    .chapter-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #2d0370;
-      margin: 0 0 1.5rem 0;
-      line-height: 1.4;
-      letter-spacing: -0.02em;
-    }
-    
-    .chapter-actions {
-      margin-top: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      padding-top: 1rem;
-      border-top: 1px solid #f0f0f0;
-    }
-    
+    .chapter-title { font-size: 1.45rem; font-weight: 700; color: var(--sp-navy); margin: 0 0 1.1rem; line-height: 1.25; }
+
+    .chapter-actions { margin-top: auto; display: flex; flex-wrap: wrap; gap: .6rem; }
+
     .btn-chapter {
-      padding: 0.875rem 1.5rem;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.95rem;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
-      border: 2px solid transparent;
-      width: 100%;
-      position: relative;
-      overflow: hidden;
+      flex: 1 1 auto; white-space: nowrap;
+      display: inline-flex; align-items: center; justify-content: center; gap: .55rem;
+      padding: .8rem 1.1rem; border-radius: 50px;
+      font-weight: 700; font-size: .93rem; text-decoration: none;
+      border: 1.5px solid transparent; position: relative; overflow: hidden;
+      transition: transform .2s, box-shadow .2s, background .2s, color .2s, border-color .2s;
     }
-    
-    .btn-chapter i {
-      font-size: 1.15rem;
-      transition: transform 0.3s ease;
-    }
-    
-    .btn-chapter:hover i {
-      transform: scale(1.1);
-    }
-    
-    .btn-chapter-primary {
-      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
-      color: white;
-      box-shadow: 0 4px 12px rgba(93, 6, 186, 0.3);
-    }
-    
-    .btn-chapter-primary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(93, 6, 186, 0.4);
-      text-decoration: none;
-      color: white;
-    }
-    
-    .btn-chapter-primary:active {
-      transform: translateY(-1px);
-    }
-    
-    .btn-chapter-outline {
-      background: white;
-      color: #5d06ba;
-      border: 2px solid #5d06ba;
-      box-shadow: 0 2px 8px rgba(93, 6, 186, 0.1);
-    }
-    
-    .btn-chapter-outline:hover {
-      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
-      color: white;
-      border-color: #5d06ba;
-      text-decoration: none;
-      box-shadow: 0 4px 16px rgba(93, 6, 186, 0.3);
-      transform: translateY(-2px);
-    }
-    
-    .btn-chapter-outline:active {
-      transform: translateY(0);
-    }
-    
-    .btn-chapter-warning {
-      background: #000;
-      color: #ffd700;
-      border: 2px solid #ffd700;
-      position: relative;
-      overflow: hidden;
-    }
+    .btn-chapter i { font-size: 1.1rem; }
 
+    .btn-chapter-primary { background: var(--sp-violet); color: #fff; }
+    .btn-chapter-primary:hover { background: var(--sp-violet-dark); color: #fff; transform: translateY(-2px); box-shadow: 0 10px 22px rgba(94,23,235,.32); }
+
+    .btn-chapter-outline { background: #fff; color: var(--sp-navy); border-color: var(--sp-navy); }
+    .btn-chapter-outline:hover { background: var(--sp-navy); color: #fff; transform: translateY(-2px); box-shadow: 0 10px 22px rgba(50,44,77,.22); }
+
+    .btn-chapter-warning { background: var(--sp-sun); color: var(--sp-navy); }
     .btn-chapter-warning::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
-      transition: left 0.5s ease;
+      content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent);
+      transition: left .6s ease;
     }
+    .btn-chapter-warning:hover::before { left: 100%; }
+    .btn-chapter-warning:hover { color: var(--sp-navy); transform: translateY(-2px); box-shadow: 0 10px 22px rgba(255,194,58,.45); }
+    .btn-chapter-warning i { animation: spSparkle 2.4s ease-in-out infinite; }
+    @keyframes spSparkle { 0%,100% { transform: scale(1); } 50% { transform: scale(1.18); } }
+    @media (prefers-reduced-motion: reduce) { .btn-chapter-warning i { animation: none; } }
 
-    .btn-chapter-warning:hover::before {
-      left: 100%;
-    }
-
-    .btn-chapter-warning:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
-      text-decoration: none;
-      color: #ffd700;
-      background: #1a1a1a;
-      border-color: #ffed4e;
-    }
-    
-    .btn-chapter-warning i {
-      animation: sparkle 2s ease-in-out infinite;
-    }
-    
-    @keyframes sparkle {
-      0%, 100% { 
-        transform: scale(1) rotate(0deg);
-        filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.8));
-      }
-      50% { 
-        transform: scale(1.1) rotate(5deg);
-        filter: drop-shadow(0 0 8px rgba(255, 215, 0, 1));
-      }
-    }
-    
-    /* Premium Access Dropdown - Brand Colors */
-    .premium-dropdown-menu {
-      min-width: 280px;
-      padding: 0;
-      border-radius: 16px;
-      box-shadow: 0 8px 30px rgba(45, 3, 112, 0.2);
-      border: 1px solid rgba(93, 6, 186, 0.1);
-      margin-top: 0.5rem;
-      overflow: hidden;
-    }
-    
-    .premium-dropdown-menu .dropdown-header {
-      padding: 1.25rem 1rem;
-      background: linear-gradient(135deg, #5d06ba 0%, #2d0370 100%);
-      color: white;
-      border-radius: 0;
-    }
-    
-    .premium-dropdown-menu .dropdown-header strong {
-      font-size: 1.1rem;
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-    
-    .premium-dropdown-menu .dropdown-header .price-info {
-      font-size: 0.9rem;
-      opacity: 0.95;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    
-    .premium-dropdown-menu .dropdown-header .price-value {
-      color: #ffd700;
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-    
-    .premium-dropdown-menu .dropdown-item {
-      padding: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: all 0.2s ease;
-      border-left: 3px solid transparent;
-    }
-    
-    .premium-dropdown-menu .dropdown-item:hover {
-      background: linear-gradient(90deg, rgba(93, 6, 186, 0.05) 0%, rgba(93, 6, 186, 0.02) 100%);
-      border-left-color: #5d06ba;
-    }
-    
-    .premium-dropdown-menu .dropdown-item-content {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      flex: 1;
-    }
-    
-    .premium-dropdown-menu .dropdown-item.btn-contact-whatsapp,
-    .premium-dropdown-menu .dropdown-item.btn-contact-phone {
-      background: none;
-      color: #2d0370;
-      border: none;
-      text-decoration: none;
-      font-weight: 500;
-    }
-    
-    .premium-dropdown-menu .dropdown-item.btn-contact-whatsapp:hover {
-      color: #25D366;
-    }
-    
-    .premium-dropdown-menu .dropdown-item.btn-contact-phone:hover {
-      color: #5d06ba;
-    }
-    
-    .premium-dropdown-menu .dropdown-item.btn-contact-whatsapp i,
-    .premium-dropdown-menu .dropdown-item.btn-contact-phone i {
-      font-size: 1.4rem;
-      width: 24px;
-      text-align: center;
-    }
-    
-    .premium-dropdown-menu .phone-number {
-      font-size: 0.95rem;
-      color: #666;
-      font-weight: 600;
-      font-family: 'Courier New', monospace;
-      letter-spacing: 0.5px;
-    }
-    
-    .premium-dropdown-menu .dropdown-item.btn-contact-phone:hover .phone-number {
-      color: #5d06ba;
-    }
-    
-    .premium-dropdown-menu .dropdown-item-text {
-      background: linear-gradient(135deg, rgba(93, 6, 186, 0.05) 0%, rgba(45, 3, 112, 0.05) 100%);
-      border-radius: 0;
-      border-top: 1px solid rgba(93, 6, 186, 0.1);
-      color: #666;
-      padding: 0.75rem 1rem;
-      font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    
-    .premium-dropdown-menu .dropdown-item-text i {
-      color: #5d06ba;
-    }
-    
-    .premium-dropdown-menu .dropdown-divider {
-      margin: 0;
-      border-color: rgba(93, 6, 186, 0.1);
-    }
-    
-    /* Empty State */
+    /* Empty state */
     .empty-state {
-      text-align: center;
-      padding: 5rem 2rem;
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      grid-column: 1 / -1;
+      text-align: center; padding: 4.5rem 2rem;
+      background: var(--sp-cream); border: 1.5px dashed #ffe3a3;
+      border-radius: var(--sp-radius);
     }
-    
-    .empty-state i {
-      font-size: 5rem;
-      color: #ccc;
-      margin-bottom: 1.5rem;
-    }
-    
-    .empty-state h3 {
-      color: #333;
-      margin-bottom: 0.75rem;
-      font-size: 1.75rem;
-    }
-    
-    .empty-state p {
-      color: #666;
-      font-size: 1.1rem;
-    }
-    
-    /* Responsive */
+    .empty-state i { display: inline-flex; width: 84px; height: 84px; border-radius: 50%; align-items: center; justify-content: center;
+      font-size: 2.4rem; color: var(--sp-navy); background: var(--sp-sun); margin-bottom: 1rem; }
+    .empty-state h3 { font-size: 1.5rem; margin: 0 0 .4rem; color: var(--sp-navy); }
+    .empty-state p { color: var(--sp-muted); margin: 0; }
+
     @media (max-width: 768px) {
-      .subject-hero {
-        padding: 1.5rem 1.5rem 1.5rem;
-      }
-      
-      .hero-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-      }
-      
-      .back-button {
-        padding: 0.625rem 1.25rem;
-        font-size: 0.9rem;
-      }
-      
-      .subject-title-wrapper {
-        width: 100%;
-        justify-content: center;
-      }
-      
-      .subject-title {
-        font-size: 2.25rem;
-      }
-      
-      .chapters-section {
-        padding: 3rem 1rem;
-      }
-      
-      .chapters-grid {
-        grid-template-columns: 1fr;
-        gap: 1.25rem;
-      }
-      
-      .chapter-card {
-        flex-direction: column;
-      }
-      
-      .chapter-image-wrapper {
-        width: 100%;
-        min-width: 100%;
-        height: 220px;
-      }
-      
-      .chapter-content {
-        width: 100%;
-        padding: 1.5rem;
-      }
-      
-      .chapter-title {
-        font-size: 1.3rem;
-        margin-bottom: 1.25rem;
-      }
-      
-      .chapter-actions {
-        gap: 0.625rem;
-      }
-      
-      .btn-chapter {
-        padding: 0.75rem 1.25rem;
-        font-size: 0.9rem;
-      }
-      
-      .section-title {
-        font-size: 2rem;
-      }
-      
-      .hero-calculators {
-        margin-top: 1rem;
-        flex-direction: column;
-        gap: 0.75rem;
-      }
-      
-      .btn-calculator-hero {
-        width: 100%;
-        justify-content: center;
-        padding: 0.75rem 1.25rem;
-        font-size: 0.9rem;
-      }
-      
-      .contact-methods {
-        flex-direction: column;
-      }
-      
-      .contact-btn {
-        width: 100%;
-      }
+      .sp-hero::before { width: 300px; height: 300px; right: -140px; top: -150px; }
+      .sp-brand img { height: 32px; }
+      .sp-tools { width: 100%; }
+      .sp-tool { flex: 1 1 auto; justify-content: center; }
+      .chapter-card { flex-direction: column; }
+      .chapter-image-wrapper { width: 100%; min-width: 100%; height: 170px; }
+      .chapter-content { padding: 1.25rem; }
+      .chapter-title { font-size: 1.3rem; }
     }
   </style>
 ` %>
 
+<% const chapterCount = (subject.chapters || []).length; %>
+
 <div class="subject-page">
-  <!-- Hero Banner -->
-  <div class="subject-hero">
-    <div class="subject-hero-content">
-      <!-- Header with Back Button and Subject Title -->
-      <div class="hero-header">
-        <a href="/programs/ekalan/kalan/class/<%= schoolClass._id %>" class="back-button">
-          <i class="bi bi-arrow-left"></i>
-          Retour à la classe
+
+  <!-- ───── Hero ───── -->
+  <header class="sp-hero">
+    <div class="sp-hero__inner">
+      <div class="sp-hero__top">
+        <nav class="sp-breadcrumb" aria-label="Fil d'Ariane">
+          <a href="/programs/ekalan/kalan/class/<%= schoolClass._id %>"><i class="bi bi-arrow-left"></i> <%= schoolClass.title %> <%= schoolClass.serie %></a>
+          <span class="sep">/</span>
+          <span class="current"><%= subject.title %></span>
+        </nav>
+        <a href="/programs/ekalan/kalan" class="sp-brand" aria-label="e-Kalan">
+          <img src="/assets/img/logos/e-Kalan_logo/ekalan-card.png" alt="e-Kalan" width="480" height="157">
         </a>
-        <div class="subject-title-wrapper">
-          <h1 class="subject-title">
-            <%= subject.title %>
-          </h1>
-                          </div>
-                        </div>
-
-     
-
-      <div class="instruction-section">
-        <p class="instruction-text">
-          🎯 <strong>Votre parcours vers l'excellence commence ici !</strong><br>
-          Explorez chaque chapitre avec attention, pratiquez régulièrement les exercices,<br>
-          et développez votre maîtrise étape par étape. Vous avez tout ce qu'il faut pour réussir ! 💪✨
-        </p>
       </div>
-      
-      <!-- Calculators in Hero -->
-      <div class="hero-calculators">
-        <button type="button" class="btn-calculator-hero" data-bs-toggle="modal" data-bs-target="#graph-calc-modal">
-          <i class="bi bi-graph-up"></i>
-          Calculatrice Graphique
-            </button>
-        <button type="button" class="btn-calculator-hero" data-bs-toggle="modal" data-bs-target="#scien-calc-modal">
-          <i class="bi bi-calculator"></i>
-          Calculatrice Scientifique
-                  </button>
-                </div>
-              </div>
+
+      <div class="sp-hero__head">
+        <div>
+          <span class="sp-eyebrow">Matière · <%= schoolClass.title %> <%= schoolClass.serie %></span>
+          <h1 class="sp-title"><%= subject.title %></h1>
+          <p class="sp-subtitle"><strong>Votre parcours vers l'excellence commence ici !</strong>
+            Explorez chaque chapitre avec attention, pratiquez régulièrement les exercices
+            et progressez étape par étape. Vous avez tout ce qu'il faut pour réussir.</p>
+          <div class="sp-meta">
+            <span class="sp-meta__item"><i class="bi bi-journal-bookmark-fill"></i> <%= chapterCount %> chapitre<%= chapterCount > 1 ? 's' : '' %></span>
+            <% if (hasPremiumAccess) { %>
+              <span class="sp-meta__item sp-meta__item--sun"><i class="bi bi-star-fill"></i> Kalan Ba activé</span>
+            <% } %>
           </div>
+        </div>
+
+        <div class="sp-tools">
+          <button type="button" class="sp-tool" data-bs-toggle="modal" data-bs-target="#graph-calc-modal">
+            <i class="bi bi-graph-up"></i> Calc. Graphique
+          </button>
+          <button type="button" class="sp-tool" data-bs-toggle="modal" data-bs-target="#scien-calc-modal">
+            <i class="bi bi-calculator"></i> Calc. Scientifique
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
 
   <!-- Calculator Modals -->
   <%- include('../../../../shared/partials/calculators/graphing-calculator-modal') %>
   <%- include('../../../../shared/partials/calculators/scientific-calculator-modal') %>
 
-  <!-- Chapters Section -->
-  <div class="chapters-section">
+  <!-- ───── Chapters ───── -->
+  <main class="chapters-section">
 
     <%# Premium access CTA (demande / statut) %>
     <%- include('../../../../partials/kalanPremiumCTA', { schoolClass, subject, hasPremiumAccess, hasPendingRequest }) %>
@@ -758,63 +315,48 @@
     <%# Kalan Naaba — upsell vers le bundle toute la classe %>
     <%- include('../../../../partials/kalanNaabaCTA', { schoolClass, naabaPrice, hasNaaba, naabaPending }) %>
 
-    <div class="section-header">
-      <h2 class="section-title">
-        <i class="bi bi-list-ul"></i>
-        Les Chapitres du programme national
-      </h2>
-                </div>
+    <div class="sp-section-head">
+      <span class="tag">Programme national</span>
+      <h2>Les chapitres</h2>
+      <p>Suivez les cours dans l'ordre, puis entraînez-vous avec les exercices de chaque chapitre.</p>
+    </div>
 
-    <% if (subject.chapters && subject.chapters.length > 0) { %>
-      <div class="chapters-grid col-lg-8">
+    <% if (chapterCount > 0) { %>
+      <div class="chapters-grid">
         <% subject.chapters.forEach((chapter, i) => { %>
-          <div class="chapter-card">
+          <article class="chapter-card">
             <div class="chapter-image-wrapper">
               <% if (chapter.chapterImageUrl) { %>
-                <img 
-                  src="<%= chapter.chapterImageUrl %>" 
-                  alt="<%= chapter.title %>" 
-                  class="chapter-image"
-                />
+                <img src="<%= chapter.chapterImageUrl %>" alt="<%= chapter.title %>" class="chapter-image" loading="lazy" />
               <% } else { %>
-                <div class="chapter-image-placeholder">
-                  <i class="bi bi-journal-bookmark"></i>
-            </div>
+                <div class="chapter-image-placeholder"><i class="bi bi-journal-bookmark"></i></div>
               <% } %>
-              <div class="chapter-number">Chapitre <%= i + 1 %></div>
-        </div>
+              <span class="chapter-number">Chapitre <b><%= i + 1 %></b></span>
+            </div>
 
             <div class="chapter-content">
               <h3 class="chapter-title"><%= chapter.title %></h3>
-              
+
               <div class="chapter-actions">
-                <a 
-                  href="/programs/ekalan/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>/chapter/<%= chapter._id %>" 
-                  class="btn-chapter btn-chapter-primary"
-                >
-                  <i class="bi bi-play-circle"></i>
-                  Contenu du cours
+                <a href="/programs/ekalan/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>/chapter/<%= chapter._id %>"
+                   class="btn-chapter btn-chapter-primary">
+                  <i class="bi bi-play-circle"></i> Contenu du cours
                 </a>
-                
-                <a
-                  href="/programs/ekalan/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>/chapter/<%= chapter._id %>/SE"
-                  class="btn-chapter btn-chapter-outline"
-                >
-                  <i class="bi bi-pencil-square"></i>
-                  Exercices d'apprentissage
+
+                <a href="/programs/ekalan/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>/chapter/<%= chapter._id %>/SE"
+                   class="btn-chapter btn-chapter-outline">
+                  <i class="bi bi-pencil-square"></i> Exercices d'apprentissage
                 </a>
 
                 <% if (hasPremiumAccess) { %>
-                  <a
-                    href="/programs/ekalan/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>/chapter/<%= chapter._id %>/PRE"
-                    class="btn-chapter btn-chapter-warning"
-                  >
-                    <i class="bi bi-stars"></i>
-                    Kalan Ba
+                  <a href="/programs/ekalan/kalan/class/<%= schoolClass._id %>/subject/<%= subject._id %>/chapter/<%= chapter._id %>/PRE"
+                     class="btn-chapter btn-chapter-warning">
+                    <i class="bi bi-stars"></i> Kalan Ba
                   </a>
                 <% } %>
-      </div>
-    </div>
+              </div>
+            </div>
+          </article>
         <% }); %>
       </div>
     <% } else { %>
@@ -822,7 +364,7 @@
         <i class="bi bi-inbox"></i>
         <h3>Aucun chapitre disponible</h3>
         <p>Les chapitres de cette matière seront bientôt ajoutés. Veuillez revenir plus tard.</p>
-  </div>
-  <% } %>
-                </div>
+      </div>
+    <% } %>
+  </main>
 </div>

@@ -1,130 +1,202 @@
 <% layout('layouts/100bacBoilerplate') %>
 
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
+  /* Palette from the e-Kalan logo (same as the Kalan landing / class / subject / course pages) */
   :root {
-    --se-brand: #5d06ba;
-    --se-brand-dark: #2d0370;
-    --se-brand-50: #f4eefe;
-    --se-ink: #1d1633;
+    --se-sun: #ffc23a;
+    --se-sun-soft: #fff3d6;
+    --se-violet: #5e17eb;
+    --se-violet-dark: #4710c0;
+    --se-violet-soft: #efe7ff;
+    --se-navy: #322c4d;
+    --se-navy-deep: #231e38;
+    --se-cream: #fffaf0;
     --se-muted: #6b6880;
-    --se-bg: #f6f6fb;
-    --se-surface: #fff;
-    --se-border: #eceaf4;
-    --se-green: #15a06b;
-    --se-radius: 18px;
-    --se-shadow: 0 6px 24px rgba(45, 3, 112, 0.07);
-    --se-shadow-lg: 0 18px 44px rgba(45, 3, 112, 0.16);
+    --se-border: #ece9f3;
+    --se-radius: 22px;
   }
 
-  body { background: var(--se-bg); }
+  body { background: #fff; }
   /* Offset below the fixed navbar (~88px at rest) so the hero doesn't slide under it */
-  .se-page { font-family: 'Poppins', system-ui, sans-serif; color: var(--se-ink); margin-top: 88px; }
+  .se-page { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; color: var(--se-navy); margin-top: 88px; }
+  .se-page h1, .se-page h2, .se-page h3 { font-family: 'Baloo 2', system-ui, sans-serif; }
 
-  /* ── Hero ── */
+  /* ── Hero (light, logo-led) ── */
   .se-hero {
-    position: relative; overflow: hidden; color: #fff;
-    background:
-      radial-gradient(900px 360px at 88% -50%, rgba(255,255,255,.16), transparent 60%),
-      linear-gradient(135deg, #6a0fd6 0%, var(--se-brand) 48%, var(--se-brand-dark) 100%);
-    padding: 1.4rem clamp(1rem, 4vw, 3rem) clamp(2.2rem, 4vw, 3rem);
+    position: relative; overflow: hidden;
+    background: var(--se-cream);
+    padding: 1.75rem clamp(1rem, 4vw, 3rem) clamp(2.4rem, 5vw, 3.4rem);
+  }
+  .se-hero::before {
+    content: ''; position: absolute; right: -150px; top: -190px;
+    width: 440px; height: 440px; border-radius: 50%;
+    background: var(--se-sun); opacity: .9; pointer-events: none;
   }
   .se-hero::after {
-    content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 34px;
-    background: var(--se-bg); border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    content: ''; position: absolute; left: -90px; bottom: -130px;
+    width: 240px; height: 240px; border-radius: 50%;
+    border: 30px solid var(--se-violet-soft); pointer-events: none;
   }
   .se-hero__inner { max-width: 1140px; margin: 0 auto; position: relative; z-index: 2; }
 
-  .se-crumb { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; font-size: .85rem; margin-bottom: 1.3rem; }
-  .se-crumb a {
-    display: inline-flex; align-items: center; gap: .4rem; color: #fff; text-decoration: none;
-    background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22);
-    padding: .42rem .85rem; border-radius: 999px; transition: background .2s, transform .2s;
+  .se-hero__top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap; margin-bottom: 1.8rem;
   }
-  .se-crumb a:hover { background: rgba(255,255,255,.26); transform: translateX(-2px); color: #fff; }
-  .se-crumb .sep { opacity: .45; }
-  .se-crumb .current { opacity: .9; padding: .42rem .2rem; }
+  .se-crumb { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; font-size: .9rem; color: var(--se-muted); }
+  .se-crumb a {
+    display: inline-flex; align-items: center; gap: .45rem;
+    color: var(--se-navy); text-decoration: none; font-weight: 600;
+    background: #fff; border: 1px solid var(--se-border);
+    padding: .5rem .95rem; border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(50,44,77,.06);
+    transition: transform .2s, border-color .2s, color .2s;
+  }
+  .se-crumb a:hover { transform: translateX(-2px); border-color: var(--se-violet); color: var(--se-violet); }
+  .se-crumb .sep { opacity: .5; }
+  .se-crumb .current { font-weight: 600; color: var(--se-navy); }
 
-  .se-title { font-size: clamp(1.9rem, 4.5vw, 2.9rem); font-weight: 700; letter-spacing: -.02em; margin: 0; line-height: 1.1; }
-  .se-meta { display: flex; flex-wrap: wrap; gap: 1.3rem; margin-top: 1.1rem; }
-  .se-meta__item { display: inline-flex; align-items: center; gap: .5rem; font-size: .92rem; font-weight: 500; opacity: .95; }
-  .se-meta__item i { font-size: 1.05rem; }
+  .se-brand {
+    display: inline-flex; align-items: center;
+    background: #fff; border-radius: 16px; padding: .45rem .95rem;
+    box-shadow: 0 12px 28px rgba(50,44,77,.16);
+    transition: transform .2s;
+  }
+  .se-brand:hover { transform: translateY(-2px); }
+  .se-brand img { display: block; height: 42px; width: auto; }
+
+  .se-hero__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; flex-wrap: wrap; }
+  .se-hero__head > div:first-child { min-width: 0; max-width: 760px; }
+  .se-eyebrow {
+    display: inline-flex; align-items: center; gap: .45rem;
+    font-size: .76rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--se-violet); margin-bottom: .6rem;
+  }
+  .se-eyebrow::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--se-sun); }
+  .se-title { font-size: clamp(2rem, 4.6vw, 3rem); font-weight: 800; color: var(--se-navy); margin: 0; line-height: 1.08; }
+  .se-meta { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.3rem; }
+  .se-meta__item {
+    display: inline-flex; align-items: center; gap: .45rem;
+    font-size: .86rem; font-weight: 600; color: var(--se-navy);
+    background: #fff; border: 1px solid var(--se-border);
+    padding: .42rem .85rem; border-radius: 999px;
+  }
+  .se-meta__item i { color: var(--se-violet); }
+
+  .se-tool {
+    display: inline-flex; align-items: center; gap: .6rem;
+    padding: .8rem 1.3rem; border-radius: 50px;
+    background: #fff; color: var(--se-navy); border: 1.5px solid var(--se-border);
+    font-weight: 700; font-size: .94rem; text-decoration: none;
+    box-shadow: 0 4px 14px rgba(50,44,77,.06);
+    transition: background .2s, color .2s, border-color .2s, transform .2s, box-shadow .2s;
+  }
+  .se-tool:hover { background: var(--se-navy); color: #fff; border-color: var(--se-navy); transform: translateY(-2px); box-shadow: 0 10px 24px rgba(50,44,77,.22); }
+  .se-tool i { font-size: 1.15rem; }
 
   /* ── Body ── */
-  .se-body { max-width: 1140px; margin: 0 auto; padding: clamp(1.4rem, 3vw, 2.4rem) clamp(1rem, 4vw, 3rem) 4rem; }
-  .se-section { margin-bottom: 2.6rem; }
-  .se-section__head { display: flex; align-items: center; gap: .7rem; margin-bottom: 1.3rem; }
-  .se-section__head h2 { font-size: 1.35rem; font-weight: 700; margin: 0; color: var(--se-ink); }
-  .se-section__head .badge-count {
-    font-size: .8rem; font-weight: 700; color: var(--se-brand-dark);
-    background: var(--se-brand-50); border-radius: 999px; padding: .25rem .7rem;
+  .se-body { max-width: 1140px; margin: 0 auto; padding: clamp(2rem, 4vw, 3rem) clamp(1rem, 4vw, 3rem) 4rem; }
+  .se-body .kpc, .se-body .kn { max-width: none; }
+  .se-section { margin-bottom: 2.8rem; }
+  .se-section__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1.3rem; flex-wrap: wrap; }
+  .se-section__head .tag {
+    display: inline-flex; align-items: center; gap: .45rem;
+    font-size: .76rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--se-violet); margin-bottom: .3rem;
   }
-  .se-section__head .ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; color: #fff; flex-shrink: 0; }
-  .ic--corr { background: linear-gradient(135deg, #18b67d, var(--se-green)); }
-  .ic--prac { background: linear-gradient(135deg, var(--se-brand), var(--se-brand-dark)); }
+  .se-section__head .tag::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--se-sun); }
+  .se-section__head h2 { font-size: clamp(1.5rem, 2.8vw, 2rem); font-weight: 800; margin: 0; line-height: 1.15; color: var(--se-navy); }
+  .se-section__head .badge-count {
+    font-size: .82rem; font-weight: 800; color: var(--se-navy);
+    background: var(--se-sun); border-radius: 999px; padding: .3rem .8rem;
+  }
 
   /* corrected grid */
   .se-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
   .ex-card {
-    background: var(--se-surface); border: 1px solid var(--se-border); border-radius: var(--se-radius);
-    padding: 1.4rem 1.3rem; box-shadow: var(--se-shadow);
+    background: #fff; border: 1px solid var(--se-border); border-radius: var(--se-radius);
+    padding: 1.4rem 1.3rem; box-shadow: 0 4px 20px rgba(50,44,77,.06);
     display: flex; flex-direction: column; gap: 1rem;
     transition: transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s, border-color .3s;
   }
-  .ex-card:hover { transform: translateY(-5px); box-shadow: var(--se-shadow-lg); border-color: var(--se-brand-50); }
-  .ex-card__top { display: flex; align-items: flex-start; gap: .85rem; }
+  .ex-card:hover { transform: translateY(-5px); box-shadow: 0 20px 44px rgba(50,44,77,.14); border-color: #ddd4f5; }
+  .ex-card__top { display: flex; align-items: flex-start; gap: .9rem; }
   .ex-num {
-    flex-shrink: 0; width: 42px; height: 42px; border-radius: 12px;
-    display: grid; place-items: center; font-weight: 700; font-size: 1.05rem;
-    background: var(--se-brand-50); color: var(--se-brand-dark);
+    flex-shrink: 0; width: 46px; height: 46px; border-radius: 50%;
+    display: grid; place-items: center; font-family: 'Baloo 2', system-ui, sans-serif; font-weight: 800; font-size: 1.2rem;
+    background: var(--se-violet); color: #fff;
   }
-  .ex-card__title { font-size: 1.02rem; font-weight: 600; margin: 0; line-height: 1.35; color: var(--se-ink); }
-  .ex-card__label { font-size: .76rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--se-green); }
+  .ex-num--1 { background: var(--se-navy); color: var(--se-sun); }
+  .ex-num--2 { background: var(--se-sun); color: var(--se-navy); }
+  .ex-card__title { font-size: 1.15rem; font-weight: 700; margin: 0; line-height: 1.3; color: var(--se-navy); }
+  .ex-card__label { font-size: .74rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--se-violet); }
   .ex-btn {
+    margin-top: auto;
     display: flex; align-items: center; justify-content: center; gap: .55rem;
-    width: 100%; padding: .8rem 1rem; border-radius: 12px; border: none; cursor: pointer;
-    font-weight: 600; font-size: .95rem; font-family: inherit;
-    background: linear-gradient(135deg, var(--se-brand) 0%, var(--se-brand-dark) 100%); color: #fff;
-    transition: transform .2s, box-shadow .2s;
+    width: 100%; padding: .85rem 1rem; border-radius: 50px; border: none; cursor: pointer;
+    font-weight: 700; font-size: .95rem; font-family: inherit;
+    background: var(--se-violet); color: #fff;
+    transition: transform .2s, box-shadow .2s, background .2s;
   }
-  .ex-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(93,6,186,.32); color: #fff; }
+  .ex-btn:hover { background: var(--se-violet-dark); transform: translateY(-2px); box-shadow: 0 10px 22px rgba(94,23,235,.32); color: #fff; }
 
   /* uncorrected list */
   .se-list { display: flex; flex-direction: column; gap: .75rem; }
   .pdf-row {
     display: flex; align-items: center; gap: 1rem; text-decoration: none;
-    background: var(--se-surface); border: 1px solid var(--se-border); border-radius: 14px;
-    padding: 1rem 1.2rem; box-shadow: var(--se-shadow); color: var(--se-ink);
+    background: #fff; border: 1px solid var(--se-border); border-radius: 18px;
+    padding: 1rem 1.2rem; box-shadow: 0 4px 20px rgba(50,44,77,.06); color: var(--se-navy);
     transition: transform .2s, box-shadow .2s, border-color .2s;
   }
-  .pdf-row:hover { transform: translateX(4px); box-shadow: var(--se-shadow-lg); border-color: var(--se-brand-50); color: var(--se-ink); }
-  .pdf-row .pdf-ic { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: #fdeaea; color: #d6453f; font-size: 1.4rem; flex-shrink: 0; }
+  .pdf-row:hover { transform: translateX(4px); box-shadow: 0 14px 32px rgba(50,44,77,.12); border-color: #ddd4f5; color: var(--se-navy); }
+  .pdf-row .pdf-ic { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: var(--se-navy); color: var(--se-sun); font-size: 1.4rem; flex-shrink: 0; }
   .pdf-row .pdf-info { flex: 1; min-width: 0; }
-  .pdf-row .pdf-label { font-size: .74rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--se-muted); }
-  .pdf-row .pdf-title { font-size: 1rem; font-weight: 600; margin: 0; }
-  .pdf-row .pdf-go { color: var(--se-brand); font-size: 1.3rem; flex-shrink: 0; }
+  .pdf-row .pdf-label { font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--se-muted); }
+  .pdf-row .pdf-title { font-size: 1.02rem; font-weight: 700; margin: 0; }
+  .pdf-row .pdf-go {
+    width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0;
+    background: var(--se-sun-soft); color: var(--se-navy); font-size: 1.05rem; transition: background .2s;
+  }
+  .pdf-row:hover .pdf-go { background: var(--se-sun); }
 
   /* empty */
   .se-empty {
-    text-align: center; padding: 4.5rem 2rem; background: var(--se-surface);
-    border: 1px dashed var(--se-border); border-radius: var(--se-radius);
+    text-align: center; padding: 4.5rem 2rem; margin-bottom: 2.5rem;
+    background: var(--se-cream); border: 1.5px dashed #ffe3a3; border-radius: var(--se-radius);
   }
-  .se-empty i { font-size: 3.5rem; color: #d9d2ee; }
-  .se-empty h3 { font-size: 1.4rem; margin: 1rem 0 .4rem; color: var(--se-ink); }
+  .se-empty > i { display: inline-flex; width: 84px; height: 84px; border-radius: 50%; align-items: center; justify-content: center;
+    font-size: 2.4rem; color: var(--se-navy); background: var(--se-sun); }
+  .se-empty h3 { font-size: 1.5rem; margin: 1rem 0 .4rem; color: var(--se-navy); }
   .se-empty p { color: var(--se-muted); margin: 0 0 1.3rem; }
   .se-empty .btn-back {
     display: inline-flex; align-items: center; gap: .5rem; text-decoration: none;
-    padding: .7rem 1.4rem; border-radius: 999px; font-weight: 600;
-    border: 1px solid var(--se-border); color: var(--se-brand-dark); background: #fff;
+    padding: .75rem 1.4rem; border-radius: 999px; font-weight: 700;
+    border: 1.5px solid var(--se-navy); color: var(--se-navy); background: #fff;
+    transition: background .2s, color .2s;
   }
-  .se-empty .btn-back:hover { background: var(--se-brand-50); }
+  .se-empty .btn-back:hover { background: var(--se-navy); color: #fff; }
 
   /* modal video */
-  .se-modal .modal-content { border: none; border-radius: 18px; overflow: hidden; }
-  .se-modal .modal-header { background: linear-gradient(135deg, var(--se-brand) 0%, var(--se-brand-dark) 100%); color: #fff; border: none; padding: 1rem 1.3rem; }
-  .se-modal .modal-title { font-weight: 600; font-size: 1.05rem; }
+  .se-modal .modal-content { border: none; border-radius: 20px; overflow: hidden; }
+  .se-modal .modal-header { background: var(--se-navy); color: #fff; border: none; padding: 1rem 1.3rem; }
+  .se-modal .modal-title { font-weight: 700; font-size: 1.05rem; }
+  .se-modal .modal-title i { color: var(--se-sun); }
   .se-modal .modal-body { padding: 0; background: #000; }
   .se-modal .ratio iframe { border: 0; }
   .se-modal .modal-footer { border: none; padding: .85rem 1.3rem; }
+  .se-modal .btn-close-modal {
+    display: inline-flex; align-items: center; gap: .45rem;
+    padding: .6rem 1.2rem; border-radius: 50px; font-weight: 700;
+    background: #fff; color: var(--se-navy); border: 1.5px solid var(--se-navy);
+  }
+  .se-modal .btn-close-modal:hover { background: var(--se-navy); color: #fff; }
+
+  @media (max-width: 768px) {
+    .se-hero::before { width: 300px; height: 300px; right: -140px; top: -150px; }
+    .se-brand img { height: 32px; }
+    .se-tool { width: 100%; justify-content: center; }
+  }
 </style>
 
 <%
@@ -135,6 +207,7 @@
   const uncorrected = (grouped && grouped.practiceEx) ? grouped.practiceEx : [];
   const chapterIdx = (subject.chapters && subject.chapters.indexOf(chapter._id) >= 0)
     ? subject.chapters.indexOf(chapter._id) + 1 : null;
+  const chapterUrl = `/programs/ekalan/kalan/class/${serie._id}/subject/${subject._id}/chapter/${chapter._id}`;
 %>
 
 <div class="se-page">
@@ -142,19 +215,28 @@
   <!-- ── Hero ── -->
   <header class="se-hero">
     <div class="se-hero__inner">
-      <nav class="se-crumb" aria-label="Fil d'Ariane">
-        <a href="/programs/ekalan/kalan/class/<%= serie._id %>"><i class="bi bi-arrow-left"></i> <%= serie.title %> <%= serie.serie %></a>
-        <span class="sep">/</span>
-        <a href="/programs/ekalan/kalan/class/<%= serie._id %>/subject/<%= subject._id %>"><%= subject.title %></a>
-        <span class="sep">/</span>
-        <span class="current"><% if (chapterIdx) { %>Chapitre <%= chapterIdx %><% } else { %>Chapitre<% } %></span>
-      </nav>
+      <div class="se-hero__top">
+        <nav class="se-crumb" aria-label="Fil d'Ariane">
+          <a href="/programs/ekalan/kalan/class/<%= serie._id %>/subject/<%= subject._id %>"><i class="bi bi-arrow-left"></i> <%= subject.title %></a>
+          <span class="sep">/</span>
+          <span class="current"><% if (chapterIdx) { %>Chapitre <%= chapterIdx %><% } else { %>Chapitre<% } %> · Exercices</span>
+        </nav>
+        <a href="/programs/ekalan/kalan" class="se-brand" aria-label="e-Kalan">
+          <img src="/assets/img/logos/e-Kalan_logo/ekalan-card.png" alt="e-Kalan" width="480" height="157">
+        </a>
+      </div>
 
-      <h1 class="se-title"><%= chapter.title %></h1>
+      <div class="se-hero__head">
+        <div>
+          <span class="se-eyebrow">Exercices d'apprentissage<% if (chapterIdx) { %> · Chapitre <%= chapterIdx %><% } %> · <%= serie.title %> <%= serie.serie %></span>
+          <h1 class="se-title"><%= chapter.title %></h1>
+          <div class="se-meta">
+            <span class="se-meta__item"><i class="bi bi-patch-check-fill"></i> <%= corrected.length %> exercice<%= corrected.length > 1 ? 's' : '' %> corrigé<%= corrected.length > 1 ? 's' : '' %></span>
+            <span class="se-meta__item"><i class="bi bi-file-earmark-text-fill"></i> <%= uncorrected.length %> à télécharger</span>
+          </div>
+        </div>
 
-      <div class="se-meta">
-        <span class="se-meta__item"><i class="bi bi-patch-check-fill"></i> <%= corrected.length %> exercice<%= corrected.length > 1 ? 's' : '' %> corrigé<%= corrected.length > 1 ? 's' : '' %></span>
-        <span class="se-meta__item"><i class="bi bi-file-earmark-text-fill"></i> <%= uncorrected.length %> à télécharger</span>
+        <a href="<%= chapterUrl %>" class="se-tool"><i class="bi bi-play-circle"></i> Revoir le cours</a>
       </div>
     </div>
   </header>
@@ -167,7 +249,7 @@
         <i class="bi bi-journal-x"></i>
         <h3>Aucun exercice disponible</h3>
         <p>Les exercices d'apprentissage de ce chapitre seront bientôt ajoutés. Revenez plus tard.</p>
-        <a href="/programs/ekalan/kalan/class/<%= serie._id %>/subject/<%= subject._id %>/chapter/<%= chapter._id %>" class="btn-back">
+        <a href="<%= chapterUrl %>" class="btn-back">
           <i class="bi bi-arrow-left"></i> Retour au chapitre
         </a>
       </div>
@@ -176,15 +258,17 @@
       <% if (corrected.length > 0) { %>
       <section class="se-section">
         <div class="se-section__head">
-          <span class="ic ic--corr"><i class="bi bi-patch-check-fill"></i></span>
-          <h2>Exercices corrigés</h2>
+          <div>
+            <span class="tag">Avec correction vidéo</span>
+            <h2>Exercices corrigés</h2>
+          </div>
           <span class="badge-count"><%= corrected.length %></span>
         </div>
         <div class="se-grid">
           <% corrected.forEach((content, i) => { %>
             <div class="ex-card">
               <div class="ex-card__top">
-                <span class="ex-num"><%= i + 1 %></span>
+                <span class="ex-num ex-num--<%= i % 3 %>"><%= i + 1 %></span>
                 <div>
                   <div class="ex-card__label">Exercice corrigé</div>
                   <h3 class="ex-card__title"><%= content.title %></h3>
@@ -193,8 +277,9 @@
               <button type="button" class="ex-btn" data-bs-toggle="modal" data-bs-target="#N<%= content._id %>">
                 <i class="bi bi-play-circle-fill"></i> Voir la correction
               </button>
+            </div>
 
-              <!-- Modal -->
+              <%# Modal kept outside the card: the card's hover transform would break position:fixed %>
               <div class="modal fade se-modal" id="N<%= content._id %>" tabindex="-1" aria-labelledby="lbl<%= content._id %>" aria-hidden="true">
                 <div class="modal-dialog modal-xl modal-dialog-centered">
                   <div class="modal-content">
@@ -208,12 +293,11 @@
                       </div>
                     </div>
                     <div class="modal-footer">
-                      <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+                      <button type="button" class="btn-close-modal" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i> Fermer</button>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
           <% }); %>
         </div>
       </section>
@@ -222,8 +306,10 @@
       <% if (uncorrected.length > 0) { %>
       <section class="se-section">
         <div class="se-section__head">
-          <span class="ic ic--prac"><i class="bi bi-file-earmark-text-fill"></i></span>
-          <h2>Exercices non corrigés</h2>
+          <div>
+            <span class="tag">À faire en autonomie</span>
+            <h2>Exercices non corrigés</h2>
+          </div>
           <span class="badge-count"><%= uncorrected.length %></span>
         </div>
         <div class="se-list">
@@ -234,7 +320,7 @@
                 <div class="pdf-label">Exercice <%= i + 1 %> · PDF</div>
                 <p class="pdf-title"><%= content.title %></p>
               </div>
-              <i class="bi bi-box-arrow-up-right pdf-go"></i>
+              <span class="pdf-go"><i class="bi bi-box-arrow-up-right"></i></span>
             </a>
           <% }); %>
         </div>
