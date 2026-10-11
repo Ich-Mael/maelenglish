@@ -467,7 +467,8 @@
 
             <div class="ml-ops" id="eqsteps">
               <button class="ml-op" data-eqop="eval_at"><i class="bi bi-calculator"></i> Calculer f(z₀)</button>
-              <button class="ml-op" data-eqop="find_root"><i class="bi bi-search"></i> Racine réelle / imaginaire pure</button>
+              <button class="ml-op" data-eqop="find_real_root"><i class="bi bi-arrow-left-right"></i> Racine réelle</button>
+              <button class="ml-op" data-eqop="find_imag_root"><i class="bi bi-arrow-down-up"></i> Racine imaginaire pure</button>
               <button class="ml-op" data-eqop="quotient"><i class="bi bi-diagram-2"></i> Q(z) : f(z)=(z−z₀)Q(z)</button>
               <button class="ml-op" data-eqop="solve_quotient"><i class="bi bi-check2-square"></i> Résoudre Q(z)=0</button>
             </div>
@@ -2434,21 +2435,56 @@
       return parts.map(function(p){ return p.trim(); }).filter(function(p){ return p !== ''; });
     }
     function stripZeq(r){ var eq = r.indexOf('='); if(eq >= 0 && r.slice(0, eq).trim().toLowerCase() === 'z') return r.slice(eq + 1).trim(); return r; }
-    // Scan the roots for a REAL (im≈0) or PURE-IMAGINARY (re≈0) one. Returns {value} or null.
-    // Uses CSolutions for the list, then the reliable graphics view to read each root.
-    function findSpecialRoot(poly){
-      var raw = '';
-      try { raw = ggbToText(ggb.evalCommandCAS('CSolutions(' + poly + ' = 0, z)')); } catch(e){ raw = ''; }
-      if(!raw || raw === '{}') return null;
-      var roots = splitTopLevel(raw), res = null;
-      for(var k = 0; k < roots.length && !res; k++){
-        var v = evalComplex(stripZeq(roots[k]));
-        if(v){
-          if(Math.abs(v.im) < 1e-6) res = { value: fmtReal(v.re) };
-          else if(Math.abs(v.re) < 1e-6) res = { value: fmtImag(v.im) };
+    // Evaluate f(z) = Σ coefs[k]·z^(n−k) (Horner, pure-JS complex arithmetic).
+    function cHorner(coefs, z){ var acc = { re: 0, im: 0 }; for(var k = 0; k < coefs.length; k++){ acc = cAdd(cMul(acc, z), coefs[k]); } return acc; }
+    // All complex roots of a polynomial (Durand–Kerner). Pure JS — GeoGebra's CSolutions is
+    // unreliable with the imaginary unit and implicit products (e.g. "2(6i-11)").
+    function polyRootsJS(coefs){
+      while(coefs.length > 1 && cIsZero(coefs[0])) coefs = coefs.slice(1);
+      var n = coefs.length - 1; if(n < 1) return [];
+      var lead = coefs[0], m = coefs.map(function(c){ return cDiv(c, lead); });
+      var zs = [], seed = { re: 0.4, im: 0.9 }, cur = { re: 1, im: 0 };
+      for(var k = 0; k < n; k++){ cur = cMul(cur, seed); zs.push(cur); }
+      for(var it = 0; it < 800; it++){
+        var moved = 0;
+        for(var i = 0; i < n; i++){
+          var den = { re: 1, im: 0 };
+          for(var j = 0; j < n; j++){ if(j !== i) den = cMul(den, cSub(zs[i], zs[j])); }
+          if(cIsZero(den)) den = { re: 1e-12, im: 1e-12 };
+          var step = cDiv(cHorner(m, zs[i]), den);
+          zs[i] = cSub(zs[i], step); moved = Math.max(moved, Math.hypot(step.re, step.im));
         }
+        if(moved < 1e-14) break;
       }
-      return res;
+      return zs;
+    }
+    // Snap a real number to a simple fraction p/q (q ≤ 12) when it is an EXACT root along dir
+    // (dir = {1,0} for z = x, {0,1} for z = i·y). Returns { num, str } with str parseable later.
+    function snapRoot(coefs, x, dir){
+      var scale = coefs.reduce(function(s, c){ return s + Math.hypot(c.re, c.im); }, 0) || 1;
+      for(var q = 1; q <= 12; q++){
+        var p = Math.round(x * q), v = p / q;
+        var r = cHorner(coefs, { re: v * dir.re, im: v * dir.im });
+        if(Math.hypot(r.re, r.im) < 1e-9 * scale) return { num: v, str: (q === 1 || p % q === 0) ? String(p / q) : plainFrac(p, q) };
+      }
+      return { num: x, str: fmtReal(x) };
+    }
+    // kind = 'real' (z = x) or 'imag' (z = i·y). Returns the distinct roots of that kind as
+    // strings usable as z₀ (e.g. "-2", "-3i", "(2/3)i"), or [] if there is none.
+    function findSpecialRoots(kind){
+      var coefs = [coefVal(eqaInput.value), coefVal(eqbInput.value), coefVal(eqcInput.value), coefVal(eqdInput.value)];
+      var roots = polyRootsJS(coefs), out = [], seen = [];
+      var tol = 1e-6 * Math.max(1, roots.reduce(function(s, r){ return Math.max(s, Math.hypot(r.re, r.im)); }, 0));
+      roots.forEach(function(r){
+        var isKind = (kind === 'real') ? (Math.abs(r.im) < tol) : (Math.abs(r.re) < tol && Math.abs(r.im) >= tol);
+        if(!isKind) return;
+        var sn = (kind === 'real') ? snapRoot(coefs, r.re, { re: 1, im: 0 }) : snapRoot(coefs, r.im, { re: 0, im: 1 });
+        if(seen.some(function(v){ return Math.abs(v - sn.num) < 1e-7; })) return;
+        seen.push(sn.num);
+        if(kind === 'real') out.push(sn.str);
+        else out.push(sn.str === '1' ? 'i' : (sn.str === '-1' ? '-i' : (sn.str.indexOf('/') >= 0 ? '(' + sn.str + ')i' : sn.str + 'i')));
+      });
+      return out;
     }
 
     // Synthetic (Horner) division of f(z)=a z³+b z²+c z+d by (z − z₀).
@@ -2556,11 +2592,20 @@
           var fv = syntheticDiv(z0).rem;
           casResult = fmtComplexVal(fv.re, fv.im);
           label = 'f(z₀)';
-        } else if(op === 'find_root'){
-          var fr = findSpecialRoot(poly);
-          if(!fr){ stateEl.textContent = 'Aucune racine réelle ou imaginaire pure évidente pour cette équation.'; reenable(); return; }
-          eqz0Input.value = fr.value; z0 = fr.value; casResult = fr.value; label = 'Racine évidente z₀'; plotAll = true;
-          var frv = evalComplex('(' + fr.value + ')'); if(frv) eqRoots = [frv];
+        } else if(op === 'find_real_root' || op === 'find_imag_root'){
+          var kindReal = (op === 'find_real_root');
+          var found = findSpecialRoots(kindReal ? 'real' : 'imag');
+          if(!found.length){
+            answerEl.innerHTML = '';
+            stateEl.textContent = kindReal
+              ? 'Cette équation n’a pas de racine réelle. Essayez « Racine imaginaire pure », ou saisissez une racine z₀ connue.'
+              : 'Cette équation n’a pas de racine imaginaire pure. Essayez « Racine réelle », ou saisissez une racine z₀ connue.';
+            reenable(); return;
+          }
+          eqz0Input.value = found[0]; z0 = found[0];
+          casResult = (found.length === 1) ? found[0] : ('{' + found.join(', ') + '}');
+          label = kindReal ? 'Racine réelle z₀' : 'Racine imaginaire pure z₀'; plotAll = true;
+          eqRoots = found.map(function(v){ return coefVal(v); });
         } else if(op === 'quotient'){
           // Synthetic division in JS (CAS Div is unreliable with the imaginary unit).
           var qd0 = syntheticDiv(z0);

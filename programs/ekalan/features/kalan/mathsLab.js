@@ -59,6 +59,8 @@ const COMPLEX_OPERATIONS = {
   solve_poly: "les solutions de l'équation polynomiale",
   eval_at: "la valeur f(z₀)",
   find_root: "une racine réelle ou imaginaire pure",
+  find_real_root: "une racine réelle",
+  find_imag_root: "une racine imaginaire pure",
   quotient: "le quotient Q(z) tel que f(z) = (z − z₀)·Q(z)",
   solve_quotient: "les solutions de Q(z) = 0",
 };
@@ -232,6 +234,26 @@ function buildPrompt({ domain, input, operation, casResult, params }) {
         `Solution correcte (fournie — à justifier, ne pas modifier) : z = ${casResult}`,
         ``,
         `Explique la méthode : poser z = a (ou z = i·b selon le cas), remplacer dans f(z), développer, puis séparer les parties réelle et imaginaire et résoudre le système { partie réelle = 0 ; partie imaginaire = 0 } pour obtenir cette racine.`,
+      ];
+      return { system: SYSTEM_PROMPT_COMPLEX, userMsg: e.join("\n") };
+    }
+    if (operation === "find_real_root") {
+      const e = [
+        `Équation : f(z) = 0 avec f(z) = ${input}.`,
+        `On cherche une solution RÉELLE : z = x avec x réel.`,
+        `Racine(s) réelle(s) correcte(s) (fournie(s) — à justifier, ne pas modifier) : ${casResult}`,
+        ``,
+        `Méthode attendue : poser z = x (x réel), remplacer dans f(z) et développer (z² = x², z³ = x³), puis regrouper partie réelle et partie imaginaire. Comme x est réel, f(x) = 0 équivaut au système { partie réelle = 0 ; partie imaginaire = 0 }. Résous l'équation la plus simple des deux (souvent du second degré), puis vérifie quelle(s) valeur(s) annule(nt) aussi l'autre équation. Conclus que z = ${casResult} est solution.`,
+      ];
+      return { system: SYSTEM_PROMPT_COMPLEX, userMsg: e.join("\n") };
+    }
+    if (operation === "find_imag_root") {
+      const e = [
+        `Équation : f(z) = 0 avec f(z) = ${input}.`,
+        `On cherche une solution IMAGINAIRE PURE : z = i·y avec y réel non nul.`,
+        `Racine(s) imaginaire(s) pure(s) correcte(s) (fournie(s) — à justifier, ne pas modifier) : ${casResult}`,
+        ``,
+        `Méthode attendue : poser z = i·y (y réel), remplacer dans f(z) en utilisant i² = −1 et i³ = −i (donc z² = −y² et z³ = −i·y³), développer, puis regrouper partie réelle et partie imaginaire. f(iy) = 0 équivaut au système { partie réelle = 0 ; partie imaginaire = 0 }. Résous l'équation la plus simple, vérifie la valeur de y dans l'autre, puis conclus que z = ${casResult} est solution.`,
       ];
       return { system: SYSTEM_PROMPT_COMPLEX, userMsg: e.join("\n") };
     }
