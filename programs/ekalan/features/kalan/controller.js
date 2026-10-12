@@ -1522,7 +1522,8 @@ module.exports.explainMath = async (req, res) => {
           return res.status(400).json({ ok: false, error: "Valeur z₀ manquante." });
         }
         params = { z0 };
-        opKeyPart = `${operation}:${z0}`; // distinct cache per z₀
+        // distinct cache per z₀ ; "quotient" v2 = both methods (division posée + identification)
+        opKeyPart = operation === "quotient" ? `quotient:v2:${z0}` : `${operation}:${z0}`;
       }
 
       key = `complex|${input}|${opKeyPart}|${casResult}`;

@@ -263,7 +263,10 @@ function buildPrompt({ domain, input, operation, casResult, params }) {
         `Détermine le polynôme Q(z) tel que f(z) = (z − z₀)·Q(z).`,
         `Quotient correct (fourni — à expliquer, ne pas modifier) : Q(z) = ${casResult}`,
         ``,
-        `Explique l'obtention de Q(z) par division euclidienne de f(z) par (z − z₀) (ou par identification des coefficients). Aboutis EXACTEMENT à ce Q(z).`,
+        `Présente les DEUX méthodes, clairement séparées, et aboutis EXACTEMENT à ce Q(z) dans chacune :`,
+        `MÉTHODE 1 — Division euclidienne de f(z) par (z − z₀) : une étape par terme du quotient. À chaque étape, divise le terme de plus haut degré par z, multiplie (z − z₀) par ce terme, soustrais le produit et abaisse le terme suivant ; donne le reste partiel. Termine en montrant que le reste est 0. Préfixe le titre de ces étapes par « Méthode 1 — ».`,
+        `MÉTHODE 2 — Identification des coefficients : pose Q(z) = αz² + βz + γ, développe (z − z₀)(αz² + βz + γ) et regroupe par puissances de z, écris le SYSTÈME de 4 équations obtenu par identification avec les coefficients de f(z) (dans le champ latex, utilise \\left\\{ \\begin{array}{l} … \\end{array} \\right.), puis résous-le de proche en proche (α, puis β, puis γ) et vérifie la 4ᵉ équation. Préfixe le titre de ces étapes par « Méthode 2 — ».`,
+        `N'utilise jamais le titre « Division euclidienne » pour une étape d'identification (et inversement).`,
       ];
       return { system: SYSTEM_PROMPT_COMPLEX, userMsg: e.join("\n") };
     }
@@ -515,7 +518,9 @@ async function explainSteps({ domain = "function", input, operation, casResult, 
   try {
     const response = await client.messages.create({
       model: MATHS_LAB_MODEL,
-      max_tokens: 2000,
+      // Two-method answers (e.g. quotient: division posée + identification) exceed 2000 tokens;
+      // a truncated reply is invalid JSON → "Explication indisponible".
+      max_tokens: 4096,
       system: [
         { type: "text", text: system, cache_control: { type: "ephemeral" } },
       ],
@@ -524,6 +529,10 @@ async function explainSteps({ domain = "function", input, operation, casResult, 
     });
 
     if (response.stop_reason === "refusal") return { ok: false, reason: "refusal" };
+    if (response.stop_reason === "max_tokens") {
+      console.warn("[mathsLab] reply truncated at max_tokens:", operation);
+      return { ok: false, reason: "truncated" };
+    }
 
     const block = (response.content || []).find((b) => b.type === "text");
     if (!block || !block.text) return { ok: false, reason: "empty" };

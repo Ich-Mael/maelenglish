@@ -257,6 +257,27 @@
     .ml-form-sec:first-child { margin-top:0; }
     .ml-form-cards { display:grid; grid-template-columns:repeat(2,1fr); gap:.5rem; }
     @media (max-width:640px){ .ml-form-cards { grid-template-columns:1fr; } }
+    /* Q(z) — two methods: long division (posée) + identification (system) */
+    .eq-methods { display:grid; gap:1rem; margin-top:1rem; }
+    .eq-meth { background:#fff; border:1px solid #ece9f3; border-radius:16px; padding:1rem 1.1rem; box-shadow:0 4px 16px rgba(50,44,77,.06); }
+    .eq-meth__t { display:flex; align-items:center; gap:.5rem; font-weight:800; color:#322c4d; font-size:1rem; margin-bottom:.35rem; }
+    .eq-meth__n { display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:50%;
+      background:#ffc23a; color:#322c4d; font-size:.85rem; font-weight:800; flex-shrink:0; }
+    .eq-meth__n--v { background:#5e17eb; color:#fff; }
+    .eq-meth__intro { font-size:.9rem; color:#6b6880; margin:0 0 .75rem; line-height:1.5; }
+    .eq-div-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    .eq-div { border-collapse:collapse; font-size:1rem; min-width:max-content; }
+    .eq-div td { padding:.28rem .55rem; text-align:right; white-space:nowrap; vertical-align:middle; }
+    .eq-div td.eq-dv { text-align:left; padding-left:.9rem; }
+    .eq-div tr.eq-sub td.eq-l { color:#5e17eb; background:#f6f1ff; border-bottom:2px solid #322c4d; }
+    .eq-div tr.eq-rem td.eq-l { color:#322c4d; font-weight:700; }
+    .eq-div td.eq-dv-top { border-left:2px solid #322c4d; border-bottom:2px solid #322c4d; }
+    .eq-div td.eq-dv-q { border-left:2px solid #322c4d; color:#5e17eb; font-weight:700; }
+    .eq-div td.eq-lbl { font-size:.74rem; color:#a3a0b5; text-align:left; padding-left:.8rem; font-style:italic; }
+    .eq-sys { overflow-x:auto; font-size:1.02rem; margin:.4rem 0 .6rem; }
+    .eq-line { margin:.3rem 0; overflow-x:auto; }
+    .eq-ok { margin-top:.5rem; font-size:.88rem; color:#15803d; font-weight:600; }
+    .eq-ok.is-ko { color:#dc2626; }
     .ml-form-card { background:#fff; border:1px solid #ece4fb; border-radius:9px; padding:.5rem .7rem; overflow-x:auto; color:#374151; font-size:.95rem; }
   </style>
 ` %>
@@ -2568,9 +2589,119 @@
       }
       try { return toLatex(s); } catch(e){ return s; }
     }
+    /* ---------- Q(z) : deux méthodes illustrées (division posée + identification) ---------- */
+    var eqExtra = null; // optional renderer called after the answer box (used by the quotient op)
+    function cTxt(c){ return fmtComplexVal(c.re, c.im); }
+    function cCompound(c){ var r = Math.round(c.re * 1e6) / 1e6, i = Math.round(c.im * 1e6) / 1e6; return r !== 0 && i !== 0; }
+    // A paren-wrapped value for products: (−2), (−2 + 9i), 3, 9i
+    function cPar(c){ var t = cTxt(c); return (cCompound(c) || t.charAt(0) === '-') ? '(' + t + ')' : t; }
+    // One term c·z^p as LaTeX. first=true → no leading "+".
+    function termTex(c, p, first){
+      if(cIsZero(c)) return '';
+      var v = p === 0 ? '' : (p === 1 ? 'z' : 'z^{' + p + '}');
+      var t = cTxt(c), sign = '+', body;
+      if(cCompound(c)){ body = '(' + t + ')' + v; }
+      else {
+        if(t.charAt(0) === '-'){ sign = '-'; t = t.slice(1); }
+        if(v && t === '1') t = '';
+        body = t + v;
+      }
+      if(first) return (sign === '-' ? '-' : '') + body;
+      return sign + ' ' + body;
+    }
+    function polyTex(list){ // list of [c, p]
+      var out = '', first = true;
+      list.forEach(function(it){ var t = termTex(it[0], it[1], first); if(t){ out += (first ? '' : ' ') + t; first = false; } });
+      return out || '0';
+    }
+    function neg(c){ return { re: -c.re, im: -c.im }; }
+    // m·sym with a simplified sign, e.g. m=2 → "+ 2α", m=-1 → "- β", m=2-9i → "+ (2 - 9i)γ"
+    function scaledSym(m, sym, first){
+      if(cIsZero(m)) return '';
+      var t = cTxt(m);
+      if(cCompound(m)) return (first ? '' : '+ ') + '(' + t + ')' + sym;
+      var ng = t.charAt(0) === '-', ab = ng ? t.slice(1) : t;
+      if(ab === '1') ab = '';
+      return first ? ((ng ? '-' : '') + ab + sym) : ((ng ? '- ' : '+ ') + ab + sym);
+    }
+
+    function renderQuotientMethods(box, z0str){
+      var a = coefVal(eqaInput.value), b = coefVal(eqbInput.value), c = coefVal(eqcInput.value), d = coefVal(eqdInput.value);
+      var z0 = coefVal(z0str), qd = syntheticDiv(z0str), q0 = qd.q0, q1 = qd.q1, q2 = qd.q2, rem = qd.rem;
+      var divisor = polyTex([[{ re: 1, im: 0 }, 1], [neg(z0), 0]]);
+      var quot = polyTex([[q0, 2], [q1, 1], [q2, 0]]);
+      var fz = polyTex([[a, 3], [b, 2], [c, 1], [d, 0]]);
+      var remOk = cIsZero(rem);
+
+      // ---- Méthode 1 : division euclidienne posée (colonnes z³ | z² | z | 1) ----
+      // Each "sub" row is the OPPOSITE of (quotient term)·(z − z₀), added to the line above.
+      function cell(c, p, first, cls){ var t = termTex(c, p, first); return '<td class="eq-l' + (cls ? ' ' + cls : '') + '"><span data-tex="' + escapeHtml(t) + '"></span></td>'; }
+      function empty(){ return '<td class="eq-l"></td>'; }
+      function rowCells(map, startFirst){ // map: {3: c3, 2: c2, 1: c1, 0: c0}
+        var html = '', first = true;
+        [3, 2, 1, 0].forEach(function(p){
+          if(map[p] === undefined){ html += empty(); return; }
+          html += cell(map[p], p, first); first = false;
+        });
+        return html;
+      }
+      var rows = [];
+      rows.push('<tr>' + rowCells({3: a, 2: b, 1: c, 0: d}) + '<td class="eq-dv eq-dv-top"><span data-tex="' + escapeHtml(divisor) + '"></span></td></tr>');
+      rows.push('<tr class="eq-sub">' + rowCells({3: neg(q0), 2: cMul(q0, z0)}) + '<td class="eq-dv eq-dv-q"><span data-tex="' + escapeHtml(quot) + '"></span></td></tr>');
+      rows.push('<tr>' + rowCells({2: q1, 1: c, 0: d}) + '<td class="eq-lbl">' + (cIsZero(q0) ? '' : 'on abaisse c·z et d') + '</td></tr>');
+      rows.push('<tr class="eq-sub">' + rowCells({2: neg(q1), 1: cMul(q1, z0)}) + '<td></td></tr>');
+      rows.push('<tr>' + rowCells({1: q2, 0: d}) + '<td></td></tr>');
+      rows.push('<tr class="eq-sub">' + rowCells({1: neg(q2), 0: cMul(q2, z0)}) + '<td></td></tr>');
+      rows.push('<tr class="eq-rem"><td class="eq-l"></td><td class="eq-l"></td><td class="eq-l"></td><td class="eq-l"><span data-tex="' + escapeHtml(cIsZero(rem) ? '0' : cTxt(rem)) + '"></span></td><td class="eq-lbl">reste</td></tr>');
+
+      var z0t = cPar(z0);
+      var m1 = '<div class="eq-meth">'
+        + '<div class="eq-meth__t"><span class="eq-meth__n">1</span> Méthode 1 — Division euclidienne de f(z) par (z − z₀)</div>'
+        + '<p class="eq-meth__intro">On divise le terme de plus haut degré par z, on multiplie le diviseur par ce terme, on retranche (lignes colorées = opposé du produit), puis on abaisse le terme suivant. On recommence jusqu’au reste.</p>'
+        + '<div class="eq-div-wrap"><table class="eq-div">' + rows.join('') + '</table></div>'
+        + '<div class="eq-line" data-tex="' + escapeHtml(termTex(a, 3, true) + ' ' + BS + 'div z = ' + termTex(q0, 2, true) + ',' + BS + 'quad ' + termTex(q1, 2, true) + ' ' + BS + 'div z = ' + termTex(q1, 1, true) + ',' + BS + 'quad ' + termTex(q2, 1, true) + ' ' + BS + 'div z = ' + termTex(q2, 0, true)) + '"></div>'
+        + '<div class="eq-ok' + (remOk ? '' : ' is-ko') + '">' + (remOk ? 'Le reste est nul : z₀ est bien racine, et Q(z) est le quotient.' : 'Le reste n’est pas nul : z₀ n’est pas racine de f.') + '</div>'
+        + '</div>';
+
+      // ---- Méthode 2 : identification des coefficients (système) ----
+      var al = BS + 'alpha', be = BS + 'beta', ga = BS + 'gamma';
+      var mz = neg(z0);
+      var expand = '(' + divisor + ')(' + al + ' z^{2} + ' + be + ' z + ' + ga + ') = ' + al + ' z^{3} + (' + be + ' ' + scaledSym(mz, al, false) + ') z^{2} + (' + ga + ' ' + scaledSym(mz, be, false) + ') z ' + scaledSym(mz, ga, false);
+      var sys = BS + 'left' + BS + '{' + BS + 'begin{array}{l}'
+        + al + ' = ' + cPar(a) + BS + BS
+        + be + ' ' + scaledSym(mz, al, false) + ' = ' + cPar(b) + BS + BS
+        + ga + ' ' + scaledSym(mz, be, false) + ' = ' + cPar(c) + BS + BS
+        + scaledSym(mz, ga, true) + ' = ' + cPar(d)
+        + BS + 'end{array}' + BS + 'right.';
+      var s1 = al + ' = ' + cTxt(q0);
+      var s2 = be + ' = ' + cPar(b) + ' - ' + cPar(mz) + ' ' + BS + 'times ' + cPar(q0) + ' = ' + cTxt(q1);
+      var s3 = ga + ' = ' + cPar(c) + ' - ' + cPar(mz) + ' ' + BS + 'times ' + cPar(q1) + ' = ' + cTxt(q2);
+      var chk = cMul(neg(z0), q2);
+      var s4 = cPar(mz) + ' ' + BS + 'times ' + cPar(q2) + ' = ' + cTxt(chk) + (cIsZero(cSub(chk, d)) ? ' = d' + BS + ';' + BS + 'checkmark' : BS + 'neq d');
+      var m2 = '<div class="eq-meth">'
+        + '<div class="eq-meth__t"><span class="eq-meth__n eq-meth__n--v">2</span> Méthode 2 — Identification des coefficients</div>'
+        + '<p class="eq-meth__intro">On cherche Q(z) = αz² + βz + γ tel que f(z) = (z − z₀)·Q(z). On développe, puis on identifie avec f(z) = a·z³ + b·z² + c·z + d : deux polynômes égaux ont les mêmes coefficients.</p>'
+        + '<div class="eq-line" data-tex="' + escapeHtml(expand) + '"></div>'
+        + '<p class="eq-meth__intro" style="margin:.6rem 0 .2rem">Par identification, on obtient le système :</p>'
+        + '<div class="eq-sys" data-tex="' + escapeHtml(sys) + '"></div>'
+        + '<p class="eq-meth__intro" style="margin:.4rem 0 .2rem">On le résout de proche en proche :</p>'
+        + '<div class="eq-line" data-tex="' + escapeHtml(s1) + '"></div>'
+        + '<div class="eq-line" data-tex="' + escapeHtml(s2) + '"></div>'
+        + '<div class="eq-line" data-tex="' + escapeHtml(s3) + '"></div>'
+        + '<p class="eq-meth__intro" style="margin:.4rem 0 .2rem">Vérification avec la 4ᵉ équation :</p>'
+        + '<div class="eq-line" data-tex="' + escapeHtml(s4) + '"></div>'
+        + '<div class="eq-line" data-tex="' + escapeHtml('Q(z) = ' + quot) + '"></div>'
+        + '</div>';
+
+      box.innerHTML = '<div class="eq-methods">' + m1 + m2 + '</div>';
+      Array.prototype.forEach.call(box.querySelectorAll('[data-tex]'), function(el){
+        var t = el.getAttribute('data-tex'); if(t) renderKatex(el, t);
+      });
+    }
     function setEqAnswer(label, value){
       answerEl.innerHTML = '<div class="ml-answer"><div class="lbl"><i class="bi bi-stars"></i> ' + label + '</div><div class="val" id="eq-final"></div></div>';
       renderKatex(document.getElementById('eq-final'), eqResultLatex(value));
+      if(eqExtra){ var bx = document.createElement('div'); answerEl.appendChild(bx); try { eqExtra(bx); } catch(e){ bx.innerHTML = ''; } }
     }
 
     async function runEqStep(op){
@@ -2586,6 +2717,7 @@
       stateEl.innerHTML = '<span class="ml-spinner"></span> Calcul en cours…';
 
       var casResult = '', label = 'Résultat', plotAll = false, eqRoots = null, eqNote = '';
+      eqExtra = null;
       try {
         if(op === 'eval_at'){
           // Remainder theorem: f(z₀) is exactly the remainder of f(z)/(z−z₀). Pure JS.
@@ -2611,6 +2743,7 @@
           var qd0 = syntheticDiv(z0);
           casResult = fmtQuotient(qd0);
           label = 'Q(z)';
+          eqExtra = function(bx){ renderQuotientMethods(bx, z0); };
           if(!cIsZero(qd0.rem)){ eqNote = 'Remarque : le reste de la division vaut ' + fmtComplexVal(qd0.rem.re, qd0.rem.im) + ' (non nul) — z₀ ne semble pas être une racine de f.'; }
         } else if(op === 'solve_quotient'){
           var qd = syntheticDiv(z0);
