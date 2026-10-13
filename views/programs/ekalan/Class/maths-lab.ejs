@@ -257,6 +257,28 @@
     .ml-form-sec:first-child { margin-top:0; }
     .ml-form-cards { display:grid; grid-template-columns:repeat(2,1fr); gap:.5rem; }
     @media (max-width:640px){ .ml-form-cards { grid-template-columns:1fr; } }
+    /* Fonctions définies par intervalles */
+    .pw-ex { display:flex; flex-wrap:wrap; align-items:center; gap:.35rem; margin:0 0 1rem; }
+    .pw-ex__lbl { font-size:.82rem; font-weight:700; color:#6b6880; margin-right:.2rem; }
+    .pw-ex__lbl i { color:#d99a00; }
+    .pw-row { display:flex; align-items:center; gap:.55rem; flex-wrap:wrap; margin-bottom:.6rem; }
+    .pw-f { font-family:'Times New Roman',serif; font-style:italic; font-weight:700; font-size:1.08rem; color:#5e17eb; white-space:nowrap; }
+    .pw-expr { flex:1 1 220px; min-width:150px; padding:.6rem .8rem; border:2px solid #e0e0e0; border-radius:10px;
+      font-size:1rem; font-family:'Courier New',monospace; background:#fafafa; }
+    .pw-expr:focus, .pw-junction input:focus, .pw-junction select:focus, .pw-params select:focus { outline:none; border-color:#5e17eb; background:#fff; }
+    .pw-cond { font-size:.88rem; font-weight:700; color:#322c4d; background:#efe7ff; padding:.38rem .8rem; border-radius:999px; white-space:nowrap; }
+    .pw-junction { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; background:#fff8ec; border:1px dashed #ffe3a3;
+      border-radius:12px; padding:.5rem .8rem; margin:0 0 .6rem; font-size:.9rem; color:#322c4d; }
+    .pw-junction input { width:90px; padding:.42rem .6rem; border:2px solid #e0e0e0; border-radius:8px; font-family:'Courier New',monospace; background:#fff; }
+    .pw-junction select, .pw-params select { padding:.42rem .6rem; border:2px solid #e0e0e0; border-radius:8px; background:#fff; font-size:.86rem; color:#322c4d; max-width:100%; }
+    .pw-params { display:flex; align-items:center; gap:.45rem; flex-wrap:wrap; background:#efe7ff; border:1px solid #ddd0fb;
+      border-radius:12px; padding:.6rem .85rem; margin:.2rem 0 .9rem; font-size:.9rem; color:#322c4d; }
+    .pw-params > i { color:#5e17eb; }
+    .pw-params strong { color:#5e17eb; }
+    .study-ok { color:#86efac; font-weight:700; }
+    .study-ko { color:#fca5a5; font-weight:700; }
+    .study-sub { font-weight:700; color:#fff; margin:.55rem 0 .15rem; font-family:system-ui,sans-serif; font-size:.9rem; }
+
     /* Q(z) — two methods: long division (posée) + identification (system) */
     .eq-methods { display:grid; gap:1rem; margin-top:1rem; }
     .eq-meth { background:#fff; border:1px solid #ece9f3; border-radius:16px; padding:1rem 1.1rem; box-shadow:0 4px 16px rgba(50,44,77,.06); }
@@ -331,6 +353,7 @@
         </div>
         <div class="ml-modes" id="modes">
           <button type="button" class="ml-mode is-active" data-mode="function"><i class="bi bi-graph-up"></i> Fonctions</button>
+          <button type="button" class="ml-mode" data-mode="piecewise"><i class="bi bi-distribute-horizontal"></i> Fonction par intervalles</button>
           <button type="button" class="ml-mode" data-mode="complex"><i class="bi bi-asterisk"></i> Nombres complexes</button>
           <button type="button" class="ml-mode" data-mode="geometry"><i class="bi bi-triangle"></i> Géométrie</button>
           <button type="button" class="ml-mode" data-mode="integral"><i class="bi bi-integral"></i> Intégrales</button>
@@ -793,6 +816,81 @@
           </div>
           <div class="ml-hint">La solution générale et la solution particulière (vérifiant la condition initiale) sont données ; la courbe de la solution particulière est tracée.</div>
         </div><%# /mode-diffeq %>
+
+        <div id="mode-piecewise" hidden>
+          <h2><i class="bi bi-distribute-horizontal"></i> Fonction définie par intervalles</h2>
+          <div class="ml-side" id="pw-count">
+            <button type="button" class="ml-sidebtn is-active" data-pwn="2">2 intervalles</button>
+            <button type="button" class="ml-sidebtn" data-pwn="3">3 intervalles</button>
+          </div>
+
+          <div class="pw-ex" id="pw-ex">
+            <span class="pw-ex__lbl"><i class="bi bi-lightbulb"></i> Exemples :</span>
+            <button type="button" class="ml-key is-util" data-pwex="1">Trouver a et b</button>
+            <button type="button" class="ml-key is-util" data-pwex="2">Valeur en x₀</button>
+            <button type="button" class="ml-key is-util" data-pwex="3">Point anguleux</button>
+            <button type="button" class="ml-key is-util" data-pwex="4">Tangente verticale</button>
+            <button type="button" class="ml-key is-util" data-pwex="5">3 intervalles</button>
+          </div>
+
+          <div class="pw-row">
+            <span class="pw-f">f(x) =</span>
+            <input class="pw-expr" id="pw-e1" type="text" value="ax^2+1" autocomplete="off" />
+            <span class="pw-cond" id="pw-c1">si x &lt; x₁</span>
+          </div>
+          <div class="pw-junction">
+            <label for="pw-x1"><strong>x₁ =</strong></label>
+            <input id="pw-x1" type="text" value="1" autocomplete="off" />
+            <select id="pw-at1" aria-label="Valeur de f en x₁">
+              <option value="R" selected>f(x₁) donnée par l'intervalle de droite</option>
+              <option value="L">f(x₁) donnée par l'intervalle de gauche</option>
+              <option value="V">f(x₁) donnée à part :</option>
+            </select>
+            <input id="pw-v1" type="text" value="a" autocomplete="off" placeholder="f(x₁)" hidden />
+          </div>
+          <div class="pw-row">
+            <span class="pw-f">f(x) =</span>
+            <input class="pw-expr" id="pw-e2" type="text" value="bx+3" autocomplete="off" />
+            <span class="pw-cond" id="pw-c2">si x ≥ x₁</span>
+          </div>
+          <div id="pw-third" hidden>
+            <div class="pw-junction">
+              <label for="pw-x2"><strong>x₂ =</strong></label>
+              <input id="pw-x2" type="text" value="2" autocomplete="off" />
+              <select id="pw-at2" aria-label="Valeur de f en x₂">
+                <option value="R" selected>f(x₂) donnée par l'intervalle de droite</option>
+                <option value="L">f(x₂) donnée par l'intervalle du milieu</option>
+                <option value="V">f(x₂) donnée à part :</option>
+              </select>
+              <input id="pw-v2" type="text" value="" autocomplete="off" placeholder="f(x₂)" hidden />
+            </div>
+            <div class="pw-row">
+              <span class="pw-f">f(x) =</span>
+              <input class="pw-expr" id="pw-e3" type="text" value="x+1" autocomplete="off" />
+              <span class="pw-cond" id="pw-c3">si x &gt; x₂</span>
+            </div>
+          </div>
+
+          <div class="pw-params" id="pw-params" hidden>
+            <i class="bi bi-sliders"></i>
+            <span>Paramètres : <strong id="pw-plist"></strong> — on les détermine pour que f soit</span>
+            <select id="pw-goal" aria-label="Condition imposée">
+              <option value="CD" selected>continue et dérivable</option>
+              <option value="C">continue</option>
+            </select>
+            <span>en chaque point de raccordement.</span>
+          </div>
+
+          <div class="ml-preview is-empty" id="pw-preview">Aperçu de la fonction…</div>
+
+          <div class="ml-ops" id="pw-ops">
+            <button class="ml-op ml-op--hero" data-pwop="study"><i class="bi bi-clipboard2-data"></i> Étude complète</button>
+            <button class="ml-op" data-pwop="cont"><i class="bi bi-link"></i> Continuité</button>
+            <button class="ml-op" data-pwop="deriv"><i class="bi bi-bezier2"></i> Dérivabilité</button>
+            <button class="ml-op" data-pwop="params" id="pw-op-params" hidden><i class="bi bi-sliders"></i> Déterminer les paramètres</button>
+          </div>
+          <div class="ml-hint">Syntaxe : x^2, sqrt(x), exp(x), ln(x), abs(x)… Paramètres autorisés : a, b, k, m (ex. « ax^2+b »).</div>
+        </div><%# /mode-piecewise %>
 
         <div id="mode-arith" hidden>
           <h2><i class="bi bi-123"></i> Arithmétique</h2>
@@ -4247,6 +4345,567 @@
       });
     })();
 
+    /* ============ FONCTIONS DÉFINIES PAR MORCEAUX (continuité, dérivabilité, paramètres) ============ */
+    // Everything is computed in pure JS: expressions are parsed with dxTok/dxParse, limits are taken
+    // numerically (one-sided, with Richardson extrapolation) and snapped to exact values when possible.
+    var modePw     = document.getElementById('mode-piecewise');
+    var pwCountEl  = document.getElementById('pw-count');
+    var pwOpsEl    = document.getElementById('pw-ops');
+    var pwPrevEl   = document.getElementById('pw-preview');
+    var pwParamsEl = document.getElementById('pw-params');
+    var pwPlistEl  = document.getElementById('pw-plist');
+    var pwGoalEl   = document.getElementById('pw-goal');
+    var pwParamBtn = document.getElementById('pw-op-params');
+    var pwThirdEl  = document.getElementById('pw-third');
+    var pwExEl     = document.getElementById('pw-ex');
+    var pwE  = [document.getElementById('pw-e1'), document.getElementById('pw-e2'), document.getElementById('pw-e3')];
+    var pwC  = [document.getElementById('pw-c1'), document.getElementById('pw-c2'), document.getElementById('pw-c3')];
+    var pwX  = [document.getElementById('pw-x1'), document.getElementById('pw-x2')];
+    var pwAt = [document.getElementById('pw-at1'), document.getElementById('pw-at2')];
+    var pwV  = [document.getElementById('pw-v1'), document.getElementById('pw-v2')];
+    var pwN = 2;
+    var PW_FN = ['sqrt', 'exp', 'ln', 'log', 'abs', 'sin', 'cos', 'tan'];
+    var PW_PARAMS = ['a', 'b', 'k', 'm'];
+    var pwObjs = [];
+
+    function setPwOpsEnabled(on){ pwOpsEl.querySelectorAll('.ml-op').forEach(function(b){ b.disabled = !on; }); }
+    function clearPwPlot(){ pwObjs.forEach(function(nm){ try { ggb.deleteObject(nm); } catch(e){} }); pwObjs = []; }
+
+    // Tokens with multi-letter names split into single letters ("ax" → a·x) unless they are functions.
+    function pwTokens(s){
+      s = String(s == null ? '' : s).split(String.fromCharCode(0x2212)).join('-').split(String.fromCharCode(0xB2)).join('^2').split(String.fromCharCode(0xB3)).join('^3');
+      var t = dxTok(s); if(!t) return null;
+      var out = [];
+      for(var i = 0; i < t.length; i++){
+        var tk = t[i];
+        var isCall = t[i + 1] && t[i + 1].t === '(';
+        if(tk.t === 'name' && tk.v.length > 1 && !isCall && tk.v !== 'pi'){
+          for(var j = 0; j < tk.v.length; j++){
+            var ch = tk.v.charAt(j);
+            if(ch >= '0' && ch <= '9') out.push({ t:'num', v:Number(ch) }); else out.push({ t:'name', v:ch, split:true });
+          }
+        } else out.push(tk);
+      }
+      return out;
+    }
+    // Rebuild a string from tokens. sep = '*' for GeoGebra, ' ' for display; env substitutes parameter values.
+    function pwStr(toks, sep, env){
+      var s = '', prev = null;
+      function isNumPiece(tk){ return tk.t === 'num' || (env && tk.t === 'name' && PW_PARAMS.indexOf(tk.v) >= 0 && env[tk.v] !== undefined); }
+      toks.forEach(function(tk){
+        var piece;
+        if(tk.t === 'num') piece = String(tk.v);
+        else if(tk.t === 'name'){
+          if(env && env[tk.v] !== undefined && PW_PARAMS.indexOf(tk.v) >= 0){
+            var v = env[tk.v]; piece = (v < 0) ? '(' + pwNumStr(v) + ')' : pwNumStr(v);
+          } else piece = tk.v;
+        } else piece = tk.t;
+        var needSep = prev && ((prev.t === 'name' || prev.t === 'num' || prev.t === ')') && (tk.t === 'name' || tk.t === 'num' || tk.t === '('))
+          && !(prev.t === 'name' && tk.t === '(' && PW_FN.indexOf(prev.v) >= 0);
+        if(needSep) s += (sep === '*' || (isNumPiece(prev) && isNumPiece(tk))) ? '*' : sep;
+        s += piece; prev = tk;
+      });
+      return s;
+    }
+    function pwNumStr(v){ var sn = pwSnap(v); return sn.plain; }
+    function pwCollect(n, acc){
+      if(!n) return acc;
+      if(n.t === 'const' && acc.indexOf(n.name) < 0) acc.push(n.name);
+      ['a', 'l', 'r'].forEach(function(k){ if(n[k] && typeof n[k] === 'object') pwCollect(n[k], acc); });
+      return acc;
+    }
+    function pwCompile(src, needX){
+      src = (src || '').trim(); if(!src) return { err: 'vide' };
+      var tk = pwTokens(src); if(!tk || !tk.length) return { err: 'syntaxe' };
+      var ast = null; try { ast = dxParse(tk); } catch(e){ ast = null; }
+      if(!ast) return { err: 'syntaxe' };
+      var names = pwCollect(ast, []);
+      var bad = names.filter(function(nm){ return PW_PARAMS.indexOf(nm) < 0; });
+      if(bad.length) return { err: 'inconnu', bad: bad };
+      var dAst = null; try { dAst = dxSimp(dxSimp(dxDiff(ast))); } catch(e){ dAst = null; }
+      return { src: src, toks: tk, ast: ast, dAst: dAst, params: names };
+    }
+    function pwEval(n, x, env){
+      if(!n) return NaN;
+      switch(n.t){
+        case 'num': return n.v;
+        case 'var': return x;
+        case 'const': return (env && env[n.name] !== undefined) ? env[n.name] : NaN;
+        case 'neg': return -pwEval(n.a, x, env);
+        case '+': return pwEval(n.l, x, env) + pwEval(n.r, x, env);
+        case '-': return pwEval(n.l, x, env) - pwEval(n.r, x, env);
+        case '*': return pwEval(n.l, x, env) * pwEval(n.r, x, env);
+        case '/': return pwEval(n.l, x, env) / pwEval(n.r, x, env);
+        case '^': {
+          var b = pwEval(n.l, x, env), e = pwEval(n.r, x, env);
+          if(b < 0 && Math.abs(e - Math.round(e)) > 1e-12) return NaN;
+          return Math.pow(b, e);
+        }
+        case 'fn': {
+          var a = pwEval(n.a, x, env);
+          switch(n.name){
+            case 'sqrt': return a < 0 ? NaN : Math.sqrt(a);
+            case 'exp': return Math.exp(a);
+            case 'ln': case 'log': return a <= 0 ? NaN : Math.log(a);
+            case 'abs': return Math.abs(a);
+            case 'sin': return Math.sin(a);
+            case 'cos': return Math.cos(a);
+            case 'tan': return Math.tan(a);
+          }
+          return NaN;
+        }
+      }
+      return NaN;
+    }
+
+    // One-sided limit of g at x0 (side −1 = left, +1 = right). Returns { ok, v, inf }.
+    // Samples at h = 2^-k; Aitken's Δ² extrapolation handles any power-law convergence
+    // (h, √h, h²…), e.g. √x → 0 as x → 0⁺. Divergence is tested before extrapolating.
+    function pwLimit(g, x0, side){
+      var vals = [];
+      for(var k = 4; k <= 22; k++){ var h = Math.pow(2, -k); vals.push(g(x0 + side * h)); }
+      var fin = vals.filter(isFinite), n = vals.length;
+      if(fin.length < n - 2 || !isFinite(vals[n - 1]) || !isFinite(vals[n - 2]) || !isFinite(vals[n - 3])) return { ok: false };
+      var v1 = vals[n - 3], v2 = vals[n - 2], v3 = vals[n - 1];
+      if(Math.abs(v3 - v2) < 1e-10 * (1 + Math.abs(v3))) return { ok: true, v: v3, inf: 0 };
+      var a8 = Math.abs(vals[n - 9]), aN = Math.abs(v3);
+      if(aN > 50 && aN > 3 * a8) return { ok: true, v: v3 > 0 ? Infinity : -Infinity, inf: v3 > 0 ? 1 : -1 };
+      function aitken(p, q, r){ var d1 = q - p, d2 = r - q, den = d2 - d1; if(Math.abs(den) < 1e-300) return NaN; return r - d2 * d2 / den; }
+      var A1 = aitken(vals[n - 5], vals[n - 4], vals[n - 3]), A2 = aitken(vals[n - 4], vals[n - 3], v2), A3 = aitken(v1, v2, v3);
+      var shrinking = Math.abs(v3 - v2) < Math.abs(v2 - v1);
+      if(shrinking && isFinite(A3) && isFinite(A2) && Math.abs(A3 - A2) < 1e-6 * (1 + Math.abs(A3)) && Math.abs(A2 - A1) < 1e-4 * (1 + Math.abs(A2))) return { ok: true, v: A3, inf: 0 };
+      if(shrinking && Math.abs(v3 - v2) < 1e-7 * (1 + Math.abs(v3))) return { ok: true, v: v3, inf: 0 };
+      var tail = vals.slice(n - 6), tmax = Math.max.apply(null, tail), tmin = Math.min.apply(null, tail);
+      if(tmax - tmin < 1e-5 * (1 + Math.abs(tmax))) return { ok: true, v: (tmax + tmin) / 2, inf: 0 }; // squeezed (e.g. x·sin(1/x))
+      var mono = true;
+      for(var i = n - 8; i < n; i++){ if(Math.abs(vals[i]) < Math.abs(vals[i - 1]) - 1e-12) { mono = false; break; } }
+      if(mono && Math.abs(v3 - vals[n - 9]) > 1) return { ok: true, v: v3 > 0 ? Infinity : -Infinity, inf: v3 > 0 ? 1 : -1 };
+      return { ok: false };
+    }
+    // Snap to an exact-looking value: integer, fraction p/q (q ≤ 12), ±√(p/q); else 4 decimals.
+    function pwSnap(v){
+      if(v === Infinity) return { tex: '+' + BS + 'infty', plain: '+inf', exact: true };
+      if(v === -Infinity) return { tex: '-' + BS + 'infty', plain: '-inf', exact: true };
+      if(!isFinite(v)) return { tex: '?', plain: '?', exact: false };
+      var tol = 1e-6 * (1 + Math.abs(v));
+      for(var q = 1; q <= 12; q++){
+        var p = Math.round(v * q);
+        if(Math.abs(p / q - v) < tol){
+          var g = igcd(p, q) || 1, pp = p / g, qq = q / g;
+          if(qq === 1) return { tex: String(pp), plain: String(pp), exact: true, num: pp };
+          return { tex: (pp < 0 ? '-' : '') + BS + 'frac{' + Math.abs(pp) + '}{' + qq + '}', plain: pp + '/' + qq, exact: true, num: pp / qq };
+        }
+      }
+      var v2 = v * v;
+      for(var q2 = 1; q2 <= 12; q2++){
+        var p2 = Math.round(v2 * q2);
+        if(p2 > 0 && Math.abs(p2 / q2 - v2) < 1e-6 * (1 + v2)){
+          var sg = v < 0 ? '-' : '';
+          var g2 = igcd(p2, q2) || 1, a2 = p2 / g2, b2 = q2 / g2;
+          var inner = b2 === 1 ? String(a2) : BS + 'frac{' + a2 + '}{' + b2 + '}';
+          return { tex: sg + BS + 'sqrt{' + inner + '}', plain: sg + 'sqrt(' + (b2 === 1 ? a2 : a2 + '/' + b2) + ')', exact: true };
+        }
+      }
+      var r = Math.round(v * 10000) / 10000;
+      return { tex: BS + 'approx ' + r, plain: '~' + r, exact: false, num: r };
+    }
+    function pwTexNum(v){ return pwSnap(v).tex.split(BS + 'approx ').join(''); }
+
+    function pwExprTex(c, env){ try { return toLatex(pwStr(c.toks, ' ', env)); } catch(e){ return pwStr(c.toks, ' ', env); } }
+    // Read the form. Returns { err } or the definition object.
+    function pwRead(){
+      var pieces = [], juncs = [], params = [];
+      for(var i = 0; i < pwN; i++){
+        var c = pwCompile(pwE[i].value);
+        if(c.err === 'vide') return { err: 'Intervalle ' + (i + 1) + ' : expression vide.' };
+        if(c.err === 'inconnu') return { err: 'Intervalle ' + (i + 1) + ' : lettre inconnue « ' + c.bad.join(', ') + ' » (paramètres autorisés : a, b, k, m).' };
+        if(c.err) return { err: 'Intervalle ' + (i + 1) + ' : expression invalide.' };
+        pieces.push(c); c.params.forEach(function(p){ if(params.indexOf(p) < 0) params.push(p); });
+      }
+      for(var j = 0; j < pwN - 1; j++){
+        var xs = (pwX[j].value || '').trim(), xc = pwCompile(xs);
+        var x0 = xc.err ? NaN : pwEval(xc.ast, 0, {});
+        if(!isFinite(x0)) return { err: 'x' + (j === 0 ? '₁' : '₂') + ' doit être un nombre.' };
+        var at = pwAt[j].value, vc = null;
+        if(at === 'V'){
+          vc = pwCompile(pwV[j].value);
+          if(vc.err === 'inconnu') return { err: 'f(x' + (j === 0 ? '₁' : '₂') + ') : lettre inconnue (paramètres autorisés : a, b, k, m).' };
+          if(vc.err) return { err: 'Indiquez la valeur de f(x' + (j === 0 ? '₁' : '₂') + ').' };
+          vc.params.forEach(function(p){ if(params.indexOf(p) < 0) params.push(p); });
+        }
+        juncs.push({ x0: x0, xs: xs, at: at, vc: vc });
+      }
+      if(pwN === 3 && !(juncs[0].x0 < juncs[1].x0)) return { err: 'Il faut x₁ < x₂.' };
+      params.sort();
+      return { pieces: pieces, juncs: juncs, params: params };
+    }
+
+    function pwCondTex(i, def){
+      var J = def.juncs, BSl = BS + 'leq ', BSg = BS + 'geq ';
+      function xs(j){ return pwTexNum(J[j].x0); }
+      if(def.pieces.length === 2){
+        if(i === 0) return 'x ' + (J[0].at === 'L' ? BSl : '< ') + xs(0);
+        return 'x ' + (J[0].at === 'R' ? BSg : '> ') + xs(0);
+      }
+      if(i === 0) return 'x ' + (J[0].at === 'L' ? BSl : '< ') + xs(0);
+      if(i === 1) return xs(0) + (J[0].at === 'R' ? ' ' + BSl : ' < ') + 'x' + (J[1].at === 'L' ? ' ' + BSl : ' < ') + xs(1);
+      return 'x ' + (J[1].at === 'R' ? BSg : '> ') + xs(1);
+    }
+    function pwCondTxt(i){
+      var at1 = pwAt[0].value, at2 = pwAt[1].value;
+      if(pwN === 2){ return i === 0 ? (at1 === 'L' ? 'si x ≤ x₁' : 'si x < x₁') : (at1 === 'R' ? 'si x ≥ x₁' : 'si x > x₁'); }
+      if(i === 0) return at1 === 'L' ? 'si x ≤ x₁' : 'si x < x₁';
+      if(i === 1) return 'si x₁ ' + (at1 === 'R' ? '≤' : '<') + ' x ' + (at2 === 'L' ? '≤' : '<') + ' x₂';
+      return at2 === 'R' ? 'si x ≥ x₂' : 'si x > x₂';
+    }
+    function pwDefTex(def, env){
+      var rows = [], sameTwo = def.pieces.length === 2 && def.juncs[0].at === 'V' && pwStr(def.pieces[0].toks, ' ') === pwStr(def.pieces[1].toks, ' ');
+      if(sameTwo){
+        rows.push(pwExprTex(def.pieces[0], env) + ' & ' + BS + 'text{si } x ' + BS + 'neq ' + pwTexNum(def.juncs[0].x0));
+      } else {
+        def.pieces.forEach(function(c, i){ rows.push(pwExprTex(c, env) + ' & ' + BS + 'text{si } ' + pwCondTex(i, def)); });
+      }
+      def.juncs.forEach(function(J){ if(J.at === 'V') rows.push(pwExprTex(J.vc, env) + ' & ' + BS + 'text{si } x = ' + pwTexNum(J.x0)); });
+      return 'f(x) = ' + BS + 'begin{cases} ' + rows.join(' ' + BS + BS + ' ') + ' ' + BS + 'end{cases}';
+    }
+
+    function updatePwPreview(){
+      pwC.forEach(function(el, i){ if(el) el.textContent = pwCondTxt(i); });
+      pwV.forEach(function(el, j){ el.hidden = (pwAt[j].value !== 'V'); });
+      var def = pwRead();
+      if(def.err){ pwParamsEl.hidden = true; pwParamBtn.hidden = true; pwPrevEl.className = 'ml-preview is-empty'; pwPrevEl.textContent = def.err; return; }
+      var hasP = def.params.length > 0;
+      pwParamsEl.hidden = !hasP; pwParamBtn.hidden = !hasP;
+      if(hasP) pwPlistEl.textContent = def.params.join(', ');
+      try { renderKatex(pwPrevEl, pwDefTex(def, null)); pwPrevEl.className = 'ml-preview'; }
+      catch(e){ pwPrevEl.className = 'ml-preview is-empty'; pwPrevEl.textContent = 'Aperçu indisponible.'; }
+    }
+
+    function setPwCount(n){
+      pwN = n;
+      pwCountEl.querySelectorAll('.ml-sidebtn').forEach(function(b){ b.classList.toggle('is-active', Number(b.getAttribute('data-pwn')) === n); });
+      pwThirdEl.hidden = (n !== 3);
+      updatePwPreview();
+    }
+    pwCountEl.addEventListener('click', function(ev){ var b = ev.target.closest('.ml-sidebtn'); if(b) setPwCount(Number(b.getAttribute('data-pwn'))); });
+    pwE.concat(pwX, pwV).forEach(function(inp){ if(inp) inp.addEventListener('input', updatePwPreview); });
+    pwAt.forEach(function(sel){ sel.addEventListener('change', updatePwPreview); });
+
+    var PW_EXAMPLES = {
+      1: { n: 2, e: ['ax^2+1', 'bx+3'], x: ['1'], at: ['R'], v: [''], goal: 'CD' },
+      2: { n: 2, e: ['(x^2-1)/(x-1)', '(x^2-1)/(x-1)'], x: ['1'], at: ['V'], v: ['a'], goal: 'C' },
+      3: { n: 2, e: ['-2x+1', 'x+1'], x: ['0'], at: ['R'], v: [''], goal: 'CD' },
+      4: { n: 2, e: ['-x^2', 'sqrt(x)'], x: ['0'], at: ['R'], v: [''], goal: 'CD' },
+      5: { n: 3, e: ['x+2', 'x^2', '2x-1'], x: ['-1', '1'], at: ['R', 'L'], v: ['', ''], goal: 'CD' }
+    };
+    pwExEl.addEventListener('click', function(ev){
+      var b = ev.target.closest('[data-pwex]'); if(!b) return;
+      var ex = PW_EXAMPLES[b.getAttribute('data-pwex')]; if(!ex) return;
+      ex.e.forEach(function(v, i){ pwE[i].value = v; });
+      ex.x.forEach(function(v, j){ pwX[j].value = v; });
+      ex.at.forEach(function(v, j){ pwAt[j].value = v; });
+      ex.v.forEach(function(v, j){ pwV[j].value = v; });
+      pwGoalEl.value = ex.goal;
+      answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = '';
+      setPwCount(ex.n);
+    });
+
+    // ---- core analysis at one junction (concrete env, all parameters known) ----
+    function pwJunction(def, j, env){
+      var J = def.juncs[j], L = def.pieces[j], R = def.pieces[j + 1], x0 = J.x0;
+      var gL = function(x){ return pwEval(L.ast, x, env); }, gR = function(x){ return pwEval(R.ast, x, env); };
+      var F = (J.at === 'L') ? gL(x0) : (J.at === 'R') ? gR(x0) : pwEval(J.vc.ast, 0, env);
+      var Lm = pwLimit(gL, x0, -1), Lp = pwLimit(gR, x0, 1);
+      function near(a, b){ return isFinite(a) && isFinite(b) && Math.abs(a - b) < 1e-6 * (1 + Math.abs(a) + Math.abs(b)); }
+      var contL = Lm.ok && near(Lm.v, F), contR = Lp.ok && near(Lp.v, F);
+      var dm = null, dp = null;
+      if(contL) dm = pwLimit(function(x){ return (gL(x) - F) / (x - x0); }, x0, -1);
+      if(contR) dp = pwLimit(function(x){ return (gR(x) - F) / (x - x0); }, x0, 1);
+      var cont = isFinite(F) && contL && contR;
+      var kind = 'none'; // 'deriv' | 'angle' | 'vert' | 'none'
+      if(cont && dm && dp && dm.ok && dp.ok){
+        if(isFinite(dm.v) && isFinite(dp.v)) kind = near(dm.v, dp.v) ? 'deriv' : 'angle';
+        else kind = 'vert';
+      }
+      return { J: J, L: L, R: R, x0: x0, F: F, Lm: Lm, Lp: Lp, contL: contL, contR: contR, cont: cont, dm: dm, dp: dp, kind: kind };
+    }
+
+    // ---- parameters: equations as functions of the parameter vector ----
+    function pwEquations(def, goal){
+      var P = def.params, eqs = [];
+      function envOf(vec){ var e = {}; P.forEach(function(p, i){ e[p] = vec[i]; }); return e; }
+      def.juncs.forEach(function(J, j){
+        var L = def.pieces[j], R = def.pieces[j + 1], x0 = J.x0;
+        var lim = function(c, side){ return function(vec){ var r = pwLimit(function(x){ return pwEval(c.ast, x, envOf(vec)); }, x0, side); return r.ok ? r.v : NaN; }; };
+        var dlim = function(c, side){ return function(vec){ if(!c.dAst) return NaN; var r = pwLimit(function(x){ return pwEval(c.dAst, x, envOf(vec)); }, x0, side); return r.ok ? r.v : NaN; }; };
+        var Fv = function(vec){ return J.at === 'V' ? pwEval(J.vc.ast, 0, envOf(vec)) : NaN; };
+        var lm = lim(L, -1), lp = lim(R, 1);
+        if(J.at === 'L') eqs.push({ j: j, kind: 'cont', lhs: lp, rhs: lm, lhsLbl: 'lim+', rhsLbl: 'F' });
+        else if(J.at === 'R') eqs.push({ j: j, kind: 'cont', lhs: lm, rhs: lp, lhsLbl: 'lim-', rhsLbl: 'F' });
+        else { eqs.push({ j: j, kind: 'cont', lhs: lm, rhs: Fv, lhsLbl: 'lim-', rhsLbl: 'F' }); eqs.push({ j: j, kind: 'cont', lhs: lp, rhs: Fv, lhsLbl: 'lim+', rhsLbl: 'F' }); }
+        if(goal === 'CD') eqs.push({ j: j, kind: 'deriv', lhs: dlim(L, -1), rhs: dlim(R, 1), lhsLbl: "f'g", rhsLbl: "f'd" });
+      });
+      return eqs;
+    }
+    function pwAffine(fn, n){
+      var z = []; for(var i = 0; i < n; i++) z.push(0);
+      var c0 = fn(z); if(!isFinite(c0)) return null;
+      var cs = [];
+      for(var k = 0; k < n; k++){ var e = z.slice(); e[k] = 1; var v = fn(e); if(!isFinite(v)) return null; cs.push(v - c0); }
+      var t = z.map(function(_, i){ return 0.37 + 0.91 * i; }), pred = c0;
+      cs.forEach(function(c, i){ pred += c * t[i]; });
+      var got = fn(t);
+      if(!isFinite(got) || Math.abs(got - pred) > 1e-6 * (1 + Math.abs(got))) return null;
+      return { c0: c0, c: cs };
+    }
+    function pwAffTex(aff, P){
+      var out = '', first = true;
+      aff.c.forEach(function(c, i){
+        if(Math.abs(c) < 1e-9) return;
+        var sn = pwSnap(Math.abs(c)), co = (sn.plain === '1') ? '' : sn.tex.split(BS + 'approx ').join('');
+        out += (first ? (c < 0 ? '-' : '') : (c < 0 ? ' - ' : ' + ')) + co + P[i]; first = false;
+      });
+      if(Math.abs(aff.c0) > 1e-9 || first){
+        var s0 = pwSnap(Math.abs(aff.c0)).tex.split(BS + 'approx ').join('');
+        out += first ? ((aff.c0 < 0 ? '-' : '') + s0) : ((aff.c0 < 0 ? ' - ' : ' + ') + s0);
+      }
+      return out;
+    }
+    // Solve the parameter system. Returns { ok, env, rows:[{tex}], sys, msg }.
+    function pwSolveParams(def, goal){
+      var P = def.params, n = P.length, eqs = pwEquations(def, goal);
+      var rows = [], lin = [], allAff = true;
+      eqs.forEach(function(e){
+        var A = pwAffine(e.lhs, n), B = pwAffine(e.rhs, n);
+        if(!A || !B){ allAff = false; return; }
+        var D = { c0: A.c0 - B.c0, c: A.c.map(function(c, i){ return c - B.c[i]; }) };
+        e.A = A; e.B = B; e.D = D; lin.push(e);
+      });
+      if(!allAff) return { ok: false, msg: 'Les conditions ne sont pas affines en ' + P.join(', ') + ' : résolution non prise en charge ici.' };
+      // keep informative equations
+      var useful = lin.filter(function(e){ return e.D.c.some(function(c){ return Math.abs(c) > 1e-9; }); });
+      var trivialBad = lin.filter(function(e){ return !e.D.c.some(function(c){ return Math.abs(c) > 1e-9; }) && Math.abs(e.D.c0) > 1e-7; });
+      if(trivialBad.length) return { ok: false, eqs: lin, msg: 'Une condition ne dépend d’aucun paramètre et n’est pas vérifiée : aucune valeur ne convient.' };
+      var sol = null;
+      if(n === 1){
+        if(!useful.length) return { ok: false, eqs: lin, msg: 'Aucune condition ne permet de déterminer ' + P[0] + '.' };
+        var e0 = useful[0]; sol = [-e0.D.c0 / e0.D.c[0]];
+      } else if(n === 2){
+        for(var i = 0; i < useful.length && !sol; i++) for(var k = i + 1; k < useful.length && !sol; k++){
+          var a1 = useful[i].D.c[0], b1 = useful[i].D.c[1], c1 = -useful[i].D.c0;
+          var a2 = useful[k].D.c[0], b2 = useful[k].D.c[1], c2 = -useful[k].D.c0;
+          var det = a1 * b2 - a2 * b1;
+          if(Math.abs(det) > 1e-9) sol = [(c1 * b2 - c2 * b1) / det, (a1 * c2 - a2 * c1) / det];
+        }
+        if(!sol) return { ok: false, eqs: lin, msg: 'Le système n’a pas une solution unique (il manque une condition indépendante).' };
+      } else return { ok: false, eqs: lin, msg: 'Au plus deux paramètres sont pris en charge.' };
+      sol = sol.map(function(v){ var sn = pwSnap(v); return (sn.exact && sn.num !== undefined) ? sn.num : v; });
+      var ok = lin.every(function(e){ var r = e.D.c0; e.D.c.forEach(function(c, i){ r += c * sol[i]; }); return Math.abs(r) < 1e-6 * (1 + Math.abs(e.D.c0)); });
+      if(!ok) return { ok: false, eqs: lin, msg: 'Le système est incompatible : aucune valeur de ' + P.join(', ') + ' ne vérifie toutes les conditions.' };
+      var env = {}; P.forEach(function(p, i){ env[p] = sol[i]; });
+      return { ok: true, env: env, eqs: lin, sol: sol };
+    }
+
+    function pwFmtLim(r){ if(!r || !r.ok) return null; return pwTexNum(r.v); }
+    function pwTangentTex(d, x0, F){ // y = d(x − x0) + F, expanded
+      var b = F - d * x0, out = 'y = ';
+      var ds = pwSnap(d), bs = pwSnap(b);
+      var dt = ds.tex.split(BS + 'approx ').join('');
+      if(Math.abs(d) < 1e-12) return out + bs.tex.split(BS + 'approx ').join('');
+      out += (ds.plain === '1' ? '' : ds.plain === '-1' ? '-' : dt) + 'x';
+      if(Math.abs(b) > 1e-12) out += (b < 0 ? ' - ' : ' + ') + pwSnap(Math.abs(b)).tex.split(BS + 'approx ').join('');
+      return out;
+    }
+
+    async function runPiecewise(op){
+      if(!ggb){ return; }
+      var def = pwRead();
+      if(def.err){ stateEl.textContent = def.err; return; }
+      answerEl.innerHTML = ''; stepsEl.innerHTML = '';
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Calcul…';
+      setPwOpsEnabled(false);
+      var kq = [], kid = 0;
+      function km(l){ var id = 'pwk' + (kid++); kq.push({ id: id, latex: l }); return '<span class="study-math" id="' + id + '"></span>'; }
+      function line(label, l){ var s = '<div class="study-line">'; if(label) s += '<span class="study-lbl">' + label + '</span> '; if(l) s += km(l); return s + '</div>'; }
+      function sec(t, inner){ return '<div class="study-sec"><div class="study-t">' + t + '</div><div class="study-body">' + inner + '</div></div>'; }
+      var goal = pwGoalEl.value, body = '', summary = [], env = {};
+
+      // 1) parameters
+      if(def.params.length){
+        var sp = pwSolveParams(def, goal), P = def.params, ptxt = '';
+        (sp.eqs || []).forEach(function(e){
+          var J = def.juncs[e.j], xt = pwTexNum(J.x0);
+          var lhsName = e.lhsLbl === 'lim-' ? BS + 'lim_{x ' + BS + 'to ' + xt + '^{-}} f(x)' : e.lhsLbl === 'lim+' ? BS + 'lim_{x ' + BS + 'to ' + xt + '^{+}} f(x)' : "f'_g(" + xt + ')';
+          var rhsName = e.rhsLbl === 'F' ? 'f(' + xt + ')' : "f'_d(" + xt + ')';
+          var lbl = e.kind === 'cont' ? 'Continuité en ' + escapeHtml(J.xs) + ' :' : 'Dérivabilité en ' + escapeHtml(J.xs) + ' :';
+          ptxt += line(lbl, lhsName + ' = ' + pwAffTex(e.A, P) + BS + ';,' + BS + 'quad ' + rhsName + ' = ' + pwAffTex(e.B, P));
+        });
+        var sysRows = [];
+        (sp.eqs || []).filter(function(e){ return e.D.c.some(function(c){ return Math.abs(c) > 1e-9; }); }).forEach(function(e){
+          var c = e.D.c.slice(), c0 = e.D.c0, lead = c.filter(function(v){ return Math.abs(v) > 1e-9; })[0];
+          if(lead < 0){ c = c.map(function(v){ return -v; }); c0 = -c0; }
+          var row = pwAffTex({ c0: 0, c: c }, P) + ' = ' + pwTexNum(-c0);
+          if(sysRows.indexOf(row) < 0) sysRows.push(row);
+        });
+        if(sysRows.length) ptxt += line('Système :', BS + 'left' + BS + '{' + BS + 'begin{array}{l} ' + sysRows.join(' ' + BS + BS + ' ') + ' ' + BS + 'end{array}' + BS + 'right.');
+        if(goal === 'CD') ptxt += '<div class="study-work">Pour la dérivabilité, on utilise les limites des dérivées sur chaque intervalle (f étant continue en ce point).</div>';
+        if(!sp.ok){
+          ptxt += '<div class="study-line study-ko">' + escapeHtml(sp.msg) + '</div>';
+          answerEl.innerHTML = '<div class="ml-study" style="padding:.9rem 1.1rem"><div class="study-head"><i class="bi bi-distribute-horizontal"></i> Fonction définie par intervalles</div><div class="study-body">' + line('', pwDefTex(def, null)) + '</div>' + sec('Paramètres', ptxt) + '</div>';
+          kq.forEach(function(it){ var el = document.getElementById(it.id); if(el){ try { renderKatex(el, it.latex); } catch(e){} } });
+          stateEl.textContent = ''; setPwOpsEnabled(true); return;
+        }
+        env = sp.env;
+        ptxt += line('Solution :', P.map(function(p){ return p + ' = ' + pwTexNum(env[p]); }).join(',' + BS + 'quad '));
+        body += sec('Paramètres — f ' + (goal === 'CD' ? 'continue et dérivable' : 'continue'), ptxt);
+        summary.push('params: ' + P.map(function(p){ return p + '=' + pwSnap(env[p]).plain; }).join(', ') + ' (systeme: ' + sysRows.join(' ; ').split(BS).join('') + ')');
+        if(op === 'params'){
+          body = sec('Fonction', line('', pwDefTex(def, null))) + body + sec('Avec ces valeurs', line('', pwDefTex(def, env)));
+        }
+      }
+
+      // 2) junction analysis (concrete)
+      var results = def.juncs.map(function(_, j){ return pwJunction(def, j, env); });
+      if(op !== 'params'){
+        var head = line('', pwDefTex(def, def.params.length ? env : null));
+        var inner = '';
+        results.forEach(function(r, j){
+          var xt = pwTexNum(r.x0), xs = escapeHtml(r.J.xs);
+          var t = '<div class="study-sub">En x' + (j === 0 ? '₁' : '₂') + ' = ' + xs + '</div>';
+          var Ft = isFinite(r.F) ? pwTexNum(r.F) : null;
+          var src = r.J.at === 'L' ? '(intervalle de gauche)' : r.J.at === 'R' ? '(intervalle de droite)' : '(valeur donnée)';
+          t += line('Image :', Ft !== null ? 'f(' + xt + ') = ' + Ft : 'f(' + xt + ')' + BS + 'text{ n’est pas définie}');
+          t += '<div class="study-work">' + src + '</div>';
+          var lmT = pwFmtLim(r.Lm), lpT = pwFmtLim(r.Lp);
+          if(op === 'study' || op === 'cont' || op === 'deriv'){
+            t += line('Limite à gauche :', BS + 'lim_{x ' + BS + 'to ' + xt + '^{-}} f(x) = ' + BS + 'lim_{x ' + BS + 'to ' + xt + '^{-}} ' + BS + 'left(' + pwExprTex(r.L, env) + BS + 'right) = ' + (lmT || '?'));
+            t += line('Limite à droite :', BS + 'lim_{x ' + BS + 'to ' + xt + '^{+}} f(x) = ' + BS + 'lim_{x ' + BS + 'to ' + xt + '^{+}} ' + BS + 'left(' + pwExprTex(r.R, env) + BS + 'right) = ' + (lpT || '?'));
+            if(r.cont) t += '<div class="study-line study-ok">✓ Les deux limites sont égales à f(' + xs + ') : f est continue en ' + xs + '.</div>';
+            else {
+              var why = !isFinite(r.F) ? 'f(' + xs + ') n’est pas définie'
+                : !r.Lm.ok ? 'la limite à gauche n’existe pas (f non définie à gauche ou limite non finie)'
+                : !r.Lp.ok ? 'la limite à droite n’existe pas (f non définie à droite ou limite non finie)'
+                : (!r.contL && !r.contR) ? 'aucune des deux limites n’est égale à f(' + xs + ')'
+                : !r.contL ? 'la limite à gauche est différente de f(' + xs + ')' : 'la limite à droite est différente de f(' + xs + ')';
+              t += '<div class="study-line study-ko">✗ ' + why + ' : f n’est pas continue en ' + xs + '.</div>';
+            }
+          }
+          if(op === 'study' || op === 'deriv'){
+            var den = Math.abs(r.x0) < 1e-12 ? 'x' : r.x0 < 0 ? 'x + ' + pwTexNum(-r.x0) : 'x - ' + xt;
+            var tq = BS + 'frac{f(x) - f(' + xt + ')}{' + den + '}';
+            if(!r.cont){
+              t += '<div class="study-line study-ko">Dérivabilité : f n’étant pas continue en ' + xs + ', elle n’y est pas dérivable.</div>';
+            } else {
+              var dmT = pwFmtLim(r.dm), dpT = pwFmtLim(r.dp);
+              t += line('Nombre dérivé à gauche :', BS + 'lim_{x ' + BS + 'to ' + xt + '^{-}} ' + tq + ' = ' + (dmT || '?'));
+              t += line('Nombre dérivé à droite :', BS + 'lim_{x ' + BS + 'to ' + xt + '^{+}} ' + tq + ' = ' + (dpT || '?'));
+              if(r.kind === 'deriv'){
+                t += '<div class="study-line study-ok">✓ Les nombres dérivés à gauche et à droite sont égaux : f est dérivable en ' + xs + '.</div>';
+                t += line('', "f'(" + xt + ') = ' + dmT + BS + 'quad ' + BS + 'text{Tangente : } ' + pwTangentTex(r.dm.v, r.x0, r.F));
+              } else if(r.kind === 'angle'){
+                t += '<div class="study-line study-ko">✗ Nombres dérivés différents : f n’est pas dérivable en ' + xs + ' — point anguleux.</div>';
+                t += line('Demi-tangentes :', pwTangentTex(r.dm.v, r.x0, r.F) + BS + 'text{ (à gauche)}' + BS + ';,' + BS + 'quad ' + pwTangentTex(r.dp.v, r.x0, r.F) + BS + 'text{ (à droite)}');
+              } else if(r.kind === 'vert'){
+                t += '<div class="study-line study-ko">✗ Un nombre dérivé est infini : f n’est pas dérivable en ' + xs + ' — demi-tangente verticale (x = ' + xs + ').</div>';
+              } else {
+                t += '<div class="study-line study-ko">Un des nombres dérivés n’existe pas : f n’est pas dérivable en ' + xs + '.</div>';
+              }
+            }
+          }
+          inner += t;
+          // summary for the AI (compact, anchored)
+          var sm = 'x0=' + r.J.xs + ': f(x0)=' + (isFinite(r.F) ? pwSnap(r.F).plain : 'non definie') + ', lim-=' + (r.Lm.ok ? pwSnap(r.Lm.v).plain : '?') + ', lim+=' + (r.Lp.ok ? pwSnap(r.Lp.v).plain : '?') + ', ' + (r.cont ? 'continue' : 'non continue');
+          if(op !== 'cont'){
+            if(r.cont) sm += ", f'g=" + (r.dm && r.dm.ok ? pwSnap(r.dm.v).plain : '?') + ", f'd=" + (r.dp && r.dp.ok ? pwSnap(r.dp.v).plain : '?') + ', ' + (r.kind === 'deriv' ? 'derivable, tangente ' + pwTangentTex(r.dm.v, r.x0, r.F).split(BS).join('') : r.kind === 'angle' ? 'point anguleux' : r.kind === 'vert' ? 'demi-tangente verticale' : 'non derivable');
+            else sm += ', donc non derivable';
+          }
+          summary.push(sm);
+        });
+        var ttl = op === 'cont' ? 'Continuité' : op === 'deriv' ? 'Dérivabilité' : 'Continuité & dérivabilité';
+        body = sec('Fonction', head) + body + sec(ttl + ' aux points de raccordement', inner);
+      }
+
+      answerEl.innerHTML = '<div class="ml-study" style="padding:.9rem 1.1rem"><div class="study-head"><i class="bi bi-distribute-horizontal"></i> Fonction définie par intervalles</div>' + body + '</div>';
+      kq.forEach(function(it){ var el = document.getElementById(it.id); if(el){ try { renderKatex(el, it.latex); } catch(e){} } });
+
+      // 3) graph
+      try { pwPlot(def, env, results); } catch(e){}
+
+      // 4) anchored explanation
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
+      var defStr = def.pieces.map(function(c, i){ return pwStr(c.toks, '*') + ' ' + pwCondTxt(i).split('x₁').join(def.juncs[0].xs).split('x₂').join(def.juncs[1] ? def.juncs[1].xs : ''); }).join(' ; ');
+      def.juncs.forEach(function(J){ if(J.at === 'V') defStr += ' ; f(' + J.xs + ')=' + pwStr(J.vc.toks, '*'); });
+      if(def.params.length) defStr += ' [parametres ' + def.params.join(',') + ' : f ' + (goal === 'CD' ? 'continue et derivable' : 'continue') + ']';
+      var opName = { study: 'pw_study', cont: 'pw_cont', deriv: 'pw_deriv', params: 'pw_params' }[op];
+      try {
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: defStr.slice(0, 200), operation: opName, casResult: summary.join(' | ').slice(0, 495) }) });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data, true); }
+        else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){ stateEl.textContent = 'Connexion impossible — réessayez.'; }
+      finally { setPwOpsEnabled(true); }
+    }
+    pwOpsEl.addEventListener('click', function(ev){ var btn = ev.target.closest('.ml-op'); if(!btn || btn.disabled) return; runPiecewise(btn.getAttribute('data-pwop')); });
+    try { updatePwPreview(); } catch(e){}
+    setPwOpsEnabled(false); // enabled once GeoGebra is ready (appletOnLoad)
+
+    function pwPlot(def, env, results){
+      clearPwPlot(); try { ggb.deleteObject('f'); } catch(e){}
+      function add(nm, cmd, lhs){ try { ggb.evalCommand((lhs || nm) + '=' + cmd); pwObjs.push(nm); return true; } catch(e){ return false; } }
+      var X = def.juncs.map(function(J){ return J.x0; });
+      def.pieces.forEach(function(c, i){
+        var e = pwStr(c.toks, '*', env), cond;
+        if(i === 0) cond = 'x < ' + X[0];
+        else if(i === def.pieces.length - 1) cond = 'x > ' + X[X.length - 1];
+        else cond = 'x > ' + X[i - 1] + ' && x < ' + X[i];
+        var nm = 'pwP' + (i + 1);
+        if(add(nm, 'If(' + cond + ', ' + e + ')', nm + '(x)')){
+          try { ggb.setColor(nm, 94, 23, 235); ggb.setLineThickness(nm, 5); ggb.setLabelVisible(nm, false); } catch(e2){}
+        }
+      });
+      results.forEach(function(r, j){
+        function pt(nm, y, filled){
+          if(!isFinite(y)) return;
+          if(add(nm, '(' + r.x0 + ',' + y + ')')){
+            try { ggb.setColor(nm, 50, 44, 77); ggb.setPointSize(nm, 5); ggb.setPointStyle(nm, filled ? 0 : 2); ggb.setLabelVisible(nm, false); } catch(e){}
+          }
+        }
+        var same = r.cont;
+        // GeoGebra: a lowercase name + coordinates makes a VECTOR — points need an uppercase name.
+        if(same){ pt('PwF' + j, r.F, true); }
+        else {
+          if(r.Lm.ok) pt('PwL' + j, r.Lm.v, r.J.at === 'L');
+          if(r.Lp.ok) pt('PwR' + j, r.Lp.v, r.J.at === 'R');
+          if(r.J.at === 'V') pt('PwV' + j, r.F, true);
+        }
+        // half-tangents
+        function seg(nm, x1, y1, x2, y2){
+          if(![x1, y1, x2, y2].every(isFinite)) return;
+          if(add(nm, 'Segment((' + x1 + ',' + y1 + '),(' + x2 + ',' + y2 + '))')){
+            try { ggb.setColor(nm, 255, 194, 58); ggb.setLineThickness(nm, 6); ggb.setLabelVisible(nm, false); } catch(e){}
+          }
+        }
+        if(r.cont && r.dm && r.dp && r.dm.ok && r.dp.ok){
+          var len = 0.6;
+          if(isFinite(r.dm.v)) seg('pwTg' + j, r.x0 - len, r.F - len * r.dm.v, r.x0, r.F); else seg('pwTg' + j, r.x0, r.F, r.x0, r.F + (r.dm.v > 0 ? -1.5 : 1.5));
+          if(isFinite(r.dp.v)) seg('pwTd' + j, r.x0, r.F, r.x0 + len, r.F + len * r.dp.v); else seg('pwTd' + j, r.x0, r.F, r.x0, r.F + (r.dp.v > 0 ? 1.5 : -1.5));
+        }
+      });
+      // frame
+      var xmin = Math.min.apply(null, X) - 3, xmax = Math.max.apply(null, X) + 3, ys = [];
+      for(var k = 0; k <= 200; k++){
+        var x = xmin + (xmax - xmin) * k / 200, idx = 0;
+        while(idx < X.length && x > X[idx]) idx++;
+        var y = pwEval(def.pieces[Math.min(idx, def.pieces.length - 1)].ast, x, env);
+        if(isFinite(y) && Math.abs(y) < 1e6) ys.push(y);
+      }
+      results.forEach(function(r){ if(isFinite(r.F)) ys.push(r.F); });
+      var ymin = ys.length ? Math.min.apply(null, ys) : -5, ymax = ys.length ? Math.max.apply(null, ys) : 5;
+      ymin = Math.max(ymin, -15); ymax = Math.min(ymax, 15);
+      var pad = Math.max(1, (ymax - ymin) * 0.15);
+      try { ggb.setCoordSystem(xmin, xmax, ymin - pad, ymax + pad); } catch(e){}
+    }
+
     function switchMode(m){
       if(m === currentMode) return;
       currentMode = m;
@@ -4260,6 +4919,7 @@
       modeStats.hidden    = (m !== 'stats');
       modeDiffeq.hidden   = (m !== 'diffeq');
       modeArith.hidden    = (m !== 'arith');
+      modePw.hidden       = (m !== 'piecewise');
       modeTrig.hidden     = (m !== 'trig');
       answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = '';
       var isTrig = (m === 'trig');
@@ -4270,8 +4930,13 @@
       if(m === 'arith'){ updateArithPreview(); return; }
       if(ggb){
         try { ggb.setPerspective((m === 'function' || m === 'integral' || m === 'suite' || m === 'diffeq') ? 'AG' : 'G'); } catch(e){}
-        clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot(); clearSuitePlot(); clearProbaPlot(); clearStatsPlot();
-        if(m === 'proba'){
+        clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot(); clearSuitePlot(); clearProbaPlot(); clearStatsPlot(); clearPwPlot();
+        if(m === 'piecewise'){
+          graphTitle.textContent = 'Courbe par intervalles';
+          graphHint.textContent = 'La fonction est tracée sur chaque intervalle ; point plein = valeur prise par f, point creux = valeur exclue. En jaune : tangente ou demi-tangentes au point de raccordement.';
+          try { ggb.deleteObject('f'); } catch(e){}
+          updatePwPreview();
+        } else if(m === 'proba'){
           graphTitle.textContent = 'Distribution de probabilité';
           graphHint.textContent = 'Loi binomiale : le diagramme en bâtons de la distribution s’affiche (la barre du k demandé est en orange).';
           try { ggb.deleteObject('f'); } catch(e){}
@@ -4351,7 +5016,7 @@
       // Graphics-only view: the algebra pane would otherwise halve the width on
       // phones and hide the curve. CAS (evalCommandCAS) works headless regardless.
       perspective: 'G',
-      appletOnLoad: function(api){ ggb = api; try { ggb.setErrorDialogsActive(false); } catch(e){} setOpsEnabled(true); setCOpsEnabled(true); setGOpsEnabled(true); setLOpsEnabled(true); setIOpsEnabled(true); setSuiteOpsEnabled(true); setProbaOpsEnabled(true); setStatsOpsEnabled(true); setDeqOpsEnabled(true); if(eqSolveBtn) eqSolveBtn.disabled = false; setEqStepsEnabled(true); fitGraph(); plot((fxInput.value||'').trim()); setTimeout(fitGraph, 400); }
+      appletOnLoad: function(api){ ggb = api; try { ggb.setErrorDialogsActive(false); } catch(e){} setOpsEnabled(true); setCOpsEnabled(true); setGOpsEnabled(true); setLOpsEnabled(true); setIOpsEnabled(true); setSuiteOpsEnabled(true); setProbaOpsEnabled(true); setStatsOpsEnabled(true); setDeqOpsEnabled(true); setPwOpsEnabled(true); if(eqSolveBtn) eqSolveBtn.disabled = false; setEqStepsEnabled(true); fitGraph(); plot((fxInput.value||'').trim()); setTimeout(fitGraph, 400); }
     }, true);
     applet.inject('ggb');
     updatePreview();

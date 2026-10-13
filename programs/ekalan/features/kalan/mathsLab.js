@@ -37,6 +37,10 @@ const OPERATIONS = {
   stats_series: "les paramètres statistiques d'une série",
   stats_regression: "l'ajustement affine (régression linéaire)",
   diff_eq: "la résolution de l'équation différentielle",
+  pw_study: "l'étude de la continuité et de la dérivabilité de la fonction définie par intervalles",
+  pw_cont: "l'étude de la continuité de la fonction définie par intervalles",
+  pw_deriv: "l'étude de la dérivabilité de la fonction définie par intervalles",
+  pw_params: "la détermination des paramètres de la fonction définie par intervalles",
   arithmetique: "le calcul d'arithmétique",
   solve: "la résolution de l'équation",
   factor: "la factorisation de l'expression",
@@ -383,6 +387,26 @@ function buildPrompt({ domain, input, operation, casResult, params }) {
   }
 
   // Differential equation.
+  // Piecewise-defined functions: continuity / differentiability at the junction points, parameters.
+  if (operation === "pw_study" || operation === "pw_cont" || operation === "pw_deriv" || operation === "pw_params") {
+    const focus = {
+      pw_study: "la continuité ET la dérivabilité en chaque point de raccordement",
+      pw_cont: "la continuité en chaque point de raccordement",
+      pw_deriv: "la dérivabilité en chaque point de raccordement (en rappelant que dérivable implique continue)",
+      pw_params: "la détermination des paramètres",
+    }[operation];
+    const userMsg =
+      `Fonction définie par intervalles : ${input}\n` +
+      `Objectif : étudier ${focus}.\n` +
+      `Résultats corrects déjà calculés (à expliquer, ne pas modifier) :\n${casResult}\n\n` +
+      `Explique, niveau Terminale, une idée par étape, en traitant chaque point de raccordement x₀ séparément :\n` +
+      `- Continuité en x₀ : calcule f(x₀) avec la bonne expression (celle de l'intervalle qui contient x₀, ou la valeur donnée), puis la limite à gauche avec l'expression de l'intervalle de gauche et la limite à droite avec celle de l'intervalle de droite. Emploie le mot « intervalle », jamais « morceau ». f est continue en x₀ si et seulement si ces deux limites existent et sont égales à f(x₀). Pour une forme indéterminée 0/0, montre la factorisation ou la simplification.\n` +
+      `- Dérivabilité en x₀ : si f n'est pas continue en x₀, elle n'y est pas dérivable. Sinon, calcule la limite à gauche et à droite du taux d'accroissement (f(x) − f(x₀))/(x − x₀) : ce sont les nombres dérivés à gauche f'g(x₀) et à droite f'd(x₀). Égaux et finis : f est dérivable, donne f'(x₀) et l'équation de la tangente y = f'(x₀)(x − x₀) + f(x₀). Différents : point anguleux, donne les deux demi-tangentes. Infini : demi-tangente verticale.\n` +
+      `- Paramètres (s'il y en a) : traduis chaque condition (continuité : limite à gauche = limite à droite = f(x₀) ; dérivabilité : nombre dérivé à gauche = nombre dérivé à droite) en une équation, écris le SYSTÈME d'équations (dans le champ latex, utilise \\left\\{ \\begin{array}{l} … \\end{array} \\right.) et résous-le.\n` +
+      `Sois concis : 6 à 10 étapes au total, 2 à 3 phrases d'explication par étape, un seul calcul clé dans le champ latex.\n` +
+      `Aboutis EXACTEMENT aux valeurs fournies ; n'invente aucune autre valeur.`;
+    return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
+  }
   if (operation === "diff_eq") {
     const userMsg =
       `Équation différentielle : ${input}\n` +
@@ -520,7 +544,7 @@ async function explainSteps({ domain = "function", input, operation, casResult, 
       model: MATHS_LAB_MODEL,
       // Two-method answers (e.g. quotient: division posée + identification) exceed 2000 tokens;
       // a truncated reply is invalid JSON → "Explication indisponible".
-      max_tokens: 4096,
+      max_tokens: String(operation || "").indexOf("pw_") === 0 ? 8192 : 4096, // piecewise studies are long
       system: [
         { type: "text", text: system, cache_control: { type: "ephemeral" } },
       ],
