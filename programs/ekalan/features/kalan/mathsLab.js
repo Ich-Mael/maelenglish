@@ -37,6 +37,14 @@ const OPERATIONS = {
   stats_series: "les paramètres statistiques d'une série",
   stats_regression: "l'ajustement affine (régression linéaire)",
   diff_eq: "la résolution de l'équation différentielle",
+  system: "la résolution du système d'équations linéaires",
+  eq2_solve: "la résolution de l'équation du second degré",
+  eq2_param: "la discussion, selon le paramètre m, du nombre de solutions de l'équation",
+  eq2_param_root: "les valeurs de m pour lesquelles x₀ est solution, et l'autre solution",
+  eq3_root: "la recherche d'une racine évidente du polynôme de degré 3",
+  eq3_quotient: "la factorisation P(x) = (x − x₀)·Q(x)",
+  eq3_solveq: "la résolution de Q(x) = 0",
+  eq3_solve: "la résolution complète de l'équation de degré 3",
   pw_study: "l'étude de la continuité et de la dérivabilité de la fonction définie par intervalles",
   pw_cont: "l'étude de la continuité de la fonction définie par intervalles",
   pw_deriv: "l'étude de la dérivabilité de la fonction définie par intervalles",
@@ -387,6 +395,45 @@ function buildPrompt({ domain, input, operation, casResult, params }) {
   }
 
   // Differential equation.
+  // Système d'équations linéaires (2, 3 ou 4 inconnues).
+  if (operation === "system") {
+    const userMsg =
+      `Système d'équations linéaires : ${input}\n` +
+      `Résultats corrects déjà calculés (à expliquer, ne pas modifier) :\n${casResult}\n\n` +
+      `Explique la résolution pas à pas. Pour 2 inconnues : présente la méthode par SUBSTITUTION (exprimer une inconnue à partir d'une équation, remplacer dans l'autre), puis la méthode par COMBINAISON linéaire (multiplier les équations pour éliminer une inconnue), et mentionne la méthode des déterminants (Cramer) si le déterminant est non nul. ` +
+      `Pour 3 ou 4 inconnues : méthode du PIVOT DE GAUSS — reprends les opérations sur les lignes fournies (Lᵢ ← a·Lᵢ − b·Lⱼ) pour obtenir un système triangulaire, puis remonte (substitution) en partant de la dernière équation. ` +
+      `Si le système est incompatible, montre la ligne « 0 = nombre non nul » ; s'il y a une infinité de solutions, exprime les inconnues en fonction des inconnues libres comme fourni. Termine par la vérification et l'ensemble S. ` +
+      `Sois concis : 6 à 10 étapes, 2 à 3 phrases par étape, un calcul clé dans le champ latex (système : \\left\\{ \\begin{array}{l} … \\end{array} \\right.). Aboutis EXACTEMENT aux valeurs fournies.`;
+    return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
+  }
+
+  // Équation : second degré, paramètre m, degré 3.
+  if (/^eq[23]_/.test(String(operation || ""))) {
+    const methods = {
+      eq2_solve:
+        "Méthode attendue : identifier a, b, c ; calculer le discriminant Δ = b² − 4ac en montrant la substitution ; selon le signe de Δ, donner les deux solutions x₁ = (−b − √Δ)/(2a) et x₂ = (−b + √Δ)/(2a), la solution double x₀ = −b/(2a), ou conclure S = ∅. Donne ensuite la forme factorisée a(x − x₁)(x − x₂) (si Δ ≥ 0) et le signe du trinôme (signe de a à l'extérieur des racines, signe contraire entre elles).",
+      eq2_param:
+        "Méthode attendue : 1) étudier d'abord le cas a(m) = 0, où l'équation devient du premier degré (la résoudre) ; 2) pour a(m) ≠ 0, calculer Δ(m) = b(m)² − 4a(m)c(m) en développant, puis étudier le signe de Δ(m) (racines de Δ(m), tableau de signes) ; 3) conclure : Δ(m) > 0 deux solutions distinctes — exprime-les EN FONCTION DE m, x = (−b(m) ± √Δ(m))/(2a(m)), en simplifiant comme fourni (facteur carré sorti de la racine, ou racine supprimée si Δ(m) est un carré parfait) ; Δ(m) = 0 une solution double x₀ = −b/(2a) ; Δ(m) < 0 aucune solution réelle. Donne les intervalles de m exactement comme fournis.",
+      eq2_param_root:
+        "Méthode attendue : x₀ est solution si et seulement si a(m)·x₀² + b(m)·x₀ + c(m) = 0 ; remplacer x par x₀, obtenir une équation en m et la résoudre. Pour chaque valeur de m trouvée (avec a(m) ≠ 0), déterminer l'autre solution grâce à la somme des racines x₀ + x₁ = −b/a (ou au produit x₀·x₁ = c/a).",
+      eq3_root:
+        "Méthode attendue : chercher une racine évidente en calculant P(1), P(−1), P(2), P(−2)… (puis, si besoin, des fractions p/q où p divise d et q divise a) jusqu'à trouver P(x₀) = 0 ; montrer le calcul de P(x₀) = 0 et conclure que P(x) se factorise par (x − x₀).",
+      eq3_quotient:
+        "Présente les DEUX méthodes, clairement séparées (titres préfixés « Méthode 1 — » et « Méthode 2 — ») : Méthode 1 — division euclidienne de P(x) par (x − x₀), une étape par terme du quotient, reste nul ; Méthode 2 — identification : poser Q(x) = αx² + βx + γ, développer (x − x₀)(αx² + βx + γ), écrire le système de 4 équations (dans le champ latex : \\left\\{ \\begin{array}{l} … \\end{array} \\right.) et le résoudre (α, puis β, puis γ, vérification).",
+      eq3_solveq:
+        "Méthode attendue : résoudre Q(x) = 0 (second degré) avec le discriminant Δ, puis conclure sur l'ensemble des solutions de P(x) = 0 : x₀ et les solutions de Q(x) = 0.",
+      eq3_solve:
+        "Méthode attendue, en trois parties : 1) racine évidente x₀ (calcul de P(x₀) = 0) ; 2) factorisation P(x) = (x − x₀)·Q(x) (division euclidienne ou identification des coefficients) ; 3) résolution de Q(x) = 0 avec Δ, puis ensemble des solutions S et forme factorisée de P(x).",
+    };
+    const userMsg =
+      `Équation : ${input}\n` +
+      `Résultats corrects déjà calculés (à expliquer, ne pas modifier) :\n${casResult}\n\n` +
+      `${methods[operation] || ""}\n` +
+      `Sois concis et pédagogique : 5 à 10 étapes, 2 à 3 phrases par étape, un calcul clé dans le champ latex. Les solutions sont réelles (on travaille dans ℝ). ` +
+      `Aboutis EXACTEMENT aux valeurs fournies (forme exacte : fractions, racines carrées) ; n'invente aucune autre valeur.`;
+    return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
+  }
+
   // Piecewise-defined functions: continuity / differentiability at the junction points, parameters.
   if (operation === "pw_study" || operation === "pw_cont" || operation === "pw_deriv" || operation === "pw_params") {
     const focus = {
@@ -544,7 +591,7 @@ async function explainSteps({ domain = "function", input, operation, casResult, 
       model: MATHS_LAB_MODEL,
       // Two-method answers (e.g. quotient: division posée + identification) exceed 2000 tokens;
       // a truncated reply is invalid JSON → "Explication indisponible".
-      max_tokens: String(operation || "").indexOf("pw_") === 0 ? 8192 : 4096, // piecewise studies are long
+      max_tokens: /^(pw_|eq3_|eq2_param|system)/.test(String(operation || "")) ? 8192 : 4096, // long multi-part explanations
       system: [
         { type: "text", text: system, cache_control: { type: "ephemeral" } },
       ],
