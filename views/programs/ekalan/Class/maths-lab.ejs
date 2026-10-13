@@ -395,6 +395,7 @@
             <button type="button" class="ml-mode" data-mode="piecewise"><i class="bi bi-distribute-horizontal"></i> Fonction par intervalles</button>
             <button type="button" class="ml-mode" data-mode="equation"><i class="bi bi-calculator"></i> Équation</button>
             <button type="button" class="ml-mode" data-mode="system"><i class="bi bi-grid-3x3-gap"></i> Système d’équations</button>
+            <button type="button" class="ml-mode" data-mode="bary"><i class="bi bi-bullseye"></i> Barycentre</button>
             <button type="button" class="ml-mode" data-mode="suite"><i class="bi bi-list-ol"></i> Suites</button>
             <button type="button" class="ml-mode" data-mode="stats"><i class="bi bi-bar-chart-line"></i> Statistiques</button>
             <button type="button" class="ml-mode" data-mode="trig"><i class="bi bi-record-circle"></i> Trigonométrie</button>
@@ -539,6 +540,28 @@
           </div>
         </div><%# /mode-system %>
 
+        <div id="mode-bary" hidden>
+          <h2><i class="bi bi-bullseye"></i> Barycentre de points pondérés</h2>
+          <div class="ml-side" id="bary-count">
+            <button type="button" class="ml-sidebtn is-active" data-baryn="2">2 points</button>
+            <button type="button" class="ml-sidebtn" data-baryn="3">3 points</button>
+            <button type="button" class="ml-sidebtn" data-baryn="4">4 points</button>
+          </div>
+          <div class="pw-ex" id="bary-ex"></div>
+          <div class="sys-grid" id="bary-grid"></div>
+          <div class="ml-hint" style="margin:-.2rem 0 .8rem">Coordonnées et poids : entiers ou fractions (ex. 1/2, -3). Les poids peuvent être négatifs.</div>
+          <div class="ml-preview is-empty" id="bary-preview">Aperçu…</div>
+          <div class="ml-input-row" style="margin-top:.2rem">
+            <label for="bary-k">k =</label>
+            <input id="bary-k" type="text" value="6" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:110px;" />
+            <span class="ml-hint" style="margin:0">pour la ligne de niveau ‖Σ aᵢ·MAᵢ‖ = k</span>
+          </div>
+          <div class="ml-ops" id="bary-ops">
+            <button class="ml-op ml-op--hero" data-baryop="bary"><i class="bi bi-bullseye"></i> Calculer le barycentre</button>
+            <button class="ml-op" data-baryop="locus"><i class="bi bi-circle"></i> Ensemble des points M : ‖Σ aᵢ·MAᵢ‖ = k</button>
+          </div>
+        </div><%# /mode-bary %>
+
         <div id="mode-complex" hidden>
           <details class="ml-block" open>
           <summary><h2><i class="bi bi-asterisk"></i> Opérations dans ℂ</h2><i class="bi bi-chevron-down ml-caret"></i></summary>
@@ -621,6 +644,41 @@
             <div class="ml-hint" id="eq-cubic-hint" style="margin-top:.55rem" hidden>Équation du 3<sup>e</sup> degré : utilisez la démarche guidée ci-dessus (racine évidente → Q(z) → résoudre Q(z)=0).</div>
             </div><%# /ml-block-body %>
           </details><%# /ml-block — Équation %>
+          <details class="ml-block" id="zf-block">
+            <summary><h3 class="ml-subtitle"><i class="bi bi-arrow-repeat"></i> Transformation Z = f(z) — ensembles de points</h3><i class="bi bi-chevron-down ml-caret"></i></summary>
+            <div class="ml-block-body">
+            <div class="ml-hint" style="margin-top:.1rem">On pose <strong>z = x + iy</strong> et <strong>Z = f(z) = X + iY</strong>. Saisissez f(z) avec <strong>z</strong>, <strong>i</strong>, et éventuellement <strong>conj(z)</strong> pour z̄.</div>
+            <div class="pw-ex" id="zf-ex">
+              <span class="pw-ex__lbl"><i class="bi bi-lightbulb"></i> Exemples :</span>
+              <button type="button" class="ml-key is-util" data-zfex="(z-1)/(z+1)">(z − 1)/(z + 1)</button>
+              <button type="button" class="ml-key is-util" data-zfex="z+1/z">z + 1/z</button>
+              <button type="button" class="ml-key is-util" data-zfex="(2z+i)/(iz-1)">(2z + i)/(iz − 1)</button>
+              <button type="button" class="ml-key is-util" data-zfex="z^2-2z">z² − 2z</button>
+              <button type="button" class="ml-key is-util" data-zfex="(z-2i)/(z+1)">(z − 2i)/(z + 1)</button>
+              <button type="button" class="ml-key is-util" data-zfex="z^2+conj(z)">z² + z̄</button>
+            </div>
+            <div class="ml-input-row">
+              <label for="zf-f">Z = f(z) =</label>
+              <input id="zf-f" type="text" value="(z-1)/(z+1)" placeholder="ex : (z-1)/(z+1)" autocomplete="off" />
+            </div>
+            <div class="ml-preview is-empty" id="zf-preview">Aperçu…</div>
+            <div class="ml-input-row" style="margin-top:.2rem">
+              <label for="zf-k">k =</label>
+              <input id="zf-k" type="text" value="1" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:90px;" />
+              <label for="zf-z0" style="margin-left:.6rem">Z₀ =</label>
+              <input id="zf-z0" type="text" value="i" autocomplete="off" style="flex:0 0 auto; min-width:0; max-width:130px;" />
+            </div>
+            <div class="ml-ops" id="zf-ops">
+              <button class="ml-op ml-op--hero" data-zfop="xy"><i class="bi bi-braces"></i> Forme algébrique X, Y</button>
+              <button class="ml-op" data-zfop="real"><i class="bi bi-arrow-left-right"></i> Z réel</button>
+              <button class="ml-op" data-zfop="imag"><i class="bi bi-arrow-down-up"></i> Z imaginaire pur</button>
+              <button class="ml-op" data-zfop="mod"><i class="bi bi-circle"></i> |Z| = k</button>
+              <button class="ml-op" data-zfop="inv"><i class="bi bi-pin-angle"></i> Points invariants</button>
+              <button class="ml-op" data-zfop="ante"><i class="bi bi-arrow-90deg-left"></i> Antécédent de Z₀</button>
+            </div>
+            <div class="ml-hint" style="margin-top:.55rem">Les ensembles de points M(x ; y) sont tracés dans le plan complexe ; les points où f n’est pas définie sont exclus.</div>
+            </div><%# /ml-block-body %>
+          </details><%# /ml-block — Z = f(z) %>
           <details class="ml-form">
             <summary><i class="bi bi-journal-text"></i> Formulaire — module, argument, Moivre, Euler</summary>
             <div class="ml-form-grid" id="form-grid-complex"></div>
@@ -5991,6 +6049,779 @@
     sysBuildGrid(SYS_EX[2][0][1]);
     setSysOpsEnabled(false); // enabled once GeoGebra is ready (appletOnLoad)
 
+    /* ============ BARYCENTRE (2, 3 ou 4 points pondérés) ============ */
+    // Exact fractions (fr/fAdd/… from the Équation mode). G = bar{(Aᵢ, aᵢ)} exists iff Σaᵢ ≠ 0;
+    // construction by associativity through partial barycentres; locus ‖Σ aᵢ·MAᵢ‖ = k.
+    var modeBary    = document.getElementById('mode-bary');
+    var baryCountEl = document.getElementById('bary-count');
+    var baryGridEl  = document.getElementById('bary-grid');
+    var baryExEl    = document.getElementById('bary-ex');
+    var baryPrevEl  = document.getElementById('bary-preview');
+    var baryOpsEl   = document.getElementById('bary-ops');
+    var baryKEl     = document.getElementById('bary-k');
+    var baryN = 2, baryObjs = [];
+    var BARY_NAMES = ['A', 'B', 'C', 'D'];
+    var BARY_EX = {
+      2: [ ['Poids 1 et 2', [[1, 2, 1], [4, 5, 2]]], ['Poids opposés (somme 0)', [[0, 0, 1], [2, 0, -1]]], ['Poids 3 et −1', [[1, 1, 3], [3, 2, -1]]] ],
+      3: [ ['Isobarycentre (centre de gravité)', [[0, 0, 1], [6, 0, 1], [0, 6, 1]]], ['Poids 2, −1, 1', [[1, 1, 2], [5, 3, -1], [2, 6, 1]]], ['Somme des poids nulle', [[0, 0, 1], [4, 0, 1], [2, 3, -2]]] ],
+      4: [ ['Centre d’un carré', [[0, 0, 1], [4, 0, 1], [4, 4, 1], [0, 4, 1]]], ['Poids 1, 2, 3, 4', [[0, 0, 1], [5, 0, 2], [5, 5, 3], [0, 5, 4]]] ]
+    };
+
+    function setBaryOpsEnabled(on){ baryOpsEl.querySelectorAll('.ml-op').forEach(function(b){ b.disabled = !on; }); }
+    function clearBaryPlot(){ baryObjs.forEach(function(nm){ try { ggb.deleteObject(nm); } catch(e){} }); baryObjs = []; }
+
+    function baryBuildGrid(values){
+      var html = '';
+      for(var i = 0; i < baryN; i++){
+        var v = (values && values[i]) || [0, 0, 1];
+        html += '<div class="sys-row"><span class="sys-lbl">' + BARY_NAMES[i] + '</span>'
+          + '<span class="sys-op">x =</span><input type="text" data-r="' + i + '" data-c="0" value="' + v[0] + '" autocomplete="off" aria-label="abscisse de ' + BARY_NAMES[i] + '" />'
+          + '<span class="sys-op">y =</span><input type="text" data-r="' + i + '" data-c="1" value="' + v[1] + '" autocomplete="off" aria-label="ordonnée de ' + BARY_NAMES[i] + '" />'
+          + '<span class="sys-op">poids</span><input type="text" data-r="' + i + '" data-c="2" value="' + v[2] + '" autocomplete="off" aria-label="poids de ' + BARY_NAMES[i] + '" /></div>';
+      }
+      baryGridEl.innerHTML = html;
+      updateBaryPreview();
+    }
+    baryGridEl.addEventListener('input', updateBaryPreview);
+    function baryRenderExamples(){
+      var html = '<span class="pw-ex__lbl"><i class="bi bi-lightbulb"></i> Exemples :</span>';
+      BARY_EX[baryN].forEach(function(ex, i){ html += '<button type="button" class="ml-key is-util" data-baryex="' + i + '">' + escapeHtml(ex[0]) + '</button>'; });
+      baryExEl.innerHTML = html;
+    }
+    baryExEl.addEventListener('click', function(ev){
+      var b = ev.target.closest('[data-baryex]'); if(!b) return;
+      var ex = BARY_EX[baryN][Number(b.getAttribute('data-baryex'))]; if(!ex) return;
+      answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = '';
+      baryBuildGrid(ex[1]);
+    });
+    function setBaryN(n){
+      baryN = n;
+      baryCountEl.querySelectorAll('.ml-sidebtn').forEach(function(b){ b.classList.toggle('is-active', Number(b.getAttribute('data-baryn')) === n); });
+      baryRenderExamples(); baryBuildGrid(BARY_EX[n][0][1]);
+      answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = '';
+    }
+    baryCountEl.addEventListener('click', function(ev){ var b = ev.target.closest('.ml-sidebtn'); if(b) setBaryN(Number(b.getAttribute('data-baryn'))); });
+
+    function baryRead(){
+      var P = [];
+      for(var i = 0; i < baryN; i++){
+        var row = [];
+        for(var j = 0; j < 3; j++){
+          var inp = baryGridEl.querySelector('input[data-r="' + i + '"][data-c="' + j + '"]');
+          var p = e1Parse(inp ? inp.value : '0');
+          if(!p || !pConst(p)) return { err: 'Valeur invalide pour le point ' + BARY_NAMES[i] + ' : entier ou fraction attendu.' };
+          row.push(p[0]);
+        }
+        P.push({ name: BARY_NAMES[i], x: row[0], y: row[1], w: row[2] });
+      }
+      return { P: P };
+    }
+    function baryBarTex(P){ return BS + 'mathrm{bar}' + BS + 'left' + BS + '{' + P.map(function(p){ return '(' + p.name + ' ; ' + fTex(p.w) + ')'; }).join(',' + BS + ' ') + BS + 'right' + BS + '}'; }
+    function baryPt(p){ return p.name + BS + 'left(' + fTex(p.x) + ' ; ' + fTex(p.y) + BS + 'right)'; }
+    function updateBaryPreview(){
+      var r = baryRead();
+      if(r.err){ baryPrevEl.className = 'ml-preview is-empty'; baryPrevEl.textContent = r.err; return; }
+      try { renderKatex(baryPrevEl, r.P.map(baryPt).join(',' + BS + 'quad ') + BS + 'qquad G = ' + baryBarTex(r.P)); baryPrevEl.className = 'ml-preview'; }
+      catch(e){ baryPrevEl.className = 'ml-preview is-empty'; baryPrevEl.textContent = 'Aperçu indisponible.'; }
+    }
+    function vec(a, b){ return BS + 'overrightarrow{' + a + b + '}'; }
+    // Σ aᵢ·(vector from X to Aᵢ) written with a leading-sign style: 2GA - GB + 3GC
+    function barySumTex(P, from){
+      var out = '', first = true;
+      P.forEach(function(p){
+        var w = p.w; if(fZero(w)) return;
+        var neg = w.n < 0, ab = fr(Math.abs(w.n), w.d), ct = (ab.n === 1 && ab.d === 1) ? '' : fTex(ab);
+        out += first ? ((neg ? '-' : '') + ct + vec(from, p.name)) : ((neg ? ' - ' : ' + ') + ct + vec(from, p.name)); first = false;
+      });
+      return out || BS + 'vec{0}';
+    }
+    // weighted mean of a coordinate with the substitution shown
+    function baryCoordTex(P, key, S, label){
+      var parts = P.map(function(p){ return fPar(p.w) + ' ' + BS + 'times ' + fPar(p[key]); }).join(' + ');
+      var num = P.reduce(function(acc, p){ return fAdd(acc, fMul(p.w, p[key])); }, fr(0));
+      return label + ' = ' + BS + 'dfrac{' + parts + '}{' + fTex(S) + '} = ' + BS + 'dfrac{' + fTex(num) + '}{' + fTex(S) + '} = ' + fTex(fDiv(num, S));
+    }
+    // An order of the points whose partial sums of weights (from 2 points on) are all ≠ 0.
+    function baryOrder(P){
+      var idx = P.map(function(_, i){ return i; }), best = null;
+      function perm(a, k){
+        if(best) return;
+        if(k === a.length){
+          var s = fr(0), ok = true;
+          for(var i = 0; i < a.length; i++){ s = fAdd(s, P[a[i]].w); if(i >= 1 && fZero(s)) ok = false; if(i === 0 && fZero(P[a[0]].w)) ok = false; }
+          if(ok) best = a.slice(); return;
+        }
+        for(var j = k; j < a.length; j++){ var t = a[k]; a[k] = a[j]; a[j] = t; perm(a, k + 1); t = a[k]; a[k] = a[j]; a[j] = t; }
+      }
+      perm(idx, 0);
+      return best;
+    }
+
+    async function runBary(op){
+      if(!ggb){ return; }
+      var rd = baryRead();
+      if(rd.err){ stateEl.textContent = rd.err; return; }
+      answerEl.innerHTML = ''; stepsEl.innerHTML = '';
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Calcul…';
+      setBaryOpsEnabled(false);
+      var computed = false;
+      try {
+        var P = rd.P, R = e1Report(), body = '', sm = [];
+        var S = P.reduce(function(acc, p){ return fAdd(acc, p.w); }, fr(0));
+        var Gx = null, Gy = null, partials = [], locus = null;
+        body += R.sec('Données', R.line('', P.map(baryPt).join(',' + BS + 'quad ')) + R.line('Poids :', P.map(function(p){ return p.name + ' : ' + fTex(p.w); }).join(',' + BS + 'quad ')));
+        var sumTex = P.map(function(p){ return fPar(p.w); }).join(' + ') + ' = ' + fTex(S);
+
+        if(!fZero(S)){
+          Gx = fDiv(P.reduce(function(a, p){ return fAdd(a, fMul(p.w, p.x)); }, fr(0)), S);
+          Gy = fDiv(P.reduce(function(a, p){ return fAdd(a, fMul(p.w, p.y)); }, fr(0)), S);
+          var t = R.line('Existence :', BS + 'textstyle' + BS + 'sum a_i = ' + sumTex + ' ' + BS + 'neq 0' + BS + ';' + BS + 'Rightarrow' + BS + '; G = ' + baryBarTex(P) + BS + 'text{ existe}');
+          t += R.line('Définition :', barySumTex(P, 'G') + ' = ' + BS + 'vec{0}');
+          t += R.line('Relation fondamentale :', BS + 'text{pour tout point } M,' + BS + '; ' + barySumTex(P, 'M') + ' = ' + (S.n === S.d ? '' : fPar(S)) + vec('M', 'G'));
+          body += R.sec('Le barycentre G', t);
+          var tc = R.line('', baryCoordTex(P, 'x', S, 'x_G')) + R.line('', baryCoordTex(P, 'y', S, 'y_G'));
+          tc += R.line('Résultat :', 'G' + BS + 'left(' + fTex(Gx) + ' ; ' + fTex(Gy) + BS + 'right)');
+          body += R.sec('Coordonnées de G', tc);
+          sm.push('somme des poids=' + fPlain(S) + ' ; G(' + fPlain(Gx) + ' ; ' + fPlain(Gy) + ')');
+
+          // construction
+          var tcons = '';
+          if(P.length === 2){
+            var A = P[0], B = P[1], k = fDiv(B.w, S);
+            var ABx = fSub(B.x, A.x), ABy = fSub(B.y, A.y);
+            var irreducible = isInt(B.w) && isInt(S) && S.n > 0 && igcd(B.w.n, S.n) === 1;
+            tcons += R.line('', vec('A', 'G') + ' = ' + BS + 'dfrac{b}{a + b}' + vec('A', 'B') + ' = ' + BS + 'dfrac{' + fTex(B.w) + '}{' + fTex(S) + '}' + vec('A', 'B') + (irreducible ? '' : ' = ' + fTex(k) + BS + ',' + vec('A', 'B')) + BS + 'quad ' + BS + 'text{avec } ' + vec('A', 'B') + BS + 'begin{pmatrix} ' + fTex(ABx) + ' ' + BS + BS + ' ' + fTex(ABy) + ' ' + BS + 'end{pmatrix}');
+            var kv = fVal(k);
+            tcons += '<div class="study-work">' + (kv > 0 && kv < 1 ? 'G est sur le segment [AB]' : 'G est sur la droite (AB), en dehors du segment [AB]') + (Math.abs(kv - 0.5) < 1e-12 ? ' : c’est le milieu de [AB] (poids égaux).' : '.') + '</div>';
+            sm.push('AG=' + fPlain(k) + ' AB');
+          } else {
+            var ord = baryOrder(P);
+            if(ord){
+              var cur = { name: P[ord[0]].name, x: P[ord[0]].x, y: P[ord[0]].y, w: P[ord[0]].w };
+              tcons += '<div class="study-work">Associativité : on remplace des points par leur barycentre partiel, affecté de la somme de leurs poids.</div>';
+              for(var s2 = 1; s2 < ord.length; s2++){
+                var nx = P[ord[s2]], ws = fAdd(cur.w, nx.w);
+                var hx = fDiv(fAdd(fMul(cur.w, cur.x), fMul(nx.w, nx.x)), ws), hy = fDiv(fAdd(fMul(cur.w, cur.y), fMul(nx.w, nx.y)), ws);
+                var last = (s2 === ord.length - 1), hname = last ? 'G' : 'H_' + s2, hplain = last ? 'G' : 'H' + s2;
+                var kk = fDiv(nx.w, ws);
+                tcons += R.line(last ? 'Enfin :' : 'Étape ' + s2 + ' :', hname + ' = ' + BS + 'mathrm{bar}' + BS + 'left' + BS + '{(' + cur.name + ' ; ' + fTex(cur.w) + '),' + BS + ' (' + nx.name + ' ; ' + fTex(nx.w) + ')' + BS + 'right' + BS + '}' + BS + ';' + BS + 'Rightarrow' + BS + '; ' + vec(cur.name, hname) + ' = ' + fTex(kk) + BS + ',' + vec(cur.name, nx.name) + ',' + BS + 'quad ' + hname + BS + 'left(' + fTex(hx) + ' ; ' + fTex(hy) + BS + 'right)');
+                if(!last) partials.push({ name: 'H' + s2, x: hx, y: hy, from: cur, to: nx });
+                else partials.push({ name: 'G', x: hx, y: hy, from: cur, to: nx, last: true });
+                cur = { name: hname, x: hx, y: hy, w: ws, plain: hplain };
+              }
+              sm.push('construction par associativite: ' + ord.map(function(i){ return P[i].name; }).join(' puis '));
+            } else tcons += '<div class="study-work">Aucun regroupement de points n’a une somme de poids non nulle : on utilise directement les coordonnées.</div>';
+          }
+          body += R.sec('Construction de G', tcons);
+        } else {
+          var ux = P.reduce(function(a, p){ return fAdd(a, fMul(p.w, p.x)); }, fr(0)), uy = P.reduce(function(a, p){ return fAdd(a, fMul(p.w, p.y)); }, fr(0));
+          var tz = R.line('Existence :', BS + 'textstyle' + BS + 'sum a_i = ' + sumTex + BS + ';' + BS + 'Rightarrow' + BS + '; ' + BS + 'text{pas de barycentre}');
+          tz += '<div class="study-work">Quand la somme des poids est nulle, le vecteur Σ aᵢ·MAᵢ ne dépend pas du point M : il est constant.</div>';
+          tz += R.line('', BS + 'vec{u} = ' + barySumTex(P, 'M') + ' = ' + barySumTex(P, 'O') + ' = ' + BS + 'begin{pmatrix} ' + fTex(ux) + ' ' + BS + BS + ' ' + fTex(uy) + ' ' + BS + 'end{pmatrix}');
+          body += R.sec('Somme des poids nulle', tz);
+          sm.push('somme des poids nulle: pas de barycentre ; vecteur constant u(' + fPlain(ux) + ' ; ' + fPlain(uy) + ')');
+          locus = { zero: true, ux: ux, uy: uy };
+        }
+
+        if(op === 'locus'){
+          var kp = e1Parse(baryKEl.value);
+          if(!kp || !pConst(kp)){ stateEl.textContent = 'Indiquez un nombre k.'; setBaryOpsEnabled(true); return; }
+          var K = kp[0], tl = '';
+          if(!fZero(S)){
+            tl += R.line('', barySumTex(P, 'M') + ' = ' + (S.n === S.d ? '' : fPar(S)) + vec('M', 'G') + BS + ';' + BS + 'Rightarrow' + BS + '; ' + BS + 'left' + BS + '|' + barySumTex(P, 'M') + BS + 'right' + BS + '| = ' + fTex(fr(Math.abs(S.n), S.d)) + BS + ',MG');
+            if(K.n < 0){ tl += R.line('', fTex(fr(Math.abs(S.n), S.d)) + BS + ',MG = ' + fTex(K) + ' < 0'); tl += '<div class="study-line study-ko">Une distance est positive : l’ensemble est vide.</div>'; sm.push('ligne de niveau k=' + fPlain(K) + ': ensemble vide'); }
+            else if(fZero(K)){ tl += '<div class="study-line study-ok">MG = 0 : l’ensemble est réduit au point G.</div>'; sm.push('ligne de niveau k=0: le point G'); }
+            else {
+              var rad = fDiv(K, fr(Math.abs(S.n), S.d));
+              tl += R.line('', fTex(fr(Math.abs(S.n), S.d)) + BS + ',MG = ' + fTex(K) + BS + ';' + BS + 'iff' + BS + '; MG = ' + fTex(rad));
+              tl += '<div class="study-line study-ok">✓ L’ensemble des points M est le cercle de centre G et de rayon ' + escapeHtml(fPlain(rad)) + '.</div>';
+              locus = { circle: true, r: rad };
+              sm.push('ligne de niveau k=' + fPlain(K) + ': cercle de centre G et de rayon ' + fPlain(rad));
+            }
+          } else {
+            var nu2 = fAdd(fMul(locus.ux, locus.ux), fMul(locus.uy, locus.uy));
+            tl += R.line('', BS + 'left' + BS + '|' + BS + 'vec{u}' + BS + 'right' + BS + '|^{2} = ' + fTex(nu2) + BS + 'quad ' + BS + 'text{(constant)}');
+            var same = (K.n >= 0) && fZero(fSub(fMul(K, K), nu2));
+            tl += '<div class="study-line ' + (same ? 'study-ok">✓ ‖u‖ = k : tout point M du plan convient.' : 'study-ko">‖u‖ ≠ k : aucun point M ne convient (ensemble vide).') + '</div>';
+            sm.push('ligne de niveau: ' + (same ? 'tout le plan' : 'ensemble vide'));
+          }
+          body += R.sec('Ensemble des points M tels que ‖Σ aᵢ·MAᵢ‖ = ' + escapeHtml(fPlain(K)), tl);
+        }
+
+        R.render(op === 'locus' ? 'Barycentre — ligne de niveau' : 'Barycentre de points pondérés', body);
+        computed = true;
+        baryPlot(P, Gx, Gy, partials, locus);
+        stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
+        var defStr = P.map(function(p){ return p.name + '(' + fPlain(p.x) + ';' + fPlain(p.y) + ') poids ' + fPlain(p.w); }).join(', ') + (op === 'locus' ? ' ; k=' + baryKEl.value.trim() : '');
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: defStr.slice(0, 200), operation: op === 'locus' ? 'bary_locus' : 'barycentre', casResult: sm.join(' | ').slice(0, 495) }) });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data, true); } else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){ stateEl.textContent = computed ? 'Connexion impossible — réessayez.' : 'Calcul impossible — vérifiez les valeurs.'; }
+      finally { setBaryOpsEnabled(true); }
+    }
+    baryOpsEl.addEventListener('click', function(ev){ var btn = ev.target.closest('.ml-op'); if(!btn || btn.disabled) return; runBary(btn.getAttribute('data-baryop')); });
+
+    function baryPlot(P, Gx, Gy, partials, locus){
+      clearBaryPlot(); try { ggb.deleteObject('f'); } catch(e){}
+      function add(nm, cmd){ try { ggb.evalCommand(nm + '=' + cmd); baryObjs.push(nm); return true; } catch(e){ return false; } }
+      var xs = [], ys = [];
+      P.forEach(function(p){
+        var nm = 'Bry' + p.name;
+        if(add(nm, '(' + fVal(p.x) + ',' + fVal(p.y) + ')')){
+          try { ggb.setColor(nm, 94, 23, 235); ggb.setPointSize(nm, 6); ggb.setCaption(nm, p.name + ' (' + fPlain(p.w) + ')'); ggb.setLabelStyle(nm, 3); ggb.setLabelVisible(nm, true); } catch(e){}
+        }
+        xs.push(fVal(p.x)); ys.push(fVal(p.y));
+      });
+      // polygon outline for 3–4 points
+      if(P.length >= 3){
+        if(add('bryPoly', 'Polygon(' + P.map(function(p){ return 'Bry' + p.name; }).join(',') + ')')){ try { ggb.setColor('bryPoly', 94, 23, 235); ggb.setFilling('bryPoly', 0.05); ggb.setLabelVisible('bryPoly', false); } catch(e){} }
+      } else if(add('bryAB', 'Line(BryA,BryB)')){ try { ggb.setColor('bryAB', 180, 170, 210); ggb.setLabelVisible('bryAB', false); } catch(e){} }
+      (partials || []).forEach(function(h, i){
+        var nm = h.last ? 'BryG' : 'BryH' + (i + 1);
+        if(!h.last && add(nm, '(' + fVal(h.x) + ',' + fVal(h.y) + ')')){
+          try { ggb.setColor(nm, 50, 44, 77); ggb.setPointSize(nm, 4); ggb.setCaption(nm, 'H' + (i + 1)); ggb.setLabelStyle(nm, 3); ggb.setLabelVisible(nm, true); } catch(e){}
+        }
+        var sn = 'brySeg' + (i + 1), fx = fVal(h.from.x), fy = fVal(h.from.y), tx = fVal(h.to.x), ty = fVal(h.to.y);
+        if(add(sn, 'Segment((' + fx + ',' + fy + '),(' + tx + ',' + ty + '))')){ try { ggb.setColor(sn, 50, 44, 77); ggb.setLineStyle(sn, 1); ggb.setLabelVisible(sn, false); } catch(e){} }
+      });
+      if(Gx !== null){
+        if(add('BryG', '(' + fVal(Gx) + ',' + fVal(Gy) + ')')){
+          try { ggb.setColor('BryG', 255, 194, 58); ggb.setPointSize('BryG', 8); ggb.setCaption('BryG', 'G'); ggb.setLabelStyle('BryG', 3); ggb.setLabelVisible('BryG', true); } catch(e){}
+        }
+        xs.push(fVal(Gx)); ys.push(fVal(Gy));
+        if(locus && locus.circle){
+          var r = fVal(locus.r);
+          if(add('bryCircle', 'Circle(BryG,' + r + ')')){ try { ggb.setColor('bryCircle', 255, 194, 58); ggb.setLineThickness('bryCircle', 6); ggb.setLabelVisible('bryCircle', false); } catch(e){} }
+          xs.push(fVal(Gx) - r, fVal(Gx) + r); ys.push(fVal(Gy) - r, fVal(Gy) + r);
+        }
+      }
+      var xmin = Math.min.apply(null, xs), xmax = Math.max.apply(null, xs), ymin = Math.min.apply(null, ys), ymax = Math.max.apply(null, ys);
+      var pad = Math.max(1.5, 0.2 * Math.max(xmax - xmin, ymax - ymin));
+      // Orthonormal frame (circles stay circles) that still contains every point:
+      // same units-per-pixel on both axes, from the applet's pixel size.
+      var host = document.getElementById('ggb'), W = (host && host.clientWidth) || 800, H = (host && host.clientHeight) || 480;
+      var xr = (xmax - xmin) + 2 * pad, yr = (ymax - ymin) + 2 * pad, upp = Math.max(xr / W, yr / H);
+      var cx = (xmin + xmax) / 2, cy = (ymin + ymax) / 2;
+      try { ggb.setCoordSystem(cx - upp * W / 2, cx + upp * W / 2, cy - upp * H / 2, cy + upp * H / 2); } catch(e){}
+    }
+
+    baryRenderExamples();
+    baryBuildGrid(BARY_EX[2][0][1]);
+    setBaryOpsEnabled(false); // enabled once GeoGebra is ready (appletOnLoad)
+
+    /* ============ NOMBRES COMPLEXES — TRANSFORMATION Z = f(z) ============ */
+    // z = x + iy, Z = X + iY. Exact (fractions fr/fAdd/… from the Équation mode).
+    // Two representations: (1) rational function in z — num/den complex polynomials (no z̄) —
+    // gives poles, |Z| = k, invariant points, antecedents; (2) bivariate polynomials in x, y
+    // giving X = P/D, Y = Q/D (also works with conj(z)). Sets of points are factorised and
+    // classified (line, circle by completing the square, two lines, point, ∅, conic).
+    var zfFEl = document.getElementById('zf-f'), zfKEl = document.getElementById('zf-k'), zfZ0El = document.getElementById('zf-z0');
+    var zfPrevEl = document.getElementById('zf-preview'), zfOpsEl = document.getElementById('zf-ops'), zfExEl = document.getElementById('zf-ex');
+    var zfObjs = [];
+    function setZfOpsEnabled(on){ zfOpsEl.querySelectorAll('.ml-op').forEach(function(b){ b.disabled = !on; }); }
+    function clearZfPlot(){ zfObjs.forEach(function(nm){ try { ggb.deleteObject(nm); } catch(e){} }); zfObjs = []; }
+
+    // ---- complex fractions ----
+    function cf(re, im){ return { re: re || fr(0), im: im || fr(0) }; }
+    function cfAdd(a, b){ return cf(fAdd(a.re, b.re), fAdd(a.im, b.im)); }
+    function cfSub(a, b){ return cf(fSub(a.re, b.re), fSub(a.im, b.im)); }
+    function cfMul(a, b){ return cf(fSub(fMul(a.re, b.re), fMul(a.im, b.im)), fAdd(fMul(a.re, b.im), fMul(a.im, b.re))); }
+    function cfAbs2(a){ return fAdd(fMul(a.re, a.re), fMul(a.im, a.im)); }
+    function cfDiv(a, b){ var d = cfAbs2(b); var n = cfMul(a, cf(b.re, fNeg(b.im))); return cf(fDiv(n.re, d), fDiv(n.im, d)); }
+    function cfZero(a){ return fZero(a.re) && fZero(a.im); }
+    function cfTex(a){
+      if(fZero(a.im)) return fTex(a.re);
+      var ab = fr(Math.abs(a.im.n), a.im.d), it = (ab.n === 1 && ab.d === 1) ? 'i' : fTex(ab) + 'i';
+      if(fZero(a.re)) return (a.im.n < 0 ? '-' : '') + it;
+      return fTex(a.re) + (a.im.n < 0 ? ' - ' : ' + ') + it;
+    }
+    function cfPlain(a){ return cfTex(a).split(BS + 'frac{').join('(').split('}{').join('/').split('}').join(')'); }
+
+    // ---- complex polynomials in z (index = power) ----
+    function czTrim(p){ var r = p.slice(); while(r.length > 1 && cfZero(r[r.length - 1])) r.pop(); return r.length ? r : [cf()]; }
+    function czDeg(p){ p = czTrim(p); return (p.length === 1 && cfZero(p[0])) ? -1 : p.length - 1; }
+    function czAdd(p, q){ var r = []; for(var i = 0; i < Math.max(p.length, q.length); i++) r.push(cfAdd(p[i] || cf(), q[i] || cf())); return czTrim(r); }
+    function czSub(p, q){ var r = []; for(var i = 0; i < Math.max(p.length, q.length); i++) r.push(cfSub(p[i] || cf(), q[i] || cf())); return czTrim(r); }
+    function czMul(p, q){ var r = []; for(var i = 0; i < p.length + q.length - 1; i++) r.push(cf()); for(var a = 0; a < p.length; a++) for(var b = 0; b < q.length; b++) r[a + b] = cfAdd(r[a + b], cfMul(p[a], q[b])); return czTrim(r); }
+    function czEval(p, z){ var acc = cf(); for(var i = p.length - 1; i >= 0; i--) acc = cfAdd(cfMul(acc, z), p[i]); return acc; }
+    // rational function in z: { n, d }  (null when conj is used)
+    function zfRZ(n){
+      if(!n) return null;
+      switch(n.t){
+        case 'num': { var f = fFromNum(n.v); return f ? { n: [cf(f)], d: [cf(fr(1))] } : null; }
+        case 'const': if(n.name === 'z') return { n: [cf(), cf(fr(1))], d: [cf(fr(1))] }; if(n.name === 'i') return { n: [cf(fr(0), fr(1))], d: [cf(fr(1))] }; return null;
+        case 'neg': { var a = zfRZ(n.a); return a ? { n: czMul(a.n, [cf(fr(-1))]), d: a.d } : null; }
+        case '+': case '-': { var l = zfRZ(n.l), r = zfRZ(n.r); if(!l || !r) return null; var nl = czMul(l.n, r.d), nr = czMul(r.n, l.d); return { n: n.t === '+' ? czAdd(nl, nr) : czSub(nl, nr), d: czMul(l.d, r.d) }; }
+        case '*': { var l2 = zfRZ(n.l), r2 = zfRZ(n.r); if(!l2 || !r2) return null; return { n: czMul(l2.n, r2.n), d: czMul(l2.d, r2.d) }; }
+        case '/': { var l3 = zfRZ(n.l), r3 = zfRZ(n.r); if(!l3 || !r3 || czDeg(r3.n) < 0) return null; return { n: czMul(l3.n, r3.d), d: czMul(l3.d, r3.n) }; }
+        case '^': {
+          var b = zfRZ(n.l), e = zfRZ(n.r); if(!b || !e || czDeg(e.n) > 0 || czDeg(e.d) > 0) return null;
+          var ev = cfDiv(e.n[0], e.d[0]); if(!fZero(ev.im) || ev.re.d !== 1 || Math.abs(ev.re.n) > 6) return null;
+          var k = ev.re.n, res = { n: [cf(fr(1))], d: [cf(fr(1))] };
+          for(var i = 0; i < Math.abs(k); i++) res = { n: czMul(res.n, b.n), d: czMul(res.d, b.d) };
+          return k < 0 ? { n: res.d, d: res.n } : res;
+        }
+      }
+      return null;
+    }
+
+    // ---- bivariate polynomials in x, y: { "i,j": fraction } ----
+    function bpK(i, j){ return i + ',' + j; }
+    function bpC(f){ var o = {}; if(!fZero(f)) o[bpK(0, 0)] = f; return o; }
+    function bpAdd(a, b){ var o = {}; [a, b].forEach(function(p){ Object.keys(p).forEach(function(k){ var v = o[k] ? fAdd(o[k], p[k]) : p[k]; if(fZero(v)) delete o[k]; else o[k] = v; }); }); return o; }
+    function bpScale(a, f){ var o = {}; if(fZero(f)) return o; Object.keys(a).forEach(function(k){ o[k] = fMul(a[k], f); }); return o; }
+    function bpSub(a, b){ return bpAdd(a, bpScale(b, fr(-1))); }
+    function bpMul(a, b){
+      var o = {};
+      Object.keys(a).forEach(function(ka){ var ia = ka.split(','); Object.keys(b).forEach(function(kb){ var ib = kb.split(','); var k = bpK(Number(ia[0]) + Number(ib[0]), Number(ia[1]) + Number(ib[1])); var v = fMul(a[ka], b[kb]); o[k] = o[k] ? fAdd(o[k], v) : v; if(fZero(o[k])) delete o[k]; }); });
+      return o;
+    }
+    function bpZero(a){ return Object.keys(a).length === 0; }
+    function bpDeg(a){ var d = -1; Object.keys(a).forEach(function(k){ var p = k.split(','); d = Math.max(d, Number(p[0]) + Number(p[1])); }); return d; }
+    function bpGet(a, i, j){ return a[bpK(i, j)] || fr(0); }
+    function bpEvalF(a, X, Y){ var s = fr(0); Object.keys(a).forEach(function(k){ var p = k.split(','), t = a[k]; for(var u = 0; u < Number(p[0]); u++) t = fMul(t, X); for(var w = 0; w < Number(p[1]); w++) t = fMul(t, Y); s = fAdd(s, t); }); return s; }
+    function bpEvalN(a, X, Y){ var s = 0; Object.keys(a).forEach(function(k){ var p = k.split(','); s += fVal(a[k]) * Math.pow(X, Number(p[0])) * Math.pow(Y, Number(p[1])); }); return s; }
+    function bpSorted(a){ return Object.keys(a).map(function(k){ var p = k.split(','); return { i: Number(p[0]), j: Number(p[1]), c: a[k] }; }).sort(function(u, v){ return (v.i + v.j) - (u.i + u.j) || v.i - u.i; }); }
+    function bpMono(i, j){ return (i ? (i === 1 ? 'x' : 'x^{' + i + '}') : '') + (j ? (j === 1 ? 'y' : 'y^{' + j + '}') : ''); }
+    function bpTex(a){
+      var out = '', first = true;
+      bpSorted(a).forEach(function(t){
+        var neg = t.c.n < 0, ab = fr(Math.abs(t.c.n), t.c.d), m = bpMono(t.i, t.j);
+        var ct = (m && ab.n === 1 && ab.d === 1) ? '' : fTex(ab);
+        out += first ? ((neg ? '-' : '') + ct + m) : ((neg ? ' - ' : ' + ') + ct + m); first = false;
+      });
+      return out || '0';
+    }
+    function bpPlain(a){ return bpTex(a).split(BS + 'frac{').join('(').split('}{').join('/').split('}').join(')').split('^{').join('^').split('{').join(''); }
+    function bpGgb(a){ var parts = bpSorted(a).map(function(t){ return '(' + t.c.n + '/' + t.c.d + ')' + (t.i ? '*x^' + t.i : '') + (t.j ? '*y^' + t.j : ''); }); return parts.length ? parts.join('+') : '0'; }
+    function bpTerms(a){ return Object.keys(a).length; }
+    // complex polynomial in z → (Re, Im) as polynomials in x, y
+    function czToBP(p){
+      var P = {}, Q = {}, powP = bpC(fr(1)), powQ = {};
+      var X = {}; X[bpK(1, 0)] = fr(1); var Y = {}; Y[bpK(0, 1)] = fr(1);
+      for(var k = 0; k < p.length; k++){
+        var c = p[k];
+        if(!cfZero(c)){ P = bpAdd(P, bpSub(bpScale(powP, c.re), bpScale(powQ, c.im))); Q = bpAdd(Q, bpAdd(bpScale(powQ, c.re), bpScale(powP, c.im))); }
+        var nP = bpSub(bpMul(powP, X), bpMul(powQ, Y)), nQ = bpAdd(bpMul(powP, Y), bpMul(powQ, X));
+        powP = nP; powQ = nQ;
+      }
+      return { P: P, Q: Q };
+    }
+    // generic evaluator (handles conj): value = (P + iQ)/D with D real
+    function zfCR(n){
+      if(!n) throw new Error('syntaxe');
+      var one = bpC(fr(1));
+      switch(n.t){
+        case 'num': { var f = fFromNum(n.v); if(!f) throw new Error('nombre'); return { P: bpC(f), Q: {}, D: one }; }
+        case 'var': throw new Error('x');
+        case 'const': {
+          if(n.name === 'z'){ var X = {}; X[bpK(1, 0)] = fr(1); var Y = {}; Y[bpK(0, 1)] = fr(1); return { P: X, Q: Y, D: one }; }
+          if(n.name === 'i') return { P: {}, Q: bpC(fr(1)), D: one };
+          throw new Error('lettre');
+        }
+        case 'neg': { var a = zfCR(n.a); return { P: bpScale(a.P, fr(-1)), Q: bpScale(a.Q, fr(-1)), D: a.D }; }
+        case '+': case '-': {
+          var l = zfCR(n.l), r = zfCR(n.r), s = n.t === '+' ? 1 : -1;
+          return { P: bpAdd(bpMul(l.P, r.D), bpScale(bpMul(r.P, l.D), fr(s))), Q: bpAdd(bpMul(l.Q, r.D), bpScale(bpMul(r.Q, l.D), fr(s))), D: bpMul(l.D, r.D) };
+        }
+        case '*': { var a2 = zfCR(n.l), b2 = zfCR(n.r); return { P: bpSub(bpMul(a2.P, b2.P), bpMul(a2.Q, b2.Q)), Q: bpAdd(bpMul(a2.P, b2.Q), bpMul(a2.Q, b2.P)), D: bpMul(a2.D, b2.D) }; }
+        case '/': {
+          var a3 = zfCR(n.l), b3 = zfCR(n.r);
+          var m2 = bpAdd(bpMul(b3.P, b3.P), bpMul(b3.Q, b3.Q)); if(bpZero(m2)) throw new Error('div0');
+          return { P: bpMul(bpAdd(bpMul(a3.P, b3.P), bpMul(a3.Q, b3.Q)), b3.D), Q: bpMul(bpSub(bpMul(a3.Q, b3.P), bpMul(a3.P, b3.Q)), b3.D), D: bpMul(a3.D, m2) };
+        }
+        case '^': {
+          var e = zfCR(n.r); if(!bpZero(e.Q) || bpDeg(e.P) > 0 || bpDeg(e.D) > 0) throw new Error('exposant');
+          var ev = fDiv(bpGet(e.P, 0, 0), bpGet(e.D, 0, 0)); if(ev.d !== 1 || Math.abs(ev.n) > 6) throw new Error('exposant');
+          var res = { P: one, Q: {}, D: one };
+          for(var i = 0; i < Math.abs(ev.n); i++) res = zfCR({ t: '*', l: { t: '__v', v: res }, r: n.l });
+          if(ev.n < 0) res = zfCR({ t: '/', l: { t: 'num', v: 1 }, r: { t: '__v', v: res } });
+          return res;
+        }
+        case '__v': return n.v;
+        case 'fn': {
+          if(n.name === 'conj'){ var c = zfCR(n.a); return { P: c.P, Q: bpScale(c.Q, fr(-1)), D: c.D }; }
+          throw new Error('fonction');
+        }
+      }
+      throw new Error('syntaxe');
+    }
+    // common constant content of several bivariate polynomials → divide, D leading positive
+    function zfReduce(P, Q, D){
+      var all = [P, Q, D].reduce(function(acc, p){ return acc.concat(Object.keys(p).map(function(k){ return p[k]; })); }, []);
+      if(!all.length) return { P: P, Q: Q, D: D };
+      var L = pLcmDen(all), g = 0; all.forEach(function(f){ g = igcd(g, f.n * (L / f.d)); }); g = g || 1;
+      var lead = bpSorted(D)[0]; var sgn = lead && lead.c.n < 0 ? -1 : 1;
+      var k = fr(sgn * L, g);
+      return { P: bpScale(P, k), Q: bpScale(Q, k), D: bpScale(D, k) };
+    }
+
+    function bpPrimitive(a){
+      var cs = Object.keys(a).map(function(k){ return a[k]; }); if(!cs.length) return a;
+      var L = pLcmDen(cs), g = 0; cs.forEach(function(f){ g = igcd(g, f.n * (L / f.d)); }); g = g || 1;
+      return bpScale(a, fr(L, g));
+    }
+    // ---- classify E(x, y) = 0 ----
+    function zfLineTex(a, b, c){ // a x + b y + c = 0
+      if(!fZero(b)){ var m = fDiv(fNeg(a), b), p = fDiv(fNeg(c), b); return 'y = ' + pTex([p, m], 'x'); }
+      return 'x = ' + fTex(fDiv(fNeg(c), a));
+    }
+    function sqrtTex(f){ // √(p/q) simplified
+      if(f.n === 0) return '0';
+      var sr = simplifyRadical(f.n * f.d), num = sr.coef, rad = sr.rad, den = f.d;
+      var g = igcd(num, den) || 1; num /= g; den /= g;
+      var core = rad === 1 ? String(num) : (num === 1 ? '' : num) + BS + 'sqrt{' + rad + '}';
+      return den === 1 ? core : BS + 'dfrac{' + core + '}{' + den + '}';
+    }
+    // returns { parts:[{kind, tex, desc, poly}], factTex }
+    function zfClassify(E){
+      var parts = [];
+      if(bpZero(E)) return { parts: [{ kind: 'plane', desc: 'tout le plan', poly: E }], factTex: '0 = 0' };
+      var mi = Infinity, mj = Infinity;
+      Object.keys(E).forEach(function(k){ var p = k.split(','); mi = Math.min(mi, Number(p[0])); mj = Math.min(mj, Number(p[1])); });
+      var R = {};
+      Object.keys(E).forEach(function(k){ var p = k.split(','); R[bpK(Number(p[0]) - mi, Number(p[1]) - mj)] = E[k]; });
+      R = bpPrimitive(R); // primitive integer coefficients
+      var lead = bpSorted(R)[0]; if(lead && lead.c.n < 0) R = bpScale(R, fr(-1));
+      var X1 = {}; X1[bpK(1, 0)] = fr(1); var Y1 = {}; Y1[bpK(0, 1)] = fr(1);
+      if(mi > 0) parts.push({ kind: 'line', tex: 'x = 0', desc: 'la droite d’équation x = 0 (axe des ordonnées)', poly: X1 });
+      if(mj > 0) parts.push({ kind: 'line', tex: 'y = 0', desc: 'la droite d’équation y = 0 (axe des abscisses)', poly: Y1 });
+      var factors = []; if(mi) factors.push(mi === 1 ? 'x' : 'x^{' + mi + '}'); if(mj) factors.push(mj === 1 ? 'y' : 'y^{' + mj + '}');
+      var d = bpDeg(R);
+      if(d > 0) factors.push(factors.length ? BS + 'left(' + bpTex(R) + BS + 'right)' : bpTex(R));
+      var factTex = (factors.join('') || bpTex(R)) + ' = 0';
+      if(d === 0){ if(!parts.length) parts.push({ kind: 'empty', desc: 'l’ensemble vide (égalité impossible)', poly: R }); return { parts: parts, factTex: factTex }; }
+      var A = bpGet(R, 2, 0), B = bpGet(R, 1, 1), C = bpGet(R, 0, 2), Dc = bpGet(R, 1, 0), Ec = bpGet(R, 0, 1), F = bpGet(R, 0, 0);
+      if(d === 1){ parts.push({ kind: 'line', tex: zfLineTex(Dc, Ec, F), desc: 'la droite d’équation ' + bpPlain(R) + ' = 0', poly: R }); return { parts: parts, factTex: factTex }; }
+      if(d === 2){
+        if(fZero(B) && !fZero(A) && fZero(fSub(A, C))){
+          var dd = fDiv(Dc, A), ee = fDiv(Ec, A), ff = fDiv(F, A);
+          var cx = fDiv(fNeg(dd), fr(2)), cy = fDiv(fNeg(ee), fr(2)), r2 = fSub(fAdd(fMul(cx, cx), fMul(cy, cy)), ff);
+          var sq = (fZero(cx) ? 'x^{2}' : BS + 'left(x ' + (cx.n < 0 ? '+ ' + fTex(fNeg(cx)) : '- ' + fTex(cx)) + BS + 'right)^{2}') + ' + ' + (fZero(cy) ? 'y^{2}' : BS + 'left(y ' + (cy.n < 0 ? '+ ' + fTex(fNeg(cy)) : '- ' + fTex(cy)) + BS + 'right)^{2}') + ' = ' + fTex(r2);
+          var cen = BS + 'Omega' + BS + 'left(' + fTex(cx) + ' ; ' + fTex(cy) + BS + 'right)';
+          var rq = fSqrt(r2), rPlain = rq ? fPlain(rq) : '√(' + fPlain(r2) + ')';
+          if(r2.n > 0) parts.push({ kind: 'circle', tex: sq, desc: 'le cercle de centre Ω(' + fPlain(cx) + ' ; ' + fPlain(cy) + ') et de rayon ' + rPlain, rTex: sqrtTex(r2), cenTex: cen, cx: cx, cy: cy, r2: r2, poly: R });
+          else if(r2.n === 0) parts.push({ kind: 'point', tex: sq, desc: 'le point Ω(' + fPlain(cx) + ' ; ' + fPlain(cy) + ')', cx: cx, cy: cy, poly: R });
+          else parts.push({ kind: 'empty', tex: sq, desc: 'l’ensemble vide (un carré ne peut pas valoir ' + fPlain(r2) + ')', poly: R });
+          return { parts: parts, factTex: factTex };
+        }
+        // pair of lines?
+        var lines = zfTwoLines(A, B, C, Dc, Ec, F);
+        if(lines){ lines.forEach(function(L){ parts.push({ kind: 'line', tex: zfLineTex(L[0], L[1], L[2]), desc: 'la droite d’équation ' + zfLineTex(L[0], L[1], L[2]), poly: zfLinePoly(L) }); }); return { parts: parts, factTex: factTex, twoLines: lines }; }
+        var disc = fVal(fSub(fMul(B, B), fMul(fr(4), fMul(A, C))));
+        parts.push({ kind: 'conic', desc: (disc < 0 ? 'une ellipse' : disc === 0 ? 'une parabole' : 'une hyperbole') + ' d’équation ' + bpPlain(R) + ' = 0', poly: R });
+        return { parts: parts, factTex: factTex };
+      }
+      parts.push({ kind: 'curve', desc: 'la courbe d’équation ' + bpPlain(R) + ' = 0', poly: R });
+      return { parts: parts, factTex: factTex };
+    }
+    function zfLinePoly(L){ var o = {}; if(!fZero(L[0])) o[bpK(1, 0)] = L[0]; if(!fZero(L[1])) o[bpK(0, 1)] = L[1]; if(!fZero(L[2])) o[bpK(0, 0)] = L[2]; return o; }
+    function fSqrt(f){ if(f.n < 0) return null; var a = Math.round(Math.sqrt(f.n)), b = Math.round(Math.sqrt(f.d)); return (a * a === f.n && b * b === f.d) ? fr(a, b) : null; }
+    // A x² + B xy + C y² + D x + E y + F = 0 as a product of two lines (rational coefficients) → [[a,b,c],[a,b,c]] or null
+    function zfTwoLines(A, B, C, D, E, F){
+      if(fZero(A) && fZero(C)){
+        if(fZero(B)) return null;
+        if(!fZero(fSub(F, fDiv(fMul(D, E), B)))) return null;
+        return [[fr(1), fr(0), fDiv(E, B)], [fr(0), fr(1), fDiv(D, B)]];
+      }
+      var swap = fZero(A);
+      if(swap){ var t; t = A; A = C; C = t; t = D; D = E; E = t; }
+      var al = fSub(fMul(B, B), fMul(fr(4), fMul(A, C))), be = fSub(fMul(fr(2), fMul(B, D)), fMul(fr(4), fMul(A, E))), ga = fSub(fMul(D, D), fMul(fr(4), fMul(A, F)));
+      if(!fZero(fSub(fMul(be, be), fMul(fr(4), fMul(al, ga))))) return null;
+      var u = fSqrt(al), v = fSqrt(ga); if(!u || !v) return null;
+      if(!fZero(u) && !fZero(v) && !fZero(fSub(fMul(fr(2), fMul(u, v)), be))) v = fNeg(v);
+      if(fZero(u) && !fZero(be)) return null;
+      var l1 = [fMul(fr(2), A), fSub(B, u), fSub(D, v)], l2 = [fMul(fr(2), A), fAdd(B, u), fAdd(D, v)];
+      var out = [l1, l2].map(function(L){ return swap ? [L[1], L[0], L[2]] : L; });
+      if(fZero(fSub(out[0][0], out[1][0])) && fZero(fSub(out[0][1], out[1][1])) && fZero(fSub(out[0][2], out[1][2]))) out = [out[0]];
+      return out;
+    }
+
+    // ---- roots of a complex polynomial (exact when they snap to fractions) ----
+    function czRoots(p){
+      p = czTrim(p); var deg = czDeg(p);
+      if(deg <= 0) return [];
+      if(deg === 1){ var r = cfDiv(cf(fNeg(p[0].re), fNeg(p[0].im)), p[1]); return [{ z: r, exact: true, x: fVal(r.re), y: fVal(r.im) }]; }
+      if(deg === 2){ var ex = czQuadExact(p[2], p[1], p[0]); if(ex) return ex; }
+      var coefs = p.slice().reverse().map(function(c){ return { re: fVal(c.re), im: fVal(c.im) }; });
+      return polyRootsJS(coefs).map(function(z){
+        var a = fFromNum(Math.round(z.re * 1e9) / 1e9), b = fFromNum(Math.round(z.im * 1e9) / 1e9);
+        if(a && b && cfZero(czEval(p, cf(a, b)))) return { z: cf(a, b), exact: true, x: fVal(a), y: fVal(b) };
+        return { approx: true, x: z.re, y: z.im };
+      });
+    }
+    // a z² + b z + c = 0 with exact roots when Δ is real, or a perfect square in ℂ. Roots: w ± s·v (s = √r or 1)
+    function czQuadExact(a, b, c){
+      var delta = cfSub(cfMul(b, b), cfMul(cf(fr(4)), cfMul(a, c))), twoA = cfMul(cf(fr(2)), a);
+      var w = cfDiv(cf(fNeg(b.re), fNeg(b.im)), twoA), v, rad = 1, k = fr(1);
+      if(fZero(delta.im)){
+        var D = delta.re, neg = D.n < 0, ab = fr(Math.abs(D.n), D.d);
+        var sr = simplifyRadical(ab.n * ab.d); rad = sr.rad; k = fr(sr.coef, ab.d); // √|Δ| = k·√rad
+        v = cfDiv(neg ? cf(fr(0), fr(1)) : cf(fr(1)), twoA);
+      } else {
+        var mod = fSqrt(cfAbs2(delta)); if(!mod) return null;
+        var pp = fSqrt(fDiv(fAdd(delta.re, mod), fr(2))); if(!pp || fZero(pp)) return null;
+        var qq = fDiv(delta.im, fMul(fr(2), pp));
+        v = cfDiv(cf(pp, qq), twoA);
+      }
+      function part(c0, c1){ // c0 ± k·c1·√rad  → tex for both signs
+        var c1k = fMul(c1, k);
+        if(rad === 1){ return [fAdd(c0, c1k), fSub(c0, c1k)].map(function(f){ return { tex: fTex(f), val: fVal(f), zero: fZero(f), frac: f }; }); }
+        var L = c0.d * c1k.d / (igcd(c0.d, c1k.d) || 1), n0 = c0.n * (L / c0.d), n1 = c1k.n * (L / c1k.d);
+        return [1, -1].map(function(sg){
+          var m = sg * n1, g = igcd(igcd(n0, Math.abs(m)), L) || 1, a0 = n0 / g, a1 = m / g, den = L / g;
+          var rt = (Math.abs(a1) === 1 ? '' : Math.abs(a1)) + BS + 'sqrt{' + rad + '}';
+          var num = a1 === 0 ? String(a0) : (a0 !== 0 ? a0 + (a1 < 0 ? ' - ' : ' + ') + rt : (a1 < 0 ? '-' : '') + rt);
+          return { tex: den === 1 ? num : BS + 'dfrac{' + num + '}{' + den + '}', val: (a0 + a1 * Math.sqrt(rad)) / den, zero: false, frac: null, compound: den === 1 && a0 !== 0 && a1 !== 0 };
+        });
+      }
+      var re = part(w.re, v.re), im = part(w.im, v.im), out = [];
+      for(var i = 0; i < 2; i++){
+        var R0 = re[i], I0 = im[i], reZero = rad === 1 ? R0.zero : (Math.abs(R0.val) < 1e-15), imZero = rad === 1 ? I0.zero : (Math.abs(I0.val) < 1e-15);
+        var tex;
+        if(imZero) tex = reZero ? '0' : R0.tex;
+        else {
+          var itx = I0.tex === '1' ? 'i' : I0.tex === '-1' ? '-i' : (I0.compound ? BS + 'left(' + I0.tex + BS + 'right)' : I0.tex) + BS + ',i';
+          tex = reZero ? itx : R0.tex + (itx.charAt(0) === '-' ? ' - ' + itx.slice(1) : ' + ' + itx);
+        }
+        var exactZ = (rad === 1) ? cf(R0.frac, I0.frac) : null;
+        out.push({ exact: true, tex: tex, z: exactZ, x: R0.val, y: I0.val, plain: tex.split(BS + 'dfrac{').join('(').split(BS + 'sqrt{').join('sqrt(').split('}{').join(')/(').split('}').join(')').split(BS + 'left(').join('(').split(BS + 'right)').join(')').split(BS + ',').join('') });
+      }
+      if(Math.abs(out[0].x - out[1].x) < 1e-12 && Math.abs(out[0].y - out[1].y) < 1e-12) out = [out[0]];
+      return out;
+    }
+    function zfRootTex(r){
+      if(r.tex) return r.tex;
+      if(r.exact) return cfTex(r.z);
+      var re = Math.round(r.x * 1000) / 1000, im = Math.round(r.y * 1000) / 1000;
+      return BS + 'approx ' + (re !== 0 ? re + (im ? (im < 0 ? ' - ' : ' + ') + Math.abs(im) + 'i' : '') : (im ? im + 'i' : '0'));
+    }
+    function zfRootPlain(r){ if(r.plain) return r.plain; return r.exact ? cfPlain(r.z) : '~' + (Math.round(r.x * 1000) / 1000) + (r.y >= 0 ? '+' : '-') + Math.abs(Math.round(r.y * 1000) / 1000) + 'i'; }
+    function zfCzTex(p){ // complex polynomial in z as LaTeX
+      p = czTrim(p); var out = '', first = true;
+      for(var k = p.length - 1; k >= 0; k--){
+        var c = p[k]; if(cfZero(c)) continue;
+        var m = k === 0 ? '' : (k === 1 ? 'z' : 'z^{' + k + '}'), t, sign = '+';
+        if(!fZero(c.re) && !fZero(c.im)) t = BS + 'left(' + cfTex(c) + BS + 'right)' + m;
+        else { var s = cfTex(c); if(s.charAt(0) === '-'){ sign = '-'; s = s.slice(1); } if(m && s === '1') s = ''; t = s + m; }
+        out += first ? (sign === '-' ? '-' : '') + t : ' ' + sign + ' ' + t; first = false;
+      }
+      return out || '0';
+    }
+
+    // ---- parse + preview ----
+    function zfParse(){
+      var src = (zfFEl.value || '').trim(); if(!src) return { err: 'Saisissez f(z).' };
+      var tk = pwTokens(src); if(!tk) return { err: 'Expression invalide.' };
+      var ast = null; try { ast = dxParse(tk); } catch(e){ ast = null; }
+      if(!ast) return { err: 'Expression invalide.' };
+      var cr; try { cr = zfCR(ast); } catch(e){ return { err: e.message === 'x' ? 'Utilisez z (et non x) : z = x + iy est posé automatiquement.' : 'Expression non prise en charge (z, i, nombres, + − × ÷, puissances entières, conj(z)).' }; }
+      var rz = zfRZ(ast);
+      return { src: src, ast: ast, cr: cr, rz: rz, usesConj: !rz };
+    }
+    function zfFTex(src){ try { return toLatex(src.split('conj(z)').join('cz')).split('cz').join(BS + 'overline{z}'); } catch(e){ return null; } }
+    function updateZfPreview(){
+      var r = zfParse();
+      if(r.err){ zfPrevEl.className = 'ml-preview is-empty'; zfPrevEl.textContent = r.err; return; }
+      var t = zfFTex(r.src);
+      if(!t){ zfPrevEl.className = 'ml-preview is-empty'; zfPrevEl.textContent = 'Z = ' + r.src; return; }
+      try { renderKatex(zfPrevEl, 'Z = f(z) = ' + t); zfPrevEl.className = 'ml-preview'; } catch(e){ zfPrevEl.className = 'ml-preview is-empty'; zfPrevEl.textContent = 'Z = ' + r.src; }
+    }
+    zfFEl.addEventListener('input', updateZfPreview);
+    zfExEl.addEventListener('click', function(ev){ var b = ev.target.closest('[data-zfex]'); if(!b) return; zfFEl.value = b.getAttribute('data-zfex'); answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = ''; updateZfPreview(); });
+
+    // P + iQ as LaTeX: "x - 1 + iy", "2x + i(2y + 1)", "x^2 - y^2 + 1 + 2ixy"
+    function zfCbt(u){
+      var re = bpZero(u.P) ? '' : bpTex(u.P);
+      if(bpZero(u.Q)) return re || '0';
+      var im;
+      if(bpTerms(u.Q) === 1){
+        var t = bpSorted(u.Q)[0], neg = t.c.n < 0, ab = fr(Math.abs(t.c.n), t.c.d), m = bpMono(t.i, t.j);
+        var ct = (ab.n === 1 && ab.d === 1) ? '' : fTex(ab);
+        im = (neg ? '-' : '') + ct + 'i' + m;
+      } else im = 'i' + BS + 'left(' + bpTex(u.Q) + BS + 'right)';
+      if(!re) return im;
+      return re + (im.charAt(0) === '-' ? ' - ' + im.slice(1) : ' + ' + im);
+    }
+    function zfSq(u){ // u² with brackets only when needed
+      if(bpTerms(u) === 1){ var t = bpSorted(u)[0]; if(t.c.n === 1 && t.c.d === 1 && t.i + t.j === 1) return bpMono(t.i, t.j) + '^{2}'; }
+      return BS + 'left(' + bpTex(u) + BS + 'right)^{2}';
+    }
+    // X = P/D, Y = Q/D (with the steps), and the poles
+    function zfAlgebraic(parsed, R){
+      var html = R.line('', 'z = x + iy,' + BS + 'quad Z = X + iY'), P, Q, D, poles = [], polesKnown = true;
+      if(parsed.rz && czDeg(parsed.rz.d) > 0){
+        var A = czToBP(parsed.rz.n), B = czToBP(parsed.rz.d);
+        var cbt = zfCbt;
+        html += R.line('', 'Z = ' + BS + 'dfrac{' + zfCzTex(parsed.rz.n) + '}{' + zfCzTex(parsed.rz.d) + '} = ' + BS + 'dfrac{' + cbt(A) + '}{' + cbt(B) + '}');
+        P = bpAdd(bpMul(A.P, B.P), bpMul(A.Q, B.Q)); Q = bpSub(bpMul(A.Q, B.P), bpMul(A.P, B.Q)); D = bpAdd(bpMul(B.P, B.P), bpMul(B.Q, B.Q));
+        var red = zfReduce(P, Q, D); P = red.P; Q = red.Q; D = red.D;
+        html += '<div class="study-work">On multiplie le numérateur et le dénominateur par le conjugué du dénominateur :</div>';
+        html += R.line('', 'Z = ' + BS + 'dfrac{' + BS + 'left(' + cbt(A) + BS + 'right)' + BS + 'left(' + zfCbt({ P: B.P, Q: bpScale(B.Q, fr(-1)) }) + BS + 'right)}{' + zfSq(B.P) + ' + ' + zfSq(B.Q) + '}');
+        poles = czRoots(parsed.rz.d);
+      } else {
+        var cr = parsed.cr; P = cr.P; Q = cr.Q; D = cr.D;
+        var red2 = zfReduce(P, Q, D); P = red2.P; Q = red2.Q; D = red2.D;
+        if(bpDeg(D) > 0) polesKnown = false;
+        if(parsed.rz) html += R.line('', 'Z = ' + zfCzTex(czMul(parsed.rz.n, [cfDiv(cf(fr(1)), parsed.rz.d[0])])) + BS + 'quad ' + BS + 'text{(on remplace z par } x + iy ' + BS + 'text{ et on développe)}');
+        else html += '<div class="study-work">On remplace z par x + iy et z̄ par x − iy, puis on développe.</div>';
+      }
+      var constD = bpDeg(D) <= 0, dval = constD ? bpGet(D, 0, 0) : null;
+      var Xt = constD ? bpTex(bpScale(P, fDiv(fr(1), dval))) : BS + 'dfrac{' + bpTex(P) + '}{' + bpTex(D) + '}';
+      var Yt = constD ? bpTex(bpScale(Q, fDiv(fr(1), dval))) : BS + 'dfrac{' + bpTex(Q) + '}{' + bpTex(D) + '}';
+      if(constD){ P = bpScale(P, fDiv(fr(1), dval)); Q = bpScale(Q, fDiv(fr(1), dval)); D = bpC(fr(1)); }
+      html += R.line('Partie réelle :', 'X(x, y) = ' + Xt);
+      html += R.line('Partie imaginaire :', 'Y(x, y) = ' + Yt);
+      return { html: html, P: P, Q: Q, D: D, poles: poles, polesKnown: polesKnown, constD: constD };
+    }
+    function zfPolesLine(alg, R){
+      if(!alg.poles.length) return alg.polesKnown ? '' : '<div class="study-work">On exclut les points où le dénominateur s’annule.</div>';
+      return R.line('f est définie pour', alg.poles.map(function(p){ return 'z ' + BS + 'neq ' + zfRootTex(p); }).join(',' + BS + '; ') + BS + ';(' + BS + 'text{point' + (alg.poles.length > 1 ? 's' : '') + ' exclu' + (alg.poles.length > 1 ? 's' : '') + '})');
+    }
+    // describe the set {E = 0} minus the poles
+    function zfSetHtml(E, alg, R, sm){
+      var cl = zfClassify(E), html = '';
+      html += R.line('', cl.factTex);
+      if(cl.parts.length > 1) html += '<div class="study-work">Un produit est nul si et seulement si l’un des facteurs est nul.</div>';
+      var descs = [];
+      cl.parts.forEach(function(pt){
+        if(pt.kind === 'circle'){ html += R.line('', pt.tex + BS + ';' + BS + 'Rightarrow' + BS + '; ' + BS + 'text{cercle de centre } ' + pt.cenTex + BS + 'text{ et de rayon } ' + pt.rTex); descs.push(pt.desc); }
+        else if(pt.kind === 'point' || pt.kind === 'empty'){ if(pt.tex) html += R.line('', pt.tex); descs.push(pt.desc); }
+        else if(pt.kind === 'line' && pt.tex){ if(!(cl.parts.length === 1 && cl.factTex === pt.tex)) html += R.line('', pt.tex); descs.push(pt.desc); }
+        else descs.push(pt.desc);
+      });
+      // excluded points that lie on the set
+      var excl = [];
+      alg.poles.forEach(function(p){
+        var on = (p.exact && p.z) ? fZero(bpEvalF(E, p.z.re, p.z.im)) : Math.abs(bpEvalN(E, p.x, p.y)) < 1e-9;
+        if(on) excl.push(p);
+      });
+      var concl = 'L’ensemble des points M est ' + descs.join(' et ') + (excl.length ? ', privé' + (cl.parts.length > 1 ? '' : '') + ' du point d’affixe ' + excl.map(zfRootPlain).join(' et ') : '') + '.';
+      html += '<div class="study-line study-ok">✓ ' + escapeHtml(concl) + '</div>';
+      sm.push(concl);
+      return { html: html, parts: cl.parts, excl: excl };
+    }
+
+    async function runZf(op){
+      if(!ggb){ return; }
+      var parsed = zfParse();
+      if(parsed.err){ stateEl.textContent = parsed.err; return; }
+      answerEl.innerHTML = ''; stepsEl.innerHTML = '';
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Calcul…';
+      setZfOpsEnabled(false);
+      var computed = false;
+      try {
+        var R = e1Report(), body = '', sm = [], E = null, set = null, extraPts = [];
+        var ft = zfFTex(parsed.src) || parsed.src;
+        var alg = zfAlgebraic(parsed, R);
+        body += R.sec('Forme algébrique X + iY', R.line('', 'Z = ' + ft) + alg.html + zfPolesLine(alg, R));
+        sm.push('X=' + (alg.constD ? bpPlain(alg.P) : '(' + bpPlain(alg.P) + ')/(' + bpPlain(alg.D) + ')') + ' ; Y=' + (alg.constD ? bpPlain(alg.Q) : '(' + bpPlain(alg.Q) + ')/(' + bpPlain(alg.D) + ')'));
+        if(alg.poles.length) sm.push('poles exclus: ' + alg.poles.map(zfRootPlain).join(', '));
+        var title = 'Transformation Z = f(z)';
+
+        if(op === 'real' || op === 'imag'){
+          var isReal = op === 'real';
+          E = isReal ? alg.Q : alg.P;
+          var t = R.line('', BS + 'text{Z est ' + (isReal ? 'réel' : 'imaginaire pur') + '} ' + BS + 'iff ' + (isReal ? 'Y' : 'X') + '(x, y) = 0' + (alg.constD ? '' : BS + 'iff ' + bpTex(E) + ' = 0 ' + BS + 'text{ (avec } z ' + BS + 'neq ' + BS + 'text{ pôle)}'));
+          set = zfSetHtml(E, alg, R, sm);
+          body += R.sec('Ensemble des points M tels que Z soit ' + (isReal ? 'réel' : 'imaginaire pur'), t + set.html + (isReal ? '' : '<div class="study-work">(Z = 0 est compté comme imaginaire pur.)</div>'));
+          title = isReal ? 'Z = f(z) — Z réel' : 'Z = f(z) — Z imaginaire pur';
+        } else if(op === 'mod'){
+          var kp = e1Parse(zfKEl.value);
+          if(!kp || !pConst(kp) || kp[0].n < 0){ stateEl.textContent = 'Indiquez k ≥ 0.'; setZfOpsEnabled(true); return; }
+          var K = kp[0], tm = '';
+          if(parsed.rz){
+            var Ab = czToBP(parsed.rz.n), Bb = czToBP(parsed.rz.d);
+            var A2 = bpAdd(bpMul(Ab.P, Ab.P), bpMul(Ab.Q, Ab.Q)), B2 = bpAdd(bpMul(Bb.P, Bb.P), bpMul(Bb.Q, Bb.Q));
+            E = bpSub(A2, bpScale(B2, fMul(K, K)));
+            tm += R.line('', '|Z| = ' + fTex(K) + BS + 'iff ' + BS + 'left|' + zfCzTex(parsed.rz.n) + BS + 'right| = ' + (K.n === K.d ? '' : fTex(K)) + BS + 'left|' + zfCzTex(parsed.rz.d) + BS + 'right|' + BS + 'iff ' + BS + 'left|' + zfCzTex(parsed.rz.n) + BS + 'right|^{2} = ' + (K.n === K.d ? '' : fTex(fMul(K, K))) + BS + 'left|' + zfCzTex(parsed.rz.d) + BS + 'right|^{2}');
+            if(czDeg(parsed.rz.n) === 1 && czDeg(parsed.rz.d) === 1){
+              var a0 = czRoots(parsed.rz.n)[0], b0 = czRoots(parsed.rz.d)[0];
+              var ratio2 = fDiv(fMul(fMul(K, K), cfAbs2(parsed.rz.d[1])), cfAbs2(parsed.rz.n[1]));
+              var rr = fSqrt(ratio2);
+              tm += R.line('Interprétation :', BS + 'text{avec } A(' + zfRootTex(a0) + ')' + BS + 'text{ et } B(' + zfRootTex(b0) + '),' + BS + '; ' + (fZero(fSub(ratio2, fr(1))) ? 'AM = BM' : 'AM = ' + (rr ? fTex(rr) : sqrtTex(ratio2)) + BS + ',BM'));
+              if(fZero(fSub(ratio2, fr(1)))) tm += '<div class="study-work">AM = BM : M est équidistant de A et B, donc sur la médiatrice de [AB].</div>';
+            }
+          } else {
+            E = bpSub(bpAdd(bpMul(alg.P, alg.P), bpMul(alg.Q, alg.Q)), bpScale(bpMul(alg.D, alg.D), fMul(K, K)));
+            tm += R.line('', '|Z| = ' + fTex(K) + BS + 'iff X^{2} + Y^{2} = ' + fTex(fMul(K, K)));
+          }
+          tm += R.line('En développant :', bpTex(E) + ' = 0');
+          set = zfSetHtml(E, alg, R, sm);
+          body += R.sec('Ensemble des points M tels que |Z| = ' + escapeHtml(fPlain(K)), tm + set.html);
+          title = 'Z = f(z) — |Z| = ' + fPlain(K);
+        } else if(op === 'inv' || op === 'ante'){
+          if(!parsed.rz){ stateEl.textContent = 'Non disponible quand f contient z̄ (conj).'; setZfOpsEnabled(true); return; }
+          var target, lbl;
+          if(op === 'inv'){ target = [cf(), cf(fr(1))]; lbl = 'z'; }
+          else {
+            var z0t = pwTokens(zfZ0El.value || ''), z0a = null; try { z0a = z0t && dxParse(z0t); } catch(e){ z0a = null; }
+            var z0r = z0a && zfRZ(z0a);
+            if(!z0r || czDeg(z0r.n) > 0 || czDeg(z0r.d) > 0){ stateEl.textContent = 'Indiquez une valeur numérique Z₀ (ex. i, 2, 1+i).'; setZfOpsEnabled(true); return; }
+            var z0 = cfDiv(z0r.n[0], z0r.d[0]); target = [z0]; lbl = cfTex(z0);
+          }
+          // f(z) = target ⇔ N(z) − target·D(z) = 0, z not a pole
+          var eqP = czSub(parsed.rz.n, czMul(target, parsed.rz.d));
+          var ti = R.line('', 'f(z) = ' + lbl + BS + 'iff ' + (czDeg(parsed.rz.d) > 0 ? zfCzTex(parsed.rz.n) + ' = ' + (op === 'inv' ? 'z' : BS + 'left(' + lbl + BS + 'right)') + BS + 'left(' + zfCzTex(parsed.rz.d) + BS + 'right)' + BS + 'iff ' : '') + zfCzTex(eqP) + ' = 0');
+          var roots = [];
+          if(czDeg(eqP) < 0) ti += '<div class="study-line study-ok">Égalité vraie pour tout z (hors pôles).</div>';
+          else if(czDeg(eqP) === 0) ti += '<div class="study-line study-ko">✗ Égalité impossible : aucune solution.</div>';
+          else {
+            roots = czRoots(eqP).filter(function(r){ return !alg.poles.some(function(p){ return Math.abs(p.x - r.x) < 1e-9 && Math.abs(p.y - r.y) < 1e-9; }); });
+            if(!roots.length) ti += '<div class="study-line study-ko">✗ Les solutions trouvées sont des pôles : aucune solution.</div>';
+            else ti += R.line(op === 'inv' ? 'Points invariants :' : 'Antécédent(s) :', roots.map(function(r, i){ var t = zfRootTex(r); return 'z_{' + (i + 1) + '} ' + (t.indexOf(BS + 'approx') === 0 ? t : '= ' + t); }).join(',' + BS + 'quad '));
+          }
+          sm.push((op === 'inv' ? 'points invariants: ' : 'antecedents de ' + cfPlain(target[0]) + ': ') + (roots.length ? roots.map(zfRootPlain).join(', ') : 'aucun'));
+          roots.forEach(function(r){ extraPts.push(r); });
+          body += R.sec(op === 'inv' ? 'Points invariants : f(z) = z' : 'Antécédent de Z₀ = ' + escapeHtml(cfPlain(target[0])), ti);
+          title = op === 'inv' ? 'Z = f(z) — points invariants' : 'Z = f(z) — antécédent';
+        }
+
+        R.render(title, body);
+        computed = true;
+        zfPlot(E, alg.poles, extraPts, set);
+        var defStr = 'Z = ' + parsed.src + (op === 'mod' ? ' ; |Z| = ' + zfKEl.value.trim() : op === 'ante' ? ' ; Z0 = ' + zfZ0El.value.trim() : '');
+        stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ domain: 'complex', operation: 'zf_' + op, expression: defStr.slice(0, 390), casResult: sm.join(' | ').slice(0, 495) }) });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data, true); } else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){ stateEl.textContent = computed ? 'Connexion impossible — réessayez.' : 'Calcul impossible — vérifiez f(z).'; }
+      finally { setZfOpsEnabled(true); }
+    }
+    zfOpsEl.addEventListener('click', function(ev){ var btn = ev.target.closest('.ml-op'); if(!btn || btn.disabled) return; runZf(btn.getAttribute('data-zfop')); });
+
+    function zfPlot(E, poles, pts, set){
+      clearZfPlot(); clearComplexPlot(); try { ggb.deleteObject('f'); } catch(e){}
+      function add(nm, cmd){ try { ggb.evalCommand(nm + '=' + cmd); zfObjs.push(nm); return true; } catch(e){ return false; } }
+      var xs = [0], ys = [0];
+      if(E && !bpZero(E) && bpDeg(E) > 0){
+        try { ggb.evalCommand('zfSet:' + bpGgb(E) + '=0'); ggb.setColor('zfSet', 94, 23, 235); ggb.setLineThickness('zfSet', 6); ggb.setLabelVisible('zfSet', false); zfObjs.push('zfSet'); } catch(e){}
+        (set && set.parts || []).forEach(function(pt){
+          if(pt.kind === 'circle'){ var r = Math.sqrt(fVal(pt.r2)); xs.push(fVal(pt.cx) - r, fVal(pt.cx) + r); ys.push(fVal(pt.cy) - r, fVal(pt.cy) + r);
+            if(add('ZfC', '(' + fVal(pt.cx) + ',' + fVal(pt.cy) + ')')){ try { ggb.setColor('ZfC', 50, 44, 77); ggb.setPointSize('ZfC', 4); ggb.setCaption('ZfC', 'Ω'); ggb.setLabelStyle('ZfC', 3); ggb.setLabelVisible('ZfC', true); } catch(e){} } }
+          if(pt.kind === 'point'){ xs.push(fVal(pt.cx)); ys.push(fVal(pt.cy)); if(add('ZfPt', '(' + fVal(pt.cx) + ',' + fVal(pt.cy) + ')')){ try { ggb.setColor('ZfPt', 94, 23, 235); ggb.setPointSize('ZfPt', 6); } catch(e){} } }
+        });
+      }
+      (poles || []).forEach(function(p, i){
+        var nm = 'ZfP' + (i + 1);
+        if(add(nm, '(' + p.x + ',' + p.y + ')')){ try { ggb.setColor(nm, 220, 38, 38); ggb.setPointSize(nm, 5); ggb.setPointStyle(nm, 2); ggb.setCaption(nm, 'exclu'); ggb.setLabelStyle(nm, 3); ggb.setLabelVisible(nm, true); } catch(e){} }
+        xs.push(p.x); ys.push(p.y);
+      });
+      (pts || []).forEach(function(p, i){
+        var nm = 'ZfS' + (i + 1);
+        if(add(nm, '(' + p.x + ',' + p.y + ')')){ try { ggb.setColor(nm, 255, 194, 58); ggb.setPointSize(nm, 7); ggb.setCaption(nm, 'z' + (i + 1)); ggb.setLabelStyle(nm, 3); ggb.setLabelVisible(nm, true); } catch(e){} }
+        xs.push(p.x); ys.push(p.y);
+      });
+      var xmin = Math.min.apply(null, xs), xmax = Math.max.apply(null, xs), ymin = Math.min.apply(null, ys), ymax = Math.max.apply(null, ys);
+      var pad = Math.max(2, 0.25 * Math.max(xmax - xmin, ymax - ymin));
+      var host = document.getElementById('ggb'), W = (host && host.clientWidth) || 800, H = (host && host.clientHeight) || 480;
+      var xr = (xmax - xmin) + 2 * pad, yr = (ymax - ymin) + 2 * pad, upp = Math.max(xr / W, yr / H), cx = (xmin + xmax) / 2, cy = (ymin + ymax) / 2;
+      try { ggb.setCoordSystem(cx - upp * W / 2, cx + upp * W / 2, cy - upp * H / 2, cy + upp * H / 2); } catch(e){}
+    }
+
+    try { updateZfPreview(); } catch(e){}
+    setZfOpsEnabled(false); // enabled once GeoGebra is ready (appletOnLoad)
+
     function switchMode(m){
       if(m === currentMode) return;
       currentMode = m;
@@ -6007,6 +6838,7 @@
       modePw.hidden       = (m !== 'piecewise');
       modeEq1.hidden      = (m !== 'equation');
       modeSys.hidden      = (m !== 'system');
+      modeBary.hidden     = (m !== 'bary');
       modeTrig.hidden     = (m !== 'trig');
       answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = '';
       var isTrig = (m === 'trig');
@@ -6017,8 +6849,13 @@
       if(m === 'arith'){ updateArithPreview(); return; }
       if(ggb){
         try { ggb.setPerspective((m === 'function' || m === 'integral' || m === 'suite' || m === 'diffeq') ? 'AG' : 'G'); } catch(e){}
-        clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot(); clearSuitePlot(); clearProbaPlot(); clearStatsPlot(); clearPwPlot(); clearE1Plot(); clearSysPlot();
-        if(m === 'system'){
+        clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot(); clearSuitePlot(); clearProbaPlot(); clearStatsPlot(); clearPwPlot(); clearE1Plot(); clearSysPlot(); clearBaryPlot(); clearZfPlot();
+        if(m === 'bary'){
+          graphTitle.textContent = 'Points pondérés et barycentre';
+          graphHint.textContent = 'Les points (avec leur poids), les barycentres partiels de la construction (H₁, H₂…) et le barycentre G en jaune ; le cercle de la ligne de niveau s’affiche avec le second bouton.';
+          try { ggb.deleteObject('f'); } catch(e){}
+          updateBaryPreview();
+        } else if(m === 'system'){
           graphTitle.textContent = 'Interprétation graphique';
           graphHint.textContent = 'Chaque équation à 2 inconnues est une droite : la solution est le point d’intersection (en jaune). Droites parallèles : aucune solution ; confondues : une infinité.';
           try { ggb.deleteObject('f'); } catch(e){}
@@ -6113,7 +6950,7 @@
       // Graphics-only view: the algebra pane would otherwise halve the width on
       // phones and hide the curve. CAS (evalCommandCAS) works headless regardless.
       perspective: 'G',
-      appletOnLoad: function(api){ ggb = api; try { ggb.setErrorDialogsActive(false); } catch(e){} setOpsEnabled(true); setCOpsEnabled(true); setGOpsEnabled(true); setLOpsEnabled(true); setIOpsEnabled(true); setSuiteOpsEnabled(true); setProbaOpsEnabled(true); setStatsOpsEnabled(true); setDeqOpsEnabled(true); setPwOpsEnabled(true); setE1OpsEnabled(true); setSysOpsEnabled(true); if(eqSolveBtn) eqSolveBtn.disabled = false; setEqStepsEnabled(true); fitGraph(); plot((fxInput.value||'').trim()); setTimeout(fitGraph, 400); }
+      appletOnLoad: function(api){ ggb = api; try { ggb.setErrorDialogsActive(false); } catch(e){} setOpsEnabled(true); setCOpsEnabled(true); setGOpsEnabled(true); setLOpsEnabled(true); setIOpsEnabled(true); setSuiteOpsEnabled(true); setProbaOpsEnabled(true); setStatsOpsEnabled(true); setDeqOpsEnabled(true); setPwOpsEnabled(true); setE1OpsEnabled(true); setSysOpsEnabled(true); setBaryOpsEnabled(true); setZfOpsEnabled(true); if(eqSolveBtn) eqSolveBtn.disabled = false; setEqStepsEnabled(true); fitGraph(); plot((fxInput.value||'').trim()); setTimeout(fitGraph, 400); }
     }, true);
     applet.inject('ggb');
     updatePreview();

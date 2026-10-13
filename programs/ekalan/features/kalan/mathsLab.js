@@ -38,6 +38,8 @@ const OPERATIONS = {
   stats_regression: "l'ajustement affine (régression linéaire)",
   diff_eq: "la résolution de l'équation différentielle",
   system: "la résolution du système d'équations linéaires",
+  barycentre: "le barycentre de points pondérés",
+  bary_locus: "l'ensemble des points M tels que ‖Σ aᵢ·MAᵢ‖ = k",
   eq2_solve: "la résolution de l'équation du second degré",
   eq2_param: "la discussion, selon le paramètre m, du nombre de solutions de l'équation",
   eq2_param_root: "les valeurs de m pour lesquelles x₀ est solution, et l'autre solution",
@@ -71,6 +73,12 @@ const COMPLEX_OPERATIONS = {
   solve_poly: "les solutions de l'équation polynomiale",
   eval_at: "la valeur f(z₀)",
   find_root: "une racine réelle ou imaginaire pure",
+  zf_xy: "la forme algébrique X + iY de Z = f(z)",
+  zf_real: "l'ensemble des points M tels que Z soit réel",
+  zf_imag: "l'ensemble des points M tels que Z soit imaginaire pur",
+  zf_mod: "l'ensemble des points M tels que |Z| = k",
+  zf_inv: "les points invariants de la transformation",
+  zf_ante: "l'antécédent de Z₀ par la transformation",
   find_real_root: "une racine réelle",
   find_imag_root: "une racine imaginaire pure",
   quotient: "le quotient Q(z) tel que f(z) = (z − z₀)·Q(z)",
@@ -224,6 +232,29 @@ function buildPrompt({ domain, input, operation, casResult, params }) {
         `Résultat correct (fourni — à expliquer, ne pas modifier) : z = ${casResult}`,
         ``,
         `Mets d'abord z sous forme algébrique a + bi si nécessaire, calcule le module r = |z| = √(a²+b²) et un argument θ tel que cos θ = a/r et sin θ = b/r, puis écris z = r(cos θ + i·sin θ). Aboutis exactement au résultat fourni. Ce n'est pas une équation à résoudre.`,
+      ];
+      return { system: SYSTEM_PROMPT_COMPLEX, userMsg: e.join("\n") };
+    }
+
+    // Transformation Z = f(z) (z = x + iy, Z = X + iY): forme algébrique, ensembles de points.
+    if (/^zf_/.test(String(operation || ""))) {
+      const goal = {
+        zf_xy: "Déterminer la forme algébrique Z = X(x, y) + iY(x, y).",
+        zf_real: "Déterminer l'ensemble des points M(z) tels que Z soit réel (Y = 0).",
+        zf_imag: "Déterminer l'ensemble des points M(z) tels que Z soit imaginaire pur (X = 0).",
+        zf_mod: "Déterminer l'ensemble des points M(z) tels que |Z| = k (caractérisation par le module).",
+        zf_inv: "Déterminer les points invariants : résoudre f(z) = z.",
+        zf_ante: "Déterminer le ou les antécédents de Z₀ : résoudre f(z) = Z₀.",
+      }[operation];
+      const e = [
+        `Transformation : ${input}`,
+        `Objectif : ${goal}`,
+        `Résultats corrects déjà calculés (à expliquer, ne pas modifier) : ${casResult}`,
+        ``,
+        `Méthode attendue : poser z = x + iy (x, y réels) et Z = X + iY ; remplacer et développer ; pour un quotient, multiplier numérateur et dénominateur par le conjugué du dénominateur pour obtenir X et Y. ` +
+          `Pour un ensemble de points : traduire la condition (Y = 0, X = 0, ou |Z|² = k²), exclure les points où f n'est pas définie, factoriser l'équation obtenue, puis reconnaître chaque partie : droite (équation réduite), cercle (mise sous forme canonique (x − a)² + (y − b)² = R² : centre et rayon), point ou ensemble vide. ` +
+          `Pour |Z| = k avec Z = (z − a)/(z − b), interpréter aussi géométriquement (AM = k·BM ; médiatrice si k = 1). Conclure par une phrase donnant l'ensemble (avec les points exclus). ` +
+          `Sois concis : 5 à 10 étapes, 2 à 3 phrases par étape, un calcul clé dans le champ latex. Aboutis EXACTEMENT aux résultats fournis.`,
       ];
       return { system: SYSTEM_PROMPT_COMPLEX, userMsg: e.join("\n") };
     }
@@ -395,6 +426,20 @@ function buildPrompt({ domain, input, operation, casResult, params }) {
   }
 
   // Differential equation.
+  // Barycentre de points pondérés (+ ligne de niveau).
+  if (operation === "barycentre" || operation === "bary_locus") {
+    const extra = operation === "bary_locus"
+      ? `Puis détermine l'ensemble des points M tels que ‖Σ aᵢ·MAᵢ‖ = k : réduis Σ aᵢ·MAᵢ en (Σ aᵢ)·MG grâce à la relation fondamentale (relation de Chasles), d'où |Σ aᵢ|·MG = k, et conclus (cercle de centre G et de rayon k/|Σ aᵢ|, point G si k = 0, ensemble vide si k < 0). Si la somme des poids est nulle, le vecteur est constant : conclus (tout le plan ou ensemble vide).`
+      : `Explique la construction : pour 2 points, la relation vectorielle AG = b/(a+b)·AB ; pour 3 ou 4 points, l'associativité du barycentre (barycentres partiels) comme fourni.`;
+    const userMsg =
+      `Points pondérés : ${input}\n` +
+      `Résultats corrects déjà calculés (à expliquer, ne pas modifier) :\n${casResult}\n\n` +
+      `Explique pas à pas : condition d'existence (somme des poids non nulle), relation vectorielle définissant G (Σ aᵢ·GAᵢ = 0), relation fondamentale Σ aᵢ·MAᵢ = (Σ aᵢ)·MG pour tout point M, calcul des coordonnées x_G = (Σ aᵢ xᵢ)/(Σ aᵢ) et y_G de même. ` +
+      `Si la somme des poids est nulle, explique qu'il n'y a pas de barycentre et que le vecteur Σ aᵢ·MAᵢ est constant. ${extra} ` +
+      `Écris les vecteurs avec \\overrightarrow{GA} dans le champ latex. Sois concis : 5 à 9 étapes, 2 à 3 phrases par étape. Aboutis EXACTEMENT aux valeurs fournies.`;
+    return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
+  }
+
   // Système d'équations linéaires (2, 3 ou 4 inconnues).
   if (operation === "system") {
     const userMsg =
@@ -591,7 +636,7 @@ async function explainSteps({ domain = "function", input, operation, casResult, 
       model: MATHS_LAB_MODEL,
       // Two-method answers (e.g. quotient: division posée + identification) exceed 2000 tokens;
       // a truncated reply is invalid JSON → "Explication indisponible".
-      max_tokens: /^(pw_|eq3_|eq2_param|system)/.test(String(operation || "")) ? 8192 : 4096, // long multi-part explanations
+      max_tokens: /^(pw_|eq3_|eq2_param|system|zf_)/.test(String(operation || "")) ? 8192 : 4096, // long multi-part explanations
       system: [
         { type: "text", text: system, cache_control: { type: "ephemeral" } },
       ],
