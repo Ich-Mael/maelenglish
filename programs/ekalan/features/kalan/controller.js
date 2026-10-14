@@ -1612,6 +1612,14 @@ module.exports.explainMath = async (req, res) => {
         }
         params = { a, b };
         opKeyPart = `integral_def:${a},${b}`; // distinct cache key per bounds
+      } else if (operation === "integral_ipp") {
+        const a = typeof req.body.a === "string" ? req.body.a.trim().slice(0, 40) : "";
+        const b = typeof req.body.b === "string" ? req.body.b.trim().slice(0, 40) : "";
+        if ((a && !b) || (!a && b)) {
+          return res.status(400).json({ ok: false, error: "Bornes a et b incomplètes." });
+        }
+        if (a) params = { a, b };
+        opKeyPart = `integral_ipp:${a},${b}`; // primitive (no bounds) or definite
       } else if (operation === "study") {
         opKeyPart = "study:v3"; // bump when the étude prompt changes (busts old cached studies)
       } else if (operation === "tangent") {

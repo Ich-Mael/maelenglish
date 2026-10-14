@@ -26,6 +26,7 @@ const OPERATIONS = {
   limit: "la limite demandée",
   integral: "une primitive (intégrale) de f",
   integral_def: "la valeur de l'intégrale définie",
+  integral_ipp: "le calcul de l'intégrale par une intégration par parties",
   variations: "le tableau de variation de f",
   domain: "le domaine de définition de f",
   study: "l'étude complète de la fonction f",
@@ -91,7 +92,7 @@ const SYSTEM_PROMPT_FUNCTION = [
   "Ta tâche : expliquer, étape par étape et en français (niveau Terminale), le raisonnement qui mène EXACTEMENT à ce résultat.",
   "Règles impératives :",
   "- N'invente JAMAIS un résultat final différent de celui fourni ; ton explication doit y aboutir.",
-  "- Écris les mathématiques en LaTeX SANS délimiteurs ($, \\[ \\]) dans les champs 'latex' et 'finalAnswerLatex'.",
+  "- Écris les mathématiques en LaTeX SANS délimiteurs ($, \\[ \\]) dans les champs 'latex' et 'finalAnswerLatex'. Dans 'explanation', écris du texte simple : toute formule LaTeX doit être entre $…$ (jamais de \\left, \\right, \\, ni de commande LaTeX hors des $), et pas de « \\n » : fais des phrases.",
   "- Donne TOUJOURS les valeurs sous forme EXACTE quand c'est possible : radicaux et fractions simplifiés (ex : \\pm\\sqrt{4/3} = \\pm\\dfrac{2\\sqrt{3}}{3}, et NON \\pm 1{,}155). Une valeur décimale approchée peut être ajoutée EN PLUS, précédée de \\approx.",
   "- Intervalles en notation française : le crochet d'une borne OUVERTE ou INFINIE se tourne vers l'extérieur (ex : ]-\\infty\\,;\\,2] et [0\\,;\\,+\\infty[), et les bornes sont séparées par un point-virgule (la virgule est le séparateur décimal).",
   "- Reste concis : 2 à 6 étapes, chacune avec un titre court, l'expression LaTeX de l'étape, et une courte explication en français.",
@@ -106,7 +107,7 @@ const SYSTEM_PROMPT_COMPLEX = [
   "Pour la NATURE d'un triangle ou d'un quadrilatère défini par les affixes de ses points : calcule les longueurs avec les modules de différences (AB = |z_B - z_A|) et les angles avec les arguments de quotients (arg((z_C - z_A)/(z_B - z_A))) ; déduis les égalités de longueurs, le parallélisme et les angles droits, puis justifie la nature FOURNIE sans la changer.",
   "Règles impératives :",
   "- N'invente JAMAIS un résultat final différent de celui fourni ; ton explication doit y aboutir.",
-  "- Écris les mathématiques en LaTeX SANS délimiteurs ($, \\[ \\]) dans les champs 'latex' et 'finalAnswerLatex'. Note l'unité imaginaire i et utilise e^{i\\theta} pour la forme exponentielle.",
+  "- Écris les mathématiques en LaTeX SANS délimiteurs ($, \\[ \\]) dans les champs 'latex' et 'finalAnswerLatex'. Note l'unité imaginaire i et utilise e^{i\\theta} pour la forme exponentielle. Dans 'explanation', écris du texte simple : toute formule LaTeX doit être entre $…$ (jamais de \\left, \\right, \\, ni de commande LaTeX hors des $), et pas de « \\n » : fais des phrases.",
   "- Reste concis : 2 à 6 étapes, chacune avec un titre court, l'expression LaTeX de l'étape, et une courte explication en français.",
 ].join("\n");
 
@@ -130,7 +131,7 @@ const SYSTEM_PROMPT_TRIG = [
   "Tu dois CALCULER toi-même le résultat exact, puis l'expliquer étape par étape en français (niveau Terminale).",
   "Règles impératives :",
   "- Donne un résultat EXACT et juste (valeurs remarquables, π, fractions, radicaux).",
-  "- Écris les mathématiques en LaTeX SANS délimiteurs ($, \\[ \\]) dans les champs 'latex' et 'finalAnswerLatex'.",
+  "- Écris les mathématiques en LaTeX SANS délimiteurs ($, \\[ \\]) dans les champs 'latex' et 'finalAnswerLatex'. Dans 'explanation', écris du texte simple : toute formule LaTeX doit être entre $…$ (jamais de \\left, \\right, \\, ni de commande LaTeX hors des $), et pas de « \\n » : fais des phrases.",
   "- Reste concis : 2 à 6 étapes, chacune avec un titre court, l'expression LaTeX de l'étape, et une courte explication en français.",
   "- Utilise les outils du chapitre : cercle trigonométrique, valeurs remarquables, formules d'addition et de duplication, linéarisation (formules d'Euler ou puissances de cos/sin).",
 ].join("\n");
@@ -385,6 +386,22 @@ function buildPrompt({ domain, input, operation, casResult, params }) {
     return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
   }
 
+  // Integration by parts: the choice of u / v' and every step are computed client-side (exact).
+  if (operation === "integral_ipp") {
+    const def = params && params.a && params.b;
+    const userMsg =
+      `Fonction : f(x) = ${input}\n` +
+      `Opération : ${def ? `calculer l'intégrale de ${params.a} à ${params.b} de f(x) dx` : "déterminer une primitive de f"} par intégration par parties.\n` +
+      `Calcul correct (fourni — choix de u et v', étapes, résultat — à expliquer, ne pas modifier) : ${casResult}\n\n` +
+      `Explique simplement, niveau Terminale :\n` +
+      `- rappelle la formule : ∫ u(x)v'(x) dx = u(x)v(x) − ∫ u'(x)v(x) dx${def ? " (avec des crochets [u v] entre les bornes pour une intégrale définie)" : ""} ;\n` +
+      `- justifie le choix de u et de v' (on dérive ce qui se simplifie : polynôme, ou ln ; on primitive ce qui reste simple : exponentielle, sin, cos, polynôme) ;\n` +
+      `- calcule u', v puis applique la formule ; s'il y a plusieurs intégrations par parties, fais-les dans l'ordre ; si l'intégrale de départ réapparaît (e^x·cos x, e^x·sin x), isole-la ;\n` +
+      `- ${def ? "évalue les crochets aux bornes ; pour combiner, utilise EXACTEMENT les valeurs intermédiaires fournies (« integrale restante … = … », « integrale de depart = … ») sans refaire l'arithmétique autrement, et conclus avec la valeur fournie" : "termine par la primitive fournie + une constante k, et vérifie en dérivant"}.\n` +
+      `Dans 'finalAnswerLatex', écris l'égalité finale avec le symbole intégrale${def ? ` et les bornes ${params.a} et ${params.b}` : " et + k"}.`;
+    return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
+  }
+
   // Limit: convey the target point + side so the explanation is precise.
   if (operation === "limit") {
     let where = "x tend vers la valeur demandée";
@@ -636,7 +653,7 @@ async function explainSteps({ domain = "function", input, operation, casResult, 
       model: MATHS_LAB_MODEL,
       // Two-method answers (e.g. quotient: division posée + identification) exceed 2000 tokens;
       // a truncated reply is invalid JSON → "Explication indisponible".
-      max_tokens: /^(pw_|eq3_|eq2_param|system|zf_)/.test(String(operation || "")) ? 8192 : 4096, // long multi-part explanations
+      max_tokens: /^(pw_|eq3_|eq2_param|system|zf_|integral_ipp)/.test(String(operation || "")) ? 8192 : 4096, // long multi-part explanations
       system: [
         { type: "text", text: system, cache_control: { type: "ephemeral" } },
       ],

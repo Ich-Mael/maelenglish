@@ -836,6 +836,10 @@
           <div class="ml-side" id="iside">
             <button type="button" class="ml-sidebtn is-active" data-itype="indef">∫ Primitive (indéfinie)</button>
             <button type="button" class="ml-sidebtn" data-itype="def">∫ₐᵇ Intégrale définie</button>
+            <button type="button" class="ml-sidebtn" data-itype="ipp">∫ u·v′ Par parties</button>
+          </div>
+          <div class="ml-hint" id="iipp-note" hidden>Intégration par parties : écrivez f comme un produit, par ex. <b>x*exp(x)</b>, <b>x^2*cos(x)</b>, <b>x*ln(x)</b>, <b>ln(x)</b>, <b>exp(x)*sin(x)</b>. Bornes a et b facultatives : vides → primitive, remplies → intégrale définie. Exemples :
+            <span class="ml-ipp-ex"><button type="button" class="ml-key" data-ippex="x*exp(x)|0|1">x·eˣ sur [0 ; 1]</button><button type="button" class="ml-key" data-ippex="x*sin(x)|0|pi">x·sin x sur [0 ; π]</button><button type="button" class="ml-key" data-ippex="ln(x)|1|e">ln x sur [1 ; e]</button><button type="button" class="ml-key" data-ippex="x^2*exp(-x)||">x²·e⁻ˣ</button><button type="button" class="ml-key" data-ippex="exp(x)*cos(x)||">eˣ·cos x</button></span>
           </div>
 
           <div class="ml-input-row" id="ibounds" hidden>
@@ -862,6 +866,7 @@
             <button type="button" class="ml-key is-fn" data-ins="ln(|)">ln</button>
             <button type="button" class="ml-key is-fn" data-ins="sin(|)">sin</button>
             <button type="button" class="ml-key is-fn" data-ins="cos(|)">cos</button>
+            <button type="button" class="ml-key" data-ins="e">e</button>
             <button type="button" class="ml-key is-util" data-act="back">⌫</button>
             <button type="button" class="ml-key is-util" data-act="clear">C</button>
           </div>
@@ -870,7 +875,7 @@
             <button class="ml-op" data-iop="integral"><i class="bi bi-integral"></i> Calculer l'intégrale</button>
           </div>
 
-          <div class="ml-hint">« Primitive » donne ∫ f(x) dx (avec la constante). « Intégrale définie » calcule ∫ de a à b de f(x) dx par F(b) − F(a) ; l'aire correspondante est colorée sur le graphique.</div>
+          <div class="ml-hint">« Primitive » donne ∫ f(x) dx (avec la constante). « Intégrale définie » calcule ∫ de a à b de f(x) dx par F(b) − F(a) ; l'aire correspondante est colorée sur le graphique. « Par parties » applique ∫ u·v′ = u·v − ∫ u′·v avec le choix de u et v′ expliqué.</div>
           <details class="ml-form">
             <summary><i class="bi bi-journal-text"></i> Formulaire — primitives &amp; intégration</summary>
             <div class="ml-form-grid" id="form-grid-integral"></div>
@@ -1406,7 +1411,25 @@
         break; }
       return i;
     }
+    // Clean LaTeX layout commands the model leaves in prose: left/right (keep the delimiter),
+    // spacing commands (comma, semicolon, quad), and a literal backslash-n that does not start a command like neq.
+    function proseClean(t){
+      var out = '', i = 0, n = t.length;
+      while(i < n){
+        var c = t.charAt(i);
+        if(c !== BS){ out += c; i++; continue; }
+        var j = i + 1; while(j < n && _isAlpha(t.charAt(j))) j++;
+        var name = t.slice(i + 1, j), nx = t.charAt(i + 1);
+        if(name === 'left' || name === 'right' || name === 'big' || name === 'Big' || name === 'bigg' || name === 'Bigg'){ i = j; continue; }
+        if(name === 'quad' || name === 'qquad'){ out += ' '; i = j; continue; }
+        if(nx === ',' || nx === ';' || nx === '!' || nx === ':'){ out += ' '; i += 2; continue; }
+        if(nx === 'n' && !(t.charAt(i + 2) >= 'a' && t.charAt(i + 2) <= 'z')){ var lc = out.replace(/ +$/, '').slice(-1); out += ('.:;!?'.indexOf(lc) < 0 && lc) ? '. ' : ' '; i += 2; continue; } // literal newline escape, e.g. before « On »
+        out += c; i++;
+      }
+      return out;
+    }
     function appendProseWithMath(el, text){
+      if(text.indexOf(BS) >= 0) text = proseClean(text);
       if(text.indexOf(BS) < 0){ el.appendChild(document.createTextNode(text)); return; }
       var i = 0, n = text.length, buf = '';
       function flush(){ if(buf){ el.appendChild(document.createTextNode(buf)); buf = ''; } }
@@ -3522,6 +3545,7 @@
     var iPreviewEl = document.getElementById('iPreview');
     var isideEl    = document.getElementById('iside');
     var iboundsEl  = document.getElementById('ibounds');
+    var iippNote   = document.getElementById('iipp-note');
     var intObjs    = [];
     var intType    = 'indef';
     var activeInt  = ifxInput;
@@ -3534,7 +3558,8 @@
       var f = (ifxInput.value || '').trim();
       var fTex = null; try { fTex = toLatex(f); } catch(e){ return null; }
       if(fTex == null) return null;
-      if(intType === 'def'){
+      var ippDef = intType === 'ipp' && ((iaInput.value || '').trim() || (ibInput.value || '').trim());
+      if(intType === 'def' || ippDef){
         var a = (iaInput.value || '').trim() || 'a', b = (ibInput.value || '').trim() || 'b';
         var aTex, bTex;
         try { aTex = toLatex(a); } catch(e){ aTex = a; }
@@ -3555,7 +3580,10 @@
     function setIType(t){
       intType = t;
       isideEl.querySelectorAll('.ml-sidebtn').forEach(function(b){ b.classList.toggle('is-active', b.getAttribute('data-itype') === t); });
-      iboundsEl.hidden = (t !== 'def');
+      iboundsEl.hidden = (t !== 'def' && t !== 'ipp');
+      iippNote.hidden = (t !== 'ipp');
+      iaInput.placeholder = t === 'ipp' ? 'vide = primitive' : 'borne inf.'; ibInput.placeholder = t === 'ipp' ? 'vide = primitive' : 'borne sup.';
+      if(t === 'ipp' && ['x^2', 'x', ''].indexOf((ifxInput.value || '').trim()) >= 0){ ifxInput.value = 'x*exp(x)'; }
       updateIntPreview();
     }
     isideEl.addEventListener('click', function(ev){ var b = ev.target.closest('.ml-sidebtn'); if(!b) return; setIType(b.getAttribute('data-itype')); });
@@ -3675,7 +3703,368 @@
       return s * h / 3;
     }
 
+    /* --- Intégration par parties (pure JS, exact) ---
+       ∫ u·v' = u·v − ∫ u'·v. Handled forms (k constant):
+         P(x)·e^(αx+β), P(x)·sin(αx+β), P(x)·cos(αx+β)  → u = P (repeated until P is constant)
+         P(x)·ln(αx+β) (P may be 1)                        → u = ln, v' = P
+         k·e^(αx+β)·sin/cos(γx+δ)                          → two IPP, I reappears (cyclic)
+       A primitive is a list of terms { P: poly, kind: 'exp'|'sin'|'cos'|'ln'|'1', L: {a, b} }. */
+    function ippFactors(n, out){
+      if(n.t === '*'){ ippFactors(n.l, out); ippFactors(n.r, out); return; }
+      if(n.t === 'neg'){ out.push({ t:'num', v:-1 }); ippFactors(n.a, out); return; }
+      if(n.t === '/'){ var kd = itConst(n.r); if(kd && !fZero(kd)){ ippFactors(n.l, out); out.push({ t:'num', v:1 / fVal(kd), fr: fDiv(fr(1), kd) }); return; } }
+      out.push(n);
+    }
+    function ippTrans(n){ // transcendental factor with a linear argument
+      if(n.t === 'fn' && (n.name === 'exp' || n.name === 'sin' || n.name === 'cos' || n.name === 'ln')){ var L = itLin(n.a); if(L) return { kind: n.name, L: { a: L.a, b: L.b } }; }
+      if(n.t === '^' && n.l.t === 'num' && Math.abs(n.l.v - Math.E) < 1e-12){ var L2 = itLin(n.r); if(L2) return { kind: 'exp', L: { a: L2.a, b: L2.b } }; }
+      return null;
+    }
+    function ippClassify(ast){
+      var fs = []; ippFactors(ast, fs);
+      var P = [fr(1)], tr = [];
+      for(var i = 0; i < fs.length; i++){
+        var f = fs[i];
+        if(f.fr){ P = pScale(P, f.fr); continue; }
+        var p = astToPolyX(f); if(p){ P = pMul(P, p); continue; }
+        var t = ippTrans(f); if(t){ tr.push(t); continue; }
+        return null;
+      }
+      if(tr.length === 0) return { kind: 'poly', P: P };
+      if(tr.length === 1) return { kind: tr[0].kind, P: P, L: tr[0].L };
+      if(tr.length === 2 && pConst(P)){
+        var ex = tr[0].kind === 'exp' ? tr[0] : (tr[1].kind === 'exp' ? tr[1] : null);
+        var tg = tr[0].kind === 'exp' ? tr[1] : tr[0];
+        if(ex && (tg.kind === 'sin' || tg.kind === 'cos')) return { kind: 'cyc', k: P[0], E: ex.L, T: tg };
+      }
+      return null;
+    }
+    function ippLTex(L){ return pTex([L.b, L.a], 'x'); }
+    function ippLPlain(L){ return pPlain([L.b, L.a], 'x'); }
+    function ippTTex(kind, L){
+      var lt = ippLTex(L), simple = fZero(L.b) && L.a.d === 1;
+      if(kind === 'exp') return 'e^{' + lt + '}';
+      if(kind === '1') return '';
+      var arg = simple && L.a.n === 1 ? 'x' : BS + 'left(' + lt + BS + 'right)';
+      return BS + kind + (arg === 'x' ? ' x' : arg);
+    }
+    function ippTPlain(kind, L){ return kind === '1' ? '' : kind + '(' + ippLPlain(L) + ')'; }
+    function ippTEval(kind, L, x){ var a = fVal(L.a) * x + fVal(L.b); return kind === 'exp' ? Math.exp(a) : kind === 'sin' ? Math.sin(a) : kind === 'cos' ? Math.cos(a) : kind === 'ln' ? Math.log(a) : 1; }
+    function ippPTex(P, kind, L){ // P(x)·T as one product (no leading sign handling)
+      var T = ippTTex(kind, L);
+      if(pConst(P)){ var c = P[0]; if(!T) return fTex(c); var ab = fr(Math.abs(c.n), c.d); return (c.n < 0 ? '-' : '') + (ab.n === 1 && ab.d === 1 ? '' : fTex(ab)) + T; }
+      var nz = P.filter(function(c){ return !fZero(c); }).length;
+      if(!T) return pTex(P, 'x');
+      return (nz > 1 ? BS + 'left(' + pTex(P, 'x') + BS + 'right)' : pTex(P, 'x')) + T;
+    }
+    function ippSumTex(terms){
+      var out = '';
+      terms.forEach(function(t){ if(pDeg(t.P) < 0) return; var s = ippPTex(t.P, t.kind, t.L); if(out && s.charAt(0) !== '-') out += ' + '; else if(out) out += ' '; out += s; });
+      return out || '0';
+    }
+    function ippSumPlain(terms){
+      return terms.filter(function(t){ return pDeg(t.P) >= 0; }).map(function(t){ var T = ippTPlain(t.kind, t.L); return '(' + pPlain(t.P, 'x') + ')' + (T ? '*' + T : ''); }).join(' + ') || '0';
+    }
+    function ippEval(terms, x){ var s = 0; terms.forEach(function(t){ s += pEvalN(t.P, x) * ippTEval(t.kind, t.L, x); }); return s; }
+    function ippMerge(terms){ // group terms with the same kind + argument
+      var out = [];
+      terms.forEach(function(t){
+        for(var i = 0; i < out.length; i++){ var o = out[i]; if(o.kind === t.kind && (t.kind === '1' || (o.L.a.n === t.L.a.n && o.L.a.d === t.L.a.d && o.L.b.n === t.L.b.n && o.L.b.d === t.L.b.d))){ o.P = pAdd(o.P, t.P); return; } }
+        out.push({ P: t.P, kind: t.kind, L: t.L });
+      });
+      return out.filter(function(t){ return pDeg(t.P) >= 0; });
+    }
+    function pDerivF(P){ var r = []; for(var i = 1; i < P.length; i++) r.push(fMul(P[i], fr(i))); return pTrim(r.length ? r : [fr(0)]); }
+    function pPrimF(P){ var r = [fr(0)]; for(var i = 0; i < P.length; i++) r.push(fDiv(P[i], fr(i + 1))); return pTrim(r); }
+    // primitive of T(αx+β): { c, kind }
+    function ippPrimT(kind, L){ var inv = fDiv(fr(1), L.a); if(kind === 'exp') return { c: inv, kind: 'exp' }; if(kind === 'sin') return { c: fNeg(inv), kind: 'cos' }; return { c: inv, kind: 'sin' }; }
+    // derivative of T(αx+β): { c, kind }
+    function ippDerT(kind, L){ if(kind === 'exp') return { c: L.a, kind: 'exp' }; if(kind === 'sin') return { c: L.a, kind: 'cos' }; return { c: fNeg(L.a), kind: 'sin' }; }
+
+    // Snap a real to an exact-looking form: p/q, or q·B + p with B ∈ {e, e², 1/e, π, π², ln 2, ln 3, √2, √3}.
+    var ippExtraBases = []; // e^{f(a)}, e^{f(b)} for the current integral (set by runIPP)
+    function ippSnap(v){
+      if(!isFinite(v)) return { tex: '?', plain: '?', exact: false };
+      var r0 = pwSnap(v); if(r0.exact && r0.tex.indexOf('sqrt') < 0) return r0;
+      for(var qd0 = 13; qd0 <= 30; qd0++){ var pn0 = Math.round(v * qd0); if(Math.abs(pn0 / qd0 - v) < 1e-11 * (1 + Math.abs(v))){ var f0 = fr(pn0, qd0); return { tex: fTex(f0), plain: fPlain(f0), exact: true, num: v }; } }
+      if(!r0.exact || r0.tex.indexOf('sqrt') >= 0) r0 = { tex: BS + 'approx ' + (Math.round(v * 10000) / 10000), plain: '~' + (Math.round(v * 10000) / 10000), exact: false, num: v };
+      var BASES = [
+        { v: Math.E, n: 'e', d: '', p: 'e' }, { v: Math.E * Math.E, n: 'e^{2}', d: '', p: 'e^2' }, { v: 1 / Math.E, n: '1', d: 'e', p: '1/e' },
+        { v: Math.PI, n: BS + 'pi', d: '', p: 'pi' }, { v: Math.PI * Math.PI, n: BS + 'pi^{2}', d: '', p: 'pi^2' },
+        { v: Math.LN2, n: BS + 'ln 2', d: '', p: 'ln(2)' }, { v: Math.log(3), n: BS + 'ln 3', d: '', p: 'ln(3)' },
+        { v: Math.SQRT2, n: BS + 'sqrt{2}', d: '', p: 'sqrt(2)' }, { v: Math.sqrt(3), n: BS + 'sqrt{3}', d: '', p: 'sqrt(3)' }
+      ].concat(ippExtraBases);
+      var best = null;
+      BASES.forEach(function(B){
+        for(var qd = 1; qd <= 30; qd++) for(var qn = -48; qn <= 48; qn++){
+          if(!qn) continue; var rest = v - qn / qd * B.v, rf = null;
+          for(var d = 1; d <= 30 && !rf; d++){ var pn = Math.round(rest * d); if(Math.abs(pn / d - rest) < 1e-11 * (1 + Math.abs(v))) rf = fr(pn, d); }
+          if(!rf) continue;
+          var cost = qd + Math.abs(qn) + rf.d + (rf.n ? 1 : 0);
+          if(!best || cost < best.cost) best = { cost: cost, q: fr(qn, qd), r: rf, B: B };
+        }
+      });
+      function ratOf(x){ for(var d = 1; d <= 12; d++){ var pn = Math.round(x * d); if(Math.abs(pn / d - x) < 1e-11 * (1 + Math.abs(v))) return fr(pn, d); } return null; }
+      var EB = BASES.filter(function(B){ return B.p.indexOf('e') === 0 || B.p.indexOf('exp') === 0 || B.p === '1/e'; }); // two-base search: exponentials only (fewer false fits)
+      function coefTex(q, B, first){ var aq = fr(Math.abs(q.n), q.d), num = (aq.n === 1 ? B.n : (B.n === '1' ? String(aq.n) : aq.n + B.n)), den = (aq.d === 1 ? '' : String(aq.d)) + B.d; return (q.n < 0 ? (first ? '-' : ' - ') : (first ? '' : ' + ')) + (den ? BS + 'frac{' + num + '}{' + den + '}' : num); }
+      function coefPlain(q, B, first){ var aq = fr(Math.abs(q.n), q.d); return (q.n < 0 ? (first ? '-' : ' - ') : (first ? '' : ' + ')) + (aq.n === 1 && aq.d === 1 ? '' : (aq.d === 1 ? aq.n : '(' + fPlain(aq) + ')*')) + B.p; }
+      if(!best){ // two bases, e.g. 2e² − e
+        for(var i1 = 0; i1 < EB.length && !best; i1++) for(var i2 = i1 + 1; i2 < EB.length; i2++){
+          var B1 = EB[i1], B2 = EB[i2];
+          for(var d1 = 1; d1 <= 4; d1++) for(var n1 = -12; n1 <= 12; n1++){ if(!n1) continue;
+            for(var d2 = 1; d2 <= 4; d2++) for(var n2 = -12; n2 <= 12; n2++){ if(!n2) continue;
+              var rf2 = ratOf(v - n1 / d1 * B1.v - n2 / d2 * B2.v); if(!rf2) continue;
+              var cost2 = d1 + d2 + Math.abs(n1) + Math.abs(n2) + rf2.d;
+              if(!best || cost2 < best.cost) best = { cost: cost2, two: [{ q: fr(n1, d1), B: B1 }, { q: fr(n2, d2), B: B2 }], r: rf2 };
+            } }
+        }
+        if(best){
+          if(best.two[0].q.n < 0 && best.two[1].q.n > 0) best.two.reverse();
+          var tt = '', pp = '';
+          best.two.forEach(function(it, k){ tt += coefTex(it.q, it.B, k === 0); pp += coefPlain(it.q, it.B, k === 0); });
+          if(!fZero(best.r)){ tt += (best.r.n < 0 ? ' - ' : ' + ') + fTex(fr(Math.abs(best.r.n), best.r.d)); pp += (best.r.n < 0 ? ' - ' : ' + ') + fPlain(fr(Math.abs(best.r.n), best.r.d)); }
+          return { tex: tt, plain: pp, exact: true, num: v };
+        }
+      }
+      if(!best) return r0;
+      var q = best.q, B = best.B, aq = fr(Math.abs(q.n), q.d);
+      var num = (aq.n === 1 ? (B.n === '1' && B.d ? '1' : B.n) : (B.n === '1' ? String(aq.n) : aq.n + B.n)), den = (aq.d === 1 ? '' : String(aq.d)) + B.d;
+      var bt = den ? BS + 'frac{' + num + '}{' + den + '}' : num;
+      var bp = (aq.n === 1 && aq.d === 1 ? '' : (aq.d === 1 ? aq.n : '(' + fPlain(aq) + ')*')) + B.p;
+      var tex, plain;
+      if(fZero(best.r)){ tex = (q.n < 0 ? '-' : '') + bt; plain = (q.n < 0 ? '-' : '') + bp; }
+      else if(q.n > 0){ tex = bt + (best.r.n < 0 ? ' - ' : ' + ') + fTex(fr(Math.abs(best.r.n), best.r.d)); plain = bp + (best.r.n < 0 ? ' - ' : ' + ') + fPlain(fr(Math.abs(best.r.n), best.r.d)); }
+      else { tex = fTex(best.r) + ' - ' + bt; plain = fPlain(best.r) + ' - ' + bp; }
+      return { tex: tex, plain: plain, exact: true, num: v };
+    }
+
+    // Build the IPP solution. Returns { err } or { steps:[{u,du,dv,v,uvTerms,restTex,restTerms}], F:terms, choice, summary }.
+    function ippSolve(ast){
+      var c = ippClassify(ast);
+      if(!c) return { err: 'Forme non prise en charge par l’intégration par parties automatique. Formes reconnues : P(x)·e^(ax+b), P(x)·sin(ax+b), P(x)·cos(ax+b), P(x)·ln(ax+b), ln(ax+b) seul et e^(ax+b)·cos/sin(cx+d) (P polynôme).' };
+      if(c.kind === 'poly') return { err: 'f est un polynôme : pas besoin d’intégration par parties, utilisez « Primitive ».' };
+      if(fZero(c.L ? c.L.a : fr(1))) return { err: 'Argument constant : pas besoin d’intégration par parties.' };
+      var steps = [], F = [];
+      if(c.kind === 'exp' || c.kind === 'sin' || c.kind === 'cos'){
+        if(pConst(c.P)) return { err: 'f est de la forme k·' + c.kind + '(ax+b) : une primitive usuelle suffit, utilisez « Primitive ».' };
+        var P = c.P, kind = c.kind, sign = fr(1);
+        var choice = 'u(x) = polynôme (il se simplifie en dérivant), v′(x) = ' + (kind === 'exp' ? 'exponentielle' : kind) + ' (facile à primitiver)';
+        while(!pConst(P)){
+          var V = ippPrimT(kind, c.L), dP = pDerivF(P);
+          var uv = { P: pScale(P, fMul(sign, V.c)), kind: V.kind, L: c.L };
+          var rest = { P: pScale(dP, V.c), kind: V.kind, L: c.L }; // ∫ u'·v
+          var flip = rest.P[pDeg(rest.P)].n < 0; // − ∫ (−g) written + ∫ g
+          if(flip) rest.P = pScale(rest.P, fr(-1));
+          steps.push({ op: flip ? ' + ' : ' - ',  uP: pPlain(P, 'x'), vP: '(' + fPlain(V.c) + ')*' + ippTPlain(V.kind, c.L), u: pTex(P, 'x'), du: pTex(dP, 'x'), dv: ippTTex(kind, c.L), v: ippPTex([V.c], V.kind, c.L), uvTex: ippPTex(pScale(P, V.c), V.kind, c.L), restTex: ippPTex(rest.P, V.kind, c.L), sign: sign, uvSigned: uv });
+          F.push(uv);
+          if(!flip) sign = fNeg(sign); P = rest.P; kind = rest.kind;
+        }
+        // last integral: constant · T → usual primitive
+        var V2 = ippPrimT(kind, c.L), lastPrim = { P: [fMul(P[0], V2.c)], kind: V2.kind, L: c.L };
+        if(!fZero(P[0])) F.push({ P: [fMul(sign, lastPrim.P[0])], kind: V2.kind, L: c.L });
+        return { kind: 'poly-trans', steps: steps, F: ippMerge(F), choice: choice, cls: c, lastPrim: lastPrim };
+      }
+      if(c.kind === 'ln'){
+        var L = c.L, Q = pPrimF(c.P), aQ = pScale(Q, L.a);
+        var dv = synthDivF(aQ, fDiv(fNeg(L.b), L.a)); // αQ = (x + β/α)·q + rem
+        var S = pScale(dv.q, fDiv(fr(1), L.a)), r = dv.rem;
+        // ∫ αQ/(αx+β) = ∫ S + (r/α)·ln|αx+β|
+        var restPrim = [{ P: pPrimF(S), kind: '1', L: L }];
+        if(!fZero(r)) restPrim.push({ P: [fDiv(r, L.a)], kind: 'ln', L: L });
+        var uvT = { P: Q, kind: 'ln', L: L };
+        var Fl = [uvT].concat(restPrim.map(function(t){ return { P: pScale(t.P, fr(-1)), kind: t.kind, L: t.L }; }));
+        var restTex = BS + 'frac{' + fTex(L.a) + '}{' + ippLTex(L) + '}' + BS + 'times ' + (pDeg(Q) > 0 && Q.filter(function(q){ return !fZero(q); }).length > 1 ? BS + 'left(' + pTex(Q, 'x') + BS + 'right)' : pTex(Q, 'x'));
+        steps.push({ uP: 'ln(' + ippLPlain(L) + ')', vP: pPlain(Q, 'x'), u: ippTTex('ln', L), du: BS + 'frac{' + fTex(L.a) + '}{' + ippLTex(L) + '}', dv: pTex(c.P, 'x'), v: pTex(Q, 'x'), uvTex: ippPTex(Q, 'ln', L), restTex: restTex, sign: fr(1), lnS: S, lnR: r, lnRest: restPrim });
+        return { kind: 'ln', steps: steps, F: ippMerge(Fl), choice: 'u(x) = ln (sa dérivée est une fraction rationnelle simple), v′(x) = ' + (pConst(c.P) && fVal(c.P[0]) === 1 ? '1 (on écrit ln = 1 × ln)' : 'le polynôme'), cls: c };
+      }
+      if(c.kind === 'cyc'){
+        var E = c.E, T = c.T, al = E.a, ga = T.L.a, k = c.k;
+        var den = fAdd(fMul(al, al), fMul(ga, ga));
+        // ∫ e^{L1} cos(L2) = e^{L1}(α cos + γ sin)/(α²+γ²) ; ∫ e^{L1} sin(L2) = e^{L1}(α sin − γ cos)/(α²+γ²)
+        var cCos, cSin;
+        if(T.kind === 'cos'){ cCos = fDiv(al, den); cSin = fDiv(ga, den); } else { cSin = fDiv(al, den); cCos = fDiv(fNeg(ga), den); }
+        return { kind: 'cyc', cls: c, al: al, ga: ga, den: den, k: k, cCos: fMul(k, cCos), cSin: fMul(k, cSin),
+          choice: 'u(x) = ' + T.kind + ' (on dérive la fonction trigonométrique), v′(x) = exponentielle — deux intégrations par parties, puis on retrouve l’intégrale de départ' };
+      }
+      return { err: 'Forme non prise en charge.' };
+    }
+    function ippCycTex(R){ // e^{L1}(A cos L2 + B sin L2)
+      var e = 'e^{' + ippLTex(R.cls.E) + '}', L2 = R.cls.T.L, inner = [];
+      var parts = [{ c: R.cCos, k: 'cos' }, { c: R.cSin, k: 'sin' }].filter(function(p){ return !fZero(p.c); });
+      var s = '';
+      parts.forEach(function(p, i){ var ab = fr(Math.abs(p.c.n), p.c.d), ct = (ab.n === 1 && ab.d === 1) ? '' : fTex(ab); s += (i ? (p.c.n < 0 ? ' - ' : ' + ') : (p.c.n < 0 ? '-' : '')) + ct + ippTTex(p.k, L2); });
+      return parts.length > 1 ? e + BS + 'left(' + s + BS + 'right)' : (s.charAt(0) === '-' ? '-' + e + s.slice(1) : e + s); // single term: e^{…}·(c·T)
+    }
+    function ippCycEval(R, x){ var L2 = R.cls.T.L; return Math.exp(fVal(R.cls.E.a) * x + fVal(R.cls.E.b)) * (fVal(R.cCos) * ippTEval('cos', L2, x) + fVal(R.cSin) * ippTEval('sin', L2, x)); }
+    function ippCycPlain(R){ var L2 = R.cls.T.L; return 'exp(' + ippLPlain(R.cls.E) + ')*((' + fPlain(R.cCos) + ')*cos(' + ippLPlain(L2) + ') + (' + fPlain(R.cSin) + ')*sin(' + ippLPlain(L2) + '))'; }
+
+    async function runIPP(){
+      var f = (ifxInput.value || '').trim();
+      if(!f){ stateEl.textContent = 'Saisissez une fonction.'; return; }
+      if(!ggb) return;
+      var a = (iaInput.value || '').trim(), b = (ibInput.value || '').trim();
+      var isDef = !!(a || b);
+      if(isDef && (!a || !b)){ stateEl.textContent = 'Renseignez les deux bornes a et b (ou laissez-les vides pour une primitive).'; return; }
+      clearIntPlot(); plot(f);
+      answerEl.innerHTML = ''; stepsEl.innerHTML = '';
+      setIOpsEnabled(false);
+      function fail(msg){ answerEl.innerHTML = '<div class="ml-warn" style="margin-top:1rem"><i class="bi bi-exclamation-triangle"></i><span>' + escapeHtml(msg) + '</span></div>'; stateEl.textContent = ''; setIOpsEnabled(true); }
+      var fAst = itCompile(f);
+      if(!fAst) return fail('Fonction invalide — écrivez le produit avec * ou un espace (ex. x*exp(x), x^2*cos(x), x*ln(x)).');
+      var Rs = ippSolve(fAst);
+      if(Rs.err) return fail(Rs.err);
+      var av = NaN, bv = NaN, aTex = a, bTex = b;
+      if(isDef){
+        var aAst = itCompile(a), bAst = itCompile(b);
+        av = aAst ? pwEval(aAst, 0, {}) : NaN; bv = bAst ? pwEval(bAst, 0, {}) : NaN;
+        if(!isFinite(av) || !isFinite(bv)) return fail('Bornes a et b invalides (nombres, fractions, pi, e…).');
+        var lo = Math.min(av, bv), hi = Math.max(av, bv);
+        for(var k = 0; k <= 400; k++){ if(!isFinite(pwEval(fAst, lo + (hi - lo) * k / 400, {}))) return fail('f n’est pas définie sur tout l’intervalle [' + a + ' ; ' + b + '] : l’intégrale n’est pas calculable ici.'); }
+        try { aTex = toLatex(a); } catch(e){} try { bTex = toLatex(b); } catch(e){}
+      }
+      ippExtraBases = [];
+      var expL = Rs.kind === 'cyc' ? Rs.cls.E : (Rs.cls && Rs.cls.kind === 'exp' ? Rs.cls.L : null);
+      if(isDef && expL){
+        [av, bv].forEach(function(x){
+          var t = fVal(expL.a) * x + fVal(expL.b), tf = fFromNum(t), tex = null, pl = null;
+          if(tf && tf.d <= 12){ if(fZero(tf) || (tf.n === 1 && tf.d === 1) || (tf.n === 2 && tf.d === 1)) return; tex = 'e^{' + fTex(tf) + '}'; pl = 'exp(' + fPlain(tf) + ')'; }
+          else { var tp = fFromNum(t / Math.PI); if(!tp || tp.d > 12) return; var ab = fr(Math.abs(tp.n), tp.d); tex = 'e^{' + (tp.n < 0 ? '-' : '') + (ab.d === 1 ? (ab.n === 1 ? '' : ab.n) + BS + 'pi' : BS + 'frac{' + (ab.n === 1 ? '' : ab.n) + BS + 'pi}{' + ab.d + '}') + '}'; pl = 'exp(' + fPlain(tp) + '*pi)'; }
+          if(!ippExtraBases.some(function(B){ return B.n === tex; })) ippExtraBases.push({ v: Math.exp(t), n: tex, d: '', p: pl });
+        });
+      }
+      var fTexStr = f; try { fTexStr = toLatex(f); } catch(e){}
+      var R = e1Report(), body = '', sum = [];
+      var I0 = isDef ? BS + 'int_{' + aTex + '}^{' + bTex + '} ' : BS + 'int ';
+      function br(terms, evalFn){ // [ … ]_a^b with its value
+        var Fb = evalFn(bv), Fa = evalFn(av);
+        return { tex: BS + 'Big[' + terms + BS + 'Big]_{' + aTex + '}^{' + bTex + '}', val: Fb - Fa, sb: ippSnap(Fb), sa: ippSnap(Fa) };
+      }
+      function ippBrVal(bb){ var sv = ippSnap(bb.val), saT = bb.sa.tex.split(BS + 'approx ').join(''), mid = bb.sb.tex.split(BS + 'approx ').join('') + ' - ' + (saT.charAt(0) === '-' || saT.indexOf(' + ') > 0 || saT.indexOf(' - ') > 0 ? BS + 'left(' + saT + BS + 'right)' : saT); if(!sv.exact) return R.line('', bb.tex + ' ' + sv.tex); return R.line('', bb.tex + ' = ' + mid + (mid === sv.tex ? '' : ' = ' + sv.tex)); }
+      body += R.sec('Formule', R.line('', BS + 'int u(x)' + BS + ',v' + "'" + '(x)' + BS + ',dx = u(x)' + BS + ',v(x) - ' + BS + 'int u' + "'" + '(x)' + BS + ',v(x)' + BS + ',dx')
+        + (isDef ? R.line('', BS + 'int_a^b u' + BS + ',v' + "'" + BS + ',dx = ' + BS + 'Big[u' + BS + ',v' + BS + 'Big]_a^b - ' + BS + 'int_a^b u' + "'" + BS + ',v' + BS + ',dx') : ''));
+      body += R.sec('Choix de u et v′', '<div class="study-work">' + escapeHtml(Rs.choice) + '.</div>');
+      sum.push('choix: u = ' + (Rs.kind === 'ln' ? 'ln' : Rs.kind === 'cyc' ? Rs.cls.T.kind : 'polynome') + ", v' = " + (Rs.kind === 'ln' ? 'polynome' : Rs.kind === 'cyc' ? 'exp' : Rs.cls.kind));
+      var Fval = NaN, finalTex = '', finalPlain = '', brs = [], lastV = 0;
+
+      if(Rs.kind === 'poly-trans' || Rs.kind === 'ln'){
+        Rs.steps.forEach(function(st, i){
+          var t = '';
+          t += R.line('', 'u(x) = ' + st.u + BS + 'quad' + BS + 'Rightarrow' + BS + 'quad u' + "'" + '(x) = ' + st.du);
+          t += R.line('', 'v' + "'" + '(x) = ' + st.dv + BS + 'quad' + BS + 'Rightarrow' + BS + 'quad v(x) = ' + st.v);
+          var intRest = I0 + st.restTex + BS + ',dx';
+          var opS = st.op || ' - ';
+          if(i === 0) t += R.line('', I0 + fTexStr + BS + ',dx = ' + (isDef ? BS + 'Big[' + st.uvTex + BS + 'Big]_{' + aTex + '}^{' + bTex + '}' : st.uvTex) + opS + intRest);
+          else t += R.line('Pour l’intégrale restante :', I0 + Rs.steps[i - 1].restTex + BS + ',dx = ' + (isDef ? BS + 'Big[' + st.uvTex + BS + 'Big]_{' + aTex + '}^{' + bTex + '}' : st.uvTex) + opS + intRest);
+          if(isDef){
+            var uvTerms = [{ P: Rs.kind === 'ln' ? pPrimF(Rs.cls.P) : st.uvSigned.P.map(function(c){ return fMul(c, st.sign); }), kind: Rs.kind === 'ln' ? 'ln' : st.uvSigned.kind, L: Rs.cls.L }];
+            var bb = br(st.uvTex, function(x){ return ippEval(uvTerms, x); });
+            var sv = ippSnap(bb.val);
+            t += ippBrVal(bb); brs.push({ val: bb.val, op: st.op || ' - ' });
+            sum.push('etape ' + (i + 1) + ': [' + ippSumPlain(uvTerms) + '] de a a b = ' + sv.plain);
+          }
+          sum.push('IPP ' + (i + 1) + ': u=' + st.uP + ', v=' + st.vP);
+          body += R.sec('Intégration par parties' + (Rs.steps.length > 1 ? ' n°' + (i + 1) : ''), t);
+        });
+        var last = '';
+        if(Rs.kind === 'ln'){
+          var st0 = Rs.steps[0];
+          var restT = ippSumTex(st0.lnRest), split = '';
+          if(!fZero(st0.lnR) || !pConst(st0.lnS) || !fZero(st0.lnS[0])){
+            split = (pDeg(st0.lnS) >= 0 ? pTex(st0.lnS, 'x') : '');
+            if(!fZero(st0.lnR)) split += (split ? (st0.lnR.n < 0 ? ' - ' : ' + ') : (st0.lnR.n < 0 ? '-' : '')) + BS + 'frac{' + fTex(fr(Math.abs(st0.lnR.n), st0.lnR.d)) + '}{' + ippLTex(Rs.cls.L) + '}';
+          }
+          if(!fZero(st0.lnR)) last += '<div class="study-work">On écrit la fraction sous la forme « polynôme + c / (' + escapeHtml(ippLPlain(Rs.cls.L)) + ') » (division euclidienne) pour l’intégrer :</div>';
+          else last += '<div class="study-work">On simplifie la fraction avant d’intégrer :</div>';
+          last += R.line('', I0 + st0.restTex + BS + ',dx = ' + I0 + BS + 'left(' + (split || '0') + BS + 'right)' + BS + ',dx = ' + (isDef ? BS + 'Big[' + restT + BS + 'Big]_{' + aTex + '}^{' + bTex + '}' : restT));
+          if(isDef){ var bL = br(restT, function(x){ return ippEval(st0.lnRest, x); }); last += ippBrVal(bL); lastV = bL.val; }
+        } else {
+          var lastP = Rs.steps[Rs.steps.length - 1];
+          var lastT = ippPTex(Rs.lastPrim.P, Rs.lastPrim.kind, Rs.lastPrim.L);
+          last += R.line('Primitive usuelle :', I0 + lastP.restTex + BS + ',dx = ' + (isDef ? BS + 'Big[' + lastT + BS + 'Big]_{' + aTex + '}^{' + bTex + '}' : lastT));
+          if(isDef){ var bL2 = br(lastT, function(x){ return ippEval([Rs.lastPrim], x); }); last += ippBrVal(bL2); lastV = bL2.val; }
+        }
+        if(isDef && brs.length){ // bilan : I = B₁ ∓ (B₂ ∓ (… ∓ dernière))
+          var V = lastV, chain = [];
+          for(var j = brs.length - 1; j >= 0; j--){ V = brs[j].val + (brs[j].op === ' + ' ? V : -V); chain.unshift(V); }
+          var vt = function(x){ var q = ippSnap(x); return q.tex.split(BS + 'approx ').join(''); };
+          var par = function(x){ var q = vt(x); return (q.charAt(0) === '-' || q.indexOf(' + ') > 0 || q.indexOf(' - ') > 0) ? BS + 'left(' + q + BS + 'right)' : q; };
+          var bil = '';
+          for(var j2 = brs.length - 1; j2 >= 0; j2--){
+            var nextV = j2 === brs.length - 1 ? lastV : chain[j2 + 1];
+            var lhsN = j2 === 0 ? I0 + fTexStr + BS + ',dx' : I0 + Rs.steps[j2 - 1].restTex + BS + ',dx';
+            bil += R.line('', lhsN + ' = ' + par(brs[j2].val) + brs[j2].op + par(nextV) + ' = ' + vt(chain[j2]));
+            sum.push((j2 === 0 ? 'integrale de depart' : 'integrale restante apres IPP ' + j2) + ' = ' + ippSnap(brs[j2].val).plain + brs[j2].op + '(' + ippSnap(nextV).plain + ') = ' + ippSnap(chain[j2]).plain);
+          }
+          last += '<div class="study-work">On remonte les calculs, de la dernière intégrale vers la première :</div>' + bil;
+        }
+        body += R.sec('Intégrale restante', last);
+        var Fterms = Rs.F;
+        finalTex = ippSumTex(Fterms); finalPlain = ippSumPlain(Fterms);
+        Fval = isDef ? ippEval(Fterms, bv) - ippEval(Fterms, av) : NaN;
+      } else { // cyclic
+        var c = Rs.cls, E = c.E, L2 = c.T.L, eT = 'e^{' + ippLTex(E) + '}', al = Rs.al;
+        var Tk = c.T.kind, Ok = Tk === 'cos' ? 'sin' : 'cos', iv = fDiv(fr(1), al);
+        var d1 = ippDerT(Tk, L2), d2 = ippDerT(Ok, L2);
+        var m1 = fNeg(fMul(iv, d1.c)), m2 = fNeg(fMul(iv, d2.c)); // I = iv·e·T + m1·J ; J = iv·e·O + m2·I
+        function cT(cf, body, first){ var ab = fr(Math.abs(cf.n), cf.d), ct = (ab.n === 1 && ab.d === 1) ? '' : fTex(ab); return (first ? (cf.n < 0 ? '-' : '') : (cf.n < 0 ? ' - ' : ' + ')) + ct + body; }
+        var eTk = eT + ippTTex(Tk, L2), eOk = eT + ippTTex(Ok, L2);
+        var Iint = I0 + eTk + BS + ',dx', Jint = I0 + eOk + BS + ',dx';
+        var t1 = '';
+        if(!(c.k.n === 1 && c.k.d === 1)) t1 += R.line('', I0 + BS + 'left(' + fTexStr + BS + 'right)' + BS + ',dx = ' + fTex(c.k) + BS + ',I' + BS + 'quad' + BS + 'text{avec }I = ' + Iint);
+        else t1 += R.line('', 'I = ' + Iint + ',' + BS + 'qquad J = ' + Jint);
+        t1 += R.line('', 'u = ' + ippTTex(Tk, L2) + ',' + BS + 'quad u' + "'" + ' = ' + ippPTex([d1.c], d1.kind, L2) + BS + 'qquad v' + "'" + ' = ' + eT + ',' + BS + 'quad v = ' + ippPTex([iv], 'exp', E));
+        t1 += R.line('', 'I = ' + cT(iv, eTk, true) + cT(m1, 'J', false));
+        body += R.sec('Première intégration par parties (sur I)', t1);
+        var t2 = '';
+        t2 += R.line('', 'u = ' + ippTTex(Ok, L2) + ',' + BS + 'quad u' + "'" + ' = ' + ippPTex([d2.c], d2.kind, L2) + BS + 'qquad v' + "'" + ' = ' + eT + ',' + BS + 'quad v = ' + ippPTex([iv], 'exp', E));
+        t2 += R.line('', 'J = ' + cT(iv, eOk, true) + cT(m2, 'I', false));
+        t2 += '<div class="study-work">On retrouve I dans l’expression de J : on remplace J dans la première égalité.</div>';
+        body += R.sec('Deuxième intégration par parties (sur J)', t2);
+        var mm = fMul(m1, m2), lhsC = fSub(fr(1), mm), m1iv = fMul(m1, iv);
+        var t3 = '';
+        t3 += R.line('', 'I = ' + cT(iv, eTk, true) + cT(m1iv, eOk, false) + cT(mm, 'I', false));
+        var inner = cT(iv, ippTTex(Tk, L2), true) + cT(m1iv, ippTTex(Ok, L2), false);
+        t3 += R.line('', BS + 'Longrightarrow' + BS + 'quad ' + (lhsC.n === 1 && lhsC.d === 1 ? '' : fTex(lhsC) + BS + ',') + 'I = ' + eT + BS + 'left(' + inner + BS + 'right)');
+        t3 += R.line('', BS + 'Longrightarrow' + BS + 'quad I = ' + (lhsC.n === 1 && lhsC.d === 1 ? '' : fTex(fDiv(fr(1), lhsC)) + BS + ',') + eT + BS + 'left(' + inner + BS + 'right)');
+        body += R.sec('On isole I', t3);
+        finalTex = ippCycTex(Rs); finalPlain = ippCycPlain(Rs);
+        Fval = isDef ? ippCycEval(Rs, bv) - ippCycEval(Rs, av) : NaN;
+      }
+
+      // résultat + contrôle numérique
+      var res = '';
+      if(!isDef){
+        res += R.line('', I0 + BS + 'left(' + fTexStr + BS + 'right)' + BS + ',dx = ' + finalTex + ' + C,' + BS + 'quad C ' + BS + 'in ' + BS + 'mathbb{R}');
+        if(Rs.kind === 'ln') res += '<div class="study-work">Sur un intervalle où ' + escapeHtml(ippLPlain(Rs.cls.L)) + ' > 0.</div>';
+        res += '<div class="study-work">Vérification : en dérivant ce résultat on retrouve bien f(x).</div>';
+        sum.unshift('F(x) = ' + finalPlain + ' + C');
+      } else {
+        var num = itSimpson(fAst, av, bv);
+        if(!isFinite(Fval) || (isFinite(num) && Math.abs(Fval - num) > 1e-5 * (1 + Math.abs(num)))) Fval = num;
+        var sv2 = ippSnap(Fval);
+        res += R.line('Primitive :', 'F(x) = ' + finalTex);
+        if(Rs.kind === 'cyc') res += ippBrVal(br(finalTex, function(x){ return ippCycEval(Rs, x); }));
+        res += R.line('', I0 + BS + 'left(' + fTexStr + BS + 'right)' + BS + ',dx ' + (sv2.tex.indexOf(BS + 'approx') === 0 ? sv2.tex : '= ' + sv2.tex));
+        if(sv2.exact) res += '<div class="study-work">Valeur approchée : ' + (Math.round(Fval * 10000) / 10000) + ' (contrôlée par un calcul numérique).</div>';
+        sum.unshift('F(x) = ' + finalPlain + ' ; integrale de ' + a + ' a ' + b + ' = ' + sv2.plain);
+        defInt('iarea', 'iarea=Integral(f, ' + a + ', ' + b + ')'); colour('iarea', 255, 184, 0);
+      }
+      body += R.sec('Résultat', res);
+      R.render('Intégration par parties', body);
+
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
+      var reqBody = { function: f, operation: 'integral_ipp', casResult: sum.join(' ; ').slice(0, 495) };
+      if(isDef){ reqBody.a = a; reqBody.b = b; }
+      try {
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(reqBody) });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data, true); } else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){ stateEl.textContent = 'Connexion impossible — réessayez.'; }
+      finally { setIOpsEnabled(true); }
+    }
+
     async function runIntegral(){
+      if(intType === 'ipp') return runIPP();
       var f = (ifxInput.value || '').trim();
       if(!f){ stateEl.textContent = 'Saisissez une fonction.'; return; }
       if(!ggb) return;
@@ -3780,6 +4169,7 @@
       runIntegral();
     });
     setIType('indef');
+    document.getElementById('iipp-note').addEventListener('click', function(ev){ var b = ev.target.closest('[data-ippex]'); if(!b) return; var p = b.getAttribute('data-ippex').split('|'); ifxInput.value = p[0]; iaInput.value = p[1]; ibInput.value = p[2]; updateIntPreview(); runIPP(); });
 
     /* ============ CERCLE TRIGONOMÉTRIQUE ============ */
     var modeTrig = document.getElementById('mode-trig');
@@ -4708,7 +5098,7 @@
             "#int_a^b f(x)#,dx = F(b) - F(a)",
             "#int_a^b (#alpha f + #beta g) = #alpha#!#int_a^b f + #beta#!#int_a^b g",
             "#int_a^b f + #int_b^c f = #int_a^c f",
-            "#int_a^b u'v = #big[uv#big]_a^b - #int_a^b uv'",
+            "#int_a^b u(x)v'(x)#,dx = #big[u(x)v(x)#big]_a^b - #int_a^b u'(x)v(x)#,dx#quad(#text{par parties})",
             "#mu = #frac{1}{b-a}#int_a^b f(x)#,dx#quad(#text{moyenne})"
           ]},
           { t:'Primitives usuelles', f:[
