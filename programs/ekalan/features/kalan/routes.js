@@ -206,6 +206,17 @@ router.post(
   catchAsync(BAC.explainMath)
 );
 
+// Maths Lab — questions ouvertes (JSON, rate-limited + quota quotidien dans le contrôleur)
+router.post(
+  "/class/:class_id/maths-lab/open",
+  isLoggedIn,
+  isVerified,
+  classCheck,
+  mathsLabAccess,
+  (req, res, next) => req.app.get("authLimiter")(req, res, next),
+  catchAsync(BAC.openQuestion)
+);
+
 // ✅ NOUVEAU: Liste des demandes d'accès premium (admin)
 router.get(
   "/admindashboard/kalan/premium-requests",

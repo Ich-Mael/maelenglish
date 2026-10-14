@@ -684,4 +684,4 @@ async function explainSteps({ domain = "function", input, operation, casResult, 
   }
 }
 
-module.exports = { explainSteps, MATHS_LAB_MODEL, OPERATIONS, COMPLEX_OPERATIONS, ARITH_LABELS, TRIG_OPERATIONS };
+module.exports = { explainSteps, MATHS_LAB_MODEL, OPERATIONS, COMPLEX_OPERATIONS, ARITH_LABELS, TRIG_OPERATIONS, getClient, repairJsonBackslashes };

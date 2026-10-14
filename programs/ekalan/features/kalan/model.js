@@ -556,6 +556,23 @@ const mathExplanationSchema = new Schema({
 
 const MathExplanation = mongoose.model("MathExplanation", mathExplanationSchema);
 
+// Maths Lab — « Questions ouvertes » : réponses générées (cache par énoncé + quota par élève/jour).
+const openQuestionSchema = new Schema({
+  user: { type: Schema.Types.ObjectId, ref: "User", index: true },
+  classId: { type: Schema.Types.ObjectId, ref: "Class" },
+  key: { type: String, required: true, index: true }, // sha256(mode|énoncé|questions)
+  mode: { type: String, enum: ["hint", "full"], default: "full" },
+  statement: String,
+  questions: [String],
+  types: [String], // calc | show | compare | sign per question
+  anchors: { type: Array, default: [] }, // numeric checks computed before calling Claude
+  answers: { type: Array, default: [] },
+  verification: { type: Object, default: {} },
+  retried: { type: Boolean, default: false },
+}, { timestamps: true });
+openQuestionSchema.index({ user: 1, createdAt: -1 });
+const OpenQuestion = mongoose.model("OpenQuestion", openQuestionSchema);
+
 module.exports = {
   Class,
   Chapter,
@@ -566,5 +583,6 @@ module.exports = {
   PremiumContent,
   PremiumRequest,
   MathExplanation,
+  OpenQuestion,
   HighSchool
 };

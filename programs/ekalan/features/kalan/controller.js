@@ -8,6 +8,7 @@ const {
   HSCourseVideo,
   PremiumRequest,
   MathExplanation,
+  OpenQuestion,
 } = require("./model");
 const {
   findEntry,
@@ -16,6 +17,8 @@ const {
   grantOrRenew,
 } = require("./premiumAccess");
 const { explainSteps, OPERATIONS, COMPLEX_OPERATIONS, ARITH_LABELS, TRIG_OPERATIONS } = require("./mathsLab");
+const { solveOpenQuestion } = require("./openQuestions");
+const crypto = require("crypto");
 
 // ── Kalan Naaba helpers ──────────────────────────────────────────────
 // True if the high-school student (hsId) holds active Kalan Naaba (whole-class premium).
@@ -1444,7 +1447,8 @@ module.exports.mathsLab = async (req, res) => {
     req.flash("error", "Classe non trouvée");
     return res.redirect("back");
   }
-  res.render("programs/ekalan/Class/maths-lab", { schoolClass });
+  const oq = await openQuestionQuota(req.user);
+  res.render("programs/ekalan/Class/maths-lab", { schoolClass, oqUsed: oq.used, oqLimit: oq.limit });
 };
 
 // Detect cache entries whose LaTeX was corrupted by lone-backslash JSON escapes
@@ -1455,6 +1459,63 @@ function cacheLooksCorrupted(doc) {
   (doc.steps || []).forEach((s) => { if (s && s.latex) latexes.push(s.latex); });
   return latexes.some((s) => { for (let i = 0; i < s.length; i++) { if (s.charCodeAt(i) < 32) return true; } return false; });
 }
+
+// ── Maths Lab : « Questions ouvertes » ────────────────────────────────
+// Quota of fresh AI answers per student per day (cached answers are free; admins unlimited).
+const OPEN_QUESTIONS_DAILY_LIMIT = 10;
+function isMathsLabAdmin(user) { return !!user && ["admin", "super-admin"].includes(user.role); }
+async function openQuestionQuota(user) {
+  if (!user) return { used: 0, limit: OPEN_QUESTIONS_DAILY_LIMIT };
+  if (isMathsLabAdmin(user)) return { used: 0, limit: null };
+  const start = new Date(); start.setHours(0, 0, 0, 0);
+  const used = await OpenQuestion.countDocuments({ user: user._id, createdAt: { $gte: start } });
+  return { used, limit: OPEN_QUESTIONS_DAILY_LIMIT };
+}
+
+// POST …/maths-lab/open  { statement, questions[], mode: 'hint' | 'full' } → JSON
+module.exports.openQuestion = async (req, res) => {
+  try {
+    const mode = req.body.mode === "hint" ? "hint" : "full";
+    const norm = (s) => String(s == null ? "" : s).replace(/\s+/g, " ").trim();
+    const statement = norm(req.body.statement);
+    // typed questions { type: calc|show|compare|sign, text, expr, a, b } (plain strings still accepted)
+    const TYPES = ["calc", "show", "compare", "sign"];
+    const questions = (Array.isArray(req.body.questions) ? req.body.questions : []).map((q) => {
+      if (typeof q === "string") return { type: "", text: norm(q) };
+      const o = { type: TYPES.includes(q && q.type) ? q.type : "", text: norm(q && q.text) };
+      ["expr", "a", "b"].forEach((k) => { if (q && q[k]) o[k] = norm(q[k]).slice(0, 300); });
+      return o;
+    }).filter((q) => q.text);
+    if (!statement || statement.length > 2000) return res.status(400).json({ ok: false, error: "Énoncé manquant ou trop long (2000 caractères max)." });
+    if (!questions.length || questions.length > 8 || questions.some((q) => q.text.length > 500)) {
+      return res.status(400).json({ ok: false, error: "Indiquez entre 1 et 8 questions (500 caractères max chacune)." });
+    }
+    const key = crypto.createHash("sha256").update(mode + "|" + statement + "|" + JSON.stringify(questions)).digest("hex");
+    const quota = await openQuestionQuota(req.user);
+
+    const cached = await OpenQuestion.findOne({ key }).sort({ createdAt: -1 });
+    if (cached && cached.answers && cached.answers.length) {
+      return res.json({ ok: true, cached: true, answers: cached.answers, verification: cached.verification, retried: cached.retried, anchors: cached.anchors || [], quota });
+    }
+    if (quota.limit !== null && quota.used >= quota.limit) {
+      return res.status(429).json({ ok: false, error: `Limite atteinte : ${quota.limit} questions ouvertes par jour. Revenez demain !`, quota });
+    }
+
+    const result = await solveOpenQuestion({ statement, questions, mode });
+    if (!result.ok) {
+      return res.json({ ok: false, error: "Réponse indisponible pour le moment — réessayez dans un instant.", quota });
+    }
+    await OpenQuestion.create({
+      user: req.user._id, classId: req.params.class_id, key, mode, statement, questions: questions.map((q) => q.text), types: questions.map((q) => q.type),
+      answers: result.answers, verification: result.verification, retried: result.retried, anchors: result.anchors,
+    });
+    const after = { used: quota.limit === null ? 0 : quota.used + 1, limit: quota.limit };
+    return res.json({ ok: true, cached: false, answers: result.answers, verification: result.verification, retried: result.retried, anchors: result.anchors, quota: after });
+  } catch (err) {
+    console.error("[openQuestion]", err && err.message);
+    return res.status(500).json({ ok: false, error: "Erreur serveur." });
+  }
+};
 
 // Endpoint JSON : explication pas-à-pas (cache + Claude). Renvoie toujours du JSON.
 module.exports.explainMath = async (req, res) => {

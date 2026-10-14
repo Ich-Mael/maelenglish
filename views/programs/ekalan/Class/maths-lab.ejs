@@ -280,6 +280,43 @@
     .sys-meth__t { font-family:system-ui,sans-serif; font-weight:800; color:#ffc23a; font-size:.82rem; text-transform:uppercase; letter-spacing:.04em; margin-bottom:.25rem; }
     .sys-stage { margin:.5rem 0; padding-left:.7rem; border-left:2px dashed rgba(255,255,255,.25); }
 
+    /* Questions ouvertes */
+    .oq-part { display:flex; align-items:center; gap:.5rem; font-weight:800; color:#322c4d; margin:.9rem 0 .45rem; font-size:.95rem; }
+    .oq-part__n { display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:50%; background:#5e17eb; color:#fff; font-size:.8rem; }
+    .oq-text { width:100%; padding:.7rem .9rem; border:2px solid #e0e0e0; border-radius:12px; font-size:.98rem; font-family:inherit; background:#fafafa; resize:vertical; margin-bottom:.6rem; }
+    .oq-text:focus, .oq-qrow input:focus { outline:none; border-color:#5e17eb; background:#fff; }
+    .oq-qrow { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; margin-bottom:.65rem; padding:.5rem .6rem; background:#faf8ff; border:1px solid #ece4fb; border-radius:12px; }
+    .oq-qrow .oq-type { padding:.5rem .55rem; border:2px solid #ddd0fb; border-radius:10px; background:#fff; color:#5e17eb; font-weight:700; font-size:.88rem; }
+    .oq-qrow .oq-main, .oq-qrow .oq-b { flex:1 1 200px; min-width:0; padding:.6rem .8rem; border:2px solid #e0e0e0; border-radius:10px; font-size:.96rem; background:#fff; font-family:'Courier New',monospace; }
+    .oq-qrow .oq-and { font-weight:700; color:#6b6880; }
+    .oq-qrow .oq-qprev { flex:1 1 100%; font-size:1rem; color:#322c4d; padding:.15rem .2rem 0 2.3rem; }
+    .oq-part__hint { font-weight:500; color:#6b6880; font-size:.82rem; }
+    .oq-kbd { background:#fff8ec; border:1px dashed #ffe3a3; border-radius:12px; padding:.55rem .7rem; margin:.2rem 0 .4rem; }
+    .oq-kbd__lbl { font-size:.78rem; font-weight:700; color:#7a5b00; margin-bottom:.4rem; }
+    .oq-anchor { display:inline-flex; align-items:center; gap:.4rem; font-size:.84rem; color:#1e3a8a; background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:.3rem .65rem; margin:.15rem 0 .45rem; }
+    .oq-anchor.is-ko { color:#991b1b; background:#fef2f2; border-color:#fecaca; }
+    .oq-ans__t { font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; font-weight:700; }
+    .oq-qrow .oq-n { font-weight:800; color:#5e17eb; min-width:1.8rem; }
+    .oq-qrow input { flex:1; min-width:0; padding:.6rem .8rem; border:2px solid #e0e0e0; border-radius:10px; font-size:.96rem; background:#fafafa; }
+    .oq-quota { font-size:.85rem; font-weight:700; color:#6b6880; background:#f1ecfb; border-radius:999px; padding:.35rem .8rem; }
+    .oq-quota.is-low { color:#9a3412; background:#fff3d6; }
+    .oq-summary { display:flex; flex-wrap:wrap; gap:.4rem; margin:.2rem 0 .6rem; }
+    .oq-badge { display:inline-flex; align-items:center; gap:.3rem; font-size:.78rem; font-weight:700; padding:.25rem .6rem; border-radius:999px; font-family:system-ui,sans-serif; }
+    .oq-badge--ok { background:#dcfce7; color:#166534; }
+    .oq-badge--fail { background:#fee2e2; color:#991b1b; }
+    .oq-badge--un { background:#f1f5f9; color:#475569; }
+    .oq-ans { background:#fff; border:1px solid #ece9f3; border-radius:18px; padding:1rem 1.1rem; margin-top:.9rem; box-shadow:0 4px 16px rgba(50,44,77,.06); }
+    .oq-ans__q { font-family:'Baloo 2',system-ui,sans-serif; font-weight:800; font-size:1.1rem; color:#322c4d; margin-bottom:.35rem; }
+    .oq-ans__q span { color:#5e17eb; }
+    .oq-method { font-size:.95rem; color:#322c4d; background:#f7f4fe; border-left:3px solid #5e17eb; border-radius:8px; padding:.5rem .7rem; margin:.3rem 0 .6rem; }
+    .oq-concl { font-size:.98rem; color:#14532d; background:#f0fdf4; border-left:3px solid #22c55e; border-radius:8px; padding:.5rem .7rem; margin-top:.6rem; font-weight:600; }
+    .oq-checks { display:flex; flex-wrap:wrap; gap:.35rem; margin-top:.45rem; }
+    .oq-check { display:inline-flex; align-items:center; gap:.35rem; font-size:.8rem; padding:.2rem .55rem; border-radius:8px; border:1px solid; }
+    .oq-check--ok { border-color:#bbf7d0; background:#f0fdf4; color:#166534; }
+    .oq-check--fail { border-color:#fecaca; background:#fef2f2; color:#991b1b; }
+    .oq-check--un { border-color:#e2e8f0; background:#f8fafc; color:#475569; }
+    .oq-note { font-size:.8rem; color:#6b6880; margin-top:.8rem; }
+
     /* Équation */
     .ml-study { font-variant-numeric: lining-nums; }
     .e1-table { border-collapse:collapse; background:#fff; color:#322c4d; font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; font-size:.92rem; min-width:max-content; margin:.35rem 0 .2rem; border-radius:8px; overflow:hidden; }
@@ -399,6 +436,7 @@
             <button type="button" class="ml-mode" data-mode="suite"><i class="bi bi-list-ol"></i> Suites</button>
             <button type="button" class="ml-mode" data-mode="stats"><i class="bi bi-bar-chart-line"></i> Statistiques</button>
             <button type="button" class="ml-mode" data-mode="trig"><i class="bi bi-record-circle"></i> Trigonométrie</button>
+            <button type="button" class="ml-mode" data-mode="open"><i class="bi bi-chat-square-text"></i> Questions ouvertes</button>
           </div>
           <div class="ml-modes__group ml-modes__group--tle">
             <span class="ml-modes__lbl"><i class="bi bi-mortarboard-fill"></i> Terminale</span>
@@ -561,6 +599,61 @@
             <button class="ml-op" data-baryop="locus"><i class="bi bi-circle"></i> Ensemble des points M : ‖Σ aᵢ·MAᵢ‖ = k</button>
           </div>
         </div><%# /mode-bary %>
+
+        <div id="mode-open" hidden>
+          <h2><i class="bi bi-chat-square-text"></i> Questions ouvertes</h2>
+          <div class="ml-hint" style="margin:-.3rem 0 .8rem">Pour les exercices qui ne rentrent dans aucun autre onglet : « Démontrer que… », « Comparer… », « En déduire… ». Les calculs de la réponse sont <strong>vérifiés automatiquement</strong>.</div>
+          <div class="pw-ex" id="oq-ex">
+            <span class="pw-ex__lbl"><i class="bi bi-lightbulb"></i> Exemples :</span>
+            <button type="button" class="ml-key is-util" data-oqex="0">Comparer des racines</button>
+            <button type="button" class="ml-key is-util" data-oqex="1">Signe et comparaison</button>
+            <button type="button" class="ml-key is-util" data-oqex="2">Démontrer, en déduire</button>
+            <button type="button" class="ml-key is-util" data-oqex="3">Calculer une intégrale</button>
+          </div>
+
+          <div class="oq-part"><span class="oq-part__n">1</span> Énoncé</div>
+          <textarea id="oq-statement" class="oq-text" rows="3" placeholder="Ex. : Soient a et b deux nombres réels de ]0 ; 1[."></textarea>
+          <div class="ml-preview is-empty" id="oq-preview">Aperçu de l’énoncé… (les maths sont reconnues automatiquement)</div>
+
+          <div class="oq-kbd">
+            <div class="oq-kbd__lbl"><i class="bi bi-keyboard"></i> Clavier maths — s’insère dans le champ où se trouve le curseur</div>
+            <div class="ml-keys" id="oq-keys" style="margin:0">
+              <button type="button" class="ml-key" data-ins="^2">x²</button>
+              <button type="button" class="ml-key" data-ins="^3">x³</button>
+              <button type="button" class="ml-key" data-ins="^(|)">xⁿ</button>
+              <button type="button" class="ml-key" data-ins="(|)/()">a⁄b</button>
+              <button type="button" class="ml-key" data-ins="sqrt(|)">√</button>
+              <button type="button" class="ml-key" data-ins="root(|, )">ⁿ√</button>
+              <button type="button" class="ml-key is-fn" data-ins="ln(|)">ln</button>
+              <button type="button" class="ml-key" data-ins="e^(|)">eˣ</button>
+              <button type="button" class="ml-key is-fn" data-ins="abs(|)">|x|</button>
+              <button type="button" class="ml-key" data-ins="(|)">( )</button>
+              <button type="button" class="ml-key" data-ins="pi">π</button>
+              <button type="button" class="ml-key" data-ins="∞">∞</button>
+              <button type="button" class="ml-key" data-ins=" ≤ ">≤</button>
+              <button type="button" class="ml-key" data-ins=" ≥ ">≥</button>
+              <button type="button" class="ml-key" data-ins=" ≠ ">≠</button>
+              <button type="button" class="ml-key" data-ins=" ∈ ">∈</button>
+              <button type="button" class="ml-key" data-ins="ℝ">ℝ</button>
+              <button type="button" class="ml-key is-fn" data-ins="int(|, , )">∫ₐᵇ</button>
+              <button type="button" class="ml-key is-fn" data-ins="lim(x→|, )">lim</button>
+            </div>
+          </div>
+
+          <div class="oq-part"><span class="oq-part__n">2</span> À démontrer / À faire <span class="oq-part__hint">— choisissez le type de chaque question</span></div>
+          <div id="oq-questions"></div>
+          <button type="button" class="geo-add" id="oq-add"><i class="bi bi-plus-lg"></i> Ajouter une question</button>
+
+          <div class="ml-side" id="oq-mode">
+            <button type="button" class="ml-sidebtn is-active" data-oqmode="hint"><i class="bi bi-lightbulb"></i> Coup de pouce</button>
+            <button type="button" class="ml-sidebtn" data-oqmode="full"><i class="bi bi-journal-check"></i> Solution rédigée</button>
+          </div>
+          <div class="ml-ops" id="oq-ops" style="align-items:center">
+            <button class="ml-op ml-op--hero" id="oq-go" type="button"><i class="bi bi-stars"></i> Obtenir de l’aide</button>
+            <span class="oq-quota" id="oq-quota" data-used="<%= typeof oqUsed !== 'undefined' ? oqUsed : 0 %>" data-limit="<%= (typeof oqLimit !== 'undefined' && oqLimit !== null) ? oqLimit : '' %>"></span>
+          </div>
+          <div class="ml-hint" style="margin-top:.5rem">« Coup de pouce » : la méthode et la première étape, pour chercher par vous-même. « Solution rédigée » : la démonstration complète.</div>
+        </div><%# /mode-open %>
 
         <div id="mode-complex" hidden>
           <details class="ml-block" open>
@@ -1366,7 +1459,7 @@
         data.steps.forEach(function(st){
           var div = document.createElement('div');
           div.className = 'ml-step';
-          var t = document.createElement('div'); t.className = 'ml-step__title'; t.textContent = st.title || '';
+          var t = document.createElement('div'); t.className = 'ml-step__title'; renderExplanation(t, st.title || '');
           var l = document.createElement('div'); l.className = 'ml-step__latex';
           var e = document.createElement('div'); e.className = 'ml-step__exp'; renderExplanation(e, st.explanation || '');
           div.appendChild(t); div.appendChild(l); div.appendChild(e);
@@ -6962,6 +7055,329 @@
     try { updateZfPreview(); } catch(e){}
     setZfOpsEnabled(false); // enabled once GeoGebra is ready (appletOnLoad)
 
+    /* ============ QUESTIONS OUVERTES ============ */
+    // Énoncé + typed questions (Calculer / Montrer que / Comparer A et B) → POST …/maths-lab/open.
+    // Input aids: a maths keyboard that types into the active field, and an automatic preview that
+    // detects the maths in plain sentences (2+sqrt(5), x^3, 1/(ab), int(0,1,x^2), lim(x→0, f)…).
+    // The server computes numeric anchors per type and verifies every claim of Claude's answer.
+    var modeOpen    = document.getElementById('mode-open');
+    var oqStmt      = document.getElementById('oq-statement');
+    var oqPrev      = document.getElementById('oq-preview');
+    var oqList      = document.getElementById('oq-questions');
+    var oqAddBtn    = document.getElementById('oq-add');
+    var oqModeEl    = document.getElementById('oq-mode');
+    var oqGoBtn     = document.getElementById('oq-go');
+    var oqQuotaEl   = document.getElementById('oq-quota');
+    var oqExEl      = document.getElementById('oq-ex');
+    var oqKeysEl    = document.getElementById('oq-keys');
+    var OPEN_URL    = EXPLAIN_URL.slice(0, -'explain'.length) + 'open';
+    var oqMode = 'hint', OQ_MAX = 8, oqActive = null;
+    var OQ_TYPES = { calc: 'Calculer', show: 'Montrer que', compare: 'Comparer', sign: 'Déterminer le signe de' };
+    var OQ_PH = { calc: 'ex. (2+sqrt(3))^2 - 4sqrt(3)   ou   int(0, 1, x^2+1)', show: 'ex. y^2+xy+x^2 = (y+x/2)^2+3/4x^2', compare: 'A, ex. 2+sqrt(5)', sign: 'ex. (1-a)(1-b)   ou   sqrt(3)-2' };
+    var OQ_EX = [
+      { s: 'Comparer les nombres réels suivants.', q: [['compare', '2+sqrt(5)', 'sqrt(9+4sqrt(5))'], ['compare', 'sqrt(2)-sqrt(7)', 'sqrt(9-2sqrt(14))']] },
+      { s: 'Soient a et b deux nombres réels de ]0 ; 1[.', q: [['sign', '(1-a)(1-b)'], ['compare', '1/a+1/b', '1+1/(ab)']] },
+      { s: 'Soient x et y deux nombres réels.', q: [['calc', 'le développement de (y-x)(y^2+xy+x^2)'], ['show', 'y^2+xy+x^2 = (y+x/2)^2+3/4x^2'], ['show', 'si x <= y alors x^3 <= y^3']] },
+      { s: 'On considère la fonction f définie sur [0 ; 1] par f(x) = x^2 + 1.', q: [['calc', 'int(0, 1, x^2+1)']] }
+    ];
+
+    // ---------- plain text → maths (preview + what is sent to the AI) ----------
+    var OQ_FN = { sqrt:1, ln:1, log:1, exp:1, abs:1, sin:1, cos:1, tan:1, int:1, lim:1, root:1, pi:1, dx:1 };
+    function oqNorm(t){
+      return String(t == null ? '' : t)
+        .split(String.fromCharCode(0x2212)).join('-').split(String.fromCharCode(0xD7)).join('*').split(String.fromCharCode(0xF7)).join('/')
+        .split(String.fromCharCode(0x3C0)).join('pi').split(String.fromCharCode(0xB2)).join('^2').split(String.fromCharCode(0xB3)).join('^3')
+        ;
+    }
+    // "√5" → "sqrt(5)", "√(…)" → "sqrt(…)"  (scanned by hand: no regex escapes inside this template)
+    function oqRoot(t){
+      var out = '', i = 0;
+      while(i < t.length){
+        var c = t.charAt(i);
+        if(c !== '√'){ out += c; i++; continue; }
+        i++; while(t.charAt(i) === ' ') i++;
+        if(t.charAt(i) === '('){ out += 'sqrt'; continue; }
+        var run = ''; while(i < t.length && /[0-9a-zA-Z.]/.test(t.charAt(i))){ run += t.charAt(i); i++; }
+        out += run ? 'sqrt(' + run + ')' : 'sqrt';
+      }
+      return out;
+    }
+    // split "f(a, b, c)" arguments at top-level commas; returns { args, end } (end = index after ')')
+    function oqArgs(s, open){
+      var depth = 0, cur = '', args = [];
+      for(var i = open; i < s.length; i++){
+        var c = s.charAt(i);
+        if(c === '('){ depth++; if(depth === 1) continue; }
+        else if(c === ')'){ depth--; if(depth === 0){ args.push(cur); return { args: args, end: i + 1 }; } }
+        if(c === ',' && depth === 1){ args.push(cur); cur = ''; continue; }
+        cur += c;
+      }
+      return null;
+    }
+    // expression (calculator syntax, may contain int/lim/root, relations) → LaTeX; throws if not maths
+    function oqExprTex(e){
+      e = oqRoot(oqNorm(e)).trim();
+      var REL = [['<=', BS + 'leq '], ['>=', BS + 'geq '], ['!=', BS + 'neq '], ['≤', BS + 'leq '], ['≥', BS + 'geq '], ['≠', BS + 'neq '], ['∈', BS + 'in '], ['=', '='], ['<', '<'], ['>', '>']];
+      var depth = 0;
+      for(var i = 0; i < e.length; i++){
+        var c = e.charAt(i); if(c === '(') depth++; else if(c === ')') depth--;
+        if(depth !== 0) continue;
+        for(var r = 0; r < REL.length; r++){
+          if(e.substr(i, REL[r][0].length) === REL[r][0]){
+            var L = e.slice(0, i), Rr = e.slice(i + REL[r][0].length);
+            return (L.trim() ? oqExprTex(L) : '') + ' ' + REL[r][1] + ' ' + (Rr.trim() ? oqExprTex(Rr) : '');
+          }
+        }
+      }
+      var ph = [], out = '';
+      function hold(tex){ ph.push(tex); return String(9876500 + ph.length - 1); }
+      for(var k = 0; k < e.length; ){
+        var m = null;
+        if(k === 0 || !/[a-zA-Z]/.test(e.charAt(k - 1))){
+          ['int', 'lim', 'root'].forEach(function(nm){
+            if(m || e.substr(k, nm.length) !== nm) return;
+            var j = k + nm.length; while(e.charAt(j) === ' ') j++;
+            if(e.charAt(j) === '(') m = [e.slice(k, j + 1), nm];
+          });
+        }
+        if(m){
+          var A = oqArgs(e, k + m[0].length - 1);
+          if(A){
+            var t = null;
+            if(m[1] === 'int' && A.args.length === 3){
+              var fT = oqExprTex(A.args[2]), sumLike = /[+-]/.test(A.args[2].trim().slice(1));
+              t = BS + 'int_{' + oqExprTex(A.args[0]) + '}^{' + oqExprTex(A.args[1]) + '} ' + (sumLike ? BS + 'left(' + fT + BS + 'right)' : fT) + BS + ',dx';
+            }
+            if(m[1] === 'root' && A.args.length === 2) t = BS + 'sqrt[' + oqExprTex(A.args[0]) + ']{' + oqExprTex(A.args[1]) + '}';
+            if(m[1] === 'lim' && A.args.length === 2){
+              var to = A.args[0].split('->').join('→').split('→');
+              var tgt = to.length === 2 ? to[1].trim() : '';
+              t = BS + 'lim_{' + (to.length === 2 ? oqExprTex(to[0]) + ' ' + BS + 'to ' + (tgt.charAt(0) === '+' ? '+' : '') + oqExprTex(tgt) : oqExprTex(A.args[0])) + '} ' + oqExprTex(A.args[1]);
+            }
+            if(t !== null){ out += hold(t); k = A.end; continue; }
+          }
+        }
+        var ch = e.charAt(k);
+        if(ch === '∞'){ out += hold(BS + 'infty'); k++; continue; }
+        if(ch === 'ℝ'){ out += hold(BS + 'mathbb{R}'); k++; continue; }
+        out += ch; k++;
+      }
+      var tex = toLatex(out);
+      ph.forEach(function(p, i){ tex = tex.split(String(9876500 + i)).join(p); });
+      return tex;
+    }
+    // Is a whitespace-separated token "maths"? strong = surely maths, weak = a single letter/number
+    var OQ_ALLOWED = /^[0-9a-zA-Z+*/^().,|√²³π∞=<>≤≥≠∈ℝ→!_-]+$/;
+    function oqTokKind(tok){
+      if(!tok || !OQ_ALLOWED.test(tok)) return 'text';
+      var runs = tok.match(/[a-zA-Z]+/g) || [];
+      var hasSym = /[0-9+*/^()=<>≤≥≠∈√²³π∞|→-]/.test(tok);
+      var okRuns = runs.every(function(r){ return r.length === 1 || OQ_FN[r] || hasSym; });
+      if(!okRuns) return 'text';
+      if(/^[+*/=<>≤≥≠∈→^-]+$/.test(tok)) return 'op';
+      if(hasSym && !/^[0-9]+$/.test(tok)) return 'strong';
+      return 'weak';
+    }
+    // Wrap the maths found in a sentence into $…$ (text already containing $…$ is kept as is)
+    function oqMathify(text){
+      text = String(text == null ? '' : text);
+      if(text.indexOf('$') >= 0) return text;
+      text = text.split(String.fromCharCode(0x2212)).join('-').split(String.fromCharCode(0xD7)).join('*');
+      var toks = text.split(' '), out = [], i = 0;
+      function strip(t){ var m = t.match(/^(.*?)([.,;:?!]*)$/); return { core: m[1], punct: m[2] }; }
+      function depthOf(t){ var d = 0; for(var q = 0; q < t.length; q++){ if(t.charAt(q) === '(') d++; else if(t.charAt(q) === ')') d--; } return d; }
+      while(i < toks.length){
+        var k0 = oqTokKind(strip(toks[i]).core);
+        if(k0 === 'text' || (k0 === 'op' && i === 0)){ out.push(toks[i]); i++; continue; }
+        // grow a run of math-ish tokens; inside parentheses, commas belong to the formula
+        var j = i, strong = false, punct = '', depth = 0;
+        while(j < toks.length){
+          var tok = toks[j], st = strip(tok);
+          var core = depth > 0 ? tok : st.core;
+          var kk = oqTokKind(core);
+          if(kk === 'text' || core === '') break;
+          if(kk === 'strong' || kk === 'op') strong = true;
+          depth += depthOf(tok);
+          j++;
+          if(depth <= 0 && st.punct && depthOf(st.core) === depthOf(tok)){ punct = st.punct; break; }
+        }
+        if(!strong || j === i){ out.push(toks[i]); i++; continue; }
+        // trim leading weak tokens that are not followed by an operator (French "a", "y"…)
+        while(i < j - 1 && oqTokKind(strip(toks[i]).core) === 'weak' && oqTokKind(strip(toks[i + 1]).core) === 'weak'){ out.push(toks[i]); i++; }
+        var expr = toks.slice(i, j).join(' ');
+        if(punct) expr = expr.slice(0, expr.length - punct.length);
+        var tex = null; try { tex = oqExprTex(expr); } catch(e){ tex = null; }
+        out.push(tex ? '$' + tex + '$' + punct : toks.slice(i, j).join(' '));
+        i = j;
+      }
+      return out.join(' ');
+    }
+    function oqRenderPreview(el, text, emptyMsg){
+      text = (text || '').trim();
+      if(!text){ el.className = 'ml-preview is-empty'; el.textContent = emptyMsg; return; }
+      el.className = 'ml-preview'; el.innerHTML = '';
+      try { renderExplanation(el, oqMathify(text)); } catch(e){ el.textContent = text; }
+    }
+
+    // ---------- typed question rows ----------
+    function oqRowText(row){
+      var type = row.querySelector('.oq-type').value, a = row.querySelector('.oq-main').value.trim(), b = row.querySelector('.oq-b').value.trim();
+      if(type === 'compare') return (a && b) ? 'Comparer ' + a + ' et ' + b : '';
+      if(!a) return '';
+      if(type === 'show') return /^(montrer|démontrer)/i.test(a) ? a : 'Montrer que ' + a;
+      if(type === 'sign') return /^(déterminer|quel|étudier)/i.test(a) ? a : 'Déterminer le signe de ' + a;
+      return /^calculer/i.test(a) ? a : 'Calculer ' + a;
+    }
+    function oqRowPreview(row){
+      var txt = oqRowText(row), pv = row.querySelector('.oq-qprev');
+      if(!txt){ pv.innerHTML = ''; pv.hidden = true; return; }
+      pv.hidden = false; pv.innerHTML = '';
+      try { renderExplanation(pv, oqMathify(txt)); } catch(e){ pv.textContent = txt; }
+    }
+    function oqSetRowType(row, type){
+      row.querySelector('.oq-type').value = type;
+      row.querySelector('.oq-and').hidden = row.querySelector('.oq-b').hidden = (type !== 'compare');
+      row.querySelector('.oq-main').placeholder = OQ_PH[type];
+      row.classList.toggle('is-compare', type === 'compare');
+      oqRowPreview(row);
+    }
+    function oqRenumber(){ Array.prototype.forEach.call(oqList.querySelectorAll('.oq-qrow'), function(r, i){ r.querySelector('.oq-n').textContent = (i + 1) + ')'; }); oqAddBtn.disabled = oqList.children.length >= OQ_MAX; }
+    function oqAddRow(type, a, b){
+      if(oqList.children.length >= OQ_MAX) return;
+      var row = document.createElement('div'); row.className = 'oq-qrow';
+      row.innerHTML = '<span class="oq-n"></span>'
+        + '<select class="oq-type" aria-label="Type de question"><option value="calc">Calculer</option><option value="show">Montrer que</option><option value="compare">Comparer</option><option value="sign">Déterminer le signe</option></select>'
+        + '<input class="oq-main" type="text" autocomplete="off" />'
+        + '<span class="oq-and" hidden>et</span><input class="oq-b" type="text" autocomplete="off" placeholder="B" hidden />'
+        + '<button type="button" class="geo-del" aria-label="Supprimer la question">×</button>'
+        + '<div class="oq-qprev" hidden></div>';
+      row.querySelector('.oq-main').value = a || '';
+      row.querySelector('.oq-b').value = b || '';
+      row.querySelector('.oq-type').addEventListener('change', function(){ oqSetRowType(row, this.value); });
+      ['.oq-main', '.oq-b'].forEach(function(sel){ var inp = row.querySelector(sel); inp.addEventListener('input', function(){ oqRowPreview(row); }); inp.addEventListener('focus', function(){ oqActive = inp; }); });
+      row.querySelector('.geo-del').addEventListener('click', function(){ if(oqList.children.length > 1){ row.remove(); oqRenumber(); } else { row.querySelector('.oq-main').value = ''; row.querySelector('.oq-b').value = ''; oqRowPreview(row); } });
+      oqList.appendChild(row); oqSetRowType(row, type || 'show'); oqRenumber();
+    }
+    function oqSet(ex){
+      oqStmt.value = ex.s; oqList.innerHTML = ''; ex.q.forEach(function(q){ oqAddRow(q[0], q[1], q[2]); });
+      answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = '';
+      updateOqPreview();
+    }
+    function updateOqPreview(){ oqRenderPreview(oqPrev, oqStmt.value, 'Aperçu de l’énoncé… (les maths sont reconnues automatiquement)'); }
+    function oqQuotaRender(used, limit){
+      if(limit === '' || limit === null || limit === undefined){ oqQuotaEl.textContent = 'Questions : illimitées (admin)'; oqQuotaEl.className = 'oq-quota'; return; }
+      var left = Math.max(0, Number(limit) - Number(used || 0));
+      oqQuotaEl.textContent = 'Restantes aujourd’hui : ' + left + ' / ' + limit;
+      oqQuotaEl.className = 'oq-quota' + (left <= 2 ? ' is-low' : '');
+    }
+    oqStmt.addEventListener('input', updateOqPreview);
+    oqStmt.addEventListener('focus', function(){ oqActive = oqStmt; });
+    oqAddBtn.addEventListener('click', function(){ oqAddRow('show'); var ins = oqList.querySelectorAll('.oq-main'); if(ins.length) ins[ins.length - 1].focus(); });
+    oqModeEl.addEventListener('click', function(ev){ var b = ev.target.closest('.ml-sidebtn'); if(!b) return; oqMode = b.getAttribute('data-oqmode'); oqModeEl.querySelectorAll('.ml-sidebtn').forEach(function(x){ x.classList.toggle('is-active', x === b); }); });
+    oqExEl.addEventListener('click', function(ev){ var b = ev.target.closest('[data-oqex]'); if(!b) return; var ex = OQ_EX[Number(b.getAttribute('data-oqex'))]; if(ex) oqSet(ex); });
+    // maths keyboard → active field (statement or a question input); "|" marks where the caret goes
+    oqKeysEl.addEventListener('mousedown', function(ev){ if(ev.target.closest('.ml-key')) ev.preventDefault(); }); // keep focus in the field
+    oqKeysEl.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.ml-key'); if(!btn) return;
+      var inp = (oqActive && document.body.contains(oqActive)) ? oqActive : oqStmt;
+      insertInto(inp, btn.getAttribute('data-ins'));
+      inp.dispatchEvent(new Event('input'));
+    });
+
+    function oqClaimTex(c){
+      var rel = { '=': '=', '<': '<', '>': '>', '<=': BS + 'leq', '>=': BS + 'geq', '!=': BS + 'neq' }[c.relation] || c.relation;
+      try { return oqExprTex(c.lhs) + ' ' + rel + ' ' + oqExprTex(c.rhs); } catch(e){ return null; }
+    }
+    function oqAnchorHtml(an){
+      if(!an) return '';
+      if(an.kind === 'compare') return '<div class="oq-anchor"><i class="bi bi-calculator"></i> Calcul de contrôle : A ≈ ' + escapeHtml(an.a) + ', B ≈ ' + escapeHtml(an.b) + ' → <strong>A ' + escapeHtml(an.relation) + ' B</strong></div>';
+      if(an.kind === 'value') return '<div class="oq-anchor"><i class="bi bi-calculator"></i> Valeur numérique de contrôle : ≈ <strong>' + escapeHtml(an.value) + '</strong></div>';
+      if(an.kind === 'sign') return '<div class="oq-anchor"><i class="bi bi-calculator"></i> Calcul de contrôle : ≈ ' + escapeHtml(an.value) + ' → <strong>' + (an.sign === '>0' ? 'strictement positif' : an.sign === '<0' ? 'strictement négatif' : 'nul') + '</strong></div>';
+      if(an.kind === 'target' && an.status === 'ok') return '<div class="oq-anchor"><i class="bi bi-check-circle"></i> L’énoncé à démontrer a été vérifié numériquement : il est vrai.</div>';
+      if(an.kind === 'target' && an.status === 'fail') return '<div class="oq-anchor is-ko"><i class="bi bi-exclamation-triangle"></i> Attention : l’énoncé à démontrer semble <strong>faux</strong> (' + escapeHtml(an.detail) + '). Vérifiez votre saisie.</div>';
+      return '';
+    }
+    function oqAttr(s){ return escapeHtml(s || '').split('"').join('&quot;'); }
+    function oqRender(data, qTexts){
+      var v = data.verification || {}, html = '';
+      html += '<div class="oq-summary">'
+        + '<span class="oq-badge oq-badge--ok"><i class="bi bi-check-circle-fill"></i> ' + (v.ok || 0) + ' calcul' + ((v.ok || 0) > 1 ? 's' : '') + ' vérifié' + ((v.ok || 0) > 1 ? 's' : '') + '</span>'
+        + ((v.failed || 0) ? '<span class="oq-badge oq-badge--fail"><i class="bi bi-exclamation-triangle-fill"></i> ' + v.failed + ' à revoir</span>' : '')
+        + ((v.unchecked || 0) ? '<span class="oq-badge oq-badge--un"><i class="bi bi-question-circle"></i> ' + v.unchecked + ' non vérifiable' + (v.unchecked > 1 ? 's' : '') + '</span>' : '')
+        + (data.retried ? '<span class="oq-badge oq-badge--un"><i class="bi bi-arrow-repeat"></i> corrigée après vérification</span>' : '')
+        + (data.cached ? '<span class="oq-badge oq-badge--un"><i class="bi bi-lightning-charge"></i> réponse déjà calculée</span>' : '')
+        + '</div>';
+      (data.answers || []).forEach(function(a, i){
+        html += '<div class="oq-ans"><div class="oq-ans__q"><span>' + (i + 1) + ')</span> <span class="oq-ans__t" data-prose="' + oqAttr(oqMathify(qTexts[i] || a.question || '')) + '"></span></div>';
+        html += oqAnchorHtml((data.anchors || [])[i]);
+        if(a.method) html += '<div class="oq-method"><strong>Méthode : </strong><span data-prose="' + oqAttr(a.method) + '"></span></div>';
+        (a.steps || []).forEach(function(st){
+          html += '<div class="ml-step"><div class="ml-step__title" data-prose="' + oqAttr(st.title || '') + '"></div>'
+            + (st.latex ? '<div class="ml-step__latex" data-tex="' + oqAttr(st.latex) + '"></div>' : '')
+            + '<div class="ml-step__exp" data-prose="' + oqAttr(st.explanation || '') + '"></div>';
+          if(st.checks && st.checks.length){
+            html += '<div class="oq-checks">';
+            st.checks.forEach(function(c){
+              var cls = c.status === 'ok' ? 'ok' : c.status === 'fail' ? 'fail' : 'un';
+              var icon = c.status === 'ok' ? 'bi-check-circle-fill' : c.status === 'fail' ? 'bi-exclamation-triangle-fill' : 'bi-question-circle';
+              var lbl = c.status === 'ok' ? 'vérifié' : c.status === 'fail' ? 'à revoir' : 'non vérifiable';
+              var tex = oqClaimTex(c), condTex = null;
+              if(c.condition){
+                try {
+                  var cparts = String(c.condition).split('&&').join(' and ').split(' et ').join(' and ').split(';').join(' and ').split(' and ');
+                  condTex = cparts.filter(function(x){ return x.trim(); }).map(function(x){ return oqExprTex(x); }).join(BS + 'text{ et }');
+                } catch(e){ condTex = null; }
+              }
+              html += '<span class="oq-check oq-check--' + cls + '" title="' + oqAttr(c.detail) + '"><i class="bi ' + icon + '"></i> ' + lbl + ' : '
+                + (tex ? '<span data-tex="' + oqAttr(tex) + '"></span>' : escapeHtml(c.lhs + ' ' + c.relation + ' ' + c.rhs))
+                + (c.condition ? ' <em>(si ' + (condTex ? '<span data-tex="' + oqAttr(condTex) + '"></span>' : escapeHtml(c.condition)) + ')</em>' : '') + '</span>';
+            });
+            html += '</div>';
+          }
+          html += '</div>';
+        });
+        if(a.conclusion) html += '<div class="oq-concl"><i class="bi bi-check2-circle"></i> <span data-prose="' + oqAttr(a.conclusion) + '"></span></div>';
+        html += '</div>';
+      });
+      html += '<div class="oq-note"><i class="bi bi-info-circle"></i> Les calculs marqués « vérifié » ont été contrôlés numériquement par Kalan Maths Lab. Le raisonnement (implications, choix de méthode) n’est pas vérifiable automatiquement : relisez-le et refaites les calculs vous-même.</div>';
+      answerEl.innerHTML = html;
+      Array.prototype.forEach.call(answerEl.querySelectorAll('[data-tex]'), function(el){ try { renderKatex(el, el.getAttribute('data-tex')); } catch(e){} });
+      Array.prototype.forEach.call(answerEl.querySelectorAll('[data-prose]'), function(el){ try { renderExplanation(el, el.getAttribute('data-prose')); } catch(e){ el.textContent = el.getAttribute('data-prose'); } });
+    }
+
+    async function runOpen(){
+      var statementRaw = (oqStmt.value || '').trim();
+      var rows = Array.prototype.slice.call(oqList.querySelectorAll('.oq-qrow'));
+      var questions = [], qTexts = [];
+      rows.forEach(function(r){
+        var type = r.querySelector('.oq-type').value, text = oqRowText(r);
+        if(!text) return;
+        var q = { type: type, text: oqMathify(text) };
+        if(type === 'compare'){ q.a = r.querySelector('.oq-main').value.trim(); q.b = r.querySelector('.oq-b').value.trim(); }
+        else q.expr = r.querySelector('.oq-main').value.trim();
+        questions.push(q); qTexts.push(text);
+      });
+      if(!statementRaw){ stateEl.textContent = 'Écrivez l’énoncé (partie 1).'; oqStmt.focus(); return; }
+      if(!questions.length){ stateEl.textContent = 'Écrivez au moins une question (partie 2) — pour « Comparer », remplissez A et B.'; return; }
+      answerEl.innerHTML = ''; stepsEl.innerHTML = '';
+      stateEl.innerHTML = '<span class="ml-spinner"></span> ' + (oqMode === 'hint' ? 'Préparation du coup de pouce…' : 'Rédaction et vérification de la solution…');
+      oqGoBtn.disabled = true;
+      try {
+        var resp = await fetch(OPEN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ statement: oqMathify(statementRaw), questions: questions, mode: oqMode }) });
+        var data = await resp.json();
+        if(data.quota) oqQuotaRender(data.quota.used, data.quota.limit === null ? '' : data.quota.limit);
+        if(!data.ok){ stateEl.textContent = ''; answerEl.innerHTML = '<div class="ml-warn" style="margin-top:1rem"><i class="bi bi-exclamation-triangle"></i><span>' + escapeHtml(data.error || 'Réponse indisponible.') + '</span></div>'; return; }
+        stateEl.textContent = '';
+        oqRender(data, qTexts);
+      } catch(e){ stateEl.textContent = 'Connexion impossible — réessayez.'; }
+      finally { oqGoBtn.disabled = false; }
+    }
+    oqGoBtn.addEventListener('click', runOpen);
+
+    oqAddRow('show'); oqAddRow('show');
+    oqQuotaRender(oqQuotaEl.getAttribute('data-used'), oqQuotaEl.getAttribute('data-limit'));
+    updateOqPreview();
+
     function switchMode(m){
       if(m === currentMode) return;
       currentMode = m;
@@ -6979,14 +7395,16 @@
       modeEq1.hidden      = (m !== 'equation');
       modeSys.hidden      = (m !== 'system');
       modeBary.hidden     = (m !== 'bary');
+      modeOpen.hidden     = (m !== 'open');
       modeTrig.hidden     = (m !== 'trig');
       answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = '';
       var isTrig = (m === 'trig');
       // Trigonométrie & Arithmétique have no GeoGebra graph — hide the graph card.
-      var gcard = document.getElementById('graph-card'); if(gcard) gcard.hidden = isTrig || (m === 'arith') || (m === 'system' && sysN !== 2);
+      var gcard = document.getElementById('graph-card'); if(gcard) gcard.hidden = isTrig || (m === 'arith') || (m === 'open') || (m === 'system' && sysN !== 2);
       if(trigCircleCard) trigCircleCard.hidden = !isTrig;
       if(isTrig){ tcRender(tcDeg); return; }
       if(m === 'arith'){ updateArithPreview(); return; }
+      if(m === 'open'){ updateOqPreview(); return; }
       if(ggb){
         try { ggb.setPerspective((m === 'function' || m === 'integral' || m === 'suite' || m === 'diffeq') ? 'AG' : 'G'); } catch(e){}
         clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot(); clearSuitePlot(); clearProbaPlot(); clearStatsPlot(); clearPwPlot(); clearE1Plot(); clearSysPlot(); clearBaryPlot(); clearZfPlot();
