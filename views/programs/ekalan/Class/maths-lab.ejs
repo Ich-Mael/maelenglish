@@ -3497,6 +3497,91 @@
       return 'Integral(' + f + ')';
     }
 
+    /* --- Pure-JS integration (GeoGebra's CAS answers "?" to Integral(…) in this deployment) ---
+       Primitive as a sum of terms { c: fraction, body: string in x }: exact for polynomials, plus
+       linearity and the classic forms 1/(ax+b), (ax+b)^n, e^(ax+b), sin/cos(ax+b), √(ax+b). */
+    function astToPolyX(n){
+      if(!n) return null;
+      switch(n.t){
+        case 'num': { var f = fFromNum(n.v); return f ? [f] : null; }
+        case 'var': return [fr(0), fr(1)];
+        case 'const': return null;
+        case 'neg': { var a = astToPolyX(n.a); return a ? pScale(a, fr(-1)) : null; }
+        case '+': case '-': case '*': {
+          var l = astToPolyX(n.l), r = astToPolyX(n.r); if(!l || !r) return null;
+          return n.t === '+' ? pAdd(l, r) : n.t === '-' ? pSub(l, r) : pMul(l, r);
+        }
+        case '/': { var l2 = astToPolyX(n.l), r2 = astToPolyX(n.r); if(!l2 || !r2 || !pConst(r2) || fZero(r2[0])) return null; return pScale(l2, fDiv(fr(1), r2[0])); }
+        case '^': { var b = astToPolyX(n.l), e = astToPolyX(n.r); if(!b || !e || !pConst(e)) return null; var ev = fVal(e[0]); if(ev < 0 || ev > 12 || ev !== Math.floor(ev)) return null; var res = [fr(1)]; for(var i = 0; i < ev; i++) res = pMul(res, b); return res; }
+      }
+      return null;
+    }
+    function itConst(n){ var p = astToPolyX(n); return (p && pConst(p)) ? p[0] : null; }
+    function itLin(n){ var p = astToPolyX(n); if(!p || pDeg(p) !== 1) return null; return { a: p[1], b: p[0], s: pPlain([p[0], p[1]], 'x'), isX: fZero(p[0]) && p[1].n === p[1].d }; }
+    function itScale(terms, k){ return terms ? terms.map(function(t){ return { c: fMul(t.c, k), body: t.body }; }) : null; }
+    function itPow(L, n){ // ∫ (ax+b)^n dx
+      if(fZero(fAdd(n, fr(1)))) return [{ c: fDiv(fr(1), L.a), body: 'ln(abs(' + L.s + '))' }];
+      var np = fAdd(n, fr(1)), base = L.isX ? 'x' : '(' + L.s + ')';
+      return [{ c: fDiv(fr(1), fMul(L.a, np)), body: base + '^' + (np.d === 1 ? String(np.n) : '(' + fPlain(np) + ')') }];
+    }
+    function itInt(n){
+      if(!n) return null;
+      var poly = astToPolyX(n);
+      if(poly){
+        var out = [];
+        for(var k = pDeg(poly); k >= 0; k--){ if(!fZero(poly[k])) out.push({ c: fDiv(poly[k], fr(k + 1)), body: k + 1 === 1 ? 'x' : 'x^' + (k + 1) }); }
+        return out;
+      }
+      switch(n.t){
+        case '+': { var a = itInt(n.l), b = itInt(n.r); return (a && b) ? a.concat(b) : null; }
+        case '-': { var a2 = itInt(n.l), b2 = itInt(n.r); return (a2 && b2) ? a2.concat(itScale(b2, fr(-1))) : null; }
+        case 'neg': return itScale(itInt(n.a), fr(-1));
+        case '*': { var kl = itConst(n.l); if(kl) return itScale(itInt(n.r), kl); var kr = itConst(n.r); if(kr) return itScale(itInt(n.l), kr); return null; }
+        case '/': {
+          var kd = itConst(n.r); if(kd && !fZero(kd)) return itScale(itInt(n.l), fDiv(fr(1), kd));
+          var kn = itConst(n.l); if(!kn) return null;
+          var L = itLin(n.r); if(L) return itScale(itPow(L, fr(-1)), kn);
+          if(n.r.t === '^'){ var Lp = itLin(n.r.l), ep = itConst(n.r.r); if(Lp && ep) return itScale(itPow(Lp, fNeg(ep)), kn); }
+          if(n.r.t === 'fn' && n.r.name === 'sqrt'){ var Ls = itLin(n.r.a); if(Ls) return itScale(itPow(Ls, fr(-1, 2)), kn); }
+          return null;
+        }
+        case '^': { var Lb = itLin(n.l), e = itConst(n.r); if(Lb && e) return itPow(Lb, e); return null; }
+        case 'fn': {
+          var Lf = itLin(n.a); if(!Lf) return null;
+          var inv = fDiv(fr(1), Lf.a), arg = Lf.s;
+          if(n.name === 'exp') return [{ c: inv, body: 'exp(' + arg + ')' }];
+          if(n.name === 'sin') return [{ c: fNeg(inv), body: 'cos(' + arg + ')' }];
+          if(n.name === 'cos') return [{ c: inv, body: 'sin(' + arg + ')' }];
+          if(n.name === 'sqrt') return itPow(Lf, fr(1, 2));
+          return null;
+        }
+      }
+      return null;
+    }
+    function itBodyTex(body){ try { return toLatex(body); } catch(e){ return body; } }
+    function itTex(terms){
+      var out = '', first = true;
+      terms.forEach(function(t){
+        if(fZero(t.c)) return;
+        var neg = t.c.n < 0, ab = fr(Math.abs(t.c.n), t.c.d), ct = (ab.n === 1 && ab.d === 1) ? '' : fTex(ab) + BS + ',';
+        out += first ? ((neg ? '-' : '') + ct + itBodyTex(t.body)) : ((neg ? ' - ' : ' + ') + ct + itBodyTex(t.body)); first = false;
+      });
+      return out || '0';
+    }
+    function itStr(terms){ var s = terms.filter(function(t){ return !fZero(t.c); }).map(function(t){ return '(' + t.c.n + '/' + t.c.d + ')*(' + t.body + ')'; }).join('+'); return s || '0'; }
+    function itPlain(terms){ return terms.filter(function(t){ return !fZero(t.c); }).map(function(t, i){ var neg = t.c.n < 0, ab = fr(Math.abs(t.c.n), t.c.d); return (i ? (neg ? ' - ' : ' + ') : (neg ? '-' : '')) + ((ab.n === 1 && ab.d === 1) ? '' : fPlain(ab)) + t.body; }).join('') || '0'; }
+    function itCompile(str){ var tk = dxTok(str); if(!tk) return null; try { return dxParse(tk); } catch(e){ return null; } }
+    function itSimpson(fAst, a, b){ // composite Simpson; endpoints nudged inward if f is undefined there
+      var N = 2000, h = (b - a) / N, s = 0, eps = 1e-9 * (b > a ? 1 : -1);
+      for(var i = 0; i <= N; i++){
+        var x = a + i * h, y = pwEval(fAst, x, {});
+        if(!isFinite(y) && (i === 0 || i === N)) y = pwEval(fAst, i === 0 ? a + eps : b - eps, {});
+        if(!isFinite(y)) return NaN;
+        s += y * (i === 0 || i === N ? 1 : (i % 2 ? 4 : 2));
+      }
+      return s * h / 3;
+    }
+
     async function runIntegral(){
       var f = (ifxInput.value || '').trim();
       if(!f){ stateEl.textContent = 'Saisissez une fonction.'; return; }
@@ -3506,34 +3591,89 @@
         a = (iaInput.value || '').trim(); b = (ibInput.value || '').trim();
         if(!a || !b){ stateEl.textContent = 'Renseignez les bornes a et b.'; return; }
       }
-
       clearIntPlot();
       plot(f);
       answerEl.innerHTML = ''; stepsEl.innerHTML = '';
       stateEl.innerHTML = '<span class="ml-spinner"></span> Calcul en cours…';
       setIOpsEnabled(false);
+      function fail(msg){ answerEl.innerHTML = '<div class="ml-warn" style="margin-top:1rem"><i class="bi bi-exclamation-triangle"></i><span>' + escapeHtml(msg) + '</span></div>'; stateEl.textContent = ''; setIOpsEnabled(true); }
 
-      var casResult = '';
-      try { casResult = ggb.evalCommandCAS(integralCAS(f)); } catch(e){ casResult = ''; }
-      casResult = ggbToText(casResult).trim();
-      if(!casResult || casResult === '?'){ stateEl.textContent = 'Impossible de calculer — vérifiez la fonction' + (intType === 'def' ? ' et les bornes.' : '.'); setIOpsEnabled(true); return; }
+      var fAst = itCompile(f);
+      if(!fAst){ return fail('Fonction invalide — vérifiez la syntaxe (ex. x^2 - 3x, 1/x, exp(2x), cos(x)).'); }
+      var prim = null; try { prim = itInt(fAst); } catch(e){ prim = null; }
+      var R = e1Report(), body = '', casResult = '';
+      var fTexStr = null; try { fTexStr = toLatex(f); } catch(e){ fTexStr = f; }
 
-      // Shade the area under the curve for a definite integral.
-      if(intType === 'def'){ defInt('iarea', 'iarea=Integral(f, ' + a + ', ' + b + ')'); colour('iarea', 255, 184, 0); }
+      if(intType !== 'def'){
+        if(!prim){
+          // last resort: GeoGebra CAS
+          var cas = ''; try { cas = ggbToText(ggb.evalCommandCAS(integralCAS(f))).trim(); } catch(e){ cas = ''; }
+          if(!cas || cas === '?') return fail('Primitive non calculable automatiquement pour cette fonction. Formes prises en charge : polynômes, 1/x, 1/(ax+b), (ax+b)ⁿ, e^(ax+b), sin(ax+b), cos(ax+b), √(ax+b), et leurs combinaisons linéaires.');
+          casResult = cas;
+          body += R.sec('Primitive', R.line('', BS + 'int ' + fTexStr + BS + ',dx = ' + escapeHtml(cas)));
+        } else {
+          var Ft = itTex(prim);
+          body += R.sec('Primitive', R.line('', BS + 'int ' + BS + 'left(' + fTexStr + BS + 'right)' + BS + ',dx = ' + Ft + ' + C,' + BS + 'quad C ' + BS + 'in ' + BS + 'mathbb{R}'));
+          casResult = 'F(x) = ' + itPlain(prim) + ' + C';
+        }
+        R.render('Primitive', body);
+      } else {
+        var aAst = itCompile(a), bAst = itCompile(b);
+        var av = aAst ? pwEval(aAst, 0, {}) : NaN, bv = bAst ? pwEval(bAst, 0, {}) : NaN;
+        if(!isFinite(av) || !isFinite(bv)) return fail('Bornes a et b invalides (nombres, fractions, pi…).');
+        // f must be defined (and finite) on [a, b]
+        var lo = Math.min(av, bv), hi = Math.max(av, bv), okDom = true;
+        for(var k = 0; k <= 400 && okDom; k++){ var xs = lo + (hi - lo) * k / 400; if(!isFinite(pwEval(fAst, xs, {}))) okDom = false; }
+        if(!okDom) return fail('f n’est pas définie (ou pas continue) sur tout l’intervalle [' + a + ' ; ' + b + '] : l’intégrale n’est pas calculable ici.');
+        var num = itSimpson(fAst, av, bv);
+        var aTex = (function(){ try { return toLatex(a); } catch(e){ return a; } })(), bTex = (function(){ try { return toLatex(b); } catch(e){ return b; } })();
+        var t = '', valTex, valPlain;
+        if(prim){
+          var Ft2 = itTex(prim), Fast = itCompile(itStr(prim));
+          var aF = fFromNum(av), bF = fFromNum(bv), polyF = null;
+          var pX = astToPolyX(fAst);
+          if(pX && aF && bF){ // exact for polynomials with rational bounds
+            var Pp = [fr(0)]; for(var j = 0; j <= pDeg(pX); j++) Pp[j + 1] = fDiv(pX[j], fr(j + 1));
+            var Fb = pEvalF(Pp, bF), Fa = pEvalF(Pp, aF), I = fSub(Fb, Fa);
+            valTex = fTex(I); valPlain = fPlain(I);
+            t += R.line('Primitive :', 'F(x) = ' + Ft2);
+            t += R.line('', BS + 'int_{' + aTex + '}^{' + bTex + '} ' + BS + 'left(' + fTexStr + BS + 'right)' + BS + ',dx = ' + BS + 'Big[F(x)' + BS + 'Big]_{' + aTex + '}^{' + bTex + '} = F' + BS + 'left(' + bTex + BS + 'right) - F' + BS + 'left(' + aTex + BS + 'right)');
+            t += R.line('', '= ' + fTex(Fb) + ' - ' + fPar(Fa) + ' = ' + valTex);
+          } else {
+            var Fbn = pwEval(Fast, bv, {}), Fan = pwEval(Fast, av, {}), In = Fbn - Fan;
+            if(!isFinite(In)) In = num;
+            var sn = pwSnap(In); valTex = sn.tex; valPlain = sn.plain;
+            t += R.line('Primitive :', 'F(x) = ' + Ft2);
+            t += R.line('', BS + 'int_{' + aTex + '}^{' + bTex + '} ' + BS + 'left(' + fTexStr + BS + 'right)' + BS + ',dx = ' + BS + 'Big[F(x)' + BS + 'Big]_{' + aTex + '}^{' + bTex + '} = F' + BS + 'left(' + bTex + BS + 'right) - F' + BS + 'left(' + aTex + BS + 'right) = ' + valTex);
+          }
+          casResult = 'F(x) = ' + itPlain(prim) + ' ; integrale de ' + a + ' a ' + b + ' = ' + valPlain;
+        } else {
+          if(!isFinite(num)) return fail('Intégrale non calculable sur cet intervalle.');
+          var sn2 = pwSnap(num); valTex = sn2.tex; valPlain = sn2.plain;
+          t += '<div class="study-work">Pas de primitive usuelle reconnue : valeur obtenue par calcul numérique (méthode de Simpson).</div>';
+          t += R.line('', BS + 'int_{' + aTex + '}^{' + bTex + '} ' + BS + 'left(' + fTexStr + BS + 'right)' + BS + ',dx ' + (valTex.indexOf(BS + 'approx') === 0 ? valTex : '= ' + valTex));
+          casResult = 'integrale de ' + a + ' a ' + b + ' = ' + valPlain + ' (calcul numerique)';
+        }
+        // interpretation as an area
+        var allPos = true, allNeg = true;
+        for(var q = 1; q < 200; q++){ var yv = pwEval(fAst, lo + (hi - lo) * q / 200, {}); if(yv < -1e-12) allPos = false; if(yv > 1e-12) allNeg = false; }
+        if(av > bv) t += '<div class="study-work">Ici a > b : ∫ₐᵇ f = −∫ᵦᵃ f (les bornes sont « dans le mauvais sens »).</div>';
+        else if(allPos) t += '<div class="study-work">f ≥ 0 sur [a ; b] : l’intégrale est l’aire (en unités d’aire) du domaine sous la courbe.</div>';
+        else if(allNeg) t += '<div class="study-work">f ≤ 0 sur [a ; b] : l’intégrale est l’opposé de l’aire du domaine entre la courbe et l’axe.</div>';
+        else t += '<div class="study-work">f change de signe sur [a ; b] : l’intégrale est la somme algébrique des aires (au-dessus de l’axe comptées +, en dessous −).</div>';
+        body += R.sec('Intégrale définie', t);
+        R.render('Calcul d’intégrale', body);
+        defInt('iarea', 'iarea=Integral(f, ' + a + ', ' + b + ')'); colour('iarea', 255, 184, 0);
+      }
 
-      answerEl.innerHTML = '<div class="ml-answer"><div class="lbl"><i class="bi bi-stars"></i> Résultat</div><div class="val">' + escapeHtml(casResult) + '</div></div>';
       stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
-
       var op = (intType === 'def') ? 'integral_def' : 'integral';
-      var body = { function: f, operation: op, casResult: casResult };
-      if(intType === 'def'){ body.a = a; body.b = b; }
+      var reqBody = { function: f, operation: op, casResult: casResult.slice(0, 495) };
+      if(intType === 'def'){ reqBody.a = a; reqBody.b = b; }
       try {
-        var resp = await fetch(EXPLAIN_URL, {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify(body)
-        });
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(reqBody) });
         var data = await resp.json();
-        if(data.ok){ showSteps(data); }
+        if(data.ok){ showSteps(data, true); }
         else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
       } catch(e){
         stateEl.textContent = 'Connexion impossible — réessayez.';
