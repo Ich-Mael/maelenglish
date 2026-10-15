@@ -39,6 +39,8 @@ const OPERATIONS = {
   stats_regression: "l'ajustement affine (régression linéaire)",
   diff_eq: "la résolution de l'équation différentielle",
   system: "la résolution du système d'équations linéaires",
+  system_free: "la résolution du système d'équations (non linéaire)",
+  inequation: "la résolution de l'inéquation",
   barycentre: "le barycentre de points pondérés",
   bary_locus: "l'ensemble des points M tels que ‖Σ aᵢ·MAᵢ‖ = k",
   eq2_solve: "la résolution de l'équation du second degré",
@@ -56,6 +58,30 @@ const OPERATIONS = {
   solve: "la résolution de l'équation",
   factor: "la factorisation de l'expression",
   expand: "le développement de l'expression",
+};
+
+// Free (non-linear) systems: method imposed by the client (detected from the shape of the system).
+const SYSTEM_FREE_METHODS = {
+  ln: "regroupe d'abord les logarithmes (ln a + ln b = ln(ab), ln a − ln b = ln(a/b)), puis passe à l'exponentielle pour obtenir un système sans logarithme ; résous-le ensuite par somme-produit (X² − SX + P = 0) ou par substitution, et garde seulement les solutions qui respectent les conditions d'existence",
+  exp: "pose X = e^x et Y = e^y (X > 0, Y > 0), résous le système en X et Y, puis reviens à x = ln X et y = ln Y",
+  sumprod: "méthode somme-produit : avec S = x + y et P = xy, x et y sont les solutions de X² − SX + P = 0 ; résous cette équation avec le discriminant puis écris les couples",
+  linear: "substitution : isole une inconnue dans l'équation du premier degré et remplace-la dans l'autre équation",
+  product: "substitution : de l'équation xy = k, tire y = k/x (x ≠ 0), remplace y dans l'autre équation, multiplie par x² et pose X = x² pour obtenir une équation du second degré en X (équation bicarrée) ; garde X ≥ 0, déduis x = ±√X puis y = k/x",
+  sym3: "x, y et z sont les racines du polynôme t³ − St² + Qt − P = 0 (S = x + y + z, Q = xy + yz + zx, P = xyz) ; cherche une racine évidente, factorise, puis écris tous les triplets (permutations)",
+  linear3: "substitution : exprime deux inconnues en fonction de la troisième à l'aide des équations simples, puis remplace dans l'équation restante",
+  generic: "substitution : exprime une inconnue en fonction des autres à partir de l'équation la plus simple, puis remplace dans les autres équations",
+};
+
+// Inequations: method imposed by the client (detected from the form of the inequation).
+const INEQUATION_METHODS = {
+  deg1: "inéquation du premier degré : regroupe les termes en x d'un côté et les constantes de l'autre, puis divise par le coefficient de x en CHANGEANT LE SENS de l'inégalité s'il est négatif",
+  deg2: "signe du trinôme : ramène à ax² + bx + c ⋄ 0, calcule Δ et les racines ; le trinôme est du signe de a à l'extérieur des racines et du signe contraire entre elles (si Δ < 0 : signe de a partout)",
+  product: "ramène à « … ⋄ 0 », factorise (racine évidente si besoin), puis fais un tableau de signes avec une ligne par facteur",
+  quotient: "ramène à « … ⋄ 0 » sur un même dénominateur, donne les valeurs interdites (dénominateur nul), puis fais un tableau de signes avec une ligne par facteur du numérateur et du dénominateur (double barre aux valeurs interdites)",
+  ln: "écris d'abord les conditions d'existence (argument du ln strictement positif), puis utilise la stricte croissance de ln et de exp (ln a < ln b ⇔ a < b pour a, b > 0 ; ln x < k ⇔ 0 < x < e^k), et intersecte avec le domaine",
+  exp: "isole l'exponentielle puis utilise la stricte croissance de ln : e^u > k ⇔ u > ln k si k > 0 (si k ≤ 0, e^u > k est toujours vrai)",
+  sqrt: "écris les conditions d'existence (expression sous la racine ≥ 0), puis étudie les cas selon le signe des membres avant d'élever au carré",
+  generic: "ramène à h(x) ⋄ 0, détermine le domaine, les zéros de h, puis étudie le signe de h sur chaque intervalle",
 };
 
 // Complex-numbers domain (Nombres complexes).
@@ -386,6 +412,36 @@ function buildPrompt({ domain, input, operation, casResult, params }) {
     return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
   }
 
+  // Inequation: solution set, factorisation and critical values computed client-side (exact when rational).
+  if (operation === "inequation") {
+    const userMsg =
+      `Inéquation : ${input}\n` +
+      `Résultat correct (fourni — ensemble des solutions, factorisation et valeurs critiques — à expliquer, ne pas modifier) : ${casResult}\n\n` +
+      (params && INEQUATION_METHODS[params.method] ? `MÉTHODE IMPOSÉE (celle du cours, à suivre telle quelle) : ${INEQUATION_METHODS[params.method]}.\n` : "") +
+      `Explique la résolution pas à pas, niveau lycée. Ne dessine pas de tableau de signes en LaTeX (il est déjà affiché) : décris le signe intervalle par intervalle. ` +
+      `Attention aux crochets : borne incluse [ ou ] selon que l'inégalité est large ou stricte, toujours ouverte en une valeur interdite et en ±∞ (notation française ]a ; b[). ` +
+      `Conclus avec EXACTEMENT l'ensemble des solutions fourni. Dans 'finalAnswerLatex', écris S = … en LaTeX (\\left] … \\right[ pour les crochets, \\cup pour les réunions).`;
+    return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
+  }
+
+  // Free (non-linear) system: the solution set is computed client-side (numeric + exact snapping).
+  if (operation === "system_free") {
+    const userMsg =
+      `Système d'équations : ${input}\n` +
+      `(les équations sont séparées par « ; » ; inconnues x, y et éventuellement z)\n` +
+      `Résultat correct (fourni — à expliquer, ne pas modifier) : ${casResult}\n\n` +
+      (params && SYSTEM_FREE_METHODS[params.method]
+        ? `MÉTHODE IMPOSÉE (celle du cours, à suivre telle quelle) : ${SYSTEM_FREE_METHODS[params.method]}. N'introduis AUCUNE autre variable auxiliaire (pas de u = x + y, v = x − y, etc.) et ne change pas de méthode.\n`
+        : "") +
+      `Explique la résolution, niveau lycée, en choisissant la méthode adaptée :\n` +
+      `- commence par les conditions d'existence (ln(a) exige a > 0, sqrt(a) exige a ≥ 0, un dénominateur doit être non nul) ;\n` +
+      `- méthodes possibles : propriétés du logarithme (ln a + ln b = ln(ab), ln a − ln b = ln(a/b)) puis passage à l'exponentielle ; somme S et produit P connus ⇒ x et y sont les racines de X² − SX + P = 0 ; changement de variable (X = e^x, Y = e^y, ou X = x²) ; substitution (exprimer une inconnue en fonction de l'autre) ; combinaison linéaire ;\n` +
+      `- résous pas à pas, puis élimine les solutions qui ne vérifient pas les conditions d'existence ;\n` +
+      `- conclus avec EXACTEMENT l'ensemble des solutions fourni (même nombre de solutions, mêmes valeurs).\n` +
+      `Dans 'finalAnswerLatex', écris l'ensemble des solutions S = \\{ … \\} avec des couples (ou triplets) notés (a ; b).`;
+    return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
+  }
+
   // Integration by parts: the choice of u / v' and every step are computed client-side (exact).
   if (operation === "integral_ipp") {
     const def = params && params.a && params.b;
@@ -701,4 +757,4 @@ async function explainSteps({ domain = "function", input, operation, casResult, 
   }
 }
 
-module.exports = { explainSteps, MATHS_LAB_MODEL, OPERATIONS, COMPLEX_OPERATIONS, ARITH_LABELS, TRIG_OPERATIONS, getClient, repairJsonBackslashes };
+module.exports = { explainSteps, SYSTEM_FREE_METHODS, INEQUATION_METHODS, MATHS_LAB_MODEL, OPERATIONS, COMPLEX_OPERATIONS, ARITH_LABELS, TRIG_OPERATIONS, getClient, repairJsonBackslashes };

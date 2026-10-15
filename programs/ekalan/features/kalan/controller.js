@@ -16,7 +16,7 @@ const {
   activeCount,
   grantOrRenew,
 } = require("./premiumAccess");
-const { explainSteps, OPERATIONS, COMPLEX_OPERATIONS, ARITH_LABELS, TRIG_OPERATIONS } = require("./mathsLab");
+const { explainSteps, SYSTEM_FREE_METHODS, INEQUATION_METHODS, OPERATIONS, COMPLEX_OPERATIONS, ARITH_LABELS, TRIG_OPERATIONS } = require("./mathsLab");
 const { solveOpenQuestion } = require("./openQuestions");
 const crypto = require("crypto");
 
@@ -1612,6 +1612,18 @@ module.exports.explainMath = async (req, res) => {
         }
         params = { a, b };
         opKeyPart = `integral_def:${a},${b}`; // distinct cache key per bounds
+      } else if (operation === "inequation") {
+        const method = typeof req.body.method === "string" ? req.body.method : "";
+        if (INEQUATION_METHODS[method]) {
+          params = { method };
+          opKeyPart = `inequation:${method}`;
+        }
+      } else if (operation === "system_free") {
+        const method = typeof req.body.method === "string" ? req.body.method : "";
+        if (SYSTEM_FREE_METHODS[method]) {
+          params = { method };
+          opKeyPart = `system_free:${method}`; // the imposed method changes the explanation
+        }
       } else if (operation === "integral_ipp") {
         const a = typeof req.body.a === "string" ? req.body.a.trim().slice(0, 40) : "";
         const b = typeof req.body.b === "string" ? req.body.b.trim().slice(0, 40) : "";

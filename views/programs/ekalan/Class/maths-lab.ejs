@@ -64,6 +64,32 @@
     .ml-card { background:#fff; border-radius:22px; border:1px solid #ece9f3; box-shadow:0 12px 34px rgba(50,44,77,.1); padding:1.35rem; }
     .ml-card h2 { font-family:'Baloo 2',system-ui,sans-serif; font-size:1.25rem; font-weight:700; color:#322c4d; margin:0 0 .9rem; display:flex; align-items:center; gap:.5rem; }
     /* ===== Main topics (domain tabs) — brand PURPLE ===== */
+    /* ===== Two spaces: calculation tools vs open questions ===== */
+    .ml-spaces { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin:0 0 1rem; }
+    .ml-space { position:relative; display:flex; align-items:center; gap:.8rem; text-align:left; cursor:pointer;
+      background:#fff; border:2px solid #e5dbf7; border-radius:18px; padding:.85rem 1rem; transition:all .18s; color:#322c4d; }
+    .ml-space:hover { border-color:#b99cf0; box-shadow:0 6px 18px rgba(94,23,235,.12); transform:translateY(-1px); }
+    .ml-space__ic { flex:0 0 auto; display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:14px;
+      background:#f1ecfb; color:#5e17eb; font-size:1.3rem; }
+    .ml-space__txt { display:flex; flex-direction:column; gap:.15rem; min-width:0; }
+    .ml-space__txt strong { font-family:'Baloo 2',system-ui,sans-serif; font-size:1.08rem; line-height:1.15; }
+    .ml-space__txt small { font-size:.8rem; color:#6b6880; line-height:1.3; }
+    .ml-space.is-active { border-color:#5e17eb; background:linear-gradient(135deg,#5e17eb,#7b3cf2); color:#fff; box-shadow:0 8px 22px rgba(94,23,235,.32); }
+    .ml-space.is-active .ml-space__ic { background:rgba(255,255,255,.18); color:#ffc23a; }
+    .ml-space.is-active .ml-space__txt small { color:rgba(255,255,255,.85); }
+    .ml-space--open:not(.is-active) { border-color:#ffe3a3; background:#fffbf0; }
+    .ml-space--open:not(.is-active) .ml-space__ic { background:#ffc23a; color:#322c4d; }
+    @media (max-width:640px){
+      .ml-spaces { grid-template-columns:1fr; gap:.6rem; }
+      .ml-space { padding:.7rem .85rem; }
+    }
+    .oq-intro { background:linear-gradient(135deg,#fffbf0,#f6f1ff); border:1px solid #ece4fb; border-radius:18px; padding:1rem 1.1rem; margin:0 0 1rem; }
+    .oq-intro__head h2 { margin:0 0 .3rem; }
+    .oq-intro__head p { margin:0 0 .75rem; color:#4b4766; font-size:.92rem; line-height:1.45; }
+    .oq-steps { list-style:none; display:flex; flex-wrap:wrap; gap:.5rem; margin:0; padding:0; }
+    .oq-steps li { display:inline-flex; align-items:center; gap:.45rem; background:#fff; border:1px solid #e5dbf7; border-radius:999px; padding:.35rem .8rem .35rem .4rem; font-size:.85rem; color:#322c4d; }
+    .oq-steps li em { font-style:normal; }
+    .oq-steps li span { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; background:#5e17eb; color:#fff; font-size:.75rem; font-weight:800; }
     .ml-modes { display:flex; flex-direction:column; gap:.55rem; margin-bottom:1.1rem; }
     .ml-modes__group { display:flex; flex-wrap:wrap; align-items:center; gap:.45rem; padding:.5rem .55rem;
       background:#f1ecfb; border:1px solid #e5dbf7; border-radius:18px; }
@@ -84,6 +110,12 @@
     .ml-mode.is-active { background:#5e17eb; color:#fff; border-color:#5e17eb;
       box-shadow:0 5px 16px rgba(94,23,235,.38); transform:none; }
     .ml-mode.is-active:hover { transform:translateY(-1px); }
+    @media (max-width:640px){
+      /* topic chips scroll sideways instead of stacking into many rows */
+      .ml-modes__group { flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+      .ml-modes__group::-webkit-scrollbar { display:none; }
+      .ml-mode { flex:0 0 auto; }
+    }
     .geo-row { display:flex; align-items:center; gap:.6rem; margin-bottom:.55rem; }
     .geo-row .geo-label { font-weight:700; color:#5e17eb; min-width:3.4rem; }
     .geo-row input { flex:1; min-width:140px; padding:.6rem .8rem; border:2px solid #e0e0e0; border-radius:10px;
@@ -276,6 +308,7 @@
     .sys-row input:focus { outline:none; border-color:#5e17eb; }
     .sys-row .sys-v { font-family:'Times New Roman',serif; font-style:italic; font-weight:700; font-size:1.1rem; color:#322c4d; }
     .sys-row .sys-op { color:#6b6880; font-weight:700; }
+    .sys-row input.sysf-in { flex:1 1 220px; width:auto; text-align:left; }
     .sys-meth { margin:.55rem 0; padding:.55rem .8rem; border-radius:12px; background:rgba(255,255,255,.07); border-left:3px solid #ffc23a; }
     .sys-meth__t { font-family:system-ui,sans-serif; font-weight:800; color:#ffc23a; font-size:.82rem; text-transform:uppercase; letter-spacing:.04em; margin-bottom:.25rem; }
     .sys-stage { margin:.5rem 0; padding-left:.7rem; border-left:2px dashed rgba(255,255,255,.25); }
@@ -327,6 +360,8 @@
     .e1-table td.e1-neg { color:#dc2626; font-weight:800; }
     .e1-table td.e1-bar { background:repeating-linear-gradient(90deg,#fff,#fff 3px,#ffe3a3 3px,#ffe3a3 6px); }
     .e1-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    .e1-table td.iq-bar { color:#dc2626; font-weight:900; letter-spacing:-.05em; }
+    .e1-table tr.iq-hrow th, .e1-table tr.iq-hrow td { border-top:2px solid #b99cf0; }
     .e1-case { margin:.4rem 0; padding:.45rem .7rem; border-radius:10px; background:rgba(255,255,255,.07); border-left:3px solid #ffc23a; }
     .e1-case--2 { border-left-color:#86efac; }
     .e1-case--0 { border-left-color:#fca5a5; }
@@ -425,18 +460,28 @@
           <i class="bi bi-shield-exclamation"></i>
           <span><strong>Aide à l'étude, usage personnel.</strong> Vérifiez toujours les résultats vous-même — l'IA peut se tromper dans les explications, mais le résultat affiché provient du moteur de calcul.</span>
         </div>
+        <div class="ml-spaces" id="ml-spaces" role="tablist" aria-label="Espaces du Maths Lab">
+          <button type="button" class="ml-space is-active" data-space="tools" role="tab" aria-selected="true">
+            <span class="ml-space__ic"><i class="bi bi-calculator-fill"></i></span>
+            <span class="ml-space__txt"><strong>Outils de calcul</strong><small>Choisis un thème : le calcul, le graphique et les étapes expliquées</small></span>
+          </button>
+          <button type="button" class="ml-space ml-space--open" data-space="open" role="tab" aria-selected="false">
+            <span class="ml-space__ic"><i class="bi bi-chat-square-text-fill"></i></span>
+            <span class="ml-space__txt"><strong>Questions ouvertes</strong><small>Ton exercice : « Démontrer », « Comparer », « En déduire »… avec calculs vérifiés</small></span>
+          </button>
+        </div>
         <div class="ml-modes" id="modes">
           <div class="ml-modes__group">
             <span class="ml-modes__lbl"><i class="bi bi-people-fill"></i> Tous niveaux</span>
             <button type="button" class="ml-mode is-active" data-mode="function"><i class="bi bi-graph-up"></i> Fonctions</button>
             <button type="button" class="ml-mode" data-mode="piecewise"><i class="bi bi-distribute-horizontal"></i> Fonction par intervalles</button>
             <button type="button" class="ml-mode" data-mode="equation"><i class="bi bi-calculator"></i> Équation</button>
+            <button type="button" class="ml-mode" data-mode="ineq"><i class="bi bi-code"></i> Inéquations</button>
             <button type="button" class="ml-mode" data-mode="system"><i class="bi bi-grid-3x3-gap"></i> Système d’équations</button>
             <button type="button" class="ml-mode" data-mode="bary"><i class="bi bi-bullseye"></i> Barycentre</button>
             <button type="button" class="ml-mode" data-mode="suite"><i class="bi bi-list-ol"></i> Suites</button>
             <button type="button" class="ml-mode" data-mode="stats"><i class="bi bi-bar-chart-line"></i> Statistiques</button>
             <button type="button" class="ml-mode" data-mode="trig"><i class="bi bi-record-circle"></i> Trigonométrie</button>
-            <button type="button" class="ml-mode" data-mode="open"><i class="bi bi-chat-square-text"></i> Questions ouvertes</button>
           </div>
           <div class="ml-modes__group ml-modes__group--tle">
             <span class="ml-modes__lbl"><i class="bi bi-mortarboard-fill"></i> Terminale</span>
@@ -562,6 +607,41 @@
           </div>
         </div><%# /mode-equation %>
 
+        <div id="mode-ineq" hidden>
+          <h2><i class="bi bi-code"></i> Inéquation</h2>
+          <div class="pw-ex" id="iq-ex"></div>
+          <div class="ml-input-row">
+            <label for="iq-in">Résoudre</label>
+            <input id="iq-in" type="text" value="x^2 - 5x + 6 <= 0" placeholder="ex : (x+1)/(x-2) < 0" autocomplete="off" spellcheck="false" />
+          </div>
+          <div class="ml-preview is-empty" id="iq-preview">Aperçu de l’inéquation…</div>
+          <div class="ml-keys" id="iq-keys">
+            <button type="button" class="ml-key" data-ins="x">x</button>
+            <button type="button" class="ml-key" data-ins="^2">x²</button>
+            <button type="button" class="ml-key" data-ins="^">xⁿ</button>
+            <button type="button" class="ml-key" data-ins="(|)/(|)">a⁄b</button>
+            <button type="button" class="ml-key" data-ins="sqrt(|)">√</button>
+            <button type="button" class="ml-key" data-ins="(|)">(&nbsp;)</button>
+            <button type="button" class="ml-key" data-ins="+">+</button>
+            <button type="button" class="ml-key" data-ins="-">−</button>
+            <button type="button" class="ml-key" data-ins="*">×</button>
+            <button type="button" class="ml-key is-fn" data-ins=" < ">&lt;</button>
+            <button type="button" class="ml-key is-fn" data-ins=" <= ">≤</button>
+            <button type="button" class="ml-key is-fn" data-ins=" > ">&gt;</button>
+            <button type="button" class="ml-key is-fn" data-ins=" >= ">≥</button>
+            <button type="button" class="ml-key is-fn" data-ins="ln(|)">ln</button>
+            <button type="button" class="ml-key" data-ins="exp(|)">eˣ</button>
+            <button type="button" class="ml-key" data-ins="e">e</button>
+            <button type="button" class="ml-key" data-ins="pi">π</button>
+            <button type="button" class="ml-key is-util" data-act="back">⌫</button>
+            <button type="button" class="ml-key is-util" data-act="clear">C</button>
+          </div>
+          <div class="ml-ops" id="iq-ops">
+            <button class="ml-op ml-op--hero" type="button"><i class="bi bi-check2-circle"></i> Résoudre</button>
+          </div>
+          <div class="ml-hint">Tapez <strong>&lt;=</strong> pour ≤ et <strong>&gt;=</strong> pour ≥ (ou utilisez le clavier). Polynômes et quotients : factorisation exacte et tableau de signes facteur par facteur ; avec ln, exp ou √ : domaine, zéros et signe.</div>
+        </div><%# /mode-ineq %>
+
         <div id="mode-system" hidden>
           <h2><i class="bi bi-grid-3x3-gap"></i> Système d’équations</h2>
           <div class="ml-side" id="sys-count">
@@ -569,10 +649,42 @@
             <button type="button" class="ml-sidebtn" data-sysn="3">3 inconnues</button>
             <button type="button" class="ml-sidebtn" data-sysn="4">4 inconnues</button>
           </div>
+          <div class="ml-side" id="sys-kind">
+            <button type="button" class="ml-sidebtn is-active" data-syskind="lin">Linéaire (coefficients)</button>
+            <button type="button" class="ml-sidebtn" data-syskind="free">Équations libres (ln, xy, x²…)</button>
+          </div>
+          <div id="sys-lin">
           <div class="pw-ex" id="sys-ex"></div>
           <div class="sys-grid" id="sys-grid"></div>
           <div class="ml-hint" style="margin:-.2rem 0 .8rem">Coefficients entiers ou fractions (ex. 1/2) ; mettez <strong>0</strong> si une inconnue n’apparaît pas dans une équation.</div>
           <div class="ml-preview is-empty" id="sys-preview">Aperçu du système…</div>
+          </div>
+          <div id="sysf" hidden>
+            <div class="pw-ex" id="sysf-ex"></div>
+            <div class="sys-grid" id="sysf-rows"></div>
+            <div class="ml-keys" id="sysf-keys">
+              <button type="button" class="ml-key" data-ins="x">x</button>
+              <button type="button" class="ml-key" data-ins="y">y</button>
+              <button type="button" class="ml-key" data-ins="z">z</button>
+              <button type="button" class="ml-key" data-ins="=">=</button>
+              <button type="button" class="ml-key" data-ins="^2">x²</button>
+              <button type="button" class="ml-key" data-ins="^">xⁿ</button>
+              <button type="button" class="ml-key" data-ins="(|)/(|)">a⁄b</button>
+              <button type="button" class="ml-key" data-ins="sqrt(|)">√</button>
+              <button type="button" class="ml-key" data-ins="(|)">(&nbsp;)</button>
+              <button type="button" class="ml-key" data-ins="+">+</button>
+              <button type="button" class="ml-key" data-ins="-">−</button>
+              <button type="button" class="ml-key" data-ins="*">×</button>
+              <button type="button" class="ml-key is-fn" data-ins="ln(|)">ln</button>
+              <button type="button" class="ml-key" data-ins="exp(|)">eˣ</button>
+              <button type="button" class="ml-key" data-ins="e">e</button>
+              <button type="button" class="ml-key" data-ins="pi">π</button>
+              <button type="button" class="ml-key is-util" data-act="back">⌫</button>
+              <button type="button" class="ml-key is-util" data-act="clear">C</button>
+            </div>
+            <div class="ml-hint" style="margin:.2rem 0 .8rem">Une égalité par ligne, avec les inconnues x, y<span class="sysf-z">, z</span>. Produits : <strong>xy</strong> ou <strong>x*y</strong> ; fonctions : <strong>ln(x)</strong>, <strong>exp(x)</strong>, <strong>sqrt(x)</strong> ; puissances : <strong>x^2</strong>. Seules les solutions réelles sont recherchées.</div>
+            <div class="ml-preview is-empty" id="sysf-preview">Aperçu du système…</div>
+          </div>
           <div class="ml-ops" id="sys-ops">
             <button class="ml-op ml-op--hero" data-sysop="solve"><i class="bi bi-check2-circle"></i> Résoudre</button>
           </div>
@@ -601,8 +713,17 @@
         </div><%# /mode-bary %>
 
         <div id="mode-open" hidden>
-          <h2><i class="bi bi-chat-square-text"></i> Questions ouvertes</h2>
-          <div class="ml-hint" style="margin:-.3rem 0 .8rem">Pour les exercices qui ne rentrent dans aucun autre onglet : « Démontrer que… », « Comparer… », « En déduire… ». Les calculs de la réponse sont <strong>vérifiés automatiquement</strong>.</div>
+          <div class="oq-intro">
+            <div class="oq-intro__head">
+              <h2><i class="bi bi-chat-square-text"></i> Questions ouvertes</h2>
+              <p>Pour les exercices qu’aucun outil ne couvre : « Démontrer que… », « Comparer… », « Déterminer le signe… », « En déduire… ». Chaque calcul de la réponse est <strong>vérifié automatiquement</strong>.</p>
+            </div>
+            <ol class="oq-steps">
+              <li><span>1</span><em>Recopie l’<strong>énoncé</strong></em></li>
+              <li><span>2</span><em>Ajoute les <strong>questions</strong> et leur type</em></li>
+              <li><span>3</span><em>Choisis le <strong>niveau d’aide</strong></em></li>
+            </ol>
+          </div>
           <div class="pw-ex" id="oq-ex">
             <span class="pw-ex__lbl"><i class="bi bi-lightbulb"></i> Exemples :</span>
             <button type="button" class="ml-key is-util" data-oqex="0">Comparer des racines</button>
@@ -2423,7 +2544,8 @@
     var ckeysEl   = document.getElementById('ckeys');
     var copsEl    = document.getElementById('cops');
     var activeZ   = z1Input;
-    var currentMode = 'function';
+    var currentMode = 'function', lastToolMode = 'function';
+    var spacesEl = document.getElementById('ml-spaces');
     var complexObjs = [];
 
     function setCOpsEnabled(on){ copsEl.querySelectorAll('.ml-op').forEach(function(b){ b.disabled = !on; }); }
@@ -6414,6 +6536,7 @@
       answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = '';
       var gcard = document.getElementById('graph-card'); if(gcard && currentMode === 'system') gcard.hidden = (n !== 2);
       if(n !== 2) clearSysPlot();
+      if(typeof sysKind !== 'undefined' && sysKind === 'free') sysfBuild(SYSF_EX[n] ? SYSF_EX[n][0][1] : null);
     }
     sysCountEl.addEventListener('click', function(ev){ var b = ev.target.closest('.ml-sidebtn'); if(b) setSysN(Number(b.getAttribute('data-sysn'))); });
 
@@ -6531,7 +6654,342 @@
       return { expr: expr, free: free };
     }
 
+    /* --- Système « libre » (non linéaire) : 2 ou 3 inconnues, équations quelconques ---
+       e.g. ln x + ln y = ln 6, x + y = 5 ; x² − y² = 3, xy = 2 ; e^x + e^y = 3, x + y = ln 2.
+       Parsed with pwTokens/dxParse (x = var, y/z = consts read from env), solved numerically by damped
+       Newton from a grid of starts (points outside the domain give NaN and are rejected), deduplicated,
+       then snapped to exact forms (p/q, (p ± q√r)/d, e/ln bases). Claude explains the method, anchored. */
+    var sysKind = 'lin';
+    var sysLinEl = document.getElementById('sys-lin'), sysfEl = document.getElementById('sysf');
+    var sysfRowsEl = document.getElementById('sysf-rows'), sysfExEl = document.getElementById('sysf-ex');
+    var sysfKeysEl = document.getElementById('sysf-keys'), sysfPrevEl = document.getElementById('sysf-preview');
+    var sysfActive = null;
+    var SYSF_EX = {
+      2: [ ['Somme et produit', ['x + y = 5', 'xy = 6']], ['Logarithmes', ['ln(x) + ln(y) = ln(6)', 'x + y = 5']], ['x² − y² = a, xy = b', ['x^2 - y^2 = 3', 'xy = 2']], ['Exponentielles', ['exp(x) + exp(y) = 3', 'x + y = ln(2)']], ['ln et xy', ['ln(x) - ln(y) = ln(4)', 'xy = 16']] ],
+      3: [ ['Symétrique', ['x + y + z = 6', 'xy + yz + zx = 11', 'xyz = 6']], ['Logarithmes', ['ln(x) + ln(y) + ln(z) = ln(6)', 'x + y = 3', 'y + z = 5']], ['Linéaire', ['x + y + z = 6', '2x - y + z = 3', 'x + 2y - z = 2']] ]
+    };
+    var SYSF_FN = ['ln', 'log', 'exp', 'sqrt', 'sin', 'cos', 'tan', 'abs'];
+
+    function sysfBuild(eqs){
+      var html = '';
+      for(var i = 0; i < sysN; i++) html += '<div class="sys-row"><span class="sys-lbl">(E' + (i + 1) + ')</span><input type="text" class="sysf-in" data-r="' + i + '" autocomplete="off" spellcheck="false" aria-label="équation ' + (i + 1) + '" /></div>';
+      sysfRowsEl.innerHTML = html;
+      Array.prototype.forEach.call(sysfRowsEl.querySelectorAll('input'), function(inp, i){ inp.value = (eqs && eqs[i]) || ''; inp.addEventListener('focus', function(){ sysfActive = inp; }); inp.addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); runSystem(); } }); });
+      sysfActive = sysfRowsEl.querySelector('input');
+      var ex = '<span class="pw-ex__lbl"><i class="bi bi-lightbulb"></i> Exemples :</span>';
+      (SYSF_EX[sysN] || []).forEach(function(e, i){ ex += '<button type="button" class="ml-key is-util" data-sysfex="' + i + '">' + escapeHtml(e[0]) + '</button>'; });
+      sysfExEl.innerHTML = ex;
+      updateSysfPreview();
+    }
+    sysfRowsEl.addEventListener('input', updateSysfPreview);
+    sysfExEl.addEventListener('click', function(ev){ var b = ev.target.closest('[data-sysfex]'); if(!b) return; var e = SYSF_EX[sysN][Number(b.getAttribute('data-sysfex'))]; if(!e) return; answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = ''; sysfBuild(e[1]); });
+    sysfKeysEl.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.ml-key'); if(!btn) return;
+      var inp = sysfActive || sysfRowsEl.querySelector('input'); if(!inp) return;
+      var act = btn.getAttribute('data-act');
+      if(act === 'clear'){ inp.value = ''; inp.focus(); }
+      else if(act === 'back'){ var v = inp.value, s = inp.selectionStart, e = inp.selectionEnd; if(s == null){ inp.value = v.slice(0, -1); } else if(s !== e){ inp.value = v.slice(0, s) + v.slice(e); inp.setSelectionRange(s, s); } else if(s > 0){ inp.value = v.slice(0, s - 1) + v.slice(s); inp.setSelectionRange(s - 1, s - 1); } inp.focus(); }
+      else insertInto(inp, btn.getAttribute('data-ins'));
+      updateSysfPreview();
+    });
+    function sysGraphHint(){
+      var gh = document.getElementById('graph-hint') || graphHint;
+      gh.textContent = sysKind === 'free' ? 'Chaque équation est une courbe du plan (violet : E₁, orange : E₂) ; les solutions sont les points d’intersection (en rouge).' : 'Chaque équation à 2 inconnues est une droite : la solution est le point d’intersection (en jaune). Droites parallèles : aucune solution ; confondues : une infinité.';
+    }
+    function setSysKind(k){
+      sysKind = k; sysGraphHint();
+      document.getElementById('sys-kind').querySelectorAll('.ml-sidebtn').forEach(function(b){ b.classList.toggle('is-active', b.getAttribute('data-syskind') === k); });
+      sysLinEl.hidden = (k !== 'lin'); sysfEl.hidden = (k !== 'free');
+      var b4 = sysCountEl.querySelector('[data-sysn="4"]'); if(b4) b4.hidden = (k === 'free');
+      answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = '';
+      if(k === 'free' && sysN === 4) setSysN(3); else if(k === 'free') sysfBuild(SYSF_EX[sysN][0][1]);
+      clearSysPlot();
+    }
+    document.getElementById('sys-kind').addEventListener('click', function(ev){ var b = ev.target.closest('.ml-sidebtn'); if(b) setSysKind(b.getAttribute('data-syskind')); });
+
+    // Parse "lhs = rhs" → { L, R, lt, rt } or { err }
+    function sysfParseSide(str, V){
+      var tk = pwTokens(str); if(!tk || !tk.length) return { err: 'vide' };
+      var ast = null; try { ast = dxParse(tk); } catch(e){ ast = null; }
+      if(!ast) return { err: 'syntaxe' };
+      var bad = [];
+      (function walk(n){ if(!n) return; if(n.t === 'const' && V.indexOf(n.name) < 0 && bad.indexOf(n.name) < 0) bad.push(n.name); if(n.t === 'fn' && SYSF_FN.indexOf(n.name) < 0 && bad.indexOf(n.name + '()') < 0) bad.push(n.name + '()'); ['a', 'l', 'r'].forEach(function(k){ if(n[k] && typeof n[k] === 'object') walk(n[k]); }); })(ast);
+      if(bad.length) return { err: 'inconnu', bad: bad };
+      return { ast: ast };
+    }
+    function sysfRead(){
+      var V = SYS_VARS[sysN], eqs = [];
+      var ins = sysfRowsEl.querySelectorAll('input');
+      for(var i = 0; i < ins.length; i++){
+        var raw = (ins[i].value || '').trim();
+        if(!raw) return { err: 'Équation (E' + (i + 1) + ') vide.' };
+        var parts = raw.split('=');
+        if(parts.length !== 2) return { err: '(E' + (i + 1) + ') : écrivez une seule égalité « … = … ».' };
+        var L = sysfParseSide(parts[0], V), R = sysfParseSide(parts[1], V);
+        var e = L.err ? L : R;
+        if(e.err === 'vide') return { err: '(E' + (i + 1) + ') : un membre de l’égalité est vide.' };
+        if(e.err === 'inconnu') return { err: '(E' + (i + 1) + ') : « ' + e.bad.join(', ') + ' » inconnu (inconnues : ' + V.join(', ') + ' ; fonctions : ln, exp, sqrt…).' };
+        if(e.err) return { err: '(E' + (i + 1) + ') : expression invalide — vérifiez les parenthèses (ex. ln(x), exp(2y)).' };
+        var lt = sysfPrint(L.ast), rt = sysfPrint(R.ast);
+        eqs.push({ L: L.ast, R: R.ast, raw: raw, plain: lt + ' = ' + rt, tex: sysfTex(lt) + ' = ' + sysfTex(rt) });
+      }
+      return { eqs: eqs, V: V };
+    }
+    function sysfPrint(n){ // like dxStr, with only the parentheses that are needed
+      if(!n) return '';
+      function atom(x){ return x.t === 'var' || x.t === 'const' || x.t === 'fn' || (x.t === 'num' && x.v >= 0); }
+      function sum(x){ return x.t === '+' || x.t === '-' || x.t === 'neg'; }
+      function P(x){ return '(' + sysfPrint(x) + ')'; }
+      switch(n.t){
+        case 'num': { var v = n.v; if(Math.abs(v - Math.E) < 1e-12) return 'e'; if(Math.abs(v - Math.PI) < 1e-12) return 'pi'; if(Math.abs(v - Math.round(v)) < 1e-9) v = Math.round(v); return String(v); }
+        case 'var': return 'x'; case 'const': return n.name;
+        case 'fn': return n.name + '(' + sysfPrint(n.a) + ')';
+        case 'neg': return '-' + (sum(n.a) ? P(n.a) : sysfPrint(n.a));
+        case '+': return sysfPrint(n.l) + ' + ' + (n.r.t === 'neg' ? P(n.r) : sysfPrint(n.r));
+        case '-': return sysfPrint(n.l) + ' - ' + (sum(n.r) ? P(n.r) : sysfPrint(n.r));
+        case '*': { var rs = (sum(n.r) || (n.r.t === 'num' && n.r.v < 0) ? P(n.r) : sysfPrint(n.r)); return (sum(n.l) ? P(n.l) : sysfPrint(n.l)) + (n.l.t === 'num' && n.r.t !== 'num' && /^[a-z(]/.test(rs) ? '' : '*') + rs; } // 4x, 2(x+1), 3ln(x)
+        case '/': return (sum(n.l) ? P(n.l) : sysfPrint(n.l)) + '/' + (atom(n.r) ? sysfPrint(n.r) : P(n.r));
+        case '^': return (atom(n.l) ? sysfPrint(n.l) : P(n.l)) + '^' + (atom(n.r) ? sysfPrint(n.r) : P(n.r));
+      }
+      return '';
+    }
+    function sysfTex(s){ try { return toLatex(s); } catch(e){ return s; } }
+    function sysfSysTex(eqs){ return BS + 'left' + BS + '{' + BS + 'begin{array}{ll} ' + eqs.map(function(e, i){ return e.tex + ' & ' + BS + 'scriptsize (E_{' + (i + 1) + '})'; }).join(' ' + BS + BS + ' ') + ' ' + BS + 'end{array}' + BS + 'right.'; }
+    function updateSysfPreview(){
+      var r = sysfRead();
+      if(r.err){ sysfPrevEl.className = 'ml-preview is-empty'; sysfPrevEl.textContent = r.err; return; }
+      try { renderKatex(sysfPrevEl, sysfSysTex(r.eqs)); sysfPrevEl.className = 'ml-preview'; }
+      catch(e){ sysfPrevEl.className = 'ml-preview is-empty'; sysfPrevEl.textContent = 'Aperçu indisponible.'; }
+    }
+
+    function sysfF(eqs, v){ var env = { y: v[1], z: v[2] }; return eqs.map(function(e){ return pwEval(e.L, v[0], env) - pwEval(e.R, v[0], env); }); }
+    function sysfNorm(F){ var m = 0; for(var i = 0; i < F.length; i++){ if(!isFinite(F[i])) return Infinity; m = Math.max(m, Math.abs(F[i])); } return m; }
+    function sysfLin(A, b){ // Gauss with partial pivoting; null if singular
+      var n = b.length, M = A.map(function(r, i){ return r.concat([b[i]]); });
+      for(var c = 0; c < n; c++){
+        var p = c; for(var r = c + 1; r < n; r++) if(Math.abs(M[r][c]) > Math.abs(M[p][c])) p = r;
+        if(Math.abs(M[p][c]) < 1e-14) return null;
+        var t = M[c]; M[c] = M[p]; M[p] = t;
+        for(var r2 = c + 1; r2 < n; r2++){ var f = M[r2][c] / M[c][c]; for(var k = c; k <= n; k++) M[r2][k] -= f * M[c][k]; }
+      }
+      var x = new Array(n);
+      for(var i = n - 1; i >= 0; i--){ var s = M[i][n]; for(var j = i + 1; j < n; j++) s -= M[i][j] * x[j]; x[i] = s / M[i][i]; }
+      return x;
+    }
+    function sysfJac(eqs, v, F0){
+      var n = v.length, J = [];
+      for(var i = 0; i < n; i++) J.push(new Array(n));
+      for(var j = 0; j < n; j++){
+        var h = 1e-6 * (1 + Math.abs(v[j])), vp = v.slice(), vm = v.slice(); vp[j] += h; vm[j] -= h;
+        var Fp = sysfF(eqs, vp), Fm = sysfF(eqs, vm);
+        for(var i2 = 0; i2 < n; i2++){
+          var d = (Fp[i2] - Fm[i2]) / (2 * h);
+          if(!isFinite(d)){ d = isFinite(Fp[i2]) ? (Fp[i2] - F0[i2]) / h : (F0[i2] - Fm[i2]) / h; } // one-sided at a domain edge
+          J[i2][j] = d;
+        }
+      }
+      return J;
+    }
+    function sysfNewton(eqs, v0){
+      var v = v0.slice(), F = sysfF(eqs, v), nF = sysfNorm(F);
+      if(!isFinite(nF)) return null;
+      for(var it = 0; it < 80; it++){
+        if(nF < 1e-13) break;
+        var J = sysfJac(eqs, v, F), d = sysfLin(J, F.map(function(x){ return -x; }));
+        if(!d || d.some(function(x){ return !isFinite(x); })) return null;
+        var lam = 1, ok = false;
+        for(var k = 0; k < 30; k++){
+          var vt = v.map(function(x, i){ return x + lam * d[i]; }), Ft = sysfF(eqs, vt), nt = sysfNorm(Ft);
+          if(isFinite(nt) && nt < nF){ v = vt; F = Ft; nF = nt; ok = true; break; }
+          lam /= 2;
+        }
+        if(!ok) break;
+        if(v.some(function(x){ return Math.abs(x) > 1e7; })) return null;
+      }
+      return nF < 1e-9 ? { v: v, J: sysfJac(eqs, v, F) } : null;
+    }
+    function sysfDet(J){ if(J.length === 2) return J[0][0] * J[1][1] - J[0][1] * J[1][0]; return J[0][0] * (J[1][1] * J[2][2] - J[1][2] * J[2][1]) - J[0][1] * (J[1][0] * J[2][2] - J[1][2] * J[2][0]) + J[0][2] * (J[1][0] * J[2][1] - J[1][1] * J[2][0]); }
+    function sysfSolve(eqs, n){
+      var S = n === 2 ? [-30, -10, -5, -3, -2, -1.2, -0.6, -0.25, 0.1, 0.25, 0.6, 1.2, 2, 3, 5, 10, 30] : [-8, -3, -1.2, -0.4, 0.3, 1, 2.2, 4, 9];
+      var sols = [], degenerate = 0;
+      function add(r){
+        for(var i = 0; i < sols.length; i++){ var same = true; for(var j = 0; j < n; j++) if(Math.abs(sols[i].v[j] - r.v[j]) > 1e-6 * (1 + Math.abs(r.v[j]))) same = false; if(same) return; }
+        sols.push(r);
+      }
+      var idx = new Array(n).fill(0), total = Math.pow(S.length, n);
+      for(var t = 0; t < total; t++){
+        var v0 = [], q = t; for(var j = 0; j < n; j++){ v0.push(S[q % S.length] + 0.0137 * (j + 1)); q = Math.floor(q / S.length); }
+        var r = sysfNewton(eqs, v0); if(r) add(r);
+        if(sols.length > 40) break;
+      }
+      sols.forEach(function(s){ if(Math.abs(sysfDet(s.J)) < 1e-7) degenerate++; });
+      var infinite = sols.length > 24 || (sols.length >= 6 && degenerate === sols.length);
+      sols.sort(function(a, b){ for(var j = 0; j < n; j++){ if(Math.abs(a.v[j] - b.v[j]) > 1e-9) return a.v[j] - b.v[j]; } return 0; });
+      return { sols: sols, infinite: infinite };
+    }
+    // (p ± q√r)/d with small integers
+    function sysfQuad(v){
+      var R = [2, 3, 5, 6, 7, 10, 11, 13, 14, 15, 17, 19, 21, 22, 23, 26, 29, 30], best = null;
+      R.forEach(function(r){ var sr = Math.sqrt(r);
+        for(var d = 1; d <= 8; d++) for(var q = -8; q <= 8; q++){ if(!q) continue;
+          var p = v * d - q * sr, pr = Math.round(p);
+          if(Math.abs(p - pr) < 1e-9 * (1 + Math.abs(v) * d) && Math.abs(pr) <= 200){
+            var g = igcd(igcd(Math.abs(pr), Math.abs(q)), d) || 1, P = pr / g, Q = q / g, D = d / g, cost = D + Math.abs(Q) + Math.abs(P) / 20 + r / 100;
+            if(!best || cost < best.cost) best = { cost: cost, p: P, q: Q, d: D, r: r };
+          } } });
+      if(!best) return null;
+      var aq = Math.abs(best.q), rad = (aq === 1 ? '' : aq) + BS + 'sqrt{' + best.r + '}', radP = (aq === 1 ? '' : aq + '*') + 'sqrt(' + best.r + ')';
+      var numT = best.p ? best.p + (best.q < 0 ? ' - ' : ' + ') + rad : (best.q < 0 ? '-' : '') + rad;
+      var numP = best.p ? best.p + (best.q < 0 ? ' - ' : ' + ') + radP : (best.q < 0 ? '-' : '') + radP;
+      if(best.d === 1) return { tex: numT, plain: numP, exact: true };
+      if(!best.p && best.q < 0) return { tex: '-' + BS + 'frac{' + rad + '}{' + best.d + '}', plain: '-' + radP + '/' + best.d, exact: true };
+      return { tex: BS + 'frac{' + numT + '}{' + best.d + '}', plain: '(' + numP + ')/' + best.d, exact: true };
+    }
+    function sysfSnap(v){
+      if(Math.abs(v) < 1e-10) return { tex: '0', plain: '0', exact: true };
+      var r = pwSnap(v);
+      if(r.exact && r.tex.indexOf('sqrt') < 0) return r;
+      var qd = sysfQuad(v); if(qd) return qd;
+      var saved = ippExtraBases;
+      ippExtraBases = [{ v: Math.sqrt(Math.E), n: BS + 'sqrt{e}', d: '', p: 'sqrt(e)' }, { v: Math.exp(1.5), n: 'e^{3/2}', d: '', p: 'exp(3/2)' }, { v: Math.exp(3), n: 'e^{3}', d: '', p: 'exp(3)' }, { v: Math.exp(4), n: 'e^{4}', d: '', p: 'exp(4)' }, { v: Math.log(5), n: BS + 'ln 5', d: '', p: 'ln(5)' }, { v: Math.log(6), n: BS + 'ln 6', d: '', p: 'ln(6)' }];
+      var ip = ippSnap(v); ippExtraBases = saved;
+      if(ip.exact) return ip;
+      if(r.exact) return r;
+      return { tex: BS + 'approx ' + (Math.round(v * 10000) / 10000), plain: '~' + (Math.round(v * 10000) / 10000), exact: false };
+    }
+    function sysfConds(eqs){
+      var out = [], seen = {};
+      function push(s, rel, relP){ var k = s + rel; if(seen[k]) return; seen[k] = 1; out.push({ tex: sysfTex(s) + ' ' + rel, plain: s + ' ' + relP }); }
+      eqs.forEach(function(e){ [e.L, e.R].forEach(function walk(n){ if(!n) return;
+        if(n.t === 'fn' && (n.name === 'ln' || n.name === 'log') && sysfHasVar(n.a)) push(sysfPrint(n.a), '> 0', '> 0');
+        if(n.t === 'fn' && n.name === 'sqrt' && sysfHasVar(n.a)) push(sysfPrint(n.a), BS + 'geq 0', '>= 0');
+        if(n.t === '/' && sysfHasVar(n.r)) push(sysfPrint(n.r), BS + 'neq 0', '!= 0');
+        ['a', 'l', 'r'].forEach(function(k){ if(n[k] && typeof n[k] === 'object') walk(n[k]); });
+      }); });
+      return out;
+    }
+    function sysfHasVar(n){ if(!n) return false; if(n.t === 'var' || n.t === 'const') return true; return ['a', 'l', 'r'].some(function(k){ return n[k] && typeof n[k] === 'object' && sysfHasVar(n[k]); }); }
+    function sysfTuple(tx){ return BS + 'left(' + tx.join(' ; ') + BS + 'right)'; }
+
+    // Method chosen from the shape of the system (imposed on Claude so the explanation follows the
+    // textbook approach: substitution y = k/x, somme-produit, ln → exp…, never an exotic change of variables).
+    function sysfPoly(n, V){ // polynomial in the unknowns → { "i,j(,k)": coef } or null
+      var z = V.map(function(){ return 0; });
+      function mono(e, c){ var o = {}; o[e.join(',')] = c; return o; }
+      function add(a, b, s){ var o = {}; Object.keys(a).forEach(function(k){ o[k] = a[k]; }); Object.keys(b).forEach(function(k){ o[k] = (o[k] || 0) + s * b[k]; }); return o; }
+      function mul(a, b){ var o = {}; Object.keys(a).forEach(function(ka){ var ea = ka.split(',').map(Number); Object.keys(b).forEach(function(kb){ var eb = kb.split(',').map(Number), k = ea.map(function(x, i){ return x + eb[i]; }).join(','); o[k] = (o[k] || 0) + a[ka] * b[kb]; }); }); return o; }
+      function isC(p){ return Object.keys(p).every(function(k){ return k === z.join(','); }); }
+      function rec(n){
+        if(!n) return null;
+        switch(n.t){
+          case 'num': return mono(z, n.v);
+          case 'var': { var e = z.slice(); e[0] = 1; return mono(e, 1); }
+          case 'const': { var i = V.indexOf(n.name); if(i < 0) return null; var e2 = z.slice(); e2[i] = 1; return mono(e2, 1); }
+          case 'neg': { var a = rec(n.a); return a ? add({}, a, -1) : null; }
+          case '+': case '-': { var l = rec(n.l), r = rec(n.r); return (l && r) ? add(l, r, n.t === '+' ? 1 : -1) : null; }
+          case '*': { var l2 = rec(n.l), r2 = rec(n.r); return (l2 && r2) ? mul(l2, r2) : null; }
+          case '/': { var l3 = rec(n.l), r3 = rec(n.r); if(!l3 || !r3 || !isC(r3)) return null; var d = r3[z.join(',')] || 0; if(!d) return null; return add({}, l3, 1 / d); }
+          case '^': { var b = rec(n.l), ex = rec(n.r); if(!b || !ex || !isC(ex)) return null; var k = ex[z.join(',')] || 0; if(k < 0 || k > 6 || k !== Math.round(k)) return null; var res = mono(z, 1); for(var t = 0; t < k; t++) res = mul(res, b); return res; }
+        }
+        return null;
+      }
+      var p = rec(n); if(!p) return null;
+      Object.keys(p).forEach(function(k){ if(Math.abs(p[k]) < 1e-12) delete p[k]; });
+      return p;
+    }
+    function sysfHasFn(n, name){ if(!n) return false; if(n.t === 'fn' && n.name === name && sysfHasVar(n.a)) return true; if(n.t === '^' && n.l.t === 'num' && Math.abs(n.l.v - Math.E) < 1e-12 && name === 'exp' && sysfHasVar(n.r)) return true; return ['a', 'l', 'r'].some(function(k){ return n[k] && typeof n[k] === 'object' && sysfHasFn(n[k], name); }); }
+    var SYSF_METHODS = {
+      ln: 'Conditions d’existence, puis regrouper les logarithmes (ln a + ln b = ln(ab), ln a − ln b = ln(a/b)) et passer à l’exponentielle pour obtenir un système sans ln ; le résoudre ensuite (somme-produit ou substitution) et garder seulement les solutions qui respectent les conditions.',
+      exp: 'Changement de variable X = eˣ et Y = eʸ (X > 0, Y > 0) : on obtient un système en X et Y, on le résout, puis on revient à x = ln X et y = ln Y.',
+      sumprod: 'Somme et produit : x et y sont les solutions de l’équation X² − S·X + P = 0 (S = x + y, P = xy) ; on la résout avec le discriminant.',
+      linear: 'Substitution : on isole une inconnue dans l’équation du premier degré, puis on la remplace dans l’autre équation.',
+      product: 'Substitution : de xy = k on tire y = k / x (x ≠ 0), on remplace dans l’autre équation, on multiplie par x² et on pose X = x² (équation bicarrée) si nécessaire ; puis on calcule y = k / x.',
+      sym3: 'x, y et z sont les racines de t³ − S·t² + Q·t − P = 0 (S = x + y + z, Q = xy + yz + zx, P = xyz) : on cherche une racine évidente puis on factorise.',
+      linear3: 'Substitution : on exprime deux inconnues en fonction de la troisième grâce aux équations simples, puis on remplace dans l’équation restante.',
+      generic: 'Substitution : on exprime une inconnue en fonction des autres à partir de l’équation la plus simple, puis on remplace dans les autres équations.'
+    };
+    function sysfMethod(eqs, V){
+      var n = V.length, polys = eqs.map(function(e){ return sysfPoly({ t:'-', l:e.L, r:e.R }, V); });
+      if(eqs.some(function(e){ return sysfHasFn(e.L, 'ln') || sysfHasFn(e.R, 'ln') || sysfHasFn(e.L, 'log') || sysfHasFn(e.R, 'log'); })) return 'ln';
+      if(eqs.some(function(e){ return sysfHasFn(e.L, 'exp') || sysfHasFn(e.R, 'exp'); })) return 'exp';
+      function monos(p){ return p ? Object.keys(p).filter(function(k){ return k.split(',').some(function(x){ return x !== '0'; }); }).sort() : null; }
+      function deg(p){ return p ? Math.max.apply(null, Object.keys(p).map(function(k){ return k.split(',').map(Number).reduce(function(a, b){ return a + b; }, 0); })) : 99; }
+      function key(arr){ var e = V.map(function(){ return 0; }); arr.forEach(function(i){ e[i]++; }); return e.join(','); }
+      function isSym(p, ks){ var m = monos(p); if(!m || m.length !== ks.length) return false; var c = p[ks[0]]; return ks.every(function(k){ return m.indexOf(k) >= 0 && Math.abs(p[k] - c) < 1e-12; }); }
+      if(n === 2){
+        var hasSum = polys.some(function(p){ return isSym(p, [key([0]), key([1])]); }), hasProd = polys.some(function(p){ return isSym(p, [key([0, 1])]); });
+        if(hasSum && hasProd) return 'sumprod';
+        if(polys.some(function(p){ return p && deg(p) <= 1; })) return 'linear';
+        if(hasProd) return 'product';
+        return 'generic';
+      }
+      var s1 = polys.some(function(p){ return isSym(p, [key([0]), key([1]), key([2])]); }), s2 = polys.some(function(p){ return isSym(p, [key([0, 1]), key([1, 2]), key([0, 2])]); }), s3 = polys.some(function(p){ return isSym(p, [key([0, 1, 2])]); });
+      if(s1 && s2 && s3) return 'sym3';
+      if(polys.filter(function(p){ return p && deg(p) <= 1; }).length >= 2) return 'linear3';
+      return 'generic';
+    }
+
+    async function runSysFree(){
+      var rd = sysfRead();
+      if(rd.err){ stateEl.textContent = rd.err; return; }
+      var eqs = rd.eqs, V = rd.V, n = V.length;
+      answerEl.innerHTML = ''; stepsEl.innerHTML = '';
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Résolution…';
+      setSysOpsEnabled(false);
+      await new Promise(function(res){ setTimeout(res, 20); }); // let the spinner paint
+      var R = e1Report(), body = '', res = sysfSolve(eqs, n), conds = sysfConds(eqs);
+      var methodId = sysfMethod(eqs, V);
+      body += R.sec('Système', R.line('', sysfSysTex(eqs)));
+      body += R.sec('Méthode', '<div class="study-work">' + escapeHtml(SYSF_METHODS[methodId]) + '</div>');
+      if(conds.length){
+        body += R.sec('Conditions d’existence', R.line('', conds.map(function(c){ return c.tex; }).join(',' + BS + 'quad ')) + '<div class="study-work">Une solution n’est acceptée que si elle vérifie toutes ces conditions.</div>');
+      }
+      var solTex = [], solPlain = [], allExact = true, sumSol = '';
+      if(res.infinite){
+        body += R.sec('Solutions', '<div class="study-work">Les équations sont dépendantes : le système admet une <strong>infinité de solutions</strong> (une courbe de points).</div>');
+        sumSol = 'infinite de solutions (equations dependantes)';
+      } else if(!res.sols.length){
+        body += R.sec('Solutions', R.line('', 'S = ' + BS + 'varnothing') + '<div class="study-work">Aucun couple de réels ne vérifie toutes les équations (et les conditions d’existence).</div>');
+        sumSol = 'S = ensemble vide';
+      } else {
+        res.sols.forEach(function(s){ var sn = s.v.map(sysfSnap); if(sn.some(function(q){ return !q.exact; })) allExact = false; solTex.push(sysfTuple(sn.map(function(q){ return q.tex.split(BS + 'approx ').join(''); }))); solPlain.push('(' + sn.map(function(q){ return q.plain; }).join(' ; ') + ')'); });
+        var t = R.line('', 'S = ' + BS + '{' + solTex.join(' ; ') + BS + '}');
+        t += R.line('Nombre de solutions :', String(res.sols.length));
+        if(!allExact) t += '<div class="study-work">Certaines valeurs sont approchées (≈) : leur forme exacte n’a pas été reconnue.</div>';
+        t += '<div class="study-work">Vérification : chaque ' + (n === 2 ? 'couple' : 'triplet') + ' remplacé dans (E₁)' + (n === 3 ? ', (E₂) et (E₃)' : ' et (E₂)') + ' donne bien des égalités vraies (contrôle numérique).</div>';
+        body += R.sec('Solutions', t);
+        sumSol = 'S = {' + solPlain.join(' ; ') + '}';
+      }
+      R.render('Système d’équations', body);
+
+      // graph (2 unknowns): the two curves + the solution points
+      clearSysPlot();
+      if(n === 2 && ggb){
+        eqs.forEach(function(e, i){
+          var nm = 'sysC' + (i + 1), lt = sysfPrint(e.L), rt = sysfPrint(e.R);
+          try { ggb.evalCommand(nm + ': ' + lt + ' = ' + rt); if(ggb.exists(nm)){ sysObjs.push(nm); colour(nm, i ? 255 : 94, i ? 140 : 23, i ? 0 : 235); try { ggb.setLineThickness(nm, 6); } catch(e2){} } } catch(e1){}
+        });
+        var xs = [], ys = [];
+        if(!res.infinite) res.sols.forEach(function(s, k){ var nm = 'SysS' + (k + 1); try { var gx = function(v){ return (Math.abs(v) < 1e-9 ? 0 : v).toFixed(10); }; ggb.evalCommand(nm + ' = (' + gx(s.v[0]) + ', ' + gx(s.v[1]) + ')'); sysObjs.push(nm); colour(nm, 220, 38, 38); xs.push(s.v[0]); ys.push(s.v[1]); } catch(e3){} });
+        if(xs.length){
+          var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs), y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
+          var m = Math.max(2, (x1 - x0) * 0.35, (y1 - y0) * 0.35);
+          try { ggb.setCoordSystem(x0 - m, x1 + m, y0 - m, y1 + m); } catch(e4){}
+        }
+      }
+
+      var summary = (conds.length ? 'conditions: ' + conds.map(function(c){ return c.plain; }).join(', ') + ' ; ' : '') + sumSol;
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
+      try {
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: eqs.map(function(e){ return e.plain; }).join(' ; ').slice(0, 200), operation: 'system_free', method: methodId, casResult: summary.slice(0, 495) }) });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data, true); } else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){ stateEl.textContent = 'Connexion impossible — réessayez.'; }
+      finally { setSysOpsEnabled(true); }
+    }
+
     async function runSystem(){
+      if(sysKind === 'free') return runSysFree();
       if(!ggb){ return; }
       var rd = sysRead();
       if(rd.err){ stateEl.textContent = rd.err; return; }
@@ -7445,6 +7903,296 @@
     try { updateZfPreview(); } catch(e){}
     setZfOpsEnabled(false); // enabled once GeoGebra is ready (appletOnLoad)
 
+    /* ============ INÉQUATIONS ============ */
+    // « A ⋄ B » with ⋄ ∈ {<, ≤, >, ≥} → h(x) = A − B ⋄ 0. Rational h (polynomials / quotients): exact
+    // factorisation (roots via exactRealRoots, multiplicities by synthetic division) and a sign table with one
+    // row per factor. Otherwise (ln, exp, √…): numeric study — domain edges, zeros and poles found by sampling
+    // + bisection and snapped to exact values (sysfSnap). Solution set = union of intervals (French notation).
+    var modeIneq = document.getElementById('mode-ineq');
+    var iqInput = document.getElementById('iq-in'), iqPrevEl = document.getElementById('iq-preview');
+    var iqKeysEl = document.getElementById('iq-keys'), iqExEl = document.getElementById('iq-ex'), iqOpsEl = document.getElementById('iq-ops');
+    var iqObjs = [];
+    var IQ_EX = [
+      ['1er degré', '3x - 5 > 2x + 1'], ['2nd degré', 'x^2 - 5x + 6 <= 0'], ['Produit', '(2x - 1)(x + 3) >= 0'],
+      ['Quotient', '(x + 1)/(x - 2) < 0'], ['Quotient ≥ 1', '(x + 4)/(x - 1) >= 1'], ['Degré 3', 'x^3 - 4x > 0'],
+      ['Logarithme', 'ln(x) < 1'], ['Exponentielle', 'exp(2x) - 3 > 0'], ['ln et domaine', 'ln(2x - 1) >= ln(x + 2)']
+    ];
+    var IQ_REL = { '<': { tex: '<', strict: true, sign: -1 }, '<=': { tex: BS + 'leq', strict: false, sign: -1 }, '>': { tex: '>', strict: true, sign: 1 }, '>=': { tex: BS + 'geq', strict: false, sign: 1 } };
+    function clearIqPlot(){ iqObjs.forEach(function(nm){ try { ggb.deleteObject(nm); } catch(e){} }); iqObjs = []; }
+    function setIqOpsEnabled(on){ iqOpsEl.querySelectorAll('.ml-op').forEach(function(b){ b.disabled = !on; }); }
+
+    (function(){
+      var html = '<span class="pw-ex__lbl"><i class="bi bi-lightbulb"></i> Exemples :</span>';
+      IQ_EX.forEach(function(e, i){ html += '<button type="button" class="ml-key is-util" data-iqex="' + i + '">' + escapeHtml(e[0]) + '</button>'; });
+      iqExEl.innerHTML = html;
+    })();
+    iqExEl.addEventListener('click', function(ev){ var b = ev.target.closest('[data-iqex]'); if(!b) return; iqInput.value = IQ_EX[Number(b.getAttribute('data-iqex'))][1]; answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = ''; updateIqPreview(); });
+    iqInput.addEventListener('input', updateIqPreview);
+    iqInput.addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); runIneq(); } });
+    iqKeysEl.addEventListener('click', function(ev){
+      var btn = ev.target.closest('.ml-key'); if(!btn) return;
+      var act = btn.getAttribute('data-act');
+      if(act === 'clear'){ iqInput.value = ''; iqInput.focus(); }
+      else if(act === 'back'){ var v = iqInput.value, s = iqInput.selectionStart, e = iqInput.selectionEnd; if(s == null){ iqInput.value = v.slice(0, -1); } else if(s !== e){ iqInput.value = v.slice(0, s) + v.slice(e); iqInput.setSelectionRange(s, s); } else if(s > 0){ iqInput.value = v.slice(0, s - 1) + v.slice(s); iqInput.setSelectionRange(s - 1, s - 1); } iqInput.focus(); }
+      else insertInto(iqInput, btn.getAttribute('data-ins'));
+      updateIqPreview();
+    });
+
+    // Parse « A rel B » → { L, R, rel } or { err }
+    function iqRead(){
+      var raw = (iqInput.value || '').trim().split(String.fromCharCode(8804)).join('<=').split(String.fromCharCode(8805)).join('>=');
+      if(!raw) return { err: 'Écrivez une inéquation, par ex. x^2 - 5x + 6 <= 0.' };
+      var found = [], i = 0;
+      while(i < raw.length){ var c = raw.charAt(i); if(c === '<' || c === '>'){ var op = c + (raw.charAt(i + 1) === '=' ? '=' : ''); found.push({ at: i, op: op }); i += op.length; } else i++; }
+      if(found.length !== 1) return { err: found.length ? 'Une seule inégalité à la fois (<, ≤, >, ≥).' : 'Il manque le symbole d’inégalité (<, ≤, >, ≥).' };
+      if(raw.indexOf('=') >= 0 && raw.split('=').length - 1 !== (found[0].op.length === 2 ? 1 : 0)) return { err: 'Utilisez <, ≤, > ou ≥ (pas de « = » seul).' };
+      var A = raw.slice(0, found[0].at), B = raw.slice(found[0].at + found[0].op.length);
+      function side(s){ var tk = pwTokens(s); if(!tk || !tk.length) return null; var a = null; try { a = dxParse(tk); } catch(e){ a = null; } return a; }
+      var L = side(A), R = side(B);
+      if(!L || !R) return { err: 'Expression invalide — vérifiez les parenthèses (ex. (x+1)/(x-2) < 0, ln(x) < 1).' };
+      var bad = [];
+      [L, R].forEach(function walk(n){ if(!n) return; if(n.t === 'const' && bad.indexOf(n.name) < 0) bad.push(n.name); if(n.t === 'fn' && SYSF_FN.indexOf(n.name) < 0) bad.push(n.name + '()'); ['a', 'l', 'r'].forEach(function(k){ if(n[k] && typeof n[k] === 'object') walk(n[k]); }); });
+      if(bad.length) return { err: '« ' + bad.join(', ') + ' » inconnu : l’inconnue est x (fonctions : ln, exp, sqrt…).' };
+      return { L: L, R: R, rel: found[0].op };
+    }
+    function iqSideTex(n){ try { return toLatex(sysfPrint(n)); } catch(e){ return sysfPrint(n); } }
+    function updateIqPreview(){
+      var r = iqRead();
+      if(r.err){ iqPrevEl.className = 'ml-preview is-empty'; iqPrevEl.textContent = (iqInput.value || '').trim() ? r.err : 'Aperçu de l’inéquation…'; return; }
+      try { renderKatex(iqPrevEl, iqSideTex(r.L) + ' ' + IQ_REL[r.rel].tex + ' ' + iqSideTex(r.R)); iqPrevEl.className = 'ml-preview'; }
+      catch(e){ iqPrevEl.className = 'ml-preview is-empty'; iqPrevEl.textContent = 'Aperçu indisponible.'; }
+    }
+
+    // ---- rational functions N/D with fraction-coefficient polynomials ----
+    function iqRat(n){
+      if(!n) return null;
+      switch(n.t){
+        case 'num': { var f = fFromNum(n.v); return f ? { N: [f], D: [fr(1)] } : null; }
+        case 'var': return { N: [fr(0), fr(1)], D: [fr(1)] };
+        case 'neg': { var a = iqRat(n.a); return a ? { N: pScale(a.N, fr(-1)), D: a.D } : null; }
+        case '+': case '-': { var l = iqRat(n.l), r = iqRat(n.r); if(!l || !r) return null; var t1 = pMul(l.N, r.D), t2 = pMul(r.N, l.D); return { N: n.t === '+' ? pAdd(t1, t2) : pSub(t1, t2), D: pMul(l.D, r.D) }; }
+        case '*': { var l2 = iqRat(n.l), r2 = iqRat(n.r); return (l2 && r2) ? { N: pMul(l2.N, r2.N), D: pMul(l2.D, r2.D) } : null; }
+        case '/': { var l3 = iqRat(n.l), r3 = iqRat(n.r); if(!l3 || !r3 || pDeg(r3.N) < 0) return null; return { N: pMul(l3.N, r3.D), D: pMul(l3.D, r3.N) }; }
+        case '^': { var b = iqRat(n.l), e = iqRat(n.r); if(!b || !e || !pConst(e.N) || !pConst(e.D)) return null; var ev = fVal(e.N[0]) / fVal(e.D[0]); if(ev < 0 || ev > 8 || ev !== Math.floor(ev)) return null; var res = { N: [fr(1)], D: [fr(1)] }; for(var i = 0; i < ev; i++) res = { N: pMul(res.N, b.N), D: pMul(res.D, b.D) }; return res; }
+      }
+      return null;
+    }
+    // P = c · Π (q x − p)^k · R  (rational roots pulled out; R has no rational root)
+    function iqFactor(P){
+      P = pTrim(P); var lin = [], R = P, scale = fr(1);
+      var guard = 0;
+      while(pDeg(R) >= 1 && guard++ < 20){
+        var roots = exactRealRoots(R).filter(function(r){ return r.f; });
+        if(!roots.length) break;
+        var r = roots[0].f, k = 0;
+        while(pDeg(R) >= 1){ var dv = synthDivF(R, r); if(!fZero(dv.rem)) break; R = dv.q; k++; }
+        lin.push({ r: r, k: k }); scale = fMul(scale, fr(Math.pow(r.d, k)));
+      }
+      R = pScale(R, fDiv(fr(1), scale)); // P = Π (q x − p)^k · R
+      var c = fr(1);
+      if(pDeg(R) === 0){ c = R[0]; R = null; }
+      else if(pDeg(R) > 0){ var lead = R[pDeg(R)]; if(lead.n < 0){ c = fr(-1); R = pScale(R, fr(-1)); } }
+      return { c: c, lin: lin, R: R };
+    }
+    function iqLinTex(r){ var q = r.d, p = r.n; if(p === 0) return q === 1 ? 'x' : q + 'x'; return (q === 1 ? 'x' : q + 'x') + (p > 0 ? ' - ' + p : ' + ' + (-p)); }
+    function iqFacTex(F){ // product as LaTeX, without the constant
+      var parts = [];
+      F.lin.forEach(function(L){ var t = iqLinTex(L.r), atom = (L.r.n === 0); var b = atom ? t : BS + 'left(' + t + BS + 'right)'; parts.push(b + (L.k > 1 ? '^{' + L.k + '}' : '')); });
+      if(F.R) parts.push(BS + 'left(' + pTex(F.R, 'x') + BS + 'right)');
+      return parts.join('');
+    }
+    function iqFacPlain(F){ var parts = F.lin.map(function(L){ return '(' + iqLinTex(L.r) + ')' + (L.k > 1 ? '^' + L.k : ''); }); if(F.R) parts.push('(' + pPlain(F.R, 'x') + ')'); return parts.join('*') || '1'; }
+    function iqCritFromFactor(F){ // exact critical points of a factored polynomial
+      var pts = F.lin.map(function(L){ return rootRat(L.r); });
+      if(F.R) exactRealRoots(F.R).forEach(function(r){ pts.push(r); });
+      return pts;
+    }
+
+    // ---- numeric study (non-rational) ----
+    function iqNumeric(h){
+      var A = -60, B = 60, N = 12000, step = (B - A) / N, xs = [], ys = [];
+      for(var i = 0; i <= N; i++){ var x = A + i * step; xs.push(x); ys.push(h(x)); }
+      var crit = [];
+      function bis(a, b, test){ for(var k = 0; k < 80; k++){ var m = (a + b) / 2; if(test(m)) b = m; else a = m; } return (a + b) / 2; }
+      for(var j = 0; j < N; j++){
+        var y0 = ys[j], y1 = ys[j + 1], f0 = isFinite(y0), f1 = isFinite(y1);
+        if(f0 !== f1){ // domain edge
+          var e = f0 ? bis(xs[j], xs[j + 1], function(m){ return !isFinite(h(m)); }) : bis(xs[j], xs[j + 1], function(m){ return isFinite(h(m)); });
+          crit.push({ num: e, kind: 'edge' });
+        } else if(f0 && f1){
+          if(y0 === 0 && (j === 0 || ys[j - 1] !== 0)) crit.push({ num: xs[j], kind: 'zero' });
+          else if(y0 * y1 < 0){
+            if(Math.abs(y0) > 1e4 && Math.abs(y1) > 1e4) crit.push({ num: bis(xs[j], xs[j + 1], function(m){ return h(m) * y0 < 0; }), kind: 'pole' });
+            else crit.push({ num: bis(xs[j], xs[j + 1], function(m){ var v = h(m); return !isFinite(v) || v * y0 <= 0; }), kind: 'zero' });
+          }
+        }
+      }
+      var out = [];
+      crit.forEach(function(c){
+        var s = sysfSnap(c.num), v = c.num;
+        if(s.exact){ try { var vv = pwEval(itCompile(s.plain.split(' ').join('')), 0, {}); if(isFinite(vv) && Math.abs(vv - v) < 1e-6 * (1 + Math.abs(v))) v = vv; } catch(e){} }
+        if(out.length && Math.abs(out[out.length - 1].num - v) < 1e-7) return;
+        out.push({ num: v, tex: s.tex.split(BS + 'approx ').join(''), approx: !s.exact, plain: s.plain, kind: c.kind });
+      });
+      return out;
+    }
+
+    // Build solution pieces and the union of intervals
+    function iqSolve(h, crit, rel){
+      var R = IQ_REL[rel], pts = crit.slice().sort(function(a, b){ return a.num - b.num; });
+      function ok(v){ if(!isFinite(v)) return false; if(Math.abs(v) < 1e-10) return !R.strict; return R.sign > 0 ? v > 0 : v < 0; }
+      var items = [];
+      for(var i = 0; i <= pts.length; i++){
+        var lo = i ? pts[i - 1].num : -Infinity, hi = i < pts.length ? pts[i].num : Infinity;
+        var t = (lo === -Infinity && hi === Infinity) ? 0 : lo === -Infinity ? hi - 1 : hi === Infinity ? lo + 1 : (lo + hi) / 2;
+        var v = h(t);
+        items.push({ type: 'int', lo: i ? pts[i - 1] : null, hi: i < pts.length ? pts[i] : null, val: v, defined: isFinite(v), ok: isFinite(v) && (R.sign > 0 ? v > 0 : v < 0) });
+        if(i < pts.length){ var pv = h(pts[i].num); if(pts[i].kind === 'zero') pv = 0; if(pts[i].kind === 'pole') pv = NaN; items.push({ type: 'pt', p: pts[i], val: pv, defined: isFinite(pv), ok: ok(pv) }); }
+      }
+      var runs = [], cur = null;
+      items.forEach(function(it){ if(it.ok){ if(!cur){ cur = { first: it, last: it }; runs.push(cur); } else cur.last = it; } else cur = null; });
+      var tex = runs.map(function(r){
+        if(r.first === r.last && r.first.type === 'pt') return BS + '{' + r.first.p.tex + BS + '}';
+        var left = r.first.type === 'pt' ? BS + 'left[' + r.first.p.tex : (r.first.lo ? BS + 'left]' + r.first.lo.tex : BS + 'left]-' + BS + 'infty');
+        var right = r.last.type === 'pt' ? r.last.p.tex + BS + 'right]' : (r.last.hi ? r.last.hi.tex + BS + 'right[' : '+' + BS + 'infty' + BS + 'right[');
+        return left + ' ;' + BS + ', ' + right;
+      });
+      var plain = runs.map(function(r){
+        if(r.first === r.last && r.first.type === 'pt') return '{' + r.first.p.plain + '}';
+        var left = r.first.type === 'pt' ? '[' + r.first.p.plain : (r.first.lo ? ']' + r.first.lo.plain : ']-inf');
+        var right = r.last.type === 'pt' ? r.last.p.plain + ']' : (r.last.hi ? r.last.hi.plain + '[' : '+inf[');
+        return left + ' ; ' + right;
+      });
+      var segs = runs.map(function(r){ return { a: r.first.type === 'pt' ? r.first.p.num : (r.first.lo ? r.first.lo.num : -Infinity), b: r.last.type === 'pt' ? r.last.p.num : (r.last.hi ? r.last.hi.num : Infinity), point: r.first === r.last && r.first.type === 'pt' }; });
+      return { pts: pts, items: items, tex: tex.length ? tex.join(' ' + BS + 'cup ') : BS + 'varnothing', plain: plain.length ? plain.join(' U ') : 'ensemble vide', all: runs.length === 1 && runs[0].first.type === 'int' && !runs[0].first.lo && !runs[0].last.hi, segs: segs };
+    }
+
+    // Sign table: optional factor rows + the h(x) row (zeros 0, poles ||, outside the domain hatched)
+    function iqTable(sol, rows, hLabel){
+      var pts = sol.pts, head = '<tr><th>x</th><td><span data-tex="-' + BS + 'infty"></span></td>';
+      pts.forEach(function(p){ head += '<td></td><td><span data-tex="' + escapeHtml(p.tex) + '"></span></td>'; });
+      head += '<td></td><td><span data-tex="+' + BS + 'infty"></span></td></tr>';
+      function cell(sv){ return sv > 1e-12 ? '<td class="e1-pos">+</td>' : sv < -1e-12 ? '<td class="e1-neg">−</td>' : '<td class="e1-zero">0</td>'; }
+      var body = '';
+      rows.forEach(function(r){
+        var tr = '<tr><th><span data-tex="' + escapeHtml(r.tex) + '"></span></th><td></td>';
+        sol.items.forEach(function(it){
+          if(it.type === 'int'){ var lo = it.lo ? it.lo.num : -Infinity, hi = it.hi ? it.hi.num : Infinity, t = (lo === -Infinity && hi === Infinity) ? 0 : lo === -Infinity ? hi - 1 : hi === Infinity ? lo + 1 : (lo + hi) / 2; tr += cell(r.f(t)); }
+          else tr += r.zeros.some(function(z){ return Math.abs(z - it.p.num) < 1e-9; }) ? '<td class="e1-zero">0</td>' : '<td></td>';
+        });
+        body += tr + '<td></td></tr>';
+      });
+      var hr = '<tr class="iq-hrow"><th><span data-tex="' + escapeHtml(hLabel) + '"></span></th><td></td>';
+      sol.items.forEach(function(it){
+        if(it.type === 'int') hr += it.defined ? cell(it.val) : '<td class="e1-bar" title="hors du domaine"></td>';
+        else hr += it.p.kind === 'pole' || !it.defined ? '<td class="iq-bar">||</td>' : (Math.abs(it.val) < 1e-10 ? '<td class="e1-zero">0</td>' : '<td></td>');
+      });
+      hr += '<td></td></tr>';
+      return '<div class="e1-wrap"><table class="e1-table">' + head + body + hr + '</table></div>';
+    }
+
+    function iqHasFn(n, names){ if(!n) return false; if(n.t === 'fn' && names.indexOf(n.name) >= 0 && sysfHasVar(n.a)) return true; if(n.t === '^' && n.l.t === 'num' && Math.abs(n.l.v - Math.E) < 1e-12 && names.indexOf('exp') >= 0 && sysfHasVar(n.r)) return true; return ['a', 'l', 'r'].some(function(k){ return n[k] && typeof n[k] === 'object' && iqHasFn(n[k], names); }); }
+    var IQ_METHODS = {
+      deg1: 'Inéquation du premier degré : on regroupe les termes en x d’un côté, puis on divise par le coefficient de x — en changeant le sens de l’inégalité s’il est négatif.',
+      deg2: 'Signe du trinôme ax² + bx + c : on calcule Δ et les racines ; le trinôme est du signe de a à l’extérieur des racines et du signe contraire entre elles.',
+      product: 'On ramène tout à « … comparé à 0 », on factorise, puis on étudie le signe de chaque facteur dans un tableau de signes.',
+      quotient: 'On ramène tout à « … comparé à 0 » sur un seul dénominateur, on cherche les valeurs interdites (dénominateur nul), puis on fait un tableau de signes (double barre aux valeurs interdites).',
+      ln: 'Conditions d’existence (argument du ln strictement positif), puis on utilise la stricte croissance de ln (ln a < ln b ⇔ a < b) ou de exp (ln x < k ⇔ x < eᵏ), et on intersecte avec le domaine.',
+      exp: 'On isole l’exponentielle, puis on utilise la stricte croissance de ln (eᵘ > k ⇔ u > ln k pour k > 0 ; si k ≤ 0, eᵘ > k est toujours vrai).',
+      sqrt: 'Conditions d’existence (expression sous la racine ≥ 0), puis on étudie le signe en distinguant les cas avant d’élever au carré (les deux membres doivent être positifs).',
+      generic: 'On ramène tout à « h(x) comparé à 0 », on cherche le domaine, les zéros de h, puis on étudie le signe de h sur chaque intervalle.'
+    };
+
+    async function runIneq(){
+      var rd = iqRead();
+      if(rd.err){ stateEl.textContent = rd.err; return; }
+      answerEl.innerHTML = ''; stepsEl.innerHTML = '';
+      setIqOpsEnabled(false);
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Résolution…';
+      await new Promise(function(res){ setTimeout(res, 20); });
+      var hAst = { t: '-', l: rd.L, r: rd.R }, rel = IQ_REL[rd.rel];
+      var h = function(x){ return pwEval(hAst, x, {}); };
+      var Rp = e1Report(), body = '', methodId = 'generic', crit = [], rows = [], hLabel = 'h(x)', sum = [];
+      var origTex = iqSideTex(rd.L) + ' ' + rel.tex + ' ' + iqSideTex(rd.R);
+      body += Rp.sec('Inéquation', Rp.line('', origTex));
+      var rat = iqRat(hAst), lnLike = iqHasFn(hAst, ['ln', 'log']), expLike = iqHasFn(hAst, ['exp']), sqrtLike = iqHasFn(hAst, ['sqrt']);
+      var rightZero = rd.R.t === 'num' && rd.R.v === 0;
+      if(rat){
+        var FN = iqFactor(rat.N), FD = iqFactor(rat.D), dN = pDeg(rat.N), dD = pDeg(rat.D);
+        var c = fDiv(FN.c, FD.c), denConst = !FD.lin.length && !FD.R;
+        methodId = denConst ? (dN <= 1 ? 'deg1' : (dN === 2 && !(rd.L.t === '*' && rightZero)) ? 'deg2' : 'product') : 'quotient'; // already factored → sign table
+        var numT = iqFacTex(FN), denT = iqFacTex(FD), cT = (c.n === c.d) ? '' : (c.n === -c.d ? '-' : fTex(c));
+        var hTex;
+        if(denConst) hTex = numT ? cT + numT : fTex(c);
+        else if(!numT) hTex = (c.n < 0 ? '-' : '') + BS + 'frac{' + Math.abs(c.n) + '}{' + (c.d === 1 ? '' : c.d) + denT + '}';
+        else hTex = (c.n < 0 ? '-' : '') + (c.n === c.d || c.n === -c.d ? '' : fTex(fr(Math.abs(c.n), c.d)) + BS + ',') + BS + 'frac{' + numT + '}{' + denT + '}';
+        var t = '';
+        if(!rightZero) t += Rp.line('On ramène tout à gauche :', iqSideTex(rd.L) + ' - ' + (rd.R.t === '+' || rd.R.t === '-' ? BS + 'left(' + iqSideTex(rd.R) + BS + 'right)' : iqSideTex(rd.R)) + ' ' + rel.tex + ' 0');
+        if(!denConst) t += Rp.line('Même dénominateur :', BS + 'frac{' + pTex(rat.N, 'x') + '}{' + pTex(rat.D, 'x') + '} ' + rel.tex + ' 0');
+        if(dN >= 1 || !denConst) t += Rp.line('Forme factorisée :', hTex + ' ' + rel.tex + ' 0');
+        if(methodId === 'deg2'){ var q = quadExact(rat.N[2], rat.N[1], rat.N[0]); t += Rp.line('Discriminant :', BS + 'Delta = ' + fTex(q.delta) + (q.roots.length ? BS + 'quad' + BS + 'Rightarrow' + BS + 'quad ' + q.roots.map(function(r, i){ return 'x_{' + (i + 1) + '} = ' + r.tex; }).join(',' + BS + 'quad ') : BS + 'quad (' + BS + 'text{pas de racine réelle})')); }
+        body += Rp.sec('Transformation', t || Rp.line('', origTex));
+        var exclN = iqCritFromFactor(FD);
+        if(exclN.length) body += Rp.sec('Valeurs interdites', Rp.line('', exclN.map(function(r){ return 'x ' + BS + 'neq ' + r.tex; }).join(',' + BS + 'quad ')) + '<div class="study-work">Le dénominateur s’annule : ces valeurs sont exclues (double barre dans le tableau).</div>');
+        iqCritFromFactor(FN).forEach(function(r){ crit.push({ num: r.num, tex: r.tex, plain: r.plain, kind: 'zero' }); });
+        exclN.forEach(function(r){ var ex = crit.filter(function(z){ return Math.abs(z.num - r.num) < 1e-9; })[0]; if(ex) ex.kind = 'pole'; else crit.push({ num: r.num, tex: r.tex, plain: r.plain, kind: 'pole' }); });
+        // factor rows
+        if(c.n < 0) rows.push({ tex: fTex(c), f: function(){ return -1; }, zeros: [] });
+        [FN, FD].forEach(function(F){
+          F.lin.forEach(function(L){ var r = L.r, t2 = iqLinTex(r), tt = (r.n === 0 ? t2 : BS + 'left(' + t2 + BS + 'right)') + (L.k > 1 ? '^{' + L.k + '}' : ''); rows.push({ tex: tt, f: function(x){ return Math.pow(r.d * x - r.n, L.k); }, zeros: [fVal(r)] }); });
+          if(F.R){ var RR = F.R; rows.push({ tex: pTex(RR, 'x'), f: function(x){ return pEvalN(RR, x); }, zeros: exactRealRoots(RR).map(function(z){ return z.num; }) }); }
+        });
+        if(rows.length <= 1) rows = []; // a single factor: the h(x) row says it all
+        hLabel = rightZero ? iqSideTex(rd.L) : hTex;
+        sum.push('h(x) = ' + (denConst ? pPlain(rat.N, 'x') + (pConst(rat.D) && fVal(rat.D[0]) !== 1 ? ' (divise par ' + fPlain(rat.D[0]) + ')' : '') : '(' + pPlain(rat.N, 'x') + ')/(' + pPlain(rat.D, 'x') + ')') + ' ; factorise: ' + (FN.lin.length || FN.R ? (c.n === c.d ? '' : fPlain(c) + '*') + iqFacPlain(FN) : fPlain(c)) + (denConst ? '' : ' / ' + iqFacPlain(FD)));
+      } else {
+        methodId = lnLike ? 'ln' : expLike ? 'exp' : sqrtLike ? 'sqrt' : 'generic';
+        var t3 = '';
+        if(!rightZero) t3 += Rp.line('On étudie le signe de :', 'h(x) = ' + iqSideTex(rd.L) + ' - ' + (rd.R.t === '+' || rd.R.t === '-' ? BS + 'left(' + iqSideTex(rd.R) + BS + 'right)' : iqSideTex(rd.R)));
+        var conds = sysfConds([{ L: rd.L, R: rd.R }]);
+        if(conds.length) t3 += Rp.line('Conditions d’existence :', conds.map(function(c2){ return c2.tex; }).join(',' + BS + 'quad '));
+        body += Rp.sec('Transformation', t3 || Rp.line('', origTex));
+        crit = iqNumeric(h);
+        hLabel = rightZero ? iqSideTex(rd.L) : 'h(x)';
+        if(conds.length) sum.push('conditions: ' + conds.map(function(c2){ return c2.plain; }).join(', '));
+      }
+      var sol = iqSolve(h, crit, rd.rel);
+      body += Rp.sec('Tableau de signes', iqTable(sol, rows, hLabel));
+      var stxt = Rp.line('', 'S = ' + sol.tex);
+      if(sol.all) stxt += '<div class="study-work">Tous les réels sont solutions.</div>';
+      if(crit.some(function(p){ return p.approx; })) stxt += '<div class="study-work">Certaines bornes sont approchées (≈) : leur forme exacte n’a pas été reconnue.</div>';
+      body += Rp.sec('Ensemble des solutions', stxt);
+      body = Rp.sec('Méthode', '<div class="study-work">' + escapeHtml(IQ_METHODS[methodId]) + '</div>') + body;
+      Rp.render('Inéquation', body);
+
+      // graph: h (or the left side when B = 0), zeros, and the solution set on the x-axis
+      clearIqPlot();
+      if(ggb){
+        try { plot(sysfPrint(hAst)); } catch(e){}
+        var xsAll = [];
+        sol.pts.forEach(function(p, k){ if(!isFinite(p.num)) return; xsAll.push(p.num); if(p.kind === 'zero'){ var nm = 'IqZ' + (k + 1); try { ggb.evalCommand(nm + ' = (' + p.num.toFixed(10) + ', 0)'); iqObjs.push(nm); colour(nm, 220, 38, 38); } catch(e){} } });
+        sol.segs.forEach(function(sg, k){
+          var a = Math.max(sg.a, -1000), b = Math.min(sg.b, 1000), nm = 'IqS' + (k + 1);
+          try { if(sg.point) ggb.evalCommand(nm + ' = (' + a.toFixed(10) + ', 0)'); else ggb.evalCommand(nm + ' = Segment((' + a.toFixed(10) + ', 0), (' + b.toFixed(10) + ', 0))'); iqObjs.push(nm); colour(nm, 22, 163, 74); try { ggb.setLineThickness(nm, 10); } catch(e2){} } catch(e){}
+        });
+        var lo = xsAll.length ? Math.min.apply(null, xsAll) : -5, hi = xsAll.length ? Math.max.apply(null, xsAll) : 5, m = Math.max(3, (hi - lo) * 0.5);
+        try { ggb.setCoordSystem(lo - m, hi + m, -8, 8); } catch(e){}
+      }
+
+      sum.unshift('S = ' + sol.plain);
+      sum.push('valeurs critiques: ' + (sol.pts.map(function(p){ return p.plain + (p.kind === 'pole' ? ' (interdite)' : p.kind === 'edge' ? ' (bord du domaine)' : ''); }).join(', ') || 'aucune'));
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
+      try {
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: (sysfPrint(rd.L) + ' ' + rd.rel + ' ' + sysfPrint(rd.R)).slice(0, 200), operation: 'inequation', method: methodId, casResult: sum.join(' ; ').slice(0, 495) }) });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data, true); } else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){ stateEl.textContent = 'Connexion impossible — réessayez.'; }
+      finally { setIqOpsEnabled(true); }
+    }
+    iqOpsEl.addEventListener('click', function(ev){ var b = ev.target.closest('.ml-op'); if(!b || b.disabled) return; runIneq(); });
+    updateIqPreview();
+
+
     /* ============ QUESTIONS OUVERTES ============ */
     // Énoncé + typed questions (Calculer / Montrer que / Comparer A et B) → POST …/maths-lab/open.
     // Input aids: a maths keyboard that types into the active field, and an automatic preview that
@@ -7771,7 +8519,11 @@
     function switchMode(m){
       if(m === currentMode) return;
       currentMode = m;
+      if(m !== 'open') lastToolMode = m;
       modesEl.querySelectorAll('.ml-mode').forEach(function(b){ b.classList.toggle('is-active', b.getAttribute('data-mode') === m); });
+      modesEl.hidden = (m === 'open');
+      var actBtn = modesEl.querySelector('.ml-mode.is-active'); if(actBtn && !modesEl.hidden){ var grp = actBtn.parentElement; if(grp && grp.scrollWidth > grp.clientWidth) grp.scrollLeft = actBtn.offsetLeft - grp.offsetLeft - 12; } // phones: keep the chosen topic visible in its scrolling row
+      spacesEl.querySelectorAll('.ml-space').forEach(function(b){ var on = (b.getAttribute('data-space') === 'open') === (m === 'open'); b.classList.toggle('is-active', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); });
       modeFunc.hidden     = (m !== 'function');
       modeCplx.hidden     = (m !== 'complex');
       modeGeo.hidden      = (m !== 'geometry');
@@ -7784,6 +8536,7 @@
       modePw.hidden       = (m !== 'piecewise');
       modeEq1.hidden      = (m !== 'equation');
       modeSys.hidden      = (m !== 'system');
+      if(modeIneq) modeIneq.hidden = (m !== 'ineq');
       modeBary.hidden     = (m !== 'bary');
       modeOpen.hidden     = (m !== 'open');
       modeTrig.hidden     = (m !== 'trig');
@@ -7797,7 +8550,7 @@
       if(m === 'open'){ updateOqPreview(); return; }
       if(ggb){
         try { ggb.setPerspective((m === 'function' || m === 'integral' || m === 'suite' || m === 'diffeq') ? 'AG' : 'G'); } catch(e){}
-        clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot(); clearSuitePlot(); clearProbaPlot(); clearStatsPlot(); clearPwPlot(); clearE1Plot(); clearSysPlot(); clearBaryPlot(); clearZfPlot();
+        clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot(); clearSuitePlot(); clearProbaPlot(); clearStatsPlot(); clearPwPlot(); clearE1Plot(); clearSysPlot(); clearBaryPlot(); clearZfPlot(); if(typeof clearIqPlot === 'function') clearIqPlot();
         if(m === 'bary'){
           graphTitle.textContent = 'Points pondérés et barycentre';
           graphHint.textContent = 'Les points (avec leur poids), les barycentres partiels de la construction (H₁, H₂…) et le barycentre G en jaune ; le cercle de la ligne de niveau s’affiche avec le second bouton.';
@@ -7805,9 +8558,14 @@
           updateBaryPreview();
         } else if(m === 'system'){
           graphTitle.textContent = 'Interprétation graphique';
-          graphHint.textContent = 'Chaque équation à 2 inconnues est une droite : la solution est le point d’intersection (en jaune). Droites parallèles : aucune solution ; confondues : une infinité.';
+          sysGraphHint();
           try { ggb.deleteObject('f'); } catch(e){}
           updateSysPreview();
+        } else if(m === 'ineq'){
+          graphTitle.textContent = 'Signe et solutions';
+          graphHint.textContent = 'Courbe de h(x) = (membre de gauche) − (membre de droite). En rouge : les zéros ; en vert sur l’axe des abscisses : les x solutions.';
+          try { ggb.deleteObject('f'); } catch(e){}
+          updateIqPreview();
         } else if(m === 'equation'){
           graphTitle.textContent = 'Courbe de P(x)';
           graphHint.textContent = 'Les solutions de P(x) = 0 sont les abscisses des points d’intersection de la courbe avec l’axe des abscisses (en jaune).';
@@ -7864,6 +8622,10 @@
     modesEl.addEventListener('click', function(ev){
       var btn = ev.target.closest('.ml-mode'); if(!btn) return;
       switchMode(btn.getAttribute('data-mode'));
+    });
+    spacesEl.addEventListener('click', function(ev){
+      var b = ev.target.closest('.ml-space'); if(!b) return;
+      switchMode(b.getAttribute('data-space') === 'open' ? 'open' : lastToolMode);
     });
 
     // Keep the GeoGebra applet sized to its (now full-width) container.
