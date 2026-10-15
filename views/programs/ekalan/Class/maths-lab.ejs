@@ -360,6 +360,13 @@
     .e1-table td.e1-neg { color:#dc2626; font-weight:800; }
     .e1-table td.e1-bar { background:repeating-linear-gradient(90deg,#fff,#fff 3px,#ffe3a3 3px,#ffe3a3 6px); }
     .e1-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    .vc-row input.vc-name { width:58px; }
+    .vc-row input.vc-param, .vc-row input.vc-param2 { flex:1 1 180px; width:auto; text-align:left; }
+    .vc-row select.vc-type { padding:.4rem .5rem; border:2px solid #e0e0e0; border-radius:8px; background:#fff; font-weight:700; color:#5e17eb; max-width:100%; }
+    .vc-row .vc-by { color:#6b6880; font-size:.85rem; }
+    .vc-q { font-weight:700; color:#ffc23a; margin:.1rem 0 .35rem; }
+    .vc-ok { color:#86efac; font-weight:700; margin:.25rem 0; font-size:.92rem; }
+    .vc-ko { color:#fca5a5; font-weight:700; margin:.25rem 0; font-size:.92rem; }
     .e1-table td.iq-bar { color:#dc2626; font-weight:900; letter-spacing:-.05em; }
     .e1-table tr.iq-hrow th, .e1-table tr.iq-hrow td { border-top:2px solid #b99cf0; }
     .e1-case { margin:.4rem 0; padding:.45rem .7rem; border-radius:10px; background:rgba(255,255,255,.07); border-left:3px solid #ffc23a; }
@@ -478,6 +485,7 @@
             <button type="button" class="ml-mode" data-mode="equation"><i class="bi bi-calculator"></i> Équation</button>
             <button type="button" class="ml-mode" data-mode="ineq"><i class="bi bi-code"></i> Inéquations</button>
             <button type="button" class="ml-mode" data-mode="system"><i class="bi bi-grid-3x3-gap"></i> Système d’équations</button>
+            <button type="button" class="ml-mode" data-mode="vect"><i class="bi bi-arrow-up-right"></i> Vecteurs</button>
             <button type="button" class="ml-mode" data-mode="bary"><i class="bi bi-bullseye"></i> Barycentre</button>
             <button type="button" class="ml-mode" data-mode="suite"><i class="bi bi-list-ol"></i> Suites</button>
             <button type="button" class="ml-mode" data-mode="stats"><i class="bi bi-bar-chart-line"></i> Statistiques</button>
@@ -486,6 +494,7 @@
           <div class="ml-modes__group ml-modes__group--tle">
             <span class="ml-modes__lbl"><i class="bi bi-mortarboard-fill"></i> Terminale</span>
             <button type="button" class="ml-mode" data-mode="complex"><i class="bi bi-asterisk"></i> Nombres complexes <span class="ml-tle">Tle</span></button>
+            <button type="button" class="ml-mode" data-mode="transfo"><i class="bi bi-arrow-repeat"></i> Transformations <span class="ml-tle">Tle</span></button>
             <button type="button" class="ml-mode" data-mode="geometry"><i class="bi bi-triangle"></i> Géométrie <span class="ml-tle">Tle</span></button>
             <button type="button" class="ml-mode" data-mode="integral"><i class="bi bi-integral"></i> Intégrales <span class="ml-tle">Tle</span></button>
             <button type="button" class="ml-mode" data-mode="proba"><i class="bi bi-dice-5"></i> Probabilités <span class="ml-tle">Tle</span></button>
@@ -689,6 +698,99 @@
             <button class="ml-op ml-op--hero" data-sysop="solve"><i class="bi bi-check2-circle"></i> Résoudre</button>
           </div>
         </div><%# /mode-system %>
+
+        <div id="mode-vect" hidden>
+          <h2><i class="bi bi-arrow-up-right"></i> Vecteurs (sans repère)</h2>
+          <div class="pw-ex" id="vc-ex"></div>
+          <div class="oq-part"><span class="oq-part__n">1</span> Figure de départ</div>
+          <div class="ml-input-row">
+            <label for="vc-free">Points libres</label>
+            <input id="vc-free" type="text" value="A, B" autocomplete="off" spellcheck="false" placeholder="ex. A, B, C" />
+          </div>
+          <div class="pw-ex" id="vc-base" style="margin-top:-.4rem">
+            <span class="pw-ex__lbl">Figure :</span>
+            <button type="button" class="ml-key is-util" data-vcbase="A, B">2 points</button>
+            <button type="button" class="ml-key is-util" data-vcbase="A, B, C">Triangle ABC</button>
+            <button type="button" class="ml-key is-util" data-vcbase="A, B, C, D">Quadrilatère ABCD</button>
+          </div>
+          <div class="ml-input-row">
+            <label for="vc-len">Longueurs connues</label>
+            <input id="vc-len" type="text" autocomplete="off" spellcheck="false" placeholder="facultatif — ex. AB = 1,5 (en cm) ; AC = 2" />
+          </div>
+          <div class="oq-part"><span class="oq-part__n">2</span> Points construits <span class="oq-part__hint">— dans l’ordre de l’énoncé</span></div>
+          <div class="sys-grid" id="vc-pts"></div>
+          <button type="button" class="geo-add" id="vc-add-pt"><i class="bi bi-plus-lg"></i> Ajouter un point</button>
+          <div class="ml-preview is-empty" id="vc-preview" style="margin-top:.7rem">Aperçu de la figure…</div>
+          <div class="oq-part"><span class="oq-part__n">3</span> Questions</div>
+          <div class="sys-grid" id="vc-qs"></div>
+          <button type="button" class="geo-add" id="vc-add-q"><i class="bi bi-plus-lg"></i> Ajouter une question</button>
+          <div class="ml-ops" id="vc-ops">
+            <button class="ml-op ml-op--hero" type="button"><i class="bi bi-check2-circle"></i> Résoudre</button>
+          </div>
+          <div class="ml-hint">Un vecteur s’écrit avec deux points : <strong>AB</strong>, <strong>AA'</strong>. Coefficients : <strong>5/2 AB</strong>, <strong>-4/3 AB</strong>, <strong>1/3(AB + AC)</strong> ; vecteur nul : <strong>0</strong>. Les points libres représentent une figure <em>quelconque</em> : les résultats sont démontrés pour toutes les figures.</div>
+        </div><%# /mode-vect %>
+
+        <div id="mode-transfo" hidden>
+          <h2><i class="bi bi-arrow-repeat"></i> Transformations du plan <span class="oq-part__hint">— écriture complexe z′ = az + b ou z′ = a<span style="text-decoration:overline">z</span> + b</span></h2>
+          <div class="ml-side" id="tf-task">
+            <button type="button" class="ml-sidebtn is-active" data-tftask="recog">Reconnaître une écriture</button>
+            <button type="button" class="ml-sidebtn" data-tftask="write">Écrire à partir des éléments</button>
+            <button type="button" class="ml-sidebtn" data-tftask="find">Similitude : A→A′, B→B′</button>
+            <button type="button" class="ml-sidebtn" data-tftask="compose">Composer f₂ ∘ f₁</button>
+          </div>
+          <div class="pw-ex" id="tf-ex"></div>
+          <div id="tf-p-recog">
+            <div class="ml-input-row"><label for="tf-f">z′ =</label><input id="tf-f" type="text" value="(1+i)z + 2 - i" autocomplete="off" spellcheck="false" placeholder="ex. (1+i)z + 2 - i" /></div>
+          </div>
+          <div id="tf-p-write" hidden>
+            <div class="ml-input-row"><label for="tf-type">Transformation</label>
+              <select id="tf-type" class="oq-type" style="flex:1"><option value="rot">Rotation</option><option value="hom">Homothétie</option><option value="sim">Similitude directe</option><option value="tra">Translation</option><option value="refl">Réflexion (symétrie axiale)</option><option value="simi">Similitude indirecte</option></select></div>
+            <div class="ml-input-row" id="tf-row-w"><label for="tf-w">Centre ω =</label><input id="tf-w" type="text" value="1+i" autocomplete="off" spellcheck="false" placeholder="affixe du centre, ex. 1+i" /></div>
+            <div class="ml-input-row" id="tf-row-k"><label for="tf-k">Rapport k =</label><input id="tf-k" type="text" value="2" autocomplete="off" spellcheck="false" placeholder="ex. 2, -3, 1/2" /></div>
+            <div class="ml-input-row" id="tf-row-t"><label for="tf-t" id="tf-t-lbl">Angle θ =</label><input id="tf-t" type="text" value="pi/3" autocomplete="off" spellcheck="false" placeholder="ex. pi/3, -pi/2, 60°" /></div>
+            <div class="ml-input-row" id="tf-row-u"><label for="tf-u">Vecteur u =</label><input id="tf-u" type="text" value="3-i" autocomplete="off" spellcheck="false" placeholder="affixe du vecteur, ex. 3-i" /></div>
+            <div class="ml-input-row" id="tf-row-ax" hidden><label for="tf-ax">Axe Δ :</label><input id="tf-ax" type="text" value="y = x + 1" autocomplete="off" spellcheck="false" placeholder="ex. y = x + 1, x = 2, ou deux points 0 ; 1+i" /></div>
+          </div>
+          <div id="tf-p-find" hidden>
+            <div class="ml-input-row"><label for="tf-fkind">Similitude</label>
+              <select id="tf-fkind" class="oq-type" style="flex:1"><option value="dir">directe : z′ = az + b</option><option value="ind">indirecte : z′ = a·conj(z) + b</option></select></div>
+            <div class="sys-grid">
+              <div class="sys-row"><span class="sys-lbl">A</span><input id="tf-a" type="text" class="sysf-in" value="1" autocomplete="off" /><span class="sys-op">↦</span><span class="sys-lbl">A′</span><input id="tf-a2" type="text" class="sysf-in" value="2i" autocomplete="off" /></div>
+              <div class="sys-row"><span class="sys-lbl">B</span><input id="tf-b" type="text" class="sysf-in" value="1+i" autocomplete="off" /><span class="sys-op">↦</span><span class="sys-lbl">B′</span><input id="tf-b2" type="text" class="sysf-in" value="-1+2i" autocomplete="off" /></div>
+            </div>
+          </div>
+          <div id="tf-p-compose" hidden>
+            <div class="ml-input-row"><label for="tf-f1">f₁(z) =</label><input id="tf-f1" type="text" value="conj(z)" autocomplete="off" spellcheck="false" placeholder="ex. iz + 1 ou conj(z)" /></div>
+            <div class="ml-input-row"><label for="tf-f2">f₂(z) =</label><input id="tf-f2" type="text" value="i*conj(z)" autocomplete="off" spellcheck="false" placeholder="ex. 2z - 1 ou i*conj(z) + 1" /></div>
+            <div class="ml-hint" style="margin-top:0">f₂ ∘ f₁ : on applique d’abord f₁, puis f₂. Pour f ∘ f, écrivez deux fois la même expression.</div>
+          </div>
+          <div class="ml-input-row"><label for="tf-pts">Images de</label><input id="tf-pts" type="text" value="A = 1 ; B = 3 + i ; C = 1 + 2i" autocomplete="off" spellcheck="false" placeholder="ex. A = 1 ; B = 3 + i ; C = 1 + 2i" /></div>
+          <div class="ml-input-row"><label for="tf-line">Image de la droite</label><input id="tf-line" type="text" value="" autocomplete="off" spellcheck="false" placeholder="facultatif — ex. y = 2x + 1, x = 3, ou deux points 1 ; 2+i" /></div>
+          <div class="ml-input-row"><label for="tf-cc">Image du cercle : centre</label><input id="tf-cc" type="text" value="" autocomplete="off" spellcheck="false" placeholder="facultatif — ex. 1+i" style="flex:1" /><label for="tf-cr">rayon</label><input id="tf-cr" type="text" value="" autocomplete="off" spellcheck="false" placeholder="ex. 2" style="flex:0 0 5.5rem;width:5.5rem;min-width:5.5rem" /></div>
+          <div class="ml-preview is-empty" id="tf-preview">Aperçu…</div>
+          <div class="ml-keys" id="tf-keys">
+            <button type="button" class="ml-key" data-ins="z">z</button>
+            <button type="button" class="ml-key" data-ins="i">i</button>
+            <button type="button" class="ml-key" data-ins="conj(z)"><span style="text-decoration:overline">z</span></button>
+            <button type="button" class="ml-key" data-ins="x">x</button>
+            <button type="button" class="ml-key" data-ins="y">y</button>
+            <button type="button" class="ml-key" data-ins=" = ">=</button>
+            <button type="button" class="ml-key" data-ins="(|)">(&nbsp;)</button>
+            <button type="button" class="ml-key" data-ins="(|)/(|)">a⁄b</button>
+            <button type="button" class="ml-key" data-ins="sqrt(|)">√</button>
+            <button type="button" class="ml-key" data-ins="pi">π</button>
+            <button type="button" class="ml-key" data-ins="exp(i*|)">e<sup>iθ</sup></button>
+            <button type="button" class="ml-key" data-ins="+">+</button>
+            <button type="button" class="ml-key" data-ins="-">−</button>
+            <button type="button" class="ml-key" data-ins="*">×</button>
+            <button type="button" class="ml-key is-util" data-act="back">⌫</button>
+            <button type="button" class="ml-key is-util" data-act="clear">C</button>
+          </div>
+          <div class="ml-ops" id="tf-ops">
+            <button class="ml-op ml-op--hero" type="button"><i class="bi bi-check2-circle"></i> Calculer</button>
+          </div>
+          <div class="ml-hint">Directes : translation, homothétie, rotation, similitude (z′ = az + b). Indirectes : réflexion, symétrie glissée, similitude indirecte (z′ = a<span style="text-decoration:overline">z</span> + b, le conjugué s’écrit <strong>conj(z)</strong> ou touche <span style="text-decoration:overline">z</span>). Nombres complexes : <strong>1+i</strong>, <strong>sqrt(3)/2</strong>, <strong>exp(i*pi/3)</strong> ; angles : <strong>pi/3</strong> ou <strong>60°</strong>. Droite : <strong>y = 2x + 1</strong>, <strong>x = 3</strong> ou deux points <strong>1 ; 2+i</strong>.</div>
+        </div><%# /mode-transfo %>
 
         <div id="mode-bary" hidden>
           <h2><i class="bi bi-bullseye"></i> Barycentre de points pondérés</h2>
@@ -6839,8 +6941,9 @@
           } } });
       if(!best) return null;
       var aq = Math.abs(best.q), rad = (aq === 1 ? '' : aq) + BS + 'sqrt{' + best.r + '}', radP = (aq === 1 ? '' : aq + '*') + 'sqrt(' + best.r + ')';
-      var numT = best.p ? best.p + (best.q < 0 ? ' - ' : ' + ') + rad : (best.q < 0 ? '-' : '') + rad;
-      var numP = best.p ? best.p + (best.q < 0 ? ' - ' : ' + ') + radP : (best.q < 0 ? '-' : '') + radP;
+      var swap = best.p < 0 && best.q > 0; // write √r − p rather than −p + √r
+      var numT = swap ? rad + ' - ' + (-best.p) : best.p ? best.p + (best.q < 0 ? ' - ' : ' + ') + rad : (best.q < 0 ? '-' : '') + rad;
+      var numP = swap ? radP + ' - ' + (-best.p) : best.p ? best.p + (best.q < 0 ? ' - ' : ' + ') + radP : (best.q < 0 ? '-' : '') + radP;
       if(best.d === 1) return { tex: numT, plain: numP, exact: true };
       if(!best.p && best.q < 0) return { tex: '-' + BS + 'frac{' + rad + '}{' + best.d + '}', plain: '-' + radP + '/' + best.d, exact: true };
       return { tex: BS + 'frac{' + numT + '}{' + best.d + '}', plain: '(' + numP + ')/' + best.d, exact: true };
@@ -8193,6 +8296,801 @@
     updateIqPreview();
 
 
+    /* ============ VECTEURS (sans repère) ============ */
+    // Formal affine engine: the free points (A, B, C…) are independent symbols; every point is an exact
+    // combination of them (fractions, coefficients summing to 1) and every vector XY = Y − X a combination
+    // summing to 0. Identities are therefore proved for ANY figure, not read off a drawing. Vectors are shown
+    // in the basis (AB, AC, AD…) from the first free point (Chasles: XY = AY − AX).
+    var modeVect = document.getElementById('mode-vect');
+    var vcFreeIn = document.getElementById('vc-free'), vcLenIn = document.getElementById('vc-len');
+    var vcPtsEl = document.getElementById('vc-pts'), vcQsEl = document.getElementById('vc-qs');
+    var vcPrevEl = document.getElementById('vc-preview'), vcOpsEl = document.getElementById('vc-ops'), vcExEl = document.getElementById('vc-ex');
+    var vcObjs = [];
+    var VC_PT_TYPES = [['rel', 'Relation vectorielle', 'ex. BC = 5/2 AB'], ['mid', 'Milieu de', 'ex. AB  (milieu de [AB])'], ['grav', 'Centre de gravité de', 'ex. ABC'], ['sym', 'Symétrique de … par rapport à …', 'ex. A, B'], ['trans', 'Image par la translation', 'ex. A, BC  (image de A par la translation de vecteur BC)']];
+    var VC_Q_TYPES = [['show', 'Montrer que', 'ex. MN = 1/2 AC'], ['express', 'Exprimer … en fonction de …', 'ex. AB'], ['colin', 'Compléter la colinéarité', 'ex. CD = ... AB'], ['length', 'Longueur du vecteur', 'ex. CD'], ['align', 'Points alignés ?', 'ex. A, B, C'], ['nature', 'Nature du quadrilatère', 'ex. MNPQ'], ['construct', 'Construire le point', 'ex. D']];
+    var VC_EX = [
+      { t: 'Colinéarité et longueur', free: 'A, B', len: 'AB = 1,5', pts: [['C', 'rel', 'BC = 5/2 AB'], ['D', 'rel', 'AD = -4/3 AB']], qs: [['construct', 'C'], ['construct', 'D'], ['colin', 'CD = ... AB'], ['length', 'CD']] },
+      { t: 'Exprimer un vecteur', free: 'A, B, C', len: '', pts: [['D', 'rel', 'AD = AB - 3AC']], qs: [['construct', 'D'], ['express', 'AB', 'AD, AC'], ['express', 'AC', 'AB, AD'], ['express', 'AD', 'AC, BC']] },
+      { t: 'Milieux d’un quadrilatère', free: 'A, B, C, D', len: '', pts: [['M', 'mid', 'AB'], ['N', 'mid', 'BC'], ['P', 'mid', 'CD'], ['Q', 'mid', 'AD']], qs: [['show', 'MN = 1/2 AC'], ['show', 'QP = 1/2 AC'], ['nature', 'MNPQ']] },
+      { t: 'Médianes', free: 'A, B, C', len: '', pts: [['G', 'grav', 'ABC'], ["A'", 'mid', 'BC'], ["B'", 'mid', 'CA'], ["C'", 'mid', 'AB']], qs: [['show', "AA' + BB' + CC' = 0"]] },
+      { t: 'Centre de gravité', free: 'A, B, C', len: '', pts: [['G', 'grav', 'ABC']], qs: [['show', 'AG = 1/3(AB + AC)'], ['show', 'BG = 1/3(BA + BC)'], ['show', 'CG = 1/3(CA + CB)']] }
+    ];
+    function clearVcPlot(){ vcObjs.forEach(function(nm){ try { ggb.deleteObject(nm); } catch(e){} }); vcObjs = []; }
+    function setVcOpsEnabled(on){ vcOpsEl.querySelectorAll('.ml-op').forEach(function(b){ b.disabled = !on; }); }
+
+    // ---- UI rows ----
+    function vcOpts(list, sel){ return list.map(function(t){ return '<option value="' + t[0] + '"' + (t[0] === sel ? ' selected' : '') + '>' + escapeHtml(t[1]) + '</option>'; }).join(''); }
+    function vcAddPt(v){
+      v = v || ['', 'rel', ''];
+      var row = document.createElement('div'); row.className = 'sys-row vc-row';
+      row.innerHTML = '<span class="sys-lbl">Point</span><input type="text" class="vc-name" maxlength="4" autocomplete="off" spellcheck="false" aria-label="nom du point" /><select class="oq-type vc-type">' + vcOpts(VC_PT_TYPES, v[1]) + '</select><input type="text" class="vc-param" autocomplete="off" spellcheck="false" /><button type="button" class="geo-del" aria-label="Supprimer">×</button>';
+      row.querySelector('.vc-name').value = v[0]; row.querySelector('.vc-param').value = v[2];
+      vcPtsEl.appendChild(row); vcSyncPh(row, VC_PT_TYPES);
+    }
+    function vcAddQ(v){
+      v = v || ['show', '', ''];
+      var row = document.createElement('div'); row.className = 'sys-row vc-row';
+      row.innerHTML = '<span class="sys-lbl vc-qn"></span><select class="oq-type vc-type">' + vcOpts(VC_Q_TYPES, v[0]) + '</select><input type="text" class="vc-param" autocomplete="off" spellcheck="false" /><span class="vc-by" hidden>en fonction de</span><input type="text" class="vc-param2" autocomplete="off" spellcheck="false" placeholder="ex. AD, AC" hidden /><button type="button" class="geo-del" aria-label="Supprimer">×</button>';
+      row.querySelector('.vc-param').value = v[1]; row.querySelector('.vc-param2').value = v[2] || '';
+      vcQsEl.appendChild(row); vcSyncPh(row, VC_Q_TYPES); vcRenumber();
+    }
+    function vcRenumber(){ Array.prototype.forEach.call(vcQsEl.querySelectorAll('.vc-qn'), function(s, i){ s.textContent = (i + 1) + ')'; }); }
+    function vcSyncPh(row, list){
+      var t = row.querySelector('.vc-type').value, it = list.filter(function(x){ return x[0] === t; })[0];
+      row.querySelector('.vc-param').placeholder = it ? it[2] : '';
+      var p2 = row.querySelector('.vc-param2'), by = row.querySelector('.vc-by');
+      if(p2){ p2.hidden = (t !== 'express'); by.hidden = (t !== 'express'); }
+    }
+    [vcPtsEl, vcQsEl].forEach(function(box){
+      box.addEventListener('change', function(ev){ if(ev.target.classList.contains('vc-type')) vcSyncPh(ev.target.closest('.vc-row'), box === vcPtsEl ? VC_PT_TYPES : VC_Q_TYPES); updateVcPreview(); });
+      box.addEventListener('input', updateVcPreview);
+      box.addEventListener('click', function(ev){ var b = ev.target.closest('.geo-del'); if(!b) return; b.closest('.vc-row').remove(); vcRenumber(); updateVcPreview(); });
+    });
+    [vcFreeIn, vcLenIn].forEach(function(i){ i.addEventListener('input', updateVcPreview); });
+    document.getElementById('vc-add-pt').addEventListener('click', function(){ vcAddPt(); });
+    document.getElementById('vc-add-q').addEventListener('click', function(){ vcAddQ(); });
+    document.getElementById('vc-base').addEventListener('click', function(ev){ var b = ev.target.closest('[data-vcbase]'); if(!b) return; vcFreeIn.value = b.getAttribute('data-vcbase'); updateVcPreview(); });
+    (function(){ var h = '<span class="pw-ex__lbl"><i class="bi bi-lightbulb"></i> Exemples :</span>'; VC_EX.forEach(function(e, i){ h += '<button type="button" class="ml-key is-util" data-vcex="' + i + '">' + escapeHtml(e.t) + '</button>'; }); vcExEl.innerHTML = h; })();
+    function vcLoad(ex){ vcFreeIn.value = ex.free; vcLenIn.value = ex.len; vcPtsEl.innerHTML = ''; vcQsEl.innerHTML = ''; ex.pts.forEach(vcAddPt); ex.qs.forEach(vcAddQ); answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = ''; updateVcPreview(); }
+    vcExEl.addEventListener('click', function(ev){ var b = ev.target.closest('[data-vcex]'); if(b) vcLoad(VC_EX[Number(b.getAttribute('data-vcex'))]); });
+
+    // ---- parsing ----
+    function vcNorm(s){ return String(s || '').split(String.fromCharCode(8722)).join('-').split(String.fromCharCode(8242)).join("'").split(String.fromCharCode(8217)).join("'").split(',').join('.').split('[').join('').split(']').join(''); }
+    function vcIsUp(c){ return c >= 'A' && c <= 'Z'; }
+    function vcIsDig(c){ return c >= '0' && c <= '9'; }
+    function vcPointList(s){ // "A, B" / "ABC" / "A'B" → ['A','B',…]
+      s = String(s || '').split(String.fromCharCode(8242)).join("'").split(String.fromCharCode(8217)).join("'");
+      var out = [], i = 0;
+      while(i < s.length){ var c = s.charAt(i); if(vcIsUp(c)){ var j = i + 1; while(j < s.length && (vcIsDig(s.charAt(j)) || s.charAt(j) === "'")) j++; out.push(s.slice(i, j)); i = j; } else i++; }
+      return out;
+    }
+    // Vector expression → list of { k: fraction, X, Y } (k·XY) or throws
+    function vcParseExpr(str){
+      var s = vcNorm(str).split(' ').join('').split('*').join(''), pos = 0;
+      if(!s) throw 'vide';
+      function peek(){ return s.charAt(pos); }
+      function num(){ var j = pos; while(pos < s.length && (vcIsDig(s.charAt(pos)) || s.charAt(pos) === '.')) pos++; if(j === pos) return null; var f = fFromNum(Number(s.slice(j, pos))); if(!f) throw 'nombre'; return f; }
+      function point(){ var c = peek(); if(!vcIsUp(c)) return null; var j = pos; pos++; while(pos < s.length && (vcIsDig(s.charAt(pos)) || s.charAt(pos) === "'")) pos++; return s.slice(j, pos); }
+      function scale(list, k){ return list.map(function(t){ return { k: fMul(t.k, k), X: t.X, Y: t.Y }; }); }
+      function factor(){
+        if(peek() === '('){ pos++; var e = expr(); if(peek() !== ')') throw 'parenthèse'; pos++; return e; }
+        var X = point(); if(!X) return null; var Y = point(); if(!Y) throw 'vecteur'; return [{ k: fr(1), X: X, Y: Y }];
+      }
+      function term(){
+        var k = num(), f;
+        if(k && peek() === '/'){ pos++; var d = num(); if(!d || fZero(d)) throw 'fraction'; k = fDiv(k, d); }
+        f = factor();
+        if(!f){ if(k && fZero(k)) return []; throw 'terme'; }
+        if(peek() === '/'){ pos++; var d2 = num(); if(!d2 || fZero(d2)) throw 'fraction'; f = scale(f, fDiv(fr(1), d2)); }
+        return k ? scale(f, k) : f;
+      }
+      function expr(){
+        var sg = fr(1); if(peek() === '-'){ sg = fr(-1); pos++; } else if(peek() === '+') pos++;
+        var out = scale(term(), sg);
+        while(peek() === '+' || peek() === '-'){ var s2 = peek() === '-' ? fr(-1) : fr(1); pos++; out = out.concat(scale(term(), s2)); }
+        return out;
+      }
+      var r = expr(); if(pos < s.length) throw 'syntaxe'; return r;
+    }
+
+    // ---- combinations over the free points ----
+    function vcZero(n){ var a = []; for(var i = 0; i < n; i++) a.push(fr(0)); return a; }
+    function vcAdd(a, b, k){ return a.map(function(x, i){ return fAdd(x, fMul(b[i], k === undefined ? fr(1) : k)); }); }
+    function vcIsZero(a){ return a.every(fZero); }
+    function vcEq(a, b){ return vcIsZero(vcAdd(a, b, fr(-1))); }
+    // terms → combination (unknown point: its coefficient goes to .p)
+    function vcEval(terms, F, unknown){
+      var c = vcZero(F.n), p = fr(0);
+      terms.forEach(function(t){
+        [[t.Y, t.k], [t.X, fNeg(t.k)]].forEach(function(it){
+          if(it[0] === unknown){ p = fAdd(p, it[1]); return; }
+          var P = F.pts[it[0]]; if(!P) throw 'inconnu:' + it[0];
+          c = vcAdd(c, P, it[1]);
+        });
+      });
+      return { c: c, p: p };
+    }
+    function vcRead(){
+      var free = vcPointList(vcFreeIn.value);
+      if(free.length < 2) return { err: 'Indiquez au moins deux points libres (ex. A, B, C).' };
+      if(free.length > 5) return { err: 'Cinq points libres au maximum.' };
+      var F = { free: free, n: free.length, pts: {}, defs: [], lens: [] };
+      free.forEach(function(nm, i){ var e = vcZero(F.n); e[i] = fr(1); F.pts[nm] = e; });
+      var rows = vcPtsEl.querySelectorAll('.vc-row');
+      for(var r = 0; r < rows.length; r++){
+        var name = vcPointList(rows[r].querySelector('.vc-name').value)[0], type = rows[r].querySelector('.vc-type').value, param = rows[r].querySelector('.vc-param').value.trim();
+        if(!name && !param) continue;
+        if(!name) return { err: 'Point construit n°' + (r + 1) + ' : donnez-lui un nom (lettre majuscule).' };
+        if(F.pts[name]) return { err: 'Le point ' + name + ' est déjà défini.' };
+        var P = null, L = vcPointList(param), def = { name: name, type: type, param: param };
+        function need(k){ if(L.length < k) throw 'Point ' + name + ' : paramètres incomplets (' + VC_PT_TYPES.filter(function(t){ return t[0] === type; })[0][2] + ').'; L.forEach(function(q){ if(!F.pts[q]) throw 'Point ' + name + ' : le point ' + q + ' n’est pas encore défini (définissez-le plus haut).'; }); }
+        try {
+          if(type === 'rel'){
+            var parts = vcNorm(param).split('=');
+            if(parts.length !== 2) throw 'Point ' + name + ' : écrivez une égalité, ex. BC = 5/2 AB.';
+            var lt = vcParseExpr(parts[0]), rt = vcParseExpr(parts[1]);
+            var all = lt.concat(rt.map(function(t){ return { k: fNeg(t.k), X: t.X, Y: t.Y }; }));
+            var ev = vcEval(all, F, name);
+            if(fZero(ev.p)) throw 'Point ' + name + ' : la relation doit faire intervenir ' + name + '.';
+            P = ev.c.map(function(x){ return fDiv(fNeg(x), ev.p); });
+            def.lt = lt; def.rt = rt;
+          } else if(type === 'mid'){ need(2); P = vcAdd(vcAdd(vcZero(F.n), F.pts[L[0]], fr(1, 2)), F.pts[L[1]], fr(1, 2)); def.of = L.slice(0, 2); }
+          else if(type === 'grav'){ need(3); P = vcAdd(vcAdd(vcAdd(vcZero(F.n), F.pts[L[0]], fr(1, 3)), F.pts[L[1]], fr(1, 3)), F.pts[L[2]], fr(1, 3)); def.of = L.slice(0, 3); }
+          else if(type === 'sym'){ need(2); P = vcAdd(vcAdd(vcZero(F.n), F.pts[L[1]], fr(2)), F.pts[L[0]], fr(-1)); def.of = L.slice(0, 2); }
+          else if(type === 'trans'){ need(3); P = vcAdd(vcAdd(F.pts[L[0]], F.pts[L[2]]), F.pts[L[1]], fr(-1)); def.of = L.slice(0, 3); }
+        } catch(e){
+          if(typeof e === 'string' && e.indexOf('inconnu:') === 0) return { err: 'Point ' + name + ' : le point ' + e.slice(8) + ' n’est pas encore défini.' };
+          return { err: typeof e === 'string' && e.length > 12 ? e : 'Point ' + name + ' : relation illisible — ex. BC = 5/2 AB, AD = AB - 3AC.' };
+        }
+        F.pts[name] = P; def.P = P; F.defs.push(def);
+      }
+      // known lengths "AB = 1,5 ; AC = 2"
+      String(vcLenIn.value || '').split(';').forEach(function(seg){
+        var m = seg.split('='); if(m.length !== 2) return;
+        var L2 = vcPointList(m[0]), v = Number(String(m[1]).split(',').join('.').split('cm').join('').trim());
+        if(L2.length === 2 && isFinite(v) && v > 0) F.lens.push({ X: L2[0], Y: L2[1], L: v });
+      });
+      return { F: F };
+    }
+
+    // ---- display ----
+    function vcVec(X, Y){ return BS + 'overrightarrow{' + X + Y + '}'; }
+    function vcCoef(k, body, first){ var ab = fr(Math.abs(k.n), k.d), ct = (ab.n === 1 && ab.d === 1) ? '' : fTex(ab); return (first ? (k.n < 0 ? '-' : '') : (k.n < 0 ? ' - ' : ' + ')) + ct + body; }
+    function vcTermsTex(terms){ if(!terms.length) return BS + 'vec{0}'; var s = ''; terms.forEach(function(t, i){ s += vcCoef(t.k, vcVec(t.X, t.Y), i === 0); }); return s; }
+    function vcBasis(F, c){ var o = []; for(var i = 1; i < F.n; i++) if(!fZero(c[i])) o.push({ k: c[i], X: F.free[0], Y: F.free[i] }); return o; } // vector in the basis A→P_i
+    function vcBasisTex(F, c){ return vcTermsTex(vcBasis(F, c)); }
+    function vcBasisPlain(F, c){ var b = vcBasis(F, c); if(!b.length) return '0'; return b.map(function(t, i){ var ab = fr(Math.abs(t.k.n), t.k.d); return (i ? (t.k.n < 0 ? ' - ' : ' + ') : (t.k.n < 0 ? '-' : '')) + (ab.n === 1 && ab.d === 1 ? '' : fPlain(ab) + ' ') + t.X + t.Y; }).join(''); }
+    function vcTermsPlain(terms){ if(!terms.length) return '0'; return terms.map(function(t, i){ var ab = fr(Math.abs(t.k.n), t.k.d); return (i ? (t.k.n < 0 ? ' - ' : ' + ') : (t.k.n < 0 ? '-' : '')) + (ab.n === 1 && ab.d === 1 ? '' : fPlain(ab) + ' ') + t.X + t.Y; }).join(''); }
+    function vcVecOf(F, terms){ return vcEval(terms, F, null).c; }
+    // Chasles: XY = AY − AX in the basis
+    function vcChasles(F, X, Y){
+      var O = F.free[0];
+      if(X === O) return null;
+      var cX = vcAdd(F.pts[X], F.pts[O], fr(-1)), cY = vcAdd(F.pts[Y], F.pts[O], fr(-1));
+      var aY = Y === O ? BS + 'vec{0}' : vcBasisTex(F, cY), aX = vcBasisTex(F, cX);
+      return vcVec(X, Y) + ' = ' + vcVec(X, O) + ' + ' + vcVec(O, Y) + ' = ' + vcVec(O, Y) + ' - ' + vcVec(O, X) + (Y === O ? '' : ' = ' + BS + 'left(' + aY + BS + 'right)') + ' - ' + BS + 'left(' + aX + BS + 'right)';
+    }
+    function vcDefTex(d){
+      if(d.type === 'rel') return vcTermsTex(d.lt) + ' = ' + vcTermsTex(d.rt);
+      if(d.type === 'mid') return d.name + BS + 'text{ milieu de }[' + d.of[0] + d.of[1] + ']';
+      if(d.type === 'grav') return d.name + BS + 'text{ centre de gravité de }' + d.of.join('');
+      if(d.type === 'sym') return d.name + BS + 'text{ symétrique de }' + d.of[0] + BS + 'text{ par rapport à }' + d.of[1];
+      return d.name + BS + 'text{ image de }' + d.of[0] + BS + 'text{ par la translation de vecteur }' + vcVec(d.of[1], d.of[2]);
+    }
+    function vcDefPlain(d){ return d.name + ': ' + (d.type === 'rel' ? d.param : d.type === 'mid' ? 'milieu de [' + d.of.join('') + ']' : d.type === 'grav' ? 'centre de gravite de ' + d.of.join('') : d.type === 'sym' ? 'symetrique de ' + d.of[0] + ' par rapport a ' + d.of[1] : 'image de ' + d.of[0] + ' par la translation de vecteur ' + d.of[1] + d.of[2]); }
+    function updateVcPreview(){
+      var r = vcRead();
+      if(r.err){ vcPrevEl.className = 'ml-preview is-empty'; vcPrevEl.textContent = r.err; return; }
+      var F = r.F, lines = [BS + 'text{Points libres : }' + F.free.join(',' + BS + ',')];
+      F.defs.forEach(function(d){ lines.push(vcDefTex(d)); });
+      try { renderKatex(vcPrevEl, BS + 'begin{array}{l} ' + lines.join(' ' + BS + BS + ' ') + ' ' + BS + 'end{array}'); vcPrevEl.className = 'ml-preview'; }
+      catch(e){ vcPrevEl.className = 'ml-preview is-empty'; vcPrevEl.textContent = 'Aperçu indisponible.'; }
+    }
+
+    // ---- exact linear solve (fractions): A (rows) · x = b → { x } | { none } | { many } ----
+    function vcSolve(A, b){
+      var m = A[0] ? A[0].length : 0, M = A.map(function(r, i){ return r.concat([b[i]]); }), row = 0, piv = [];
+      for(var c = 0; c < m && row < M.length; c++){
+        var p = -1; for(var r = row; r < M.length; r++) if(!fZero(M[r][c])){ p = r; break; }
+        if(p < 0) continue;
+        var t = M[row]; M[row] = M[p]; M[p] = t;
+        var inv = fDiv(fr(1), M[row][c]); M[row] = M[row].map(function(x){ return fMul(x, inv); });
+        for(var r2 = 0; r2 < M.length; r2++) if(r2 !== row && !fZero(M[r2][c])){ var f = M[r2][c]; M[r2] = M[r2].map(function(x, j){ return fSub(x, fMul(f, M[row][j])); }); }
+        piv.push(c); row++;
+      }
+      for(var r3 = row; r3 < M.length; r3++) if(!fZero(M[r3][m])) return { none: true };
+      if(piv.length < m) return { many: true };
+      var x = vcZero(m); piv.forEach(function(c2, i){ x[c2] = M[i][m]; }); return { x: x };
+    }
+    function vcColin(u, v){ // v = k·u ? → k or null
+      var i0 = -1; for(var i = 0; i < u.length; i++) if(!fZero(u[i])){ i0 = i; break; }
+      if(i0 < 0) return null;
+      var k = fDiv(v[i0], u[i0]); return vcEq(v, u.map(function(x){ return fMul(x, k); })) ? k : null;
+    }
+
+    // ---- questions ----
+    function vcQuestion(F, R, q, idx){
+      var t = q.type, p = q.p.trim(), out = { lines: '', plain: '' }, head = '<div class="vc-q">' + (idx + 1) + ') ' + escapeHtml(VC_Q_TYPES.filter(function(x){ return x[0] === t; })[0][1]) + ' ' + escapeHtml(p) + (t === 'express' ? ' en fonction de ' + escapeHtml(q.p2) : '') + '</div>';
+      function vec(s){ return vcParseExpr(s); }
+      try {
+        if(t === 'show'){
+          var eqs = vcNorm(p).split(' et ').join(';').split(';').filter(function(x){ return x.trim(); }), all = true, txt = '', pl = [];
+          eqs.forEach(function(e){
+            var sides = e.split('='); if(sides.length !== 2) throw 'égalité';
+            var L = vec(sides[0]), Rr = vec(sides[1]), cL = vcVecOf(F, L), cR = vcVecOf(F, Rr), ok = vcEq(cL, cR);
+            all = all && ok;
+            if(L.length === 1 && fVal(L[0].k) === 1){ var ch = vcChasles(F, L[0].X, L[0].Y); if(ch) txt += R.line('Chasles :', ch); }
+            txt += R.line('', vcTermsTex(L) + ' = ' + vcBasisTex(F, cL));
+            if(!(Rr.length === 1 && vcBasis(F, cR).length && vcTermsPlain(Rr) === vcBasisPlain(F, cR))) txt += R.line('', vcTermsTex(Rr) + ' = ' + vcBasisTex(F, cR));
+            txt += ok ? '<div class="vc-ok"><i class="bi bi-check-circle-fill"></i> Égalité vraie pour toute figure.</div>' : '<div class="vc-ko"><i class="bi bi-x-circle-fill"></i> Égalité fausse : les deux membres sont différents.</div>';
+            pl.push(vcTermsPlain(L) + ' = ' + vcTermsPlain(Rr) + ' : ' + (ok ? 'VRAI' : 'FAUX') + ' (gauche = ' + vcBasisPlain(F, cL) + ' ; droite = ' + vcBasisPlain(F, cR) + ')');
+          });
+          out.lines = txt; out.plain = 'montrer ' + pl.join(' ; ');
+        } else if(t === 'express'){
+          var T = vec(p), us = String(q.p2 || '').split(' et ').join(',').split(';').join(',').split(',').map(function(x){ return x.trim(); }).filter(Boolean);
+          if(!us.length) throw 'Indiquez les vecteurs, ex. AD, AC.';
+          var cT = vcVecOf(F, T), cu = us.map(function(u){ return vcVecOf(F, vec(u)); });
+          var A = [], b = []; for(var i = 1; i < F.n; i++){ A.push(cu.map(function(c){ return c[i]; })); b.push(cT[i]); }
+          var sol = vcSolve(A, b), txt2 = '';
+          txt2 += R.line('Dans la base :', vcTermsTex(T) + ' = ' + vcBasisTex(F, cT));
+          us.forEach(function(u, j){ txt2 += R.line('', vcTermsTex(vec(u)) + ' = ' + vcBasisTex(F, cu[j])); });
+          if(sol.x){
+            var res = us.map(function(u, j){ return { k: sol.x[j], terms: vec(u) }; }).filter(function(z){ return !fZero(z.k); });
+            var tex = res.length ? res.map(function(z, j){ var inner = vcTermsTex(z.terms); var simple = z.terms.length === 1 && fVal(z.terms[0].k) === 1; return vcCoef(z.k, simple ? inner : BS + 'left(' + inner + BS + 'right)', j === 0); }).join('') : BS + 'vec{0}';
+            txt2 += R.line('Résultat :', vcTermsTex(T) + ' = ' + tex);
+            out.plain = 'exprimer ' + p + ' en fonction de ' + us.join(', ') + ' : ' + p + ' = ' + res.map(function(z, j){ var ab = fr(Math.abs(z.k.n), z.k.d); return (j ? (z.k.n < 0 ? ' - ' : ' + ') : (z.k.n < 0 ? '-' : '')) + (ab.n === 1 && ab.d === 1 ? '' : fPlain(ab) + ' ') + us[j]; }).join('');
+          } else {
+            txt2 += '<div class="vc-ko"><i class="bi bi-x-circle-fill"></i> ' + (sol.many ? 'Les vecteurs donnés sont colinéaires : la décomposition n’est pas unique.' : 'Impossible : ce vecteur ne s’écrit pas avec les vecteurs donnés.') + '</div>';
+            out.plain = 'exprimer ' + p + ' : impossible';
+          }
+          out.lines = txt2;
+        } else if(t === 'colin' || t === 'length'){
+          var s = vcNorm(p), left, right;
+          if(t === 'colin'){
+            if(s.indexOf('=') >= 0){ left = s.split('=')[0]; right = s.split('=')[1].split('.').join(''); } else { var sp = s.split(';').length > 1 ? s.split(';') : s.split(' et '); left = sp[0]; right = sp[1] || ''; }
+            var cv = vcVecOf(F, vec(left)), cw = vcVecOf(F, vec(right)), k = vcColin(cw, cv), txt3 = '';
+            var lv = vec(left), rv = vec(right);
+            if(lv.length === 1 && fVal(lv[0].k) === 1){ var chc = vcChasles(F, lv[0].X, lv[0].Y); if(chc) txt3 += R.line('Chasles :', chc); }
+            txt3 += R.line('', vcTermsTex(lv) + ' = ' + vcBasisTex(F, cv));
+            if(vcTermsPlain(rv) !== vcBasisPlain(F, cw)) txt3 += R.line('', vcTermsTex(rv) + ' = ' + vcBasisTex(F, cw));
+            if(k){ var rtt = vec(right), rtex = (rtt.length === 1 && fVal(rtt[0].k) === 1) ? vcTermsTex(rtt) : BS + 'left(' + vcTermsTex(rtt) + BS + 'right)'; txt3 += R.line('Donc :', vcTermsTex(vec(left)) + ' = ' + vcCoef(k, rtex, true)); txt3 += '<div class="vc-ok"><i class="bi bi-check-circle-fill"></i> Vecteurs colinéaires (k = ' + escapeHtml(fPlain(k)) + ').</div>'; out.plain = 'colinearite: ' + left.trim() + ' = ' + fPlain(k) + ' ' + right.trim(); }
+            else { txt3 += '<div class="vc-ko"><i class="bi bi-x-circle-fill"></i> Ces vecteurs ne sont pas colinéaires.</div>'; out.plain = 'colinearite: ' + left.trim() + ' et ' + right.trim() + ' non colineaires'; }
+            out.lines = txt3;
+          } else {
+            var cv2 = vcVecOf(F, vec(s)), found = null;
+            F.lens.forEach(function(Lk){ if(found) return; var cw2 = vcAdd(F.pts[Lk.Y], F.pts[Lk.X], fr(-1)), k2 = vcColin(cw2, cv2); if(k2) found = { k: k2, Lk: Lk }; });
+            if(found){
+              var len = Math.abs(fVal(found.k)) * found.Lk.L, lenS = String(Math.round(len * 1e6) / 1e6).split('.').join(',');
+              out.lines = R.line('', vcTermsTex(vec(s)) + ' = ' + fTex(found.k) + BS + ',' + vcVec(found.Lk.X, found.Lk.Y)) + R.line('Donc :', BS + 'left' + BS + '|' + vcTermsTex(vec(s)) + BS + 'right' + BS + '| = ' + BS + 'left|' + fTex(found.k) + BS + 'right|' + BS + 'times ' + found.Lk.X + found.Lk.Y + ' = ' + fTex(fr(Math.abs(found.k.n), found.k.d)) + BS + 'times ' + String(found.Lk.L).split('.').join('{,}') + ' = ' + lenS.split(',').join('{,}') + BS + 'text{ cm}');
+              out.plain = 'longueur ' + s.trim() + ' = |' + fPlain(found.k) + '| x ' + found.Lk.X + found.Lk.Y + ' = ' + lenS + ' cm';
+            } else { out.lines = '<div class="vc-ko"><i class="bi bi-x-circle-fill"></i> Longueur non déterminable : ce vecteur n’est colinéaire à aucun vecteur de longueur connue (renseignez « Longueurs connues »).</div>'; out.plain = 'longueur ' + s.trim() + ' : non determinable'; }
+          }
+        } else if(t === 'align'){
+          var L3 = vcPointList(p); if(L3.length < 3) throw 'Trois points, ex. A, B, C.';
+          var u3 = vcAdd(F.pts[L3[1]], F.pts[L3[0]], fr(-1)), w3 = vcAdd(F.pts[L3[2]], F.pts[L3[0]], fr(-1)), k3 = vcColin(u3, w3);
+          out.lines = R.line('', vcVec(L3[0], L3[1]) + ' = ' + vcBasisTex(F, u3)) + R.line('', vcVec(L3[0], L3[2]) + ' = ' + vcBasisTex(F, w3));
+          var al = vcIsZero(u3) || !!k3;
+          out.lines += al ? R.line('Donc :', vcVec(L3[0], L3[2]) + ' = ' + (k3 ? fTex(k3) + BS + ',' : '') + vcVec(L3[0], L3[1])) + '<div class="vc-ok"><i class="bi bi-check-circle-fill"></i> Vecteurs colinéaires : ' + L3.slice(0, 3).join(', ') + ' sont alignés.</div>' : '<div class="vc-ko"><i class="bi bi-x-circle-fill"></i> Vecteurs non colinéaires : les points ne sont pas alignés (en général).</div>';
+          out.plain = 'alignement ' + L3.slice(0, 3).join(',') + ' : ' + (al ? 'oui, ' + L3[0] + L3[2] + ' = ' + (k3 ? fPlain(k3) : '0') + ' ' + L3[0] + L3[1] : 'non');
+        } else if(t === 'nature'){
+          var Q = vcPointList(p); if(Q.length !== 4) throw 'Quatre points, ex. MNPQ.';
+          function V(a, b2){ return vcAdd(F.pts[b2], F.pts[a], fr(-1)); }
+          var ab = V(Q[0], Q[1]), dc = V(Q[3], Q[2]), bc = V(Q[1], Q[2]), ad = V(Q[0], Q[3]);
+          var para = vcEq(ab, dc), kk = vcColin(dc, ab), kk2 = vcColin(ad, bc), txt4 = '';
+          txt4 += R.line('', vcVec(Q[0], Q[1]) + ' = ' + vcBasisTex(F, ab)) + R.line('', vcVec(Q[3], Q[2]) + ' = ' + vcBasisTex(F, dc));
+          var nat;
+          if(para){ txt4 += R.line('Donc :', vcVec(Q[0], Q[1]) + ' = ' + vcVec(Q[3], Q[2])); nat = 'parallélogramme'; }
+          else if(kk || kk2){ nat = 'trapèze (deux côtés parallèles)'; }
+          else nat = 'quadrilatère quelconque (aucun côté parallèle en général)';
+          txt4 += '<div class="vc-ok"><i class="bi bi-info-circle-fill"></i> ' + p + ' est un <strong>' + nat + '</strong>.' + (para ? ' Rectangle, losange ou carré : impossible à conclure sans hypothèse sur les longueurs ou les angles.' : '') + '</div>';
+          out.lines = txt4; out.plain = 'nature ' + p + ' : ' + nat + (para ? ' car ' + Q[0] + Q[1] + ' = ' + Q[3] + Q[2] : '');
+        } else if(t === 'construct'){
+          var nm = vcPointList(p)[0], d = F.defs.filter(function(x){ return x.name === nm; })[0];
+          if(!nm || !F.pts[nm]) throw 'Point inconnu.';
+          var O = F.free[0], cP = vcAdd(F.pts[nm], F.pts[O], fr(-1));
+          out.lines = (d ? R.line('Définition :', vcDefTex(d)) : '') + R.line('Pour construire :', vcVec(O, nm) + ' = ' + vcBasisTex(F, cP)) + '<div class="study-work">On part de ' + O + ' et on reporte ' + escapeHtml(vcBasisPlain(F, cP)) + ' (le point est tracé sur la figure).</div>';
+          out.plain = 'construire ' + nm + ' : ' + O + nm + ' = ' + vcBasisPlain(F, cP);
+        }
+      } catch(e){
+        out.lines = '<div class="vc-ko"><i class="bi bi-exclamation-triangle-fill"></i> ' + escapeHtml(typeof e === 'string' && e.length > 12 ? e : (typeof e === 'string' && e.indexOf('inconnu:') === 0 ? 'Le point ' + e.slice(8) + ' n’est pas défini.' : 'Question illisible — ex. MN = 1/2 AC, AB en fonction de AD, AC.')) + '</div>';
+        out.plain = 'question ' + (idx + 1) + ' illisible';
+      }
+      return head + out.lines + '|||' + out.plain;
+    }
+
+    // ---- GeoGebra figure: draggable free points, dependent constructed points ----
+    var VC_POS = { 2: [[0, 0], [4, 0]], 3: [[0, 0], [5, 0], [1.5, 3.5]], 4: [[0, 0], [5, -0.5], [6, 3.5], [1, 3]], 5: [[0, 0], [5, 0], [6, 3], [2.5, 5], [-1, 3]] };
+    function vcDraw(F, qs){
+      clearVcPlot(); if(!ggb) return;
+      var id = {}, k = 0;
+      function mk(name, cmd, r, g, b){ var nm = 'Vc' + (k++); try { ggb.evalCommand(nm + ' = ' + cmd); if(!ggb.exists(nm)) return null; vcObjs.push(nm); id[name] = nm; try { ggb.setCaption(nm, name); ggb.setLabelStyle(nm, 3); ggb.setLabelVisible(nm, true); } catch(e){} colour(nm, r, g, b); } catch(e){ return null; } return nm; }
+      var pos = VC_POS[F.n] || VC_POS[5];
+      F.free.forEach(function(nm, i){ mk(nm, '(' + pos[i][0] + ', ' + pos[i][1] + ')', 94, 23, 235); });
+      if(F.n >= 3){ var poly = 'VcPoly'; try { ggb.evalCommand(poly + ' = Polygon(' + F.free.map(function(n){ return id[n]; }).join(', ') + ')'); vcObjs.push(poly); colour(poly, 185, 156, 240); try { ggb.setFilling(poly, 0.05); ggb.setLabelVisible(poly, false); } catch(e){} } catch(e){} }
+      else { try { ggb.evalCommand('VcSeg = Segment(' + id[F.free[0]] + ', ' + id[F.free[1]] + ')'); vcObjs.push('VcSeg'); colour('VcSeg', 185, 156, 240); ggb.setLabelVisible('VcSeg', false); } catch(e){} }
+      F.defs.forEach(function(d){
+        var cmd = d.P.map(function(c, i){ return fZero(c) ? null : '(' + fVal(c) + ')*' + id[F.free[i]]; }).filter(Boolean).join(' + ');
+        mk(d.name, cmd, 220, 38, 38);
+      });
+      // vectors mentioned in the questions / relations (arrows)
+      var vecs = [], seen = {};
+      function addV(X, Y){ var key = X + '>' + Y; if(seen[key] || !id[X] || !id[Y] || X === Y) return; seen[key] = 1; vecs.push([X, Y]); }
+      F.defs.forEach(function(d){ if(d.lt) d.lt.concat(d.rt).forEach(function(t){ addV(t.X, t.Y); }); });
+      qs.forEach(function(q){ try { if(q.type === 'show' || q.type === 'colin') vcNorm(q.p).split('=').forEach(function(s){ vcParseExpr(s.split('.').join('')).forEach(function(t){ addV(t.X, t.Y); }); }); } catch(e){} });
+      vecs.slice(0, 10).forEach(function(v, i){ var nm = 'VcVec' + i; try { ggb.evalCommand(nm + ' = Vector(' + id[v[0]] + ', ' + id[v[1]] + ')'); vcObjs.push(nm); colour(nm, 255, 140, 0); ggb.setLabelVisible(nm, false); ggb.setLineThickness(nm, 5); } catch(e){} });
+      var xs = [], ys = [];
+      Object.keys(id).forEach(function(n){ try { xs.push(ggb.getXcoord(id[n])); ys.push(ggb.getYcoord(id[n])); } catch(e){} });
+      if(xs.length){ var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs), y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys), m = Math.max(1.5, (x1 - x0) * 0.2, (y1 - y0) * 0.2); try { ggb.setCoordSystem(x0 - m, x1 + m, y0 - m, y1 + m); } catch(e){} }
+    }
+
+    async function runVect(){
+      var rd = vcRead();
+      if(rd.err){ stateEl.textContent = rd.err; return; }
+      var F = rd.F, qs = Array.prototype.map.call(vcQsEl.querySelectorAll('.vc-row'), function(r){ return { type: r.querySelector('.vc-type').value, p: r.querySelector('.vc-param').value, p2: r.querySelector('.vc-param2').value }; }).filter(function(q){ return q.p.trim(); });
+      if(!qs.length){ stateEl.textContent = 'Ajoutez au moins une question.'; return; }
+      answerEl.innerHTML = ''; stepsEl.innerHTML = ''; setVcOpsEnabled(false);
+      var R = e1Report(), body = '', sums = [];
+      var O = F.free[0], basis = F.free.slice(1).map(function(n){ return vcVec(O, n); });
+      var fig = R.line('Points libres :', F.free.join(',' + BS + ',') + BS + 'quad(' + BS + 'text{figure quelconque})') + R.line('Base de calcul :', BS + 'left(' + basis.join(' ; ') + BS + 'right)');
+      F.defs.forEach(function(d){ var cP = vcAdd(F.pts[d.name], F.pts[O], fr(-1)), same = d.type === 'rel' && vcTermsPlain(d.lt) === O + d.name && vcTermsPlain(d.rt) === vcBasisPlain(F, cP); fig += R.line('', vcDefTex(d) + (same ? '' : BS + 'quad' + BS + 'Longrightarrow' + BS + 'quad ' + vcVec(O, d.name) + ' = ' + vcBasisTex(F, cP))); });
+      body += R.sec('Figure', fig + '<div class="study-work">Chaque point est exprimé à partir de ' + O + ' avec la relation de Chasles : les résultats sont vrais pour toute figure (déplacez les points violets sur le graphique pour le vérifier).</div>');
+      qs.forEach(function(q, i){ var r = vcQuestion(F, R, q, i).split('|||'); body += R.sec('Question ' + (i + 1), r[0]); sums.push((i + 1) + ') ' + r[1]); });
+      R.render('Vecteurs', body);
+      vcDraw(F, qs);
+      var defs = 'points libres ' + F.free.join(',') + (F.lens.length ? ' ; longueurs ' + F.lens.map(function(l){ return l.X + l.Y + '=' + l.L; }).join(', ') : '') + ' ; ' + F.defs.map(vcDefPlain).join(' ; ');
+      var summary = 'base (' + F.free.slice(1).map(function(n){ return O + n; }).join(', ') + ') ; ' + F.defs.map(function(d){ return O + d.name + ' = ' + vcBasisPlain(F, vcAdd(F.pts[d.name], F.pts[O], fr(-1))); }).join(' ; ') + ' || ' + sums.join(' || ');
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
+      try {
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: defs.slice(0, 800), operation: 'vecteurs', casResult: summary.slice(0, 2400) }) });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data, true); } else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){ stateEl.textContent = 'Connexion impossible — réessayez.'; }
+      finally { setVcOpsEnabled(true); }
+    }
+    vcOpsEl.addEventListener('click', function(ev){ var b = ev.target.closest('.ml-op'); if(!b || b.disabled) return; runVect(); });
+    vcLoad(VC_EX[0]);
+
+
+    /* ============ TRANSFORMATIONS DU PLAN (écriture complexe z' = az + b ou z' = a·conj(z) + b) ============ */
+    // Every similitude is stored as { a, b, ind }: z' = az + b (direct) or z' = a·conj(z) + b (indirect).
+    // Numbers are evaluated in floating point by a small complex evaluator (pwTokens + dxParse: i and z are
+    // 'const' nodes, conj(…) allowed) and displayed in exact form by snapping (p/q, (p ± q√r)/d, angles kπ/d).
+    // Direct: a = 1 translation ; a ∈ ℝ homothétie ; |a| = 1 rotation ; otherwise similitude directe
+    // (centre ω = b/(1 − a), rapport |a|, angle arg a).
+    // Indirect: |a| = 1 → réflexion when a·conj(b) + b = 0 (f∘f = id), else symétrie glissée (f∘f = translation
+    // of vector 2u, u = (a·conj(b) + b)/2) ; |a| ≠ 1 → similitude indirecte (centre ω = (b + a·conj(b))/(1 − |a|²),
+    // rapport |a|, axe passing through Ω directed by e^{i·arg(a)/2}).
+    var modeTf = document.getElementById('mode-transfo');
+    var tfTask = 'recog', tfObjs = [], tfActive = null;
+    var tfOpsEl = document.getElementById('tf-ops');
+    var TF_EX = {
+      recog: [['Similitude', '(1+i)z + 2 - i'], ['Homothétie', '-2z + 3'], ['Rotation π/2', 'iz + 1 + i'], ['Rotation π/3', '(1/2 + i*sqrt(3)/2)z'], ['Translation', 'z + 2 - 3i'], ['Symétrie centrale', '-z + 4i'], ['Réflexion', 'i*conj(z) + 1 - i'], ['Symétrie glissée', 'conj(z) + 2'], ['Similitude indirecte', '2i*conj(z) + 1']],
+      write: [['Rotation (1+i ; π/3)', ['rot', '1+i', '', 'pi/3', '', '']], ['Homothétie (2 ; −3)', ['hom', '2', '-3', '', '', '']], ['Similitude (i ; 2 ; π/2)', ['sim', 'i', '2', 'pi/2', '', '']], ['Translation u = 3 − i', ['tra', '', '', '', '3-i', '']], ['Réflexion d’axe y = x + 1', ['refl', '', '', '', '', 'y = x + 1']], ['Similitude indirecte (0 ; 2 ; axe π/4)', ['simi', '0', '2', 'pi/4', '', '']]],
+      find: [['Rotation', ['1', '2i', '1+i', '-1+2i'], 'dir'], ['Similitude', ['0', '1+i', '2', '3+3i'], 'dir'], ['Homothétie', ['1', '-1', '2', '-4'], 'dir'], ['Réflexion', ['1', 'i', 'i', '1'], 'ind'], ['Similitude indirecte', ['0', '1', '1', '1+2i'], 'ind']],
+      compose: [['Deux réflexions', ['conj(z)', 'i*conj(z)']], ['Deux rotations', ['iz', '-iz + 2']], ['Homothétie puis rotation', ['2z - 1', 'iz + 1']], ['Rotation puis réflexion', ['iz', 'conj(z)']], ['f ∘ f (symétrie glissée)', ['conj(z) + 2', 'conj(z) + 2']]]
+    };
+    function clearTfPlot(){ tfObjs.forEach(function(nm){ try { ggb.deleteObject(nm); } catch(e){} }); tfObjs = []; }
+    function setTfOpsEnabled(on){ tfOpsEl.querySelectorAll('.ml-op').forEach(function(b){ b.disabled = !on; }); }
+    function tfEl(id){ return document.getElementById(id); }
+
+    function tfSetTask(t){
+      tfTask = t;
+      tfEl('tf-task').querySelectorAll('.ml-sidebtn').forEach(function(b){ b.classList.toggle('is-active', b.getAttribute('data-tftask') === t); });
+      ['recog', 'write', 'find', 'compose'].forEach(function(k){ tfEl('tf-p-' + k).hidden = (k !== t); });
+      var ptsIn = tfEl('tf-pts'), DEF_PTS = 'A = 1 ; B = 3 + i ; C = 1 + 2i', DEF_FIND = 'C = 2 + i'; // A and B are the data of the similitude task
+      if(t === 'find' && ptsIn.value.trim() === DEF_PTS) ptsIn.value = DEF_FIND; else if(t !== 'find' && ptsIn.value.trim() === DEF_FIND) ptsIn.value = DEF_PTS;
+      var h = '<span class="pw-ex__lbl"><i class="bi bi-lightbulb"></i> Exemples :</span>';
+      TF_EX[t].forEach(function(e, i){ h += '<button type="button" class="ml-key is-util" data-tfex="' + i + '">' + escapeHtml(e[0]) + '</button>'; });
+      tfEl('tf-ex').innerHTML = h;
+      answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = '';
+      tfSyncType(); updateTfPreview();
+    }
+    function tfSyncType(){
+      var ty = tfEl('tf-type').value;
+      tfEl('tf-row-w').hidden = (ty === 'tra' || ty === 'refl'); tfEl('tf-row-k').hidden = (ty === 'tra' || ty === 'rot' || ty === 'refl');
+      tfEl('tf-row-t').hidden = (ty === 'tra' || ty === 'hom' || ty === 'refl'); tfEl('tf-row-u').hidden = (ty !== 'tra'); tfEl('tf-row-ax').hidden = (ty !== 'refl');
+      tfEl('tf-t-lbl').textContent = ty === 'simi' ? 'Angle de l’axe α =' : 'Angle θ =';
+      tfEl('tf-k').placeholder = ty === 'hom' ? 'ex. 2, -3, 1/2' : 'ex. 2, 1/2, sqrt(2)';
+    }
+    tfEl('tf-task').addEventListener('click', function(ev){ var b = ev.target.closest('.ml-sidebtn'); if(b) tfSetTask(b.getAttribute('data-tftask')); });
+    tfEl('tf-type').addEventListener('change', function(){ tfSyncType(); updateTfPreview(); });
+    tfEl('tf-fkind').addEventListener('change', updateTfPreview);
+    tfEl('tf-ex').addEventListener('click', function(ev){
+      var b = ev.target.closest('[data-tfex]'); if(!b) return; var e = TF_EX[tfTask][Number(b.getAttribute('data-tfex'))]; if(!e) return;
+      if(tfTask === 'recog') tfEl('tf-f').value = e[1];
+      else if(tfTask === 'write'){ tfEl('tf-type').value = e[1][0]; ['tf-w', 'tf-k', 'tf-t', 'tf-u', 'tf-ax'].forEach(function(id, i){ tfEl(id).value = e[1][i + 1]; }); tfSyncType(); }
+      else if(tfTask === 'find'){ ['tf-a', 'tf-a2', 'tf-b', 'tf-b2'].forEach(function(id, i){ tfEl(id).value = e[1][i]; }); tfEl('tf-fkind').value = e[2]; }
+      else { tfEl('tf-f1').value = e[1][0]; tfEl('tf-f2').value = e[1][1]; }
+      answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = ''; updateTfPreview();
+    });
+    Array.prototype.forEach.call(modeTf.querySelectorAll('input'), function(inp){
+      inp.addEventListener('focus', function(){ tfActive = inp; });
+      inp.addEventListener('input', updateTfPreview);
+      inp.addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); runTransfo(); } });
+    });
+    tfEl('tf-keys').addEventListener('click', function(ev){
+      var btn = ev.target.closest('.ml-key'); if(!btn) return; var inp = tfActive || tfEl('tf-f'), act = btn.getAttribute('data-act');
+      if(act === 'clear'){ inp.value = ''; inp.focus(); }
+      else if(act === 'back'){ var v = inp.value, s = inp.selectionStart, e = inp.selectionEnd; if(s == null){ inp.value = v.slice(0, -1); } else if(s !== e){ inp.value = v.slice(0, s) + v.slice(e); inp.setSelectionRange(s, s); } else if(s > 0){ inp.value = v.slice(0, s - 1) + v.slice(s); inp.setSelectionRange(s - 1, s - 1); } inp.focus(); }
+      else insertInto(inp, btn.getAttribute('data-ins'));
+      updateTfPreview();
+    });
+
+    // ---- complex evaluation ----
+    function tfC(re, im){ return { re: re, im: im || 0 }; }
+    function tfAdd(a, b){ return tfC(a.re + b.re, a.im + b.im); }
+    function tfSub(a, b){ return tfC(a.re - b.re, a.im - b.im); }
+    function tfMul(a, b){ return tfC(a.re * b.re - a.im * b.im, a.re * b.im + a.im * b.re); }
+    function tfDiv(a, b){ var d = b.re * b.re + b.im * b.im; if(d < 1e-300) throw 'div0'; return tfC((a.re * b.re + a.im * b.im) / d, (a.im * b.re - a.re * b.im) / d); }
+    function tfAbs(a){ return Math.sqrt(a.re * a.re + a.im * a.im); }
+    function tfConj(a){ return tfC(a.re, -a.im); }
+    function tfIsOne(a){ return Math.abs(a.re - 1) < 1e-10 && Math.abs(a.im) < 1e-10; }
+    function tfApply(r, z){ return tfAdd(tfMul(r.a, r.ind ? tfConj(z) : z), r.b); }
+    function tfEval(n, z){
+      switch(n.t){
+        case 'num': return tfC(n.v, 0);
+        case 'const': if(n.name === 'i') return tfC(0, 1); if(n.name === 'z'){ if(!z) throw 'z'; return z; } throw 'nom:' + n.name;
+        case 'var': throw 'nom:x';
+        case 'neg': { var a = tfEval(n.a, z); return tfC(-a.re, -a.im); }
+        case '+': return tfAdd(tfEval(n.l, z), tfEval(n.r, z));
+        case '-': return tfSub(tfEval(n.l, z), tfEval(n.r, z));
+        case '*': return tfMul(tfEval(n.l, z), tfEval(n.r, z));
+        case '/': return tfDiv(tfEval(n.l, z), tfEval(n.r, z));
+        case '^': { var b = tfEval(n.l, z), e = tfEval(n.r, z); if(Math.abs(e.im) > 1e-12 || Math.abs(e.re - Math.round(e.re)) > 1e-12 || Math.abs(e.re) > 12) throw 'puissance'; var r = tfC(1, 0), k = Math.round(Math.abs(e.re)); for(var i = 0; i < k; i++) r = tfMul(r, b); return e.re < 0 ? tfDiv(tfC(1, 0), r) : r; }
+        case 'fn': {
+          var u = tfEval(n.a, z);
+          if(n.name === 'conj') return tfConj(u);
+          if(n.name === 'exp'){ var m = Math.exp(u.re); return tfC(m * Math.cos(u.im), m * Math.sin(u.im)); }
+          if(Math.abs(u.im) > 1e-12) throw 'fn';
+          if(n.name === 'sqrt'){ if(u.re < 0) throw 'fn'; return tfC(Math.sqrt(u.re), 0); }
+          if(n.name === 'cos') return tfC(Math.cos(u.re), 0);
+          if(n.name === 'sin') return tfC(Math.sin(u.re), 0);
+          throw 'fn';
+        }
+      }
+      throw 'syntaxe';
+    }
+    function tfParse(str){
+      var s = String(str || '').trim().split(String.fromCharCode(8722)).join('-').split('×').join('*').split('°').join('*pi/180');
+      s = s.split('z̄').join('conj(z)').split('zbar').join('conj(z)');
+      if(!s) throw 'vide';
+      var tk = pwTokens(s); if(!tk) throw 'syntaxe';
+      var ast = null; try { ast = dxParse(tk); } catch(e){ ast = null; }
+      if(!ast) throw 'syntaxe';
+      return ast;
+    }
+    function tfNum(str, label){ // a complex constant
+      var v; try { v = tfEval(tfParse(str), null); } catch(e){ throw label + ' : nombre complexe invalide (ex. 1+i, 2i, -3, sqrt(3)/2).'; }
+      if(!isFinite(v.re) || !isFinite(v.im)) throw label + ' : valeur invalide.';
+      return v;
+    }
+    // f(z) = αz + β·conj(z) + b, read from f(0), f(1), f(i) and checked at two other points
+    function tfAffine(ast){
+      var b = tfEval(ast, tfC(0, 0)), s1 = tfSub(tfEval(ast, tfC(1, 0)), b), s2 = tfDiv(tfSub(tfEval(ast, tfC(0, 1)), b), tfC(0, 1));
+      var al = tfC((s1.re + s2.re) / 2, (s1.im + s2.im) / 2), be = tfC((s1.re - s2.re) / 2, (s1.im - s2.im) / 2);
+      [tfC(2, 3), tfC(-1.5, 0.7)].forEach(function(z){ var v = tfEval(ast, z), w = tfAdd(tfAdd(tfMul(al, z), tfMul(be, tfConj(z))), b); if(!isFinite(v.re) || !isFinite(v.im) || tfAbs(tfSub(v, w)) > 1e-8 * (1 + tfAbs(v))) throw 'affine'; });
+      if(tfAbs(al) > 1e-10 && tfAbs(be) > 1e-10) throw 'mixte';
+      return tfAbs(be) > 1e-10 ? { a: be, b: b, ind: true } : { a: al, b: b, ind: false };
+    }
+    function tfReadExpr(raw, who){ // "(1+i)z + 2" or "i*conj(z) + 1" → { a, b, ind }
+      var ast; try { ast = tfParse(raw); } catch(e){ throw who + ' : écrivez l’expression en fonction de z, ex. (1+i)z + 2 - i ou i*conj(z) + 1.'; }
+      try { return tfAffine(ast); }
+      catch(e){
+        if(typeof e === 'string' && e.indexOf('nom:') === 0) throw who + ' : « ' + e.slice(4) + ' » inconnu — utilisez z, conj(z) et i.';
+        if(e === 'mixte') throw who + ' : z et z̄ apparaissent tous les deux — ce n’est pas une similitude (forme az + b ou az̄ + b attendue).';
+        if(e === 'affine') throw who + ' : ce n’est pas de la forme az + b ni az̄ + b.';
+        throw who + ' : expression invalide.';
+      }
+    }
+
+    // ---- exact display ----
+    function tfR(v){ var s = sysfSnap(v); return { tex: s.tex.split(BS + 'approx ').join(''), plain: s.plain, exact: s.exact }; }
+    function tfCTex(c){
+      var re = Math.abs(c.re) < 1e-10 ? 0 : c.re, im = Math.abs(c.im) < 1e-10 ? 0 : c.im;
+      if(!im) return tfR(re).tex;
+      var ia = tfR(Math.abs(im)), compound = ia.tex.indexOf(' + ') >= 0 || ia.tex.indexOf(' - ') >= 0;
+      var it = (Math.abs(Math.abs(im) - 1) < 1e-10 ? '' : (compound ? BS + 'left(' + ia.tex + BS + 'right)' : ia.tex)) + 'i';
+      if(!re) return (im < 0 ? '-' : '') + it;
+      return tfR(re).tex + (im < 0 ? ' - ' : ' + ') + it;
+    }
+    function tfCPlain(c){
+      var re = Math.abs(c.re) < 1e-10 ? 0 : c.re, im = Math.abs(c.im) < 1e-10 ? 0 : c.im;
+      if(!im) return tfR(re).plain;
+      var ia = tfR(Math.abs(im)).plain, it = (Math.abs(Math.abs(im) - 1) < 1e-10 ? '' : '(' + ia + ')') + 'i';
+      if(!re) return (im < 0 ? '-' : '') + it;
+      return tfR(re).plain + (im < 0 ? ' - ' : ' + ') + it;
+    }
+    function tfPar(c){ var t = tfCTex(c); return (t.indexOf(' + ') > 0 || t.indexOf(' - ') > 0 || t.charAt(0) === '-') ? BS + 'left(' + t + BS + 'right)' : t; }
+    function tfAngle(th){ // ]−π, π] → kπ/d
+      while(th <= -Math.PI + 1e-12) th += 2 * Math.PI; while(th > Math.PI + 1e-12) th -= 2 * Math.PI;
+      for(var d = 1; d <= 12; d++){ var k = Math.round(th / Math.PI * d); if(Math.abs(k * Math.PI / d - th) < 1e-9){ var g = igcd(Math.abs(k), d) || 1; k /= g; var dd = d / g;
+        if(k === 0) return { tex: '0', plain: '0', v: 0 };
+        var num = (Math.abs(k) === 1 ? '' : Math.abs(k)) + BS + 'pi', np = (Math.abs(k) === 1 ? '' : Math.abs(k)) + 'pi';
+        return { tex: (k < 0 ? '-' : '') + (dd === 1 ? num : BS + 'frac{' + num + '}{' + dd + '}'), plain: (k < 0 ? '-' : '') + np + (dd === 1 ? '' : '/' + dd), v: th }; } }
+      var deg = Math.round(th * 180 / Math.PI * 100) / 100;
+      return { tex: BS + 'approx ' + (Math.round(th * 10000) / 10000) + BS + 'text{ rad (}' + deg + '^{' + BS + 'circ})', plain: '~' + (Math.round(th * 10000) / 10000) + ' rad', v: th, approx: true };
+    }
+    function tfZ(ind){ return ind ? BS + 'overline{z}' : 'z'; }
+    function tfFormTex(a, b, ind, lhs){ // z' = az + b  or  z' = a·conj(z) + b
+      var at = tfIsOne(a) ? '' : (Math.abs(a.re + 1) < 1e-10 && Math.abs(a.im) < 1e-10) ? '-' : tfPar(a);
+      var s = (lhs === undefined ? "z' = " : lhs) + (tfAbs(a) < 1e-12 ? '' : at + tfZ(ind));
+      if(tfAbs(b) > 1e-10 || tfAbs(a) < 1e-12){ var bt = tfCTex(b); s += tfAbs(a) < 1e-12 ? bt : (bt.charAt(0) === '-' ? ' - ' + bt.slice(1) : ' + ' + bt); }
+      return s;
+    }
+    function tfRhs(a, b, ind){ return tfFormTex(a, b, ind, ''); }
+    function tfFormPlain(a, b, ind){ return "z' = (" + tfCPlain(a) + ')' + (ind ? 'conj(z)' : 'z') + ' + (' + tfCPlain(b) + ')'; }
+    function tfAff(m, q, v){ // m·v + q, TeX and plain
+      var o = { tex: '', plain: '' };
+      if(Math.abs(m) > 1e-10){
+        var ma = tfR(Math.abs(m)), one = Math.abs(Math.abs(m) - 1) < 1e-10, cp = (ma.tex.indexOf(' + ') >= 0 || ma.tex.indexOf(' - ') >= 0) && ma.tex.indexOf(BS + 'frac') !== 0;
+        o.tex = (m < 0 ? '-' : '') + (one ? '' : cp ? BS + 'left(' + ma.tex + BS + 'right)' : ma.tex) + v;
+        o.plain = (m < 0 ? '-' : '') + (one ? '' : (/[^0-9.]/.test(ma.plain) ? '(' + ma.plain + ')' : ma.plain)) + v;
+      }
+      if(!o.tex){ var q0 = tfR(q); return { tex: q0.tex, plain: q0.plain }; }
+      if(Math.abs(q) > 1e-10){ var qa = tfR(Math.abs(q)); o.tex += (q < 0 ? ' - ' : ' + ') + qa.tex; o.plain += (q < 0 ? ' - ' : ' + ') + qa.plain; }
+      return o;
+    }
+    function tfLineEq(p, d){ // line through p directed by d → y = mx + q or x = c
+      if(Math.abs(d.re) < 1e-10 * (1 + tfAbs(d))){ var c = tfR(p.re); return { tex: 'x = ' + c.tex, plain: 'x = ' + c.plain }; }
+      var m = d.im / d.re, f = tfAff(m, p.im - m * p.re, 'x');
+      return { tex: 'y = ' + f.tex, plain: 'y = ' + f.plain };
+    }
+    function tfSqTerm(v, c){ if(Math.abs(c) < 1e-10) return v + '^2'; var t = tfR(Math.abs(c)); return BS + 'left(' + v + (c > 0 ? ' - ' : ' + ') + t.tex + BS + 'right)^2'; }
+    function tfSqPlain(v, c){ if(Math.abs(c) < 1e-10) return v + '^2'; return '(' + v + (c > 0 ? ' - ' : ' + ') + tfR(Math.abs(c)).plain + ')^2'; }
+    function tfCircEq(c, rad){ var r2 = tfR(rad * rad); return { tex: tfSqTerm('x', c.re) + ' + ' + tfSqTerm('y', c.im) + ' = ' + r2.tex, plain: tfSqPlain('x', c.re) + ' + ' + tfSqPlain('y', c.im) + ' = ' + r2.plain }; }
+
+    // Nature + elements of a direct similitude z' = az + b → { kind, label, lines (TeX), plain, w, k, th }
+    function tfRecognize(a, b){
+      var one = tfIsOne(a), real = Math.abs(a.im) < 1e-10, mod = tfAbs(a);
+      if(mod < 1e-12) return { kind: 'const', label: 'application constante (a = 0)', lines: [], plain: 'a = 0 : application constante, pas une transformation' };
+      if(one){
+        if(tfAbs(b) < 1e-10) return { kind: 'id', label: 'identité', lines: [BS + 'text{a = 1 et b = 0 : }z' + "'" + ' = z' + BS + 'text{, c’est l’identité du plan}'], plain: 'identite' };
+        return { kind: 'tra', label: 'translation', lines: ['a = 1' + BS + 'quad' + BS + 'Rightarrow' + BS + 'quad ' + BS + 'text{translation de vecteur }' + BS + 'vec{u}' + BS + 'text{ d’affixe }' + tfCTex(b)], plain: 'translation de vecteur u(' + tfCPlain(b) + ')', u: b };
+      }
+      var w = tfDiv(b, tfSub(tfC(1, 0), a)), lines = [];
+      lines.push(BS + 'omega = a' + BS + 'omega + b' + BS + 'iff ' + BS + 'omega = ' + BS + 'frac{b}{1 - a} = ' + BS + 'frac{' + tfCTex(b) + '}{' + tfCTex(tfSub(tfC(1, 0), a)) + '} = ' + tfCTex(w));
+      var th = tfAngle(Math.atan2(a.im, a.re)), kt = tfR(mod);
+      if(real){
+        if(Math.abs(a.re + 1) < 1e-10){ lines.push('a = -1' + BS + 'quad' + BS + 'Rightarrow' + BS + 'quad ' + BS + 'text{symétrie centrale de centre }' + BS + 'Omega(' + tfCTex(w) + ')'); return { kind: 'hom', label: 'symétrie centrale (homothétie de rapport −1)', lines: lines, plain: 'symetrie centrale de centre ' + tfCPlain(w) + ' (homothetie de rapport -1)', w: w, k: -1 }; }
+        lines.push('a = ' + tfR(a.re).tex + BS + 'in' + BS + 'mathbb{R}' + BS + 'setminus' + BS + '{0 ; 1' + BS + '}' + BS + 'quad' + BS + 'Rightarrow' + BS + 'quad ' + BS + 'text{homothétie de centre }' + BS + 'Omega(' + tfCTex(w) + ')' + BS + 'text{ et de rapport }' + tfR(a.re).tex);
+        return { kind: 'hom', label: 'homothétie', lines: lines, plain: 'homothetie de centre ' + tfCPlain(w) + ' et de rapport ' + tfR(a.re).plain, w: w, k: a.re };
+      }
+      lines.push('|a| = ' + kt.tex + ',' + BS + 'quad ' + BS + 'arg a = ' + th.tex + BS + 'pmod{2' + BS + 'pi}' + BS + 'quad' + BS + 'Rightarrow' + BS + 'quad a = ' + (Math.abs(mod - 1) < 1e-10 ? '' : kt.tex) + 'e^{i' + (th.approx ? BS + 'theta' : th.tex) + '}');
+      if(Math.abs(mod - 1) < 1e-10){
+        lines.push(BS + 'text{rotation de centre }' + BS + 'Omega(' + tfCTex(w) + ')' + BS + 'text{ et d’angle }' + th.tex);
+        return { kind: 'rot', label: 'rotation', lines: lines, plain: 'rotation de centre ' + tfCPlain(w) + " et d'angle " + th.plain, w: w, k: 1, th: th };
+      }
+      lines.push(BS + 'text{similitude directe de centre }' + BS + 'Omega(' + tfCTex(w) + ')' + BS + 'text{, de rapport }' + kt.tex + BS + 'text{ et d’angle }' + th.tex);
+      lines.push(BS + 'text{c’est la composée (commutative) de l’homothétie }(' + BS + 'Omega ; ' + kt.tex + ')' + BS + 'text{ et de la rotation }(' + BS + 'Omega ; ' + th.tex + ')');
+      return { kind: 'sim', label: 'similitude directe', lines: lines, plain: 'similitude directe de centre ' + tfCPlain(w) + ', de rapport ' + kt.plain + " et d'angle " + th.plain, w: w, k: mod, th: th };
+    }
+    // Nature + elements of an indirect similitude z' = a·conj(z) + b
+    function tfRecognizeInd(a, b){
+      var mod = tfAbs(a), lines = [], RA = BS + 'quad' + BS + 'Rightarrow' + BS + 'quad ';
+      if(mod < 1e-12) return { kind: 'const', label: 'application constante (a = 0)', lines: [], plain: 'a = 0 : application constante, pas une transformation' };
+      var phi = Math.atan2(a.im, a.re), dir = tfC(Math.cos(phi / 2), Math.sin(phi / 2)), al = tfAngle(phi / 2), th = tfAngle(phi);
+      var axTex = BS + 'left(' + BS + 'vec{e}_1, ' + BS + 'Delta' + BS + 'right) = ' + BS + 'frac{' + BS + 'arg a}{2} = ' + al.tex + BS + 'pmod{' + BS + 'pi}';
+      if(Math.abs(mod - 1) < 1e-10){
+        var c = tfAdd(tfMul(a, tfConj(b)), b);
+        lines.push('z' + "'" + ' = a' + BS + 'overline{z} + b,' + BS + 'quad |a| = 1' + RA + BS + 'text{antidéplacement (isométrie indirecte : elle conserve les distances et change l’orientation des angles)}');
+        lines.push('f' + BS + 'circ f(z) = a' + BS + ',' + BS + 'overline{a' + BS + 'overline{z} + b} + b = a' + BS + 'overline{a}' + BS + ',z + a' + BS + 'overline{b} + b = z' + (tfAbs(c) < 1e-10 ? '' : ' + ' + tfPar(c)));
+        if(tfAbs(c) < 1e-10){
+          var p = tfC(b.re / 2, b.im / 2), eq = tfLineEq(p, dir);
+          lines.push('a' + BS + 'overline{b} + b = 0' + RA + 'f' + BS + 'circ f = ' + BS + 'mathrm{id}' + BS + 'text{ et }f' + BS + 'text{ a des points invariants : c’est une réflexion d’axe }' + BS + 'Delta');
+          lines.push(BS + 'text{M(z) invariant }' + BS + 'iff z = a' + BS + 'overline{z} + b' + BS + 'iff x + iy = ' + tfPar(a) + '(x - iy)' + (tfAbs(b) > 1e-10 ? ' + ' + tfPar(b) : '') + BS + 'iff ' + BS + 'Delta : ' + eq.tex);
+          lines.push(BS + 'text{(}' + BS + 'Delta' + BS + 'text{ passe par le milieu de }[O O' + "'" + ']' + BS + 'text{, avec }O' + "'(" + tfCTex(b) + '),' + BS + 'text{ et }' + axTex + BS + 'text{)}');
+          return { kind: 'refl', label: 'réflexion (symétrie orthogonale)', lines: lines, plain: "a*conj(b) + b = 0 donc f o f(z) = z + a*conj(b) + b = z ; reflexion (symetrie orthogonale) d'axe Delta : " + eq.plain, axis: { p: p, d: dir }, eq: eq };
+        }
+        var u = tfC(c.re / 2, c.im / 2), b2 = tfSub(b, u), p2 = tfC(b2.re / 2, b2.im / 2), eq2 = tfLineEq(p2, dir);
+        lines.push('a' + BS + 'overline{b} + b ' + BS + 'neq 0' + RA + 'f' + BS + 'circ f' + BS + 'text{ est la translation de vecteur }2' + BS + 'vec{u},' + BS + 'quad ' + BS + 'vec{u}(' + tfCTex(u) + ')' + BS + 'text{ : }f' + BS + 'text{ n’a aucun point invariant}');
+        lines.push('f = t_{' + BS + 'vec{u}}' + BS + 'circ s' + BS + 'quad' + BS + 'text{avec }s(z) = f(z) - u = ' + tfRhs(a, b2, true) + BS + 'text{ (réflexion)}');
+        lines.push(BS + 'text{axe de }s' + BS + 'text{ : }' + BS + 'Delta : ' + eq2.tex + BS + 'text{, parallèle à }' + BS + 'vec{u}' + BS + 'text{ (}' + axTex + BS + 'text{)}');
+        lines.push(BS + 'text{symétrie glissée d’axe }' + BS + 'Delta' + BS + 'text{ et de vecteur }' + BS + 'vec{u}(' + tfCTex(u) + ')');
+        return { kind: 'glide', label: 'symétrie glissée', lines: lines, plain: 'a*conj(b) + b = ' + tfCPlain(c) + ' donc f o f(z) = z + (' + tfCPlain(c) + ') (translation, aucun point invariant) ; ' + "symetrie glissee : reflexion d'axe Delta : " + eq2.plain + ' suivie de la translation de vecteur u(' + tfCPlain(u) + ')', axis: { p: p2, d: dir }, eq: eq2, u: u };
+      }
+      var w = tfDiv(tfAdd(b, tfMul(a, tfConj(b))), tfC(1 - mod * mod, 0)), kt = tfR(mod), eq3 = tfLineEq(w, dir);
+      lines.push('z' + "'" + ' = a' + BS + 'overline{z} + b,' + BS + 'quad |a| = ' + kt.tex + BS + 'neq 1' + RA + BS + 'text{similitude indirecte de rapport }' + kt.tex);
+      lines.push(BS + 'omega = a' + BS + 'overline{' + BS + 'omega} + b' + BS + 'text{ et }' + BS + 'overline{' + BS + 'omega} = ' + BS + 'overline{a}' + BS + 'omega + ' + BS + 'overline{b}' + BS + 'iff ' + BS + 'omega = ' + BS + 'frac{b + a' + BS + 'overline{b}}{1 - |a|^2} = ' + BS + 'frac{' + tfCTex(tfAdd(b, tfMul(a, tfConj(b)))) + '}{' + tfR(1 - mod * mod).tex + '} = ' + tfCTex(w));
+      lines.push(BS + 'arg a = ' + th.tex + BS + 'pmod{2' + BS + 'pi}' + RA + BS + 'text{axe }' + BS + 'Delta' + BS + 'text{ passant par }' + BS + 'Omega' + BS + 'text{ avec }' + axTex + BS + 'text{ : }' + BS + 'Delta : ' + eq3.tex);
+      lines.push(BS + 'text{similitude indirecte de centre }' + BS + 'Omega(' + tfCTex(w) + ')' + BS + 'text{, de rapport }' + kt.tex + BS + 'text{ et d’axe }' + BS + 'Delta');
+      lines.push(BS + 'text{c’est la composée de la réflexion d’axe }' + BS + 'Delta' + BS + 'text{ et de l’homothétie }(' + BS + 'Omega ; ' + kt.tex + ')');
+      return { kind: 'simi', label: 'similitude indirecte', lines: lines, plain: 'similitude indirecte de centre ' + tfCPlain(w) + ', de rapport ' + kt.plain + " et d'axe Delta : " + eq3.plain, w: w, k: mod, axis: { p: w, d: dir }, eq: eq3 };
+    }
+    function tfNature(r){ return r.ind ? tfRecognizeInd(r.a, r.b) : tfRecognize(r.a, r.b); }
+
+    function tfPoints(){ // "A = 1 ; B = 3+i" → [{name, z}]
+      var out = [];
+      String(tfEl('tf-pts').value || '').split(';').forEach(function(seg){
+        seg = seg.trim(); if(!seg) return;
+        var m = seg.split('='), name = m.length === 2 ? m[0].trim() : '', val = m.length === 2 ? m[1] : m[0];
+        if(!name) name = String.fromCharCode(65 + out.length);
+        out.push({ name: name.slice(0, 4), z: tfNum(val, 'Point ' + name) });
+      });
+      return out;
+    }
+    // A line typed as an equation (y = 2x + 1, x = 3, 2x - y = 4) or as two points "1 ; 2+i" → { p, d, eq }
+    function tfLineRead(raw, who){
+      var s = String(raw || '').trim().split(String.fromCharCode(8722)).join('-'); if(!s) return null;
+      if(s.indexOf(';') >= 0){
+        var pq = s.split(';'); if(pq.length !== 2) throw who + ' : deux points « P ; Q » ou une équation (ex. y = 2x + 1).';
+        var P = tfNum(pq[0], who + ' (point 1)'), Q = tfNum(pq[1], who + ' (point 2)');
+        if(tfAbs(tfSub(Q, P)) < 1e-12) throw who + ' : les deux points doivent être distincts.';
+        return { p: P, d: tfSub(Q, P), eq: tfLineEq(P, tfSub(Q, P)) };
+      }
+      var sides = s.split('='); if(sides.length !== 2) throw who + ' : écrivez une équation (ex. y = 2x + 1, x = 3) ou deux points (ex. 1 ; 2+i).';
+      var L, R; try { L = tfParse(sides[0]); R = tfParse(sides[1]); } catch(e){ throw who + ' : équation invalide.'; }
+      function h(x, y){ return pwEval(L, x, { y: y }) - pwEval(R, x, { y: y }); }
+      var c0 = h(0, 0), cx = h(1, 0) - c0, cy = h(0, 1) - c0;
+      if(!isFinite(c0) || !isFinite(cx) || !isFinite(cy) || Math.abs(h(2, 3) - (2 * cx + 3 * cy + c0)) > 1e-8 || Math.abs(h(-1, 5) - (-cx + 5 * cy + c0)) > 1e-8) throw who + ' : l’équation doit être du premier degré en x et y.';
+      if(Math.abs(cx) < 1e-12 && Math.abs(cy) < 1e-12) throw who + ' : équation sans x ni y.';
+      var p = Math.abs(cy) > 1e-12 ? tfC(0, -c0 / cy) : tfC(-c0 / cx, 0), d = tfC(cy, -cx);
+      return { p: p, d: d, eq: tfLineEq(p, d) };
+    }
+    function tfFigures(){ // optional line and circle whose images are asked
+      var out = {}, ln = tfLineRead(tfEl('tf-line').value, 'Droite');
+      if(ln) out.line = ln;
+      var cc = tfEl('tf-cc').value.trim(), cr = tfEl('tf-cr').value.trim();
+      if(cc || cr){
+        if(!cc || !cr) throw 'Cercle : donnez le centre et le rayon.';
+        var c = tfNum(cc, 'Cercle (centre)'), rr = tfNum(cr, 'Cercle (rayon)');
+        if(Math.abs(rr.im) > 1e-12 || rr.re <= 0) throw 'Cercle : rayon réel strictement positif attendu.';
+        out.circ = { c: c, r: rr.re, eq: tfCircEq(c, rr.re) };
+      }
+      return out;
+    }
+
+    function tfRead(){ // → { a, b, ind, lines (TeX), plainIn, method } or throws message
+      var lines = [], plainIn = '';
+      if(tfTask === 'recog'){
+        var raw = tfEl('tf-f').value; plainIn = "z' = " + raw.trim();
+        var f = tfReadExpr(raw, 'z′');
+        lines.push(BS + 'text{Par identification avec }z' + "'" + ' = a' + tfZ(f.ind) + ' + b : ' + BS + 'quad a = ' + tfCTex(f.a) + ',' + BS + 'quad b = ' + tfCTex(f.b));
+        return { a: f.a, b: f.b, ind: f.ind, lines: lines, plainIn: plainIn };
+      }
+      if(tfTask === 'write'){
+        var ty = tfEl('tf-type').value;
+        if(ty === 'tra'){ var u = tfNum(tfEl('tf-u').value, 'Vecteur u'); lines.push("z' = z + " + tfPar(u)); return { a: tfC(1, 0), b: u, ind: false, lines: lines, plainIn: 'translation de vecteur u = ' + tfEl('tf-u').value.trim() }; }
+        if(ty === 'refl'){
+          var ax = tfLineRead(tfEl('tf-ax').value, 'Axe Δ'); if(!ax) throw 'Axe Δ : écrivez son équation (ex. y = x + 1) ou deux de ses points (ex. 0 ; 1+i).';
+          var dn = tfAbs(ax.d), dd = tfC(ax.d.re / dn, ax.d.im / dn), ar = tfMul(dd, dd), br = tfSub(ax.p, tfMul(ar, tfConj(ax.p)));
+          lines.push(BS + 'Delta : ' + ax.eq.tex + BS + 'text{ passe par }P(' + tfCTex(ax.p) + ')' + BS + 'text{ et a pour vecteur directeur }' + BS + 'vec{w}(' + tfCTex(ax.d) + ')');
+          lines.push("z' - z_P = " + BS + 'frac{w}{' + BS + 'overline{w}}' + BS + ',' + BS + 'overline{(z - z_P)}' + BS + 'quad' + BS + 'text{avec }' + BS + 'frac{w}{' + BS + 'overline{w}} = ' + BS + 'frac{' + tfCTex(ax.d) + '}{' + tfCTex(tfConj(ax.d)) + '} = ' + tfCTex(ar));
+          lines.push("z' = " + tfPar(ar) + BS + 'overline{z} + ' + tfPar(ax.p) + ' - ' + tfPar(ar) + BS + 'times ' + tfPar(tfConj(ax.p)) + ' = ' + tfRhs(ar, br, true));
+          return { a: ar, b: br, ind: true, lines: lines, plainIn: "reflexion d'axe Delta : " + ax.eq.plain };
+        }
+        var w = tfNum(tfEl('tf-w').value, 'Centre'), k = 1, th = 0, thS = '0', kS = '1';
+        if(ty !== 'rot'){ var kc = tfNum(tfEl('tf-k').value, 'Rapport k'); if(Math.abs(kc.im) > 1e-12 || Math.abs(kc.re) < 1e-12) throw 'Rapport k : réel non nul attendu.'; k = kc.re; kS = tfEl('tf-k').value.trim(); if((ty === 'sim' || ty === 'simi') && k < 0) throw 'Similitude : rapport k > 0 attendu.'; }
+        if(ty !== 'hom'){ var tc = tfNum(tfEl('tf-t').value, ty === 'simi' ? 'Angle de l’axe' : 'Angle θ'); if(Math.abs(tc.im) > 1e-12) throw 'Angle : réel attendu (ex. pi/3, -pi/2, 60°).'; th = tc.re; thS = tfEl('tf-t').value.trim(); }
+        if(ty === 'simi'){
+          var as = tfC(k * Math.cos(2 * th), k * Math.sin(2 * th)), bs = tfSub(w, tfMul(as, tfConj(w))), t2 = tfAngle(2 * th);
+          var asExp = (Math.abs(k - 1) < 1e-12 ? '' : tfR(k).tex) + 'e^{2i' + BS + 'alpha}';
+          lines.push("z' - " + BS + 'omega = ' + asExp + BS + ',' + BS + 'overline{(z - ' + BS + 'omega)}' + BS + 'quad' + BS + 'text{avec }' + BS + 'omega = ' + tfCTex(w) + ',' + BS + ' ' + BS + 'alpha = ' + tfAngle(th).tex);
+          lines.push(asExp + ' = ' + (Math.abs(k - 1) < 1e-12 ? '' : tfR(k).tex) + 'e^{i' + t2.tex + '} = ' + tfCTex(as));
+          lines.push("z' = " + tfPar(as) + BS + 'overline{z} + ' + tfPar(w) + ' - ' + tfPar(as) + BS + 'times ' + tfPar(tfConj(w)) + ' = ' + tfRhs(as, bs, true));
+          return { a: as, b: bs, ind: true, lines: lines, plainIn: 'similitude indirecte de centre ' + tfEl('tf-w').value.trim() + ', rapport ' + kS + ", axe d'angle " + thS };
+        }
+        var a2 = tfC(k * Math.cos(th), k * Math.sin(th)), b2 = tfMul(w, tfSub(tfC(1, 0), a2)), ta = tfAngle(th);
+        var aExp = (ty === 'hom' ? tfR(k).tex : (Math.abs(k - 1) < 1e-12 ? '' : tfR(k).tex) + 'e^{i' + ta.tex + '}');
+        lines.push("z' - " + BS + 'omega = ' + aExp + BS + ',(z - ' + BS + 'omega)' + BS + 'quad' + BS + 'text{avec }' + BS + 'omega = ' + tfCTex(w));
+        if(ty !== 'hom') lines.push(aExp + ' = ' + (Math.abs(k - 1) < 1e-12 ? '' : tfR(k).tex) + BS + 'left(' + BS + 'cos ' + ta.tex + ' + i' + BS + 'sin ' + ta.tex + BS + 'right) = ' + tfCTex(a2));
+        lines.push("z' = " + tfPar(a2) + 'z + ' + tfPar(w) + BS + 'left(1 - ' + tfPar(a2) + BS + 'right) = ' + tfRhs(a2, b2, false));
+        var nm = { hom: 'homothétie', rot: 'rotation', sim: 'similitude directe' }[ty];
+        return { a: a2, b: b2, ind: false, lines: lines, plainIn: nm + ' de centre ' + tfEl('tf-w').value.trim() + (ty !== 'rot' ? ', rapport ' + kS : '') + (ty !== 'hom' ? ', angle ' + thS : '') };
+      }
+      if(tfTask === 'compose'){
+        var f1 = tfReadExpr(tfEl('tf-f1').value, 'f₁'), f2 = tfReadExpr(tfEl('tf-f2').value, 'f₂');
+        var ind = f1.ind !== f2.ind, ac = f2.ind ? tfMul(f2.a, tfConj(f1.a)) : tfMul(f2.a, f1.a), bc = tfAdd(tfMul(f2.a, f2.ind ? tfConj(f1.b) : f1.b), f2.b);
+        var a2t = tfIsOne(f2.a) ? '' : (Math.abs(f2.a.re + 1) < 1e-10 && Math.abs(f2.a.im) < 1e-10) ? '-' : tfPar(f2.a), b2t = tfAbs(f2.b) > 1e-10 ? (tfCTex(f2.b).charAt(0) === '-' ? ' - ' + tfCTex(f2.b).slice(1) : ' + ' + tfCTex(f2.b)) : '';
+        lines.push(tfFormTex(f1.a, f1.b, f1.ind, 'f_1(z) = ') + ',' + BS + 'qquad ' + tfFormTex(f2.a, f2.b, f2.ind, 'f_2(z) = '));
+        if(f2.ind){
+          lines.push(BS + 'overline{f_1(z)} = ' + tfRhs(tfConj(f1.a), tfConj(f1.b), !f1.ind));
+          lines.push('f_2' + BS + 'circ f_1(z) = f_2' + BS + 'big(f_1(z)' + BS + 'big) = ' + a2t + BS + ',' + BS + 'overline{f_1(z)}' + b2t + ' = ' + a2t + BS + 'left(' + tfRhs(tfConj(f1.a), tfConj(f1.b), !f1.ind) + BS + 'right)' + b2t + ' = ' + tfRhs(ac, bc, ind));
+        } else lines.push('f_2' + BS + 'circ f_1(z) = f_2' + BS + 'big(f_1(z)' + BS + 'big) = ' + a2t + BS + 'left(' + tfRhs(f1.a, f1.b, f1.ind) + BS + 'right)' + b2t + ' = ' + tfRhs(ac, bc, ind));
+        lines.push(BS + 'text{(on applique d’abord }f_1' + BS + 'text{, puis }f_2' + BS + 'text{ ; ' + (ind ? 'une seule des deux est indirecte : la composée est indirecte' : (f1.ind ? 'deux transformations indirectes : la composée est directe' : 'deux transformations directes : la composée est directe')) + ')}');
+        var n1 = tfNature(f1), n2 = tfNature(f2);
+        return { a: ac, b: bc, ind: ind, lines: lines, plainIn: 'f2 o f1 avec f1(z) = ' + tfFormPlain(f1.a, f1.b, f1.ind).slice(5) + ' (' + n1.label + ') et f2(z) = ' + tfFormPlain(f2.a, f2.b, f2.ind).slice(5) + ' (' + n2.label + ')' };
+      }
+      var A = tfNum(tfEl('tf-a').value, 'A'), A2 = tfNum(tfEl('tf-a2').value, "A'"), B = tfNum(tfEl('tf-b').value, 'B'), B2 = tfNum(tfEl('tf-b2').value, "B'");
+      var fi = tfEl('tf-fkind').value === 'ind';
+      if(tfAbs(tfSub(A, B)) < 1e-12) throw 'A et B doivent être distincts.';
+      if(tfAbs(tfSub(A2, B2)) < 1e-12) throw "A' et B' doivent être distincts (sinon ce n’est pas une similitude).";
+      var zA = fi ? BS + 'overline{z_A}' : 'z_A', zB = fi ? BS + 'overline{z_B}' : 'z_B';
+      var dAB = fi ? tfConj(tfSub(A, B)) : tfSub(A, B), a3 = tfDiv(tfSub(A2, B2), dAB), b3 = tfSub(A2, tfMul(a3, fi ? tfConj(A) : A));
+      lines.push(BS + 'begin{cases} a' + zA + ' + b = z_{A' + "'" + '} ' + BS + BS + ' a' + zB + ' + b = z_{B' + "'" + '}' + BS + 'end{cases}' + BS + 'iff' + BS + 'begin{cases} a' + tfPar(fi ? tfConj(A) : A) + ' + b = ' + tfCTex(A2) + ' ' + BS + BS + ' a' + tfPar(fi ? tfConj(B) : B) + ' + b = ' + tfCTex(B2) + BS + 'end{cases}');
+      lines.push(BS + 'text{Par soustraction : }a = ' + BS + 'frac{z_{A' + "'" + '} - z_{B' + "'" + '}}{' + (fi ? BS + 'overline{z_A - z_B}' : 'z_A - z_B') + '} = ' + BS + 'frac{' + tfCTex(tfSub(A2, B2)) + '}{' + tfCTex(dAB) + '} = ' + tfCTex(a3));
+      lines.push('b = z_{A' + "'" + '} - a' + BS + ',' + zA + ' = ' + tfCTex(A2) + ' - ' + tfPar(a3) + BS + 'times ' + tfPar(fi ? tfConj(A) : A) + ' = ' + tfCTex(b3));
+      lines.push(tfFormTex(a3, b3, fi));
+      return { a: a3, b: b3, ind: fi, lines: lines, plainIn: 'similitude ' + (fi ? 'indirecte' : 'directe') + " telle que A(" + tfEl('tf-a').value.trim() + ")->A'(" + tfEl('tf-a2').value.trim() + "), B(" + tfEl('tf-b').value.trim() + ")->B'(" + tfEl('tf-b2').value.trim() + ')', pts: [{ name: 'A', z: A }, { name: 'B', z: B }] };
+    }
+    function updateTfPreview(){
+      var el = tfEl('tf-preview');
+      try {
+        var r = tfRead();
+        renderKatex(el, tfTask === 'compose' ? tfFormTex(r.a, r.b, r.ind, 'f_2' + BS + 'circ f_1(z) = ') : tfFormTex(r.a, r.b, r.ind)); el.className = 'ml-preview';
+      } catch(e){ el.className = 'ml-preview is-empty'; el.textContent = typeof e === 'string' && e.length > 12 ? e : 'Aperçu…'; }
+    }
+
+    function tfDraw(r, T, pts, fig){
+      clearTfPlot(); if(!ggb) return;
+      var k = 0, xs = [], ys = [];
+      function fx(v){ return v.toFixed(10); }
+      function P(name, z, col, cap){ var nm = 'Tf' + (k++); try { ggb.evalCommand(nm + ' = (' + fx(z.re) + ', ' + fx(z.im) + ')'); tfObjs.push(nm); colour(nm, col[0], col[1], col[2]); try { ggb.setCaption(nm, cap || name); ggb.setLabelStyle(nm, 3); ggb.setLabelVisible(nm, true); } catch(e){} xs.push(z.re); ys.push(z.im); } catch(e){} return nm; }
+      function obj(nm, cmd, col, thick){ try { ggb.evalCommand(nm + ' = ' + cmd); tfObjs.push(nm); colour(nm, col[0], col[1], col[2]); try { ggb.setLabelVisible(nm, false); if(thick) ggb.setLineThickness(nm, thick); } catch(e){} } catch(e){} }
+      function line(nm, p, d, col, thick, dash){ var q = tfAdd(p, d); obj(nm, 'Line((' + fx(p.re) + ', ' + fx(p.im) + '), (' + fx(q.re) + ', ' + fx(q.im) + '))', col, thick); if(dash) try { ggb.setLineStyle(nm, dash); } catch(e){} }
+      var src = pts.map(function(p){ return P(p.name, p.z, [94, 23, 235]); });
+      var img = pts.map(function(p){ return P(p.name + "'", tfApply(r, p.z), [220, 38, 38], p.name + "'"); });
+      if(pts.length >= 3){ obj('TfPoly', 'Polygon(' + src.join(', ') + ')', [94, 23, 235]); obj('TfPoly2', 'Polygon(' + img.join(', ') + ')', [220, 38, 38]); try { ggb.setFilling('TfPoly', 0.08); ggb.setFilling('TfPoly2', 0.12); } catch(e){} }
+      else if(pts.length === 2){ obj('TfSeg', 'Segment(' + src[0] + ', ' + src[1] + ')', [94, 23, 235], 4); obj('TfSeg2', 'Segment(' + img[0] + ', ' + img[1] + ')', [220, 38, 38], 4); }
+      if(T.axis) line('TfAx', T.axis.p, T.axis.d, [255, 140, 0], 4, 1);
+      if(T.w){
+        var om = P('Ω', T.w, [255, 140, 0], 'Ω');
+        if(pts.length && (T.kind === 'rot' || T.kind === 'sim')){ obj('TfR1', 'Segment(' + om + ', ' + src[0] + ')', [150, 150, 150], 2); obj('TfR2', 'Segment(' + om + ', ' + img[0] + ')', [150, 150, 150], 2); try { ggb.setLineStyle('TfR1', 1); ggb.setLineStyle('TfR2', 1); } catch(e){} obj('TfAng', 'Angle(' + src[0] + ', ' + om + ', ' + img[0] + ')', [255, 140, 0]); }
+        if(T.kind === 'hom') pts.forEach(function(p, i){ obj('TfH' + i, 'Line(' + om + ', ' + src[i] + ')', [200, 200, 200], 1); try { ggb.setLineStyle('TfH' + i, 1); } catch(e){} });
+      }
+      if(T.kind === 'refl') pts.forEach(function(p, i){ obj('TfM' + i, 'Segment(' + src[i] + ', ' + img[i] + ')', [150, 150, 150], 2); try { ggb.setLineStyle('TfM' + i, 1); } catch(e){} });
+      if(T.kind === 'tra') pts.forEach(function(p, i){ obj('TfV' + i, 'Vector(' + src[i] + ', ' + img[i] + ')', [255, 140, 0], 4); });
+      if(T.kind === 'glide' && pts.length){ var m0 = tfSub(tfApply(r, pts[0].z), T.u), mp = P('', m0, [150, 150, 150], ' '); obj('TfG1', 'Segment(' + src[0] + ', ' + mp + ')', [150, 150, 150], 2); try { ggb.setLineStyle('TfG1', 1); } catch(e){} obj('TfG2', 'Vector(' + mp + ', ' + img[0] + ')', [255, 140, 0], 4); }
+      if(fig && fig.line){ var L2 = tfLineImage(r, fig.line); line('TfL1', fig.line.p, fig.line.d, [94, 23, 235], 3); line('TfL2', L2.p, L2.d, [220, 38, 38], 3); xs.push(fig.line.p.re, L2.p.re); ys.push(fig.line.p.im, L2.p.im); }
+      if(fig && fig.circ){ var C2 = tfCircImage(r, fig.circ); obj('TfC1', 'Circle((' + fx(fig.circ.c.re) + ', ' + fx(fig.circ.c.im) + '), ' + fx(fig.circ.r) + ')', [94, 23, 235], 3); obj('TfC2', 'Circle((' + fx(C2.c.re) + ', ' + fx(C2.c.im) + '), ' + fx(C2.r) + ')', [220, 38, 38], 3);
+        [fig.circ, C2].forEach(function(c){ xs.push(c.c.re - c.r, c.c.re + c.r); ys.push(c.c.im - c.r, c.c.im + c.r); }); }
+      if(xs.length){ var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs), y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys), m = Math.max(1.5, (x1 - x0) * 0.25, (y1 - y0) * 0.25); try { ggb.setCoordSystem(x0 - m, x1 + m, y0 - m, y1 + m); } catch(e){} }
+    }
+    function tfLineImage(r, L){ var P1 = tfApply(r, L.p), Q1 = tfApply(r, tfAdd(L.p, L.d)), d = tfSub(Q1, P1); return { p: P1, q: Q1, d: d, eq: tfLineEq(P1, d), q0: tfAdd(L.p, L.d) }; }
+    function tfCircImage(r, C){ var c2 = tfApply(r, C.c), r2 = tfAbs(r.a) * C.r; return { c: c2, r: r2, eq: tfCircEq(c2, r2) }; }
+
+    var TF_METHOD = {
+      recog: 'On identifie a et b ; si a ≠ 1, le centre Ω est l’unique point invariant : ω = aω + b, donc ω = b/(1 − a). On écrit a = k·e^(iθ) : |a| donne le rapport, arg a l’angle.',
+      recog_ind: 'Forme z′ = a·z̄ + b : transformation indirecte. Si |a| = 1, on calcule f∘f(z) = z + a·b̄ + b : si a·b̄ + b = 0 c’est une réflexion (axe = ensemble des points invariants), sinon une symétrie glissée. Si |a| ≠ 1, c’est une similitude indirecte : centre ω = (b + a·b̄)/(1 − |a|²), rapport |a|, axe passant par Ω d’angle arg(a)/2.',
+      write: 'On traduit la transformation par z′ − ω = k·e^(iθ)(z − ω) (homothétie : z′ − ω = k(z − ω) ; translation : z′ = z + u), puis on développe pour obtenir z′ = az + b.',
+      write_ind: 'Réflexion d’axe Δ passant par P et dirigé par w : z′ − z_P = (w/w̄)·conj(z − z_P). Similitude indirecte de centre Ω, de rapport k et d’axe d’angle α : z′ − ω = k·e^(2iα)·conj(z − ω). On développe pour obtenir z′ = a·z̄ + b.',
+      find: 'On cherche a et b tels que aA + b = A′ et aB + b = B′ : par soustraction a = (A′ − B′)/(A − B), puis b = A′ − aA ; on reconnaît ensuite la transformation.',
+      find_ind: 'Similitude indirecte z′ = a·z̄ + b : a·conj(z_A) + b = A′ et a·conj(z_B) + b = B′ ; par soustraction a = (A′ − B′)/conj(A − B), puis b = A′ − a·conj(z_A) ; on reconnaît ensuite la transformation.',
+      compose: 'On calcule f₂∘f₁(z) = f₂(f₁(z)) en remplaçant z par f₁(z) dans l’écriture de f₂ (par le conjugué de f₁(z) si f₂ est indirecte), on développe, puis on reconnaît la transformation obtenue.'
+    };
+    async function runTransfo(){
+      var r, pts, fig;
+      try { r = tfRead(); pts = tfPoints(); fig = tfFigures(); if(r.pts) pts = r.pts.concat(pts.filter(function(p){ return p.name !== 'A' && p.name !== 'B'; })); }
+      catch(e){ stateEl.textContent = typeof e === 'string' ? e : 'Entrée invalide.'; return; }
+      var method = tfTask === 'compose' ? 'compose' : tfTask + (r.ind ? '_ind' : '');
+      answerEl.innerHTML = ''; stepsEl.innerHTML = ''; setTfOpsEnabled(false);
+      var T = tfNature(r), R = e1Report(), body = '';
+      body += R.sec('Méthode', '<div class="study-work">' + escapeHtml(TF_METHOD[method]) + '</div>');
+      body += R.sec(tfTask === 'find' ? 'Recherche de a et b' : tfTask === 'compose' ? 'Calcul de la composée' : 'Écriture complexe', r.lines.map(function(l){ return R.line('', l); }).join(''));
+      body += R.sec('Nature et éléments caractéristiques', (tfTask === 'write' && T.w && !r.ind ? T.lines.slice(1) : T.lines).map(function(l){ return R.line('', l); }).join('') + '<div class="vc-ok" style="color:#5e17eb"><i class="bi bi-check-circle-fill"></i> ' + escapeHtml(T.label.charAt(0).toUpperCase() + T.label.slice(1)) + '</div>');
+      var imgs = '', imgPlain = [];
+      pts.forEach(function(p){ var z2 = tfApply(r, p.z); imgs += R.line('', 'z_{' + p.name + "'} = " + (r.ind ? 'a' + BS + 'overline{z_{' + p.name + '}} + b = ' : '') + tfPar(r.a) + BS + 'times ' + tfPar(r.ind ? tfConj(p.z) : p.z) + (tfAbs(r.b) > 1e-10 ? ' + ' + tfPar(r.b) : '') + ' = ' + tfCTex(z2)); imgPlain.push(p.name + '(' + tfCPlain(p.z) + ") -> " + p.name + "'(" + tfCPlain(z2) + ')'); });
+      if(pts.length) body += R.sec('Images des points', imgs);
+      var figHtml = '', figPlain = [];
+      if(fig.line){
+        var L2 = tfLineImage(r, fig.line);
+        figHtml += R.line('', BS + 'text{Droite }(D) : ' + fig.line.eq.tex + BS + 'text{ ; on choisit deux de ses points }P(' + tfCTex(fig.line.p) + ')' + BS + 'text{ et }Q(' + tfCTex(L2.q0) + ')');
+        figHtml += R.line('', "P' = f(P) : " + tfCTex(L2.p) + ',' + BS + 'quad Q' + "' = f(Q) : " + tfCTex(L2.q));
+        figHtml += R.line('', BS + 'text{L’image d’une droite par une similitude est une droite : }(D' + "') = (P'Q') : " + L2.eq.tex);
+        figPlain.push("image de la droite (D) : " + fig.line.eq.plain + " -> (D') : " + L2.eq.plain + " (par les points P(" + tfCPlain(fig.line.p) + ")->P'(" + tfCPlain(L2.p) + "), Q(" + tfCPlain(L2.q0) + ")->Q'(" + tfCPlain(L2.q) + '))');
+      }
+      if(fig.circ){
+        var C2 = tfCircImage(r, fig.circ), kk = tfR(tfAbs(r.a));
+        figHtml += R.line('', BS + 'text{Cercle }(' + BS + 'mathcal{C})' + BS + 'text{ de centre }I(' + tfCTex(fig.circ.c) + ')' + BS + 'text{ et de rayon }' + tfR(fig.circ.r).tex);
+        figHtml += R.line('', BS + 'text{Son image est le cercle de centre }I' + "' = f(I) : " + tfCTex(C2.c) + BS + 'text{ et de rayon }' + kk.tex + BS + 'times ' + tfR(fig.circ.r).tex + ' = ' + tfR(C2.r).tex + BS + 'text{ (rapport }|a| = ' + kk.tex + ')');
+        figHtml += R.line('', '(' + BS + 'mathcal{C}' + "') : " + C2.eq.tex);
+        figPlain.push('image du cercle de centre I(' + tfCPlain(fig.circ.c) + ') et de rayon ' + tfR(fig.circ.r).plain + " -> cercle de centre I'(" + tfCPlain(C2.c) + ') et de rayon ' + tfR(C2.r).plain + ' : ' + C2.eq.plain);
+      }
+      if(figHtml) body += R.sec('Images de figures', figHtml);
+      R.render('Transformation du plan', body);
+      tfDraw(r, T, pts, fig);
+      var summary = (tfTask === 'compose' ? 'f2 o f1 : ' : '') + tfFormPlain(r.a, r.b, r.ind) + ' ; a = ' + tfCPlain(r.a) + ', b = ' + tfCPlain(r.b) + ' ; nature : ' + T.plain + (imgPlain.length ? ' ; images : ' + imgPlain.join(', ') : '') + (figPlain.length ? ' ; ' + figPlain.join(' ; ') : '');
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
+      try {
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: r.plainIn.slice(0, 800), operation: 'transfo', method: method, casResult: summary.slice(0, 2400) }) });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data, true); } else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){ stateEl.textContent = 'Connexion impossible — réessayez.'; }
+      finally { setTfOpsEnabled(true); }
+    }
+    tfOpsEl.addEventListener('click', function(ev){ var b = ev.target.closest('.ml-op'); if(!b || b.disabled) return; runTransfo(); });
+    tfSetTask('recog');
+
+
     /* ============ QUESTIONS OUVERTES ============ */
     // Énoncé + typed questions (Calculer / Montrer que / Comparer A et B) → POST …/maths-lab/open.
     // Input aids: a maths keyboard that types into the active field, and an automatic preview that
@@ -8537,6 +9435,8 @@
       modeEq1.hidden      = (m !== 'equation');
       modeSys.hidden      = (m !== 'system');
       if(modeIneq) modeIneq.hidden = (m !== 'ineq');
+      if(modeVect) modeVect.hidden = (m !== 'vect');
+      if(modeTf) modeTf.hidden = (m !== 'transfo');
       modeBary.hidden     = (m !== 'bary');
       modeOpen.hidden     = (m !== 'open');
       modeTrig.hidden     = (m !== 'trig');
@@ -8550,7 +9450,8 @@
       if(m === 'open'){ updateOqPreview(); return; }
       if(ggb){
         try { ggb.setPerspective((m === 'function' || m === 'integral' || m === 'suite' || m === 'diffeq') ? 'AG' : 'G'); } catch(e){}
-        clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot(); clearSuitePlot(); clearProbaPlot(); clearStatsPlot(); clearPwPlot(); clearE1Plot(); clearSysPlot(); clearBaryPlot(); clearZfPlot(); if(typeof clearIqPlot === 'function') clearIqPlot();
+        try { var plainFig = (m === 'vect'); ggb.setAxesVisible(!plainFig, !plainFig); ggb.setGridVisible(!plainFig); } catch(e){} // a vector figure has no frame of reference
+        clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot(); clearSuitePlot(); clearProbaPlot(); clearStatsPlot(); clearPwPlot(); clearE1Plot(); clearSysPlot(); clearBaryPlot(); clearZfPlot(); if(typeof clearIqPlot === 'function') clearIqPlot(); if(typeof clearVcPlot === 'function') clearVcPlot(); if(typeof clearTfPlot === 'function') clearTfPlot();
         if(m === 'bary'){
           graphTitle.textContent = 'Points pondérés et barycentre';
           graphHint.textContent = 'Les points (avec leur poids), les barycentres partiels de la construction (H₁, H₂…) et le barycentre G en jaune ; le cercle de la ligne de niveau s’affiche avec le second bouton.';
@@ -8561,6 +9462,16 @@
           sysGraphHint();
           try { ggb.deleteObject('f'); } catch(e){}
           updateSysPreview();
+        } else if(m === 'transfo'){
+          graphTitle.textContent = 'Figure et son image';
+          graphHint.textContent = 'Figure de départ en violet, image en rouge ; centre Ω et axe Δ (pointillés) en orange ; angle pour une rotation ou une similitude, vecteurs pour une translation ; droites et cercles : départ en violet, image en rouge.';
+          try { ggb.deleteObject('f'); } catch(e){}
+          updateTfPreview();
+        } else if(m === 'vect'){
+          graphTitle.textContent = 'Figure (points déplaçables)';
+          graphHint.textContent = 'Points libres en violet (déplaçables), points construits en rouge, vecteurs en orange. Déplacez A, B, C… : les relations démontrées restent vraies.';
+          try { ggb.deleteObject('f'); } catch(e){}
+          updateVcPreview();
         } else if(m === 'ineq'){
           graphTitle.textContent = 'Signe et solutions';
           graphHint.textContent = 'Courbe de h(x) = (membre de gauche) − (membre de droite). En rouge : les zéros ; en vert sur l’axe des abscisses : les x solutions.';

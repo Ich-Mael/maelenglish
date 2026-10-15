@@ -41,6 +41,8 @@ const OPERATIONS = {
   system: "la résolution du système d'équations linéaires",
   system_free: "la résolution du système d'équations (non linéaire)",
   inequation: "la résolution de l'inéquation",
+  vecteurs: "la résolution de l'exercice sur les vecteurs",
+  transfo: "l'étude de la transformation du plan",
   barycentre: "le barycentre de points pondérés",
   bary_locus: "l'ensemble des points M tels que ‖Σ aᵢ·MAᵢ‖ = k",
   eq2_solve: "la résolution de l'équation du second degré",
@@ -412,6 +414,45 @@ function buildPrompt({ domain, input, operation, casResult, params }) {
     return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
   }
 
+  // Plane transformations z' = az + b (direct) or z' = a·conj(z) + b (indirect): a, b, nature, elements,
+  // images of points / lines / circles all computed client-side.
+  if (operation === "transfo") {
+    const task = (params && params.method) || "recog";
+    const how = {
+      recog: "identifie a et b ; si a ≠ 1, cherche le point invariant ω = aω + b, donc ω = b/(1 − a) ; écris a = k·e^{iθ} (module = rapport, argument = angle) et conclus : a = 1 translation, a réel homothétie, |a| = 1 rotation, sinon similitude directe (composée de l'homothétie et de la rotation de même centre)",
+      recog_ind: "identifie a et b dans z' = a·\\overline{z} + b (transformation indirecte). Si |a| = 1 : f∘f(z) = a·\\overline{a\\overline{z} + b} + b = a\\overline{a}\\,z + a\\overline{b} + b = z + a\\overline{b} + b (car \\overline{a\\overline{z}} = \\overline{a}\\,z et a\\overline{a} = |a|^2 = 1) — écris cette formule générale puis calcule seulement a\\overline{b} + b avec les valeurs de a et b (valeur fournie dans les résultats), sans redévelopper f(f(z)) terme à terme ; si a\\overline{b} + b = 0, f∘f = id et f est une réflexion : l'axe est l'ensemble des points invariants (pose z = x + iy dans z = a\\overline{z} + b) ; sinon f est une symétrie glissée de vecteur u = (a\\overline{b} + b)/2 et d'axe celui de la réflexion s(z) = a\\overline{z} + b − u. Si |a| ≠ 1 : similitude indirecte, centre ω solution de ω = a\\overline{ω} + b (conjugue puis substitue : ω = (b + a\\overline{b})/(1 − |a|²)), rapport |a|, axe passant par Ω et faisant l'angle arg(a)/2 avec l'axe des abscisses ; c'est la composée de la réflexion d'axe Δ et de l'homothétie de centre Ω et de rapport |a|",
+      write: "traduis la transformation par z' − ω = k·e^{iθ}(z − ω) (homothétie : z' − ω = k(z − ω) ; translation : z' = z + u), calcule k·e^{iθ} sous forme algébrique, puis développe pour obtenir z' = az + b",
+      write_ind: "réflexion d'axe Δ passant par P et de vecteur directeur w : z' − z_P = (w/\\overline{w})·\\overline{(z − z_P)} ; similitude indirecte de centre Ω, de rapport k et d'axe faisant l'angle α avec l'axe des abscisses : z' − ω = k·e^{2iα}·\\overline{(z − ω)} ; calcule le coefficient sous forme algébrique puis développe pour obtenir z' = a\\overline{z} + b, puis justifie la nature et les éléments",
+      find: "écris le système aA + b = A', aB + b = B', soustrais les deux équations pour obtenir a = (A' − B')/(A − B), déduis b = A' − aA, puis reconnais la transformation (centre ω = b/(1 − a), rapport |a|, angle arg a)",
+      find_ind: "écris z' = a\\overline{z} + b et le système a\\overline{z_A} + b = z_{A'}, a\\overline{z_B} + b = z_{B'} ; par soustraction a = (z_{A'} − z_{B'})/\\overline{(z_A − z_B)}, puis b = z_{A'} − a\\overline{z_A} ; reconnais ensuite la transformation indirecte (réflexion, symétrie glissée ou similitude indirecte)",
+      compose: "calcule f₂∘f₁(z) = f₂(f₁(z)) : remplace z par f₁(z) dans l'écriture de f₂ (par \\overline{f_1(z)} si f₂ est indirecte, en utilisant \\overline{uv} = \\overline{u}\\,\\overline{v} et \\overline{\\overline{z}} = z), développe, puis reconnais la transformation obtenue (directe si f₁ et f₂ sont toutes deux directes ou toutes deux indirectes, indirecte sinon)",
+    }[task] || "";
+    const userMsg =
+      `Transformation du plan complexe : ${input}\n` +
+      `Résultats corrects (fournis — à expliquer, ne pas modifier) : ${casResult}\n\n` +
+      `MÉTHODE IMPOSÉE (Terminale) : ${how}.\n` +
+      `Calcule les images des points demandés avec l'écriture complexe trouvée. ` +
+      `S'il y a des images de droites ou de cercles : l'image d'une droite est la droite passant par les images de deux de ses points (donne son équation) ; l'image d'un cercle de centre I et de rayon r est le cercle de centre f(I) et de rayon |a|·r. ` +
+      `Écris les nombres complexes sous forme algébrique x + iy, les angles en radians modulo 2π, le conjugué \\overline{z}. ` +
+      `Conclus avec EXACTEMENT la nature et les éléments fournis. Dans 'finalAnswerLatex', écris l'écriture complexe et la nature de la transformation.`;
+    return { system: SYSTEM_PROMPT_COMPLEX, userMsg };
+  }
+
+  // Vectors without coordinates: every answer is computed client-side by a formal (exact) engine.
+  if (operation === "vecteurs") {
+    const userMsg =
+      `Exercice de géométrie vectorielle (sans repère, figure quelconque).\n` +
+      `Données : ${input}\n` +
+      `Résultats corrects (fournis — décompositions dans la base indiquée et réponse de chaque question, séparées par « || » — à expliquer, ne pas modifier) : ${casResult}\n\n` +
+      `MÉTHODE IMPOSÉE : relation de Chasles (XY = XA + AY), propriétés du milieu (si M est le milieu de [AB], AM = MB = 1/2 AB) et du centre de gravité, et calcul vectoriel ; AUCUNE coordonnée, aucun repère.\n` +
+      `Traite chaque question dans l'ordre, avec un titre d'étape « Question n : … ». ` +
+      `« Montrer que » : pars d'un membre et transforme-le avec Chasles jusqu'à l'autre (si le résultat fourni est FAUX, explique pourquoi l'égalité ne tient pas). ` +
+      `« Exprimer … en fonction de … » : utilise Chasles pour faire apparaître les vecteurs demandés. « Construire » : décris la construction à la règle (reporter les vecteurs). ` +
+      `« Longueur » : utilise ‖k·u‖ = |k|·‖u‖. Conclus chaque question avec EXACTEMENT le résultat fourni. Écris les vecteurs \\overrightarrow{AB}. ` +
+      `Dans 'finalAnswerLatex', résume les résultats des questions.`;
+    return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
+  }
+
   // Inequation: solution set, factorisation and critical values computed client-side (exact when rational).
   if (operation === "inequation") {
     const userMsg =
@@ -709,7 +750,7 @@ async function explainSteps({ domain = "function", input, operation, casResult, 
       model: MATHS_LAB_MODEL,
       // Two-method answers (e.g. quotient: division posée + identification) exceed 2000 tokens;
       // a truncated reply is invalid JSON → "Explication indisponible".
-      max_tokens: /^(pw_|eq3_|eq2_param|system|zf_|integral_ipp)/.test(String(operation || "")) ? 8192 : 4096, // long multi-part explanations
+      max_tokens: /^(pw_|eq3_|eq2_param|system|zf_|integral_ipp|vecteurs|transfo)/.test(String(operation || "")) ? 8192 : 4096, // long multi-part explanations
       system: [
         { type: "text", text: system, cache_control: { type: "ephemeral" } },
       ],

@@ -1526,7 +1526,8 @@ module.exports.explainMath = async (req, res) => {
     const casResult = typeof req.body.casResult === "string" ? req.body.casResult.trim() : "";
 
     // Trig: Claude computes the result itself, so no casResult is supplied.
-    if (domain !== "trig" && (!casResult || casResult.length > 500)) {
+    const longOp = operation === "vecteurs" || operation === "transfo"; // multi-question exercise: longer input and anchored summary
+    if (domain !== "trig" && (!casResult || casResult.length > (longOp ? 2500 : 500))) {
       return res.status(400).json({ ok: false, error: "Résultat invalide." });
     }
 
@@ -1590,7 +1591,7 @@ module.exports.explainMath = async (req, res) => {
       key = `complex|${input}|${opKeyPart}|${casResult}`;
     } else {
       input = typeof req.body.function === "string" ? req.body.function.trim() : "";
-      if (!input || input.length > 200) {
+      if (!input || input.length > (longOp ? 800 : 200)) {
         return res.status(400).json({ ok: false, error: "Fonction invalide." });
       }
       if (!OPERATIONS[operation]) {
@@ -1618,6 +1619,9 @@ module.exports.explainMath = async (req, res) => {
           params = { method };
           opKeyPart = `inequation:${method}`;
         }
+      } else if (operation === "transfo") {
+        const task = ["recog", "recog_ind", "write", "write_ind", "find", "find_ind", "compose"].includes(req.body.method) ? req.body.method : "recog";
+        params = { method: task };
       } else if (operation === "system_free") {
         const method = typeof req.body.method === "string" ? req.body.method : "";
         if (SYSTEM_FREE_METHODS[method]) {
@@ -1642,7 +1646,9 @@ module.exports.explainMath = async (req, res) => {
         params = { x0 };
         opKeyPart = `tangent:${x0}`; // distinct cache key per point
       }
-      key = `${input}|${opKeyPart}|${casResult}`;
+      key = longOp
+        ? `${operation}|${crypto.createHash("sha256").update(`${input}|${(params && params.method) || ""}|${casResult}`).digest("hex")}`
+        : `${input}|${opKeyPart}|${casResult}`;
     }
 
     const cached = await MathExplanation.findOne({ key });
