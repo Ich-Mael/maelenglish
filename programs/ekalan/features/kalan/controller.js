@@ -1619,6 +1619,8 @@ module.exports.explainMath = async (req, res) => {
           params = { method };
           opKeyPart = `inequation:${method}`;
         }
+      } else if (operation === "vecteurs") {
+        if (req.body.method === "repere") params = { method: "repere" }; // dans un repère (coordinates)
       } else if (operation === "transfo") {
         const task = ["recog", "recog_ind", "write", "write_ind", "find", "find_ind", "compose"].includes(req.body.method) ? req.body.method : "recog";
         params = { method: task };

@@ -439,6 +439,21 @@ function buildPrompt({ domain, input, operation, casResult, params }) {
   }
 
   // Vectors without coordinates: every answer is computed client-side by a formal (exact) engine.
+  if (operation === "vecteurs" && params && params.method === "repere") {
+    const userMsg =
+      `Exercice de géométrie analytique (vecteurs dans un repère orthonormé, niveau 2nde).\n` +
+      `Données : ${input}\n` +
+      `Résultats corrects (fournis — coordonnées des points construits puis réponse de chaque question, séparées par « || » — à expliquer, ne pas modifier) : ${casResult}\n\n` +
+      `MÉTHODE IMPOSÉE (formules de 2nde) : coordonnées d'un vecteur \\overrightarrow{AB}(x_B − x_A ; y_B − y_A) ; milieu ((x_A + x_B)/2 ; (y_A + y_B)/2) ; ` +
+      `point défini par une relation vectorielle : on pose M(x ; y) et on identifie les coordonnées ; parallélogramme ABCD ⇔ \\overrightarrow{AB} = \\overrightarrow{DC} ; ` +
+      `distance AB = √((x_B − x_A)² + (y_B − y_A)²) ; colinéarité et alignement par le déterminant det(u, v) = xy' − x'y = 0 ; orthogonalité par xx' + yy' = 0 ; ` +
+      `nature d'un triangle par les longueurs et la réciproque du théorème de Pythagore ; nature d'un quadrilatère : parallélogramme, puis diagonales de même longueur (rectangle), côtés consécutifs égaux (losange), les deux (carré) ; ` +
+      `équation de droite : M(x ; y) ∈ (AB) ⇔ det(\\overrightarrow{AM}, \\overrightarrow{AB}) = 0, équation cartésienne puis réduite ; intersection : résolution du système des deux équations.\n` +
+      `Traite chaque question dans l'ordre, avec un titre d'étape « Question n : … », en détaillant les calculs avec les valeurs. Conclus chaque question avec EXACTEMENT le résultat fourni. ` +
+      `Dans 'finalAnswerLatex', résume les résultats des questions, séparés par des points-virgules (n'écris jamais « || »).`;
+    return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
+  }
+
   if (operation === "vecteurs") {
     const userMsg =
       `Exercice de géométrie vectorielle (sans repère, figure quelconque).\n` +
@@ -449,7 +464,7 @@ function buildPrompt({ domain, input, operation, casResult, params }) {
       `« Montrer que » : pars d'un membre et transforme-le avec Chasles jusqu'à l'autre (si le résultat fourni est FAUX, explique pourquoi l'égalité ne tient pas). ` +
       `« Exprimer … en fonction de … » : utilise Chasles pour faire apparaître les vecteurs demandés. « Construire » : décris la construction à la règle (reporter les vecteurs). ` +
       `« Longueur » : utilise ‖k·u‖ = |k|·‖u‖. Conclus chaque question avec EXACTEMENT le résultat fourni. Écris les vecteurs \\overrightarrow{AB}. ` +
-      `Dans 'finalAnswerLatex', résume les résultats des questions.`;
+      `Dans 'finalAnswerLatex', résume les résultats des questions, séparés par des points-virgules (n'écris jamais « || »).`;
     return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
   }
 

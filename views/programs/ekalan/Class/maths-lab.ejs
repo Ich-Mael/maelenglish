@@ -700,7 +700,12 @@
         </div><%# /mode-system %>
 
         <div id="mode-vect" hidden>
-          <h2><i class="bi bi-arrow-up-right"></i> Vecteurs (sans repère)</h2>
+          <h2><i class="bi bi-arrow-up-right"></i> Vecteurs <span class="oq-part__hint" id="vc-title-hint">— sans repère (figure quelconque)</span></h2>
+          <div class="ml-side" id="vc-kind">
+            <button type="button" class="ml-sidebtn is-active" data-vckind="free">Sans repère</button>
+            <button type="button" class="ml-sidebtn" data-vckind="coord">Dans un repère</button>
+          </div>
+          <div id="vc-free-panel">
           <div class="pw-ex" id="vc-ex"></div>
           <div class="oq-part"><span class="oq-part__n">1</span> Figure de départ</div>
           <div class="ml-input-row">
@@ -728,6 +733,24 @@
             <button class="ml-op ml-op--hero" type="button"><i class="bi bi-check2-circle"></i> Résoudre</button>
           </div>
           <div class="ml-hint">Un vecteur s’écrit avec deux points : <strong>AB</strong>, <strong>AA'</strong>. Coefficients : <strong>5/2 AB</strong>, <strong>-4/3 AB</strong>, <strong>1/3(AB + AC)</strong> ; vecteur nul : <strong>0</strong>. Les points libres représentent une figure <em>quelconque</em> : les résultats sont démontrés pour toutes les figures.</div>
+          </div><%# /vc-free-panel %>
+          <div id="vr-panel" hidden>
+            <div class="pw-ex" id="vr-ex"></div>
+            <div class="oq-part"><span class="oq-part__n">1</span> Points et vecteurs donnés <span class="oq-part__hint">— repère orthonormé</span></div>
+            <div class="ml-input-row"><label for="vr-pts">Points</label><input id="vr-pts" type="text" autocomplete="off" spellcheck="false" placeholder="ex. A(1 ; 2) ; B(-3 ; 4) ; C(5 ; 0)" /></div>
+            <div class="ml-input-row"><label for="vr-vecs">Vecteurs</label><input id="vr-vecs" type="text" autocomplete="off" spellcheck="false" placeholder="facultatif — ex. u(2 ; -1) ; v(-4 ; 2)" /></div>
+            <div class="oq-part"><span class="oq-part__n">2</span> Points construits <span class="oq-part__hint">— facultatif, dans l’ordre de l’énoncé</span></div>
+            <div class="sys-grid" id="vr-cpts"></div>
+            <button type="button" class="geo-add" id="vr-add-pt"><i class="bi bi-plus-lg"></i> Ajouter un point</button>
+            <div class="ml-preview is-empty" id="vr-preview" style="margin-top:.7rem">Aperçu…</div>
+            <div class="oq-part"><span class="oq-part__n">3</span> Questions</div>
+            <div class="sys-grid" id="vr-qs"></div>
+            <button type="button" class="geo-add" id="vr-add-q"><i class="bi bi-plus-lg"></i> Ajouter une question</button>
+            <div class="ml-ops" id="vr-ops">
+              <button class="ml-op ml-op--hero" type="button"><i class="bi bi-check2-circle"></i> Résoudre</button>
+            </div>
+            <div class="ml-hint">Points : <strong>A(1 ; 2)</strong>, coordonnées entières, décimales (<strong>2,5</strong>) ou fractions (<strong>1/3</strong>). Vecteurs : <strong>AB</strong>, <strong>2AB - 3AC</strong>, vecteurs nommés <strong>u</strong>, <strong>v</strong>. Droite : deux points, ex. <strong>AB</strong>. Tous les calculs sont exacts (fractions, racines simplifiées).</div>
+          </div><%# /vr-panel %>
         </div><%# /mode-vect %>
 
         <div id="mode-transfo" hidden>
@@ -8371,9 +8394,10 @@
       function peek(){ return s.charAt(pos); }
       function num(){ var j = pos; while(pos < s.length && (vcIsDig(s.charAt(pos)) || s.charAt(pos) === '.')) pos++; if(j === pos) return null; var f = fFromNum(Number(s.slice(j, pos))); if(!f) throw 'nombre'; return f; }
       function point(){ var c = peek(); if(!vcIsUp(c)) return null; var j = pos; pos++; while(pos < s.length && (vcIsDig(s.charAt(pos)) || s.charAt(pos) === "'")) pos++; return s.slice(j, pos); }
-      function scale(list, k){ return list.map(function(t){ return { k: fMul(t.k, k), X: t.X, Y: t.Y }; }); }
+      function scale(list, k){ return list.map(function(t){ return t.V ? { k: fMul(t.k, k), V: t.V } : { k: fMul(t.k, k), X: t.X, Y: t.Y }; }); }
       function factor(){
         if(peek() === '('){ pos++; var e = expr(); if(peek() !== ')') throw 'parenthèse'; pos++; return e; }
+        var lc = peek(); if(lc >= 'a' && lc <= 'z' && !vcIsUp(s.charAt(pos + 1))){ pos++; return [{ k: fr(1), V: lc }]; } // named vector u, v, w (dans un repère)
         var X = point(); if(!X) return null; var Y = point(); if(!Y) throw 'vecteur'; return [{ k: fr(1), X: X, Y: Y }];
       }
       function term(){
@@ -8402,6 +8426,7 @@
     function vcEval(terms, F, unknown){
       var c = vcZero(F.n), p = fr(0);
       terms.forEach(function(t){
+        if(t.V) throw 'Le vecteur ' + t.V + ' n’a de sens que « Dans un repère » (avec ses coordonnées).';
         [[t.Y, t.k], [t.X, fNeg(t.k)]].forEach(function(it){
           if(it[0] === unknown){ p = fAdd(p, it[1]); return; }
           var P = F.pts[it[0]]; if(!P) throw 'inconnu:' + it[0];
@@ -8429,7 +8454,7 @@
             var parts = vcNorm(param).split('=');
             if(parts.length !== 2) throw 'Point ' + name + ' : écrivez une égalité, ex. BC = 5/2 AB.';
             var lt = vcParseExpr(parts[0]), rt = vcParseExpr(parts[1]);
-            var all = lt.concat(rt.map(function(t){ return { k: fNeg(t.k), X: t.X, Y: t.Y }; }));
+            var all = lt.concat(rt.map(function(t){ return t.V ? { k: fNeg(t.k), V: t.V } : { k: fNeg(t.k), X: t.X, Y: t.Y }; }));
             var ev = vcEval(all, F, name);
             if(fZero(ev.p)) throw 'Point ' + name + ' : la relation doit faire intervenir ' + name + '.';
             P = ev.c.map(function(x){ return fDiv(fNeg(x), ev.p); });
@@ -8456,11 +8481,11 @@
     // ---- display ----
     function vcVec(X, Y){ return BS + 'overrightarrow{' + X + Y + '}'; }
     function vcCoef(k, body, first){ var ab = fr(Math.abs(k.n), k.d), ct = (ab.n === 1 && ab.d === 1) ? '' : fTex(ab); return (first ? (k.n < 0 ? '-' : '') : (k.n < 0 ? ' - ' : ' + ')) + ct + body; }
-    function vcTermsTex(terms){ if(!terms.length) return BS + 'vec{0}'; var s = ''; terms.forEach(function(t, i){ s += vcCoef(t.k, vcVec(t.X, t.Y), i === 0); }); return s; }
+    function vcTermsTex(terms){ if(!terms.length) return BS + 'vec{0}'; var s = ''; terms.forEach(function(t, i){ s += vcCoef(t.k, t.V ? BS + 'vec{' + t.V + '}' : vcVec(t.X, t.Y), i === 0); }); return s; }
     function vcBasis(F, c){ var o = []; for(var i = 1; i < F.n; i++) if(!fZero(c[i])) o.push({ k: c[i], X: F.free[0], Y: F.free[i] }); return o; } // vector in the basis A→P_i
     function vcBasisTex(F, c){ return vcTermsTex(vcBasis(F, c)); }
     function vcBasisPlain(F, c){ var b = vcBasis(F, c); if(!b.length) return '0'; return b.map(function(t, i){ var ab = fr(Math.abs(t.k.n), t.k.d); return (i ? (t.k.n < 0 ? ' - ' : ' + ') : (t.k.n < 0 ? '-' : '')) + (ab.n === 1 && ab.d === 1 ? '' : fPlain(ab) + ' ') + t.X + t.Y; }).join(''); }
-    function vcTermsPlain(terms){ if(!terms.length) return '0'; return terms.map(function(t, i){ var ab = fr(Math.abs(t.k.n), t.k.d); return (i ? (t.k.n < 0 ? ' - ' : ' + ') : (t.k.n < 0 ? '-' : '')) + (ab.n === 1 && ab.d === 1 ? '' : fPlain(ab) + ' ') + t.X + t.Y; }).join(''); }
+    function vcTermsPlain(terms){ if(!terms.length) return '0'; return terms.map(function(t, i){ var ab = fr(Math.abs(t.k.n), t.k.d); return (i ? (t.k.n < 0 ? ' - ' : ' + ') : (t.k.n < 0 ? '-' : '')) + (ab.n === 1 && ab.d === 1 ? '' : fPlain(ab) + ' ') + (t.V || t.X + t.Y); }).join(''); }
     function vcVecOf(F, terms){ return vcEval(terms, F, null).c; }
     // Chasles: XY = AY − AX in the basis
     function vcChasles(F, X, Y){
@@ -8649,6 +8674,408 @@
     }
     vcOpsEl.addEventListener('click', function(ev){ var b = ev.target.closest('.ml-op'); if(!b || b.disabled) return; runVect(); });
     vcLoad(VC_EX[0]);
+
+    /* ============ VECTEURS — DANS UN REPÈRE (phase 2) ============ */
+    // Points and vectors have exact rational coordinates (fractions). Constructed points are solved from
+    // their definition (a vector relation is linear in the unknown point), every answer is computed exactly
+    // (déterminant, xx' + yy', distances as simplified radicals, cartesian / reduced equations, Cramer for
+    // intersections) and the working is shown with the 2nde formulas.
+    var vcKind = 'free', vrObjs = [];
+    var vrPtsIn = document.getElementById('vr-pts'), vrVecsIn = document.getElementById('vr-vecs');
+    var vrCptsEl = document.getElementById('vr-cpts'), vrQsEl = document.getElementById('vr-qs'), vrPrevEl = document.getElementById('vr-preview');
+    var vrOpsEl = document.getElementById('vr-ops'), vrExEl = document.getElementById('vr-ex');
+    var VR_PT_TYPES = [['rel', 'Relation vectorielle', 'ex. AM = 2AB - AC'], ['mid', 'Milieu de', 'ex. AB  (milieu de [AB])'], ['grav', 'Centre de gravité de', 'ex. ABC'], ['para', 'Parallélogramme', 'ex. ABCD  (D tel que ABCD soit un parallélogramme)'], ['sym', 'Symétrique de … par rapport à …', 'ex. A, B'], ['trans', 'Image par la translation', 'ex. A, BC  ou  A, u']];
+    var VR_Q_TYPES = [['vec', 'Coordonnées du vecteur', 'ex. AB  ou  2AB - 3AC'], ['point', 'Coordonnées du point', 'ex. D'], ['dist', 'Distance', 'ex. AB'], ['colin', 'Vecteurs colinéaires ?', 'ex. AB, CD  ou  u, v'], ['align', 'Points alignés ?', 'ex. A, B, C'], ['ortho', 'Vecteurs orthogonaux ?', 'ex. AB, AC'], ['tri', 'Nature du triangle', 'ex. ABC'], ['quad', 'Nature du quadrilatère', 'ex. ABCD'], ['line', 'Équation de la droite', 'ex. AB'], ['linepar', 'Parallèle passant par un point', 'ex. C, AB  (parallèle à (AB) passant par C)'], ['inter', 'Intersection de deux droites', 'ex. AB, CD']];
+    var VR_EX = [
+      { t: 'Parallélogramme et milieu', pts: 'A(1 ; 2) ; B(4 ; 3) ; C(5 ; 6)', vecs: '', cpts: [['D', 'para', 'ABCD'], ['I', 'mid', 'AC']], qs: [['vec', 'AB'], ['point', 'D'], ['point', 'I'], ['quad', 'ABCD']] },
+      { t: 'Nature d’un triangle', pts: 'A(-1 ; 1) ; B(3 ; -1) ; C(1 ; 3)', vecs: '', cpts: [], qs: [['dist', 'AB'], ['dist', 'AC'], ['dist', 'BC'], ['tri', 'ABC']] },
+      { t: 'Alignement et colinéarité', pts: 'A(-2 ; 1) ; B(1 ; 3) ; C(7 ; 7) ; D(0 ; -2)', vecs: 'u(3 ; 2)', cpts: [], qs: [['align', 'A, B, C'], ['colin', 'AB, u'], ['colin', 'AB, CD']] },
+      { t: 'Relation vectorielle', pts: 'A(2 ; -1) ; B(-1 ; 3) ; C(4 ; 2)', vecs: '', cpts: [['M', 'rel', 'AM = 2AB - AC'], ['N', 'rel', '3NA + NB = 0']], qs: [['vec', '2AB - AC'], ['point', 'M'], ['point', 'N'], ['align', 'C, M, N']] },
+      { t: 'Droites', pts: 'A(1 ; 2) ; B(3 ; 6) ; C(0 ; 5) ; D(4 ; 1)', vecs: '', cpts: [], qs: [['line', 'AB'], ['line', 'CD'], ['inter', 'AB, CD'], ['linepar', 'C, AB']] },
+      { t: 'Carré', pts: 'A(0 ; 0) ; B(3 ; 1) ; C(2 ; 4) ; D(-1 ; 3)', vecs: '', cpts: [], qs: [['quad', 'ABCD'], ['ortho', 'AC, BD']] }
+    ];
+    function clearVrPlot(){ vrObjs.forEach(function(nm){ try { ggb.deleteObject(nm); } catch(e){} }); vrObjs = []; }
+    function setVrOpsEnabled(on){ vrOpsEl.querySelectorAll('.ml-op').forEach(function(b){ b.disabled = !on; }); }
+
+    // ---- kind toggle (sans repère / dans un repère) ----
+    function vcSetKind(k){
+      vcKind = k;
+      document.getElementById('vc-kind').querySelectorAll('.ml-sidebtn').forEach(function(b){ b.classList.toggle('is-active', b.getAttribute('data-vckind') === k); });
+      document.getElementById('vc-free-panel').hidden = (k !== 'free'); document.getElementById('vr-panel').hidden = (k !== 'coord');
+      document.getElementById('vc-title-hint').textContent = k === 'free' ? '— sans repère (figure quelconque)' : '— dans un repère (coordonnées)';
+      answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = '';
+      clearVcPlot(); clearVrPlot();
+      if(ggb){ try { ggb.setAxesVisible(k === 'coord', k === 'coord'); ggb.setGridVisible(k === 'coord'); } catch(e){} }
+      if(typeof graphHint !== 'undefined' && graphHint) graphHint.textContent = k === 'free' ? 'Points libres en violet (déplaçables), points construits en rouge, vecteurs en orange. Déplacez A, B, C… : les relations démontrées restent vraies.' : 'Points donnés en violet, points construits en rouge, vecteurs en orange, droites en vert.';
+      if(k === 'coord') updateVrPreview(); else updateVcPreview();
+    }
+    document.getElementById('vc-kind').addEventListener('click', function(ev){ var b = ev.target.closest('.ml-sidebtn'); if(b) vcSetKind(b.getAttribute('data-vckind')); });
+
+    // ---- UI rows ----
+    function vrAddPt(v){
+      v = v || ['', 'rel', ''];
+      var row = document.createElement('div'); row.className = 'sys-row vc-row';
+      row.innerHTML = '<span class="sys-lbl">Point</span><input type="text" class="vc-name" maxlength="4" autocomplete="off" spellcheck="false" aria-label="nom du point" /><select class="oq-type vc-type">' + vcOpts(VR_PT_TYPES, v[1]) + '</select><input type="text" class="vc-param" autocomplete="off" spellcheck="false" /><button type="button" class="geo-del" aria-label="Supprimer">×</button>';
+      row.querySelector('.vc-name').value = v[0]; row.querySelector('.vc-param').value = v[2];
+      vrCptsEl.appendChild(row); vcSyncPh(row, VR_PT_TYPES);
+    }
+    function vrAddQ(v){
+      v = v || ['vec', ''];
+      var row = document.createElement('div'); row.className = 'sys-row vc-row';
+      row.innerHTML = '<span class="sys-lbl vc-qn"></span><select class="oq-type vc-type">' + vcOpts(VR_Q_TYPES, v[0]) + '</select><input type="text" class="vc-param" autocomplete="off" spellcheck="false" /><button type="button" class="geo-del" aria-label="Supprimer">×</button>';
+      row.querySelector('.vc-param').value = v[1];
+      vrQsEl.appendChild(row); vcSyncPh(row, VR_Q_TYPES); vrRenumber();
+    }
+    function vrRenumber(){ Array.prototype.forEach.call(vrQsEl.querySelectorAll('.vc-qn'), function(s, i){ s.textContent = (i + 1) + ')'; }); }
+    [vrCptsEl, vrQsEl].forEach(function(box){
+      box.addEventListener('change', function(ev){ if(ev.target.classList.contains('vc-type')) vcSyncPh(ev.target.closest('.vc-row'), box === vrCptsEl ? VR_PT_TYPES : VR_Q_TYPES); updateVrPreview(); });
+      box.addEventListener('input', updateVrPreview);
+      box.addEventListener('click', function(ev){ var b = ev.target.closest('.geo-del'); if(!b) return; b.closest('.vc-row').remove(); vrRenumber(); updateVrPreview(); });
+    });
+    [vrPtsIn, vrVecsIn].forEach(function(i){ i.addEventListener('input', updateVrPreview); });
+    document.getElementById('vr-add-pt').addEventListener('click', function(){ vrAddPt(); });
+    document.getElementById('vr-add-q').addEventListener('click', function(){ vrAddQ(); });
+    (function(){ var h = '<span class="pw-ex__lbl"><i class="bi bi-lightbulb"></i> Exemples :</span>'; VR_EX.forEach(function(e, i){ h += '<button type="button" class="ml-key is-util" data-vrex="' + i + '">' + escapeHtml(e.t) + '</button>'; }); vrExEl.innerHTML = h; })();
+    function vrLoad(ex){ vrPtsIn.value = ex.pts; vrVecsIn.value = ex.vecs; vrCptsEl.innerHTML = ''; vrQsEl.innerHTML = ''; ex.cpts.forEach(vrAddPt); ex.qs.forEach(vrAddQ); answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = ''; updateVrPreview(); }
+    vrExEl.addEventListener('click', function(ev){ var b = ev.target.closest('[data-vrex]'); if(b) vrLoad(VR_EX[Number(b.getAttribute('data-vrex'))]); });
+
+    // ---- exact numbers and display ----
+    function vrNum(str, who){ // rational number (fractions, decimals, operations) → fraction
+      var s = String(str || '').trim().split(String.fromCharCode(8722)).join('-');
+      if(!s) throw who + ' : coordonnée manquante.';
+      var p = e1Parse(s);
+      if(!p || !p.length || p.slice(1).some(function(c){ return !fZero(c); })) throw who + ' : coordonnée invalide (nombres et fractions uniquement, ex. -3, 1/2, 2,5).';
+      return p[0];
+    }
+    // "A(1 ; 2) ; B(-3 ; 4)" → [{ name, x, y }]  — inside the parentheses « ; » (or « , » when there is no « ; »)
+    function vrPairs(str, kind){
+      var s = String(str || ''), out = [], i = 0;
+      while(i < s.length){
+        var j = s.indexOf('(', i); if(j < 0) break;
+        var name = s.slice(i, j).split(';').join(' ').split(',').join(' ').trim().split(' ').pop().split(String.fromCharCode(8242)).join("'");
+        var k = s.indexOf(')', j); if(k < 0) throw 'Parenthèse non fermée après ' + (name || '…') + '.';
+        var inner = s.slice(j + 1, k), parts = inner.indexOf(';') >= 0 ? inner.split(';') : inner.split(',');
+        if(parts.length !== 2) throw (name || kind) + ' : deux coordonnées attendues, ex. ' + (kind === 'vecteur' ? 'u(2 ; -1)' : 'A(1 ; 2)') + '.';
+        if(!name) throw 'Nom de ' + kind + ' manquant avant « (' + inner + ') ».';
+        out.push({ name: name, x: vrNum(parts[0].split(',').join('.'), name), y: vrNum(parts[1].split(',').join('.'), name) });
+        i = k + 1;
+      }
+      return out;
+    }
+    function vrCo(c){ return BS + 'left(' + fTex(c[0]) + ' ; ' + fTex(c[1]) + BS + 'right)'; }
+    function vrCoP(c){ return '(' + fPlain(c[0]) + ' ; ' + fPlain(c[1]) + ')'; }
+    function vrPar(f){ return f.n < 0 ? BS + 'left(' + fTex(f) + BS + 'right)' : fTex(f); }
+    function vrVecName(t){ return t.V ? BS + 'vec{' + t.V + '}' : vcVec(t.X, t.Y); }
+    function vrSqrt(f){ // √f exact (f ≥ 0 fraction) → { tex, plain, v }
+      var N = f.n * f.d, s = simplifyRadical(N), g = igcd(s.coef, f.d) || 1, c = s.coef / g, d = f.d / g;
+      if(s.rad === 1) { var q = fr(s.coef, f.d); return { tex: fTex(q), plain: fPlain(q), v: fVal(q) }; }
+      var num = (c === 1 ? '' : c) + BS + 'sqrt{' + s.rad + '}', np = (c === 1 ? '' : c) + 'sqrt(' + s.rad + ')';
+      return { tex: d === 1 ? num : BS + 'frac{' + num + '}{' + d + '}', plain: d === 1 ? np : np + '/' + d, v: Math.sqrt(fVal(f)) };
+    }
+    // a·x + b·y + c (list of [coef, var]) → TeX / plain, coefficients 1 omitted, zero terms skipped
+    function vrLin(terms, plain){
+      var s = '';
+      terms.forEach(function(t){
+        var k = t[0], v = t[1]; if(fZero(k)) return;
+        var ab = fr(Math.abs(k.n), k.d), one = ab.n === 1 && ab.d === 1;
+        var body = v ? ((one ? '' : (plain ? fPlain(ab) : fTex(ab))) + v) : (plain ? fPlain(ab) : fTex(ab));
+        s += s ? (k.n < 0 ? ' - ' : ' + ') + body : (k.n < 0 ? '-' : '') + body;
+      });
+      return s || '0';
+    }
+    function vrIntCoefs(cs){ // scale [a, b, c] to coprime integers, first non-zero positive
+      var L = cs.reduce(function(l, f){ return l / (igcd(l, f.d) || 1) * f.d; }, 1), ints = cs.map(function(f){ return f.n * (L / f.d); });
+      var g = ints.reduce(function(a, b){ return igcd(a, b); }, 0) || 1; ints = ints.map(function(v){ return v / g; });
+      var first = ints.filter(function(v){ return v !== 0; })[0]; if(first < 0) ints = ints.map(function(v){ return -v; });
+      return ints.map(function(v){ return fr(v); });
+    }
+
+    // ---- figure: points, vectors, constructed points ----
+    function vrTermsVal(F, terms, unknown){ // Σ k·(Y − X) or k·u → { c: [x, y], p } (p = coefficient of the unknown point)
+      var c = [fr(0), fr(0)], p = fr(0);
+      terms.forEach(function(t){
+        if(t.V){ var w = F.vecs[t.V]; if(!w) throw 'vinconnu:' + t.V; c = [fAdd(c[0], fMul(t.k, w[0])), fAdd(c[1], fMul(t.k, w[1]))]; return; }
+        [[t.Y, t.k], [t.X, fNeg(t.k)]].forEach(function(it){
+          if(it[0] === unknown){ p = fAdd(p, it[1]); return; }
+          var P = F.pts[it[0]]; if(!P) throw 'inconnu:' + it[0];
+          c = [fAdd(c[0], fMul(it[1], P[0])), fAdd(c[1], fMul(it[1], P[1]))];
+        });
+      });
+      return { c: c, p: p };
+    }
+    function vrVecTex(F, X, Y){ // AB(x_B − x_A ; y_B − y_A) = (… ; …)
+      var A = F.pts[X], B = F.pts[Y], v = [fSub(B[0], A[0]), fSub(B[1], A[1])];
+      return { v: v, tex: vcVec(X, Y) + BS + 'begin{pmatrix} x_{' + Y + '} - x_{' + X + '} ' + BS + BS + ' y_{' + Y + '} - y_{' + X + '}' + BS + 'end{pmatrix} = ' + BS + 'begin{pmatrix} ' + fTex(B[0]) + ' - ' + vrPar(A[0]) + ' ' + BS + BS + ' ' + fTex(B[1]) + ' - ' + vrPar(A[1]) + BS + 'end{pmatrix} = ' + BS + 'begin{pmatrix} ' + fTex(v[0]) + ' ' + BS + BS + ' ' + fTex(v[1]) + BS + 'end{pmatrix}' };
+    }
+    function vrPm(c){ return BS + 'begin{pmatrix} ' + fTex(c[0]) + ' ' + BS + BS + ' ' + fTex(c[1]) + BS + 'end{pmatrix}'; }
+    function vrRead(){
+      var F = { pts: {}, vecs: {}, given: [], gvecs: [], defs: [] }, list, vl;
+      try { list = vrPairs(vrPtsIn.value, 'point'); vl = vrPairs(vrVecsIn.value, 'vecteur'); } catch(e){ return { err: typeof e === 'string' ? e : 'Points illisibles — ex. A(1 ; 2) ; B(-3 ; 4).' }; }
+      if(!list.length) return { err: 'Donnez au moins un point, ex. A(1 ; 2) ; B(-3 ; 4).' };
+      for(var i = 0; i < list.length; i++){ var nm = list[i].name; if(!vcIsUp(nm.charAt(0))) return { err: 'Le nom d’un point commence par une majuscule (' + nm + ').' }; if(F.pts[nm]) return { err: 'Le point ' + nm + ' est donné deux fois.' }; F.pts[nm] = [list[i].x, list[i].y]; F.given.push(nm); }
+      for(var j = 0; j < vl.length; j++){ var vn = vl[j].name; if(vn.length !== 1 || vn < 'a' || vn > 'z') return { err: 'Un vecteur se nomme par une lettre minuscule (u, v, w).' }; F.vecs[vn] = [vl[j].x, vl[j].y]; F.gvecs.push(vn); }
+      var rows = vrCptsEl.querySelectorAll('.vc-row');
+      for(var r = 0; r < rows.length; r++){
+        var name = vcPointList(rows[r].querySelector('.vc-name').value)[0], type = rows[r].querySelector('.vc-type').value, param = rows[r].querySelector('.vc-param').value.trim();
+        if(!name && !param) continue;
+        if(!name) return { err: 'Point construit n°' + (r + 1) + ' : donnez-lui un nom (lettre majuscule).' };
+        if(F.pts[name]) return { err: 'Le point ' + name + ' est déjà défini.' };
+        var L = vcPointList(param), d = { name: name, type: type, param: param, lines: [] }, P = null;
+        function need(k){ if(L.length < k) throw 'Point ' + name + ' : paramètres incomplets (' + VR_PT_TYPES.filter(function(t){ return t[0] === type; })[0][2] + ').'; L.forEach(function(q){ if(q !== name && !F.pts[q]) throw 'Point ' + name + ' : le point ' + q + ' n’est pas encore défini.'; }); }
+        function xs(k){ return 'x_{' + k + '}'; } function ys(k){ return 'y_{' + k + '}'; }
+        try {
+          if(type === 'rel' || type === 'para' || type === 'trans'){
+            var lt, rt;
+            if(type === 'rel'){ var parts = vcNorm(param).split('='); if(parts.length !== 2) throw 'Point ' + name + ' : écrivez une égalité, ex. AM = 2AB - AC.'; lt = vcParseExpr(parts[0]); rt = vcParseExpr(parts[1]); }
+            else if(type === 'para'){ need(4); if(L.indexOf(name) < 0) throw 'Point ' + name + ' : écrivez le parallélogramme avec ' + name + ', ex. ABC' + name + '.'; lt = [{ k: fr(1), X: L[0], Y: L[1] }]; rt = [{ k: fr(1), X: L[3], Y: L[2] }]; d.of = L.slice(0, 4); }
+            else { var tp = param.split(','); if(tp.length < 2 || !vcPointList(tp[0])[0]) throw 'Point ' + name + ' : ex. A, BC (image de A par la translation de vecteur BC) ou A, u.'; var src = vcPointList(tp[0])[0]; if(!F.pts[src]) throw 'Point ' + name + ' : le point ' + src + ' n’est pas encore défini.'; lt = [{ k: fr(1), X: src, Y: name }]; rt = vcParseExpr(tp.slice(1).join(',')); d.of = [src]; d.by = rt; }
+            var vL = vrTermsVal(F, lt, name), vR = vrTermsVal(F, rt, name), p = fSub(vL.p, vR.p);
+            if(fZero(p)) throw 'Point ' + name + ' : la relation doit faire intervenir ' + name + ' (et ne pas s’annuler).';
+            var cst = [fSub(vR.c[0], vL.c[0]), fSub(vR.c[1], vL.c[1])]; // p·M = cst
+            P = [fDiv(cst[0], p), fDiv(cst[1], p)];
+            d.lt = lt; d.rt = rt;
+            // working: x-equation and y-equation in the unknown coordinates
+            function side(v, co){ return vrLin([[v.p, co], [v.c[co === 'x' ? 0 : 1], '']]); }
+            d.lines.push(BS + 'text{On pose }' + name + '(x ; y)' + BS + 'text{ : }' + vcTermsTex(lt) + ' = ' + vcTermsTex(rt) + BS + 'iff' + BS + 'begin{cases} ' + side(vL, 'x') + ' = ' + side(vR, 'x') + ' ' + BS + BS + ' ' + side(vL, 'y') + ' = ' + side(vR, 'y') + BS + 'end{cases}');
+            d.lines.push(BS + 'iff x = ' + fTex(P[0]) + BS + 'text{ et }y = ' + fTex(P[1]) + BS + 'quad' + BS + 'text{donc }' + name + vrCo(P));
+          } else if(type === 'mid'){
+            need(2); var A = F.pts[L[0]], B = F.pts[L[1]]; P = [fDiv(fAdd(A[0], B[0]), fr(2)), fDiv(fAdd(A[1], B[1]), fr(2))]; d.of = L.slice(0, 2);
+            d.lines.push(xs(name) + ' = ' + BS + 'frac{' + xs(L[0]) + ' + ' + xs(L[1]) + '}{2} = ' + BS + 'frac{' + fTex(A[0]) + ' + ' + vrPar(B[0]) + '}{2} = ' + fTex(P[0]) + ',' + BS + 'quad ' + ys(name) + ' = ' + BS + 'frac{' + ys(L[0]) + ' + ' + ys(L[1]) + '}{2} = ' + BS + 'frac{' + fTex(A[1]) + ' + ' + vrPar(B[1]) + '}{2} = ' + fTex(P[1]));
+          } else if(type === 'grav'){
+            need(3); var G = L.slice(0, 3).map(function(q){ return F.pts[q]; }); P = [fDiv(fAdd(fAdd(G[0][0], G[1][0]), G[2][0]), fr(3)), fDiv(fAdd(fAdd(G[0][1], G[1][1]), G[2][1]), fr(3))]; d.of = L.slice(0, 3);
+            d.lines.push(xs(name) + ' = ' + BS + 'frac{' + G.map(function(g){ return vrPar(g[0]); }).join(' + ') + '}{3} = ' + fTex(P[0]) + ',' + BS + 'quad ' + ys(name) + ' = ' + BS + 'frac{' + G.map(function(g){ return vrPar(g[1]); }).join(' + ') + '}{3} = ' + fTex(P[1]));
+          } else if(type === 'sym'){
+            need(2); var S0 = F.pts[L[0]], S1 = F.pts[L[1]]; P = [fSub(fMul(fr(2), S1[0]), S0[0]), fSub(fMul(fr(2), S1[1]), S0[1])]; d.of = L.slice(0, 2);
+            d.lines.push(L[1] + BS + 'text{ est le milieu de }[' + L[0] + name + ']' + BS + 'text{ : }' + xs(name) + ' = 2' + xs(L[1]) + ' - ' + xs(L[0]) + ' = ' + fTex(P[0]) + ',' + BS + 'quad ' + ys(name) + ' = 2' + ys(L[1]) + ' - ' + ys(L[0]) + ' = ' + fTex(P[1]));
+          }
+        } catch(e){
+          if(typeof e === 'string' && e.indexOf('inconnu:') === 0) return { err: 'Point ' + name + ' : le point ' + e.slice(8) + ' n’est pas encore défini.' };
+          if(typeof e === 'string' && e.indexOf('vinconnu:') === 0) return { err: 'Point ' + name + ' : le vecteur ' + e.slice(9) + ' n’est pas donné.' };
+          return { err: typeof e === 'string' && e.length > 12 ? e : 'Point ' + name + ' : définition illisible.' };
+        }
+        F.pts[name] = P; d.P = P; F.defs.push(d);
+      }
+      return { F: F };
+    }
+    function vrDefTex(d){
+      if(d.type === 'rel') return vcTermsTex(d.lt) + ' = ' + vcTermsTex(d.rt);
+      if(d.type === 'para') return d.of.join('') + BS + 'text{ parallélogramme}';
+      if(d.type === 'trans') return d.name + BS + 'text{ image de }' + d.of[0] + BS + 'text{ par la translation de vecteur }' + vcTermsTex(d.by);
+      return vcDefTex(d);
+    }
+    function vrDefPlain(d){ return d.name + ': ' + (d.type === 'rel' ? d.param : d.type === 'para' ? d.of.join('') + ' parallelogramme' : d.type === 'mid' ? 'milieu de [' + d.of.join('') + ']' : d.type === 'grav' ? 'centre de gravite de ' + d.of.join('') : d.type === 'sym' ? 'symetrique de ' + d.of[0] + ' par rapport a ' + d.of[1] : 'image de ' + d.of[0] + ' par la translation de vecteur ' + vcTermsPlain(d.by)); }
+    function updateVrPreview(){
+      var r = vrRead();
+      if(r.err){ vrPrevEl.className = 'ml-preview is-empty'; vrPrevEl.textContent = r.err; return; }
+      var F = r.F, lines = [F.given.map(function(n){ return n + vrCo(F.pts[n]); }).join(',' + BS + ' ')];
+      if(F.gvecs.length) lines.push(F.gvecs.map(function(n){ return BS + 'vec{' + n + '}' + vrCo(F.vecs[n]); }).join(',' + BS + ' '));
+      F.defs.forEach(function(d){ lines.push(vrDefTex(d) + BS + 'quad' + BS + 'Rightarrow' + BS + 'quad ' + d.name + vrCo(d.P)); });
+      try { renderKatex(vrPrevEl, BS + 'begin{array}{l} ' + lines.join(' ' + BS + BS + ' ') + ' ' + BS + 'end{array}'); vrPrevEl.className = 'ml-preview'; }
+      catch(e){ vrPrevEl.className = 'ml-preview is-empty'; vrPrevEl.textContent = 'Aperçu indisponible.'; }
+    }
+
+    // ---- questions ----
+    function vrVecOf(F, s){ var t = vcParseExpr(s); return { terms: t, v: vrTermsVal(F, t, null).c }; }
+    function vrLineOf(F, s){ // "AB" → line through A directed by AB
+      var L = vcPointList(s); if(L.length !== 2) throw 'Une droite s’écrit avec deux points, ex. AB.';
+      L.forEach(function(q){ if(!F.pts[q]) throw 'inconnu:' + q; });
+      var A = F.pts[L[0]], B = F.pts[L[1]], d = [fSub(B[0], A[0]), fSub(B[1], A[1])];
+      if(fZero(d[0]) && fZero(d[1])) throw 'Les points ' + L[0] + ' et ' + L[1] + ' sont confondus.';
+      return { name: '(' + L[0] + L[1] + ')', P: L[0], p: A, d: d, dn: vcVec(L[0], L[1]), pts: L };
+    }
+    // cartesian equation through p directed by d: d_y·x − d_x·y + c = 0 (integers), plus the reduced form
+    function vrEq(p, d){
+      var a = d[1], b = fNeg(d[0]), c = fNeg(fAdd(fMul(a, p[0]), fMul(b, p[1]))), ic = vrIntCoefs([a, b, c]);
+      var o = { a: ic[0], b: ic[1], c: ic[2], cart: vrLin([[ic[0], 'x'], [ic[1], 'y'], [ic[2], '']]) + ' = 0', cartP: vrLin([[ic[0], 'x'], [ic[1], 'y'], [ic[2], '']], true) + ' = 0' };
+      if(!fZero(ic[1])){ var m = fDiv(fNeg(ic[0]), ic[1]), q = fDiv(fNeg(ic[2]), ic[1]); o.red = 'y = ' + vrLin([[m, 'x'], [q, '']]); o.redP = 'y = ' + vrLin([[m, 'x'], [q, '']], true); o.m = m; o.q = q; }
+      else { var x0 = fDiv(fNeg(ic[2]), ic[0]); o.red = 'x = ' + fTex(x0); o.redP = 'x = ' + fPlain(x0); }
+      return o;
+    }
+    function vrEqWork(R, label, P, p, d, dn){
+      var e = vrEq(p, d);
+      var s = R.line(label, BS + 'text{M(x ; y)} ' + BS + 'in ' + label.split(' ')[0] + BS + 'iff ' + BS + 'det' + BS + 'left(' + vcVec(P, 'M') + ', ' + dn + BS + 'right) = 0' + BS + 'iff ' + BS + 'begin{vmatrix} x - ' + vrPar(p[0]) + ' & ' + fTex(d[0]) + ' ' + BS + BS + ' y - ' + vrPar(p[1]) + ' & ' + fTex(d[1]) + BS + 'end{vmatrix} = 0');
+      s += R.line('', BS + 'iff ' + fTex(d[1]) + '(x - ' + vrPar(p[0]) + ') - ' + vrPar(d[0]) + '(y - ' + vrPar(p[1]) + ') = 0' + BS + 'iff ' + e.cart);
+      s += R.line('Équation réduite :', e.red);
+      return { html: s, e: e };
+    }
+    function vrQuestion(F, R, q, idx){
+      var t = q.type, p = q.p.trim(), out = { lines: '', plain: '', draw: [] }, head = '<div class="vc-q">' + (idx + 1) + ') ' + escapeHtml(VR_Q_TYPES.filter(function(x){ return x[0] === t; })[0][1]) + ' ' + escapeHtml(p) + '</div>';
+      function two(s){ var sp = s.split(';').length > 1 ? s.split(';') : s.split(' et ').length > 1 ? s.split(' et ') : s.split(','); if(sp.length < 2) throw 'Deux éléments séparés par une virgule, ex. AB, CD.'; return [sp[0].trim(), sp.slice(1).join(',').trim()]; }
+      function vecWork(s){ // coordinates of a vector expression, with the working
+        var r = vrVecOf(F, s), html = '';
+        r.terms.forEach(function(tm){ if(!tm.V){ var w = vrVecTex(F, tm.X, tm.Y); html += R.line('', w.tex); } else html += R.line('', BS + 'vec{' + tm.V + '}' + vrPm(F.vecs[tm.V])); });
+        var simple = r.terms.length === 1 && fVal(r.terms[0].k) === 1;
+        if(!simple) html += R.line('', vcTermsTex(r.terms) + ' = ' + r.terms.map(function(tm, i){ var tv = tm.V ? F.vecs[tm.V] : [fSub(F.pts[tm.Y][0], F.pts[tm.X][0]), fSub(F.pts[tm.Y][1], F.pts[tm.X][1])]; return vcCoef(tm.k, vrPm(tv), i === 0); }).join('') + ' = ' + vrPm(r.v));
+        return { html: html, v: r.v, name: simple ? vrVecName(r.terms[0]) : BS + 'left(' + vcTermsTex(r.terms) + BS + 'right)', plain: vcTermsPlain(r.terms), terms: r.terms };
+      }
+      function det(u, v){ return fSub(fMul(u[0], v[1]), fMul(u[1], v[0])); }
+      function detTex(u, v, nu, nv){ return BS + 'det' + BS + 'left(' + nu + ', ' + nv + BS + 'right) = ' + BS + 'begin{vmatrix} ' + fTex(u[0]) + ' & ' + fTex(v[0]) + ' ' + BS + BS + ' ' + fTex(u[1]) + ' & ' + fTex(v[1]) + BS + 'end{vmatrix} = ' + vrPar(u[0]) + BS + 'times ' + vrPar(v[1]) + ' - ' + vrPar(u[1]) + BS + 'times ' + vrPar(v[0]) + ' = ' + fTex(det(u, v)); }
+      function dist2(X, Y){ var A = F.pts[X], B = F.pts[Y], dx = fSub(B[0], A[0]), dy = fSub(B[1], A[1]); return { dx: dx, dy: dy, s: fAdd(fMul(dx, dx), fMul(dy, dy)) }; }
+      function distLine(X, Y){ var r = dist2(X, Y), sq = vrSqrt(r.s); return { r: r, sq: sq, tex: X + Y + ' = ' + BS + 'sqrt{(x_{' + Y + '} - x_{' + X + '})^2 + (y_{' + Y + '} - y_{' + X + '})^2} = ' + BS + 'sqrt{' + vrPar(r.dx) + '^2 + ' + vrPar(r.dy) + '^2} = ' + BS + 'sqrt{' + fTex(r.s) + '}' + (sq.tex === BS + 'sqrt{' + fTex(r.s) + '}' ? '' : ' = ' + sq.tex) }; }
+      var OK = function(m){ return '<div class="vc-ok"><i class="bi bi-check-circle-fill"></i> ' + m + '</div>'; }, KO = function(m){ return '<div class="vc-ko"><i class="bi bi-x-circle-fill"></i> ' + m + '</div>'; };
+      try {
+        if(t === 'vec'){
+          var w = vecWork(p); out.lines = w.html + OK(escapeHtml(w.plain) + ' a pour coordonnées ' + escapeHtml(vrCoP(w.v)) + '.'); out.plain = 'coordonnees de ' + w.plain + ' : ' + vrCoP(w.v);
+          w.terms.forEach(function(tm){ if(!tm.V) out.draw.push(['vec', tm.X, tm.Y]); });
+        } else if(t === 'point'){
+          var nm = vcPointList(p)[0]; if(!nm || !F.pts[nm]) throw 'Point inconnu.';
+          var d = F.defs.filter(function(x){ return x.name === nm; })[0];
+          if(!d){ out.lines = R.line('', nm + vrCo(F.pts[nm]) + BS + 'text{ (point donné)}'); out.plain = nm + vrCoP(F.pts[nm]) + ' (donne)'; }
+          else { out.lines = R.line('Définition :', vrDefTex(d)) + d.lines.map(function(l){ return R.line('', l); }).join('') + OK(escapeHtml(nm + vrCoP(d.P))); out.plain = nm + ' (' + vrDefPlain(d) + ') : ' + nm + vrCoP(d.P); }
+        } else if(t === 'dist'){
+          var L = vcPointList(p); if(L.length !== 2) throw 'Deux points, ex. AB.'; L.forEach(function(q2){ if(!F.pts[q2]) throw 'inconnu:' + q2; });
+          var dl = distLine(L[0], L[1]); out.lines = R.line('', dl.tex) + OK(escapeHtml(L[0] + L[1] + ' = ' + dl.sq.plain + (dl.sq.plain.indexOf('sqrt') >= 0 ? ' ≈ ' + (Math.round(dl.sq.v * 100) / 100) : ''))); out.plain = 'distance ' + L[0] + L[1] + ' = sqrt(' + fPlain(dl.r.s) + ') = ' + dl.sq.plain;
+          out.draw.push(['seg', L[0], L[1]]);
+        } else if(t === 'colin' || t === 'ortho'){
+          var pr = two(p), a = vecWork(pr[0]), b = vecWork(pr[1]);
+          out.lines = a.html + b.html;
+          if(t === 'colin'){
+            var dv = det(a.v, b.v); out.lines += R.line('Déterminant :', detTex(a.v, b.v, a.name, b.name));
+            if(fZero(dv)){ var i0 = fZero(a.v[0]) ? 1 : 0, k = fZero(a.v[i0]) ? null : fDiv(b.v[i0], a.v[i0]); if(k) out.lines += R.line('Donc :', b.name + ' = ' + (fVal(k) === 1 ? '' : fTex(k)) + a.name); out.lines += OK('Déterminant nul : les vecteurs sont colinéaires.'); out.plain = 'colinearite ' + a.plain + ' et ' + b.plain + ' : det = 0, colineaires' + (k ? ' (' + b.plain + ' = ' + (fVal(k) === 1 ? '' : fPlain(k) + ' ') + a.plain + ')' : ''); }
+            else { out.lines += KO('Déterminant non nul (' + escapeHtml(fPlain(dv)) + ') : les vecteurs ne sont pas colinéaires.'); out.plain = 'colinearite ' + a.plain + ' et ' + b.plain + ' : det = ' + fPlain(dv) + ' != 0, non colineaires'; }
+          } else {
+            var sc = fAdd(fMul(a.v[0], b.v[0]), fMul(a.v[1], b.v[1]));
+            out.lines += R.line('', 'xx' + "'" + ' + yy' + "'" + ' = ' + vrPar(a.v[0]) + BS + 'times ' + vrPar(b.v[0]) + ' + ' + vrPar(a.v[1]) + BS + 'times ' + vrPar(b.v[1]) + ' = ' + fTex(sc));
+            out.lines += fZero(sc) ? OK('xx′ + yy′ = 0 : les vecteurs sont orthogonaux.') : KO('xx′ + yy′ = ' + escapeHtml(fPlain(sc)) + ' ≠ 0 : les vecteurs ne sont pas orthogonaux.');
+            out.plain = 'orthogonalite ' + a.plain + ' et ' + b.plain + " : xx' + yy' = " + fPlain(sc) + (fZero(sc) ? ', orthogonaux' : ', non orthogonaux');
+          }
+          [a, b].forEach(function(z){ z.terms.forEach(function(tm){ if(!tm.V) out.draw.push(['vec', tm.X, tm.Y]); }); });
+        } else if(t === 'align'){
+          var L3 = vcPointList(p); if(L3.length < 3) throw 'Trois points, ex. A, B, C.'; L3.forEach(function(q2){ if(!F.pts[q2]) throw 'inconnu:' + q2; });
+          var u3 = vrVecTex(F, L3[0], L3[1]), w3 = vrVecTex(F, L3[0], L3[2]), d3 = det(u3.v, w3.v);
+          out.lines = R.line('', u3.tex) + R.line('', w3.tex) + R.line('Déterminant :', detTex(u3.v, w3.v, vcVec(L3[0], L3[1]), vcVec(L3[0], L3[2])));
+          out.lines += fZero(d3) ? OK('Vecteurs colinéaires : ' + L3.slice(0, 3).join(', ') + ' sont alignés.') : KO('Déterminant non nul : ' + L3.slice(0, 3).join(', ') + ' ne sont pas alignés.');
+          out.plain = 'alignement ' + L3.slice(0, 3).join(',') + ' : det(' + L3[0] + L3[1] + ', ' + L3[0] + L3[2] + ') = ' + fPlain(d3) + (fZero(d3) ? ', alignes' : ', non alignes');
+          out.draw.push(['line', L3[0], L3[1]]);
+        } else if(t === 'tri'){
+          var T = vcPointList(p); if(T.length !== 3) throw 'Trois points, ex. ABC.'; T.forEach(function(q2){ if(!F.pts[q2]) throw 'inconnu:' + q2; });
+          var sides = [[T[0], T[1], T[2]], [T[0], T[2], T[1]], [T[1], T[2], T[0]]].map(function(s){ var dl2 = distLine(s[0], s[1]); return { n: s[0] + s[1], opp: s[2], s: dl2.r.s, sq: dl2.sq, tex: dl2.tex }; });
+          out.lines = sides.map(function(s){ return R.line('', s.tex); }).join('');
+          var dg = det(vrVecTex(F, T[0], T[1]).v, vrVecTex(F, T[0], T[2]).v);
+          if(fZero(dg)){ out.lines += KO('Les trois points sont alignés : ce n’est pas un vrai triangle.'); out.plain = 'triangle ' + T.join('') + ' : points alignes'; }
+          else {
+            var eq = function(x, y){ return fZero(fSub(x.s, y.s)); }, nat = [], iso = null;
+            if(eq(sides[0], sides[1]) && eq(sides[1], sides[2])) nat.push('équilatéral');
+            else { if(eq(sides[0], sides[1])) iso = T[0]; else if(eq(sides[0], sides[2])) iso = T[1]; else if(eq(sides[1], sides[2])) iso = T[2]; if(iso) nat.push('isocèle en ' + iso); }
+            var srt = sides.slice().sort(function(x, y){ return fVal(y.s) - fVal(x.s); }), rect = fZero(fSub(srt[0].s, fAdd(srt[1].s, srt[2].s)));
+            out.lines += R.line('Pythagore :', srt[0].n + '^2 = ' + fTex(srt[0].s) + BS + 'quad' + srt[1].n + '^2 + ' + srt[2].n + '^2 = ' + fTex(srt[1].s) + ' + ' + fTex(srt[2].s) + ' = ' + fTex(fAdd(srt[1].s, srt[2].s)) + BS + 'quad' + (rect ? BS + 'Rightarrow ' + srt[0].n + '^2 = ' + srt[1].n + '^2 + ' + srt[2].n + '^2' : BS + 'Rightarrow ' + BS + 'text{pas d’égalité}'));
+            if(rect) nat.push('rectangle en ' + srt[0].opp);
+            var natS = nat.length ? nat.join(' et ') : 'quelconque';
+            out.lines += OK('Le triangle ' + T.join('') + ' est <strong>' + escapeHtml(natS) + '</strong>' + (rect ? ' (réciproque du théorème de Pythagore)' : '') + '.');
+            out.plain = 'triangle ' + T.join('') + ' : ' + sides.map(function(s){ return s.n + '^2 = ' + fPlain(s.s); }).join(', ') + ' ; nature : ' + natS.split('é').join('e').split('è').join('e');
+          }
+          out.draw.push(['poly'].concat(T));
+        } else if(t === 'quad'){
+          var Q = vcPointList(p); if(Q.length !== 4) throw 'Quatre points, ex. ABCD.'; Q.forEach(function(q2){ if(!F.pts[q2]) throw 'inconnu:' + q2; });
+          var ab = vrVecTex(F, Q[0], Q[1]), dc = vrVecTex(F, Q[3], Q[2]);
+          out.lines = R.line('', ab.tex) + R.line('', dc.tex);
+          var para = fZero(fSub(ab.v[0], dc.v[0])) && fZero(fSub(ab.v[1], dc.v[1])), natQ;
+          if(para){
+            out.lines += R.line('Donc :', vcVec(Q[0], Q[1]) + ' = ' + vcVec(Q[3], Q[2]) + BS + 'quad' + BS + 'Rightarrow' + BS + 'quad ' + Q.join('') + BS + 'text{ est un parallélogramme}');
+            var d1 = distLine(Q[0], Q[2]), d2 = distLine(Q[1], Q[3]), s1 = distLine(Q[0], Q[1]), s2 = distLine(Q[1], Q[2]);
+            var rectQ = fZero(fSub(d1.r.s, d2.r.s)), los = fZero(fSub(s1.r.s, s2.r.s));
+            out.lines += R.line('Diagonales :', d1.tex) + R.line('', d2.tex) + R.line('Côtés consécutifs :', s1.tex) + R.line('', s2.tex);
+            natQ = rectQ && los ? 'carré' : rectQ ? 'rectangle' : los ? 'losange' : 'parallélogramme';
+            out.lines += OK(Q.join('') + ' est un <strong>' + natQ + '</strong>' + (rectQ && los ? ' (diagonales de même longueur et côtés consécutifs égaux)' : rectQ ? ' (parallélogramme dont les diagonales ont la même longueur)' : los ? ' (parallélogramme dont deux côtés consécutifs sont égaux)' : ' (ni rectangle ni losange)') + '.');
+            out.plain = 'quadrilatere ' + Q.join('') + ' : ' + Q[0] + Q[1] + ' = ' + Q[3] + Q[2] + ' = ' + vrCoP(ab.v) + ' donc parallelogramme ; ' + Q[0] + Q[2] + '^2 = ' + fPlain(d1.r.s) + ', ' + Q[1] + Q[3] + '^2 = ' + fPlain(d2.r.s) + ', ' + Q[0] + Q[1] + '^2 = ' + fPlain(s1.r.s) + ', ' + Q[1] + Q[2] + '^2 = ' + fPlain(s2.r.s) + ' ; nature : ' + natQ.split('é').join('e');
+          } else {
+            var ad = vrVecTex(F, Q[0], Q[3]), bc = vrVecTex(F, Q[1], Q[2]), p1 = fZero(det(ab.v, dc.v)), p2 = fZero(det(ad.v, bc.v));
+            out.lines += R.line('', vcVec(Q[0], Q[1]) + ' ' + BS + 'neq ' + vcVec(Q[3], Q[2]) + BS + 'text{ : ce n’est pas un parallélogramme.}');
+            out.lines += R.line('', detTex(ab.v, dc.v, vcVec(Q[0], Q[1]), vcVec(Q[3], Q[2]))) + R.line('', ad.tex) + R.line('', bc.tex) + R.line('', detTex(ad.v, bc.v, vcVec(Q[0], Q[3]), vcVec(Q[1], Q[2])));
+            natQ = p1 ? 'trapèze de bases [' + Q[0] + Q[1] + '] et [' + Q[3] + Q[2] + ']' : p2 ? 'trapèze de bases [' + Q[0] + Q[3] + '] et [' + Q[1] + Q[2] + ']' : 'quadrilatère quelconque';
+            out.lines += OK(Q.join('') + ' est un <strong>' + escapeHtml(natQ) + '</strong>.');
+            out.plain = 'quadrilatere ' + Q.join('') + ' : ' + Q[0] + Q[1] + ' != ' + Q[3] + Q[2] + ' ; nature : ' + natQ.split('è').join('e');
+          }
+          out.draw.push(['poly'].concat(Q));
+        } else if(t === 'line' || t === 'linepar'){
+          var ln, P0, p0, dd, dn, lbl;
+          if(t === 'line'){ ln = vrLineOf(F, p); P0 = ln.P; p0 = ln.p; dd = ln.d; dn = ln.dn; lbl = ln.name; out.lines = R.line('', vrVecTex(F, ln.pts[0], ln.pts[1]).tex); }
+          else { var pr2 = two(p), C = vcPointList(pr2[0])[0]; if(!C || !F.pts[C]) throw 'Point de passage inconnu (ex. C, AB).'; var dw;
+            if(vcPointList(pr2[1]).length === 2){ var l2 = vrLineOf(F, pr2[1]); dw = { v: l2.d, name: l2.dn, html: R.line('', vrVecTex(F, l2.pts[0], l2.pts[1]).tex) }; lbl = '(d)'; out.lines = R.line('', BS + 'text{(d) parallèle à }' + l2.name + BS + 'text{ passant par }' + C + BS + 'text{ : elle a pour vecteur directeur }' + l2.dn); }
+            else { var vv = vecWork(pr2[1]); dw = { v: vv.v, name: vv.name, html: vv.html }; lbl = '(d)'; out.lines = R.line('', BS + 'text{(d) passant par }' + C + BS + 'text{ de vecteur directeur }' + vv.name); }
+            if(fZero(dw.v[0]) && fZero(dw.v[1])) throw 'Vecteur directeur nul.';
+            out.lines += dw.html; P0 = C; p0 = F.pts[C]; dd = dw.v; dn = dw.name; }
+          var ew = vrEqWork(R, lbl + ' :', P0, p0, dd, dn); out.lines += ew.html + OK(escapeHtml(lbl + ' : ' + ew.e.cartP + '   (soit ' + ew.e.redP + ')'));
+          out.plain = 'droite ' + lbl + (t === 'linepar' ? ' (' + p + ')' : '') + ' : ' + ew.e.cartP + ' ; equation reduite ' + ew.e.redP;
+          out.draw.push(['eq', ew.e]);
+        } else if(t === 'inter'){
+          var pr3 = two(p), l1 = vrLineOf(F, pr3[0]), l3 = vrLineOf(F, pr3[1]);
+          var e1 = vrEq(l1.p, l1.d), e3 = vrEq(l3.p, l3.d);
+          out.lines = R.line(l1.name + ' :', e1.cart) + R.line(l3.name + ' :', e3.cart);
+          var D = fSub(fMul(e1.a, e3.b), fMul(e3.a, e1.b));
+          out.lines += R.line('Déterminant :', BS + 'begin{vmatrix} ' + fTex(e1.a) + ' & ' + fTex(e1.b) + ' ' + BS + BS + ' ' + fTex(e3.a) + ' & ' + fTex(e3.b) + BS + 'end{vmatrix} = ' + fTex(D));
+          if(fZero(D)){
+            var same = fZero(fSub(fMul(e1.a, e3.c), fMul(e3.a, e1.c))) && fZero(fSub(fMul(e1.b, e3.c), fMul(e3.b, e1.c)));
+            out.lines += KO('Déterminant nul : les droites sont parallèles' + (same ? ' et confondues.' : ' (strictement) : pas de point d’intersection.')); out.plain = 'intersection ' + l1.name + ' et ' + l3.name + ' : paralleles' + (same ? ' confondues' : ' strictement, aucun point');
+          } else {
+            var X = fDiv(fSub(fMul(fNeg(e1.c), e3.b), fMul(fNeg(e3.c), e1.b)), D), Y = fDiv(fSub(fMul(e1.a, fNeg(e3.c)), fMul(e3.a, fNeg(e1.c))), D);
+            out.lines += R.line('Système :', BS + 'begin{cases} ' + e1.cart + ' ' + BS + BS + ' ' + e3.cart + BS + 'end{cases}' + BS + 'iff' + BS + 'begin{cases} x = ' + fTex(X) + ' ' + BS + BS + ' y = ' + fTex(Y) + BS + 'end{cases}');
+            out.lines += OK('Les droites sont sécantes en ' + escapeHtml(vrCoP([X, Y])) + '.'); out.plain = 'intersection ' + l1.name + ' (' + e1.cartP + ') et ' + l3.name + ' (' + e3.cartP + ') : point ' + vrCoP([X, Y]);
+            out.draw.push(['pt', 'I', [X, Y]]);
+          }
+          out.draw.push(['eq', e1], ['eq', e3]);
+        }
+      } catch(e){
+        var msg = typeof e === 'string' && e.indexOf('inconnu:') === 0 ? 'Le point ' + e.slice(8) + ' n’est pas défini.' : typeof e === 'string' && e.indexOf('vinconnu:') === 0 ? 'Le vecteur ' + e.slice(9) + ' n’est pas donné.' : typeof e === 'string' && e.length > 12 ? e : 'Question illisible — ' + (VR_Q_TYPES.filter(function(x){ return x[0] === t; })[0][2]) + '.';
+        out.lines = '<div class="vc-ko"><i class="bi bi-exclamation-triangle-fill"></i> ' + escapeHtml(msg) + '</div>'; out.plain = 'question ' + (idx + 1) + ' illisible';
+      }
+      return { html: head + out.lines, plain: out.plain, draw: out.draw };
+    }
+
+    function vrDraw(F, draws){
+      clearVrPlot(); if(!ggb) return;
+      var k = 0, xs = [], ys = [];
+      function fx(f){ return String(fVal(f)); }
+      function P(name, c, col){ var nm = 'Vr' + (k++); try { ggb.evalCommand(nm + ' = (' + fx(c[0]) + ', ' + fx(c[1]) + ')'); vrObjs.push(nm); colour(nm, col[0], col[1], col[2]); try { ggb.setFixed(nm, true); ggb.setCaption(nm, name + vrCoP(c).split(' ').join('')); ggb.setLabelStyle(nm, 3); ggb.setLabelVisible(nm, true); } catch(e){} xs.push(fVal(c[0])); ys.push(fVal(c[1])); } catch(e){} return nm; }
+      function obj(nm, cmd, col, thick){ try { ggb.evalCommand(nm + ' = ' + cmd); vrObjs.push(nm); colour(nm, col[0], col[1], col[2]); try { ggb.setLabelVisible(nm, false); if(thick) ggb.setLineThickness(nm, thick); ggb.setFixed(nm, true); } catch(e){} } catch(e){} }
+      var id = {};
+      F.given.forEach(function(n){ id[n] = P(n, F.pts[n], [94, 23, 235]); });
+      F.defs.forEach(function(d){ id[d.name] = P(d.name, d.P, [220, 38, 38]); });
+      var seen = {}, j = 0;
+      draws.forEach(function(dw){
+        var key = JSON.stringify(dw); if(seen[key]) return; seen[key] = 1; j++;
+        if(dw[0] === 'vec' && id[dw[1]] && id[dw[2]]) obj('VrV' + j, 'Vector(' + id[dw[1]] + ', ' + id[dw[2]] + ')', [255, 140, 0], 5);
+        else if(dw[0] === 'seg' && id[dw[1]] && id[dw[2]]) obj('VrS' + j, 'Segment(' + id[dw[1]] + ', ' + id[dw[2]] + ')', [255, 140, 0], 4);
+        else if(dw[0] === 'line' && id[dw[1]] && id[dw[2]]){ obj('VrL' + j, 'Line(' + id[dw[1]] + ', ' + id[dw[2]] + ')', [22, 163, 74], 3); try { ggb.setLineStyle('VrL' + j, 1); } catch(e){} }
+        else if(dw[0] === 'poly' && dw.slice(1).every(function(n){ return id[n]; })){ obj('VrP' + j, 'Polygon(' + dw.slice(1).map(function(n){ return id[n]; }).join(', ') + ')', [94, 23, 235], 3); try { ggb.setFilling('VrP' + j, 0.1); } catch(e){} }
+        else if(dw[0] === 'eq'){ var e = dw[1], en = 'VrE' + j; try { ggb.evalCommand(en + ': ' + fx(e.a) + 'x + (' + fx(e.b) + ')y + (' + fx(e.c) + ') = 0'); if(ggb.exists(en)){ vrObjs.push(en); colour(en, 22, 163, 74); ggb.setLineThickness(en, 4); ggb.setLabelVisible(en, false); ggb.setFixed(en, true); } } catch(err){} }
+        else if(dw[0] === 'pt') P(dw[1], dw[2], [255, 140, 0]);
+      });
+      if(xs.length){ var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs), y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys), m = Math.max(1.5, (x1 - x0) * 0.2, (y1 - y0) * 0.2);
+        // orthonormal frame (same units per pixel on both axes): right angles and squares look right
+        var host = document.getElementById('ggb'), W = (host && host.clientWidth) || 800, H = (host && host.clientHeight) || 480;
+        var ax0 = Math.min(x0 - m, -1), ax1 = Math.max(x1 + m, 1), ay0 = Math.min(y0 - m, -1), ay1 = Math.max(y1 + m, 1), upp = Math.max((ax1 - ax0) / W, (ay1 - ay0) / H), cx = (ax0 + ax1) / 2, cy = (ay0 + ay1) / 2;
+        ax0 = cx - upp * W / 2; ax1 = cx + upp * W / 2; ay0 = cy - upp * H / 2; ay1 = cy + upp * H / 2;
+        try { ggb.setCoordSystem(ax0, ax1, ay0, ay1); } catch(e){} }
+    }
+
+    async function runVectCoord(){
+      var rd = vrRead();
+      if(rd.err){ stateEl.textContent = rd.err; return; }
+      var F = rd.F, qs = Array.prototype.map.call(vrQsEl.querySelectorAll('.vc-row'), function(r){ return { type: r.querySelector('.vc-type').value, p: r.querySelector('.vc-param').value }; }).filter(function(q){ return q.p.trim(); });
+      if(!qs.length){ stateEl.textContent = 'Ajoutez au moins une question.'; return; }
+      answerEl.innerHTML = ''; stepsEl.innerHTML = ''; setVrOpsEnabled(false);
+      var R = e1Report(), body = '', sums = [], draws = [];
+      var fig = R.line('Points donnés :', F.given.map(function(n){ return n + vrCo(F.pts[n]); }).join(',' + BS + ' '));
+      if(F.gvecs.length) fig += R.line('Vecteurs donnés :', F.gvecs.map(function(n){ return BS + 'vec{' + n + '}' + vrCo(F.vecs[n]); }).join(',' + BS + ' '));
+      F.defs.forEach(function(d){ fig += R.line(d.name + ' :', vrDefTex(d)) + d.lines.map(function(l){ return R.line('', l); }).join(''); });
+      body += R.sec('Figure dans le repère', fig);
+      qs.forEach(function(q, i){ var r = vrQuestion(F, R, q, i); body += R.sec('Question ' + (i + 1), r.html); sums.push((i + 1) + ') ' + r.plain); draws = draws.concat(r.draw); });
+      R.render('Vecteurs dans un repère', body);
+      vrDraw(F, draws);
+      var defs = 'repere orthonorme ; points ' + F.given.map(function(n){ return n + vrCoP(F.pts[n]); }).join(', ') + (F.gvecs.length ? ' ; vecteurs ' + F.gvecs.map(function(n){ return n + vrCoP(F.vecs[n]); }).join(', ') : '') + (F.defs.length ? ' ; ' + F.defs.map(vrDefPlain).join(' ; ') : '');
+      var summary = (F.defs.length ? F.defs.map(function(d){ return d.name + vrCoP(d.P); }).join(', ') + ' || ' : '') + sums.join(' || ');
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
+      try {
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: defs.slice(0, 800), operation: 'vecteurs', method: 'repere', casResult: summary.slice(0, 2400) }) });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data, true); } else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){ stateEl.textContent = 'Connexion impossible — réessayez.'; }
+      finally { setVrOpsEnabled(true); }
+    }
+    vrOpsEl.addEventListener('click', function(ev){ var b = ev.target.closest('.ml-op'); if(!b || b.disabled) return; runVectCoord(); });
+    vrLoad(VR_EX[0]);
+
 
 
     /* ============ TRANSFORMATIONS DU PLAN (écriture complexe z' = az + b ou z' = a·conj(z) + b) ============ */
@@ -9450,8 +9877,8 @@
       if(m === 'open'){ updateOqPreview(); return; }
       if(ggb){
         try { ggb.setPerspective((m === 'function' || m === 'integral' || m === 'suite' || m === 'diffeq') ? 'AG' : 'G'); } catch(e){}
-        try { var plainFig = (m === 'vect'); ggb.setAxesVisible(!plainFig, !plainFig); ggb.setGridVisible(!plainFig); } catch(e){} // a vector figure has no frame of reference
-        clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot(); clearSuitePlot(); clearProbaPlot(); clearStatsPlot(); clearPwPlot(); clearE1Plot(); clearSysPlot(); clearBaryPlot(); clearZfPlot(); if(typeof clearIqPlot === 'function') clearIqPlot(); if(typeof clearVcPlot === 'function') clearVcPlot(); if(typeof clearTfPlot === 'function') clearTfPlot();
+        try { var plainFig = (m === 'vect' && vcKind !== 'coord'); ggb.setAxesVisible(!plainFig, !plainFig); ggb.setGridVisible(!plainFig); } catch(e){} // a vector figure has no frame of reference
+        clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot(); clearSuitePlot(); clearProbaPlot(); clearStatsPlot(); clearPwPlot(); clearE1Plot(); clearSysPlot(); clearBaryPlot(); clearZfPlot(); if(typeof clearIqPlot === 'function') clearIqPlot(); if(typeof clearVcPlot === 'function') clearVcPlot(); if(typeof clearVrPlot === 'function') clearVrPlot(); if(typeof clearTfPlot === 'function') clearTfPlot();
         if(m === 'bary'){
           graphTitle.textContent = 'Points pondérés et barycentre';
           graphHint.textContent = 'Les points (avec leur poids), les barycentres partiels de la construction (H₁, H₂…) et le barycentre G en jaune ; le cercle de la ligne de niveau s’affiche avec le second bouton.';
@@ -9468,10 +9895,9 @@
           try { ggb.deleteObject('f'); } catch(e){}
           updateTfPreview();
         } else if(m === 'vect'){
-          graphTitle.textContent = 'Figure (points déplaçables)';
-          graphHint.textContent = 'Points libres en violet (déplaçables), points construits en rouge, vecteurs en orange. Déplacez A, B, C… : les relations démontrées restent vraies.';
+          graphTitle.textContent = 'Figure';
           try { ggb.deleteObject('f'); } catch(e){}
-          updateVcPreview();
+          vcSetKind(vcKind);
         } else if(m === 'ineq'){
           graphTitle.textContent = 'Signe et solutions';
           graphHint.textContent = 'Courbe de h(x) = (membre de gauche) − (membre de droite). En rouge : les zéros ; en vert sur l’axe des abscisses : les x solutions.';
