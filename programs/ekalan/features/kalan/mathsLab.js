@@ -43,6 +43,9 @@ const OPERATIONS = {
   inequation: "la résolution de l'inéquation",
   vecteurs: "la résolution de l'exercice sur les vecteurs",
   transfo: "l'étude de la transformation du plan",
+  analytique: "l'exercice de géométrie analytique (droites et cercles)",
+  espace: "l'exercice de géométrie dans l'espace",
+  conique: "l'étude de la conique",
   barycentre: "le barycentre de points pondérés",
   bary_locus: "l'ensemble des points M tels que ‖Σ aᵢ·MAᵢ‖ = k",
   eq2_solve: "la résolution de l'équation du second degré",
@@ -57,6 +60,9 @@ const OPERATIONS = {
   pw_deriv: "l'étude de la dérivabilité de la fonction définie par intervalles",
   pw_params: "la détermination des paramètres de la fonction définie par intervalles",
   arithmetique: "le calcul d'arithmétique",
+  divisibilite: "l'étude de divisibilité / des restes",
+  affine: "l'étude de l'application affine",
+  branches: "les asymptotes et branches infinies",
   solve: "la résolution de l'équation",
   factor: "la factorisation de l'expression",
   expand: "le développement de l'expression",
@@ -439,6 +445,58 @@ function buildPrompt({ domain, input, operation, casResult, params }) {
   }
 
   // Vectors without coordinates: every answer is computed client-side by a formal (exact) engine.
+  // Conics (Terminale): reduction and elements computed exactly client-side.
+  if (operation === "conique") {
+    const fde = params && params.method === "fde";
+    const userMsg =
+      `Conique (Terminale) : ${input}\n` +
+      `Résultats corrects (fournis — à expliquer, ne pas modifier) : ${casResult}\n\n` +
+      `MÉTHODE IMPOSÉE : ` + (fde
+        ? `M(x ; y) appartient à la conique ⇔ MF = e·d(M, (D)) ⇔ MF² = e²·d(M, (D))² ; écris MF² et d(M, (D))² = (ax + by + c)²/(a² + b²), développe pour obtenir l'équation fournie ; la nature vient de e (e < 1 ellipse, e = 1 parabole, e > 1 hyperbole) ; puis `
+        : ``) +
+      `regroupe les termes en x et en y, complète les carrés pour obtenir l'équation réduite ; ` +
+      `ellipse x²/a² + y²/b² = 1 (a > b) : c² = a² − b², foyers (±c ; 0), sommets, e = c/a, directrices x = ±a²/c ; ` +
+      `hyperbole x²/a² − y²/b² = 1 : c² = a² + b², foyers (±c ; 0), sommets (±a ; 0), e = c/a, directrices x = ±a²/c, asymptotes y = ±(b/a)x ; ` +
+      `parabole y² = 2px : sommet O, foyer (p/2 ; 0), directrice x = −p/2, e = 1 ; transpose ces formules avec le centre ou le sommet trouvé (changement de repère X = x − x₀, Y = y − y₀) et selon l'axe focal ; ` +
+      `tangente en un point M₀ de la conique : règle du dédoublement (x² → x x₀, y² → y y₀, x → (x + x₀)/2, y → (y + y₀)/2).\n` +
+      `Écris les valeurs exactes (fractions, racines). Conclus avec EXACTEMENT la nature et les éléments fournis. Dans 'finalAnswerLatex', écris l'équation réduite et la nature avec les éléments principaux.`;
+    return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
+  }
+
+  // Space geometry (Terminale): every answer computed exactly client-side.
+  if (operation === "espace") {
+    const userMsg =
+      `Exercice de géométrie dans l'espace (repère orthonormé (O ; i, j, k), niveau Terminale).\n` +
+      `Données : ${input}\n` +
+      `Résultats corrects (fournis — plans et droites puis réponse de chaque question, séparées par « || » — à expliquer, ne pas modifier) : ${casResult}\n\n` +
+      `MÉTHODE IMPOSÉE : produit vectoriel \\vec{u}\\wedge\\vec{v} = (y z' − z y' ; z x' − x z' ; x y' − y x'), orthogonal à \\vec{u} et \\vec{v}, nul ⇔ vecteurs colinéaires ; ` +
+      `plan par trois points : \\vec{n} = \\overrightarrow{AB}\\wedge\\overrightarrow{AC} puis ax + by + cz + d = 0 avec un point ; plan par un point et une normale : \\overrightarrow{AM}\\cdot\\vec{n} = 0 ; ` +
+      `droite : représentation paramétrique M = A + t\\vec{u} ; distance d'un point à un plan |ax₀ + by₀ + cz₀ + d|/√(a² + b² + c²) ; distance d'un point M à une droite (A, \\vec{u}) : ‖\\overrightarrow{AM}\\wedge\\vec{u}‖/‖\\vec{u}‖ ; ` +
+      `deux plans : \\vec{n_1}\\wedge\\vec{n_2} nul ⇒ parallèles (confondus si un point commun), sinon sécants selon une droite dirigée par \\vec{n_1}\\wedge\\vec{n_2} ; ` +
+      `droite et plan : \\vec{u}\\cdot\\vec{n} = 0 ⇒ parallèle (ou contenue), sinon on injecte la représentation paramétrique dans l'équation du plan ; ` +
+      `deux droites : \\vec{u_1}\\wedge\\vec{u_2} nul ⇒ parallèles, sinon produit mixte \\overrightarrow{A_1A_2}\\cdot(\\vec{u_1}\\wedge\\vec{u_2}) : nul ⇒ sécantes, non nul ⇒ non coplanaires ; ` +
+      `aire du triangle ABC = ½‖\\overrightarrow{AB}\\wedge\\overrightarrow{AC}‖ ; volume du tétraèdre ABCD = |(\\overrightarrow{AB}\\wedge\\overrightarrow{AC})\\cdot\\overrightarrow{AD}|/6 (= ⅓ × aire de base × hauteur).\n` +
+      `Traite chaque question dans l'ordre, avec un titre d'étape « Question n : … », en détaillant les calculs avec les valeurs. Conclus chaque question avec EXACTEMENT le résultat fourni. ` +
+      `Dans 'finalAnswerLatex', résume les résultats des questions, séparés par des points-virgules (n'écris jamais « || »).`;
+    return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
+  }
+
+  // Analytic geometry (lines and circles): every answer computed exactly client-side.
+  if (operation === "analytique") {
+    const userMsg =
+      `Exercice de géométrie analytique (droites et cercles, repère orthonormé, niveau 2nde / 1ère).\n` +
+      `Données : ${input}\n` +
+      `Résultats corrects (fournis — équations des objets puis réponse de chaque question, séparées par « || » — à expliquer, ne pas modifier) : ${casResult}\n\n` +
+      `MÉTHODE IMPOSÉE : droite — M(x ; y) ∈ (d) ⇔ det(\\overrightarrow{AM}, \\vec{u}) = 0 (vecteur directeur) ou \\overrightarrow{AM}·\\vec{n} = 0 (vecteur normal), équation cartésienne ax + by + c = 0 puis réduite y = mx + p ; ` +
+      `vecteur directeur (−b ; a), vecteur normal (a ; b) ; parallèles ⇔ det des vecteurs normaux nul, perpendiculaires ⇔ produit scalaire des vecteurs normaux nul ; intersection par résolution du système ; ` +
+      `distance d'un point à une droite |ax₀ + by₀ + c|/√(a² + b²) ; cercle de centre Ω(a ; b) et de rayon r : (x − a)² + (y − b)² = r² ; équation développée → forme canonique en complétant les carrés ; ` +
+      `position d'un point : comparer ΩM² et r² ; droite et cercle : comparer la distance du centre à la droite et r, puis substituer et résoudre l'équation du second degré (discriminant) ; ` +
+      `deux cercles : comparer Ω₁Ω₂ à r₁ + r₂ et |r₁ − r₂|, points communs en soustrayant les équations ; tangente en A : droite passant par A de vecteur normal \\overrightarrow{ΩA}.\n` +
+      `Traite chaque question dans l'ordre, avec un titre d'étape « Question n : … », en détaillant les calculs avec les valeurs. Conclus chaque question avec EXACTEMENT le résultat fourni. ` +
+      `Dans 'finalAnswerLatex', résume les résultats des questions, séparés par des points-virgules (n'écris jamais « || »).`;
+    return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
+  }
+
   if (operation === "vecteurs" && params && params.method === "repere") {
     const userMsg =
       `Exercice de géométrie analytique (vecteurs dans un repère orthonormé, niveau 2nde).\n` +
@@ -536,10 +594,64 @@ function buildPrompt({ domain, input, operation, casResult, params }) {
       `Fonction : f(x) = ${input}\n` +
       `Résultats déjà calculés (à expliquer/commenter, ne pas modifier) :\n${casResult}\n\n` +
       `Rédige une ÉTUDE DE FONCTION claire et structurée, niveau Terminale, en t'appuyant sur ces résultats. Organise tes étapes ainsi : ` +
-      `(1) domaine de définition et conditions d'existence ; (2) parité éventuelle ; (3) limites aux bornes et asymptotes (verticale, horizontale ou oblique) ; ` +
+      `(1) domaine de définition et conditions d'existence ; (2) parité éventuelle ; (3) limites aux bornes, asymptotes verticales, horizontales, obliques et branches paraboliques, exactement comme fournies (en ±∞ : a = lim f(x)/x puis b = lim [f(x) − ax] ; position de la courbe par rapport à l'asymptote si elle est fournie) ; ` +
       `(4) dérivée f'(x) et étude de son signe ; (5) sens de variation et extrema ; (6) points caractéristiques (intersections avec les axes). ` +
+      `Pour une forme indéterminée (0 × ∞, ∞/∞, ∞ − ∞), lève-la par un changement de variable (ex. X = 1/x : x·e^(1/x) = e^X / X) et les croissances comparées (e^X / X → +∞, X·e^(−X) → 0, ln(x)/x → 0) ; n'affirme jamais qu'un facteur « l'emporte » sans cette justification. Les limites aux bornes et aux valeurs interdites fournies sont exactes (une limite peut être finie d'un côté et infinie de l'autre). ` +
       `IMPORTANT : ne dessine PAS de tableau de variation (ni en LaTeX array/matrice, ni en ASCII) — il est déjà affiché à l'élève ; décris le sens de variation uniquement en toutes lettres (« f croît sur …, décroît sur … »). ` +
       `Reste strictement cohérent avec les valeurs fournies (mêmes limites, mêmes extrema, même domaine). Dans 'finalAnswerLatex', donne une brève conclusion en TEXTE (pas de tableau ni d'array) résumant le sens de variation.`;
+    return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
+  }
+
+  // Asymptotes and infinite branches of a function: everything computed client-side.
+  if (operation === "branches") {
+    const userMsg =
+      `Fonction : f(x) = ${input}\n` +
+      `Résultats corrects (fournis, séparés par « || » — à expliquer, ne pas modifier) : ${casResult}\n\n` +
+      `MÉTHODE IMPOSÉE (Terminale) : 1) asymptotes verticales : en chaque valeur interdite a, calcule les limites à gauche et à droite ; si l'une est infinie, la droite x = a est asymptote verticale (une limite peut être finie d'un côté). ` +
+      `2) en −∞ et en +∞ : calcule lim f(x). Si elle est finie et vaut ℓ : asymptote horizontale y = ℓ. Si elle est infinie : calcule a = lim f(x)/x ; si a = ±∞ : branche parabolique de direction (Oy) ; si a = 0 : branche parabolique de direction (Ox) ; ` +
+      `si a est un réel non nul : calcule b = lim [f(x) − ax] ; si b est réel : asymptote oblique y = ax + b ; si b est infini : branche parabolique de direction la droite y = ax (ce n'est PAS une asymptote : ne dis jamais « c'est-à-dire asymptote »). ` +
+      `3) position relative : étudie le signe de f(x) − ℓ ou de f(x) − (ax + b) au voisinage de l'infini quand il est fourni. ` +
+      `Lève les formes indéterminées par factorisation, quantité conjuguée, changement de variable (X = 1/x) ou croissances comparées, jamais en affirmant qu'un terme « l'emporte » sans justification. ` +
+      `Conclus avec EXACTEMENT les résultats fournis. Dans 'finalAnswerLatex', liste les asymptotes et branches infinies.`;
+    return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
+  }
+
+  // Plane affine maps / isometries (Terminale C): matrix, invariant points and nature computed client-side.
+  if (operation === "affine") {
+    const m = params && params.method;
+    const pre = m === "write"
+      ? `ÉCRIRE f À PARTIR DE SES ÉLÉMENTS : pars de la définition géométrique (translation : MM' = u ; homothétie : ΩM' = kΩM ; rotation : x' − x₀ = cos θ (x − x₀) − sin θ (y − y₀), y' − y₀ = sin θ (x − x₀) + cos θ (y − y₀) ; similitude directe : idem multiplié par k ; réflexion : MM' colinéaire au vecteur normal de D et milieu de [MM'] sur D ; projection / symétrie oblique / affinité : H ∈ D avec MH colinéaire à w, puis HM' = k·HM, donc MM' = (1 − k)·MH ; symétrie glissée : réflexion puis translation de vecteur u dirigeant l'axe), aboutis à l'expression analytique fournie, PUIS vérifie-la par l'étude ci-dessous. `
+      : m === "compose"
+      ? `COMPOSÉE f₂ ∘ f₁ : rappelle la nature de f₁ et de f₂, substitue x' et y' de f₁ dans l'expression de f₂ (x'' = …, y'' = …) pour obtenir l'expression fournie, puis étudie la composée. `
+      : "";
+    const userMsg =
+      `Exercice (Terminale C, isométries et applications affines du plan, repère orthonormé) : ${input}\n` +
+      `Résultats corrects (fournis, séparés par « || » — à expliquer, ne pas modifier) : ${casResult}\n\n` +
+      `MÉTHODE IMPOSÉE : ${pre}Écriture matricielle M' = AM + B et det A (f bijective ⇔ det A ≠ 0) ; points invariants : résous le système f(M) = M ; ` +
+      `isométrie ⇔ f conserve les distances ⇔ colonnes de A orthonormées (a² + c² = 1, b² + d² = 1, ab + cd = 0) ; déplacement si det A = 1 (translation si A = I, sinon rotation : cos θ = a, sin θ = c, centre = point invariant) ; ` +
+      `antidéplacement si det A = −1 : f∘f(M) = M + AB + B ; réflexion si AB + B = 0 (axe = droite des points invariants), sinon symétrie glissée de vecteur u = (AB + B)/2 ; homothétie si A = kI (centre = point invariant) ; similitude si A = k × matrice d'isométrie ; ` +
+      `si les points invariants forment une droite D : écris MM' = (αx + βy + γ)·w (direction Δ dirigée par w) et le rapport k par A·w = k·w (k = 0 projection sur D parallèlement à Δ, k = −1 symétrie par rapport à D parallèlement à Δ, sinon affinité de base D, de direction Δ et de rapport k). ` +
+      `Les mots déplacement / antidéplacement et le critère AB + B ne s'appliquent QUE si f est une isométrie ; sinon ne les emploie pas. Écris les valeurs exactes (fractions, racines). Conclus avec EXACTEMENT la nature et les éléments fournis. Dans 'finalAnswerLatex', écris la nature et les éléments caractéristiques.`;
+    return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
+  }
+
+  // Divisibility / residues of E(n) (Terminale C): everything decided exactly client-side.
+  if (operation === "divisibilite") {
+    const m = params && params.method;
+    const method = m === "div_base"
+      ? `CONGRUENCES : réécris chaque puissance a^(pn+q) = a^q × (a^p)^n, réduis chaque base modulo d (B ≡ ρ [d] ⇒ B^n ≡ ρ^n [d]), factorise pour faire apparaître d × (entier) ≡ 0 [d]. ` +
+        `Puis donne la SECONDE MÉTHODE PAR RÉCURRENCE fournie : initialisation E(n₀) multiple de d, hérédité E(n+1) = B × E(n) + d × (…) (utilise exactement la relation fournie).`
+      : m === "div_false"
+      ? `L'AFFIRMATION EST FAUSSE : ne la démontre surtout pas. Montre le contre-exemple fourni (calcul de E(n) et division euclidienne par d), puis, par disjonction des cas selon le reste de n modulo L (tableau des restes fourni), indique pour quels n E(n) est divisible par d.`
+      : `DISJONCTION DES CAS selon le reste r de n modulo L : tout entier s'écrit n = Lq + r (0 ≤ r < L) ; si n ≡ r [d] alors n^k ≡ r^k [d] ; pour une puissance B^n, utilise B ≡ ρ [d] puis la période des restes de ρ^n (ρ^L ≡ 1 [d] ⇒ ρ^n = (ρ^L)^q × ρ^r ≡ ρ^r [d]) ; ` +
+        `dresse le tableau des restes (avec les valeurs fournies) puis conclus` +
+        (m === "rest" ? ` : les restes possibles sont exactement les valeurs obtenues.` : m === "which" ? ` : E(n) est divisible par d exactement pour les classes de reste 0.` : ` : tous les restes sont nuls donc d divise E(n) pour tout n.`);
+    const userMsg =
+      `Exercice d'arithmétique (Terminale C, divisibilité et congruences) : ${input}\n` +
+      `Résultats corrects (fournis, séparés par « || » — à expliquer, ne pas modifier) : ${casResult}\n\n` +
+      `MÉTHODE IMPOSÉE : ${method}\n` +
+      `Utilise la notation a ≡ b [d] (en LaTeX : a \\equiv b \\; [d]) ; n'utilise jamais \\bmod, \\pmod ni de commande inventée. Écris chaque cas sous la forme « si n ≡ r [L] alors … ≡ … [d] » avec les valeurs fournies. Fais les calculs de restes un par un, sans en sauter. ` +
+      `Conclus avec EXACTEMENT la conclusion fournie. Dans 'finalAnswerLatex', recopie la conclusion en LaTeX fournie.`;
     return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
   }
 
@@ -626,6 +738,17 @@ function buildPrompt({ domain, input, operation, casResult, params }) {
       `- Paramètres (s'il y en a) : traduis chaque condition (continuité : limite à gauche = limite à droite = f(x₀) ; dérivabilité : nombre dérivé à gauche = nombre dérivé à droite) en une équation, écris le SYSTÈME d'équations (dans le champ latex, utilise \\left\\{ \\begin{array}{l} … \\end{array} \\right.) et résous-le.\n` +
       `Sois concis : 6 à 10 étapes au total, 2 à 3 phrases d'explication par étape, un seul calcul clé dans le champ latex.\n` +
       `Aboutis EXACTEMENT aux valeurs fournies ; n'invente aucune autre valeur.`;
+    return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
+  }
+  if (operation === "diff_eq" && params && params.method === "lin2") {
+    const userMsg =
+      `Équation différentielle linéaire du second ordre à coefficients constants : ${input}\n` +
+      `Résultats corrects (fournis, séparés par « || » — à expliquer, ne pas modifier) : ${casResult}\n\n` +
+      `MÉTHODE IMPOSÉE (Terminale) : on cherche des solutions de la forme x ↦ e^{rx} : r doit vérifier l'équation caractéristique r² + ar + b = 0 ; calcule Δ = a² − 4b. ` +
+      `Si Δ > 0 : deux racines réelles r₁, r₂ et y = C₁e^{r₁x} + C₂e^{r₂x}. Si Δ = 0 : racine double r₀ = −a/2 et y = (C₁x + C₂)e^{r₀x}. ` +
+      `Si Δ < 0 : racines complexes α ± iβ (α = −a/2, β = √(−Δ)/2) et y = e^{αx}(C₁cos(βx) + C₂sin(βx)). ` +
+      `Puis, si des conditions initiales sont fournies, calcule y' , écris le système en C₁ et C₂, résous-le et donne la solution particulière. ` +
+      `Valeurs exactes. Aboutis EXACTEMENT aux résultats fournis. Dans 'finalAnswerLatex', écris la solution générale et, s'il y en a une, la solution particulière.`;
     return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
   }
   if (operation === "diff_eq") {
@@ -765,7 +888,7 @@ async function explainSteps({ domain = "function", input, operation, casResult, 
       model: MATHS_LAB_MODEL,
       // Two-method answers (e.g. quotient: division posée + identification) exceed 2000 tokens;
       // a truncated reply is invalid JSON → "Explication indisponible".
-      max_tokens: /^(pw_|eq3_|eq2_param|system|zf_|integral_ipp|vecteurs|transfo)/.test(String(operation || "")) ? 8192 : 4096, // long multi-part explanations
+      max_tokens: /^(pw_|eq3_|eq2_param|system|zf_|integral_ipp|vecteurs|transfo|analytique|espace|conique|divisibilite|affine|branches|study|diff_eq)/.test(String(operation || "")) ? 8192 : 4096, // long multi-part explanations
       system: [
         { type: "text", text: system, cache_control: { type: "ephemeral" } },
       ],
@@ -785,9 +908,13 @@ async function explainSteps({ domain = "function", input, operation, casResult, 
     // Parse as-is first (valid JSON keeps real newlines etc.); only repair lone
     // LaTeX backslashes when the model produced invalid JSON — otherwise the repair
     // would escape a genuine "\n" into a literal backslash-n that KaTeX shows raw.
+    // A lone "\frac", "\times", "\text", "\right", "\beta" is still VALID JSON (\f \t \r \b escapes) and would
+    // silently become control characters: when the raw text has such a lone escape followed by a letter,
+    // repair first.
+    const looksLatexEscaped = /(^|[^\\])\\[fbtr][a-z]/.test(block.text);
     let parsed;
     try {
-      parsed = JSON.parse(block.text);
+      parsed = JSON.parse(looksLatexEscaped ? repairJsonBackslashes(block.text) : block.text);
     } catch (e1) {
       try {
         parsed = JSON.parse(repairJsonBackslashes(block.text));

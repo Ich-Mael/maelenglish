@@ -1526,7 +1526,7 @@ module.exports.explainMath = async (req, res) => {
     const casResult = typeof req.body.casResult === "string" ? req.body.casResult.trim() : "";
 
     // Trig: Claude computes the result itself, so no casResult is supplied.
-    const longOp = operation === "vecteurs" || operation === "transfo"; // multi-question exercise: longer input and anchored summary
+    const longOp = operation === "vecteurs" || operation === "transfo" || operation === "analytique" || operation === "espace" || operation === "conique" || operation === "divisibilite" || operation === "affine" || operation === "branches" || operation === "study" || operation === "diff_eq"; // multi-question exercise: longer input and anchored summary
     if (domain !== "trig" && (!casResult || casResult.length > (longOp ? 2500 : 500))) {
       return res.status(400).json({ ok: false, error: "Résultat invalide." });
     }
@@ -1619,6 +1619,14 @@ module.exports.explainMath = async (req, res) => {
           params = { method };
           opKeyPart = `inequation:${method}`;
         }
+      } else if (operation === "diff_eq") {
+        if (req.body.method === "lin2") params = { method: "lin2" };
+      } else if (operation === "affine") {
+        params = { method: ["study", "write", "compose"].includes(req.body.method) ? req.body.method : "study" };
+      } else if (operation === "divisibilite") {
+        params = { method: ["div_base", "div_table", "div_false", "rest", "which"].includes(req.body.method) ? req.body.method : "div_table" };
+      } else if (operation === "conique") {
+        params = { method: req.body.method === "fde" ? "fde" : "eq" };
       } else if (operation === "vecteurs") {
         if (req.body.method === "repere") params = { method: "repere" }; // dans un repère (coordinates)
       } else if (operation === "transfo") {
@@ -1639,7 +1647,7 @@ module.exports.explainMath = async (req, res) => {
         if (a) params = { a, b };
         opKeyPart = `integral_ipp:${a},${b}`; // primitive (no bounds) or definite
       } else if (operation === "study") {
-        opKeyPart = "study:v3"; // bump when the étude prompt changes (busts old cached studies)
+        opKeyPart = "study:v4"; // bump when the étude prompt changes (busts old cached studies)
       } else if (operation === "tangent") {
         const x0 = typeof req.body.x0 === "string" ? req.body.x0.trim().slice(0, 40) : "";
         if (!x0) {
