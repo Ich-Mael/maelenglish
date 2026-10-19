@@ -5,22 +5,52 @@ const User = require("../models/user");
 const Institution = require("../models/institution");
 const InstitutionEnrollment = require("../../programs/institution/models/Enrollment");
 const catchAsync = require("../utilities/catchAsync");
-const { isLoggedIn, checkRoles } = require("../middlewares/auth");
+const { isLoggedIn, isVerified, checkRoles } = require("../middlewares/auth");
 const { trackDevice, getOrGenerateDeviceId } = require("../middlewares/deviceTracker");
 const crypto = require("crypto");
 const Emailer = require("../utilities/sendEmail");
 const { getBaseUrl } = require("../utilities/url");
 
+// Account creation is open ONLY while no admin exists (bootstrap of the first admin).
+// Afterwards it requires a logged-in, verified admin / super-admin / account-manager.
+const ACCOUNT_CREATOR_ROLES = ["admin", "super-admin", "account-manager"];
+const ADMIN_ROLES = ["admin", "super-admin"]; // granted only directly in the database
+const ROLES_ASSIGNABLE_BY_ADMIN = ["user", "institution-admin", "english-coach", "account-manager"]; // admin / super-admin are not created from this form
+const ROLES_ASSIGNABLE_BY_MANAGER = ["user", "institution-admin", "english-coach"]; // no privilege escalation
+
+function userRolesOf(user) {
+  return Array.isArray(user.roles) && user.roles.length ? user.roles : [user.role];
+}
+
+const canCreateAccounts = catchAsync(async (req, res, next) => {
+  const adminCount = await User.countDocuments({ role: { $in: ["admin", "super-admin"] } });
+  if (adminCount === 0) {
+    res.locals.bootstrapAdmin = true;
+    return next();
+  }
+  isLoggedIn(req, res, () => isVerified(req, res, () => checkRoles(ACCOUNT_CREATOR_ROLES)(req, res, next)));
+});
+
+function assignableRoles(req) {
+  if (!req.user) return [];
+  const roles = userRolesOf(req.user);
+  if (roles.includes("admin") || roles.includes("super-admin")) return ROLES_ASSIGNABLE_BY_ADMIN;
+  if (roles.includes("account-manager")) return ROLES_ASSIGNABLE_BY_MANAGER;
+  return [];
+}
+
 /**
  * GET /admin/users/create
  * Affiche le formulaire de création de compte
- * Note: Pas de middleware pour permettre la création du premier compte admin
+ * Ouvert sans connexion uniquement tant qu'aucun admin n'existe (création du premier admin).
  */
 router.get(
   "/admin/users/create",
+  canCreateAccounts,
   catchAsync(async (req, res) => {
     const institutions = await Institution.find({ isActive: true }).select('name _id').sort({ name: 1 });
-    res.render("admin/create-account", { institutions });
+    const allowedRoles = res.locals.bootstrapAdmin ? ["admin"] : assignableRoles(req);
+    res.render("admin/create-account", { institutions, allowedRoles, bootstrapAdmin: !!res.locals.bootstrapAdmin });
   })
 );
 
@@ -32,6 +62,7 @@ router.get(
  */
 router.post(
   "/createaccount",
+  canCreateAccounts,
   catchAsync(async (req, res) => {
     // Support both direct fields and nested account object
     const accountData = req.body.account || req.body;
@@ -83,19 +114,19 @@ router.post(
       return res.redirect(req.get("Referrer") || "/");
     }
 
-    // Determine role: if no admin exists, allow creating admin, otherwise use provided role or default to "user"
+    // Determine role: the very first account (no admin yet) is an admin; afterwards the role must be
+    // one the creator is allowed to assign (an account-manager cannot create admins or managers).
     const adminCount = await User.countDocuments({ role: { $in: ["admin", "super-admin"] } });
     let userRole = accountData.role || "user";
 
-    // If no admin exists, allow setting role to admin (for first admin creation)
-    if (adminCount === 0 && (userRole === "admin" || userRole === "super-admin")) {
-      // Allow creating admin if no admin exists
-    } else if (adminCount === 0) {
-      // If no admin exists and no role specified, default to admin for first user
-      userRole = "admin";
-    } else if (userRole !== "user" && userRole !== "admin" && userRole !== "super-admin" && userRole !== "account-manager") {
-      // If admins exist and invalid role specified, default to user
-      userRole = "user";
+    if (adminCount === 0) {
+      userRole = userRole === "super-admin" ? "super-admin" : "admin";
+    } else {
+      const allowed = assignableRoles(req);
+      if (!allowed.includes(userRole)) {
+        req.flash("error", "Vous n'avez pas le droit d'attribuer ce rôle.");
+        return res.redirect(req.get("Referrer") || "/admin/users/create");
+      }
     }
 
     // Generate Activation Token
@@ -445,7 +476,7 @@ router.get(
       return res.redirect("/admin/users");
     }
 
-    res.render("admin/users/edit", { user, institutions });
+    res.render("admin/users/edit", { user, institutions, assignableRoles: ROLES_ASSIGNABLE_BY_ADMIN, roleLocked: ADMIN_ROLES.includes(user.role) });
   })
 );
 
@@ -491,7 +522,18 @@ router.put(
     if (email) user.email = email.toLowerCase();
     if (gender) user.gender = gender;
     if (phoneNumber !== undefined) user.phoneNumber = phoneNumber || undefined;
-    if (role) user.role = role;
+    if (role && role !== user.role) {
+      // admin / super-admin roles are granted or removed directly in the database, never from this form
+      if (ADMIN_ROLES.includes(user.role)) {
+        req.flash("error", "Le rôle d'un administrateur se modifie uniquement en base de données.");
+        return res.redirect(`/admin/users/${req.params.id}/edit`);
+      }
+      if (!ROLES_ASSIGNABLE_BY_ADMIN.includes(role)) {
+        req.flash("error", "Ce rôle ne peut pas être attribué depuis l'interface.");
+        return res.redirect(`/admin/users/${req.params.id}/edit`);
+      }
+      user.role = role;
+    }
     // Handle checkbox: if checked, value is 'true', if unchecked, it's undefined
     user.isVerified = req.body.isVerified === 'true' || req.body.isVerified === true;
     if (imageUrl !== undefined) user.imageUrl = imageUrl;
@@ -860,7 +902,6 @@ router.post("/reset/:token", catchAsync(async (req, res) => {
 // ADMIN ROUTES - Device Management
 // ============================================
 
-const { isVerified } = require("../middlewares/auth");
 
 /**
  * GET /admin/users/:id/devices

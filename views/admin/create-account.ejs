@@ -254,14 +254,17 @@
             class="form-control-enhanced"
             onchange="toggleInstitutionField(this.value)"
           >
-            <option value="user">Utilisateur / Étudiant</option>
-            <option value="institution-admin">Admin institution partenaire</option>
-            <option value="english-coach">English Coach</option>
-            <option value="admin">Administrateur</option>
-            <option value="super-admin">Super Administrateur</option>
-            <option value="account-manager">Gestionnaire de comptes</option>
+            <%
+              const roleLabels = { 'user': 'Utilisateur / Étudiant', 'institution-admin': 'Admin institution partenaire', 'english-coach': 'English Coach', 'admin': 'Administrateur', 'super-admin': 'Super Administrateur', 'account-manager': 'Gestionnaire de comptes' };
+              const roleList = (typeof allowedRoles !== 'undefined' && allowedRoles.length) ? allowedRoles : ['user'];
+            %>
+            <% roleList.forEach(r => { %>
+              <option value="<%= r %>"><%= roleLabels[r] || r %></option>
+            <% }) %>
           </select>
-          <small class="form-text">Si aucun admin n'existe, le premier compte sera automatiquement un admin</small>
+          <% if (typeof bootstrapAdmin !== 'undefined' && bootstrapAdmin) { %>
+            <small class="form-text">Aucun administrateur n'existe encore : ce premier compte sera administrateur.</small>
+          <% } %>
         </div>
 
         <div class="form-group-enhanced" id="institutionField">
