@@ -63,6 +63,7 @@ const OPERATIONS = {
   divisibilite: "l'étude de divisibilité / des restes",
   affine: "l'étude de l'application affine",
   branches: "les asymptotes et branches infinies",
+  param_curve: "l'étude de la courbe paramétrée",
   solve: "la résolution de l'équation",
   factor: "la factorisation de l'expression",
   expand: "le développement de l'expression",
@@ -602,6 +603,21 @@ function buildPrompt({ domain, input, operation, casResult, params }) {
     return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
   }
 
+  // Parametric curves (Terminale): everything computed client-side.
+  if (operation === "param_curve") {
+    const userMsg =
+      `Courbe paramétrée (Terminale) : ${input}\n` +
+      `Résultats corrects (fournis, séparés par « || » — à expliquer, ne pas modifier) : ${casResult}\n\n` +
+      `MÉTHODE IMPOSÉE : 1) ensemble de définition D de t ; 2) période éventuelle T (x(t + T) = x(t) et y(t + T) = y(t)) et parité de x et y : ` +
+      `x paire et y impaire → M(−t) symétrique de M(t) par rapport à (Ox) ; x impaire et y paire → par rapport à (Oy) ; toutes deux impaires → par rapport à O ; d'où l'intervalle d'étude I et la façon de compléter la courbe ; ` +
+      `3) dérivées x'(t) et y'(t), leurs signes et le tableau de variations conjoint de x et y sur I ; ` +
+      `4) points particuliers : y'(t) = 0 et x'(t) ≠ 0 → tangente horizontale ; x'(t) = 0 et y'(t) ≠ 0 → tangente verticale ; x'(t) = y'(t) = 0 → point stationnaire, tangente dirigée par (x''(t) ; y''(t)) si ce vecteur est non nul ; ` +
+      `5) branches infinies : x → ∞ et y → b : asymptote horizontale y = b ; x → a et y → ∞ : asymptote verticale x = a ; x et y → ∞ : on étudie y/x → a puis y − ax → b (asymptote oblique y = ax + b), sinon branche parabolique ; ` +
+      `6) tangente en t₀ dirigée par le vecteur dérivé (x'(t₀) ; y'(t₀)) si elle est demandée. ` +
+      `Reprends chaque point particulier EXACTEMENT avec la nature fournie (« point stationnaire », « tangente horizontale » ou « tangente verticale ») : n'appelle stationnaire QUE les points fournis comme tels, et vérifie-le par le calcul de x'(t) et y'(t). Valeurs exactes. Ne dessine pas de tableau (il est affiché). Conclus avec EXACTEMENT les résultats fournis. Dans 'finalAnswerLatex', résume les éléments principaux (intervalle d'étude, points particuliers, asymptotes).`;
+    return { system: SYSTEM_PROMPT_FUNCTION, userMsg };
+  }
+
   // Asymptotes and infinite branches of a function: everything computed client-side.
   if (operation === "branches") {
     const userMsg =
@@ -888,7 +904,7 @@ async function explainSteps({ domain = "function", input, operation, casResult, 
       model: MATHS_LAB_MODEL,
       // Two-method answers (e.g. quotient: division posée + identification) exceed 2000 tokens;
       // a truncated reply is invalid JSON → "Explication indisponible".
-      max_tokens: /^(pw_|eq3_|eq2_param|system|zf_|integral_ipp|vecteurs|transfo|analytique|espace|conique|divisibilite|affine|branches|study|diff_eq)/.test(String(operation || "")) ? 8192 : 4096, // long multi-part explanations
+      max_tokens: /^(pw_|eq3_|eq2_param|system|zf_|integral_ipp|vecteurs|transfo|analytique|espace|conique|divisibilite|affine|branches|study|diff_eq|param_curve)/.test(String(operation || "")) ? 8192 : 4096, // long multi-part explanations
       system: [
         { type: "text", text: system, cache_control: { type: "ephemeral" } },
       ],

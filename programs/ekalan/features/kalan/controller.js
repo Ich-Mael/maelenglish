@@ -1526,7 +1526,7 @@ module.exports.explainMath = async (req, res) => {
     const casResult = typeof req.body.casResult === "string" ? req.body.casResult.trim() : "";
 
     // Trig: Claude computes the result itself, so no casResult is supplied.
-    const longOp = operation === "vecteurs" || operation === "transfo" || operation === "analytique" || operation === "espace" || operation === "conique" || operation === "divisibilite" || operation === "affine" || operation === "branches" || operation === "study" || operation === "diff_eq"; // multi-question exercise: longer input and anchored summary
+    const longOp = operation === "vecteurs" || operation === "transfo" || operation === "analytique" || operation === "espace" || operation === "conique" || operation === "divisibilite" || operation === "affine" || operation === "branches" || operation === "study" || operation === "diff_eq" || operation === "param_curve"; // multi-question exercise: longer input and anchored summary
     if (domain !== "trig" && (!casResult || casResult.length > (longOp ? 2500 : 500))) {
       return res.status(400).json({ ok: false, error: "Résultat invalide." });
     }

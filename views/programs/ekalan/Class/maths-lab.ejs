@@ -500,6 +500,7 @@
             <button type="button" class="ml-mode" data-mode="espace"><i class="bi bi-box"></i> Géométrie dans l’espace <span class="ml-tle">Tle</span></button>
             <button type="button" class="ml-mode" data-mode="affine"><i class="bi bi-bounding-box"></i> Isométries et applications affines <span class="ml-tle">Tle</span></button>
             <button type="button" class="ml-mode" data-mode="conique"><i class="bi bi-vinyl"></i> Coniques <span class="ml-tle">Tle</span></button>
+            <button type="button" class="ml-mode" data-mode="param"><i class="bi bi-infinity"></i> Courbes paramétrées <span class="ml-tle">Tle</span></button>
             <button type="button" class="ml-mode" data-mode="integral"><i class="bi bi-integral"></i> Intégrales <span class="ml-tle">Tle</span></button>
             <button type="button" class="ml-mode" data-mode="proba"><i class="bi bi-dice-5"></i> Probabilités <span class="ml-tle">Tle</span></button>
             <button type="button" class="ml-mode" data-mode="diffeq"><i class="bi bi-arrow-left-right"></i> Éq. différentielles <span class="ml-tle">Tle</span></button>
@@ -986,6 +987,42 @@
           </div>
           <div class="ml-hint">Points invariants, isométrie (conservation des distances), nature et éléments caractéristiques : translation, rotation, réflexion, symétrie glissée, homothétie, similitude, projection, symétrie oblique, affinité.</div>
         </div><%# /mode-affine %>
+
+        <div id="mode-param" hidden>
+          <h2><i class="bi bi-infinity"></i> Courbes paramétrées <span class="oq-part__hint">— M(t) = (x(t) ; y(t))</span></h2>
+          <div class="pw-ex" id="pc-ex"></div>
+          <div class="ml-input-row"><label for="pc-x">x(t) =</label><input id="pc-x" type="text" value="cos(t)" autocomplete="off" spellcheck="false" placeholder="ex. cos(t), t^2, 3t/(1+t^3)" /></div>
+          <div class="ml-input-row"><label for="pc-y">y(t) =</label><input id="pc-y" type="text" value="sin(2t)" autocomplete="off" spellcheck="false" placeholder="ex. sin(2t), t^3" /></div>
+          <div class="ml-input-row">
+            <label for="pc-i">Intervalle d’étude</label><input id="pc-i" type="text" autocomplete="off" spellcheck="false" placeholder="facultatif — ex. [0 ; pi] (sinon déduit de la période et des symétries)" />
+          </div>
+          <div class="ml-input-row">
+            <label for="pc-t0">Tangente en t₀ =</label><input id="pc-t0" type="text" autocomplete="off" spellcheck="false" placeholder="facultatif — ex. pi/4" style="flex:0 0 auto; min-width:0; max-width:180px" />
+          </div>
+          <div class="ml-preview is-empty" id="pc-preview">Aperçu…</div>
+          <div class="ml-keys" id="pc-keys">
+            <button type="button" class="ml-key" data-ins="t">t</button>
+            <button type="button" class="ml-key" data-ins="t^2">t²</button>
+            <button type="button" class="ml-key" data-ins="^">tⁿ</button>
+            <button type="button" class="ml-key" data-ins="(|)/(|)">a⁄b</button>
+            <button type="button" class="ml-key" data-ins="sqrt(|)">√</button>
+            <button type="button" class="ml-key" data-ins="(|)">(&nbsp;)</button>
+            <button type="button" class="ml-key" data-ins="+">+</button>
+            <button type="button" class="ml-key" data-ins="-">−</button>
+            <button type="button" class="ml-key" data-ins="pi">π</button>
+            <button type="button" class="ml-key is-fn" data-ins="cos(|)">cos</button>
+            <button type="button" class="ml-key is-fn" data-ins="sin(|)">sin</button>
+            <button type="button" class="ml-key is-fn" data-ins="exp(|)">eᵗ</button>
+            <button type="button" class="ml-key is-fn" data-ins="ln(|)">ln</button>
+            <button type="button" class="ml-key is-fn" data-ins="[| ; ]">[ ; ]</button>
+            <button type="button" class="ml-key is-util" data-act="back">⌫</button>
+            <button type="button" class="ml-key is-util" data-act="clear">C</button>
+          </div>
+          <div class="ml-ops" id="pc-ops">
+            <button class="ml-op ml-op--hero" data-pcop="run"><i class="bi bi-clipboard2-data"></i> Étude complète</button>
+          </div>
+          <div class="ml-hint">Ensemble de définition, période et symétries, intervalle d’étude, dérivées, tableau de variations conjoint, tangentes horizontales / verticales, points stationnaires, branches infinies et asymptotes.</div>
+        </div><%# /mode-param %>
 
         <div id="mode-bary" hidden>
           <h2><i class="bi bi-bullseye"></i> Barycentre de points pondérés</h2>
@@ -11860,6 +11897,390 @@
     afOpsEl.addEventListener('click', function(ev){ var b = ev.target.closest('.ml-op'); if(!b || b.disabled) return; runAffine(); });
     afSetTask('study');
 
+    /* ============ COURBES PARAMÉTRÉES (Terminale) ============ */
+    // M(t) = (x(t) ; y(t)). Expressions in t are tokenised by pwTokens, t mapped onto the differentiator's
+    // variable (dxParse/dxDiff), evaluated by pwEval. Study: domain (definedness edges + poles of x or y),
+    // period (2π, π…) and parity of x and y → symmetries and reduced interval, x'(t) and y'(t) (exact strings),
+    // zeros by sampling + bisection, joint variation table, horizontal / vertical tangents, stationary points
+    // (direction from (x'', y'')), infinite branches (asymptotes by brLim on approaching sequences).
+    var modePc = document.getElementById('mode-param');
+    var pcObjs = [], pcActive = null;
+    var pcOpsEl = document.getElementById('pc-ops');
+    var PC_EX = [['Lissajous', 'cos(t)', 'sin(2t)', ''], ['Astroïde', 'cos(t)^3', 'sin(t)^3', ''], ['Cardioïde', '2cos(t) - cos(2t)', '2sin(t) - sin(2t)', ''], ['Point de rebroussement', 't^2', 't^3', ''], ['Folium de Descartes', '3t/(1+t^3)', '3t^2/(1+t^3)', ''], ['Hyperbole', 't + 1/t', 't - 1/t', ''], ['Ellipse', '2cos(t)', 'sin(t)', '']];
+    function clearPcPlot(){ pcObjs.forEach(function(nm){ try { ggb.deleteObject(nm); } catch(e){} }); pcObjs = []; }
+    function setPcOpsEnabled(on){ pcOpsEl.querySelectorAll('.ml-op').forEach(function(b){ b.disabled = !on; }); }
+    (function(){
+      var h = '<span class="pw-ex__lbl"><i class="bi bi-lightbulb"></i> Exemples :</span>';
+      PC_EX.forEach(function(e, i){ h += '<button type="button" class="ml-key is-util" data-pcex="' + i + '">' + escapeHtml(e[0]) + '</button>'; });
+      document.getElementById('pc-ex').innerHTML = h;
+    })();
+    document.getElementById('pc-ex').addEventListener('click', function(ev){
+      var b = ev.target.closest('[data-pcex]'); if(!b) return; var e = PC_EX[Number(b.getAttribute('data-pcex'))];
+      document.getElementById('pc-x').value = e[1]; document.getElementById('pc-y').value = e[2]; document.getElementById('pc-i').value = e[3]; document.getElementById('pc-t0').value = '';
+      answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.textContent = ''; updatePcPreview();
+    });
+    Array.prototype.forEach.call(modePc.querySelectorAll('input'), function(inp){
+      inp.addEventListener('focus', function(){ pcActive = inp; });
+      inp.addEventListener('input', updatePcPreview);
+      inp.addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); runParamCurve(); } });
+    });
+    document.getElementById('pc-keys').addEventListener('click', function(ev){
+      var btn = ev.target.closest('.ml-key'); if(!btn) return; var inp = pcActive || document.getElementById('pc-x'), act = btn.getAttribute('data-act');
+      if(act === 'clear'){ inp.value = ''; inp.focus(); }
+      else if(act === 'back'){ var v = inp.value, s0 = inp.selectionStart, e0 = inp.selectionEnd; if(s0 == null){ inp.value = v.slice(0, -1); } else if(s0 !== e0){ inp.value = v.slice(0, s0) + v.slice(e0); inp.setSelectionRange(s0, s0); } else if(s0 > 0){ inp.value = v.slice(0, s0 - 1) + v.slice(s0); inp.setSelectionRange(s0 - 1, s0 - 1); } inp.focus(); }
+      else insertInto(inp, btn.getAttribute('data-ins'));
+      updatePcPreview();
+    });
+    pcOpsEl.addEventListener('click', function(ev){ var b = ev.target.closest('.ml-op'); if(!b || b.disabled) return; runParamCurve(); });
+
+    // ---- parsing ----
+    function pcT(str){ return String(str).replace(/(^|[^a-z])x(?![a-z])/g, function(m0, p1){ return p1 + 't'; }); }
+    function pcConst(n){ if(!n) return null; if(n.t === 'const') return n.name; var r = null; ['a', 'l', 'r'].forEach(function(k){ if(!r && n[k] && typeof n[k] === 'object') r = pcConst(n[k]); }); return r; }
+    function pcHasTrig(n){ if(!n) return false; if(n.t === 'fn' && (n.name === 'sin' || n.name === 'cos' || n.name === 'tan')) return true; return ['a', 'l', 'r'].some(function(k){ return n[k] && typeof n[k] === 'object' && pcHasTrig(n[k]); }); }
+    function pcParse(src, who){
+      var s = String(src || '').trim().split('×').join('*'); if(!s) throw who + ' : expression manquante.';
+      var tk = pwTokens(s); if(!tk) throw who + ' : caractère non reconnu.';
+      var bad = false; tk = tk.map(function(k){ if(k.t === 'name' && k.v === 'x') bad = true; return (k.t === 'name' && k.v === 't') ? { t: 'name', v: 'x' } : k; });
+      if(bad) throw who + ' : la variable est t (pas x).';
+      var ast = null; try { ast = dxParse(tk); } catch(e){ ast = null; }
+      if(!ast) throw who + ' : expression invalide.';
+      var unk = pcConst(ast); if(unk) throw who + ' : « ' + unk + ' » inconnu — seule la variable t est permise.';
+      var nice = pcNice(ast);
+      return { ast: ast, src: s, str: pcT(dxStr(ast)), tex: nice ? nice.tex : pcTex(pcT(dxStr(ast))), nplain: nice ? nice.plain : pcT(dxStr(ast)), f: function(t){ return pwEval(ast, t, {}); }, trig: pcHasTrig(ast) };
+    }
+    function pcDeriv(P){
+      var d = null; try { d = dxDiff(P.ast); if(d) d = dxSimp(dxSimp(dxSimp(d))); } catch(e){ d = null; }
+      if(!d) return null;
+      var nice = pcNice(d), str = nice ? nice.plain : pcT(dxPretty(d));
+      return { ast: d, str: str, tex: nice ? nice.tex : pcTex(str), f: function(t){ return pwEval(d, t, {}); } };
+    }
+    // ---- readable form of an expression in t: sum of signed terms c·(factors), like terms collected ----
+    function pcTerms(n){ // → [{ c, f: [factor nodes] }] or null when too large
+      if(!n) return null;
+      switch(n.t){
+        case 'num': return [{ c: n.v, f: [] }];
+        case 'var': return [{ c: 1, f: [{ k: 'var' }] }];
+        case 'const': return [{ c: 1, f: [{ k: 'const', name: n.name }] }];
+        case 'neg': { var a = pcTerms(n.a); return a && a.map(function(t){ return { c: -t.c, f: t.f }; }); }
+        case '+': case '-': { var l = pcTerms(n.l), r = pcTerms(n.r); if(!l || !r) return null; return l.concat(r.map(function(t){ return { c: n.t === '-' ? -t.c : t.c, f: t.f }; })); }
+        case '*': { var L = pcTerms(n.l), Rr = pcTerms(n.r); if(!L || !Rr || L.length * Rr.length > 60) return null; var out = []; L.forEach(function(a2){ Rr.forEach(function(b2){ out.push({ c: a2.c * b2.c, f: a2.f.concat(b2.f) }); }); }); return out; }
+        case '/': { var N = pcTerms(n.l), D = pcTerms(n.r); if(!N || !D) return null; if(D.length === 1 && !D[0].f.length) return N.map(function(t){ return { c: t.c / D[0].c, f: t.f }; });
+          var dn = pcCollect(D), q = { k: 'frac', num: null, den: dn };
+          if(N.every(function(t){ return !t.f.length; })) return [{ c: N.reduce(function(s, t){ return s + t.c; }, 0), f: [{ k: 'frac', num: null, den: dn }] }];
+          return [{ c: 1, f: [{ k: 'frac', num: pcCollect(N), den: dn }] }]; }
+        case '^': { if(n.r.t === 'num' && Math.round(n.r.v) === n.r.v && n.r.v >= 2 && n.r.v <= 6){ var B = pcTerms(n.l); if(B && B.length === 1 && B[0].f.length <= 1){ var res = { c: Math.pow(B[0].c, n.r.v), f: [] }; if(B[0].f.length) res.f.push({ k: 'pow', b: B[0].f[0], e: n.r.v }); return [res]; } }
+          return [{ c: 1, f: [{ k: 'pown', b: pcCollect(pcTerms(n.l) || [{ c: 1, f: [{ k: 'raw', s: dxStr(n.l) }] }]), e: n.r }] }]; }
+        case 'fn': { var A = pcTerms(n.a); return [{ c: 1, f: [{ k: 'fn', name: n.name, arg: A ? pcCollect(A) : [{ c: 1, f: [{ k: 'raw', s: dxStr(n.a) }] }] }] }]; }
+      }
+      return null;
+    }
+    function pcFKey(f){ return JSON.stringify(f); }
+    function pcCollect(terms){ // merge powers of equal factors, then like terms
+      terms = terms.map(function(t){ var m = {}, order = []; t.f.forEach(function(x){ var base = x.k === 'pow' ? x.b : x, e = x.k === 'pow' ? x.e : 1, key = pcFKey(base); if(!(key in m)){ m[key] = { b: base, e: 0 }; order.push(key); } m[key].e += e; }); return { c: t.c, f: order.map(function(k){ var o = m[k]; return o.e === 1 ? o.b : { k: 'pow', b: o.b, e: o.e }; }).sort(function(a, b){ return pcRank(a) - pcRank(b); }) }; });
+      var acc = {}, ord = []; terms.forEach(function(t){ var key = pcFKey(t.f); if(!(key in acc)){ acc[key] = { c: 0, f: t.f }; ord.push(key); } acc[key].c += t.c; });
+      var out = ord.map(function(k){ return acc[k]; }).filter(function(t){ return Math.abs(t.c) > 1e-12; });
+      return out.length ? out : [{ c: 0, f: [] }];
+    }
+    function pcRank(f){ var b = f.k === 'pow' ? f.b : f; return b.k === 'var' ? 0 : b.k === 'const' ? 1 : b.k === 'fn' ? 2 : 3; }
+    function pcNum(c, tex){ var r = tfR(Math.abs(c)); return tex ? r.tex : r.plain; }
+    function pcFacTex(f){
+      if(f.k === 'var') return 't';
+      if(f.k === 'const') return f.name;
+      if(f.k === 'raw') return pcTex(pcT(f.s));
+      if(f.k === 'fn'){ var arg = pcSumTex(f.arg), nm = { sin: BS + 'sin', cos: BS + 'cos', tan: BS + 'tan', ln: BS + 'ln', exp: 'exp', sqrt: '', abs: '' }[f.name]; if(f.name === 'sqrt') return BS + 'sqrt{' + arg + '}'; if(f.name === 'abs') return BS + 'left|' + arg + BS + 'right|'; if(f.name === 'exp') return 'e^{' + arg + '}'; return (nm || BS + 'operatorname{' + f.name + '}') + BS + 'left(' + arg + BS + 'right)'; }
+      if(f.k === 'pow'){ var b = f.b; if(b.k === 'fn' && (b.name === 'sin' || b.name === 'cos' || b.name === 'tan')) return BS + b.name + '^{' + f.e + '}' + BS + 'left(' + pcSumTex(b.arg) + BS + 'right)'; var bt = pcFacTex(b); return (b.k === 'var' || b.k === 'const' ? bt : BS + 'left(' + bt + BS + 'right)') + '^{' + f.e + '}'; }
+      if(f.k === 'pown'){ var s = pcSumTex(f.b); return (f.b.length > 1 || f.b[0].f.length > 1 || f.b[0].c !== 1 ? BS + 'left(' + s + BS + 'right)' : s) + '^{' + pcTex(pcT(dxStr(f.e))) + '}'; }
+      if(f.k === 'frac') return BS + 'dfrac{' + (f.num ? pcSumTex(f.num) : '1') + '}{' + pcSumTex(f.den) + '}';
+      return '?';
+    }
+    function pcFacPlain(f){
+      if(f.k === 'var') return 't';
+      if(f.k === 'const') return f.name;
+      if(f.k === 'raw') return pcT(f.s);
+      if(f.k === 'fn') return f.name + '(' + pcSumPlain(f.arg) + ')';
+      if(f.k === 'pow'){ var b = f.b, bp = pcFacPlain(b); return (b.k === 'var' || b.k === 'fn' || b.k === 'const' ? bp : '(' + bp + ')') + '^' + f.e; }
+      if(f.k === 'pown') return '(' + pcSumPlain(f.b) + ')^(' + pcT(dxStr(f.e)) + ')';
+      if(f.k === 'frac') return (f.num ? '(' + pcSumPlain(f.num) + ')' : '1') + '/(' + pcSumPlain(f.den) + ')';
+      return '?';
+    }
+    function pcSumTex(terms){ var s = ''; terms.forEach(function(t, i){ var neg = t.c < 0, one = Math.abs(Math.abs(t.c) - 1) < 1e-12 && t.f.length, co = one ? '' : pcNum(t.c, true); if(co && t.f.length && (co.indexOf(' + ') > 0 || co.indexOf(' - ') > 0)) co = BS + 'left(' + co + BS + 'right)'; s += (i ? (neg ? ' - ' : ' + ') : (neg ? '-' : '')) + co + t.f.map(pcFacTex).join(BS + ','); }); return s || '0'; }
+    function pcSumPlain(terms){ var s = ''; terms.forEach(function(t, i){ var neg = t.c < 0, one = Math.abs(Math.abs(t.c) - 1) < 1e-12 && t.f.length, co = one ? '' : pcNum(t.c, false); s += (i ? (neg ? ' - ' : ' + ') : (neg ? '-' : '')) + co + (co && t.f.length ? ' ' : '') + t.f.map(pcFacPlain).join(' '); }); return s || '0'; }
+    function pcNice(ast){ var T = null; try { T = pcTerms(ast); } catch(e){ T = null; } if(!T) return null; T = pcCollect(T); return { tex: pcSumTex(T), plain: pcSumPlain(T) }; }
+    function pcTex(str){ try { return toLatex(String(str).split(' ').join('')); } catch(e){ return BS + 'text{' + str + '}'; } }
+    function pcNumParse(str, who){ var v = tfNum(str, who); if(Math.abs(v.im) > 1e-12) throw who + ' : réel attendu.'; return v.re; }
+
+    // ---- display of numbers ----
+    function pcTSnap(t, trig){ // value of the parameter: kπ/d first when trig functions are involved
+      if(!isFinite(t)) return { tex: (t > 0 ? '+' : '-') + BS + 'infty', plain: t > 0 ? '+∞' : '−∞' };
+      if(trig){ for(var d = 1; d <= 12; d++){ var k = Math.round(t / Math.PI * d); if(Math.abs(k * Math.PI / d - t) < 1e-8){ if(k === 0) return { tex: '0', plain: '0' }; var g = igcd(Math.abs(k), d) || 1; k /= g; var dd = d / g; var num = (Math.abs(k) === 1 ? '' : Math.abs(k)) + BS + 'pi', np = (Math.abs(k) === 1 ? '' : Math.abs(k)) + 'π'; return { tex: (k < 0 ? '-' : '') + (dd === 1 ? num : BS + 'frac{' + num + '}{' + dd + '}'), plain: (k < 0 ? '-' : '') + np + (dd === 1 ? '' : '/' + dd) }; } } }
+      return pcR(t);
+    }
+    function pcCbrt(v){ // v = ∛(p/q) ?
+      var c = v * v * v, sg = v < 0 ? '-' : '';
+      for(var q = 1; q <= 12; q++){ var p = Math.round(Math.abs(c) * q); if(p > 0 && Math.abs(p / q - Math.abs(c)) < 1e-7 * (1 + Math.abs(c))){ var g = igcd(p, q) || 1, pp = p / g, qq = q / g; return { tex: sg + BS + 'sqrt[3]{' + (qq === 1 ? pp : BS + 'frac{' + pp + '}{' + qq + '}') + '}', plain: sg + 'cbrt(' + (qq === 1 ? pp : pp + '/' + qq) + ')' }; } }
+      return null;
+    }
+    function pcR(v){ var r = tfR(v); if(r.exact) return { tex: r.tex, plain: r.plain }; var cb = pcCbrt(v); return cb || { tex: r.tex, plain: r.plain }; }
+    function pcV(v){ if(v === Infinity) return { tex: '+' + BS + 'infty', plain: '+∞' }; if(v === -Infinity) return { tex: '-' + BS + 'infty', plain: '−∞' }; if(!isFinite(v)) return { tex: '?', plain: '?' }; return pcR(v); }
+
+    // ---- limits along an approach (t → ±∞ or t → t0±) ----
+    function pcSeq(b, dir){ return isFinite(b) ? [1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7].map(function(h){ return b + dir * h; }) : [10, 100, 1e3, 1e4, 1e5, 1e6].map(function(X){ return (b > 0 ? 1 : -1) * X; }); }
+    function pcLim(f, b, dir){ // → number or ±Infinity or NaN
+      var ts = pcSeq(b, dir), vs = [];
+      for(var i = 0; i < ts.length; i++){ var v = f(ts[i]); if(isFinite(v)) vs.push(v); else if(v === Infinity || v === -Infinity){ return v; } else if(vs.length) break; }
+      var L = brLim(vs); if(!L) return NaN; return L.inf ? L.sign * Infinity : L.v;
+    }
+    function pcLimSeq(fn, b, dir){ var ts = pcSeq(b, dir), vs = []; for(var i = 0; i < ts.length; i++){ var v = fn(ts[i]); if(isFinite(v)) vs.push(v); else if(vs.length) break; } return brLim(vs); }
+
+    // ---- analysis ----
+    function pcPeriod(X, Y){
+      var cands = [Math.PI / 2, 2 * Math.PI / 3, Math.PI, 2 * Math.PI, 4 * Math.PI, 6 * Math.PI];
+      for(var c = 0; c < cands.length; c++){
+        var T = cands[c], ok = true, n = 0;
+        for(var k = 0; k < 14 && ok; k++){ var t = -3.1 + k * 0.47; var a = X.f(t), b = X.f(t + T), c2 = Y.f(t), d = Y.f(t + T); if(!isFinite(a) || !isFinite(c2)) continue; n++; if(Math.abs(a - b) > 1e-9 * (1 + Math.abs(a)) || Math.abs(c2 - d) > 1e-9 * (1 + Math.abs(c2))) ok = false; }
+        if(ok && n >= 6) return T;
+      }
+      return 0;
+    }
+    function pcParity(F){ var even = true, odd = true, n = 0; [0.37, 0.91, 1.7, 2.3, 3.1, 4.4].forEach(function(t){ var a = F.f(t), b = F.f(-t); if(!isFinite(a) || !isFinite(b)) return; n++; var sc = 1 + Math.abs(a); if(Math.abs(a - b) > 1e-9 * sc) even = false; if(Math.abs(a + b) > 1e-9 * sc) odd = false; }); if(n < 3) return null; return even ? 'paire' : odd ? 'impaire' : null; }
+    function pcCuts(X, Y, lo, hi){ // points where x or y is undefined or infinite, inside [lo ; hi]
+      var N = 3000, st = (hi - lo) / N, cuts = [], ok = [], P = [];
+      function def(t){ return isFinite(X.f(t)) && isFinite(Y.f(t)); }
+      function add(t){ if(cuts.some(function(c){ return Math.abs(c - t) < 2 * st; })) return; cuts.push(Math.abs(t - Math.round(t)) < 1e-7 ? Math.round(t) : t); }
+      for(var i = 0; i <= N; i++){ var t = lo + i * st; ok[i] = def(t); P[i] = { x: X.f(t), y: Y.f(t) }; }
+      for(var j = 1; j <= N; j++){
+        if(ok[j] !== ok[j - 1]){ var a = lo + (j - 1) * st, b = lo + j * st, want = ok[j - 1]; for(var it = 0; it < 50; it++){ var m = (a + b) / 2; if(def(m) === want) a = m; else b = m; } add((a + b) / 2); }
+        else if(ok[j]){ ['x', 'y'].forEach(function(k){ var u = P[j - 1][k], v = P[j][k]; if(u * v < 0 && Math.min(Math.abs(u), Math.abs(v)) > 5){ var F = k === 'x' ? X : Y, a2 = lo + (j - 1) * st, b2 = lo + j * st, ga = 1 / F.f(a2); for(var it2 = 0; it2 < 60; it2++){ var m2 = (a2 + b2) / 2, gm = 1 / F.f(m2); if((ga < 0) === (gm < 0)){ a2 = m2; ga = gm; } else b2 = m2; } var tt = (a2 + b2) / 2; if(Math.max(Math.abs(X.f(tt - 1e-6)), Math.abs(Y.f(tt - 1e-6)), Math.abs(X.f(tt + 1e-6)), Math.abs(Y.f(tt + 1e-6))) > 1e4) add(tt); } }); }
+      }
+      return cuts.sort(function(u, v){ return u - v; });
+    }
+    function pcZeros(G, lo, hi, cuts){ // zeros of G on ]lo ; hi[ (finite window), away from the cuts
+      var N = 2400, st = (hi - lo) / N, zs = [];
+      function add(t){ if(cuts.some(function(c){ return Math.abs(c - t) < 1e-6; })) return; if(zs.some(function(z){ return Math.abs(z - t) < 1e-6; })) return; zs.push(Math.abs(t - Math.round(t)) < 1e-9 ? Math.round(t) : t); }
+      var prev = G(lo), pt = lo;
+      for(var i = 1; i <= N; i++){
+        var t = lo + i * st, v = G(t);
+        if(isFinite(v) && Math.abs(v) < 1e-11 && t < hi - 1e-12) add(t);
+        else if(isFinite(prev) && isFinite(v) && prev * v < 0){ var a = pt, b = t, ga = prev; for(var it = 0; it < 70; it++){ var m = (a + b) / 2, gm = G(m); if(!isFinite(gm)) break; if((ga < 0) === (gm < 0)){ a = m; ga = gm; } else b = m; } var z = (a + b) / 2; if(Math.abs(G(z)) < 1e-6) add(z); }
+        prev = v; pt = t;
+      }
+      // double zeros (no sign change): local minima of |G| reaching 0
+      for(var j = 1; j < N; j++){ var t0 = lo + j * st, a0 = Math.abs(G(t0 - st)), a1 = Math.abs(G(t0)), a2 = Math.abs(G(t0 + st)); if(a1 <= a0 && a1 <= a2 && a1 < 1e-3){ var l = t0 - st, r = t0 + st; for(var k = 0; k < 80; k++){ var m1 = l + (r - l) / 3, m2 = r - (r - l) / 3; if(Math.abs(G(m1)) < Math.abs(G(m2))) r = m2; else l = m1; } var zz = (l + r) / 2; if(Math.abs(G(zz)) < 1e-9 && zz > lo + 1e-12 && zz < hi - 1e-12) add(zz); } }
+      return zs.sort(function(u, v){ return u - v; });
+    }
+    function pcInterval(str){
+      var s = String(str || '').trim(); if(!s) return null;
+      var i = s.indexOf('['), j = s.lastIndexOf(']'); if(i < 0 || j < i) i = -1;
+      var inner = i >= 0 ? s.slice(i + 1, j) : s; var parts = inner.split(';'); if(parts.length !== 2) throw 'Intervalle : écrivez [a ; b], ex. [0 ; pi].';
+      function val(x){ x = x.trim(); if(x === '+∞' || x === '+inf' || x === 'inf' || x === '∞') return Infinity; if(x === '-∞' || x === '−∞' || x === '-inf') return -Infinity; return pcNumParse(x, 'Intervalle'); }
+      var a = val(parts[0]), b = val(parts[1]); if(!(a < b)) throw 'Intervalle : il faut a < b.'; return { a: a, b: b };
+    }
+
+    function updatePcPreview(){
+      var el = document.getElementById('pc-preview');
+      try { var X = pcParse(document.getElementById('pc-x').value, 'x(t)'), Y = pcParse(document.getElementById('pc-y').value, 'y(t)'); renderKatex(el, BS + 'begin{cases} x(t) = ' + X.tex + ' ' + BS + BS + ' y(t) = ' + Y.tex + ' ' + BS + 'end{cases}'); el.className = 'ml-preview'; }
+      catch(e){ el.className = 'ml-preview is-empty'; el.textContent = typeof e === 'string' ? e : 'Aperçu…'; }
+    }
+
+    async function runParamCurve(){
+      var X, Y, DX, DY, Iuser = null, t0 = null;
+      try {
+        X = pcParse(document.getElementById('pc-x').value, 'x(t)'); Y = pcParse(document.getElementById('pc-y').value, 'y(t)');
+        DX = pcDeriv(X); DY = pcDeriv(Y); if(!DX || !DY) throw 'Dérivée non calculable pour cette expression.';
+        Iuser = pcInterval(document.getElementById('pc-i').value);
+        if(document.getElementById('pc-t0').value.trim()) t0 = pcNumParse(document.getElementById('pc-t0').value, 't₀');
+      } catch(e){ stateEl.textContent = typeof e === 'string' ? e : 'Entrée invalide.'; return; }
+      answerEl.innerHTML = ''; stepsEl.innerHTML = ''; stateEl.innerHTML = '<span class="ml-spinner"></span> Étude de la courbe…';
+      var trig = X.trig || Y.trig, R = e1Report(), body = '', sum = [], sn = 0;
+      sum.push('x(t) = ' + X.nplain + ' ; y(t) = ' + Y.nplain);
+      function TT(t){ return pcTSnap(t, trig); }
+
+      // 1. Domaine, période, symétries
+      var T = pcPeriod(X, Y), px = pcParity(X), py = pcParity(Y), W = T ? T : 60;
+      var cutsAll = pcCuts(X, Y, T ? -T / 2 - 1e-9 : -W, T ? T / 2 + 1e-9 : W);
+      var defLine = cutsAll.length ? BS + 'mathbb{R} ' + BS + 'setminus ' + BS + '{' + cutsAll.map(function(c){ return TT(c).tex; }).join(' ; ') + BS + '}' + (T ? BS + 'text{ (modulo la période)}' : '') : BS + 'mathbb{R}';
+      var undefAll = !isFinite(X.f(0.123)) && !isFinite(X.f(2.5)) && !isFinite(X.f(-2.5));
+      if(undefAll){ stateEl.textContent = 'La courbe n’est définie pour aucune valeur testée de t.'; return; }
+      // definedness edges with a closed end (sqrt, ln…) are listed as cut values too; keep it simple
+      var s1 = R.line('', 'D = ' + defLine);
+      sum.push('D = ' + (cutsAll.length ? 'R prive de {' + cutsAll.map(function(c){ return TT(c).plain; }).join(' ; ') + '}' : 'R'));
+      var symTxt = '', symP = '', reduce = false;
+      if(T){ s1 += R.line('Période :', 'x(t + ' + TT(T).tex + ') = x(t),' + BS + ' y(t + ' + TT(T).tex + ') = y(t)' + BS + 'quad ' + BS + 'Rightarrow ' + BS + 'text{ on étudie sur un intervalle de longueur } ' + TT(T).tex); sum.push('periode T = ' + TT(T).plain); }
+      if(px && py){
+        reduce = true;
+        if(px === 'paire' && py === 'impaire'){ symTxt = 'M(−t) est le symétrique de M(t) par rapport à l’axe (Ox)'; }
+        else if(px === 'impaire' && py === 'paire'){ symTxt = 'M(−t) est le symétrique de M(t) par rapport à l’axe (Oy)'; }
+        else if(px === 'impaire' && py === 'impaire'){ symTxt = 'M(−t) est le symétrique de M(t) par rapport à l’origine O'; }
+        else { symTxt = 'M(−t) = M(t) : la courbe est parcourue deux fois'; }
+        s1 += R.line('Parité :', BS + 'text{x est ' + px + ', y est ' + py + ' : }' + BS + 'text{' + symTxt + '}');
+        sum.push('x ' + px + ', y ' + py + ' : ' + symTxt);
+      } else sum.push('pas de symetrie par t -> -t');
+      body += R.sec((++sn) + '. Ensemble de définition, période et symétries', s1);
+
+      // 2. Intervalle d'étude
+      var I;
+      if(Iuser) I = Iuser; else if(T) I = reduce ? { a: 0, b: T / 2 } : { a: -T / 2, b: T / 2 }; else I = reduce ? { a: 0, b: Infinity } : { a: -Infinity, b: Infinity };
+      function closedAt(e){ return isFinite(e) && isFinite(X.f(e)) && isFinite(Y.f(e)) && !cutsAll.some(function(c){ return Math.abs(c - e) < 1e-7; }); }
+      var iTex = (closedAt(I.a) ? '[' : ']') + TT(I.a).tex + ' ; ' + TT(I.b).tex + (closedAt(I.b) ? ']' : '[');
+      var iPlain = (closedAt(I.a) ? '[' : ']') + TT(I.a).plain + ' ; ' + TT(I.b).plain + (closedAt(I.b) ? ']' : '[');
+      var why = Iuser ? 'intervalle choisi' : (reduce ? 'par symétrie, on étudie sur ' : 'on étudie sur ') + iPlain + (reduce ? ', puis on complète la courbe par la symétrie' : '') + (T && !reduce ? ' (une période)' : '');
+      body += R.sec((++sn) + '. Intervalle d’étude', R.line('', 'I = ' + iTex) + '<div class="study-work">' + escapeHtml(why) + '</div>');
+      sum.push('intervalle d etude I = ' + iPlain + ' (' + why + ')');
+
+      // 3. Dérivées
+      body += R.sec((++sn) + '. Dérivées', R.line('', "x'(t) = " + DX.tex) + R.line('', "y'(t) = " + DY.tex));
+      sum.push("x'(t) = " + DX.str + " ; y'(t) = " + DY.str);
+
+      // 4. Zéros des dérivées et tableau de variations conjoint
+      var wa = isFinite(I.a) ? I.a : -60, wb = isFinite(I.b) ? I.b : 60;
+      var cuts = cutsAll.filter(function(c){ return c > wa + 1e-9 && c < wb - 1e-9; });
+      if(T){ cuts = []; pcCuts(X, Y, wa, wb).forEach(function(c){ if(c > wa + 1e-9 && c < wb - 1e-9) cuts.push(c); }); }
+      var zx = pcZeros(DX.f, wa, wb, cuts), zy = pcZeros(DY.f, wa, wb, cuts);
+      [I.a, I.b].forEach(function(e){ if(isFinite(e)){ if(Math.abs(DX.f(e)) < 1e-10 && zx.every(function(z){ return Math.abs(z - e) > 1e-7; })) zx.push(e); if(Math.abs(DY.f(e)) < 1e-10 && zy.every(function(z){ return Math.abs(z - e) > 1e-7; })) zy.push(e); } });
+      zx.sort(function(u, v){ return u - v; }); zy.sort(function(u, v){ return u - v; });
+      var stops = [I.a, I.b].concat(cuts, zx, zy).filter(function(t, i, arr){ return arr.findIndex(function(u){ return Math.abs(u - t) < 1e-7 || (u === t); }) === i; }).sort(function(u, v){ return u - v; });
+      function isZ(list, t){ return list.some(function(z){ return Math.abs(z - t) < 1e-7; }); }
+      function isCut(t){ return cuts.some(function(c){ return Math.abs(c - t) < 1e-7; }); }
+      function valAt(F, t, side){ // value at a stop (limit at an open end / cut)
+        if(!isFinite(t)) return pcLim(F.f, t, t > 0 ? -1 : 1);
+        var v = F.f(t); if(isFinite(v) && !isCut(t)) return v;
+        return pcLim(F.f, t, side);
+      }
+      var cols = [], plainRows = { t: [], dx: [], x: [], y: [], dy: [] };
+      stops.forEach(function(t, i){
+        var c = { t: t, tt: TT(t), cut: isFinite(t) && (isCut(t) || !isFinite(X.f(t)) || !isFinite(Y.f(t))) };
+        if(c.cut && isFinite(t)){ c.xl = i > 0 ? valAt(X, t, -1) : null; c.xr = i < stops.length - 1 ? valAt(X, t, 1) : null; c.yl = i > 0 ? valAt(Y, t, -1) : null; c.yr = i < stops.length - 1 ? valAt(Y, t, 1) : null; }
+        else { c.x = valAt(X, t, i === 0 ? 1 : -1); c.y = valAt(Y, t, i === 0 ? 1 : -1); }
+        c.dx0 = isFinite(t) && isZ(zx, t); c.dy0 = isFinite(t) && isZ(zy, t);
+        cols.push(c);
+        if(i < stops.length - 1){ var a = t, b = stops[i + 1], m = isFinite(a) && isFinite(b) ? (a + b) / 2 : (isFinite(a) ? a + 1 : b - 1); cols.push({ gap: true, sx: Math.sign(DX.f(m)), sy: Math.sign(DY.f(m)) }); }
+      });
+      function vcell(c, which){ // x or y cell text (tex)
+        if(c.cut){ var l = c[which + 'l'], r = c[which + 'r']; return (l !== null && l !== undefined ? pcV(l).tex : '') + BS + ';' + BS + 'Vert' + BS + ';' + (r !== null && r !== undefined ? pcV(r).tex : ''); }
+        return pcV(c[which]).tex;
+      }
+      function vplain(c, which){ if(c.cut){ var l = c[which + 'l'], r = c[which + 'r']; return (l != null ? pcV(l).plain : '') + ' || ' + (r != null ? pcV(r).plain : ''); } return pcV(c[which]).plain; }
+      var th = function(t){ return '<th><span data-tex="' + escapeHtml(t) + '"></span></th>'; };
+      var td = function(t, cls){ return '<td style="color:#322c4d' + (cls || '') + '"><span data-tex="' + escapeHtml(t) + '"></span></td>'; };
+      var tdTxt = function(t, col){ return '<td style="color:' + (col || '#322c4d') + ';font-weight:700">' + t + '</td>'; };
+      var rT = '<tr>' + th('t'), rDx = '<tr>' + th("x'(t)"), rX = '<tr>' + th('x(t)'), rY = '<tr>' + th('y(t)'), rDy = '<tr>' + th("y'(t)");
+      cols.forEach(function(c){
+        if(c.gap){
+          rT += '<td></td>'; rDx += tdTxt(c.sx > 0 ? '+' : c.sx < 0 ? '−' : '0'); rDy += tdTxt(c.sy > 0 ? '+' : c.sy < 0 ? '−' : '0');
+          rX += tdTxt(c.sx > 0 ? '↗' : c.sx < 0 ? '↘' : '→', '#5e17eb'); rY += tdTxt(c.sy > 0 ? '↗' : c.sy < 0 ? '↘' : '→', '#5e17eb');
+          plainRows.dx.push(c.sx > 0 ? '+' : '-'); plainRows.dy.push(c.sy > 0 ? '+' : '-'); plainRows.x.push(c.sx > 0 ? 'croissante' : 'decroissante'); plainRows.y.push(c.sy > 0 ? 'croissante' : 'decroissante');
+          return;
+        }
+        rT += td(c.tt.tex); rDx += c.cut ? tdTxt('||', '#dc2626') : (c.dx0 ? tdTxt('0') : '<td></td>'); rDy += c.cut ? tdTxt('||', '#dc2626') : (c.dy0 ? tdTxt('0') : '<td></td>');
+        rX += td(vcell(c, 'x')); rY += td(vcell(c, 'y'));
+        plainRows.t.push(c.tt.plain); plainRows.x.push('x = ' + vplain(c, 'x')); plainRows.y.push('y = ' + vplain(c, 'y')); if(c.dx0) plainRows.dx.push("x'=0 en " + c.tt.plain); if(c.dy0) plainRows.dy.push("y'=0 en " + c.tt.plain);
+      });
+      var table = '<div class="ml-vartable-wrap"><table class="ml-vartable">' + rT + '</tr>' + rDx + '</tr>' + rX + '</tr>' + rY + '</tr>' + rDy + '</tr></table></div>';
+      var s4 = '';
+      s4 += R.line('', "x'(t) = 0 " + BS + 'iff t ' + BS + 'in ' + BS + '{' + (zx.length ? zx.map(function(z){ return TT(z).tex; }).join(' ; ') : '') + BS + '}' + BS + 'qquad ' + "y'(t) = 0 " + BS + 'iff t ' + BS + 'in ' + BS + '{' + (zy.length ? zy.map(function(z){ return TT(z).tex; }).join(' ; ') : '') + BS + '}');
+      body += R.sec((++sn) + '. Tableau de variations conjoint sur I', s4 + table);
+      sum.push("x'(t) = 0 pour t = " + (zx.map(function(z){ return TT(z).plain; }).join(', ') || 'aucun') + " ; y'(t) = 0 pour t = " + (zy.map(function(z){ return TT(z).plain; }).join(', ') || 'aucun'));
+      sum.push('tableau : t = ' + plainRows.t.join(', ') + ' ; x : ' + plainRows.x.join(', ') + ' ; y : ' + plainRows.y.join(', '));
+
+      // 5. Points particuliers
+      var specials = [], s5 = '';
+      stops.forEach(function(t){
+        if(!isFinite(t) || isCut(t)) return;
+        var a = isZ(zx, t), b = isZ(zy, t); if(!a && !b) return;
+        var P = { x: X.f(t), y: Y.f(t) }, Pt = BS + 'left(' + pcV(P.x).tex + ' ; ' + pcV(P.y).tex + BS + 'right)', Pp = '(' + pcV(P.x).plain + ' ; ' + pcV(P.y).plain + ')';
+        if(a && b){
+          var D2X = pcDeriv({ ast: DX.ast }), D2Y = pcDeriv({ ast: DY.ast }), vx = D2X ? D2X.f(t) : NaN, vy = D2Y ? D2Y.f(t) : NaN, ok = isFinite(vx) && isFinite(vy) && (Math.abs(vx) > 1e-9 || Math.abs(vy) > 1e-9);
+          s5 += R.line('Point stationnaire :', 't = ' + TT(t).tex + ',' + BS + ' M' + Pt + ',' + BS + " x'(t) = y'(t) = 0" + (ok ? BS + 'quad ' + BS + "text{tangente dirigée par } (x''(t) ; y''(t)) = " + BS + 'left(' + pcV(vx).tex + ' ; ' + pcV(vy).tex + BS + 'right)' : ''));
+          specials.push({ t: t, P: P, kind: 'stat', d: ok ? { x: vx, y: vy } : null });
+          sum.push('point stationnaire en t = ' + TT(t).plain + ' : M' + Pp + (ok ? ", tangente dirigee par (x'' ; y'') = (" + pcV(vx).plain + ' ; ' + pcV(vy).plain + ')' : ''));
+        } else if(b){
+          s5 += R.line('Tangente horizontale :', 't = ' + TT(t).tex + ',' + BS + ' M' + Pt + BS + "quad (y'(t) = 0, " + BS + " x'(t) " + BS + 'neq 0)');
+          specials.push({ t: t, P: P, kind: 'h' }); sum.push('tangente horizontale en t = ' + TT(t).plain + ' : M' + Pp);
+        } else {
+          s5 += R.line('Tangente verticale :', 't = ' + TT(t).tex + ',' + BS + ' M' + Pt + BS + "quad (x'(t) = 0, " + BS + " y'(t) " + BS + 'neq 0)');
+          specials.push({ t: t, P: P, kind: 'v' }); sum.push('tangente verticale en t = ' + TT(t).plain + ' : M' + Pp);
+        }
+      });
+      body += R.sec((++sn) + '. Points particuliers', s5 || '<div class="study-work">Aucune tangente horizontale ou verticale, aucun point stationnaire sur I.</div>');
+
+      // 6. Branches infinies
+      var ends = [];
+      if(!isFinite(I.a)) ends.push({ b: I.a, dir: 1, lbl: 't → −∞', lt: 't ' + BS + 'to -' + BS + 'infty' });
+      if(!isFinite(I.b)) ends.push({ b: I.b, dir: -1, lbl: 't → +∞', lt: 't ' + BS + 'to +' + BS + 'infty' });
+      cuts.forEach(function(c){ [-1, 1].forEach(function(dd){ ends.push({ b: c, dir: dd, lbl: 't → ' + TT(c).plain + (dd < 0 ? '⁻' : '⁺'), lt: 't ' + BS + 'to ' + TT(c).tex + '^{' + (dd < 0 ? '-' : '+') + '}' }); }); });
+      if(isFinite(I.a) && !isFinite(X.f(I.a)) || isFinite(I.a) && !isFinite(Y.f(I.a))) ends.push({ b: I.a, dir: 1, lbl: 't → ' + TT(I.a).plain + '⁺', lt: 't ' + BS + 'to ' + TT(I.a).tex + '^{+}' });
+      if(isFinite(I.b) && !isFinite(X.f(I.b)) || isFinite(I.b) && !isFinite(Y.f(I.b))) ends.push({ b: I.b, dir: -1, lbl: 't → ' + TT(I.b).plain + '⁻', lt: 't ' + BS + 'to ' + TT(I.b).tex + '^{-}' });
+      var asym = [], s6 = '';
+      ends.forEach(function(E){
+        var lx = pcLim(X.f, E.b, E.dir), ly = pcLim(Y.f, E.b, E.dir), xi = !isFinite(lx), yi = !isFinite(ly);
+        if(isNaN(lx) || isNaN(ly)) return;
+        if(!xi && !yi) return;
+        var head = BS + 'lim_{' + E.lt + '} x(t) = ' + pcV(lx).tex + ',' + BS + 'quad ' + BS + 'lim_{' + E.lt + '} y(t) = ' + pcV(ly).tex;
+        var hp = E.lbl + ' : x -> ' + pcV(lx).plain + ', y -> ' + pcV(ly).plain;
+        if(xi && !yi){ s6 += R.line('Asymptote horizontale y = ' + pcV(ly).plain + ' (' + E.lbl + ') :', head); asym.push({ k: 'h', v: ly }); sum.push(hp + ' : asymptote horizontale y = ' + pcV(ly).plain); return; }
+        if(!xi && yi){ s6 += R.line('Asymptote verticale x = ' + pcV(lx).plain + ' (' + E.lbl + ') :', head); asym.push({ k: 'v', v: lx }); sum.push(hp + ' : asymptote verticale x = ' + pcV(lx).plain); return; }
+        var A = pcLimSeq(function(t){ return Y.f(t) / X.f(t); }, E.b, E.dir);
+        if(!A){ s6 += R.line('Branche infinie (' + E.lbl + ') :', head); sum.push(hp + ' : branche infinie'); return; }
+        if(A.inf){ s6 += R.line('Branche parabolique de direction (Oy) (' + E.lbl + ') :', head + ',' + BS + 'quad ' + BS + 'dfrac{y}{x} ' + BS + 'to ' + BS + 'infty'); sum.push(hp + ', y/x -> infini : branche parabolique de direction (Oy)'); return; }
+        if(A.v === 0){ s6 += R.line('Branche parabolique de direction (Ox) (' + E.lbl + ') :', head + ',' + BS + 'quad ' + BS + 'dfrac{y}{x} ' + BS + 'to 0'); sum.push(hp + ', y/x -> 0 : branche parabolique de direction (Ox)'); return; }
+        var a = A.v, Bq = pcLimSeq(function(t){ return Y.f(t) - a * X.f(t); }, E.b, E.dir);
+        if(Bq && !Bq.inf){ var bb = Bq.v, eq = tfLineEq(tfC(0, bb), tfC(1, a)); s6 += R.line('Asymptote oblique ' + eq.plain + ' (' + E.lbl + ') :', head + ',' + BS + 'quad ' + BS + 'dfrac{y}{x} ' + BS + 'to ' + pcV(a).tex + ',' + BS + 'quad y ' + (a < 0 ? '+ ' : '- ') + (Math.abs(Math.abs(a) - 1) < 1e-12 ? '' : pcV(Math.abs(a)).tex) + 'x ' + BS + 'to ' + pcV(bb).tex); asym.push({ k: 'o', a: a, b: bb }); sum.push(hp + ', y/x -> ' + pcV(a).plain + ', y - ax -> ' + pcV(bb).plain + ' : asymptote oblique ' + eq.plain); return; }
+        s6 += R.line('Branche parabolique de direction y = ' + pcV(a).plain + 'x (' + E.lbl + ') :', head + ',' + BS + 'quad ' + BS + 'dfrac{y}{x} ' + BS + 'to ' + pcV(a).tex + ',' + BS + 'quad y - ax ' + BS + 'to ' + BS + 'infty'); sum.push(hp + ', y/x -> ' + pcV(a).plain + ', y - ax -> infini : branche parabolique de direction y = ' + pcV(a).plain + 'x');
+      });
+      body += R.sec((++sn) + '. Branches infinies', s6 || '<div class="study-work">Aucune branche infinie sur I (la courbe est bornée).</div>');
+
+      // 7. Tangente en t0
+      var tan = null;
+      if(t0 !== null){
+        var Pt0 = { x: X.f(t0), y: Y.f(t0) }, v0 = { x: DX.f(t0), y: DY.f(t0) };
+        if(!isFinite(Pt0.x) || !isFinite(Pt0.y)) body += R.sec((++sn) + '. Tangente en t₀', '<div class="vc-ko"><i class="bi bi-x-circle-fill"></i> La courbe n’est pas définie en t₀.</div>');
+        else {
+          var vv = v0, how = BS + "vec{v} = (x'(t_0) ; y'(t_0))";
+          if(Math.abs(v0.x) < 1e-10 && Math.abs(v0.y) < 1e-10){ var D2X0 = pcDeriv({ ast: DX.ast }), D2Y0 = pcDeriv({ ast: DY.ast }); vv = { x: D2X0 ? D2X0.f(t0) : 0, y: D2Y0 ? D2Y0.f(t0) : 0 }; how = BS + "text{point stationnaire : } " + BS + "vec{v} = (x''(t_0) ; y''(t_0))"; }
+          if(Math.abs(vv.x) < 1e-10 && Math.abs(vv.y) < 1e-10) body += R.sec((++sn) + '. Tangente en t₀', '<div class="study-work">Vecteur dérivé nul jusqu’à l’ordre 2 : tangente non déterminée ici.</div>');
+          else {
+            var eqT = tfLineEq(tfC(Pt0.x, Pt0.y), tfC(vv.x, vv.y)); tan = { P: Pt0, d: vv };
+            body += R.sec((++sn) + '. Tangente en t₀ = ' + escapeHtml(TT(t0).plain), R.line('', 'M(t_0) = ' + BS + 'left(' + pcV(Pt0.x).tex + ' ; ' + pcV(Pt0.y).tex + BS + 'right),' + BS + 'quad ' + how + ' = ' + BS + 'left(' + pcV(vv.x).tex + ' ; ' + pcV(vv.y).tex + BS + 'right)') + R.line('Tangente :', eqT.tex));
+            sum.push('tangente en t0 = ' + TT(t0).plain + ' : M(' + pcV(Pt0.x).plain + ' ; ' + pcV(Pt0.y).plain + '), vecteur directeur (' + pcV(vv.x).plain + ' ; ' + pcV(vv.y).plain + '), ' + eqT.plain);
+          }
+        }
+      }
+
+      R.render('Courbe paramétrée', body);
+      pcDraw(X, Y, T, cutsAll, specials, asym, tan);
+      setPcOpsEnabled(false);
+      stateEl.innerHTML = '<span class="ml-spinner"></span> Génération des étapes…';
+      try {
+        var resp = await fetch(EXPLAIN_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ function: ('x(t) = ' + X.str + ' ; y(t) = ' + Y.str + (Iuser ? ' ; I = ' + iPlain : '') + (t0 !== null ? ' ; t0 = ' + TT(t0).plain : '')).slice(0, 790), operation: 'param_curve', casResult: sum.join(' || ').slice(0, 2450) }) });
+        var data = await resp.json();
+        if(data.ok){ showSteps(data, true); } else { stateEl.textContent = data.error || 'Étapes indisponibles.'; }
+      } catch(e){ stateEl.textContent = 'Connexion impossible — réessayez.'; }
+      finally { setPcOpsEnabled(true); }
+    }
+
+    function pcDraw(X, Y, T, cuts, specials, asym, tan){
+      clearPcPlot(); if(!ggb) return;
+      try { ggb.deleteObject('f'); } catch(e){}
+      var k = 0, xs = [], ys = [];
+      function obj(cmd, col, th, dash, pre){ var nm = (pre || 'PcO') + (k++); try { ggb.evalCommand(nm + (pre === 'PcL' ? ': ' : ' = ') + cmd); if(!ggb.exists(nm)) return null; pcObjs.push(nm); ggb.setColor(nm, col[0], col[1], col[2]); ggb.setLabelVisible(nm, false); ggb.setFixed(nm, true); if(th) ggb.setLineThickness(nm, th); if(dash) ggb.setLineStyle(nm, 1); } catch(e){ return null; } return nm; }
+      var lo = T ? -T / 2 : -25, hi = T ? T / 2 : 25, segs = [], pts = [lo].concat(cuts.filter(function(c){ return c > lo && c < hi; })).concat([hi]);
+      for(var i = 0; i < pts.length - 1; i++){ var a = pts[i] + (i ? 1e-3 : 0), b = pts[i + 1] - (i < pts.length - 2 ? 1e-3 : 0); if(b > a) segs.push([a, b]); }
+      var xs0 = X.str, ys0 = Y.str;
+      segs.forEach(function(sg){ obj('Curve(' + xs0 + ', ' + ys0 + ', t, ' + ggNum(sg[0]) + ', ' + ggNum(sg[1]) + ')', [94, 23, 235], 5); });
+      // framing on the visible part of the curve
+      for(var j = 0; j <= 600; j++){ var t = lo + (hi - lo) * j / 600, x = X.f(t), y = Y.f(t); if(isFinite(x) && isFinite(y) && Math.abs(x) < (T ? 50 : 5) && Math.abs(y) < (T ? 50 : 5)){ xs.push(x); ys.push(y); } }
+      specials.forEach(function(sp){ xs.push(sp.P.x); ys.push(sp.P.y); });
+      specials.forEach(function(s){ var col = s.kind === 'stat' ? [220, 38, 38] : [245, 158, 11]; var nm = obj('(' + ggNum(s.P.x) + ', ' + ggNum(s.P.y) + ')', col, 0, false, 'PcP'); if(nm) try { ggb.setPointSize(nm, 5); } catch(e){}
+        var dx = s.kind === 'h' ? { x: 1, y: 0 } : s.kind === 'v' ? { x: 0, y: 1 } : s.d; if(dx) obj('Segment((' + ggNum(s.P.x - 0.6 * dx.x / Math.hypot(dx.x, dx.y)) + ', ' + ggNum(s.P.y - 0.6 * dx.y / Math.hypot(dx.x, dx.y)) + '), (' + ggNum(s.P.x + 0.6 * dx.x / Math.hypot(dx.x, dx.y)) + ', ' + ggNum(s.P.y + 0.6 * dx.y / Math.hypot(dx.x, dx.y)) + '))', col, 4); });
+      asym.forEach(function(A){ var eq = A.k === 'h' ? 'y = ' + ggNum(A.v) : A.k === 'v' ? 'x = ' + ggNum(A.v) : 'y = ' + ggNum(A.a) + ' x + (' + ggNum(A.b) + ')'; obj(eq, [220, 38, 38], 4, true, 'PcL'); });
+      if(tan){ obj('Line((' + ggNum(tan.P.x) + ', ' + ggNum(tan.P.y) + '), (' + ggNum(tan.P.x + tan.d.x) + ', ' + ggNum(tan.P.y + tan.d.y) + '))', [22, 163, 74], 4); obj('(' + ggNum(tan.P.x) + ', ' + ggNum(tan.P.y) + ')', [22, 163, 74], 0, false, 'PcP'); }
+      if(!xs.length){ xs = [-3, 3]; ys = [-3, 3]; }
+      var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs), y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys), m = Math.max(0.6, (x1 - x0) * 0.15, (y1 - y0) * 0.15);
+      var host = document.getElementById('ggb'), Wd = (host && host.clientWidth) || 800, Ht = (host && host.clientHeight) || 480;
+      var ax0 = x0 - m, ax1 = x1 + m, ay0 = y0 - m, ay1 = y1 + m, upp = Math.max((ax1 - ax0) / Wd, (ay1 - ay0) / Ht), cx = (ax0 + ax1) / 2, cy = (ay0 + ay1) / 2;
+      try { ggb.setCoordSystem(cx - upp * Wd / 2, cx + upp * Wd / 2, cy - upp * Ht / 2, cy + upp * Ht / 2); } catch(e){}
+    }
+
 
     /* ============ QUESTIONS OUVERTES ============ */
     // Énoncé + typed questions (Calculer / Montrer que / Comparer A et B) → POST …/maths-lab/open.
@@ -12211,6 +12632,7 @@
       if(modeCn) modeCn.hidden = (m !== 'conique');
       if(modeTf) modeTf.hidden = (m !== 'transfo');
       if(modeAf) modeAf.hidden = (m !== 'affine');
+      if(modePc) modePc.hidden = (m !== 'param');
       modeBary.hidden     = (m !== 'bary');
       modeOpen.hidden     = (m !== 'open');
       modeTrig.hidden     = (m !== 'trig');
@@ -12226,7 +12648,7 @@
       if(ggb){
         try { ggb.setPerspective((m === 'function' || m === 'integral' || m === 'suite' || m === 'diffeq') ? 'AG' : 'G'); } catch(e){}
         try { var plainFig = (m === 'vect' && vcKind !== 'coord'); ggb.setAxesVisible(!plainFig, !plainFig); ggb.setGridVisible(!plainFig); } catch(e){} // a vector figure has no frame of reference
-        clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot(); clearSuitePlot(); clearProbaPlot(); clearStatsPlot(); clearPwPlot(); clearE1Plot(); clearSysPlot(); clearBaryPlot(); clearZfPlot(); if(typeof clearIqPlot === 'function') clearIqPlot(); if(typeof clearVcPlot === 'function') clearVcPlot(); if(typeof clearVrPlot === 'function') clearVrPlot(); if(typeof clearAnPlot === 'function') clearAnPlot(); if(typeof clearCnPlot === 'function') clearCnPlot(); if(typeof clearTfPlot === 'function') clearTfPlot(); if(typeof clearAfPlot === 'function') clearAfPlot(); if(typeof clearAsymPlot === 'function') clearAsymPlot();
+        clearComplexPlot(); clearGeoPlot(); clearLimPlot(); clearIntPlot(); clearSuitePlot(); clearProbaPlot(); clearStatsPlot(); clearPwPlot(); clearE1Plot(); clearSysPlot(); clearBaryPlot(); clearZfPlot(); if(typeof clearIqPlot === 'function') clearIqPlot(); if(typeof clearVcPlot === 'function') clearVcPlot(); if(typeof clearVrPlot === 'function') clearVrPlot(); if(typeof clearAnPlot === 'function') clearAnPlot(); if(typeof clearCnPlot === 'function') clearCnPlot(); if(typeof clearTfPlot === 'function') clearTfPlot(); if(typeof clearAfPlot === 'function') clearAfPlot(); if(typeof clearAsymPlot === 'function') clearAsymPlot(); if(typeof clearPcPlot === 'function') clearPcPlot();
         if(m === 'bary'){
           graphTitle.textContent = 'Points pondérés et barycentre';
           graphHint.textContent = 'Les points (avec leur poids), les barycentres partiels de la construction (H₁, H₂…) et le barycentre G en jaune ; le cercle de la ligne de niveau s’affiche avec le second bouton.';
@@ -12242,6 +12664,11 @@
           graphHint.textContent = 'Figure de départ en violet, image en rouge ; centre Ω et axe Δ (pointillés) en orange ; angle pour une rotation ou une similitude, vecteurs pour une translation ; droites et cercles : départ en violet, image en rouge.';
           try { ggb.deleteObject('f'); } catch(e){}
           updateTfPreview();
+        } else if(m === 'param'){
+          graphTitle.textContent = 'Courbe paramétrée';
+          graphHint.textContent = 'La courbe en violet ; tangentes horizontales et verticales en orange, points stationnaires en rouge ; asymptotes en rouge (pointillés) ; tangente en t₀ en vert. Repère orthonormé.';
+          try { ggb.deleteObject('f'); } catch(e){}
+          updatePcPreview();
         } else if(m === 'affine'){
           graphTitle.textContent = 'Figure et son image';
           graphHint.textContent = 'Figure de départ en violet, image en rouge ; droite des points invariants ou axe en pointillés orange, centre Ω ; segments [MM′] en pointillés gris. Repère orthonormé.';
