@@ -34,18 +34,22 @@ const userSchema = new Schema({
     enum: ["male", "female", "other"],
   },
 
+  // Optional: many learners have no email. At least one of email / phoneNumber is required
+  // (see the pre-validate hook). Unique only among accounts that have one (sparse index —
+  // run `npm run migrate:whatsapp` once so the old non-sparse index is replaced).
   email: {
     type: String,
     trim: true,
     lowercase: true,
     unique: true,
+    sparse: true,
     validate: {
       validator: function (v) {
+        if (v === undefined || v === null || v === "") return true;
         return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v);
       },
       message: "Saisissez une adresse mail valide",
     },
-    required: [true, "Email required"],
   },
 
   role: {
@@ -83,6 +87,25 @@ const userSchema = new Schema({
     type: String,
     trim: true,
   },
+
+  // phoneNumber normalised to international digits (e.g. 22670123456) — WhatsApp recipient and
+  // phone login. Computed in the pre-validate hook. Not unique: a family may share one number.
+  phoneE164: {
+    type: String,
+    index: true,
+  },
+
+  // Set when the account was activated through WhatsApp: the user chooses the password on the
+  // activation page (no password is ever sent over WhatsApp).
+  passwordSetRequired: {
+    type: Boolean,
+    default: false,
+  },
+
+  // Password reset by a 6-digit code sent on WhatsApp (hash only, short expiry, limited attempts)
+  resetCodeHash: { type: String },
+  resetCodeExpires: { type: Date },
+  resetCodeAttempts: { type: Number, default: 0 },
 
   imageUrl: {
     type: String,
@@ -336,6 +359,19 @@ const userSchema = new Schema({
   }
 }, {
   timestamps: true
+});
+
+// Email or phone: at least one contact channel; keep phoneE164 in sync with phoneNumber.
+userSchema.pre("validate", function (next) {
+  const { normalizePhone } = require("../utilities/phone");
+  if (this.email === "") this.email = undefined;
+  if (this.isModified("phoneNumber") || (this.phoneNumber && !this.phoneE164)) {
+    this.phoneE164 = this.phoneNumber ? normalizePhone(this.phoneNumber) || undefined : undefined;
+  }
+  if (!this.email && !this.phoneNumber) {
+    this.invalidate("email", "Renseignez une adresse email ou un numéro WhatsApp.");
+  }
+  next();
 });
 
 userSchema.plugin(passportLocalMongoose);

@@ -151,6 +151,8 @@ const authLimiter = rateLimit({
 });
 
 // Middleware
+// WhatsApp Cloud API webhook: raw body (signature check), no session — must come before the parsers
+app.use('/webhooks/whatsapp', require('./shared/routes/whatsappWebhook'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // JSON bodies (e.g. Espace Maths /explain fetch)
 app.use(express.static(path.join(__dirname, "public")));

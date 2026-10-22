@@ -12,6 +12,8 @@ const {
     InstitutionFinalProjectSubmission
 } = require('../../../programs/institution/models');
 const Emailer = require('../../utilities/sendEmail');
+const notify = require('../../utilities/notify');
+const { normalizePhone, looksLikePhone } = require('../../utilities/phone');
 const { getBaseUrl } = require('../../utilities/url');
 const catchAsync = require('../../utilities/catchAsync');
 
@@ -100,11 +102,12 @@ module.exports.search = catchAsync(async (req, res) => {
                 { username: { $regex: q, $options: 'i' } },
                 { name:     { $regex: q, $options: 'i' } },
                 { surname:  { $regex: q, $options: 'i' } },
-                { email:    { $regex: q, $options: 'i' } }
+                { email:    { $regex: q, $options: 'i' } },
+                ...(looksLikePhone(q) && normalizePhone(q) ? [{ phoneE164: normalizePhone(q) }] : [])
             ],
             role: { $nin: ['admin', 'super-admin', 'institution-admin'] }
         })
-        .select('username name surname email isVerified')
+        .select('username name surname email phoneNumber isVerified')
         .limit(10)
         .sort({ surname: 1, name: 1 })
     ]);
@@ -118,6 +121,7 @@ module.exports.search = catchAsync(async (req, res) => {
             name:       u.name,
             surname:    u.surname,
             email:      u.email,
+            phoneNumber: u.phoneNumber,
             isVerified: u.isVerified,
             enrolled:   enrolledSet.has(u._id.toString())
         }))
@@ -304,8 +308,7 @@ module.exports.enroll = catchAsync(async (req, res) => {
     }
 
     const loginUrl = `${getBaseUrl(req)}/login`;
-    new Emailer(student).sendEnrollmentEmail(course.title, start, end, loginUrl)
-        .catch(err => console.error('Enrollment email error:', err));
+    notify.sendEnrollment(student, { courseTitle: course.title, start, end, loginUrl });
 
     req.flash('success', `${student.name} ${student.surname} inscrit(e) à "${course.title}".`);
     res.redirect(`/institution/dashboard/students/${userId}`);
@@ -356,8 +359,7 @@ module.exports.enrollBulk = catchAsync(async (req, res) => {
         }
 
         const loginUrl = `${getBaseUrl(req)}/login`;
-        new Emailer(student).sendEnrollmentEmail(course.title, start, end, loginUrl)
-            .catch(err => console.error('Bulk enrollment email error:', err));
+        notify.sendEnrollment(student, { courseTitle: course.title, start, end, loginUrl });
 
         enrolled++;
     }
@@ -417,19 +419,24 @@ module.exports.updateEnrollment = catchAsync(async (req, res) => {
 
 // Create a brand-new student account and optionally enroll them
 module.exports.createStudent = catchAsync(async (req, res) => {
-    const { name, surname, email, username: rawUsername, courseId, startDate, endDate } = req.body;
+    const { name, surname, email, phoneNumber: rawPhone, username: rawUsername, courseId, startDate, endDate } = req.body;
 
-    if (!name || !surname || !email) {
-        req.flash('error', 'Prénom, nom et email sont requis.');
+    const normalizedEmail = (email || '').trim().toLowerCase() || undefined;
+    const phoneNumber = (rawPhone || '').trim() || undefined;
+    if (!name || !surname || (!normalizedEmail && !phoneNumber)) {
+        req.flash('error', 'Prénom, nom et un email ou un numéro WhatsApp sont requis.');
+        return res.redirect('/institution/dashboard/students');
+    }
+    if (phoneNumber && !normalizePhone(phoneNumber)) {
+        req.flash('error', 'Numéro WhatsApp invalide (ex. 70 12 34 56 ou +226 70 12 34 56).');
         return res.redirect('/institution/dashboard/students');
     }
 
-    const normalizedEmail = email.trim().toLowerCase();
-
-    // Derive username: provided > email prefix, then ensure uniqueness
+    // Derive username: provided > email prefix > name.surname, then ensure uniqueness
+    const slug = (v) => String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9._-]/g, '');
     let baseUsername = rawUsername
         ? rawUsername.trim().toLowerCase().replace(/[^a-z0-9._-]/g, '')
-        : normalizedEmail.split('@')[0].replace(/[^a-z0-9._-]/g, '');
+        : normalizedEmail ? normalizedEmail.split('@')[0].replace(/[^a-z0-9._-]/g, '') : [slug(name), slug(surname)].filter(Boolean).join('.');
     if (!baseUsername) baseUsername = 'etudiant';
 
     let username = baseUsername;
@@ -439,7 +446,7 @@ module.exports.createStudent = catchAsync(async (req, res) => {
         username = `${baseUsername}${attempt}`;
     }
 
-    const emailExists = await User.findOne({ email: normalizedEmail });
+    const emailExists = normalizedEmail ? await User.findOne({ email: normalizedEmail }) : null;
     if (emailExists) {
         req.flash('error', `Un compte avec l'email ${normalizedEmail} existe déjà. Utilisez la recherche pour l'inscrire.`);
         return res.redirect('/institution/dashboard/students');
@@ -458,6 +465,7 @@ module.exports.createStudent = catchAsync(async (req, res) => {
         name:              name.trim(),
         surname:           surname.trim(),
         email:             normalizedEmail,
+        phoneNumber,
         username,
         gender:            'other',
         role:              'user',
@@ -466,6 +474,7 @@ module.exports.createStudent = catchAsync(async (req, res) => {
         activationToken,
         activationExpires
     });
+    notify.prepareActivation(student); // WhatsApp → the student chooses the password at activation
     await User.register(student, tempPassword);
 
     // Optional immediate enrollment
@@ -486,13 +495,16 @@ module.exports.createStudent = catchAsync(async (req, res) => {
         }
     }
 
+    const activationUrl = `${getBaseUrl(req)}/user/activate/${activationToken}`;
     try {
-        const activationUrl = `${getBaseUrl(req)}/user/activate/${activationToken}`;
-        await new Emailer(student, activationUrl).sendActivationEmail(tempPassword);
-        req.flash('success', `Compte créé pour ${student.name} ${student.surname}. Un email d'activation a été envoyé.`);
+        const result = await notify.sendActivation(student, { activationUrl, activationToken, password: tempPassword });
+        const [type, msg] = notify.activationFlash(result, student, { password: tempPassword, activationUrl });
+        req.flash(type, msg);
     } catch (err) {
-        console.error('Create student activation email error:', err);
-        req.flash('success', `Compte créé pour ${student.name} ${student.surname} (@${username}). Email non envoyé — mot de passe temporaire : ${tempPassword}`);
+        console.error('Create student activation error:', err);
+        req.flash('warning', student.passwordSetRequired
+            ? `Compte créé pour ${student.name} ${student.surname} (@${username}). Message WhatsApp non envoyé — lien d'activation à transmettre : ${activationUrl}`
+            : `Compte créé pour ${student.name} ${student.surname} (@${username}). Email non envoyé — mot de passe temporaire : ${tempPassword}`);
     }
 
     res.redirect(`/institution/dashboard/students/${student._id}`);
@@ -521,16 +533,20 @@ module.exports.resendActivation = catchAsync(async (req, res) => {
 
     student.activationToken   = activationToken;
     student.activationExpires = activationExpires;
+    notify.prepareActivation(student);
     await student.setPassword(newPassword);
     await student.save();
 
+    const activationUrl = `${getBaseUrl(req)}/user/activate/${activationToken}`;
     try {
-        const activationUrl = `${getBaseUrl(req)}/user/activate/${activationToken}`;
-        await new Emailer(student, activationUrl).sendActivationEmail(newPassword);
-        req.flash('success', `Email d'activation renvoyé à ${student.email}.`);
+        const result = await notify.sendActivation(student, { activationUrl, activationToken, password: newPassword });
+        if (result.channel === 'whatsapp' && result.simulated) req.flash('warning', `WhatsApp n'est pas encore configuré : transmettez ce lien d'activation : ${activationUrl}`);
+        else if (result.channel === 'whatsapp') req.flash('success', `Lien d'activation renvoyé sur WhatsApp au ${result.to}.`);
+        else if (result.channel === 'email') req.flash('success', `Email d'activation renvoyé à ${result.to}.`);
+        else req.flash('warning', `Aucun moyen de contact. Nouveau mot de passe temporaire : ${newPassword}`);
     } catch (err) {
-        console.error('Resend activation email error:', err);
-        req.flash('warning', `Email non envoyé. Nouveau mot de passe temporaire : ${newPassword}`);
+        console.error('Resend activation error:', err);
+        req.flash('warning', student.passwordSetRequired ? `Message non envoyé. Lien d'activation à transmettre : ${activationUrl}` : `Email non envoyé. Nouveau mot de passe temporaire : ${newPassword}`);
     }
 
     res.redirect(`/institution/dashboard/students/${req.params.userId}`);

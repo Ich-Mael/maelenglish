@@ -11,6 +11,15 @@ module.exports = class Emailer {
     this.from = `AfroHK Team <${process.env.EMAIL_FROM || 'contact@afrohk.com'}>`;
   }
 
+  // Accounts may have no email (WhatsApp-only learners): skip quietly instead of failing in SMTP.
+  async _deliver(mailOptions) {
+    if (!mailOptions.to) {
+      console.warn(`Email non envoyé : le compte ${this.user && this.user.username} n'a pas d'adresse email.`);
+      return;
+    }
+    return this.newTransport().sendMail(mailOptions);
+  }
+
   newTransport() {
     const host = process.env.EMAIL_HOST || 'smtp-relay.brevo.com';
     const port = process.env.EMAIL_PORT || 587;
@@ -77,7 +86,7 @@ module.exports = class Emailer {
       }),
     };
     // 3) Create a transport and send email
-    await this.newTransport().sendMail(mailOptions);
+    await this._deliver(mailOptions);
   }
 
   async sendVerifyEmail() {
@@ -91,7 +100,7 @@ module.exports = class Emailer {
       path.join(__dirname, "../../views/emails", `${template}.ejs`),
       { user: this.user, url: this.url, subject, ...data }
     );
-    await this.newTransport().sendMail({
+    await this._deliver({
       from: this.from,
       to: this.to,
       subject,
@@ -142,7 +151,7 @@ module.exports = class Emailer {
         text: htmlToText.convert(html, { wordwrap: 130 }),
     };
 
-    await this.newTransport().sendMail(mailOptions);
+    await this._deliver(mailOptions);
   }
 
   async sendEnrollmentEmail(courseTitle, startDate, endDate, loginUrl) {
@@ -174,7 +183,7 @@ module.exports = class Emailer {
       text: htmlToText.convert(html, { wordwrap: 130 }),
     };
 
-    await this.newTransport().sendMail(mailOptions);
+    await this._deliver(mailOptions);
   }
 
   async sendActivationEmail(password) {
@@ -225,7 +234,7 @@ module.exports = class Emailer {
         text: htmlToText.convert(html, { wordwrap: 130 }),
     };
 
-    await this.newTransport().sendMail(mailOptions);
+    await this._deliver(mailOptions);
   }
 };
 

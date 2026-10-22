@@ -7,6 +7,7 @@ const {
 const InstitutionCourseTestimonial = require('../../../programs/institution/models/Testimonial');
 const User       = require('../../models/user');
 const Emailer    = require('../../utilities/sendEmail');
+const notify = require('../../utilities/notify');
 const { getBaseUrl } = require('../../utilities/url');
 const catchAsync = require('../../utilities/catchAsync');
 
@@ -187,8 +188,7 @@ module.exports.enrollFromCourse = catchAsync(async (req, res) => {
     }
 
     const loginUrl = `${getBaseUrl(req)}/login`;
-    new Emailer(student).sendEnrollmentEmail(course.title, start, end, loginUrl)
-        .catch(err => console.error('Enrollment email error:', err));
+    notify.sendEnrollment(student, { courseTitle: course.title, start, end, loginUrl });
 
     req.flash('success', `${student.name} ${student.surname} inscrit(e) à ce cours.`);
     res.redirect(`/institution/dashboard/courses/${courseId}`);

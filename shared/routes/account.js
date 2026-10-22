@@ -10,6 +10,27 @@ const { trackDevice, getOrGenerateDeviceId } = require("../middlewares/deviceTra
 const crypto = require("crypto");
 const Emailer = require("../utilities/sendEmail");
 const { getBaseUrl } = require("../utilities/url");
+const notify = require("../utilities/notify");
+const whatsapp = require("../utilities/whatsapp");
+const { normalizePhone, displayPhone, looksLikePhone } = require("../utilities/phone");
+
+// Login / password reset identifier → user: username, email or WhatsApp number.
+// A number shared by several accounts (family phone) is ambiguous → { ambiguous: true }.
+async function findByIdentifier(raw) {
+  const id = String(raw || "").trim();
+  if (!id) return { user: null };
+  if (id.includes("@")) return { user: await User.findOne({ email: id.toLowerCase() }) };
+  const byUsername = await User.findOne({ username: id });
+  if (byUsername) return { user: byUsername };
+  if (looksLikePhone(id)) {
+    const e164 = normalizePhone(id);
+    if (!e164) return { user: null };
+    const matches = await User.find({ phoneE164: e164 }).limit(2);
+    if (matches.length > 1) return { user: null, ambiguous: true };
+    return { user: matches[0] || null };
+  }
+  return { user: null };
+}
 
 // Account creation is open ONLY while no admin exists (bootstrap of the first admin).
 // Afterwards it requires a logged-in, verified admin / super-admin / account-manager.
@@ -68,9 +89,19 @@ router.post(
     const accountData = req.body.account || req.body;
     let { name, surname, username, email, gender, phoneNumber, password, defP } = accountData;
 
-    // Validation: Check required fields (except password which can be auto-generated)
-    if (!name || !surname || !username || !email || !gender) {
+    // Validation: required fields (password can be auto-generated; email OR WhatsApp number)
+    email = (email || "").trim().toLowerCase() || undefined;
+    phoneNumber = (phoneNumber || "").trim() || undefined;
+    if (!name || !surname || !username || !gender) {
       req.flash("error", "Veuillez remplir tous les champs obligatoires");
+      return res.redirect(req.get("Referrer") || "/");
+    }
+    if (!email && !phoneNumber) {
+      req.flash("error", "Renseignez une adresse email ou un numéro WhatsApp.");
+      return res.redirect(req.get("Referrer") || "/");
+    }
+    if (phoneNumber && !normalizePhone(phoneNumber)) {
+      req.flash("error", "Numéro WhatsApp invalide (ex. 70 12 34 56 ou +226 70 12 34 56).");
       return res.redirect(req.get("Referrer") || "/");
     }
 
@@ -103,8 +134,8 @@ router.post(
       }
     }
 
-    // Check if username already exists
-    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    // Check if username (or email, when given) already exists
+    const existingUser = await User.findOne(email ? { $or: [{ username }, { email }] } : { username });
     if (existingUser) {
       if (existingUser.username === username) {
         req.flash("error", "Ce nom d'utilisateur est déjà pris");
@@ -129,9 +160,9 @@ router.post(
       }
     }
 
-    // Generate Activation Token
+    // Generate Activation Token (WhatsApp users set their password through it: 7 days)
     const activationToken = crypto.randomBytes(32).toString("hex");
-    const activationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+    let activationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
 
     // Resolve institution if provided
     const institutionId = accountData.institutionId || null;
@@ -157,33 +188,34 @@ router.post(
       activationExpires,
       institutionId: institutionId || null
     });
+    if (adminCount > 0) {
+      const ch = notify.prepareActivation(user);
+      if (ch === "whatsapp" || ch === "whatsapp-sim") user.activationExpires = activationExpires = Date.now() + 7 * 24 * 60 * 60 * 1000;
+    }
 
     // Register user with password (passport-local-mongoose)
     const registeredUser = await User.register(user, password);
 
-    // Send Activation Email if not first admin (first admin is auto verified)
+    // Send the activation message (WhatsApp or email) if not first admin (first admin is auto verified)
     if (adminCount > 0) {
+      const activationUrl = `${getBaseUrl(req)}/user/activate/${activationToken}`;
       try {
-        // Construct activation URL
-        const activationUrl = `${getBaseUrl(req)}/user/activate/${activationToken}`;
-
-        await new Emailer(user, activationUrl).sendActivationEmail(password);
-
-        req.flash(
-          "success",
-          `Compte créé avec succès ! Un email d'activation a été envoyé à ${email} avec le mot de passe.`
-        );
+        const result = await notify.sendActivation(user, { activationUrl, activationToken, password });
+        const [type, msg] = notify.activationFlash(result, user, { password, activationUrl });
+        req.flash(type, msg);
       } catch (err) {
-        console.error("Email send error:", err);
+        console.error("Activation send error:", err);
         req.flash(
           "warning",
-          `Compte créé, mais impossible d'envoyer l'email d'activation. Mot de passe: ${password}`
+          user.passwordSetRequired
+            ? `Compte créé, mais le message WhatsApp n'a pas pu être envoyé. Lien d'activation à transmettre : ${activationUrl}`
+            : `Compte créé, mais impossible d'envoyer l'email d'activation. Mot de passe: ${password}`
         );
       }
     } else {
       req.flash(
         "success",
-        `Compte ADMIN créé avec succès pour ${registeredUser.surname} ${registeredUser.name} (${registeredUser.email})`
+        `Compte ADMIN créé avec succès pour ${registeredUser.surname} ${registeredUser.name} (${registeredUser.email || registeredUser.phoneNumber})`
       );
     }
 
@@ -212,6 +244,19 @@ router.get("/login", (req, res) => {
 router.post(
   "/login",
   (req, res, next) => req.app.get('authLimiter')(req, res, next),
+  catchAsync(async (req, res, next) => {
+    // Accept a username, an email or a WhatsApp number in the "username" field
+    const raw = String(req.body.username || "").trim();
+    if (raw && (raw.includes("@") || looksLikePhone(raw))) {
+      const found = await findByIdentifier(raw);
+      if (found.ambiguous) {
+        req.flash("error", "Plusieurs comptes utilisent ce numéro : connectez-vous avec votre nom d'utilisateur.");
+        return res.redirect("/login");
+      }
+      if (found.user) req.body.username = found.user.username;
+    }
+    next();
+  }),
   (req, res, next) => {
     passport.authenticate("local", (err, user, info) => {
       if (err) return next(err);
@@ -776,6 +821,11 @@ router.get(
       return res.redirect("/login");
     }
 
+    // Accounts notified on WhatsApp choose their password here (no password is sent on WhatsApp)
+    if (user.passwordSetRequired) {
+      return res.render("user/activate-set-password", { token, user });
+    }
+
     // Activate user
     user.isVerified = true;
     user.activationToken = undefined;
@@ -785,6 +835,77 @@ router.get(
 
     req.flash("success", "Votre compte a été activé avec succès ! Vous pouvez maintenant vous connecter.");
     res.redirect("/login");
+  })
+);
+
+/**
+ * POST /user/activate/:token
+ * Activation + choix du mot de passe (comptes prévenus par WhatsApp)
+ */
+router.post(
+  "/user/activate/:token",
+  (req, res, next) => req.app.get('authLimiter')(req, res, next),
+  catchAsync(async (req, res) => {
+    const { token } = req.params;
+    const user = await User.findOne({ activationToken: token, activationExpires: { $gt: Date.now() } });
+    if (!user || !user.passwordSetRequired) {
+      req.flash("error", "Le lien d'activation est invalide ou a expiré.");
+      return res.redirect("/login");
+    }
+    const { password, confirm } = req.body;
+    if (!password || password.length < 6) {
+      req.flash("error", "Le mot de passe doit contenir au moins 6 caractères.");
+      return res.redirect(`/user/activate/${token}`);
+    }
+    if (password !== confirm) {
+      req.flash("error", "Les mots de passe ne correspondent pas.");
+      return res.redirect(`/user/activate/${token}`);
+    }
+    await user.setPassword(password);
+    user.isVerified = true;
+    user.passwordSetRequired = false;
+    user.activationToken = undefined;
+    user.activationExpires = undefined;
+    await user.save();
+    req.flash("success", `Compte activé ! Connectez-vous avec votre identifiant « ${user.username} » et votre nouveau mot de passe.`);
+    res.redirect("/login");
+  })
+);
+
+/**
+ * GET /user/send-verification-email
+ * Compte connecté mais pas encore activé : propose de renvoyer le message d'activation
+ */
+router.get("/user/send-verification-email", isLoggedIn, (req, res) => {
+  if (req.user.isVerified) return res.redirect("/");
+  res.render("user/send-verification", { channel: notify.channelFor(req.user), phone: displayPhone(req.user.phoneE164), email: req.user.email });
+});
+
+router.post(
+  "/user/send-verification-email",
+  isLoggedIn,
+  (req, res, next) => req.app.get('authLimiter')(req, res, next),
+  catchAsync(async (req, res) => {
+    const user = await User.findById(req.user._id);
+    if (!user || user.isVerified) return res.redirect("/");
+    user.activationToken = crypto.randomBytes(32).toString("hex");
+    user.activationExpires = Date.now() + 24 * 60 * 60 * 1000;
+    await user.save();
+    const activationUrl = `${getBaseUrl(req)}/user/activate/${user.activationToken}`;
+    try {
+      // the user is logged in, so the password is known: the link only activates the account
+      const ch = notify.channelFor(user);
+      if (ch === "email") await new Emailer(user, activationUrl).sendActivationEmail(null);
+      else if (ch === "whatsapp" || ch === "whatsapp-sim") {
+        const r = await whatsapp.sendActivation(user.phoneE164, { firstName: user.name, username: user.username, token: user.activationToken });
+        if (r.simulated) throw new Error("WhatsApp non configuré");
+      } else throw new Error("aucun moyen de contact");
+      req.flash("success", ch === "email" ? `Un lien d'activation a été envoyé à ${user.email}.` : `Un lien d'activation a été envoyé sur WhatsApp au ${displayPhone(user.phoneE164)}.`);
+    } catch (err) {
+      console.error("Resend verification error:", err.message);
+      req.flash("error", "Impossible d'envoyer le message d'activation pour le moment. Contactez l'équipe AfroHK.");
+    }
+    res.redirect("/user/send-verification-email");
   })
 );
 
@@ -806,11 +927,47 @@ router.get("/forgot-password", (req, res) => {
  * Traite la demande de réinitialisation (envoi email)
  */
 router.post("/forgot-password", (req, res, next) => req.app.get('authLimiter')(req, res, next), catchAsync(async (req, res) => {
-  const { email } = req.body;
-  const user = await User.findOne({ email: email.toLowerCase() });
+  const identifier = req.body.identifier || req.body.email;
+  const found = await findByIdentifier(identifier);
+  const user = found.user;
 
+  if (found.ambiguous) {
+    req.flash("error", "Plusieurs comptes utilisent ce numéro : indiquez votre nom d'utilisateur.");
+    return res.redirect("/forgot-password");
+  }
   if (!user) {
-    req.flash("error", "Aucun compte associé à cette adresse email.");
+    req.flash("error", "Aucun compte trouvé avec cet identifiant.");
+    return res.redirect("/forgot-password");
+  }
+
+  // WhatsApp: 6-digit code, valid 10 minutes, 5 attempts
+  if (notify.channelFor(user) === "whatsapp") {
+    const code = String(crypto.randomInt(0, 1000000)).padStart(6, "0");
+    user.resetCodeHash = crypto.createHash("sha256").update(`${user._id}:${code}`).digest("hex");
+    user.resetCodeExpires = new Date(Date.now() + 10 * 60 * 1000);
+    user.resetCodeAttempts = 0;
+    await user.save();
+    try {
+      await whatsapp.sendCode(user.phoneE164, code);
+    } catch (err) {
+      console.error("WhatsApp reset code error:", err.message);
+      user.resetCodeHash = undefined; user.resetCodeExpires = undefined;
+      await user.save();
+      if (!user.email) {
+        req.flash("error", "Le code n'a pas pu être envoyé sur WhatsApp. Réessayez dans quelques minutes.");
+        return res.redirect("/forgot-password");
+      }
+      // fall through to the email link below
+    }
+    if (user.resetCodeHash) {
+      req.session.resetUserId = String(user._id);
+      req.flash("success", `Un code à 6 chiffres a été envoyé sur WhatsApp au ${displayPhone(user.phoneE164)}.`);
+      return req.session.save(() => res.redirect("/reset-code"));
+    }
+  }
+
+  if (!user.email) {
+    req.flash("error", "Ce compte n'a pas d'adresse email et l'envoi WhatsApp n'est pas encore disponible. Contactez l'équipe AfroHK.");
     return res.redirect("/forgot-password");
   }
 
@@ -836,6 +993,57 @@ router.post("/forgot-password", (req, res, next) => req.app.get('authLimiter')(r
     req.flash("error", "Erreur lors de l'envoi de l'email. Veuillez réessayer.");
     res.redirect("/forgot-password");
   }
+}));
+
+/**
+ * GET/POST /reset-code
+ * Code reçu sur WhatsApp + nouveau mot de passe
+ */
+router.get("/reset-code", (req, res) => {
+  if (!req.session.resetUserId) return res.redirect("/forgot-password");
+  res.render("user/reset-code");
+});
+
+router.post("/reset-code", (req, res, next) => req.app.get('authLimiter')(req, res, next), catchAsync(async (req, res) => {
+  const userId = req.session.resetUserId;
+  if (!userId) return res.redirect("/forgot-password");
+  const user = await User.findById(userId);
+  const expired = !user || !user.resetCodeHash || !user.resetCodeExpires || user.resetCodeExpires < new Date();
+  if (expired || user.resetCodeAttempts >= 5) {
+    if (user) { user.resetCodeHash = undefined; user.resetCodeExpires = undefined; await user.save(); }
+    delete req.session.resetUserId;
+    req.flash("error", "Le code a expiré ou trop d'essais ont été faits. Demandez un nouveau code.");
+    return res.redirect("/forgot-password");
+  }
+  const code = String(req.body.code || "").replace(/\D/g, "");
+  const given = crypto.createHash("sha256").update(`${user._id}:${code}`).digest();
+  const stored = Buffer.from(user.resetCodeHash, "hex");
+  if (code.length !== 6 || given.length !== stored.length || !crypto.timingSafeEqual(given, stored)) {
+    user.resetCodeAttempts = (user.resetCodeAttempts || 0) + 1;
+    await user.save();
+    req.flash("error", `Code incorrect (${5 - user.resetCodeAttempts} essai(s) restant(s)).`);
+    return res.redirect("/reset-code");
+  }
+  if (!req.body.password || req.body.password.length < 6) {
+    req.flash("error", "Le mot de passe doit contenir au moins 6 caractères.");
+    return res.redirect("/reset-code");
+  }
+  if (req.body.password !== req.body.confirm) {
+    req.flash("error", "Les mots de passe ne correspondent pas.");
+    return res.redirect("/reset-code");
+  }
+  await user.setPassword(req.body.password);
+  user.resetCodeHash = undefined;
+  user.resetCodeExpires = undefined;
+  user.resetCodeAttempts = 0;
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpires = undefined;
+  // receiving the code on WhatsApp proves the number: a never-activated account is activated too
+  if (!user.isVerified) { user.isVerified = true; user.passwordSetRequired = false; user.activationToken = undefined; user.activationExpires = undefined; }
+  await user.save();
+  delete req.session.resetUserId;
+  req.flash("success", `Mot de passe modifié. Connectez-vous avec « ${user.username} ».`);
+  req.session.save(() => res.redirect("/login"));
 }));
 
 /**
