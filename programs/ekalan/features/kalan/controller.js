@@ -19,6 +19,7 @@ const {
 const { explainSteps, SYSTEM_FREE_METHODS, INEQUATION_METHODS, OPERATIONS, COMPLEX_OPERATIONS, ARITH_LABELS, TRIG_OPERATIONS } = require("./mathsLab");
 const { solveOpenQuestion } = require("./openQuestions");
 const crypto = require("crypto");
+const { FRANCOPHONE_AFRICA, COUNTRY_CODES, countryName } = require("../../../../shared/utilities/countries");
 
 // ── Kalan Naaba helpers ──────────────────────────────────────────────
 // True if the high-school student (hsId) holds active Kalan Naaba (whole-class premium).
@@ -220,6 +221,7 @@ module.exports.listAllStudents = async (req, res) => {
   const allClasses = await Class.find({}).select('title serie').sort({ serie: 1, title: 1 });
   
   res.render("programs/ekalan/admin/students/list", {
+    countryName,
     students,
     currentPage: page,
     totalPages,
@@ -248,6 +250,7 @@ module.exports.showCreateStudentForm = async (req, res) => {
   res.render("programs/ekalan/admin/students/create", {
     schoolClass,
     allClasses,
+    countries: FRANCOPHONE_AFRICA,
   });
 };
 
@@ -259,6 +262,7 @@ module.exports.showCreateStudentFormGeneral = async (req, res) => {
   res.render("programs/ekalan/admin/students/create", {
     schoolClass: null,
     allClasses,
+    countries: FRANCOPHONE_AFRICA,
   });
 };
 
@@ -292,11 +296,15 @@ module.exports.searchUsers = async (req, res) => {
 
 //student
 module.exports.createHStudent = async (req, res) => {
-  const { student_username, school, class: classId, neighborhood, parentsContact } = req.body;
+  const { student_username, school, class: classId, neighborhood, parentsContact, country } = req.body;
 
   // Validate required fields
-  if (!student_username || !classId) {
-    req.flash("error", "Veuillez remplir tous les champs obligatoires (nom d'utilisateur, classe)");
+  if (!student_username || !classId || !country) {
+    req.flash("error", "Veuillez remplir tous les champs obligatoires (nom d'utilisateur, classe, pays)");
+    return res.redirect("back");
+  }
+  if (!COUNTRY_CODES.includes(country)) {
+    req.flash("error", "Pays invalide : choisissez un pays d'Afrique francophone dans la liste.");
     return res.redirect("back");
   }
 
@@ -339,6 +347,7 @@ module.exports.createHStudent = async (req, res) => {
     serie: serie,
     neighborhood: neighborhood || undefined,
     parentsContact: parentsContact || undefined,
+    country,
       studentBasicInfo: user._id,
     });
 

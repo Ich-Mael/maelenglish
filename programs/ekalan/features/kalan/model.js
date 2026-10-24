@@ -66,6 +66,12 @@ const HStudentSchema = new Schema({
     type: String,
   },
 
+  // ISO code of a francophone African country (shared/utilities/countries.js)
+  country: {
+    type: String,
+    enum: require("../../../../shared/utilities/countries").COUNTRY_CODES,
+  },
+
   parentsContact: {
     type: String,
   },

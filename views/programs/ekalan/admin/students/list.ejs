@@ -561,8 +561,8 @@
                       <div>
                         <div class="student-name"><%= student.studentBasicInfo.name %> <%= student.studentBasicInfo.surname %></div>
                         <div class="student-details">@<%= student.studentBasicInfo.username %></div>
-                        <% if (student.neighborhood) { %>
-                          <div class="student-details"><i class="bi bi-geo-alt"></i> <%= student.neighborhood %></div>
+                        <% if (student.neighborhood || student.country) { %>
+                          <div class="student-details"><i class="bi bi-geo-alt"></i> <%= [student.neighborhood, (student.country && typeof countryName === 'function') ? countryName(student.country) : ''].filter(Boolean).join(', ') %></div>
                         <% } %>
                       </div>
                     </div>
