@@ -17,7 +17,7 @@ const AssignmentSubmission = require('../../../shared/models/assignmentSubmissio
 const catchAsync = require('../../../shared/utilities/catchAsync');
 
 const DAY_MS = 24 * 60 * 60 * 1000;
-const GEB_BASE = '/programs/language-learning/general-english-boost';
+const GEB_BASE = '/maelenglish/cours';
 
 function startOfDay(d) {
   const x = new Date(d);

@@ -383,7 +383,7 @@
         <strong><%= course.title %></strong>
       </p>
     </div>
-    <a href="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/addStudent" class="btn-add-student">
+    <a href="/maelenglish/cours/admindashboard/<%= course._id %>/addStudent" class="btn-add-student">
       <i class="bi bi-person-plus-fill"></i>
       Ajouter un étudiant
     </a>
@@ -621,7 +621,7 @@
         modalBodyInputEnd.value = endDate;
         
         // Update form action
-        form.action = `/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/students/${studentId}/access`;
+        form.action = `/maelenglish/cours/admindashboard/<%= course._id %>/students/${studentId}/access`;
       });
     }
 

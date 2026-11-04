@@ -1,0 +1,13 @@
+<%#
+  MaelEnglish photo: /assets/img/Maelenglish/photos/<name>-{720,1280}.webp (+ -1280.jpg fallback).
+  Locals: name (required), alt, sizes (default 100vw), cls, pos (CSS object-position), eager (bool).
+%>
+<% const _b = '/assets/img/Maelenglish/photos/' + name; %>
+<picture>
+  <source type="image/webp" srcset="<%= _b %>-720.webp 720w, <%= _b %>-1280.webp 1280w" sizes="<%= typeof sizes !== 'undefined' && sizes ? sizes : '100vw' %>">
+  <img src="<%= _b %>-1280.jpg" alt="<%= typeof alt !== 'undefined' ? alt : '' %>"
+       class="<%= typeof cls !== 'undefined' ? cls : '' %>"
+       <% if (typeof pos !== 'undefined' && pos) { %>style="object-position: <%= pos %>"<% } %>
+       <%- typeof eager !== 'undefined' && eager ? 'fetchpriority="high"' : 'loading="lazy"' %>
+       decoding="async" width="1280" height="853">
+</picture>

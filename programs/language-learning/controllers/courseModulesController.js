@@ -38,7 +38,7 @@ module.exports.createModule = catchAsync(async (req, res) => {
   await course.save();
 
   req.flash("success", "Module créé avec succès");
-  res.redirect(`/programs/language-learning/general-english-boost/${course._id}`);
+  res.redirect(`/maelenglish/cours/${course._id}`);
 });
 
 module.exports.showModule = catchAsync(async (req, res) => {
@@ -93,7 +93,7 @@ module.exports.markComplete = catchAsync(async (req, res) => {
   );
 
   req.flash('success', 'Module marqué comme terminé !');
-  res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}`);
+  res.redirect(`/maelenglish/cours/${course_id}/modules/${module_id}`);
 });
 
 module.exports.showCourseModules = catchAsync(async (req, res) => {
@@ -142,13 +142,13 @@ module.exports.updateModule = catchAsync(async (req, res) => {
   await courseModule.save();
 
   req.flash("success", "Module mis à jour avec succès");
-  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${req.params.course_id}/modules`);
+  res.redirect(`/maelenglish/cours/admindashboard/${req.params.course_id}/modules`);
 });
 
 module.exports.deleteModule = catchAsync(async (req, res) => {
   await Module.findByIdAndDelete(req.params.module_id);
   req.flash("success", "Module supprimé avec succès");
-  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${req.params.course_id}/modules`);
+  res.redirect(`/maelenglish/cours/admindashboard/${req.params.course_id}/modules`);
 });
 
 // Video lesson
@@ -166,7 +166,7 @@ module.exports.addEngVideoLesson = catchAsync(async (req, res) => {
   await courseModule.save();
 
   req.flash("success", "Vidéo de leçon ajoutée avec succès");
-  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${req.params.course_id}/modules`);
+  res.redirect(`/maelenglish/cours/admindashboard/${req.params.course_id}/modules`);
 });
 
 // Practice exercises
@@ -192,7 +192,7 @@ module.exports.createPractice = catchAsync(async (req, res) => {
   await module.save();
 
   req.flash("success", "Exercice de pratique ajouté avec succès");
-  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${req.params.course_id}/modules`);
+  res.redirect(`/maelenglish/cours/admindashboard/${req.params.course_id}/modules`);
 });
 
 // Coach Resources
@@ -201,7 +201,7 @@ module.exports.addCoachResource = catchAsync(async (req, res) => {
   
   if (!courseModule) {
     req.flash("error", "Module non trouvé");
-    return res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${req.params.course_id}/modules`);
+    return res.redirect(`/maelenglish/cours/admindashboard/${req.params.course_id}/modules`);
   }
 
   const { title, type, description, link } = req.body.resource;
@@ -216,7 +216,7 @@ module.exports.addCoachResource = catchAsync(async (req, res) => {
   await courseModule.save();
   
   req.flash("success", "Ressource pour coach ajoutée avec succès");
-  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${req.params.course_id}/modules/${req.params.courseModule_id}/edit`);
+  res.redirect(`/maelenglish/cours/admindashboard/${req.params.course_id}/modules/${req.params.courseModule_id}/edit`);
 });
 
 module.exports.deleteCoachResource = catchAsync(async (req, res) => {
@@ -224,7 +224,7 @@ module.exports.deleteCoachResource = catchAsync(async (req, res) => {
   
   if (!courseModule) {
     req.flash("error", "Module non trouvé");
-    return res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${req.params.course_id}/modules`);
+    return res.redirect(`/maelenglish/cours/admindashboard/${req.params.course_id}/modules`);
   }
   
   courseModule.coachResources = courseModule.coachResources.filter(
@@ -234,7 +234,7 @@ module.exports.deleteCoachResource = catchAsync(async (req, res) => {
   await courseModule.save();
   
   req.flash("success", "Ressource supprimée avec succès");
-  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${req.params.course_id}/modules/${req.params.courseModule_id}/edit`);
+  res.redirect(`/maelenglish/cours/admindashboard/${req.params.course_id}/modules/${req.params.courseModule_id}/edit`);
 });
 
 // Delete Video lesson from a module
@@ -244,7 +244,7 @@ module.exports.deleteEngVideoLesson = catchAsync(async (req, res) => {
 
   if (!courseModule) {
     req.flash("error", "Module non trouvé");
-    return res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules`);
+    return res.redirect(`/maelenglish/cours/admindashboard/${course_id}/modules`);
   }
 
   // Remove video ID from module's videoLinks array
@@ -257,7 +257,7 @@ module.exports.deleteEngVideoLesson = catchAsync(async (req, res) => {
   await EngCourseVideo.findByIdAndDelete(video_id);
 
   req.flash("success", "Vidéo supprimée avec succès");
-  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${courseModule_id}/edit`);
+  res.redirect(`/maelenglish/cours/admindashboard/${course_id}/modules/${courseModule_id}/edit`);
 });
 
 // Update Video lesson in a module
@@ -267,7 +267,7 @@ module.exports.updateEngVideoLesson = catchAsync(async (req, res) => {
   await EngCourseVideo.findByIdAndUpdate(video_id, req.body.engVideo);
 
   req.flash("success", "Vidéo mise à jour avec succès");
-  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${courseModule_id}/edit`);
+  res.redirect(`/maelenglish/cours/admindashboard/${course_id}/modules/${courseModule_id}/edit`);
 });
 
 // Update Practice exercise in a module
@@ -280,7 +280,7 @@ module.exports.updatePractice = catchAsync(async (req, res) => {
   await Practice.findByIdAndUpdate(practice_id, { title, category, links });
 
   req.flash("success", "Exercice de pratique mis à jour avec succès");
-  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${courseModule_id}/edit`);
+  res.redirect(`/maelenglish/cours/admindashboard/${course_id}/modules/${courseModule_id}/edit`);
 });
 
 // Delete Practice exercise from a module
@@ -290,7 +290,7 @@ module.exports.deletePractice = catchAsync(async (req, res) => {
 
   if (!courseModule) {
     req.flash("error", "Module non trouvé");
-    return res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules`);
+    return res.redirect(`/maelenglish/cours/admindashboard/${course_id}/modules`);
   }
 
   // Remove practice ID from module's Assignment array
@@ -303,7 +303,7 @@ module.exports.deletePractice = catchAsync(async (req, res) => {
   await Practice.findByIdAndDelete(practice_id);
 
   req.flash("success", "Exercice de pratique supprimé avec succès");
-  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${courseModule_id}/edit`);
+  res.redirect(`/maelenglish/cours/admindashboard/${course_id}/modules/${courseModule_id}/edit`);
 });
 
 
@@ -318,7 +318,7 @@ module.exports.saveEvaluation = catchAsync(async (req, res) => {
   const courseModule = await Module.findById(module_id);
   if (!courseModule) {
     req.flash('error', 'Module introuvable.');
-    return res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules`);
+    return res.redirect(`/maelenglish/cours/admindashboard/${course_id}/modules`);
   }
 
   // Parse questions — each has Question_text, Question_response, and options[]
@@ -350,7 +350,7 @@ module.exports.saveEvaluation = catchAsync(async (req, res) => {
     req.flash('success', 'Évaluation créée.');
   }
 
-  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${module_id}/edit`);
+  res.redirect(`/maelenglish/cours/admindashboard/${course_id}/modules/${module_id}/edit`);
 });
 
 // Admin: remove evaluation from a module
@@ -360,7 +360,7 @@ module.exports.deleteEvaluation = catchAsync(async (req, res) => {
   const courseModule = await Module.findById(module_id);
   if (!courseModule) {
     req.flash('error', 'Module introuvable.');
-    return res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules`);
+    return res.redirect(`/maelenglish/cours/admindashboard/${course_id}/modules`);
   }
 
   if (courseModule.evaluation) {
@@ -370,7 +370,7 @@ module.exports.deleteEvaluation = catchAsync(async (req, res) => {
     req.flash('success', 'Évaluation supprimée.');
   }
 
-  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${module_id}/edit`);
+  res.redirect(`/maelenglish/cours/admindashboard/${course_id}/modules/${module_id}/edit`);
 });
 
 // Student: submit evaluation answers
@@ -380,7 +380,7 @@ module.exports.submitEvaluation = catchAsync(async (req, res) => {
   const courseModule = await Module.findById(module_id).populate('evaluation');
   if (!courseModule || !courseModule.evaluation) {
     req.flash('error', 'Évaluation introuvable.');
-    return res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}`);
+    return res.redirect(`/maelenglish/cours/${course_id}/modules/${module_id}`);
   }
 
   const evaluation = courseModule.evaluation;
@@ -391,7 +391,7 @@ module.exports.submitEvaluation = catchAsync(async (req, res) => {
   );
   if (alreadySubmitted) {
     req.flash('error', 'Vous avez déjà soumis cette évaluation.');
-    return res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}`);
+    return res.redirect(`/maelenglish/cours/${course_id}/modules/${module_id}`);
   }
 
   // Grade the answers
@@ -427,7 +427,7 @@ module.exports.submitEvaluation = catchAsync(async (req, res) => {
   }
 
   req.flash('success', `Évaluation soumise ! Score : ${score}/100 (${correct}/${evaluation.questions.length} bonne(s) réponse(s)).`);
-  res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}`);
+  res.redirect(`/maelenglish/cours/${course_id}/modules/${module_id}`);
 });
 
 // ─── MODULE QUIZ (new structured field) ──────────────────────────────────────
@@ -439,7 +439,7 @@ module.exports.saveModuleQuiz = catchAsync(async (req, res) => {
   const courseModule = await Module.findById(module_id);
   if (!courseModule) {
     req.flash('error', 'Module introuvable.');
-    return res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules`);
+    return res.redirect(`/maelenglish/cours/admindashboard/${course_id}/modules`);
   }
 
   const parsedQuestions = questions
@@ -464,7 +464,7 @@ module.exports.saveModuleQuiz = catchAsync(async (req, res) => {
   await courseModule.save();
 
   req.flash('success', 'Quiz du module sauvegardé.');
-  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${module_id}/edit`);
+  res.redirect(`/maelenglish/cours/admindashboard/${course_id}/modules/${module_id}/edit`);
 });
 
 // ─── MODULE ASSIGNMENT ────────────────────────────────────────────────────────
@@ -476,7 +476,7 @@ module.exports.saveModuleAssignment = catchAsync(async (req, res) => {
   const courseModule = await Module.findById(module_id);
   if (!courseModule) {
     req.flash('error', 'Module introuvable.');
-    return res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules`);
+    return res.redirect(`/maelenglish/cours/admindashboard/${course_id}/modules`);
   }
 
   courseModule.moduleAssignment = {
@@ -489,7 +489,7 @@ module.exports.saveModuleAssignment = catchAsync(async (req, res) => {
   await courseModule.save();
 
   req.flash('success', 'Devoir du module sauvegardé.');
-  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${module_id}/edit`);
+  res.redirect(`/maelenglish/cours/admindashboard/${course_id}/modules/${module_id}/edit`);
 });
 
 

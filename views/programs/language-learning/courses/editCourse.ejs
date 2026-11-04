@@ -204,7 +204,7 @@
                   </p>
               </div>
               <div class="col-md-4 d-flex justify-content-end banner-actions">
-                  <a class="banner-btn" href="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules">
+                  <a class="banner-btn" href="/maelenglish/cours/admindashboard/<%= course._id %>/modules">
                       <i class="bi bi-collection-play-fill"></i> Gérer les modules
                   </a>
               </div>
@@ -212,7 +212,7 @@
       </div>
   </div>
 
-  <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>?_method=PUT" method="POST">
+  <form action="/maelenglish/cours/admindashboard/<%= course._id %>?_method=PUT" method="POST">
     
     <!-- General Info -->
     <div class="form-card">
@@ -248,7 +248,7 @@
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" id="isChallenge" name="course[isChallenge]" value="true" <%= course.isChallenge ? 'checked' : '' %> onchange="document.getElementById('challenge-fields').style.display = this.checked ? 'block' : 'none';">
                     <label class="form-check-label" for="isChallenge">
-                        <i class="bi bi-lightning-charge-fill ms-2" style="color:#7c3aed;"></i> Mode English Challenge (jour par jour, point de contrôle validé par un coach)
+                        <i class="bi bi-lightning-charge-fill ms-2" style="color:#7c3aed;"></i> Mode MaelEnglish Challenge (jour par jour, point de contrôle validé par un coach)
                     </label>
                 </div>
                 <div id="challenge-fields" style="display:<%= course.isChallenge ? 'block' : 'none' %>; margin-top:.9rem;">
@@ -349,7 +349,7 @@
       </h3>
       
       <div class="collapse mt-4" id="new-module">
-          <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/module" method="POST">
+          <form action="/maelenglish/cours/admindashboard/<%= course._id %>/module" method="POST">
              <div class="row g-4 mb-3">
                  <div class="col-md-8">
                     <label class="form-label">Titre du module</label>
@@ -393,7 +393,7 @@
       <span class="text-muted small"><%= course.finalExam && course.finalExam.questions && course.finalExam.questions.length > 0 ? course.finalExam.questions.length + ' question(s)' : 'Non configuré' %></span>
     </div>
     <div class="card-body">
-      <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/final-exam" method="POST">
+      <form action="/maelenglish/cours/admindashboard/<%= course._id %>/final-exam" method="POST">
         <div class="row g-2 mb-3">
           <div class="col-md-6">
             <label class="form-label small fw-semibold">Titre</label>
@@ -435,7 +435,7 @@
       <h5 class="mb-0 fw-bold" style="color:#854d0e;"><i class="bi bi-journal-check me-2"></i>Projet final</h5>
     </div>
     <div class="card-body">
-      <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/final-project" method="POST">
+      <form action="/maelenglish/cours/admindashboard/<%= course._id %>/final-project" method="POST">
         <div class="row g-2 mb-2">
           <div class="col-md-6"><label class="form-label small fw-semibold">Titre</label><input type="text" name="title" class="form-control form-control-sm" value="<%= course.finalProject && course.finalProject.title ? course.finalProject.title : '' %>" placeholder="Projet final"></div>
           <div class="col-md-3"><label class="form-label small fw-semibold">Type de rendu</label><select name="submissionType" class="form-select form-select-sm"><option value="text" <%= course.finalProject && course.finalProject.submissionType === 'text' ? 'selected' : '' %>>Texte</option><option value="link" <%= course.finalProject && course.finalProject.submissionType === 'link' ? 'selected' : '' %>>Lien URL</option></select></div>

@@ -182,8 +182,8 @@
   <div class="container">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb mb-3">
-        <li class="breadcrumb-item"><a href="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>">Course Dashboard</a></li>
-        <li class="breadcrumb-item"><a href="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules">Modules</a></li>
+        <li class="breadcrumb-item"><a href="/maelenglish/cours/admindashboard/<%= course._id %>">Course Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/maelenglish/cours/admindashboard/<%= course._id %>/modules">Modules</a></li>
         <li class="breadcrumb-item active" aria-current="page">Edit Module</li>
       </ol>
     </nav>
@@ -213,7 +213,7 @@
         </div>
         
         <div class="collapse show" id="moduleDetailsForm">
-          <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>?_method=PUT" method="POST">
+          <form action="/maelenglish/cours/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>?_method=PUT" method="POST">
             <div class="row g-3 pt-4">
             <div class="col-md-8">
               <label class="form-label" for="title">Module Title</label>
@@ -266,7 +266,7 @@
         </div>
         
         <div class="collapse" id="addVideoForm">
-          <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/engcoursevideo" method="POST">
+          <form action="/maelenglish/cours/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/engcoursevideo" method="POST">
             <div class="mb-3">
               <label class="form-label">Lesson Title</label>
               <input class="form-control" type="text" name="engVideo[title]" placeholder="e.g. Introduction to Verbs" required />
@@ -363,7 +363,7 @@
         </div>
         
         <div class="collapse" id="addPracticeForm">
-          <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/practice" method="POST">
+          <form action="/maelenglish/cours/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/practice" method="POST">
             <div class="mb-3">
               <label class="form-label">Assignment Title</label>
               <input class="form-control" type="text" name="practice[title]" placeholder="e.g. Quiz 1" required />
@@ -463,7 +463,7 @@
         <div class="collapse mb-4" id="addResourceForm">
           <div class="card card-body bg-light border-0">
             <h5 class="mb-3 text-primary fw-bold">New Resource Details</h5>
-            <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/coach-resource" method="POST">
+            <form action="/maelenglish/cours/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/coach-resource" method="POST">
               <div class="row g-3">
                 <div class="col-md-6">
                   <label class="form-label">Resource Title</label>
@@ -541,7 +541,7 @@
                         <a href="<%= resource.link %>" target="_blank" class="btn btn-sm btn-outline-primary">
                           <i class="bi bi-box-arrow-up-right"></i> Open
                         </a>
-                        <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/coach-resource/<%= resource._id %>?_method=DELETE" 
+                        <form action="/maelenglish/cours/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/coach-resource/<%= resource._id %>?_method=DELETE" 
                               method="POST" 
                               onsubmit="return confirm('Are you sure you want to delete this resource?');"
                               style="display: inline;">
@@ -578,7 +578,7 @@
             <h5 class="modal-title" id="editVideoModalLabel<%= video._id %>" style="color: var(--text-dark)">Edit Video: <%= video.title %></h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/engcoursevideo/<%= video._id %>?_method=PUT" method="POST">
+          <form action="/maelenglish/cours/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/engcoursevideo/<%= video._id %>?_method=PUT" method="POST">
             <div class="modal-body text-start">
               <div class="mb-3">
                 <label class="form-label" style="color: var(--text-dark)">Lesson Title</label>
@@ -630,7 +630,7 @@
           </div>
           <div class="modal-footer border-0 pt-0">
             <button type="button" class="btn btn-sm btn-light border" data-bs-dismiss="modal">Cancel</button>
-            <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/engcoursevideo/<%= video._id %>?_method=DELETE" method="POST" style="display: inline;">
+            <form action="/maelenglish/cours/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/engcoursevideo/<%= video._id %>?_method=DELETE" method="POST" style="display: inline;">
               <button type="submit" class="btn btn-sm btn-danger px-3">Delete</button>
             </form>
           </div>
@@ -650,7 +650,7 @@
             <h5 class="modal-title" id="editPracticeModalLabel<%= practice._id %>" style="color: var(--text-dark)">Edit Practice: <%= practice.title %></h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/practice/<%= practice._id %>?_method=PUT" method="POST">
+          <form action="/maelenglish/cours/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/practice/<%= practice._id %>?_method=PUT" method="POST">
             <div class="modal-body text-start">
               <div class="mb-3">
                 <label class="form-label" style="color: var(--text-dark)">Assignment Title</label>
@@ -698,7 +698,7 @@
           </div>
           <div class="modal-footer border-0 pt-0">
             <button type="button" class="btn btn-sm btn-light border" data-bs-dismiss="modal">Cancel</button>
-            <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/practice/<%= practice._id %>?_method=DELETE" method="POST" style="display: inline;">
+            <form action="/maelenglish/cours/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/practice/<%= practice._id %>?_method=DELETE" method="POST" style="display: inline;">
               <button type="submit" class="btn btn-sm btn-danger px-3">Delete</button>
             </form>
           </div>
@@ -736,7 +736,7 @@
               onclick="openEditLesson('<%= lesson._id %>','<%= lesson.type %>','<%= lesson.title.replace(/'/g,\"\\'\"") %>','<%= lesson.description ? lesson.description.replace(/'/g,\"\\'\"") : '' %>','<%= lesson.videoUrl || '' %>','<%= lesson.videoDuration || 0 %>','<%= (lesson.fileUrl||'').replace(/'/g,\"\\'\"") %>','<%= (lesson.fileName||'').replace(/'/g,\"\\'\"") %>')">
               Modifier
             </button>
-            <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/lessons/<%= lesson._id %>?_method=DELETE" method="POST" style="margin:0">
+            <form action="/maelenglish/cours/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/lessons/<%= lesson._id %>?_method=DELETE" method="POST" style="margin:0">
               <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" onclick="return confirm('Supprimer cette leçon ?')">×</button>
             </form>
           </div>
@@ -749,7 +749,7 @@
     <!-- Add new lesson form -->
     <details>
       <summary class="btn btn-sm btn-outline-success mb-3" style="list-style:none;cursor:pointer;">+ Ajouter une leçon</summary>
-      <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/lessons" method="POST" class="border rounded p-3 mt-2" style="background:#f0fdf4;">
+      <form action="/maelenglish/cours/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/lessons" method="POST" class="border rounded p-3 mt-2" style="background:#f0fdf4;">
         <div class="row g-2 mb-2">
           <div class="col-md-7">
             <input type="text" name="title" class="form-control form-control-sm" placeholder="Titre de la leçon *" required>
@@ -820,7 +820,7 @@ function updateNewLessonFields(type) {
 
 function openEditLesson(id, type, title, desc, videoUrl, videoDuration, fileUrl, fileName) {
   const form = document.getElementById('editLessonForm');
-  form.action = `/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/lessons/${id}`;
+  form.action = `/maelenglish/cours/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/lessons/${id}`;
   document.getElementById('editTitle').value = title;
   document.getElementById('editDesc').value = desc;
   ['editVideoFields','editPdfFields','editTextFields'].forEach(f => document.getElementById(f).style.display = 'none');
@@ -846,7 +846,7 @@ function openEditLesson(id, type, title, desc, videoUrl, videoDuration, fileUrl,
   <div class="card-header d-flex justify-content-between align-items-center" style="background:#f8f5ff;">
     <h5 class="mb-0 fw-bold" style="color:#5d06ba;"><i class="bi bi-clipboard-check me-2"></i>Évaluation du module</h5>
     <% if (courseModule.evaluation) { %>
-      <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/evaluation?_method=DELETE" method="POST" style="display:inline">
+      <form action="/maelenglish/cours/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/evaluation?_method=DELETE" method="POST" style="display:inline">
         <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Supprimer cette évaluation ?')">Supprimer</button>
       </form>
     <% } %>
@@ -862,7 +862,7 @@ function openEditLesson(id, type, title, desc, videoUrl, videoDuration, fileUrl,
       <p class="text-muted small mb-3">Aucune évaluation pour ce module. Créez-en une ci-dessous.</p>
     <% } %>
 
-    <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/evaluation" method="POST">
+    <form action="/maelenglish/cours/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/evaluation" method="POST">
       <div class="mb-3">
         <label class="form-label fw-semibold">Titre de l'évaluation</label>
         <input type="text" name="title" class="form-control" value="<%= courseModule.evaluation ? courseModule.evaluation.title : '' %>" placeholder="Ex: Quiz Module 1" required>
@@ -924,7 +924,7 @@ function removeQuestion(btn) { btn.closest('.question-block').remove(); }
   </div>
   <div class="card-body">
     <p class="text-muted small mb-3">Ce quiz est obligatoire pour valider le module. Il remplace le quiz legacy ci-dessus.</p>
-    <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/module-quiz" method="POST">
+    <form action="/maelenglish/cours/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/module-quiz" method="POST">
       <div class="row g-2 mb-3">
         <div class="col-md-6">
           <label class="form-label fw-semibold small">Titre du quiz</label>
@@ -972,7 +972,7 @@ function removeQuestion(btn) { btn.closest('.question-block').remove(); }
     <h5 class="mb-0 fw-bold" style="color:#854d0e;"><i class="bi bi-pencil-square me-2"></i>Devoir du module</h5>
   </div>
   <div class="card-body">
-    <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/assignment" method="POST">
+    <form action="/maelenglish/cours/admindashboard/<%= course._id %>/modules/<%= courseModule._id %>/assignment" method="POST">
       <div class="row g-2 mb-2">
         <div class="col-md-6">
           <label class="form-label fw-semibold small">Titre du devoir</label>

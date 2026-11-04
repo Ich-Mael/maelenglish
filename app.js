@@ -462,7 +462,9 @@ app.use('/institution', institutionStudentRoutes);
 
 // Mount Program Routes
 app.use('/programs/ekalan', eKalanRoutes);
-app.use('/programs/language-learning', languageLearningRoutes);
+app.use('/maelenglish', languageLearningRoutes);
+// Old English Boost URLs → MaelEnglish (301 / 308)
+app.use('/programs/language-learning', require('./shared/routes/legacyEnglishRedirect'));
 app.use('/institution', institutionProgram);
 
 // Export rate limiter for use in routes

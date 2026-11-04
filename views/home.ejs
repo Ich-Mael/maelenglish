@@ -10,7 +10,7 @@
     const _canonical = _base + '/';
     const _ogImg = _base + '/assets/img/afrohk_logo_2.png';
     const _title = "Afro House of Knowledge — Éducation, accompagnement scolaire & anglais";
-    const _desc = "Afro House of Knowledge — plateforme éducative en ligne : formations d'excellence académique, accompagnement scolaire (e-Kalan) et apprentissage de l'anglais (English Boost) en Afrique. Le savoir sans barrières.";
+    const _desc = "Afro House of Knowledge — plateforme éducative en ligne : formations d'excellence académique, accompagnement scolaire (e-Kalan) et anglais professionnel (MaelEnglish) en Afrique. Le savoir sans barrières.";
     const _ld = {
       "@context": "https://schema.org",
       "@graph": [
@@ -44,7 +44,7 @@
   <title><%= _title %></title>
   <meta name="description" content="<%= _desc %>" />
   <meta name="keywords"
-    content="Afro House of Knowledge, AfroHK, éducation Afrique, accompagnement scolaire, cours en ligne, apprentissage anglais, e-Kalan, English Boost, formations en ligne, EdTech Afrique" />
+    content="Afro House of Knowledge, AfroHK, éducation Afrique, accompagnement scolaire, cours en ligne, apprentissage anglais, e-Kalan, MaelEnglish, anglais professionnel, formations en ligne, EdTech Afrique" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="<%= _canonical %>" />
 
@@ -65,9 +65,9 @@
   <meta name="twitter:image" content="<%= _ogImg %>" />
 
   <%# LCP: preload the hero background image (matches #hero in Home.css, per breakpoint) %>
-  <link rel="preload" as="image" href="https://images.pexels.com/photos/5896928/pexels-photo-5896928.jpeg"
+  <link rel="preload" as="image" href="/assets/img/hero-slide-1.webp" type="image/webp"
     media="(min-width: 769px)" />
-  <link rel="preload" as="image" href="https://images.pexels.com/photos/12911773/pexels-photo-12911773.jpeg"
+  <link rel="preload" as="image" href="/assets/img/hero-slide-1-m.webp" type="image/webp"
     media="(max-width: 768px)" />
 
   <%# Structured data (JSON.stringify guarantees valid JSON) %>
@@ -95,6 +95,7 @@
 
   <!-- Template Main CSS File -->
   <link href="assets/css/Home.css" rel="stylesheet" />
+  <link href="assets/css/hero-carousel.css" rel="stylesheet" />
   <link href="assets/css/navbar.css" rel="stylesheet" />
   <link href="assets/css/contact-redesign.css" rel="stylesheet" />
   <link href="assets/css/reflection-gallery.css" rel="stylesheet" />
@@ -1063,22 +1064,105 @@
   <%-include('./partials/navbar')%>
     <!-- ======= Hero Section ======= -->
     <%-include('./partials/flash')%>
-      <section id="hero" class="d-flex align-items-center">
+      <%#
+        Hero carousel (Swiper, fade): one slide per program. Slide 1 keeps the page's only <h1>
+        and the preloaded background; slides 2–4 get their image lazily (data-bg) after load.
+      %>
+      <%
+        const _px = (id) => 'https://images.pexels.com/photos/' + id + '/pexels-photo-' + id + '.jpeg?auto=compress&cs=tinysrgb&w=1920';
+        const _ic = (typeof institutionCourseCount === 'number') ? institutionCourseCount : 0;
+        const _in = (typeof institutionCount === 'number') ? institutionCount : 0;
+        const _instSub = (_ic > 0 && _in > 0)
+          ? _ic + ' formation' + (_ic > 1 ? 's' : '') + ' certifiante' + (_ic > 1 ? 's' : '') + ' proposée' + (_ic > 1 ? 's' : '') + ' par ' + _in + ' institution' + (_in > 1 ? 's' : '') + ' partenaire' + (_in > 1 ? 's' : '') + ', à suivre en ligne et à votre rythme.'
+          : 'Des formations certifiantes conçues avec des institutions partenaires, à suivre en ligne et à votre rythme.';
+      %>
+      <section id="hero" class="hero-carousel" aria-roledescription="carrousel" aria-label="À la une">
+        <div class="hero-swiper swiper">
+          <div class="swiper-wrapper">
 
-        <div class="container">
-          <div class="row mt-5">
-            <div class="col-xl-9">
-              <h1 class="slogan" id="values-c">
-                <span class="purple">Innover pour révéler  <br> le potentiel humain</span>
-              </h1>
-              <p class="hero-sub">Accompagnement scolaire, anglais et formations certifiantes — accessibles partout en Afrique. Découvrez, développez, devenez.</p>
-              <div class="hero-cta">
-                <a href="/formations" class="btn-get-started">
-                  Explorer les formations <i class="bi bi-arrow-right"></i>
-                </a>
+            <div class="swiper-slide hero-slide">
+              <div class="hero-slide__bg hero-slide__bg--main" aria-hidden="true"></div>
+              <div class="container">
+                <div class="row mt-5">
+                  <div class="col-xl-9">
+                    <h1 class="slogan hero-title" id="values-c">
+                      <span class="purple">Innover pour révéler  <br> le potentiel humain</span>
+                    </h1>
+                    <p class="hero-sub">Accompagnement scolaire, anglais et formations certifiantes — accessibles partout en Afrique. Découvrez, développez, devenez.</p>
+                    <div class="hero-cta">
+                      <a href="/formations" class="btn-get-started">
+                        Explorer les formations <i class="bi bi-arrow-right"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
+
+            <div class="swiper-slide hero-slide">
+              <div class="hero-slide__bg" data-bg="<%= _px(5896928) %>" aria-hidden="true"></div>
+              <div class="container">
+                <div class="row mt-5">
+                  <div class="col-xl-9">
+                    <p class="hero-kicker">E-Kalan · Lycée</p>
+                    <h2 class="slogan hero-title">
+                      <span class="purple">Réussir au lycée <br> et décrocher son BAC</span>
+                    </h2>
+                    <p class="hero-sub">Cours vidéo, exercices corrigés et le Kalan Maths Lab qui explique chaque calcul étape par étape.</p>
+                    <div class="hero-cta">
+                      <a href="/programs/ekalan/kalan" class="btn-get-started">
+                        Découvrir E-Kalan <i class="bi bi-arrow-right"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide hero-slide">
+              <div class="hero-slide__bg" data-bg="/assets/img/Maelenglish/photos/speaker-1280.jpg" aria-hidden="true"></div>
+              <div class="container">
+                <div class="row mt-5">
+                  <div class="col-xl-9">
+                    <p class="hero-kicker">MaelEnglish · Anglais professionnel</p>
+                    <h2 class="slogan hero-title">
+                      <span class="purple" lang="en">Speak the language <br> of your profession</span>
+                    </h2>
+                    <p class="hero-sub">L'anglais des situations de votre métier — réunions, e-mails, entretiens, clients — en groupe, en coaching ou en challenge.</p>
+                    <div class="hero-cta">
+                      <a href="/maelenglish" class="btn-get-started">
+                        Découvrir MaelEnglish <i class="bi bi-arrow-right"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide hero-slide">
+              <div class="hero-slide__bg" data-bg="<%= _px(6077709) %>" aria-hidden="true"></div>
+              <div class="container">
+                <div class="row mt-5">
+                  <div class="col-xl-9">
+                    <p class="hero-kicker">Institutions partenaires</p>
+                    <h2 class="slogan hero-title">
+                      <span class="purple">Se former <br> et se certifier</span>
+                    </h2>
+                    <p class="hero-sub"><%= _instSub %></p>
+                    <div class="hero-cta">
+                      <a href="/formations" class="btn-get-started">
+                        Voir les formations <i class="bi bi-arrow-right"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
+          <button type="button" class="hero-nav hero-nav--prev" aria-label="Diapositive précédente"><i class="bi bi-chevron-left"></i></button>
+          <button type="button" class="hero-nav hero-nav--next" aria-label="Diapositive suivante"><i class="bi bi-chevron-right"></i></button>
+          <div class="hero-pagination"></div>
         </div>
       </section>
       <!-- End Hero -->
@@ -1152,11 +1236,11 @@
                 </div>
               </div>
 
-              <!-- 3. English Boost -->
+              <!-- 3. MaelEnglish -->
               <div class="program-card-modern" data-aos="zoom-in" data-aos-delay="300">
                 <div class="program-card-image">
-                  <img loading="lazy" src="https://images.pexels.com/photos/7490843/pexels-photo-7490843.jpeg"
-                    alt="English Boost - Apprentissage de l'anglais">
+                  <img loading="lazy" src="/assets/img/Maelenglish/photos/speaker-1280.jpg" srcset="/assets/img/Maelenglish/photos/speaker-720.webp 720w, /assets/img/Maelenglish/photos/speaker-1280.webp 1280w" sizes="(max-width: 768px) 100vw, 420px"
+                    alt="MaelEnglish - Anglais professionnel">
                   <div class="program-card-overlay"></div>
                 </div>
                 <div class="program-card-content">
@@ -1165,7 +1249,7 @@
                     <div class="program-card-icon">
                       <i class="bi bi-translate"></i>
                     </div>
-                    <h3 class="program-card-title">English Boost</h3>
+                    <h3 class="program-card-title">MaelEnglish</h3>
                   </div>
                   <p class="program-card-description">
                     Propulsez votre carrière grâce à un anglais utile et adapté à votre réalité professionnelle.
@@ -1177,7 +1261,7 @@
                       :</strong> Maîtriser l’anglais de votre métier, gagner en confiance et saisir de nouvelles
                     opportunités professionnelles.
                   </p>
-                  <a href="/programs/language-learning/english4all" class="program-card-link">
+                  <a href="/maelenglish" class="program-card-link">
                     En savoir plus <i class="bi bi-arrow-right"></i>
                   </a>
                 </div>
@@ -1550,7 +1634,7 @@
             <div class="testimonials-slider swiper" data-aos="fade-up" data-aos-delay="100">
               <div class="swiper-wrapper">
 
-                <!-- 1. English Boost (Sarah) -->
+                <!-- 1. MaelEnglish (Sarah) -->
                 <div class="swiper-slide">
                   <div
                     class="testimonial-item p-4 rounded-4 bg-white shadow-sm border border-light h-100 text-center position-relative overflow-hidden">
@@ -1563,13 +1647,13 @@
                           class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
                       </div>
                       <p class="fst-italic text-muted mb-4 fs-5" style="line-height: 1.8;">
-                        "Honnêtement, je stagnais dans ma carrière. English Boost ne m'a pas juste appris la grammaire,
+                        "Honnêtement, je stagnais dans ma carrière. MaelEnglish ne m'a pas juste appris la grammaire,
                         ça m'a donné le courage de prendre la parole en réunion. J'ai décroché un contrat avec une boîte
                         américaine le mois dernier !"
                       </p>
                       <hr class="mx-auto" style="width: 50px; height: 3px; background: #5d06ba; opacity: 1;">
                       <p class="fw-bold mt-3 h5 mb-1">Sarah K.</p>
-                      <p class="text-secondary small text-uppercase fw-bold">English Boost • Gestionnaire de Projet
+                      <p class="text-secondary small text-uppercase fw-bold">MaelEnglish • Gestionnaire de Projet
                       </p>
                     </div>
                   </div>
@@ -1623,7 +1707,7 @@
                   </div>
                 </div>
 
-                <!-- 4. English Boost (Marc) -->
+                <!-- 4. MaelEnglish (Marc) -->
                 <div class="swiper-slide">
                   <div
                     class="testimonial-item p-4 rounded-4 bg-white shadow-sm border border-light h-100 text-center position-relative overflow-hidden">
@@ -1642,7 +1726,7 @@
                       </p>
                       <hr class="mx-auto" style="width: 50px; height: 3px; background: #5d06ba; opacity: 1;">
                       <p class="fw-bold mt-3 h5 mb-1">Marc O.</p>
-                      <p class="text-secondary small text-uppercase fw-bold">English Boost • Entrepreneur</p>
+                      <p class="text-secondary small text-uppercase fw-bold">MaelEnglish • Entrepreneur</p>
                     </div>
                   </div>
                 </div>
@@ -1949,6 +2033,7 @@
 
         <!-- Template Main JS File -->
         <script src="assets/js/main.js"></script>
+        <script src="assets/js/hero-carousel.js"></script>
         <!-- About Section Mouse Move Animation -->
         <script>
           document.addEventListener('DOMContentLoaded', function () {

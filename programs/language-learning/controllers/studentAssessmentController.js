@@ -8,7 +8,7 @@ const catchAsync = require('../../../shared/utilities/catchAsync');
 const Emailer = require('../../../shared/utilities/sendEmail');
 const { getBaseUrl } = require('../../../shared/utilities/url');
 
-const GEB_BASE = '/programs/language-learning/general-english-boost';
+const GEB_BASE = '/maelenglish/cours';
 
 // ─── CHALLENGE NOTIFICATIONS ────────────────────────────────────────────────────
 
@@ -36,7 +36,7 @@ async function notifyGradeResult(req, submission, isReturn) {
     const course = await Course.findById(submission.courseId).select('title');
     const challengeUrl = `${getBaseUrl(req)}${GEB_BASE}/${submission.courseId}/challenge`;
     await new Emailer(student, challengeUrl).sendChallengeResult({
-        courseTitle: course ? course.title : 'English Challenge',
+        courseTitle: course ? course.title : 'MaelEnglish Challenge',
         dayTitle: submission.moduleId ? submission.moduleId.title : 'le point de contrôle',
         approved: !isReturn,
         feedback: submission.feedback || '',
@@ -51,7 +51,7 @@ module.exports.showModuleQuiz = catchAsync(async (req, res) => {
     const courseModule = await Module.findById(module_id);
     if (!courseModule || !courseModule.moduleQuiz || !courseModule.moduleQuiz.questions.length) {
         req.flash('error', 'Quiz introuvable.');
-        return res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}/overview`);
+        return res.redirect(`/maelenglish/cours/${course_id}/modules/${module_id}/overview`);
     }
 
     // Check all lessons done
@@ -64,7 +64,7 @@ module.exports.showModuleQuiz = catchAsync(async (req, res) => {
 
     if (completedCount < lessons.length) {
         req.flash('error', 'Terminez toutes les leçons avant de faire le quiz.');
-        return res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}/overview`);
+        return res.redirect(`/maelenglish/cours/${course_id}/modules/${module_id}/overview`);
     }
 
     // Previous attempt
@@ -90,7 +90,7 @@ module.exports.submitModuleQuiz = catchAsync(async (req, res) => {
     const courseModule = await Module.findById(module_id);
     if (!courseModule || !courseModule.moduleQuiz) {
         req.flash('error', 'Quiz introuvable.');
-        return res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}/overview`);
+        return res.redirect(`/maelenglish/cours/${course_id}/modules/${module_id}/overview`);
     }
 
     const quiz = courseModule.moduleQuiz;
@@ -134,7 +134,7 @@ module.exports.submitModuleQuiz = catchAsync(async (req, res) => {
         req.flash('error', `Score : ${score}/100. Score requis : ${quiz.passingScore || 70}/100. Réessayez.`);
     }
 
-    res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}/overview`);
+    res.redirect(`/maelenglish/cours/${course_id}/modules/${module_id}/overview`);
 });
 
 // ─── MODULE ASSIGNMENT ────────────────────────────────────────────────────────
@@ -145,7 +145,7 @@ module.exports.showModuleAssignment = catchAsync(async (req, res) => {
     const courseModule = await Module.findById(module_id);
     if (!courseModule || !courseModule.moduleAssignment || !courseModule.moduleAssignment.title) {
         req.flash('error', 'Devoir introuvable.');
-        return res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}/overview`);
+        return res.redirect(`/maelenglish/cours/${course_id}/modules/${module_id}/overview`);
     }
 
     const existing = await AssignmentSubmission.findOne({
@@ -171,12 +171,12 @@ module.exports.submitModuleAssignment = catchAsync(async (req, res) => {
     const courseModule = await Module.findById(module_id);
     if (!courseModule || !courseModule.moduleAssignment) {
         req.flash('error', 'Devoir introuvable.');
-        return res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}/overview`);
+        return res.redirect(`/maelenglish/cours/${course_id}/modules/${module_id}/overview`);
     }
 
     if (!content || !content.trim()) {
         req.flash('error', 'Votre réponse ne peut pas être vide.');
-        return res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}/assignment`);
+        return res.redirect(`/maelenglish/cours/${course_id}/modules/${module_id}/assignment`);
     }
 
     await AssignmentSubmission.findOneAndUpdate(
@@ -199,11 +199,11 @@ module.exports.submitModuleAssignment = catchAsync(async (req, res) => {
         try { await notifyCheckpointSubmitted(req, course, courseModule); }
         catch (e) { console.error('challenge submit email failed:', e.message); }
         req.flash('success', 'Point de contrôle soumis. En attente de la validation de votre coach.');
-        return res.redirect(`/programs/language-learning/general-english-boost/${course_id}/challenge`);
+        return res.redirect(`/maelenglish/cours/${course_id}/challenge`);
     }
 
     req.flash('success', 'Devoir soumis avec succès. En attente de correction.');
-    res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}/overview`);
+    res.redirect(`/maelenglish/cours/${course_id}/modules/${module_id}/overview`);
 });
 
 // ─── FINAL EXAM ───────────────────────────────────────────────────────────────
@@ -214,7 +214,7 @@ module.exports.showFinalExam = catchAsync(async (req, res) => {
     const course = await Course.findById(course_id).populate('modules', 'title order moduleQuiz');
     if (!course || !course.finalExam || !course.finalExam.questions.length) {
         req.flash('error', 'Examen final introuvable.');
-        return res.redirect(`/programs/language-learning/general-english-boost/${course_id}`);
+        return res.redirect(`/maelenglish/cours/${course_id}`);
     }
 
     const lastAttempt = await QuizAttempt.findOne({
@@ -235,7 +235,7 @@ module.exports.submitFinalExam = catchAsync(async (req, res) => {
     const course = await Course.findById(course_id).select('finalExam');
     if (!course || !course.finalExam) {
         req.flash('error', 'Examen final introuvable.');
-        return res.redirect(`/programs/language-learning/general-english-boost/${course_id}`);
+        return res.redirect(`/maelenglish/cours/${course_id}`);
     }
 
     const exam = course.finalExam;
@@ -278,7 +278,7 @@ module.exports.submitFinalExam = catchAsync(async (req, res) => {
         req.flash('error', `Score : ${score}/100. Score requis : ${exam.passingScore || 70}/100. Réessayez.`);
     }
 
-    res.redirect(`/programs/language-learning/general-english-boost/${course_id}`);
+    res.redirect(`/maelenglish/cours/${course_id}`);
 });
 
 // ─── FINAL PROJECT ────────────────────────────────────────────────────────────
@@ -288,7 +288,7 @@ module.exports.showFinalProject = catchAsync(async (req, res) => {
     const course = await Course.findById(course_id).select('title finalProject');
     if (!course || !course.finalProject || !course.finalProject.title) {
         req.flash('error', 'Projet final introuvable.');
-        return res.redirect(`/programs/language-learning/general-english-boost/${course_id}`);
+        return res.redirect(`/maelenglish/cours/${course_id}`);
     }
 
     const existing = await AssignmentSubmission.findOne({
@@ -307,12 +307,12 @@ module.exports.submitFinalProject = catchAsync(async (req, res) => {
     const course = await Course.findById(course_id).select('finalProject');
     if (!course || !course.finalProject) {
         req.flash('error', 'Projet final introuvable.');
-        return res.redirect(`/programs/language-learning/general-english-boost/${course_id}`);
+        return res.redirect(`/maelenglish/cours/${course_id}`);
     }
 
     if (!content || !content.trim()) {
         req.flash('error', 'Votre soumission ne peut pas être vide.');
-        return res.redirect(`/programs/language-learning/general-english-boost/${course_id}/final-project`);
+        return res.redirect(`/maelenglish/cours/${course_id}/final-project`);
     }
 
     await AssignmentSubmission.findOneAndUpdate(
@@ -330,7 +330,7 @@ module.exports.submitFinalProject = catchAsync(async (req, res) => {
     );
 
     req.flash('success', 'Projet final soumis. En attente de correction.');
-    res.redirect(`/programs/language-learning/general-english-boost/${course_id}`);
+    res.redirect(`/maelenglish/cours/${course_id}`);
 });
 
 // ─── INSTRUCTOR GRADING ───────────────────────────────────────────────────────
@@ -376,5 +376,5 @@ module.exports.gradeSubmission = catchAsync(async (req, res) => {
     }
 
     req.flash('success', isReturn ? "Devoir renvoyé à l'élève pour correction." : 'Devoir validé — le jour suivant est débloqué.');
-    res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/grading`);
+    res.redirect(`/maelenglish/cours/admindashboard/${course_id}/grading`);
 });

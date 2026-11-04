@@ -1,0 +1,266 @@
+<% layout('layouts/main') %>
+<%# MaelEnglish — single storefront page (landing + programme catalogue; /maelenglish/cours redirects here).
+    Programmes come from programs/language-learning/catalog.js. Styles: /assets/css/maelenglish.css %>
+<% headContent = `
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&display=swap" rel="stylesheet">
+  <link href="/assets/css/maelenglish.css" rel="stylesheet">
+  <link rel="preload" as="image" href="/assets/img/Maelenglish/maelenglish-logo.webp" type="image/webp">
+` %>
+<%
+  const wa = (msg) => 'https://wa.me/22667323131?text=' + encodeURIComponent(msg);
+  // « MaelEnglish for Business » → MaelEnglish + coral « for Business »
+  const brand = (name) => {
+    const rest = name.replace(/^MaelEnglish\s*/, '');
+    return 'MaelEnglish' + (rest ? ' <span>' + rest.replace(/[<>&]/g, '') + '</span>' : '');
+  };
+  const featured = programs.find((p) => p.featured);
+  const jobs = programs.filter((p) => !p.featured);
+  const quotes = [
+    { text: "Grâce au coaching MaelEnglish, j'ai pu décrocher un poste à l'international. La méthode est incroyablement efficace et pragmatique.", name: 'Sarah K.', role: 'Directrice Marketing · Coaching' },
+    { text: "L'ambiance des cours en groupe est géniale. On apprend sans stress, et les progrès sont visibles dès les premières semaines.", name: 'Mohamed D.', role: 'Ingénieur logiciel · Cours en groupe' },
+    { text: "J'avais peur de parler anglais, mais les coachs m'ont donné confiance. Aujourd'hui, je mène des réunions en anglais sans hésitation.", name: 'Aminata T.', role: 'Entrepreneure' },
+    { text: "Une formation adaptée aux réalités du business. Mon anglais est maintenant un atout majeur pour mes négociations.", name: 'Jean-Marc B.', role: 'Commercial' }
+  ];
+%>
+
+<div class="me-page">
+
+  <!-- Hero -->
+  <section class="me-hero">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-7">
+          <picture>
+            <source srcset="/assets/img/Maelenglish/maelenglish-logo.webp" type="image/webp">
+            <img class="me-hero__logo" src="/assets/img/Maelenglish/maelenglish-logo.png" alt="MaelEnglish" width="800" height="183">
+          </picture>
+          <h1 lang="en">Speak the Language of <em>Your Profession</em></h1>
+          <p class="me-hero__lead">
+            Réunions, e-mails, entretiens, clients : avec MaelEnglish, vous pratiquez l'anglais
+            des situations que vous vivez vraiment au travail, accompagné par des coachs qui
+            corrigent chaque étape.
+          </p>
+          <div class="me-hero__cta">
+            <a href="#programmes" class="me-btn me-btn--coral">Voir les programmes <i class="bi bi-arrow-down"></i></a>
+            <% if (currentUser) { %>
+              <a href="/maelenglish/cours/my-courses" class="me-btn me-btn--outline"><i class="bi bi-play-circle"></i> Mes cours</a>
+            <% } else { %>
+              <a href="<%= whatsappLink(null) %>" target="_blank" rel="noopener" class="me-btn me-btn--outline me-btn--wa">
+                <i class="bi bi-whatsapp"></i> Parler à un conseiller
+              </a>
+            <% } %>
+          </div>
+          <div class="me-hero__proof">
+            <span><i class="bi bi-grid-fill"></i> <%= programs.length %> programmes</span>
+            <span><i class="bi bi-people-fill"></i> 500+ apprenants</span>
+            <span><i class="bi bi-patch-check-fill"></i> Certificat</span>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="me-visual" aria-label="Exemples de phrases professionnelles">
+            <div class="me-visual__photo">
+              <%- include('../../../partials/me-photo', { name: 'speaker', alt: 'Professionnelle prenant la parole en anglais lors d’une conférence', sizes: '(max-width: 991px) 100vw, 480px', eager: true }) %>
+            </div>
+            <div class="me-chat__card me-visual__card me-visual__card--top">
+              <div class="me-chat__role"><i class="bi bi-heart-pulse"></i> Health</div>
+              <p class="me-chat__en" lang="en">“Can you describe the pain?”</p>
+              <p class="me-chat__fr">Pouvez-vous décrire la douleur ?</p>
+            </div>
+            <div class="me-chat__card me-visual__card me-visual__card--bottom">
+              <div class="me-chat__role"><i class="bi bi-briefcase"></i> Business</div>
+              <p class="me-chat__en" lang="en">“Let's go over the agenda for today's meeting.”</p>
+              <p class="me-chat__fr">Passons en revue l'ordre du jour de la réunion.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Programmes (catalogue) -->
+  <section class="me-section me-section--tint" id="programmes">
+    <div class="container">
+      <div class="me-head">
+        <span class="me-pill">Nos programmes</span>
+        <h2>L'anglais général, puis l'anglais de votre métier</h2>
+        <p>Commencez par les bases avec Essentials, ou choisissez directement le programme de votre secteur.</p>
+      </div>
+
+      <div class="me-progs">
+        <% if (featured) { %>
+          <a class="me-prog me-prog--featured" href="/maelenglish/cours/programme/<%= featured.slug %>">
+            <div>
+              <div class="me-prog__top">
+                <span class="me-prog__icon"><i class="bi bi-<%= featured.icon %>"></i></span>
+                <% if (featured.status === 'soon') { %>
+                  <span class="me-badge me-badge--soon"><i class="bi bi-hourglass-split"></i> Bientôt</span>
+                <% } else { %>
+                  <span class="me-badge me-badge--open"><i class="bi bi-check-circle-fill"></i> Inscriptions ouvertes</span>
+                <% } %>
+              </div>
+              <h3 class="me-prog__brand"><%- brand(featured.name) %></h3>
+              <p class="me-prog__tagline"><%= featured.tagline %></p>
+              <p class="me-prog__summary"><%= featured.summary %></p>
+              <div class="me-prog__meta">
+                <span><i class="bi bi-stopwatch"></i> <%= featured.duration %></span>
+                <span><i class="bi bi-bar-chart-steps"></i> 2 niveaux</span>
+                <span><i class="bi bi-geo-alt"></i> En ligne ou en centre</span>
+              </div>
+              <span class="me-prog__more">Découvrir le programme <i class="bi bi-arrow-right"></i></span>
+            </div>
+            <div class="me-prog__photo">
+              <%- include('../../../partials/me-photo', { name: featured.photo, alt: featured.name, sizes: '(max-width: 991px) 100vw, 560px', pos: featured.photoPos }) %>
+              <div class="me-chat__card me-prog__quote" aria-hidden="true">
+                <p class="me-chat__en" lang="en">“<%= featured.phrases[0].en %>”</p>
+                <p class="me-chat__fr"><%= featured.phrases[0].fr %></p>
+              </div>
+            </div>
+          </a>
+        <% } %>
+
+        <% jobs.forEach(function (p) { %>
+          <a class="me-prog me-prog--photo" href="/maelenglish/cours/programme/<%= p.slug %>">
+            <div class="me-prog__media">
+              <%- include('../../../partials/me-photo', { name: p.photo, alt: p.name, sizes: '(max-width: 640px) 100vw, (max-width: 1199px) 50vw, 400px', pos: p.photoPos }) %>
+            </div>
+            <div class="me-prog__top">
+              <span class="me-prog__icon"><i class="bi bi-<%= p.icon %>"></i></span>
+              <% if (p.status === 'soon') { %>
+                <span class="me-badge me-badge--soon"><i class="bi bi-hourglass-split"></i> Bientôt</span>
+              <% } else { %>
+                <span class="me-badge me-badge--open"><i class="bi bi-check-circle-fill"></i> Ouvert</span>
+              <% } %>
+            </div>
+            <h3 class="me-prog__brand"><%- brand(p.name) %></h3>
+            <p class="me-prog__tagline"><%= p.tagline %></p>
+            <p class="me-prog__summary"><%= p.summary %></p>
+            <div class="me-prog__meta">
+              <span><i class="bi bi-stopwatch"></i> <%= p.duration %></span>
+              <span><i class="bi bi-bar-chart"></i> <%= p.level %></span>
+            </div>
+            <span class="me-prog__more">Voir le programme <i class="bi bi-arrow-right"></i></span>
+          </a>
+        <% }) %>
+      </div>
+
+      <!-- Other formats -->
+      <div class="me-alt">
+        <a class="me-prog me-prog--custom" href="/maelenglish/coaching">
+          <span class="me-prog__icon"><i class="bi bi-person-video3"></i></span>
+          <div>
+            <h3 class="me-prog__brand">MaelEnglish Coaching</h3>
+            <p class="me-prog__summary">Un coach rien que pour vous, un programme taillé pour votre poste et vos échéances. Idéal si votre secteur n'est pas dans la liste.</p>
+          </div>
+          <span class="me-prog__more" style="color:#fff">Découvrir <i class="bi bi-arrow-right"></i></span>
+        </a>
+        <a class="me-prog me-prog--custom me-prog--challenge" href="<%= wa('Bonjour, je souhaite rejoindre un MaelEnglish Challenge.') %>" target="_blank" rel="noopener">
+          <span class="me-prog__icon"><i class="bi bi-lightning-charge-fill"></i></span>
+          <div>
+            <h3 class="me-prog__brand">MaelEnglish Challenge</h3>
+            <p class="me-prog__summary">Une mission par jour, un point de contrôle validé par un coach avant de passer à la suivante : idéal pour créer l'habitude.</p>
+          </div>
+          <span class="me-prog__more" style="color:#fff">Rejoindre <i class="bi bi-arrow-right"></i></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works (method + format) -->
+  <section class="me-section" id="methode">
+    <div class="container">
+      <div class="me-head">
+        <span class="me-pill">Comment ça marche</span>
+        <h2>Parler d'abord, la grammaire au service de la parole</h2>
+      </div>
+      <div class="me-steps">
+        <div class="me-step">
+          <div class="me-step__num"></div>
+          <h3>On fait le point</h3>
+          <p>Test de niveau, votre métier et vos objectifs : on vous oriente vers le bon programme.</p>
+        </div>
+        <div class="me-step">
+          <div class="me-step__num"></div>
+          <h3>Vous pratiquez</h3>
+          <p>Des situations réelles de votre quotidien professionnel, à l'oral comme à l'écrit.</p>
+        </div>
+        <div class="me-step">
+          <div class="me-step__num"></div>
+          <h3>Le coach corrige</h3>
+          <p>Des retours précis sur vos devoirs et vos prises de parole, pour progresser vite.</p>
+        </div>
+        <div class="me-step">
+          <div class="me-step__num"></div>
+          <h3>Vous êtes certifié</h3>
+          <p>Un certificat MaelEnglish à valoriser sur votre CV et votre profil professionnel.</p>
+        </div>
+      </div>
+      <div class="me-facts">
+        <span><i class="bi bi-stopwatch"></i> Essentials : 8 semaines par niveau</span>
+        <span><i class="bi bi-briefcase"></i> Programmes métiers : 12 semaines</span>
+        <span><i class="bi bi-laptop"></i> En ligne ou dans nos centres à Ouagadougou</span>
+        <span><i class="bi bi-award"></i> Certificat à la fin</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="me-stats" aria-label="MaelEnglish en chiffres">
+    <div class="container">
+      <div class="me-stats__grid">
+        <div><div class="me-stats__value">500<span>+</span></div><div class="me-stats__label">Apprenants actifs</div></div>
+        <div><div class="me-stats__value">90<span>%</span></div><div class="me-stats__label">Satisfaction</div></div>
+        <div><div class="me-stats__value">4<span>+</span></div><div class="me-stats__label">Pays représentés</div></div>
+        <div><div class="me-stats__value">10<span>+</span></div><div class="me-stats__label">Partenaires</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="me-section me-section--tint" id="temoignages">
+    <div class="container">
+      <div class="me-head">
+        <span class="me-pill">Ils parlent l'anglais de leur métier</span>
+        <h2>Des résultats concrets</h2>
+      </div>
+      <div class="me-quotes">
+        <% quotes.forEach(function (q) { %>
+          <figure class="me-quote">
+            <p>« <%= q.text %> »</p>
+            <figcaption class="me-quote__who">
+              <span class="me-quote__avatar"><%= q.name.charAt(0) %></span>
+              <span>
+                <span class="me-quote__name d-block"><%= q.name %></span>
+                <span class="me-quote__role"><%= q.role %></span>
+              </span>
+            </figcaption>
+          </figure>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="me-section me-section--tint me-cta">
+    <div class="container">
+      <div class="me-cta__box">
+        <div>
+          <picture>
+            <source srcset="/assets/img/Maelenglish/maelenglish-logo-light.webp" type="image/webp">
+            <img src="/assets/img/Maelenglish/maelenglish-logo-light.png" alt="MaelEnglish — Speak the Language of Your Profession" loading="lazy" width="800" height="267">
+          </picture>
+          <h2>Vous hésitez entre deux programmes ?</h2>
+          <p>Dites-nous votre métier et votre niveau : un conseiller vous oriente. Si besoin, commencez par Essentials puis poursuivez avec le programme de votre secteur.</p>
+        </div>
+        <div class="me-cta__actions">
+          <a href="<%= whatsappLink(null) %>" target="_blank" rel="noopener" class="me-btn me-btn--coral me-btn--wa">
+            <i class="bi bi-whatsapp"></i> Écrire sur WhatsApp
+          </a>
+          <a href="#programmes" class="me-btn me-btn--ghost">Voir les programmes</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>

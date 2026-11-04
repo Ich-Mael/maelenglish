@@ -19,10 +19,10 @@
       <div class="quiz-card text-center">
         <p class="fs-1">🎉</p>
         <h4>Examen réussi — Score : <%= lastAttempt.score %>/100</h4>
-        <a href="/programs/language-learning/general-english-boost/<%= course._id %>" class="btn btn-success mt-2">Retour au cours</a>
+        <a href="/maelenglish/cours/<%= course._id %>" class="btn btn-success mt-2">Retour au cours</a>
       </div>
     <% } else { %>
-      <form action="/programs/language-learning/general-english-boost/<%= course._id %>/final-exam/submit" method="POST">
+      <form action="/maelenglish/cours/<%= course._id %>/final-exam/submit" method="POST">
         <% course.finalExam.questions.forEach((q, qi) => { %>
           <div class="quiz-card">
             <p class="fw-semibold mb-3"><%= qi+1 %>. <%= q.text %></p>
@@ -35,7 +35,7 @@
           </div>
         <% }) %>
         <div class="d-flex gap-2 justify-content-between">
-          <a href="/programs/language-learning/general-english-boost/<%= course._id %>" class="btn btn-outline-secondary">Annuler</a>
+          <a href="/maelenglish/cours/<%= course._id %>" class="btn btn-outline-secondary">Annuler</a>
           <button type="submit" class="btn btn-success px-5">Soumettre l'examen</button>
         </div>
       </form>

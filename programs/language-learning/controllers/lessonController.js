@@ -11,7 +11,7 @@ module.exports.create = catchAsync(async (req, res) => {
     const courseModule = await Module.findById(module_id);
     if (!courseModule) {
         req.flash('error', 'Module introuvable.');
-        return res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules`);
+        return res.redirect(`/maelenglish/cours/admindashboard/${course_id}/modules`);
     }
 
     // Order = next after existing lessons
@@ -36,7 +36,7 @@ module.exports.create = catchAsync(async (req, res) => {
     await courseModule.save();
 
     req.flash('success', `Leçon "${lesson.title}" créée.`);
-    res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${module_id}/edit`);
+    res.redirect(`/maelenglish/cours/admindashboard/${course_id}/modules/${module_id}/edit`);
 });
 
 // ─── UPDATE ───────────────────────────────────────────────────────────────────
@@ -48,7 +48,7 @@ module.exports.update = catchAsync(async (req, res) => {
     const lesson = await Lesson.findOne({ _id: lesson_id, moduleId: module_id });
     if (!lesson) {
         req.flash('error', 'Leçon introuvable.');
-        return res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${module_id}/edit`);
+        return res.redirect(`/maelenglish/cours/admindashboard/${course_id}/modules/${module_id}/edit`);
     }
 
     lesson.title       = title ? title.trim() : lesson.title;
@@ -67,7 +67,7 @@ module.exports.update = catchAsync(async (req, res) => {
     await lesson.save();
 
     req.flash('success', 'Leçon mise à jour.');
-    res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${module_id}/edit`);
+    res.redirect(`/maelenglish/cours/admindashboard/${course_id}/modules/${module_id}/edit`);
 });
 
 // ─── DELETE ───────────────────────────────────────────────────────────────────
@@ -88,7 +88,7 @@ module.exports.destroy = catchAsync(async (req, res) => {
     }
 
     req.flash('success', 'Leçon supprimée.');
-    res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${module_id}/edit`);
+    res.redirect(`/maelenglish/cours/admindashboard/${course_id}/modules/${module_id}/edit`);
 });
 
 // ─── REORDER ──────────────────────────────────────────────────────────────────
@@ -120,7 +120,7 @@ module.exports.savePracticeQuiz = catchAsync(async (req, res) => {
     const lesson = await Lesson.findOne({ _id: lesson_id, moduleId: module_id, type: 'practice_quiz' });
     if (!lesson) {
         req.flash('error', 'Leçon introuvable.');
-        return res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${module_id}/edit`);
+        return res.redirect(`/maelenglish/cours/admindashboard/${course_id}/modules/${module_id}/edit`);
     }
 
     const parsed = (Array.isArray(questions) ? questions : [questions]).map((q, idx) => ({
@@ -138,5 +138,5 @@ module.exports.savePracticeQuiz = catchAsync(async (req, res) => {
     await lesson.save();
 
     req.flash('success', 'Quiz de pratique sauvegardé.');
-    res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/modules/${module_id}/edit`);
+    res.redirect(`/maelenglish/cours/admindashboard/${course_id}/modules/${module_id}/edit`);
 });

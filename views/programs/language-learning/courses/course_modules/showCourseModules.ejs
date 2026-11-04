@@ -260,7 +260,7 @@
               <h1>Modules du cours</h1>
               <p><%= course.title %></p>
           </div>
-          <a href="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/edit" class="btn-add-module">
+          <a href="/maelenglish/cours/admindashboard/<%= course._id %>/edit" class="btn-add-module">
               <i class="bi bi-plus-lg"></i> Créer un module
           </a>
       </div>
@@ -295,15 +295,15 @@
                   </div>
 
                   <div class="module-actions">
-                      <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%= chapter._id %>"
+                      <a href="/maelenglish/cours/<%= course._id %>/modules/<%= chapter._id %>"
                          class="action-btn btn-view" title="Voir le contenu">
                           <i class="bi bi-eye"></i>
                       </a>
-                      <a href="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= chapter._id %>/edit"
+                      <a href="/maelenglish/cours/admindashboard/<%= course._id %>/modules/<%= chapter._id %>/edit"
                          class="action-btn btn-edit" title="Modifier">
                           <i class="bi bi-pencil"></i>
                       </a>
-                      <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/<%= chapter._id %>?_method=DELETE" method="POST" style="margin: 0;">
+                      <form action="/maelenglish/cours/admindashboard/<%= course._id %>/modules/<%= chapter._id %>?_method=DELETE" method="POST" style="margin: 0;">
                           <button type="submit" class="action-btn btn-delete" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce module ?');">
                               <i class="bi bi-trash"></i>
                           </button>
@@ -322,7 +322,7 @@
           <i class="bi bi-collection"></i>
           <h3>Aucun module pour le moment</h3>
           <p class="text-muted">Commencez par ajouter du contenu pédagogique à ce cours.</p>
-          <a href="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/edit" class="btn btn-primary rounded-pill mt-3">
+          <a href="/maelenglish/cours/admindashboard/<%= course._id %>/edit" class="btn btn-primary rounded-pill mt-3">
               <i class="bi bi-plus-lg"></i> Ajouter le premier module
           </a>
       </div>
@@ -375,7 +375,7 @@
     saveBtn.textContent = 'Enregistrement…';
     saveBtn.disabled    = true;
 
-    fetch('/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/modules/reorder', {
+    fetch('/maelenglish/cours/admindashboard/<%= course._id %>/modules/reorder', {
       method:  'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body:    'orderedIds=' + encodeURIComponent(ids)

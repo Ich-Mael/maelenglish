@@ -42,7 +42,7 @@
           <p style="opacity:.7;font-size:.85rem;margin:0 0 .3rem;"><%= course.title %></p>
           <h1><%= courseModule.title %></h1>
         </div>
-        <a href="/programs/language-learning/general-english-boost/<%= course._id %>" class="btn btn-light btn-sm">← Cours</a>
+        <a href="/maelenglish/cours/<%= course._id %>" class="btn btn-light btn-sm">← Cours</a>
       </div>
     </div>
 
@@ -66,7 +66,7 @@
           <% const icons = { video: '▶', text: '📄', pdf: '📎', practice_quiz: '🧩' }; %>
           <% const iconClasses = { video: 'icon-video', text: 'icon-text', pdf: 'icon-pdf', practice_quiz: 'icon-quiz' }; %>
           <% if (unlocked) { %>
-            <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%= courseModule._id %>/lessons/<%= lesson._id %>"
+            <a href="/maelenglish/cours/<%= course._id %>/modules/<%= courseModule._id %>/lessons/<%= lesson._id %>"
                class="lesson-card unlocked <%= completed ? 'completed' : '' %>">
           <% } else { %>
             <div class="lesson-card locked">
@@ -104,11 +104,11 @@
             <%= quizAttempt.passed ? '✓ Réussi' : '✗ Échoué' %> — <%= quizAttempt.score %>/100
           </span>
           <% if (!quizAttempt.passed) { %>
-            <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%= courseModule._id %>/module-quiz" class="btn btn-sm btn-outline-primary">Réessayer</a>
+            <a href="/maelenglish/cours/<%= course._id %>/modules/<%= courseModule._id %>/module-quiz" class="btn btn-sm btn-outline-primary">Réessayer</a>
           <% } %>
         </div>
       <% } else { %>
-        <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%= courseModule._id %>/module-quiz" class="btn btn-primary btn-sm px-4">
+        <a href="/maelenglish/cours/<%= course._id %>/modules/<%= courseModule._id %>/module-quiz" class="btn btn-primary btn-sm px-4">
           Commencer le quiz (<%= courseModule.moduleQuiz.questions.length %> questions)
         </a>
       <% } %>
@@ -130,7 +130,7 @@
         <% } %>
       <% } else { %>
         <p class="mb-2 text-muted small"><%= courseModule.moduleAssignment.instructions %></p>
-        <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%= courseModule._id %>/assignment" class="btn btn-warning btn-sm px-4">
+        <a href="/maelenglish/cours/<%= course._id %>/modules/<%= courseModule._id %>/assignment" class="btn btn-warning btn-sm px-4">
           Remettre le devoir
         </a>
       <% } %>

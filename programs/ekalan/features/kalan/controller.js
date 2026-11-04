@@ -19,6 +19,7 @@ const {
 const { explainSteps, SYSTEM_FREE_METHODS, INEQUATION_METHODS, OPERATIONS, COMPLEX_OPERATIONS, ARITH_LABELS, TRIG_OPERATIONS } = require("./mathsLab");
 const { solveOpenQuestion } = require("./openQuestions");
 const crypto = require("crypto");
+const mongoose = require("mongoose");
 const { FRANCOPHONE_AFRICA, COUNTRY_CODES, countryName } = require("../../../../shared/utilities/countries");
 
 // ── Kalan Naaba helpers ──────────────────────────────────────────────
@@ -384,13 +385,25 @@ module.exports.studentProfile = async (req, res) => {
   });
 };
 
-// Show student dashboard
+// Show student dashboard (admin: view + edit the E-Kalan student profile)
 module.exports.showStudentDashboard = async (req, res) => {
   const student = await HStudent.findById(req.params.student_id).populate(
     "studentBasicInfo"
   );
 
-  res.render("user/studentDashboard", { student });
+  if (!student) {
+    req.flash("error", "Élève introuvable");
+    return res.redirect("/programs/ekalan/kalan/admindashboard/kalan/students");
+  }
+
+  const allClasses = await Class.find(expectedClassQuery()).select('title serie').sort({ title: 1, serie: 1 });
+
+  res.render("programs/ekalan/admin/students/edit", {
+    student,
+    allClasses,
+    countries: FRANCOPHONE_AFRICA,
+    countryName,
+  });
 };
 
 // Search and Access Student dashboard
@@ -416,52 +429,60 @@ module.exports.studentDashboard = async (req, res) => {
   );
 };
 
-// add student to a class by updating
+// Update an E-Kalan student profile (class, country, school, neighbourhood, parents)
 module.exports.updateStudentInfo = async (req, res) => {
-  const studentNewClass = await Class.findOne({
-    title: req.body.class,
-    serie: req.body.serie,
-  });
+  const { class: classId, country, school, neighborhood, parentsContact } = req.body;
 
-  if (!studentNewClass) {
-    req.flash("error", `Classe ${req.body.class} (${req.body.serie}) introuvable`);
+  const student = await HStudent.findById(req.params.student_id);
+  if (!student) {
+    req.flash("error", "Élève introuvable");
     return res.redirect("back");
   }
 
-  const student = await HStudent.findById(req.params.student_id);
+  if (!classId || !country) {
+    req.flash("error", "Veuillez choisir la classe et le pays de l'élève");
+    return res.redirect("back");
+  }
+  if (!COUNTRY_CODES.includes(country)) {
+    req.flash("error", "Pays invalide : choisissez un pays d'Afrique francophone dans la liste.");
+    return res.redirect("back");
+  }
 
-  if (!student) {
-    req.flash("error", "Étudiant non trouvé");
+  const studentNewClass = mongoose.isValidObjectId(classId) ? await Class.findById(classId) : null;
+  if (!studentNewClass) {
+    req.flash("error", "Classe introuvable");
     return res.redirect("back");
   }
 
   const previousClassId = student.class_id;
 
-  // Update the student's own fields
-  student.school = req.body.school;
-  student.class = req.body.class;
-  student.serie = req.body.serie;
+  student.school = (school || "").trim() || undefined;
+  student.neighborhood = (neighborhood || "").trim() || undefined;
+  student.parentsContact = (parentsContact || "").trim() || undefined;
+  student.country = country;
+  student.class = studentNewClass.title;
+  student.serie = studentNewClass.serie;
 
   // Remove the student from their previous class roster (if it changed)
   if (previousClassId && String(previousClassId) !== String(studentNewClass._id)) {
-    const studentPreviousClass = await Class.findById(previousClassId);
+    const studentPreviousClass = mongoose.isValidObjectId(previousClassId) ? await Class.findById(previousClassId) : null;
     if (studentPreviousClass) {
       studentPreviousClass.students.pull(student._id);
       await studentPreviousClass.save();
     }
+  }
 
-    // Add to the new class roster (avoid duplicates)
-    if (!studentNewClass.students.includes(student._id)) {
-      studentNewClass.students.push(student._id);
-      await studentNewClass.save();
-    }
+  // Add to the new class roster (avoid duplicates)
+  if (!studentNewClass.students.some((id) => String(id) === String(student._id))) {
+    studentNewClass.students.push(student._id);
+    await studentNewClass.save();
   }
 
   student.class_id = studentNewClass._id;
   await student.save();
 
   req.flash("success", "Informations de l'élève mises à jour");
-  res.redirect("back");
+  res.redirect(`/programs/ekalan/kalan/admindashboard/kalan/studentDashboard/student/${student._id}`);
 };
 
 /* SUBJECTS */

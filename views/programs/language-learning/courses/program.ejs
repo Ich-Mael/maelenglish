@@ -1,0 +1,265 @@
+<% layout('layouts/main') %>
+<%# One MaelEnglish programme (data: programs/language-learning/catalog.js). Styles: /assets/css/maelenglish.css %>
+<% headContent = `
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&display=swap" rel="stylesheet">
+  <link href="/assets/css/maelenglish.css" rel="stylesheet">
+` %>
+<%
+  const p = program;
+  const d = p.details || null;
+  const soon = p.status === 'soon';
+  const rest = p.name.replace(/^MaelEnglish\s*/, '');
+  // Shared format, first item = this programme's duration
+  const fmt = format.map((f, i) => i === 0 ? Object.assign({}, f, { label: p.duration }) : f);
+%>
+
+<div class="me-page">
+
+  <!-- Hero -->
+  <section class="me-hero me-hero--dark">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
+          <nav class="me-crumbs" aria-label="Fil d'Ariane">
+            <a href="/maelenglish">MaelEnglish</a><span>›</span>
+            <a href="/maelenglish#programmes">Programmes</a><span>›</span>
+            <span><%= rest || p.name %></span>
+          </nav>
+          <% if (soon) { %>
+            <span class="me-badge me-badge--soon"><i class="bi bi-hourglass-split"></i> Bientôt disponible</span>
+          <% } else { %>
+            <span class="me-badge me-badge--open"><i class="bi bi-check-circle-fill"></i> Inscriptions ouvertes</span>
+          <% } %>
+          <h1 style="margin-top:16px">MaelEnglish<% if (rest) { %> <em><%= rest %></em><% } %></h1>
+          <p class="me-hero__lead"><strong><%= p.tagline %>.</strong> <%= p.summary %></p>
+          <div class="me-chips">
+            <span class="me-chip"><i class="bi bi-stopwatch"></i> <%= p.duration %></span>
+            <span class="me-chip"><i class="bi bi-bar-chart"></i> <%= p.level %></span>
+            <span class="me-chip"><i class="bi bi-laptop"></i> En ligne ou en présentiel</span>
+            <span class="me-chip"><i class="bi bi-award"></i> Certificat</span>
+          </div>
+          <div class="me-hero__cta">
+            <a href="<%= whatsappLink(p) %>" target="_blank" rel="noopener" class="me-btn me-btn--coral me-btn--wa">
+              <i class="bi bi-<%= soon ? 'bell' : 'whatsapp' %>"></i> <%= soon ? 'Être prévenu(e)' : "S'inscrire" %>
+            </a>
+            <a href="#contenu" class="me-btn me-btn--ghost">Le contenu <i class="bi bi-arrow-down"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="me-hero__photo">
+            <%- include('../../../partials/me-photo', { name: p.photo, alt: p.name, sizes: '(max-width: 991px) 100vw, 420px', pos: p.photoPos, eager: true }) %>
+            <div class="me-chat__card me-prog__quote" aria-hidden="true">
+              <div class="me-chat__role"><i class="bi bi-<%= p.icon %>"></i> <%= rest || 'Essentials' %></div>
+              <p class="me-chat__en" lang="en">“<%= p.phrases[0].en %>”</p>
+              <p class="me-chat__fr"><%= p.phrases[0].fr %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- For whom + objectives -->
+  <section class="me-section" id="contenu">
+    <div class="container">
+      <div class="me-two">
+        <div class="me-panel">
+          <h3><i class="bi bi-person-check"></i> Pour qui ?</h3>
+          <p><%= p.audience %></p>
+        </div>
+        <div class="me-panel">
+          <h3><i class="bi bi-bullseye"></i> Objectifs</h3>
+          <ul class="me-checks">
+            <% p.objectives.forEach(function (o) { %><li><i class="bi bi-check2-circle"></i><span><%= o %></span></li><% }) %>
+          </ul>
+        </div>
+        <div class="me-panel">
+          <h3><i class="bi bi-chat-square-text"></i> Situations travaillées</h3>
+          <ul class="me-checks">
+            <% p.situations.forEach(function (s) { %><li><i class="bi bi-arrow-right-short"></i><span><%= s %></span></li><% }) %>
+          </ul>
+        </div>
+        <div class="me-panel">
+          <h3><i class="bi bi-journal-text"></i> Vocabulaire</h3>
+          <div class="me-tags">
+            <% p.vocabulary.forEach(function (v) { %><span class="me-tag"><%= v %></span><% }) %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Example phrases -->
+  <section class="me-section me-section--tint">
+    <div class="container">
+      <div class="me-head">
+        <span class="me-pill">Ce que vous saurez dire</span>
+        <h2>Des phrases tirées du terrain</h2>
+      </div>
+      <div class="me-phrases">
+        <% p.phrases.forEach(function (ph) { %>
+          <div class="me-chat__card">
+            <div class="me-chat__role"><i class="bi bi-<%= p.icon %>"></i> <%= rest || 'Essentials' %></div>
+            <p class="me-chat__en" lang="en">“<%= ph.en %>”</p>
+            <p class="me-chat__fr"><%= ph.fr %></p>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+
+  <% if (d) { %>
+    <!-- Essentials: levels -->
+    <section class="me-section" id="niveaux">
+      <div class="container">
+        <div class="me-head">
+          <span class="me-pill">Votre parcours</span>
+          <h2>Deux niveaux de 8 semaines</h2>
+        </div>
+        <div class="me-levels">
+          <% d.levels.forEach(function (l) { %>
+            <div class="me-panel me-level">
+              <span class="me-level__badge"><%= l.badge %></span>
+              <h3><%= l.title %></h3>
+              <p style="margin-bottom:14px"><%= l.text %></p>
+              <div class="me-tags"><% l.tags.forEach(function (t) { %><span class="me-tag"><%= t %></span><% }) %></div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </section>
+
+    <!-- Essentials: practical details -->
+    <section class="me-section me-section--tint" id="infos-pratiques">
+      <div class="container">
+        <div class="me-head">
+          <span class="me-pill">Détails pratiques</span>
+          <h2>Tout ce qu'il faut savoir pour démarrer</h2>
+        </div>
+        <div class="me-two">
+          <div class="me-panel">
+            <h3><i class="bi bi-layers"></i> Structure de la formation</h3>
+            <ul class="me-checks"><% d.structure.forEach(function (s) { %><li><i class="bi bi-check2-circle"></i><span><%= s %></span></li><% }) %></ul>
+          </div>
+          <div class="me-panel">
+            <h3><i class="bi bi-wallet2"></i> Participation</h3>
+            <ul class="me-checks"><% d.pricing.forEach(function (s) { %><li><i class="bi bi-check2-circle"></i><span><%= s %></span></li><% }) %></ul>
+          </div>
+          <div class="me-panel" style="grid-column:1 / -1">
+            <h3><i class="bi bi-geo-alt"></i> <%= d.formatNote %></h3>
+            <p style="margin-bottom:14px">Nos <%= d.centres.length %> centres à Ouagadougou :</p>
+            <div class="me-centres"><% d.centres.forEach(function (c) { %><span class="me-centre"><i class="bi bi-pin-map-fill"></i> <%= c %></span><% }) %></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Essentials: calendar (hidden while catalog.js has no session dates) -->
+    <% if (!d.sessions.length) { %>
+    <section class="me-section" id="calendrier">
+      <div class="container">
+        <div class="me-cta__box" style="background:var(--me-bg);color:var(--me-ink);border:1px solid var(--me-line)">
+          <div>
+            <span class="me-pill">Prochaines sessions</span>
+            <h2 style="color:var(--me-blue-dark);margin-top:12px">Les dates des sessions de 8 semaines arrivent bientôt</h2>
+            <p style="color:var(--me-muted)">Réservez dès maintenant : nous vous confirmons la date de démarrage et l'horaire. <%= d.seats %> places par session en présentiel.</p>
+          </div>
+          <div class="me-cta__actions">
+            <a href="<%= whatsappLink(p) %>" target="_blank" rel="noopener" class="me-btn me-btn--coral me-btn--wa"><i class="bi bi-whatsapp"></i> Réserver ma place</a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <% } else { %>
+    <section class="me-section" id="calendrier">
+      <div class="container">
+        <div class="me-head">
+          <span class="me-pill">Calendrier <%= d.calendarYear %></span>
+          <h2><%= d.sessions.length %> sessions dans l'année</h2>
+        </div>
+        <div class="me-calendar">
+          <div class="me-panel">
+            <h3><i class="bi bi-calendar-event"></i> Dates des sessions</h3>
+            <ul class="me-sessions">
+              <% d.sessions.forEach(function (s, i) { %><li><b>Session <%= i + 1 %></b> <%= s %></li><% }) %>
+            </ul>
+          </div>
+          <div>
+            <% d.schedule.forEach(function (sl) { %>
+              <div class="me-slot">
+                <i class="bi bi-calendar-week"></i>
+                <div><strong><%= sl.level %> — <%= sl.days %></strong><small>Cours du soir, <%= sl.hours %></small></div>
+              </div>
+            <% }) %>
+            <div class="me-seats">
+              <div class="me-seats__num"><%= d.seats %></div>
+              <p style="color:var(--me-muted);margin:6px 0 16px">places par session en présentiel</p>
+              <a href="<%= whatsappLink(p) %>" target="_blank" rel="noopener" class="me-btn me-btn--coral me-btn--wa"><i class="bi bi-whatsapp"></i> Réserver ma place</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <% } %>
+  <% } else { %>
+    <!-- Shared format -->
+    <section class="me-section" id="format">
+      <div class="container">
+        <div class="me-head">
+          <span class="me-pill">Le format</span>
+          <h2><%= p.duration %> pour parler l'anglais de votre métier</h2>
+        </div>
+        <div class="me-format">
+          <% fmt.forEach(function (f) { %>
+            <div class="me-format__item">
+              <i class="bi bi-<%= f.icon %>"></i>
+              <h3><%= f.label %></h3>
+              <p><%= f.text %></p>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </section>
+  <% } %>
+
+  <!-- Final CTA -->
+  <section class="me-cta">
+    <div class="container">
+      <div class="me-cta__box">
+        <div>
+          <h2><%= soon ? 'Soyez parmi les premiers' : 'Prêt à commencer ?' %></h2>
+          <p>
+            <% if (soon) { %>
+              <%= p.name %> ouvre bientôt. Laissez-nous votre contact sur WhatsApp : nous vous prévenons dès l'ouverture des inscriptions.
+            <% } else { %>
+              Écrivez-nous sur WhatsApp pour vous inscrire à <%= p.name %> : un conseiller vous indique les prochaines dates<%= d ? '' : ' et le tarif' %>.
+            <% } %>
+          </p>
+        </div>
+        <div class="me-cta__actions">
+          <a href="<%= whatsappLink(p) %>" target="_blank" rel="noopener" class="me-btn me-btn--coral me-btn--wa">
+            <i class="bi bi-<%= soon ? 'bell' : 'whatsapp' %>"></i> <%= soon ? 'Être prévenu(e)' : "S'inscrire sur WhatsApp" %>
+          </a>
+          <a href="tel:+22667323131" class="me-btn me-btn--ghost"><i class="bi bi-telephone"></i> +226 67 32 31 31</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Other programmes -->
+  <section class="me-section me-section--tint" style="padding-top:0">
+    <div class="container">
+      <div class="me-head" style="margin-bottom:24px">
+        <h2 style="font-size:1.6rem">Les autres programmes</h2>
+      </div>
+      <div class="me-others">
+        <% others.forEach(function (o) { %>
+          <a class="me-other" href="/maelenglish/cours/programme/<%= o.slug %>"><i class="bi bi-<%= o.icon %>"></i> <%= o.name %></a>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+
+</div>

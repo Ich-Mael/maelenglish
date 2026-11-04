@@ -556,7 +556,7 @@
         </div>
       <% } else { %>
         <!-- Evaluation form -->
-        <form action="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%= courseModule._id %>/evaluation/submit" method="POST">
+        <form action="/maelenglish/cours/<%= course._id %>/modules/<%= courseModule._id %>/evaluation/submit" method="POST">
           <% courseModule.evaluation.questions.forEach((q, idx) => { %>
             <div class="mb-4 p-3" style="background:#f8f9fa;border-radius:10px;">
               <p class="fw-semibold mb-2"><%= idx + 1 %>. <%= q.Question_text %></p>
@@ -580,7 +580,7 @@
   <!-- Mark as Complete -->
   <div class="container mb-4">
     <div class="d-flex justify-content-end">
-      <form action="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%= courseModule._id %>/complete" method="POST">
+      <form action="/maelenglish/cours/<%= course._id %>/modules/<%= courseModule._id %>/complete" method="POST">
         <button type="submit" class="btn btn-success px-4 rounded-pill">
           <i class="bi bi-check-circle me-2"></i>Marquer comme terminé
         </button>
@@ -599,7 +599,7 @@
         <div class="modal-body">
           <div class="list-group list-group-flush">
             <% for(let chapter of course.modules){ %>
-              <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%=chapter._id%>" 
+              <a href="/maelenglish/cours/<%= course._id %>/modules/<%=chapter._id%>" 
                  class="list-group-item list-group-item-action py-3 <%= chapter._id.toString() === courseModule._id.toString() ? 'active' : '' %>"
                  style="<%= chapter._id.toString() === courseModule._id.toString() ? 'background-color: var(--primary-light); color: var(--primary-color); border-color: transparent;' : '' %>">
                 <div class="d-flex w-100 justify-content-between align-items-center">

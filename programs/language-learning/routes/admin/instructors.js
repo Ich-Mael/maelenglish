@@ -53,7 +53,7 @@ router.post('/', isAdmin, async (req, res) => {
     
     if (!user) {
       req.flash('error', 'User not found');
-      return res.redirect('/programs/language-learning/admin/instructors/new');
+      return res.redirect('/maelenglish/admin/instructors/new');
     }
     
     const instructor = new Instructor({
@@ -69,11 +69,11 @@ router.post('/', isAdmin, async (req, res) => {
     await instructor.save();
     
     req.flash('success', 'Instructor created successfully');
-    res.redirect(`/programs/language-learning/admin/instructors/${instructor._id}`);
+    res.redirect(`/maelenglish/admin/instructors/${instructor._id}`);
   } catch (error) {
     console.error('Error creating instructor:', error);
     req.flash('error', 'An error occurred while creating instructor');
-    res.redirect('/programs/language-learning/admin/instructors/new');
+    res.redirect('/maelenglish/admin/instructors/new');
   }
 });
 
@@ -155,7 +155,7 @@ router.delete('/:id', isAdmin, async (req, res) => {
     
     if (!instructor) {
       req.flash('error', 'Instructor not found');
-      return res.redirect('/programs/language-learning/admin/instructors');
+      return res.redirect('/maelenglish/admin/instructors');
     }
 
     // Find and update the associated user
@@ -165,11 +165,11 @@ router.delete('/:id', isAdmin, async (req, res) => {
     await Instructor.findByIdAndDelete(req.params.id);
     
     req.flash('success', 'Instructor profile deleted and user role reverted to "user"');
-    res.redirect('/programs/language-learning/admin/instructors');
+    res.redirect('/maelenglish/admin/instructors');
   } catch (error) {
     console.error('Error deleting instructor:', error);
     req.flash('error', 'An error occurred while deleting instructor');
-    res.redirect('/programs/language-learning/admin/instructors');
+    res.redirect('/maelenglish/admin/instructors');
   }
 });
 
@@ -209,7 +209,7 @@ router.post('/:id/assign-course', isAdmin, async (req, res) => {
     
     if (!instructor) {
       req.flash('error', 'Instructor not found');
-      return res.redirect('/programs/language-learning/admin/instructors');
+      return res.redirect('/maelenglish/admin/instructors');
     }
     
     const { courseId } = req.body;
@@ -221,7 +221,7 @@ router.post('/:id/assign-course', isAdmin, async (req, res) => {
     
     if (existingAssignment) {
       req.flash('error', 'This course is already assigned to this instructor');
-      return res.redirect(`/programs/language-learning/admin/instructors/${instructor._id}`);
+      return res.redirect(`/maelenglish/admin/instructors/${instructor._id}`);
     }
     
     // Add new assignment without modules
@@ -235,11 +235,11 @@ router.post('/:id/assign-course', isAdmin, async (req, res) => {
     await instructor.save();
     
     req.flash('success', 'Course assigned successfully');
-    res.redirect(`/programs/language-learning/admin/instructors/${instructor._id}`);
+    res.redirect(`/maelenglish/admin/instructors/${instructor._id}`);
   } catch (error) {
     console.error('Error assigning course:', error);
     req.flash('error', 'An error occurred while assigning course');
-    res.redirect(`/programs/language-learning/admin/instructors/${req.params.id}/assign-course`);
+    res.redirect(`/maelenglish/admin/instructors/${req.params.id}/assign-course`);
   }
 });
 
@@ -250,7 +250,7 @@ router.delete('/:id/unassign-course/:courseId', isAdmin, async (req, res) => {
     
     if (!instructor) {
       req.flash('error', 'Instructor not found');
-      return res.redirect('/programs/language-learning/admin/instructors');
+      return res.redirect('/maelenglish/admin/instructors');
     }
     
     instructor.assignedCourses = instructor.assignedCourses.filter(
@@ -260,11 +260,11 @@ router.delete('/:id/unassign-course/:courseId', isAdmin, async (req, res) => {
     await instructor.save();
     
     req.flash('success', 'Course unassigned successfully');
-    res.redirect(`/programs/language-learning/admin/instructors/${instructor._id}`);
+    res.redirect(`/maelenglish/admin/instructors/${instructor._id}`);
   } catch (error) {
     console.error('Error unassigning course:', error);
     req.flash('error', 'An error occurred');
-    res.redirect(`/programs/language-learning/admin/instructors/${req.params.id}`);
+    res.redirect(`/maelenglish/admin/instructors/${req.params.id}`);
   }
 });
 

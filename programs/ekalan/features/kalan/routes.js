@@ -165,7 +165,7 @@ router.post(
 );
 
 // Student dashboard by admin
-router.get("/admindashboard/kalan/studentDashboard/student/:student_id", isVerified, checkRoles(["admin", "super-admin"]), catchAsync(BAC.showStudentDashboard));
+router.get("/admindashboard/kalan/studentDashboard/student/:student_id", isLoggedIn, isVerified, checkRoles(["admin", "super-admin"]), catchAsync(BAC.showStudentDashboard));
 
 // ✅ NOUVEAU: Demander l'accès premium (étudiant)
 router.post(
@@ -360,11 +360,12 @@ router.delete(
   catchAsync(BAC.revokeMathsLabAccess)
 );
 
-// Adding a Student to a class (an udpdate of student class)
+// Update an E-Kalan student profile (class, country, school…) (admin)
 router.put(
   "/admindashboard/kalan/studentDashboard/student/:student_id",
   isLoggedIn,
   isVerified,
+  checkRoles(["admin", "super-admin"]),
   catchAsync(BAC.updateStudentInfo)
 );
 

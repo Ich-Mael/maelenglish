@@ -186,7 +186,7 @@
 
 <div class="instructor-edit-page">
   <div class="container px-4">
-    <a href="/programs/language-learning/admin/instructors/<%= instructor._id %>" class="btn-back">
+    <a href="/maelenglish/admin/instructors/<%= instructor._id %>" class="btn-back">
       <i class="bi bi-arrow-left"></i>
       Back to Profile
     </a>
@@ -200,7 +200,7 @@
     </div>
 
     <div class="form-card">
-      <form action="/programs/language-learning/admin/instructors/<%= instructor._id %>?_method=PUT" method="POST">
+      <form action="/maelenglish/admin/instructors/<%= instructor._id %>?_method=PUT" method="POST">
         <div class="form-section">
           <label class="form-label">Name</label>
           <input type="text" class="form-control" value="<%= instructor.firstName %> <%= instructor.lastName %>" disabled>
@@ -263,7 +263,7 @@
         </div>
 
         <div class="form-actions">
-          <a href="/programs/language-learning/admin/instructors/<%= instructor._id %>" class="btn btn-secondary">
+          <a href="/maelenglish/admin/instructors/<%= instructor._id %>" class="btn btn-secondary">
             <i class="bi bi-x-circle"></i>
             Cancel
           </a>

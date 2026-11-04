@@ -153,7 +153,7 @@
   <div class="create-account-card">
     <div class="info-box">
       <p><strong>Note importante :</strong> Ce formulaire crée uniquement un compte utilisateur de base. 
-      L'enrôlement dans les programmes (Kalan, English Boost, etc.) se fera séparément depuis les dashboards spécifiques de chaque programme.</p>
+      L'enrôlement dans les programmes (Kalan, MaelEnglish, etc.) se fera séparément depuis les dashboards spécifiques de chaque programme.</p>
     </div>
     
     <form action="/createaccount" method="post" id="createAccountForm">
@@ -256,7 +256,7 @@
             onchange="toggleInstitutionField(this.value)"
           >
             <%
-              const roleLabels = { 'user': 'Utilisateur / Étudiant', 'institution-admin': 'Admin institution partenaire', 'english-coach': 'English Coach', 'admin': 'Administrateur', 'super-admin': 'Super Administrateur', 'account-manager': 'Gestionnaire de comptes' };
+              const roleLabels = { 'user': 'Utilisateur / Étudiant', 'institution-admin': 'Admin institution partenaire', 'english-coach': 'Coach MaelEnglish', 'admin': 'Administrateur', 'super-admin': 'Super Administrateur', 'account-manager': 'Gestionnaire de comptes' };
               const roleList = (typeof allowedRoles !== 'undefined' && allowedRoles.length) ? allowedRoles : ['user'];
             %>
             <% roleList.forEach(r => { %>

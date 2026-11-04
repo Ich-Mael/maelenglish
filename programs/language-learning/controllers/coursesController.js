@@ -2,20 +2,24 @@ const { Course, Module, Evaluation, Grade } = require("../../../shared/models/co
 const User = require("../../../shared/models/user");
 const DateUtil = require('../../../shared/utilities/date');
 const catchAsync = require("../../../shared/utilities/catchAsync");
+const { PROGRAMS, FORMAT, findProgram, whatsappLink } = require("../catalog");
 
-module.exports.allCourses = catchAsync(async (req, res) => {
-  let query = { isActive: true, isPrivate: { $ne: true } };
-  if (req.user && req.user.coursesTaken && req.user.coursesTaken.length > 0) {
-    query = {
-      $or: [
-        { isActive: true, isPrivate: { $ne: true } },
-        { _id: { $in: req.user.coursesTaken } }
-      ]
-    };
+// One page per MaelEnglish programme (catalogue in programs/language-learning/catalog.js)
+module.exports.showProgram = (req, res) => {
+  const program = findProgram(req.params.slug);
+  if (!program) {
+    return res.status(404).render("noAccess", { statusCode: 404, message: "Programme introuvable" });
   }
-  const courses = await Course.find(query).populate("instructors");
-  res.render("programs/language-learning/courses/index", { courses });
-});
+  res.render("programs/language-learning/courses/program", {
+    program,
+    others: PROGRAMS.filter((p) => p.slug !== program.slug),
+    format: FORMAT,
+    whatsappLink,
+    title: `${program.name} — ${program.tagline}`,
+    metaDescription: `${program.name} : ${program.summary} ${program.duration}, coach dédié, certificat.`,
+    ogImage: "/assets/img/Maelenglish/maelenglish-og.jpg",
+  });
+};
 
 module.exports.myCourses = catchAsync(async (req, res) => {
   let query = { _id: { $in: [] } }; // Default to empty if no courses
@@ -40,13 +44,13 @@ module.exports.createCourse = catchAsync(async (req, res) => {
     // Validate required fields
     if (!req.body.course || !req.body.course.title || !req.body.course.price) {
       req.flash("error", "Le titre et le prix sont requis");
-      return res.redirect("/programs/language-learning/general-english-boost/admindashboard/new");
+      return res.redirect("/maelenglish/cours/admindashboard/new");
     }
 
     // Validate description (required but may be empty string from Hugerte)
     if (!req.body.course.description || req.body.course.description.trim() === '') {
       req.flash("error", "La description est requise");
-      return res.redirect("/programs/language-learning/general-english-boost/admindashboard/new");
+      return res.redirect("/maelenglish/cours/admindashboard/new");
     }
 
     // Checkbox → explicit boolean (absent when unchecked)
@@ -78,11 +82,11 @@ module.exports.createCourse = catchAsync(async (req, res) => {
     //saving course to database
     await course.save();
     req.flash("success", "Cours créé avec succès");
-    res.redirect(`/programs/language-learning/general-english-boost/${course._id}`);
+    res.redirect(`/maelenglish/cours/${course._id}`);
   } catch (error) {
     console.error("Error creating course:", error);
     req.flash("error", error.message || "Une erreur est survenue lors de la création du cours");
-    res.redirect("/programs/language-learning/general-english-boost/admindashboard/new");
+    res.redirect("/maelenglish/cours/admindashboard/new");
   }
 });
 
@@ -111,7 +115,7 @@ module.exports.updateCourse = catchAsync(async(req, res)=>{
   const course = await Course.findByIdAndUpdate(req.params.course_id, {...req.body.course, session: {...req.body.session}});
   await course.save();
   req.flash("success", "Cours mis à jour avec succès");
-  res.redirect(`/programs/language-learning/general-english-boost/${course._id}`);
+  res.redirect(`/maelenglish/cours/${course._id}`);
 });
 
 module.exports.showStudents = catchAsync(async(req, res)=>{
@@ -157,20 +161,20 @@ module.exports.updateStudentAccess = catchAsync(async (req, res) => {
 
     await student.save();
     req.flash('success', 'Access dates updated successfully.');
-    res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/showStudents`);
+    res.redirect(`/maelenglish/cours/admindashboard/${course_id}/showStudents`);
 });
 
 module.exports.deleteCourse = catchAsync(async (req, res) => {
   await Course.findByIdAndDelete(req.params.course_id);
   req.flash("success", "Cours supprimé avec succès");
-  res.redirect("/programs/language-learning/general-english-boost/admindashboard");
+  res.redirect("/maelenglish/cours/admindashboard");
 });
 
 module.exports.showAddStudentForm = catchAsync(async (req, res) => {
   const course = await Course.findById(req.params.course_id);
   if (!course) {
     req.flash("error", "Cours non trouvé");
-    return res.redirect("/programs/language-learning/general-english-boost/admindashboard");
+    return res.redirect("/maelenglish/cours/admindashboard");
   }
   res.render("programs/language-learning/courses/addNewStudent", { course });
 });
@@ -183,20 +187,20 @@ module.exports.addStudentToCourse = catchAsync(async (req, res) => {
   const user = await User.findOne({ username: student });
   if (!user) {
     req.flash("error", "Utilisateur non trouvé");
-    return res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/addStudent`);
+    return res.redirect(`/maelenglish/cours/admindashboard/${course_id}/addStudent`);
   }
 
   // Find course
   const course = await Course.findById(course_id);
   if (!course) {
     req.flash("error", "Cours non trouvé");
-    return res.redirect("/programs/language-learning/general-english-boost/admindashboard");
+    return res.redirect("/maelenglish/cours/admindashboard");
   }
 
   // Check if student is already enrolled
   if (course.students.includes(user._id)) {
     req.flash("error", "Cet étudiant est déjà inscrit à ce cours");
-    return res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/addStudent`);
+    return res.redirect(`/maelenglish/cours/admindashboard/${course_id}/addStudent`);
   }
 
   // Add student to course
@@ -225,7 +229,7 @@ module.exports.addStudentToCourse = catchAsync(async (req, res) => {
   await user.save();
 
   req.flash("success", `${user.name} ${user.surname} a été inscrit avec succès au cours "${course.title}"`);
-  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/showStudents`);
+  res.redirect(`/maelenglish/cours/admindashboard/${course_id}/showStudents`);
 });
 
 module.exports.searchUsers = catchAsync(async (req, res) => {
@@ -269,7 +273,7 @@ module.exports.saveFinalExam = catchAsync(async (req, res) => {
   const course = await Course.findById(course_id);
   if (!course) {
     req.flash('error', 'Cours introuvable.');
-    return res.redirect('/programs/language-learning/general-english-boost/admindashboard');
+    return res.redirect('/maelenglish/cours/admindashboard');
   }
 
   const parsedQuestions = questions
@@ -294,7 +298,7 @@ module.exports.saveFinalExam = catchAsync(async (req, res) => {
   await course.save();
 
   req.flash('success', 'Examen final sauvegardé.');
-  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/edit`);
+  res.redirect(`/maelenglish/cours/admindashboard/${course_id}/edit`);
 });
 
 // ─── FINAL PROJECT ────────────────────────────────────────────────────────────
@@ -306,7 +310,7 @@ module.exports.saveFinalProject = catchAsync(async (req, res) => {
   const course = await Course.findById(course_id);
   if (!course) {
     req.flash('error', 'Cours introuvable.');
-    return res.redirect('/programs/language-learning/general-english-boost/admindashboard');
+    return res.redirect('/maelenglish/cours/admindashboard');
   }
 
   course.finalProject = {
@@ -318,5 +322,5 @@ module.exports.saveFinalProject = catchAsync(async (req, res) => {
   await course.save();
 
   req.flash('success', 'Projet final sauvegardé.');
-  res.redirect(`/programs/language-learning/general-english-boost/admindashboard/${course_id}/edit`);
+  res.redirect(`/maelenglish/cours/admindashboard/${course_id}/edit`);
 });

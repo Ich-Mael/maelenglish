@@ -11,7 +11,7 @@ module.exports.checkCourseAccess = catchAsync(async (req, res, next) => {
     
     if (!course) {
         req.flash('error', 'Cours non trouvé.');
-        return res.redirect('/programs/language-learning/general-english-boost/my-courses');
+        return res.redirect('/maelenglish/cours/my-courses');
     }
 
     // 3. Check Admin/Instructor roles - bypass check
@@ -37,7 +37,7 @@ module.exports.checkCourseAccess = catchAsync(async (req, res, next) => {
             return next();
         } else {
             req.flash('error', 'Vous n\'êtes pas inscrit à ce cours.');
-            return res.redirect('/programs/language-learning/general-english-boost/my-courses');
+            return res.redirect('/maelenglish/cours/my-courses');
         }
     }
 
@@ -49,13 +49,13 @@ module.exports.checkCourseAccess = catchAsync(async (req, res, next) => {
     // Check Start Date
     if (startDate && now < startDate) {
         req.flash('error', `Ce cours ne sera accessible qu'à partir du ${startDate.toLocaleDateString('fr-FR')}.`);
-        return res.redirect('/programs/language-learning/general-english-boost/my-courses');
+        return res.redirect('/maelenglish/cours/my-courses');
     }
 
     // Check End Date
     if (endDate && now > endDate) {
         req.flash('error', `Votre accès à ce cours a expiré le ${endDate.toLocaleDateString('fr-FR')}. Veuillez contacter l'administration pour prolonger votre accès.`);
-        return res.redirect('/programs/language-learning/general-english-boost/my-courses');
+        return res.redirect('/maelenglish/cours/my-courses');
     }
 
     // 7. Access Granted

@@ -26,7 +26,7 @@
         <div class="alert alert-info">⏳ Devoir soumis — en attente de correction.</div>
         <p class="text-muted small">Votre réponse : <%= existing.content %></p>
       <% } %>
-      <form action="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%= courseModule._id %>/assignment/submit" method="POST">
+      <form action="/maelenglish/cours/<%= course._id %>/modules/<%= courseModule._id %>/assignment/submit" method="POST">
         <div class="mb-3">
           <label class="form-label fw-semibold">
             <%= courseModule.moduleAssignment.submissionType === 'link' ? 'Lien URL de votre travail' : 'Votre réponse' %>
@@ -38,7 +38,7 @@
           <% } %>
         </div>
         <div class="d-flex gap-2">
-          <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%= courseModule._id %>/overview" class="btn btn-outline-secondary">Annuler</a>
+          <a href="/maelenglish/cours/<%= course._id %>/modules/<%= courseModule._id %>/overview" class="btn btn-outline-secondary">Annuler</a>
           <button type="submit" class="btn btn-warning px-4"><%= existing ? 'Resoumettre' : 'Soumettre' %></button>
         </div>
       </form>

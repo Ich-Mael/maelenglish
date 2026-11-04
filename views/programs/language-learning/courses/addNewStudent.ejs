@@ -196,7 +196,7 @@
 </style>
 
 <div class="container">
-  <a href="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/showStudents" class="btn-back">
+  <a href="/maelenglish/cours/admindashboard/<%= course._id %>/showStudents" class="btn-back">
     <i class="bi bi-arrow-left"></i>
     Retour
   </a>
@@ -211,7 +211,7 @@
       <h3><i class="bi bi-book me-2"></i><%= course.title %></h3>
     </div>
 
-    <form action="/programs/language-learning/general-english-boost/admindashboard/<%= course._id %>/addStudent" method="POST">
+    <form action="/maelenglish/cours/admindashboard/<%= course._id %>/addStudent" method="POST">
       <div class="mb-4">
         <label class="form-label" for="student">
           <i class="bi bi-person me-2"></i>Nom d'utilisateur de l'étudiant
@@ -289,7 +289,7 @@
       suggestionsContainer.innerHTML = '<div class="search-loading"><i class="bi bi-arrow-repeat spin"></i> Recherche...</div>';
       suggestionsContainer.classList.add('show');
 
-      fetch(`/programs/language-learning/general-english-boost/admindashboard/${courseId}/search-users?q=${encodeURIComponent(query)}`)
+      fetch(`/maelenglish/cours/admindashboard/${courseId}/search-users?q=${encodeURIComponent(query)}`)
         .then(response => response.json())
         .then(data => {
           searchResults = data.users || [];

@@ -9,11 +9,11 @@ module.exports.checkCourseOwnership = catchAsync(async (req, res, next) => {
       next();
     } else {
       req.flash("error", "Vous n'avez pas accès à ce cours");
-      res.redirect("/programs/language-learning/courses");
+      res.redirect("/maelenglish#programmes");
     }
   } else {
     req.flash("error", "Cours non trouvé");
-    res.redirect("/programs/language-learning/courses");
+    res.redirect("/maelenglish#programmes");
   }
 });
 

@@ -25,8 +25,8 @@ const {
  ************************* COURSES ROUTES *******************************************
  */
 
-// All Courses route for user
-router.get('/', Courses.allCourses);
+// The programme catalogue lives on the MaelEnglish page itself
+router.get('/', (req, res) => res.redirect(301, '/maelenglish#programmes'));
 
 // My Courses route for enrolled user
 router.get('/my-courses', isLoggedIn, Courses.myCourses);
@@ -46,6 +46,9 @@ router.post('/admindashboard', isLoggedIn, isVerified, checkRoles(["admin", "sup
 router.get('/enroll-contact', (req, res) => {
     res.render('programs/language-learning/contact_enroll');
 });
+
+// MaelEnglish programme page (public; before /:course_id)
+router.get('/programme/:slug', Courses.showProgram);
 
 // Show course content
 router.get('/:course_id', isLoggedIn, checkCourseAccess, Courses.showCourse);

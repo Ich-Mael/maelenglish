@@ -484,7 +484,7 @@
               Rôle
             </label>
             <%
-              const roleLabels = { 'user': 'Apprenant / Étudiant', 'institution-admin': 'Admin institution partenaire', 'english-coach': 'English Coach', 'account-manager': 'Gestionnaire de comptes', 'admin': 'Administrateur', 'super-admin': 'Super Admin' };
+              const roleLabels = { 'user': 'Apprenant / Étudiant', 'institution-admin': 'Admin institution partenaire', 'english-coach': 'Coach MaelEnglish', 'account-manager': 'Gestionnaire de comptes', 'admin': 'Administrateur', 'super-admin': 'Super Admin' };
               const editRoles = (typeof assignableRoles !== 'undefined' ? assignableRoles : ['user']).slice();
               if (user.role && editRoles.indexOf(user.role) < 0) editRoles.push(user.role); // keep a role set elsewhere
             %>

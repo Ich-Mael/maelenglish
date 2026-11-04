@@ -431,15 +431,15 @@
 
               <!-- Action -->
               <% if(isExpired) { %>
-                  <a href="/programs/language-learning/general-english-boost/enroll-contact" class="btn-continue btn-expired">
+                  <a href="/maelenglish/cours/enroll-contact" class="btn-continue btn-expired">
                     <i class="bi bi-envelope-fill"></i> Contactez l'administration
                   </a>
               <% } else if (course.isChallenge) { %>
-                  <a href="/programs/language-learning/general-english-boost/<%= course._id %>/challenge" class="btn-continue">
+                  <a href="/maelenglish/cours/<%= course._id %>/challenge" class="btn-continue">
                     <i class="bi bi-lightning-charge-fill"></i> Reprendre le défi
                   </a>
               <% } else { %>
-                  <a href="/programs/language-learning/general-english-boost/<%= course._id %>" class="btn-continue">
+                  <a href="/maelenglish/cours/<%= course._id %>" class="btn-continue">
                     <i class="bi bi-play-circle-fill"></i> Continuer
                   </a>
               <% } %>
@@ -456,7 +456,7 @@
       <p style="color: #64748b; margin-bottom: 30px; max-width: 400px; margin-left: auto; margin-right: auto;">
         Il semble que vous ne soyez inscrit à aucun cours pour le moment. Explorez nos programmes pour commencer.
       </p>
-      <a href="/programs/language-learning/general-english-boost" class="btn" style="background: #5d06ba; color: white; border-radius: 50px; padding: 12px 30px; font-weight: 600;">
+      <a href="/maelenglish#programmes" class="btn" style="background: #5d06ba; color: white; border-radius: 50px; padding: 12px 30px; font-weight: 600;">
         Découvrir les programmes
       </a>
     </div>

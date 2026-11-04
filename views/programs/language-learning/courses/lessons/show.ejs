@@ -31,14 +31,14 @@
             const isActive    = l._id.toString() === lesson._id.toString();
             const lCompleted  = isCompleted && isActive ? true : false; // simplified
           %>
-            <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%= courseModule._id %>/lessons/<%= l._id %>"
+            <a href="/maelenglish/cours/<%= course._id %>/modules/<%= courseModule._id %>/lessons/<%= l._id %>"
                class="sidebar-lesson <%= isActive ? 'active' : '' %> d-flex">
               <span><%= l.type === 'video' ? '▶' : l.type === 'text' ? '📄' : l.type === 'pdf' ? '📎' : '🧩' %></span>
               <span class="flex-grow-1"><%= l.title %></span>
             </a>
           <% }) %>
           <div class="mt-3 pt-2 border-top">
-            <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%= courseModule._id %>/overview" class="btn btn-outline-secondary btn-sm w-100">Vue du module</a>
+            <a href="/maelenglish/cours/<%= course._id %>/modules/<%= courseModule._id %>/overview" class="btn btn-outline-secondary btn-sm w-100">Vue du module</a>
           </div>
         </div>
       </div>
@@ -125,19 +125,19 @@
 
         <!-- Navigation + complete button -->
         <div class="lesson-nav">
-          <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%= courseModule._id %>/overview" class="btn btn-outline-secondary">← Module</a>
+          <a href="/maelenglish/cours/<%= course._id %>/modules/<%= courseModule._id %>/overview" class="btn btn-outline-secondary">← Module</a>
           <% if (!isCompleted) { %>
-            <form action="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%= courseModule._id %>/lessons/<%= lesson._id %>/complete" method="POST">
+            <form action="/maelenglish/cours/<%= course._id %>/modules/<%= courseModule._id %>/lessons/<%= lesson._id %>/complete" method="POST">
               <button type="submit" class="btn btn-success px-4 rounded-pill">
                 <i class="bi bi-check-circle me-2"></i>Marquer comme terminée et continuer
               </button>
             </form>
           <% } else if (nextLesson) { %>
-            <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%= courseModule._id %>/lessons/<%= nextLesson._id %>" class="btn btn-primary px-4 rounded-pill">
+            <a href="/maelenglish/cours/<%= course._id %>/modules/<%= courseModule._id %>/lessons/<%= nextLesson._id %>" class="btn btn-primary px-4 rounded-pill">
               Leçon suivante →
             </a>
           <% } else { %>
-            <a href="/programs/language-learning/general-english-boost/<%= course._id %>/modules/<%= courseModule._id %>/overview" class="btn btn-success px-4 rounded-pill">
+            <a href="/maelenglish/cours/<%= course._id %>/modules/<%= courseModule._id %>/overview" class="btn btn-success px-4 rounded-pill">
               <i class="bi bi-check-circle me-2"></i>Module terminé →
             </a>
           <% } %>

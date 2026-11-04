@@ -489,7 +489,7 @@
           <a href="/admin/users/create" class="ud-action-btn"><i class="bi bi-person-plus-fill"></i> Créer un compte</a>
         <% } %>
         <% if (user.role === 'english-coach') { %>
-          <a href="/programs/language-learning/instructor/dashboard" class="ud-action-btn"><i class="bi bi-person-video3"></i> Dashboard Instructeur</a>
+          <a href="/maelenglish/instructor/dashboard" class="ud-action-btn"><i class="bi bi-person-video3"></i> Dashboard Instructeur</a>
         <% } %>
         <% if (user.isHighSchoolStudent) { %>
           <%
@@ -500,7 +500,7 @@
           <a href="<%= kalanRoute %>" class="ud-action-btn"><i class="bi bi-mortarboard-fill"></i> Tableau de bord Kalan</a>
         <% } %>
         <% if (user.coursesTaken && user.coursesTaken.some(c => (c._id || c).toString() === '69584e4bf744983f1e3ed576')) { %>
-          <a href="/programs/language-learning/general-english-boost/my-courses" class="ud-action-btn"><i class="bi bi-play-circle-fill"></i> English Boost — mes cours</a>
+          <a href="/maelenglish/cours/my-courses" class="ud-action-btn"><i class="bi bi-play-circle-fill"></i> MaelEnglish — mes cours</a>
         <% } %>
       </div>
     </div>
@@ -517,14 +517,12 @@
           : '/programs/ekalan/kalan';
         afroProg.push({ name: 'Kalan', sub: 'Plateforme lycée', icon: 'mortarboard-fill', color: '#7c3aed', route: kr, logo: '/assets/img/logos/e-Kalan_logo/ekalan-card.png' });
       }
-      if (user.isClubMember)
-        afroProg.push({ name: 'English4All', sub: 'Club linguistique', icon: 'translate', color: '#0891b2', route: '/programs/language-learning/english4all' });
       if (user.isPecpStudent)
-        afroProg.push({ name: 'PECP', sub: 'Étudiant', icon: 'book-fill', color: '#16a34a', route: '/programs/language-learning/pecp' });
+        afroProg.push({ name: 'MaelEnglish Coaching', sub: 'Apprenant', icon: 'book-fill', color: '#16a34a', route: '/maelenglish/coaching' });
       if (user.isPecpCoach)
-        afroProg.push({ name: 'PECP', sub: 'Coach', icon: 'person-check-fill', color: '#0d9488', route: '/programs/language-learning/pecp' });
+        afroProg.push({ name: 'MaelEnglish Coaching', sub: 'Coach', icon: 'person-check-fill', color: '#0d9488', route: '/maelenglish/coaching' });
       if (user.coursesTaken && user.coursesTaken.length > 0)
-        afroProg.push({ name: 'General English Boost', sub: 'Cours de langue', icon: 'stars', color: '#d97706', route: '/programs/language-learning/general-english-boost/my-courses' });
+        afroProg.push({ name: 'MaelEnglish', sub: 'Anglais professionnel', icon: 'stars', color: '#d97706', route: '/maelenglish/cours/my-courses' });
     %>
 
     <div class="afrohk-panel">

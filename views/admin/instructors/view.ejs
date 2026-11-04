@@ -316,7 +316,7 @@
         </h2>
         <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">English Coach Profile</p>
       </div>
-      <a href="/programs/language-learning/admin/instructors" class="btn-back">
+      <a href="/maelenglish/admin/instructors" class="btn-back">
         <i class="bi bi-arrow-left"></i>
         Back to Coaches
       </a>
@@ -340,16 +340,16 @@
           </span>
           
           <div class="action-buttons">
-            <a href="/programs/language-learning/admin/instructors/<%= instructor._id %>/edit" class="btn-action btn-edit">
+            <a href="/maelenglish/admin/instructors/<%= instructor._id %>/edit" class="btn-action btn-edit">
               <i class="bi bi-pencil"></i>
               Edit Profile
             </a>
-            <a href="/programs/language-learning/admin/instructors/<%= instructor._id %>/assign-course" class="btn-action btn-assign">
+            <a href="/maelenglish/admin/instructors/<%= instructor._id %>/assign-course" class="btn-action btn-assign">
               <i class="bi bi-plus-square"></i>
               Assign Course
             </a>
             
-            <form action="/programs/language-learning/admin/instructors/<%= instructor._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Are you sure? This will delete the instructor profile and revert the user to a regular User role.');" style="width: 100%;">
+            <form action="/maelenglish/admin/instructors/<%= instructor._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Are you sure? This will delete the instructor profile and revert the user to a regular User role.');" style="width: 100%;">
               <button type="submit" class="btn-action btn-danger w-100">
                 <i class="bi bi-trash"></i>
                 Delete Profile
@@ -407,7 +407,7 @@
             <div class="empty-state">
               <i class="bi bi-inbox"></i>
               <p>No courses assigned yet</p>
-              <a href="/programs/language-learning/admin/instructors/<%= instructor._id %>/assign-course" class="btn-action btn-assign" style="display: inline-flex;">
+              <a href="/maelenglish/admin/instructors/<%= instructor._id %>/assign-course" class="btn-action btn-assign" style="display: inline-flex;">
                 <i class="bi bi-plus-square"></i>
                 Assign First Course
               </a>
@@ -440,7 +440,7 @@
                   </div>
                 </div>
                 
-                <form action="/programs/language-learning/admin/instructors/<%= instructor._id %>/unassign-course/<%= assignment.courseId._id %>?_method=DELETE" 
+                <form action="/maelenglish/admin/instructors/<%= instructor._id %>/unassign-course/<%= assignment.courseId._id %>?_method=DELETE" 
                       method="POST" 
                       onsubmit="return confirm('Are you sure you want to unassign this course?');">
                   <button type="submit" class="btn-unassign">

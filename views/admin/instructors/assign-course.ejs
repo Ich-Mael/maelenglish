@@ -170,7 +170,7 @@
 
 <div class="assign-course-page">
   <div class="container px-4">
-    <a href="/programs/language-learning/admin/instructors/<%= instructor._id %>" class="btn-back">
+    <a href="/maelenglish/admin/instructors/<%= instructor._id %>" class="btn-back">
       <i class="bi bi-arrow-left"></i>
       Back to Profile
     </a>
@@ -191,7 +191,7 @@
           <p>There are no courses in the system yet. Please create a course first.</p>
         </div>
       <% } else { %>
-        <form action="/programs/language-learning/admin/instructors/<%= instructor._id %>/assign-course" method="POST">
+        <form action="/maelenglish/admin/instructors/<%= instructor._id %>/assign-course" method="POST">
           <div class="form-section">
             <label for="courseId" class="form-label">
               <i class="bi bi-book"></i>
@@ -207,7 +207,7 @@
           </div>
 
           <div class="form-actions">
-            <a href="/programs/language-learning/admin/instructors/<%= instructor._id %>" class="btn btn-secondary">
+            <a href="/maelenglish/admin/instructors/<%= instructor._id %>" class="btn btn-secondary">
               <i class="bi bi-x-circle"></i>
               Cancel
             </a>

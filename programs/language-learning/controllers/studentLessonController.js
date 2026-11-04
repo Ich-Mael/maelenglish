@@ -6,7 +6,7 @@ const AssignmentSubmission = require('../../../shared/models/assignmentSubmissio
 const catchAsync = require('../../../shared/utilities/catchAsync');
 const { getChallengeState } = require('../middlewares/challengeGate');
 
-const GEB_BASE = '/programs/language-learning/general-english-boost';
+const GEB_BASE = '/maelenglish/cours';
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
@@ -65,7 +65,7 @@ module.exports.showModuleOverview = catchAsync(async (req, res) => {
 
     if (!courseModule) {
         req.flash('error', 'Module introuvable.');
-        return res.redirect(`/programs/language-learning/general-english-boost/${course_id}`);
+        return res.redirect(`/maelenglish/cours/${course_id}`);
     }
 
     const { completedLessonIds, allLessonsDone } = await getModuleProgress(req.user._id, module_id, lessons);
@@ -116,7 +116,7 @@ module.exports.showLesson = catchAsync(async (req, res) => {
 
     if (!lesson || lesson.moduleId.toString() !== module_id) {
         req.flash('error', 'Leçon introuvable.');
-        return res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}`);
+        return res.redirect(`/maelenglish/cours/${course_id}/modules/${module_id}`);
     }
 
     const { completedLessonIds } = await getModuleProgress(req.user._id, module_id, lessons);
@@ -124,7 +124,7 @@ module.exports.showLesson = catchAsync(async (req, res) => {
     // Enforce sequential access
     if (!isLessonUnlocked(lesson, lessons, completedLessonIds)) {
         req.flash('error', 'Vous devez terminer la leçon précédente d\'abord.');
-        return res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}/overview`);
+        return res.redirect(`/maelenglish/cours/${course_id}/modules/${module_id}/overview`);
     }
 
     const isCompleted = completedLessonIds.has(lesson_id);
@@ -161,9 +161,9 @@ module.exports.completeLesson = catchAsync(async (req, res) => {
     const next = current ? lessons.find(l => l.order === current.order + 1) : null;
 
     if (next) {
-        res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}/lessons/${next._id}`);
+        res.redirect(`/maelenglish/cours/${course_id}/modules/${module_id}/lessons/${next._id}`);
     } else {
         req.flash('success', 'Toutes les leçons de ce module sont terminées !');
-        res.redirect(`/programs/language-learning/general-english-boost/${course_id}/modules/${module_id}/overview`);
+        res.redirect(`/maelenglish/cours/${course_id}/modules/${module_id}/overview`);
     }
 });

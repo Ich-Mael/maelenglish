@@ -47,7 +47,7 @@ router.get('/profile', isInstructor, async (req, res) => {
     
     if (!instructor) {
       req.flash('error', 'Instructor profile not found');
-      return res.redirect('/programs/language-learning/instructor/dashboard');
+      return res.redirect('/maelenglish/instructor/dashboard');
     }
     
     res.render('programs/language-learning/eng_coach/profile', {
@@ -57,7 +57,7 @@ router.get('/profile', isInstructor, async (req, res) => {
   } catch (error) {
     console.error('Error loading profile:', error);
     req.flash('error', 'An error occurred');
-    res.redirect('/programs/language-learning/instructor/dashboard');
+    res.redirect('/maelenglish/instructor/dashboard');
   }
 });
 

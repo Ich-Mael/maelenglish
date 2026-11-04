@@ -24,7 +24,7 @@
       <% } else if (existing) { %>
         <div class="alert alert-info">⏳ Projet soumis — en attente de correction.</div>
       <% } %>
-      <form action="/programs/language-learning/general-english-boost/<%= course._id %>/final-project/submit" method="POST">
+      <form action="/maelenglish/cours/<%= course._id %>/final-project/submit" method="POST">
         <div class="mb-3">
           <label class="form-label fw-semibold"><%= course.finalProject.submissionType === 'link' ? 'Lien URL de votre projet' : 'Votre projet' %></label>
           <% if (course.finalProject.submissionType === 'link') { %>
@@ -34,7 +34,7 @@
           <% } %>
         </div>
         <div class="d-flex gap-2">
-          <a href="/programs/language-learning/general-english-boost/<%= course._id %>" class="btn btn-outline-secondary">Annuler</a>
+          <a href="/maelenglish/cours/<%= course._id %>" class="btn btn-outline-secondary">Annuler</a>
           <button type="submit" class="btn btn-primary px-4"><%= existing ? 'Resoumettre' : 'Soumettre le projet' %></button>
         </div>
       </form>
