@@ -25,6 +25,9 @@ const {
  ************************* COURSES ROUTES *******************************************
  */
 
+// MaelEnglish programmes (catalog.js) for the admin course forms (« Programme MaelEnglish » select)
+router.use((req, res, next) => { res.locals.maelPrograms = require('../catalog').PROGRAMS; next(); });
+
 // The programme catalogue lives on the MaelEnglish page itself
 router.get('/', (req, res) => res.redirect(301, '/maelenglish#programmes'));
 

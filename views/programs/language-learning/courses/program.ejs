@@ -37,15 +37,30 @@
           <div class="me-chips">
             <span class="me-chip"><i class="bi bi-stopwatch"></i> <%= p.duration %></span>
             <span class="me-chip"><i class="bi bi-bar-chart"></i> <%= p.level %></span>
-            <span class="me-chip"><i class="bi bi-laptop"></i> En ligne ou en présentiel</span>
+            <span class="me-chip"><i class="bi bi-laptop"></i> 100 % en ligne</span>
             <span class="me-chip"><i class="bi bi-award"></i> Certificat</span>
           </div>
           <div class="me-hero__cta">
-            <a href="<%= whatsappLink(p) %>" target="_blank" rel="noopener" class="me-btn me-btn--coral me-btn--wa">
-              <i class="bi bi-<%= soon ? 'bell' : 'whatsapp' %>"></i> <%= soon ? 'Être prévenu(e)' : "S'inscrire" %>
-            </a>
+            <% if (myCourse) { %>
+              <a href="/maelenglish/cours/<%= myCourse._id %>" class="me-btn me-btn--coral"><i class="bi bi-play-circle"></i> Accéder à mon cours</a>
+            <% } else { %>
+              <a href="<%= whatsappLink(p) %>" target="_blank" rel="noopener" class="me-btn me-btn--coral me-btn--wa">
+                <i class="bi bi-<%= soon ? 'bell' : 'whatsapp' %>"></i> <%= soon ? 'Être prévenu(e)' : "S'inscrire" %>
+              </a>
+            <% } %>
             <a href="#contenu" class="me-btn me-btn--ghost">Le contenu <i class="bi bi-arrow-down"></i></a>
           </div>
+          <% if (typeof staffCourses !== 'undefined' && currentUser && ['admin', 'super-admin', 'english-coach', 'instructor'].includes(currentUser.role)) { %>
+            <div class="me-staff">
+              <i class="bi bi-shield-lock"></i>
+              <% if (staffCourses.length) { %>
+                Cours liés :
+                <% staffCourses.forEach(function (c, i) { %><%= i ? ' · ' : '' %><a href="/maelenglish/cours/admindashboard/<%= c._id %>/modules"><%= c.title %></a><%= c.isActive === false ? ' (inactif)' : '' %><% }) %>
+              <% } else { %>
+                Aucun cours lié à ce programme. <a href="/maelenglish/cours/admindashboard/new">Créer le cours</a> et choisir « <%= p.name %> » dans « Programme MaelEnglish ».
+              <% } %>
+            </div>
+          <% } %>
         </div>
         <div class="col-lg-4">
           <div class="me-hero__photo">
@@ -148,9 +163,8 @@
             <ul class="me-checks"><% d.pricing.forEach(function (s) { %><li><i class="bi bi-check2-circle"></i><span><%= s %></span></li><% }) %></ul>
           </div>
           <div class="me-panel" style="grid-column:1 / -1">
-            <h3><i class="bi bi-geo-alt"></i> <%= d.formatNote %></h3>
-            <p style="margin-bottom:14px">Nos <%= d.centres.length %> centres à Ouagadougou :</p>
-            <div class="me-centres"><% d.centres.forEach(function (c) { %><span class="me-centre"><i class="bi bi-pin-map-fill"></i> <%= c %></span><% }) %></div>
+            <h3><i class="bi bi-laptop"></i> Format</h3>
+            <p><%= d.formatNote %></p>
           </div>
         </div>
       </div>
@@ -164,7 +178,7 @@
           <div>
             <span class="me-pill">Prochaines sessions</span>
             <h2 style="color:var(--me-blue-dark);margin-top:12px">Les dates des sessions de 8 semaines arrivent bientôt</h2>
-            <p style="color:var(--me-muted)">Réservez dès maintenant : nous vous confirmons la date de démarrage et l'horaire. <%= d.seats %> places par session en présentiel.</p>
+            <p style="color:var(--me-muted)">Réservez dès maintenant : nous vous confirmons la date de démarrage et l'horaire. Places limitées à <%= d.seats %> par session.</p>
           </div>
           <div class="me-cta__actions">
             <a href="<%= whatsappLink(p) %>" target="_blank" rel="noopener" class="me-btn me-btn--coral me-btn--wa"><i class="bi bi-whatsapp"></i> Réserver ma place</a>
@@ -195,7 +209,7 @@
             <% }) %>
             <div class="me-seats">
               <div class="me-seats__num"><%= d.seats %></div>
-              <p style="color:var(--me-muted);margin:6px 0 16px">places par session en présentiel</p>
+              <p style="color:var(--me-muted);margin:6px 0 16px">places par session</p>
               <a href="<%= whatsappLink(p) %>" target="_blank" rel="noopener" class="me-btn me-btn--coral me-btn--wa"><i class="bi bi-whatsapp"></i> Réserver ma place</a>
             </div>
           </div>
@@ -229,9 +243,11 @@
     <div class="container">
       <div class="me-cta__box">
         <div>
-          <h2><%= soon ? 'Soyez parmi les premiers' : 'Prêt à commencer ?' %></h2>
+          <h2><%= myCourse ? 'Reprenez là où vous en étiez' : (soon ? 'Soyez parmi les premiers' : 'Prêt à commencer ?') %></h2>
           <p>
-            <% if (soon) { %>
+            <% if (myCourse) { %>
+              Vous êtes inscrit(e) à <%= p.name %>. Retrouvez vos leçons, exercices et devoirs dans votre espace de cours.
+            <% } else if (soon) { %>
               <%= p.name %> ouvre bientôt. Laissez-nous votre contact sur WhatsApp : nous vous prévenons dès l'ouverture des inscriptions.
             <% } else { %>
               Écrivez-nous sur WhatsApp pour vous inscrire à <%= p.name %> : un conseiller vous indique les prochaines dates<%= d ? '' : ' et le tarif' %>.
@@ -239,9 +255,13 @@
           </p>
         </div>
         <div class="me-cta__actions">
-          <a href="<%= whatsappLink(p) %>" target="_blank" rel="noopener" class="me-btn me-btn--coral me-btn--wa">
-            <i class="bi bi-<%= soon ? 'bell' : 'whatsapp' %>"></i> <%= soon ? 'Être prévenu(e)' : "S'inscrire sur WhatsApp" %>
-          </a>
+          <% if (myCourse) { %>
+            <a href="/maelenglish/cours/<%= myCourse._id %>" class="me-btn me-btn--coral"><i class="bi bi-play-circle"></i> Accéder à mon cours</a>
+          <% } else { %>
+            <a href="<%= whatsappLink(p) %>" target="_blank" rel="noopener" class="me-btn me-btn--coral me-btn--wa">
+              <i class="bi bi-<%= soon ? 'bell' : 'whatsapp' %>"></i> <%= soon ? 'Être prévenu(e)' : "S'inscrire sur WhatsApp" %>
+            </a>
+          <% } %>
           <a href="tel:+22667323131" class="me-btn me-btn--ghost"><i class="bi bi-telephone"></i> +226 67 32 31 31</a>
         </div>
       </div>

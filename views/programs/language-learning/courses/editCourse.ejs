@@ -244,6 +244,17 @@
                 </label>
             </div>
 
+            <div class="mt-4">
+                <label class="form-label fw-semibold" for="maelenglishProgram">Programme MaelEnglish</label>
+                <select class="form-select" id="maelenglishProgram" name="course[maelenglishProgram]">
+                    <option value="">— Aucun —</option>
+                    <% (typeof maelPrograms !== 'undefined' ? maelPrograms : []).forEach(function (mp) { %>
+                        <option value="<%= mp.slug %>" <%= course.maelenglishProgram === mp.slug ? 'selected' : '' %>><%= mp.name %></option>
+                    <% }) %>
+                </select>
+                <small class="text-muted">Les apprenants inscrits verront « Accéder à mon cours » sur la page de ce programme.</small>
+            </div>
+
             <div style="background:#f7f4ff; border:1px solid #e5dbf7; border-radius:12px; padding:1rem 1.1rem; margin-top:1.2rem;">
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" id="isChallenge" name="course[isChallenge]" value="true" <%= course.isChallenge ? 'checked' : '' %> onchange="document.getElementById('challenge-fields').style.display = this.checked ? 'block' : 'none';">

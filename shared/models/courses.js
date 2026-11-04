@@ -115,6 +115,15 @@ const courseSchema = new Schema({
     default: 'beginner'
   },
 
+  // MaelEnglish programme this course delivers (slug from
+  // programs/language-learning/catalog.js, e.g. 'business'; '' = none).
+  // The programme info page then shows « Accéder à mon cours » to enrolled learners.
+  maelenglishProgram: {
+    type: String,
+    default: '',
+    index: true,
+  },
+
   finalExam: {
     title:        { type: String, default: '' },
     passingScore: { type: Number, default: 70 },

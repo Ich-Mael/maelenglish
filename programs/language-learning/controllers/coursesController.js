@@ -5,21 +5,40 @@ const catchAsync = require("../../../shared/utilities/catchAsync");
 const { PROGRAMS, FORMAT, findProgram, whatsappLink } = require("../catalog");
 
 // One page per MaelEnglish programme (catalogue in programs/language-learning/catalog.js)
-module.exports.showProgram = (req, res) => {
+module.exports.showProgram = catchAsync(async (req, res) => {
   const program = findProgram(req.params.slug);
   if (!program) {
     return res.status(404).render("noAccess", { statusCode: 404, message: "Programme introuvable" });
   }
+
+  // Courses created in the admin and linked to this programme (Course.maelenglishProgram)
+  const linkedCourses = await Course.find({ maelenglishProgram: program.slug })
+    .select("title isActive")
+    .sort({ createdAt: -1 });
+
+  // Learner enrolled in one of them → « Accéder à mon cours » (same rule as checkCourseAccess:
+  // coursesTaken id or a specialProgram entry with the course title; dates are checked on entry)
+  let myCourse = null;
+  const user = req.user;
+  const isStaff = !!user && ["admin", "super-admin", "english-coach", "instructor"].includes(user.role);
+  if (user && !isStaff) {
+    const taken = (user.coursesTaken || []).map(String);
+    const titles = (user.specialProgram || []).map((sp) => sp.courseTitle);
+    myCourse = linkedCourses.find((c) => taken.includes(String(c._id)) || titles.includes(c.title)) || null;
+  }
+
   res.render("programs/language-learning/courses/program", {
     program,
     others: PROGRAMS.filter((p) => p.slug !== program.slug),
     format: FORMAT,
     whatsappLink,
+    myCourse,
+    staffCourses: isStaff ? linkedCourses : [],
     title: `${program.name} — ${program.tagline}`,
     metaDescription: `${program.name} : ${program.summary} ${program.duration}, coach dédié, certificat.`,
     ogImage: "/assets/img/Maelenglish/maelenglish-og.jpg",
   });
-};
+});
 
 module.exports.myCourses = catchAsync(async (req, res) => {
   let query = { _id: { $in: [] } }; // Default to empty if no courses
@@ -55,6 +74,7 @@ module.exports.createCourse = catchAsync(async (req, res) => {
 
     // Checkbox → explicit boolean (absent when unchecked)
     req.body.course.isChallenge = req.body.course.isChallenge === 'true' || req.body.course.isChallenge === 'on';
+    req.body.course.maelenglishProgram = findProgram(req.body.course.maelenglishProgram) ? req.body.course.maelenglishProgram : '';
 
     const course = new Course({ ...req.body.course, source: 'english-boost' });
     const instructorsList = req.body.instructors;
@@ -111,6 +131,9 @@ module.exports.updateCourse = catchAsync(async(req, res)=>{
   // Checkbox → explicit boolean (absent when unchecked, so it can be turned off)
   if (req.body.course) {
     req.body.course.isChallenge = req.body.course.isChallenge === 'true' || req.body.course.isChallenge === 'on';
+    if ('maelenglishProgram' in req.body.course) {
+      req.body.course.maelenglishProgram = findProgram(req.body.course.maelenglishProgram) ? req.body.course.maelenglishProgram : '';
+    }
   }
   const course = await Course.findByIdAndUpdate(req.params.course_id, {...req.body.course, session: {...req.body.session}});
   await course.save();

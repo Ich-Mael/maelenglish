@@ -1032,6 +1032,19 @@
   .me-hero__photo { aspect-ratio: 16 / 10; margin-top: 40px; }
 }
 
+.me-staff {
+  margin-top: 22px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px dashed rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.9rem;
+}
+
+.me-staff a { color: #fff; font-weight: 700; text-decoration: underline; }
+.me-staff i { color: var(--me-coral); margin-right: 6px; }
+
 .me-crumbs {
   display: flex;
   flex-wrap: wrap;
@@ -1141,21 +1154,6 @@
 
 .me-level:nth-child(2) .me-level__badge { background: var(--me-blue); }
 .me-level h3 { font-size: 1.35rem; font-weight: 900; margin: 0 0 8px; }
-
-.me-centres { display: flex; flex-wrap: wrap; gap: 10px; }
-
-.me-centre {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border-radius: 999px;
-  border: 1px solid var(--me-line);
-  background: #fff;
-  font-weight: 600;
-}
-
-.me-centre i { color: var(--me-coral); }
 
 .me-calendar {
   display: grid;

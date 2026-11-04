@@ -8,7 +8,7 @@
  *
  * Durations: Essentials 8 weeks per level, job programmes 12 weeks
  * (`duration`). Essentials also carries its practical details (levels,
- * price, centres; `sessions`/`schedule` left empty hide the calendar until
+ * price; `sessions`/`schedule` left empty hide the calendar until
  * the new 8-week dates are known).
  * `photo` = base name of /assets/img/Maelenglish/photos/<photo>-{720,1280}.webp
  * (+ -1280.jpg fallback); `photoPos` = optional CSS object-position.
@@ -20,7 +20,7 @@ const WHATSAPP = '22667323131';
 const FORMAT = [
   { icon: 'stopwatch', label: '12 semaines', text: 'Un programme concret, à suivre en parallèle de votre activité.' },
   { icon: 'people', label: 'Coach dédié', text: 'Des devoirs et des prises de parole corrigés par un coach.' },
-  { icon: 'laptop', label: 'En ligne ou en présentiel', text: 'Sur notre plateforme e-learning ou dans nos centres à Ouagadougou.' },
+  { icon: 'laptop', label: '100 % en ligne', text: 'Sur notre plateforme e-learning, depuis votre ordinateur ou votre téléphone, où que vous soyez.' },
   { icon: 'award', label: 'Certificat', text: 'Un certificat MaelEnglish à la fin du programme.' },
 ];
 
@@ -57,8 +57,7 @@ const PROGRAMS = [
       ],
       structure: ['2 niveaux : Débutant et Intermédiaire', 'Durée : 8 semaines par niveau', 'Test de niveau obligatoire au début'],
       pricing: ['Frais de formation : 30 000 FCFA', 'Possibilité de payer en 2 tranches', 'Inscription : 5 000 FCFA (déductibles)'],
-      formatNote: 'En présentiel dans nos 5 centres, ou en ligne sur notre plateforme e-learning.',
-      centres: ['Cissin', 'Paspanga', 'Saaba', "Trame d'accueil", 'Tampouy'],
+      formatNote: '100 % en ligne, sur notre plateforme e-learning : depuis votre ordinateur ou votre téléphone, où que vous soyez.',
       // Calendar hidden until the 8-week session dates are set (fill sessions/schedule to show it again)
       calendarYear: 2027,
       sessions: [],
