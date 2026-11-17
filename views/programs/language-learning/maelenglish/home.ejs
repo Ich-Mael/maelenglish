@@ -61,7 +61,7 @@
         <div class="col-lg-5">
           <div class="me-visual" aria-label="Exemples de phrases professionnelles">
             <div class="me-visual__photo">
-              <%- include('../../../partials/me-photo', { name: 'speaker', alt: 'Professionnelle prenant la parole en anglais lors d’une conférence', sizes: '(max-width: 991px) 100vw, 480px', eager: true }) %>
+              <%- include('../../../partials/me-photo', { name: 'meeting', alt: 'Équipe de professionnels en réunion de travail', pos: '62% center', sizes: '(max-width: 991px) 100vw, 480px', eager: true }) %>
             </div>
             <div class="me-chat__card me-visual__card me-visual__card--top">
               <div class="me-chat__role"><i class="bi bi-heart-pulse"></i> Health</div>
@@ -105,6 +105,7 @@
               <p class="me-prog__summary"><%= featured.summary %></p>
               <div class="me-prog__meta">
                 <span><i class="bi bi-stopwatch"></i> <%= featured.duration %></span>
+                <span><i class="bi bi-play-circle"></i> <%= featured.hours %></span>
                 <span><i class="bi bi-bar-chart-steps"></i> 2 niveaux</span>
                 <span><i class="bi bi-laptop"></i> 100 % en ligne</span>
               </div>
@@ -138,6 +139,7 @@
             <p class="me-prog__summary"><%= p.summary %></p>
             <div class="me-prog__meta">
               <span><i class="bi bi-stopwatch"></i> <%= p.duration %></span>
+              <span><i class="bi bi-play-circle"></i> <%= p.hours %></span>
               <span><i class="bi bi-bar-chart"></i> <%= p.level %></span>
             </div>
             <span class="me-prog__more">Voir le programme <i class="bi bi-arrow-right"></i></span>
@@ -199,6 +201,7 @@
       <div class="me-facts">
         <span><i class="bi bi-stopwatch"></i> Essentials : 8 semaines par niveau</span>
         <span><i class="bi bi-briefcase"></i> Programmes métiers : 12 semaines</span>
+        <span><i class="bi bi-play-circle"></i> 50 h de contenu par programme</span>
         <span><i class="bi bi-laptop"></i> 100 % en ligne</span>
         <span><i class="bi bi-award"></i> Certificat à la fin</span>
       </div>

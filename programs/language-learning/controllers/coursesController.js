@@ -50,7 +50,11 @@ module.exports.myCourses = catchAsync(async (req, res) => {
   }
   
   const courses = await Course.find(query).populate("instructors");
-  res.render("programs/language-learning/courses/my_courses", { courses });
+  // Linked catalogue programme (name + photo for the card), null when none.
+  const programs = Object.fromEntries(
+    courses.map((c) => [String(c._id), findProgram(c.maelenglishProgram)])
+  );
+  res.render("programs/language-learning/courses/my_courses", { courses, programs });
 });
 
 module.exports.allCoursesAdmin = catchAsync(async (req, res) => {
@@ -117,7 +121,24 @@ module.exports.showCourse = catchAsync(async (req, res) => {
 
   let start = DateUtil.localTime(course.session.startDate);
   let end = DateUtil.localTime(course.session.endDate);
-  res.render("programs/language-learning/courses/show", { course, start, end });
+
+  // Same enrolment rule as checkCourseAccess (students[], coursesTaken[] or a
+  // specialProgram entry for this title); staff reach the page without one.
+  const user = req.user;
+  const cid = String(course._id);
+  const enrollment = (user.specialProgram || []).find((p) => p.courseTitle === course.title) || null;
+  const isEnrolled = Boolean(
+    enrollment ||
+    (course.students || []).some((id) => String(id) === String(user._id)) ||
+    (user.coursesTaken || []).some((id) => String(id) === cid)
+  );
+  const isStaff = ['admin', 'super-admin', 'english-coach', 'instructor'].includes(user.role);
+  const accessEnd = enrollment && enrollment.endDate ? new Date(enrollment.endDate) : null;
+  const program = findProgram(course.maelenglishProgram);
+
+  res.render("programs/language-learning/courses/show", {
+    course, start, end, isEnrolled, isStaff, accessEnd, program
+  });
 });
 
 module.exports.editCourse = catchAsync(async (req, res) => {

@@ -7,7 +7,8 @@
  *   'soon' → « Bientôt » badge + « Être prévenu »
  *
  * Durations: Essentials 8 weeks per level, job programmes 12 weeks
- * (`duration`). Essentials also carries its practical details (levels,
+ * (`duration`); every programme has 50 h of learning content (`hours`,
+ * Essentials: per level). Essentials also carries its practical details (levels,
  * price; `sessions`/`schedule` left empty hide the calendar until
  * the new 8-week dates are known).
  * `photo` = base name of /assets/img/Maelenglish/photos/<photo>-{720,1280}.webp
@@ -18,7 +19,7 @@ const WHATSAPP = '22667323131';
 
 // Shared format of the job programmes (the first item takes each programme's duration)
 const FORMAT = [
-  { icon: 'stopwatch', label: '12 semaines', text: 'Un programme concret, à suivre en parallèle de votre activité.' },
+  { icon: 'stopwatch', label: '12 semaines', text: '50 h de contenu d’apprentissage, à suivre en parallèle de votre activité.' },
   { icon: 'people', label: 'Coach dédié', text: 'Des devoirs et des prises de parole corrigés par un coach.' },
   { icon: 'laptop', label: '100 % en ligne', text: 'Sur notre plateforme e-learning, depuis votre ordinateur ou votre téléphone, où que vous soyez.' },
   { icon: 'award', label: 'Certificat', text: 'Un certificat MaelEnglish à la fin du programme.' },
@@ -31,6 +32,7 @@ const PROGRAMS = [
     tagline: "L'anglais général en 8 semaines",
     icon: 'chat-dots',
     duration: '8 semaines par niveau',
+    hours: '50 h de contenu par niveau',
     photo: 'essentials',
     status: 'open',
     featured: true,
@@ -52,10 +54,10 @@ const PROGRAMS = [
     ],
     details: {
       levels: [
-        { badge: 'Niveau 1', title: 'Débutant', text: 'Posez des bases solides : vous présenter, construire des phrases correctes et tenir des conversations simples de la vie quotidienne avec confiance.', tags: ['8 semaines', '100 % pratique', 'Fondamentaux'] },
-        { badge: 'Niveau 2', title: 'Intermédiaire', text: 'Gagnez en fluidité : enrichissez votre vocabulaire, améliorez votre prononciation et exprimez des idées plus complexes dans des contextes variés.', tags: ['8 semaines', 'Conversation', 'Autonomie'] },
+        { badge: 'Niveau 1', title: 'Débutant', text: 'Posez des bases solides : vous présenter, construire des phrases correctes et tenir des conversations simples de la vie quotidienne avec confiance.', tags: ['8 semaines', '50 h de contenu', '100 % pratique', 'Fondamentaux'] },
+        { badge: 'Niveau 2', title: 'Intermédiaire', text: 'Gagnez en fluidité : enrichissez votre vocabulaire, améliorez votre prononciation et exprimez des idées plus complexes dans des contextes variés.', tags: ['8 semaines', '50 h de contenu', 'Conversation', 'Autonomie'] },
       ],
-      structure: ['2 niveaux : Débutant et Intermédiaire', 'Durée : 8 semaines par niveau', 'Test de niveau obligatoire au début'],
+      structure: ['2 niveaux : Débutant et Intermédiaire', 'Durée : 8 semaines par niveau', 'Contenu : 50 h d’apprentissage par niveau', 'Test de niveau obligatoire au début'],
       pricing: ['Frais de formation : 30 000 FCFA', 'Possibilité de payer en 2 tranches', 'Inscription : 5 000 FCFA (déductibles)'],
       formatNote: '100 % en ligne, sur notre plateforme e-learning : depuis votre ordinateur ou votre téléphone, où que vous soyez.',
       // Calendar hidden until the 8-week session dates are set (fill sessions/schedule to show it again)
@@ -71,6 +73,7 @@ const PROGRAMS = [
     tagline: "L'anglais de l'aéronautique et des aéroports",
     icon: 'airplane',
     duration: '12 semaines',
+    hours: '50 h de contenu',
     photo: 'aviation',
     status: 'open',
     level: 'Intermédiaire conseillé',
@@ -91,6 +94,7 @@ const PROGRAMS = [
     tagline: "L'anglais des affaires et de l'entreprise",
     icon: 'briefcase',
     duration: '12 semaines',
+    hours: '50 h de contenu',
     photo: 'business',
     status: 'open',
     level: 'Intermédiaire conseillé',
@@ -111,6 +115,7 @@ const PROGRAMS = [
     tagline: "L'anglais médical et des soins",
     icon: 'heart-pulse',
     duration: '12 semaines',
+    hours: '50 h de contenu',
     photo: 'health',
     status: 'open',
     level: 'Intermédiaire conseillé',
@@ -131,6 +136,7 @@ const PROGRAMS = [
     tagline: "L'anglais du numérique et de l'informatique",
     icon: 'cpu',
     duration: '12 semaines',
+    hours: '50 h de contenu',
     photo: 'tech',
     status: 'open',
     level: 'Débutant à intermédiaire',
@@ -151,6 +157,7 @@ const PROGRAMS = [
     tagline: "L'anglais de la finance et de la comptabilité",
     icon: 'cash-coin',
     duration: '12 semaines',
+    hours: '50 h de contenu',
     photo: 'finance',
     status: 'open',
     level: 'Intermédiaire conseillé',
@@ -171,6 +178,7 @@ const PROGRAMS = [
     tagline: "L'anglais juridique",
     icon: 'bank',
     duration: '12 semaines',
+    hours: '50 h de contenu',
     photo: 'lawyers',
     photoPos: 'center top',
     status: 'open',
@@ -192,6 +200,7 @@ const PROGRAMS = [
     tagline: "L'anglais du BTP et des chantiers",
     icon: 'cone-striped',
     duration: '12 semaines',
+    hours: '50 h de contenu',
     photo: 'civil-engineering',
     status: 'open',
     level: 'Intermédiaire conseillé',
@@ -212,6 +221,7 @@ const PROGRAMS = [
     tagline: "L'anglais du transport et de la supply chain",
     icon: 'truck',
     duration: '12 semaines',
+    hours: '50 h de contenu',
     photo: 'logistics',
     status: 'open',
     level: 'Débutant à intermédiaire',
@@ -232,6 +242,7 @@ const PROGRAMS = [
     tagline: "L'anglais du sport et du coaching",
     icon: 'activity',
     duration: '12 semaines',
+    hours: '50 h de contenu',
     photo: 'fitness',
     status: 'open',
     level: 'Débutant à intermédiaire',
