@@ -13,7 +13,6 @@ export const METHOD_FACTS = [
   "Programmes métiers : 12 semaines, 50 h de contenu",
   "MaelEnglish Essentials : 2 niveaux de 8 semaines, 80 h",
   "100 % en ligne",
-  "Certificat à la fin",
 ];
 
 /** Verifiable figures only (from the catalogue and the founder's own record). */
