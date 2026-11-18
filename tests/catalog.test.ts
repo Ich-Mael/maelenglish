@@ -43,6 +43,6 @@ describe("shortProgramName", () => {
     const { shortProgramName, findProgram } = await import("@/lib/catalog");
     expect(shortProgramName(findProgram("aviation")!)).toBe("Aviation");
     expect(shortProgramName(findProgram("civil-engineering")!)).toBe("Civil Engineering");
-    expect(shortProgramName(findProgram("essentials")!)).toBe("Essentials");
+    expect(shortProgramName(findProgram("essentials")!)).toBe("MaelEnglish Essentials");
   });
 });

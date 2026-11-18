@@ -2,7 +2,7 @@ import Image from "next/image";
 import { ArrowDown, ArrowRight, BadgeCheck, LayoutGrid, Quote, UserRound, Users, Zap } from "lucide-react";
 import { PROGRAMS, whatsappLink } from "@/lib/catalog";
 import { METHOD_FACTS, METHOD_STEPS, STATS, TESTIMONIALS } from "@/lib/content";
-import { CHALLENGE_WA } from "@/lib/site";
+import { signupHref } from "@/lib/site";
 import { FeaturedProgramCard, ProgramCard } from "@/components/site/program-card";
 import { Carousel } from "@/components/site/carousel";
 import { Photo } from "@/components/site/photo";
@@ -81,21 +81,15 @@ function Programmes() {
       <Container>
         <SectionHead
           pill="Nos programmes"
-          title="L'anglais général, puis l'anglais de votre métier"
-          text="Commencez par les bases avec Essentials, ou choisissez directement le programme de votre secteur."
+          title="L'anglais de votre métier"
+          text="Choisissez le programme de votre secteur, ou commencez par les bases avec MaelEnglish Essentials."
         />
-        {featured && (
-          <div className="reveal">
-            <FeaturedProgramCard program={featured} />
-          </div>
-        )}
-
-        <div className="reveal mt-14">
+        <div className="reveal">
           <Carousel
             label="Programmes métiers"
             heading={
               <>
-                <p className="text-xs font-bold tracking-wide text-coral-dark uppercase">Puis l&apos;anglais de votre secteur</p>
+                <p className="text-xs font-bold tracking-wide text-coral-dark uppercase">L&apos;anglais de votre secteur</p>
                 <h3 className="mt-1 text-2xl font-extrabold text-brand-deep sm:text-3xl">
                   {jobs.length} programmes métiers <span className="text-muted-foreground">· 12 semaines</span>
                 </h3>
@@ -108,6 +102,12 @@ function Programmes() {
           </Carousel>
         </div>
 
+        {featured && (
+          <div className="reveal mt-12">
+            <FeaturedProgramCard program={featured} />
+          </div>
+        )}
+
         <div className="reveal mt-5 grid gap-5 md:grid-cols-2">
           <AltFormat
             href="/coaching"
@@ -118,8 +118,7 @@ function Programmes() {
             tone="navy"
           />
           <AltFormat
-            href={CHALLENGE_WA}
-            external
+            href={signupHref("challenge")}
             icon={<Zap className="size-6" aria-hidden />}
             title="MaelEnglish Challenge"
             text="Une mission par jour, un point de contrôle validé par un coach avant de passer à la suivante : idéal pour créer l'habitude."

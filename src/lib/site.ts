@@ -8,6 +8,11 @@ export const SLOGAN = "Speak the Language of Your Profession";
 export const PHONE_DISPLAY = "+226 67 32 31 31";
 export const PHONE_TEL = `+${WHATSAPP_NUMBER}`;
 
+/** Sign-up form, optionally with a programme / offer pre-selected. */
+export function signupHref(program?: string): string {
+  return program ? `/inscription?programme=${encodeURIComponent(program)}` : "/inscription";
+}
+
 export function waLink(message: string): string {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }

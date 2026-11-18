@@ -7,3 +7,4 @@ export * from "./Progress";
 export * from "./TeachingResource";
 export * from "./Auth";
 export * from "./Gamification";
+export * from "./EnrollmentRequest";

@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Phone } from "lucide-react";
 import { PROGRAMS, shortProgramName, whatsappLink } from "@/lib/catalog";
-import { CHALLENGE_WA, PHONE_DISPLAY, PHONE_TEL } from "@/lib/site";
+import { PHONE_DISPLAY, PHONE_TEL, signupHref } from "@/lib/site";
 import { WhatsAppIcon } from "./icons";
 
 async function Year() {
@@ -30,10 +30,11 @@ export function SiteFooter() {
         </FooterCol>
         <FooterCol title="MaelEnglish">
           <FooterLink href="/coaching">Coaching individuel</FooterLink>
-          <FooterLink href={CHALLENGE_WA} external>
+          <FooterLink href={signupHref("challenge")}>
             Challenge
           </FooterLink>
           <FooterLink href="/#methode">La méthode</FooterLink>
+          <FooterLink href="/inscription">S&apos;inscrire</FooterLink>
           <FooterLink href="/connexion">Espace apprenant</FooterLink>
         </FooterCol>
         <FooterCol title="Contact">

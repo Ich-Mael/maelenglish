@@ -21,13 +21,13 @@ import {
   UserCheck,
   Wallet,
 } from "lucide-react";
-import { PROGRAMS, findProgram, formatFor, programPhoto, shortProgramName, whatsappLink, type Program } from "@/lib/catalog";
-import { PHONE_DISPLAY, PHONE_TEL, splitBrand } from "@/lib/site";
+import { PROGRAMS, findProgram, formatFor, programPhoto, shortProgramName, type Program } from "@/lib/catalog";
+import { PHONE_DISPLAY, PHONE_TEL, signupHref, splitBrand } from "@/lib/site";
 import { ICONS } from "@/components/site/icons";
 import { Photo } from "@/components/site/photo";
 import { StatusBadge } from "@/components/site/program-card";
 import { PhraseFlip } from "@/components/site/phrase-flip";
-import { BUTTON, Container, PhraseCard, Pill, SectionHead, WhatsAppButton } from "@/components/site/ui";
+import { BUTTON, Container, PhraseCard, Pill, SectionHead } from "@/components/site/ui";
 import { JsonLd, courseJsonLd } from "@/components/site/json-ld";
 import { EnrolledCta } from "@/components/site/enrolled-cta";
 
@@ -105,11 +105,13 @@ function Hero({ program: p, role }: { program: Program; role: string }) {
           <div className="mt-8 flex flex-wrap gap-3">
             <EnrolledCta slug={p.slug}>
               {soon ? (
-                <a href={whatsappLink(p)} target="_blank" rel="noopener" className={BUTTON.coral}>
+                <Link href={signupHref(p.slug)} className={BUTTON.coral}>
                   <Bell className="size-5" aria-hidden /> Être prévenu(e)
-                </a>
+                </Link>
               ) : (
-                <WhatsAppButton href={whatsappLink(p)}>S&apos;inscrire</WhatsAppButton>
+                <Link href={signupHref(p.slug)} className={BUTTON.coral}>
+                  S&apos;inscrire <ArrowRight className="size-5" aria-hidden />
+                </Link>
               )}
             </EnrolledCta>
             <a href="#contenu" className={BUTTON.ghost}>
@@ -286,7 +288,9 @@ function EssentialsDetails({ program: p }: { program: Program }) {
                   Réservez dès maintenant : nous vous confirmons la date de démarrage et l&apos;horaire. Places limitées à {d.seats} par session.
                 </p>
               </div>
-              <WhatsAppButton href={whatsappLink(p)}>Réserver ma place</WhatsAppButton>
+              <Link href={signupHref(p.slug)} className={BUTTON.coral}>
+                Réserver ma place <ArrowRight className="size-5" aria-hidden />
+              </Link>
             </div>
           ) : (
             <>
@@ -312,7 +316,9 @@ function EssentialsDetails({ program: p }: { program: Program }) {
                   <div className="rounded-3xl border-2 border-border bg-card p-6 text-center">
                     <p className="font-heading text-5xl font-extrabold text-coral">{d.seats}</p>
                     <p className="mt-1 mb-4 text-muted-foreground">places par session</p>
-                    <WhatsAppButton href={whatsappLink(p)} className="w-full">Réserver ma place</WhatsAppButton>
+                    <Link href={signupHref(p.slug)} className={`${BUTTON.coral} w-full`}>
+                      Réserver ma place <ArrowRight className="size-5" aria-hidden />
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -336,17 +342,19 @@ function FinalCta({ program: p }: { program: Program }) {
               <h2 className="text-3xl font-extrabold text-balance">{soon ? "Soyez parmi les premiers" : "Prêt à commencer ?"}</h2>
               <p className="mt-3 text-white/80">
                 {soon
-                  ? `${p.name} ouvre bientôt. Laissez-nous votre contact sur WhatsApp : nous vous prévenons dès l'ouverture des inscriptions.`
-                  : `Écrivez-nous sur WhatsApp pour vous inscrire à ${p.name} : un conseiller vous indique les prochaines dates${p.details ? "" : " et le tarif"}.`}
+                  ? `${p.name} ouvre bientôt. Laissez-nous votre contact : nous vous prévenons dès l'ouverture des inscriptions.`
+                  : `Envoyez votre demande d'inscription en 2 minutes : un conseiller vous recontacte sur WhatsApp avec les prochaines dates${p.details ? "" : " et le tarif"}.`}
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
               {soon ? (
-                <a href={whatsappLink(p)} target="_blank" rel="noopener" className={BUTTON.coral}>
+                <Link href={signupHref(p.slug)} className={BUTTON.coral}>
                   <Bell className="size-5" aria-hidden /> Être prévenu(e)
-                </a>
+                </Link>
               ) : (
-                <WhatsAppButton href={whatsappLink(p)}>S&apos;inscrire sur WhatsApp</WhatsAppButton>
+                <Link href={signupHref(p.slug)} className={BUTTON.coral}>
+                  S&apos;inscrire <ArrowRight className="size-5" aria-hidden />
+                </Link>
               )}
               <a href={`tel:${PHONE_TEL}`} className={BUTTON.ghost}>
                 <Phone className="size-4" aria-hidden /> {PHONE_DISPLAY}

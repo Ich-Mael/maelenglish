@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { connection } from "next/server";
-import { BookOpen, ClipboardCheck, GraduationCap, UserPlus, Users } from "lucide-react";
+import { BookOpen, ClipboardCheck, GraduationCap, Inbox, UserPlus, Users } from "lucide-react";
 import { requireStaff, actorOf, visibleCourseIds } from "@/lib/admin/context";
 import { can } from "@/lib/admin/permissions";
-import { AssignmentSubmission, Course, Enrollment, User } from "@/models";
+import { AssignmentSubmission, Course, Enrollment, EnrollmentRequest, User } from "@/models";
 import { Card, PageHeader, btn } from "@/components/admin/ui";
 import { PageSkeleton } from "@/components/learn/ui";
 
@@ -17,13 +17,15 @@ async function Dashboard() {
   const a = actorOf(me);
   const ids = await visibleCourseIds(me);
   const inCourses = ids ? { courseId: { $in: ids } } : {};
-  const [learners, courses, active, pending] = await Promise.all([
+  const [requests, learners, courses, active, pending] = await Promise.all([
+    can.manageUsers(a) ? EnrollmentRequest.countDocuments({ status: "new" }) : Promise.resolve(null),
     can.manageUsers(a) ? User.countDocuments({ role: "user", isActive: { $ne: false } }) : Promise.resolve(null),
     Course.countDocuments(ids ? { _id: { $in: ids } } : {}),
     Enrollment.countDocuments({ ...inCourses, status: "active" }),
     AssignmentSubmission.countDocuments({ ...inCourses, status: "pending" }),
   ]);
   const tiles = [
+    requests !== null && { label: "Nouvelles demandes d'inscription", value: requests, icon: Inbox, href: "/admin/demandes", highlight: requests > 0 },
     learners !== null && { label: "Apprenants actifs", value: learners, icon: Users, href: "/admin/utilisateurs?role=user" },
     { label: ids ? "Mes cours" : "Cours", value: courses, icon: BookOpen, href: "/admin/cours" },
     { label: "Inscriptions actives", value: active, icon: GraduationCap, href: "/admin/cours" },

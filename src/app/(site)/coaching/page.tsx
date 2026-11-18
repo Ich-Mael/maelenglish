@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { ArrowDown, BadgeCheck, Briefcase, Building2, CalendarCheck, ChevronDown, Mic, Phone, UserCheck, Video } from "lucide-react";
+import Link from "next/link";
+import { ArrowDown, ArrowRight, BadgeCheck, Briefcase, Building2, CalendarCheck, ChevronDown, Mic, Phone, UserCheck, Video } from "lucide-react";
 import { COACHING } from "@/lib/content";
-import { COACHING_WA, PHONE_DISPLAY, PHONE_TEL } from "@/lib/site";
+import { COACHING_WA, PHONE_DISPLAY, PHONE_TEL, signupHref } from "@/lib/site";
 import { BUTTON, ButtonLink, Container, PhraseCard, Pill, SectionHead, WhatsAppButton } from "@/components/site/ui";
 import { FounderCard } from "@/components/site/founder";
 
@@ -30,7 +31,9 @@ export default function CoachingPage() {
               échéances. Vous travaillez exactement ce dont vous avez besoin, au rythme qui vous convient.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <WhatsAppButton href={COACHING_WA}>Demander mon diagnostic</WhatsAppButton>
+              <Link href={signupHref("coaching")} className={BUTTON.coral}>
+                Demander mon diagnostic <ArrowRight className="size-5" aria-hidden />
+              </Link>
               <a href="#deroulement" className={BUTTON.outline}>
                 Comment ça marche <ArrowDown className="size-4" aria-hidden />
               </a>

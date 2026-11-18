@@ -6,7 +6,8 @@
  * `status`: 'open' → « S'inscrire » (WhatsApp message naming the programme),
  *           'soon' → « Bientôt » badge + « Être prévenu(e) ».
  * Durations: Essentials 8 weeks per level, job programmes 12 weeks; every
- * programme = 50 h of learning content (Essentials: per level).
+ * job programme = 50 h of learning content; MaelEnglish Essentials = 80 h in total
+ * (2 levels of 8 weeks, 40 h each).
  * `photo` = base name of /images/photos/<photo>-{720,1280}.webp (+ -1280.jpg);
  * `photoPos` = optional CSS object-position.
  * `icon` / `FORMAT[].icon` = lucide-react icon names (mapped in the UI).
@@ -81,7 +82,7 @@ export const PROGRAMS: readonly Program[] = [
     tagline: "L'anglais général en 8 semaines",
     icon: "MessagesSquare",
     duration: "8 semaines par niveau",
-    hours: "50 h de contenu par niveau",
+    hours: "80 h de contenu au total",
     photo: "essentials",
     status: "open",
     featured: true,
@@ -103,10 +104,10 @@ export const PROGRAMS: readonly Program[] = [
     ],
     details: {
       levels: [
-        { badge: "Niveau 1", title: "Débutant", text: "Posez des bases solides : vous présenter, construire des phrases correctes et tenir des conversations simples de la vie quotidienne avec confiance.", tags: ["8 semaines", "50 h de contenu", "100 % pratique", "Fondamentaux"] },
-        { badge: "Niveau 2", title: "Intermédiaire", text: "Gagnez en fluidité : enrichissez votre vocabulaire, améliorez votre prononciation et exprimez des idées plus complexes dans des contextes variés.", tags: ["8 semaines", "50 h de contenu", "Conversation", "Autonomie"] },
+        { badge: "Niveau 1", title: "Débutant", text: "Posez des bases solides : vous présenter, construire des phrases correctes et tenir des conversations simples de la vie quotidienne avec confiance.", tags: ["8 semaines", "40 h de contenu", "100 % pratique", "Fondamentaux"] },
+        { badge: "Niveau 2", title: "Intermédiaire", text: "Gagnez en fluidité : enrichissez votre vocabulaire, améliorez votre prononciation et exprimez des idées plus complexes dans des contextes variés.", tags: ["8 semaines", "40 h de contenu", "Conversation", "Autonomie"] },
       ],
-      structure: ["2 niveaux : Débutant et Intermédiaire", "Durée : 8 semaines par niveau", "Contenu : 50 h d’apprentissage par niveau", "Test de niveau obligatoire au début"],
+      structure: ["2 niveaux : Débutant et Intermédiaire", "Durée : 8 semaines par niveau", "Contenu : 80 h d’apprentissage au total (40 h par niveau)", "Test de niveau obligatoire au début"],
       pricing: ["Frais de formation : 30 000 FCFA", "Possibilité de payer en 2 tranches", "Inscription : 5 000 FCFA (déductibles)"],
       formatNote: "100 % en ligne, sur notre plateforme e-learning : depuis votre ordinateur ou votre téléphone, où que vous soyez.",
       calendarYear: 2027,
@@ -309,9 +310,13 @@ export const PROGRAMS: readonly Program[] = [
 
 export const PROGRAM_SLUGS: readonly string[] = PROGRAMS.map((p) => p.slug);
 
-/** « MaelEnglish for Aviation » → « Aviation », « MaelEnglish Essentials » → « Essentials » (cards, lists: avoids repeating the brand). */
+/**
+ * « MaelEnglish for Aviation » → « Aviation » (cards, lists: avoids repeating the brand);
+ * « MaelEnglish Essentials » keeps its full name.
+ */
 export function shortProgramName(p: Pick<Program, "name">): string {
-  return p.name.replace(/^MaelEnglish\s*/, "").replace(/^for\s+/i, "") || p.name;
+  const m = p.name.match(/^MaelEnglish\s+for\s+(.+)$/i);
+  return m ? m[1] : p.name;
 }
 
 export function findProgram(slug: string | null | undefined): Program | null {

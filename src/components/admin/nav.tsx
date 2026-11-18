@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, ClipboardCheck, LayoutDashboard, Users } from "lucide-react";
+import { BookOpen, ClipboardCheck, Inbox, LayoutDashboard, Users } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { can } from "@/lib/admin/permissions";
 
@@ -10,6 +10,7 @@ export async function AdminNav({ mobile }: { mobile?: boolean }) {
   const a = { id: me.id, role: me.role };
   const items = [
     { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard, show: true },
+    { href: "/admin/demandes", label: "Demandes", icon: Inbox, show: can.manageUsers(a) },
     { href: "/admin/utilisateurs", label: "Utilisateurs", icon: Users, show: can.manageUsers(a) },
     { href: "/admin/cours", label: "Cours", icon: BookOpen, show: true },
     { href: "/admin/corrections", label: "Corrections", icon: ClipboardCheck, show: a.role !== "account-manager" },

@@ -10,6 +10,7 @@ import { revokeDevice, updateAccount } from "@/lib/admin/users";
 import * as content from "@/lib/admin/content";
 import { enroll, removeEnrollment, updateEnrollment } from "@/lib/admin/enrollments";
 import { gradeSubmission } from "@/lib/admin/grading";
+import { RequestError, updateRequest } from "@/lib/requests";
 import { createAccount, deactivateUser, issueResetForUser, reissueActivation, restoreUser } from "@/lib/auth/accounts";
 import { appUrl, sendActivationEmail, sendEnrollmentEmail, sendPasswordResetEmail } from "@/lib/email";
 import { isWhatsAppConfigured, sendEnrollment } from "@/lib/whatsapp";
@@ -479,4 +480,18 @@ export async function gradeAction(_: State, form: FormData): Promise<State> {
     return fail(e);
   }
   redirect(next);
+}
+
+// ── Sign-up requests ───────────────────────────────────────────────────────
+
+export async function updateRequestAction(_: State, form: FormData): Promise<State> {
+  try {
+    const me = await usersGuard();
+    await updateRequest(str(form, "requestId"), me.id, { status: str(form, "status"), notes: String(form.get("notes") ?? "") });
+    refresh();
+    return { success: "Demande mise à jour." };
+  } catch (e) {
+    if (e instanceof RequestError) return { error: e.message };
+    return fail(e);
+  }
 }

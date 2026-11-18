@@ -110,3 +110,21 @@ export function sendEnrollmentEmail(to: string, p: { firstName: string; courseTi
     text: `Bonjour ${p.firstName},\n\nVous êtes inscrit(e) à ${p.courseTitle}, ${period}.\nVos cours : ${url}`,
   });
 }
+
+/** Staff notification: a new sign-up request arrived from /inscription. */
+export function sendNewRequestEmail(to: string[], r: { name: string; phone: string; email: string; offer: string; kind: string; message: string }) {
+  const url = appUrl("/admin/demandes");
+  const lines = [`Nom : ${r.name}`, `WhatsApp : ${r.phone}`, r.email && `Email : ${r.email}`, `Programme : ${r.offer}`, r.message && `Message : ${r.message}`].filter(Boolean) as string[];
+  return send({
+    to: to.join(", "),
+    subject: `${r.kind === "notify" ? "Demande d'information" : "Nouvelle demande d'inscription"} : ${r.name}`,
+    html: layout({
+      firstName: "l'équipe",
+      intro: `${r.kind === "notify" ? "Une personne souhaite être prévenue de l'ouverture d'un programme." : "Une nouvelle demande d'inscription vient d'arriver."}<br><br>${lines.map(esc).join("<br>")}`,
+      button: "Voir les demandes",
+      url,
+      outro: "Recontactez la personne sur WhatsApp, puis créez son compte depuis l'administration.",
+    }),
+    text: `${lines.join("\n")}\n\nDemandes : ${url}`,
+  });
+}

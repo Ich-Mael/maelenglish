@@ -10,23 +10,26 @@ import { PageSkeleton } from "@/components/learn/ui";
 
 export const metadata: Metadata = { title: "Créer un compte" };
 
-async function NewUser() {
+async function NewUser({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const me = await requireStaff("/admin/utilisateurs/nouveau");
   if (!can.manageUsers(actorOf(me))) redirect("/admin");
+  const sp = await searchParams;
+  const pick = (k: string) => (typeof sp[k] === "string" ? (sp[k] as string) : "");
+  const defaults = { name: pick("prenom"), surname: pick("nom"), email: pick("email"), phoneNumber: pick("tel") };
   return (
     <div className="max-w-2xl">
       <PageHeader title="Créer un compte" back={{ href: "/admin/utilisateurs", label: "Utilisateurs" }} subtitle="Le compte est créé sans mot de passe : la personne le choisit avec son lien d'activation." />
       <Card>
-        <CreateUserForm roles={[...assignableRoles({ _id: me.id as never, role: me.role })]} />
+        <CreateUserForm roles={[...assignableRoles({ _id: me.id as never, role: me.role })]} defaults={defaults} />
       </Card>
     </div>
   );
 }
 
-export default function Page() {
+export default function Page({ searchParams }: PageProps<"/admin/utilisateurs/nouveau">) {
   return (
     <Suspense fallback={<PageSkeleton />}>
-      <NewUser />
+      <NewUser searchParams={searchParams} />
     </Suspense>
   );
 }

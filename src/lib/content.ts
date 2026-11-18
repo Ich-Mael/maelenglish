@@ -10,9 +10,8 @@ export const METHOD_STEPS = [
 ];
 
 export const METHOD_FACTS = [
-  "Essentials : 8 semaines par niveau",
-  "Programmes métiers : 12 semaines",
-  "50 h de contenu par programme",
+  "Programmes métiers : 12 semaines, 50 h de contenu",
+  "MaelEnglish Essentials : 2 niveaux de 8 semaines, 80 h",
   "100 % en ligne",
   "Certificat à la fin",
 ];
@@ -21,7 +20,7 @@ export const METHOD_FACTS = [
 export const STATS = [
   { value: "40", suffix: "+", label: "Professionnels formés par Coach Ish" },
   { value: String(PROGRAMS.length), suffix: "", label: "Programmes, de l'anglais général aux métiers" },
-  { value: "50", suffix: " h", label: "De contenu par programme" },
+  { value: "50", suffix: " h", label: "De contenu par programme métier" },
   { value: "100", suffix: " %", label: "En ligne, sur ordinateur ou téléphone" },
 ];
 

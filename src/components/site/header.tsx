@@ -1,10 +1,8 @@
 import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu } from "lucide-react";
-import { whatsappLink } from "@/lib/catalog";
+import { Menu, UserPlus } from "lucide-react";
 import { AccountLink, LoginLink } from "./account-link";
-import { WhatsAppIcon } from "./icons";
 import { ScrollHeader } from "./scroll-header";
 
 const NAV = [
@@ -35,14 +33,12 @@ export function SiteHeader() {
           <Suspense fallback={<LoginLink />}>
             <AccountLink />
           </Suspense>
-          <a
-            href={whatsappLink()}
-            target="_blank"
-            rel="noopener"
+          <Link
+            href="/inscription"
             className="hidden h-10 items-center gap-2 rounded-xl border-2 border-coral bg-white px-4 text-sm font-bold text-coral-dark transition hover:bg-coral-soft sm:inline-flex"
           >
-            <WhatsAppIcon className="size-4" /> S&apos;inscrire
-          </a>
+            <UserPlus className="size-4" aria-hidden /> S&apos;inscrire
+          </Link>
           {/* Mobile menu: <details> works without JavaScript. */}
           <details className="group relative md:hidden">
             <summary className="flex size-10 cursor-pointer list-none items-center justify-center rounded-xl text-brand-deep hover:bg-brand-soft group-data-[scrolled=true]/hdr:text-white group-data-[scrolled=true]/hdr:hover:bg-white/10 [&::-webkit-details-marker]:hidden" aria-label="Menu">
@@ -54,9 +50,9 @@ export function SiteHeader() {
                   {n.label}
                 </Link>
               ))}
-              <a href={whatsappLink()} target="_blank" rel="noopener" className="mt-1 flex items-center gap-2 rounded-xl border-2 border-coral bg-white px-3 py-2.5 font-bold text-coral-dark hover:bg-coral-soft">
-                <WhatsAppIcon className="size-4" /> S&apos;inscrire
-              </a>
+              <Link href="/inscription" className="mt-1 flex items-center gap-2 rounded-xl border-2 border-coral bg-white px-3 py-2.5 font-bold text-coral-dark hover:bg-coral-soft">
+                <UserPlus className="size-4" aria-hidden /> S&apos;inscrire
+              </Link>
             </nav>
           </details>
         </div>
