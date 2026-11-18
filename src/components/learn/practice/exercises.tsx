@@ -168,7 +168,7 @@ export function OrderExercise({ exercise: ex, locked, onChange }: ExerciseProps)
 }
 
 // ── match: tap pairs ───────────────────────────────────────────────────────
-const PAIR_COLORS = ["bg-primary", "bg-coral", "bg-success", "bg-xp", "bg-brand-dark", "bg-coral-dark"];
+const PAIR_COLORS = ["bg-primary", "bg-coral-strong", "bg-success", "bg-xp", "bg-brand-dark", "bg-coral-dark"];
 
 export function MatchExercise({ exercise: ex, locked, onChange }: ExerciseProps) {
   const pairs = useMemo(() => ex.pairs ?? [], [ex.pairs]);
@@ -446,7 +446,7 @@ export function SpeakExercise({ exercise: ex, locked, onChange }: ExerciseProps)
           onClick={recording ? stop : start}
           className={cn(
             "relative flex size-24 items-center justify-center rounded-full text-white transition active:translate-y-1",
-            recording ? "bg-destructive" : "bg-coral shadow-[0_6px_0_0_var(--color-coral-dark)]",
+            recording ? "bg-destructive" : "bg-coral-strong shadow-[0_6px_0_0_var(--color-coral-dark)]",
           )}
           aria-label={recording ? "Arrêter l'enregistrement" : "Parler"}
         >

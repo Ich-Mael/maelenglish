@@ -17,18 +17,24 @@ export async function StatsBar() {
   const r = 15;
   const c = 2 * Math.PI * r;
   return (
-    <Link href="/progression" className="flex items-center gap-3 rounded-2xl px-2 py-1 hover:bg-muted" aria-label={`Série de ${s.streak} jour(s), ${s.todayXp} XP sur ${s.dailyGoal} aujourd'hui, niveau ${s.level.level}`}>
-      <span className={cn("flex items-center gap-1 font-heading font-extrabold", s.activeToday ? "text-coral" : "text-muted-foreground")}>
+    <Link href="/progression" className="flex items-center gap-3 rounded-2xl px-2 py-1 hover:bg-muted">
+      <span className={cn("flex items-center gap-1 font-heading font-extrabold", s.activeToday ? "text-coral-strong" : "text-muted-foreground")}>
         <Flame className={cn("size-5", s.activeToday && "fill-coral/30")} aria-hidden /> {s.streak}
+        <span className="sr-only"> jour{s.streak > 1 ? "s" : ""} de série,</span>
       </span>
-      <span className="relative flex size-9 items-center justify-center" aria-hidden>
-        <svg viewBox="0 0 36 36" className="absolute inset-0 -rotate-90">
+      <span className="relative flex size-9 items-center justify-center">
+        <svg viewBox="0 0 36 36" className="absolute inset-0 -rotate-90" aria-hidden>
           <circle cx="18" cy="18" r={r} fill="none" strokeWidth="4" className="stroke-muted" />
           <circle cx="18" cy="18" r={r} fill="none" strokeWidth="4" strokeLinecap="round" className={goal >= 100 ? "stroke-success" : "stroke-xp"} strokeDasharray={c} strokeDashoffset={c * (1 - goal / 100)} />
         </svg>
-        <Sparkles className={cn("size-4", goal >= 100 ? "text-success" : "text-[#9a6200]")} />
+        <Sparkles className={cn("size-4", goal >= 100 ? "text-success" : "text-[#9a6200]")} aria-hidden />
+        <span className="sr-only">
+          {s.todayXp} XP sur {s.dailyGoal} aujourd&apos;hui,
+        </span>
       </span>
-      <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold text-white">Niv. {s.level.level}</span>
+      <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold text-white">
+        Niv. {s.level.level}
+      </span>
     </Link>
   );
 }

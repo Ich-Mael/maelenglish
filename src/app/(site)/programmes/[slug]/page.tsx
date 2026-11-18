@@ -78,7 +78,7 @@ function Hero({ program: p, role }: { program: Program; role: string }) {
   ];
   return (
     <section className="relative overflow-hidden bg-brand-deep text-white">
-      <div aria-hidden className="pointer-events-none absolute -top-40 -right-40 size-[32rem] rounded-full bg-primary/50 blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute -top-40 -right-40 size-[32rem] bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--color-primary)_50%,transparent),transparent)]" />
       <Container className="relative grid items-center gap-10 py-12 sm:py-16 lg:grid-cols-[1.4fr_1fr]">
         <div>
           <nav aria-label="Fil d'Ariane" className="mb-5 flex flex-wrap items-center gap-1 text-sm text-white/70">
@@ -310,7 +310,7 @@ function EssentialsDetails({ program: p }: { program: Program }) {
                     </div>
                   ))}
                   <div className="rounded-3xl border-2 border-border bg-card p-6 text-center">
-                    <p className="font-heading text-5xl font-extrabold text-coral">{d.seats}</p>
+                    <p className="font-heading text-5xl font-extrabold text-coral-strong">{d.seats}</p>
                     <p className="mt-1 mb-4 text-muted-foreground">places par session</p>
                     <WhatsAppButton href={whatsappLink(p)} className="w-full">Réserver ma place</WhatsAppButton>
                   </div>
@@ -330,7 +330,7 @@ function FinalCta({ program: p }: { program: Program }) {
     <section className="pb-16">
       <Container>
         <div className="relative overflow-hidden rounded-[2.5rem] bg-brand-deep p-8 text-white sm:p-12">
-          <div aria-hidden className="pointer-events-none absolute -bottom-24 -left-24 size-80 rounded-full bg-coral/30 blur-3xl" />
+          <div aria-hidden className="pointer-events-none absolute -bottom-24 -left-24 size-80 bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--color-coral)_30%,transparent),transparent)]" />
           <div className="relative grid items-center gap-8 lg:grid-cols-[1.4fr_1fr]">
             <div>
               <h2 className="text-3xl font-extrabold text-balance">{soon ? "Soyez parmi les premiers" : "Prêt à commencer ?"}</h2>

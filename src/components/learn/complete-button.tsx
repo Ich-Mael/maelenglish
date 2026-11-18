@@ -6,6 +6,7 @@ import { ArrowRight, Check, Loader2 } from "lucide-react";
 import { completeLesson } from "@/app/(app)/learn-actions";
 import { pushReward } from "@/components/gamify/reward-store";
 import { playSound } from "@/components/gamify/sound";
+import { enqueue, isOfflineError } from "@/components/pwa/offline-queue";
 
 /** « J'ai terminé » for video / text / PDF lessons: records completion, then goes to the next step. */
 export function CompleteButton({ courseId, lessonId, done, nextHref }: { courseId: string; lessonId: string; done: boolean; nextHref: string }) {
@@ -20,15 +21,22 @@ export function CompleteButton({ courseId, lessonId, done, nextHref }: { courseI
         onClick={() =>
           start(async () => {
             if (!done) {
-              const res = await completeLesson(courseId, lessonId);
-              if (!res.ok) return setError(res.error ?? "Une erreur est survenue.");
-              if (res.reward) playSound("correct");
-              pushReward(res.reward);
+              try {
+                const res = await completeLesson(courseId, lessonId);
+                if (!res.ok) return setError(res.error ?? "Une erreur est survenue.");
+                if (res.reward) playSound("correct");
+                pushReward(res.reward);
+              } catch (e) {
+                if (!isOfflineError(e)) return setError("Une erreur est survenue. Réessayez.");
+                // Offline: keep the completion on the device, sent when the connection returns.
+                enqueue({ kind: "complete", courseId, lessonId });
+                playSound("correct");
+              }
             }
             router.push(nextHref);
           })
         }
-        className="inline-flex h-13 w-full items-center justify-center gap-2 rounded-2xl bg-coral text-lg font-bold text-white shadow-[0_5px_0_0_var(--color-coral-dark)] transition active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-coral-dark)] sm:w-auto sm:px-10"
+        className="inline-flex h-13 w-full items-center justify-center gap-2 rounded-2xl bg-coral-strong text-lg font-bold text-white shadow-[0_5px_0_0_var(--color-coral-dark)] transition active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-coral-dark)] sm:w-auto sm:px-10"
       >
         {pending ? <Loader2 className="size-5 animate-spin" aria-hidden /> : done ? <ArrowRight className="size-5" aria-hidden /> : <Check className="size-5" aria-hidden />}
         {done ? "Étape suivante" : "J'ai terminé"}

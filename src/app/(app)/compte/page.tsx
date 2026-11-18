@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import Link from "next/link";
-import { LayoutDashboard, LogOut, Monitor, Smartphone, Tablet } from "lucide-react";
+import { LayoutDashboard, Monitor, Smartphone, Tablet } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
 import { describeUserAgent } from "@/lib/auth/device";
 import { displayPhone } from "@/lib/phone";
 import { Session } from "@/models";
 import { Button } from "@/components/ui/button";
-import { logout, revokeSession } from "@/app/(auth)/actions";
+import { revokeSession } from "@/app/(auth)/actions";
+import { LogoutButton } from "@/components/pwa/logout-button";
 import { PasswordForm } from "./password-form";
 
 export const metadata: Metadata = { title: "Mon compte", robots: { index: false } };
@@ -49,11 +50,7 @@ async function Account() {
             {me.name} {me.surname} · {ROLE_LABELS[me.role] ?? me.role}
           </p>
         </div>
-        <form action={logout}>
-          <Button type="submit" variant="outline" className="rounded-xl">
-            <LogOut className="size-4" aria-hidden /> Me déconnecter
-          </Button>
-        </form>
+        <LogoutButton />
       </div>
 
       {me.isStaff && (

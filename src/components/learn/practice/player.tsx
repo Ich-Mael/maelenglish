@@ -10,6 +10,7 @@ import { submitPractice } from "@/app/(app)/learn-actions";
 import { EXERCISE_COMPONENTS } from "./exercises";
 import { pushReward } from "@/components/gamify/reward-store";
 import { confetti, playSound } from "@/components/gamify/sound";
+import { enqueue, isOfflineError } from "@/components/pwa/offline-queue";
 import { cn } from "cn";
 
 type Feedback = { correct: boolean; skipped?: boolean } | null;
@@ -44,6 +45,7 @@ export function PracticePlayer({
   const [firstTry, setFirstTry] = useState<Record<string, ExerciseResponse>>({});
   const [result, setResult] = useState<{ score: number; correct: number; xp: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [offlineSaved, setOfflineSaved] = useState(false);
   const [pending, startTransition] = useTransition();
 
   const ex = queue[pos];
@@ -77,12 +79,24 @@ export function PracticePlayer({
   function finish() {
     setError(null);
     startTransition(async () => {
-      const res = await submitPractice(courseId, lessonId, firstTry);
+      const correct = exercises.filter((e) => checkExercise(e, firstTry[e.id])).length;
+      let res: Awaited<ReturnType<typeof submitPractice>>;
+      try {
+        res = await submitPractice(courseId, lessonId, firstTry);
+      } catch (e) {
+        if (!isOfflineError(e)) {
+          setError("Une erreur est survenue. Réessayez.");
+          return;
+        }
+        // Offline: the result is kept on the device and sent when the connection returns.
+        enqueue({ kind: "practice", courseId, lessonId, responses: firstTry });
+        setOfflineSaved(true);
+        res = { ok: true, score: Math.round((correct / Math.max(1, exercises.length)) * 100), reward: null };
+      }
       if (!res.ok) {
         setError(res.error ?? "Une erreur est survenue.");
         return;
       }
-      const correct = exercises.filter((e) => checkExercise(e, firstTry[e.id])).length;
       setResult({ score: res.score ?? 0, correct, xp: res.reward?.xpGained ?? 0 });
       playSound("complete");
       if ((res.score ?? 0) >= 90) void confetti("small");
@@ -114,6 +128,7 @@ export function PracticePlayer({
         <div>
           <h1 className="text-3xl font-extrabold text-brand-deep">Leçon terminée !</h1>
           <p className="mt-1 text-muted-foreground">{title}</p>
+          {offlineSaved && <p className="mt-2 rounded-xl bg-muted px-3 py-2 text-sm text-ink">Hors ligne : votre résultat est enregistré sur l&apos;appareil et sera envoyé à la reconnexion.</p>}
         </div>
         <dl className={cn("grid w-full gap-3", result.xp ? "grid-cols-3" : "grid-cols-2")}>
           {result.xp > 0 && (
@@ -134,7 +149,7 @@ export function PracticePlayer({
           </div>
         </dl>
         <div className="grid w-full gap-3">
-          <button type="button" onClick={() => router.push(nextHref)} className="inline-flex h-13 items-center justify-center gap-2 rounded-2xl bg-coral text-lg font-bold text-white shadow-[0_5px_0_0_var(--color-coral-dark)] transition active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-coral-dark)]">
+          <button type="button" onClick={() => router.push(nextHref)} className="inline-flex h-13 items-center justify-center gap-2 rounded-2xl bg-coral-strong text-lg font-bold text-white shadow-[0_5px_0_0_var(--color-coral-dark)] transition active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-coral-dark)]">
             Continuer <ArrowRight className="size-5" aria-hidden />
           </button>
           <button type="button" onClick={restart} className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl font-semibold text-primary hover:bg-brand-soft">

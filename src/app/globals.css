@@ -40,7 +40,9 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
   --color-coral: #ff5757;
-  --color-coral-dark: #e63e3e;
+  /* #ff5757 = logo coral, for decoration and on dark backgrounds only. Text / white-on-coral use the accessible shades. */
+  --color-coral-strong: #d63434; /* 4.8:1 on white — buttons, coral text */
+  --color-coral-dark: #b02a2a; /* 6.5:1 — small coral text, button shadows */
   --color-coral-soft: #fff0f0;
   --color-brand: #364fab;
   --color-brand-dark: #1f2f73;
@@ -83,7 +85,7 @@
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
   --radius: 0.875rem;
-  --success: #1fa971;
+  --success: #12855a; /* 4.6:1 on white, both as text and behind white text */
   --xp: #ffb020;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);

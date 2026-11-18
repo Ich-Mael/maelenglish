@@ -22,7 +22,7 @@ function Brand({ name }: { name: string }) {
   const [brand, rest] = splitBrand(name);
   return (
     <>
-      {brand} {rest && <span className="text-coral">{rest}</span>}
+      {brand} {rest && <span className="text-coral-strong">{rest}</span>}
     </>
   );
 }

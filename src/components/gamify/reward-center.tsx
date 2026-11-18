@@ -101,7 +101,7 @@ export function RewardCenter() {
               </button>
               {modal.kind === "level" ? (
                 <>
-                  <div className="mx-auto flex size-28 items-center justify-center rounded-full bg-gradient-to-br from-xp to-coral font-heading text-5xl font-extrabold text-white shadow-[0_8px_0_0_var(--color-coral-dark)]">
+                  <div className="mx-auto flex size-28 items-center justify-center rounded-full bg-gradient-to-br from-coral-strong to-coral-dark font-heading text-5xl font-extrabold text-white shadow-[0_8px_0_0_var(--color-coral-dark)]">
                     {modal.level}
                   </div>
                   <h2 id="reward-title" className="mt-6 text-3xl font-extrabold text-brand-deep">Niveau {modal.level} !</h2>
@@ -117,7 +117,7 @@ export function RewardCenter() {
                   <p className="mt-2 text-muted-foreground">{modal.badge.description}</p>
                 </>
               )}
-              <button type="button" autoFocus onClick={() => setModals((m) => m.slice(1))} className="mt-7 inline-flex h-12 w-full items-center justify-center rounded-2xl bg-coral font-bold text-white shadow-[0_5px_0_0_var(--color-coral-dark)] transition active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-coral-dark)]">
+              <button type="button" autoFocus onClick={() => setModals((m) => m.slice(1))} className="mt-7 inline-flex h-12 w-full items-center justify-center rounded-2xl bg-coral-strong font-bold text-white shadow-[0_5px_0_0_var(--color-coral-dark)] transition active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-coral-dark)]">
                 Super !
               </button>
             </motion.div>

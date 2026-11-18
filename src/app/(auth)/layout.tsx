@@ -4,8 +4,8 @@ import Link from "next/link";
 export default function AuthLayout({ children }: LayoutProps<"/">) {
   return (
     <main className="relative flex flex-1 flex-col items-center justify-center overflow-hidden px-4 py-10">
-      <div aria-hidden className="pointer-events-none absolute -top-40 -right-32 size-96 rounded-full bg-coral-soft blur-3xl" />
-      <div aria-hidden className="pointer-events-none absolute -bottom-40 -left-32 size-96 rounded-full bg-brand-soft blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute -top-40 -right-32 size-96 bg-[radial-gradient(closest-side,var(--color-coral-soft),transparent)]" />
+      <div aria-hidden className="pointer-events-none absolute -bottom-40 -left-32 size-96 bg-[radial-gradient(closest-side,var(--color-brand-soft),transparent)]" />
       <div className="relative w-full max-w-md">
         <Link href="/" className="mx-auto mb-6 block w-fit" aria-label="MaelEnglish — accueil">
           <Image src="/images/maelenglish-logo.webp" alt="MaelEnglish" width={800} height={175} priority className="h-auto w-48" />

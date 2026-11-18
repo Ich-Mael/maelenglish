@@ -18,12 +18,12 @@ export default function CoachingPage() {
   return (
     <>
       <section className="relative overflow-hidden">
-        <div aria-hidden className="pointer-events-none absolute -top-48 -right-40 size-[34rem] rounded-full bg-coral-soft blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute -top-48 -right-40 size-[34rem] bg-[radial-gradient(closest-side,var(--color-coral-soft),transparent)]" />
         <Container className="relative grid items-center gap-12 py-12 sm:py-16 lg:grid-cols-[1.3fr_1fr] lg:py-20">
           <div>
             <Pill>MaelEnglish Coaching</Pill>
             <h1 className="mt-4 text-4xl leading-[1.05] font-extrabold text-brand-deep text-balance sm:text-5xl lg:text-6xl">
-              Un coach. Votre métier. <span className="text-coral">Vos objectifs.</span>
+              Un coach. Votre métier. <span className="text-coral-strong">Vos objectifs.</span>
             </h1>
             <p className="mt-5 max-w-xl text-lg text-muted-foreground text-pretty">
               Un accompagnement individuel en anglais professionnel, construit autour de votre poste, de votre secteur et de vos
@@ -81,7 +81,7 @@ export default function CoachingPage() {
           <ol className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {COACHING.steps.map((s, i) => (
               <li key={s.title} className="rounded-3xl border-2 border-border bg-card p-6">
-                <span className="mb-4 flex size-11 items-center justify-center rounded-2xl bg-coral font-heading text-lg font-extrabold text-white shadow-[0_4px_0_0_var(--color-coral-dark)]">
+                <span className="mb-4 flex size-11 items-center justify-center rounded-2xl bg-coral-strong font-heading text-lg font-extrabold text-white shadow-[0_4px_0_0_var(--color-coral-dark)]">
                   {i + 1}
                 </span>
                 <h3 className="text-lg font-extrabold text-brand-deep">{s.title}</h3>
@@ -112,7 +112,7 @@ export default function CoachingPage() {
       <section className="pb-16 sm:pb-20">
         <Container>
           <div className="relative overflow-hidden rounded-[2.5rem] bg-brand-deep p-8 text-white sm:p-12">
-            <div aria-hidden className="pointer-events-none absolute -top-24 -right-24 size-80 rounded-full bg-primary/50 blur-3xl" />
+            <div aria-hidden className="pointer-events-none absolute -top-24 -right-24 size-80 bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--color-primary)_50%,transparent),transparent)]" />
             <div className="relative grid items-center gap-8 lg:grid-cols-[1.4fr_1fr]">
               <div>
                 <h2 className="text-3xl font-extrabold">Parlons de votre objectif</h2>

@@ -5,7 +5,8 @@ import { connection } from "next/server";
 import { ArrowRight, Eye, Flame, PartyPopper } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
 import { courseAccess, courseTree } from "@/lib/learn/queries";
-import { nextPath } from "@/lib/learn/paths";
+import { coursePath, lessonPath, nextPath } from "@/lib/learn/paths";
+import { DownloadCourse } from "@/components/pwa/download-course";
 import { findProgram } from "@/lib/catalog";
 import { CourseMap } from "@/components/learn/course-map";
 import { AccessProblem, PageSkeleton, ProgressBar } from "@/components/learn/ui";
@@ -54,7 +55,7 @@ async function CourseHome({ params }: { params: Promise<{ courseId: string }> })
         {next ? (
           <Link
             href={next}
-            className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-coral font-semibold text-white shadow-[0_5px_0_0_var(--color-coral-dark)] transition active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-coral-dark)] sm:w-auto sm:px-8"
+            className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-coral-strong font-semibold text-white shadow-[0_5px_0_0_var(--color-coral-dark)] transition active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-coral-dark)] sm:w-auto sm:px-8"
           >
             {outline.lessonsDone ? "Continuer" : "Commencer"} <ArrowRight className="size-4" aria-hidden />
           </Link>
@@ -64,6 +65,18 @@ async function CourseHome({ params }: { params: Promise<{ courseId: string }> })
           </p>
         ) : null}
       </section>
+
+      {outline.lessonsTotal > 0 && (
+        <DownloadCourse
+          courseId={courseId}
+          urls={[
+            coursePath(courseId),
+            "/mes-cours",
+            // Every lesson of the open modules: offline, the next lesson can be done without asking the server.
+            ...outline.modules.filter((m) => m.state !== "locked").flatMap((m) => m.lessons.map((l) => lessonPath(courseId, l.id))),
+          ]}
+        />
+      )}
 
       {outline.modules.length === 0 ? (
         <p className="rounded-3xl border-2 border-dashed border-border p-8 text-center text-muted-foreground">Le contenu de ce cours arrive bientôt.</p>

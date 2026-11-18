@@ -33,13 +33,13 @@ export default function HomePage() {
 function Hero() {
   return (
     <section className="relative overflow-hidden">
-      <div aria-hidden className="pointer-events-none absolute -top-48 -right-40 size-[34rem] rounded-full bg-coral-soft blur-3xl" />
-      <div aria-hidden className="pointer-events-none absolute top-40 -left-48 size-[30rem] rounded-full bg-brand-soft blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute -top-48 -right-40 size-[34rem] bg-[radial-gradient(closest-side,var(--color-coral-soft),transparent)]" />
+      <div aria-hidden className="pointer-events-none absolute top-40 -left-48 size-[30rem] bg-[radial-gradient(closest-side,var(--color-brand-soft),transparent)]" />
       <Container className="relative grid items-center gap-12 py-12 sm:py-16 lg:grid-cols-[1.15fr_1fr] lg:py-20">
         <div>
           <Image src="/images/maelenglish-logo.webp" alt="" width={800} height={175} priority className="mb-6 h-auto w-52 sm:w-60" />
           <h1 lang="en" className="text-4xl leading-[1.05] font-extrabold text-brand-deep text-balance sm:text-5xl lg:text-6xl">
-            Speak the Language of <span className="text-coral">Your Profession</span>
+            Speak the Language of <span className="text-coral-strong">Your Profession</span>
           </h1>
           <p className="mt-5 max-w-xl text-lg text-muted-foreground text-pretty">
             Réunions, e-mails, entretiens, clients : avec MaelEnglish, vous pratiquez l&apos;anglais des situations que vous
@@ -63,7 +63,7 @@ function Hero() {
         <div className="relative mx-auto w-full max-w-md lg:max-w-none" aria-label="Exemples de phrases professionnelles">
           <div className="relative aspect-square overflow-hidden rounded-[2.5rem] border-4 border-white bg-[#070b1d] shadow-[0_30px_70px_-30px_rgb(20_31_77/0.6)]">
             <Photo name={FOUNDER.photo} alt={`${FOUNDER.name}, fondateur de MaelEnglish`} sizes="(max-width: 1023px) 90vw, 480px" position="center 30%" eager />
-            <a href="#votre-coach" className="absolute top-4 left-4 rounded-2xl bg-white/95 px-3.5 py-2 shadow-lg backdrop-blur hover:bg-white">
+            <a href="#votre-coach" className="absolute top-4 left-4 rounded-2xl bg-white/95 px-3.5 py-2 shadow-lg hover:bg-white">
               <span className="block font-heading text-sm font-extrabold text-brand-deep">{FOUNDER.name}</span>
               <span className="block text-xs font-semibold text-coral-dark">{FOUNDER.nickname} · fondateur</span>
             </a>
@@ -120,7 +120,7 @@ function Programmes() {
             title="MaelEnglish Challenge"
             text="Une mission par jour, un point de contrôle validé par un coach avant de passer à la suivante : idéal pour créer l'habitude."
             cta="Rejoindre"
-            className="bg-gradient-to-br from-coral to-coral-dark"
+            className="bg-gradient-to-br from-coral-strong to-coral-dark"
           />
         </div>
       </Container>
@@ -186,7 +186,7 @@ function Method() {
         <ol className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {METHOD_STEPS.map((s, i) => (
             <li key={s.title} className="relative rounded-3xl border-2 border-border bg-card p-6">
-              <span className="mb-4 flex size-11 items-center justify-center rounded-2xl bg-coral font-heading text-lg font-extrabold text-white shadow-[0_4px_0_0_var(--color-coral-dark)]">
+              <span className="mb-4 flex size-11 items-center justify-center rounded-2xl bg-coral-strong font-heading text-lg font-extrabold text-white shadow-[0_4px_0_0_var(--color-coral-dark)]">
                 {i + 1}
               </span>
               <h3 className="text-lg font-extrabold text-brand-deep">{s.title}</h3>
@@ -258,7 +258,7 @@ function FinalCta() {
     <section className="pb-16 sm:pb-20">
       <Container>
         <div className="relative overflow-hidden rounded-[2.5rem] bg-brand-deep p-8 text-white sm:p-12">
-          <div aria-hidden className="pointer-events-none absolute -top-24 -right-24 size-80 rounded-full bg-primary/50 blur-3xl" />
+          <div aria-hidden className="pointer-events-none absolute -top-24 -right-24 size-80 bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--color-primary)_50%,transparent),transparent)]" />
           <div className="relative grid items-center gap-8 lg:grid-cols-[1.4fr_1fr]">
             <div>
               <Image src="/images/maelenglish-logo-light.webp" alt="" width={800} height={259} className="mb-5 h-auto w-44" />

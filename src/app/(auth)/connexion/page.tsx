@@ -16,6 +16,11 @@ export default function LoginPage() {
           Nous écrire sur WhatsApp
         </a>
       </p>
+      <p className="mt-3 text-center text-xs text-muted-foreground">
+        <a href="/confidentialite" className="underline hover:text-primary">
+          Politique de confidentialité
+        </a>
+      </p>
     </>
   );
 }

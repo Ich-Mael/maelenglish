@@ -14,7 +14,7 @@ const NAV = [
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/85 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/[0.97]">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4">
         <Link href="/" aria-label="MaelEnglish — accueil" className="shrink-0">
           <Image src="/images/maelenglish-logo.webp" alt="MaelEnglish" width={800} height={175} priority className="h-auto w-36 sm:w-40" />
@@ -36,7 +36,7 @@ export function SiteHeader() {
             href={whatsappLink()}
             target="_blank"
             rel="noopener"
-            className="hidden h-10 items-center gap-2 rounded-xl bg-coral px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-coral-dark sm:inline-flex"
+            className="hidden h-10 items-center gap-2 rounded-xl bg-coral-strong px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-coral-dark sm:inline-flex"
           >
             <WhatsAppIcon className="size-4" /> S&apos;inscrire
           </a>
@@ -51,7 +51,7 @@ export function SiteHeader() {
                   {n.label}
                 </Link>
               ))}
-              <a href={whatsappLink()} target="_blank" rel="noopener" className="mt-1 flex items-center gap-2 rounded-xl bg-coral px-3 py-2.5 font-semibold text-white">
+              <a href={whatsappLink()} target="_blank" rel="noopener" className="mt-1 flex items-center gap-2 rounded-xl bg-coral-strong px-3 py-2.5 font-semibold text-white">
                 <WhatsAppIcon className="size-4" /> S&apos;inscrire
               </a>
             </nav>

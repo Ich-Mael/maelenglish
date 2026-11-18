@@ -11,5 +11,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: p.featured ? 0.9 : 0.8,
     })),
     { url: `${SITE_URL}/coaching`, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${SITE_URL}/confidentialite`, changeFrequency: "yearly", priority: 0.2 },
   ];
 }

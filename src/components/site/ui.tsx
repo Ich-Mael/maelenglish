@@ -34,7 +34,7 @@ const btn =
   "inline-flex h-12 items-center justify-center gap-2 rounded-2xl px-6 font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:translate-y-px";
 
 export const BUTTON = {
-  coral: cn(btn, "bg-coral text-white shadow-[0_6px_0_0_var(--color-coral-dark)] hover:brightness-105 active:shadow-[0_2px_0_0_var(--color-coral-dark)] active:translate-y-1"),
+  coral: cn(btn, "bg-coral-strong text-white shadow-[0_6px_0_0_var(--color-coral-dark)] hover:brightness-105 active:shadow-[0_2px_0_0_var(--color-coral-dark)] active:translate-y-1"),
   blue: cn(btn, "bg-primary text-primary-foreground shadow-[0_6px_0_0_var(--color-brand-dark)] hover:brightness-110 active:shadow-[0_2px_0_0_var(--color-brand-dark)] active:translate-y-1"),
   outline: cn(btn, "border-2 border-brand/20 bg-white text-brand-deep hover:border-brand/40 hover:bg-brand-soft"),
   ghost: cn(btn, "border-2 border-white/25 text-white hover:bg-white/10"),

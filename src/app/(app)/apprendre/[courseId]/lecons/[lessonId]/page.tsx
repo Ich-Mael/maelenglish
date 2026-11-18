@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { connection } from "next/server";
+import { headers } from "next/headers";
 import { ChevronLeft, Download, Eye, Lock } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
 import { courseAccess, courseTree } from "@/lib/learn/queries";
@@ -25,8 +26,12 @@ async function LessonView({ params }: { params: Promise<{ courseId: string; less
 
   const { lessons, modules, outline } = await courseTree(me, access);
   const lesson = lessons.find((l) => String(l._id) === lessonId);
-  const state = outline.modules.flatMap((m) => m.lessons).find((l) => l.id === lessonId)?.state;
+  const mod0 = outline.modules.find((m) => m.lessons.some((l) => l.id === lessonId));
+  let state = mod0?.lessons.find((l) => l.id === lessonId)?.state;
   if (!lesson || !state) return <AccessProblem reason="not-found" />;
+  // Offline download (service worker): lessons of an open module are fetched ahead of order,
+  // so they can be done offline; results are replayed in order and re-checked by the server.
+  if (state === "locked" && mod0?.state !== "locked" && (await headers()).get("x-me-offline") === "1") state = "available";
 
   const back = coursePath(courseId);
   if (state === "locked") {

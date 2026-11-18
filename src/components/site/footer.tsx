@@ -51,7 +51,10 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-white/10">
         <p className="mx-auto max-w-6xl px-4 py-5 text-xs text-white/60">
-          © <Year /> MaelEnglish · <span lang="en">Speak the Language of Your Profession</span>
+          © <Year /> MaelEnglish · <span lang="en">Speak the Language of Your Profession</span> ·{" "}
+          <Link href="/confidentialite" className="underline hover:text-white">
+            Confidentialité
+          </Link>
         </p>
       </div>
     </footer>

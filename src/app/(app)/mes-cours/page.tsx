@@ -9,6 +9,7 @@ import { whatsappLink } from "@/lib/catalog";
 import { Photo } from "@/components/site/photo";
 import { PageSkeleton, ProgressBar, formatDate } from "@/components/learn/ui";
 import { cn } from "cn";
+import { InstallPrompt } from "@/components/pwa/install-prompt";
 
 export const metadata: Metadata = { title: "Mes cours", robots: { index: false } };
 
@@ -48,6 +49,8 @@ async function Courses({ searchParams }: { searchParams: Promise<Record<string, 
         <h1 className="text-3xl font-extrabold text-brand-deep">Bonjour {me.name} 👋</h1>
         <p className="text-muted-foreground">{current ? "Prêt(e) pour la leçon du jour ?" : "Retrouvez ici tous vos cours MaelEnglish."}</p>
       </div>
+
+      <InstallPrompt />
 
       {courses.length === 0 ? (
         <div className="rounded-3xl border-2 border-dashed border-border bg-card p-8 text-center">
@@ -91,7 +94,7 @@ function CourseCard({ course: c }: { course: MyCourse }) {
         ) : null}
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/50 to-transparent" />
         {c.isChallenge && (
-          <span className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-coral px-2.5 py-1 text-xs font-bold text-white">
+          <span className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-coral-strong px-2.5 py-1 text-xs font-bold text-white">
             <Zap className="size-3.5" aria-hidden /> Challenge
           </span>
         )}
