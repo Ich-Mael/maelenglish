@@ -83,7 +83,7 @@ export const PROGRAMS: readonly Program[] = [
     icon: "MessagesSquare",
     duration: "8 semaines par niveau",
     hours: "80 h de contenu au total",
-    photo: "essentials",
+    photo: "meeting",
     status: "open",
     featured: true,
     level: "Débutant ou intermédiaire (test de niveau)",
