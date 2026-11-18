@@ -4,6 +4,8 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Check, Loader2 } from "lucide-react";
 import { completeLesson } from "@/app/(app)/learn-actions";
+import { pushReward } from "@/components/gamify/reward-store";
+import { playSound } from "@/components/gamify/sound";
 
 /** « J'ai terminé » for video / text / PDF lessons: records completion, then goes to the next step. */
 export function CompleteButton({ courseId, lessonId, done, nextHref }: { courseId: string; lessonId: string; done: boolean; nextHref: string }) {
@@ -20,6 +22,8 @@ export function CompleteButton({ courseId, lessonId, done, nextHref }: { courseI
             if (!done) {
               const res = await completeLesson(courseId, lessonId);
               if (!res.ok) return setError(res.error ?? "Une erreur est survenue.");
+              if (res.reward) playSound("correct");
+              pushReward(res.reward);
             }
             router.push(nextHref);
           })

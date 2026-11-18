@@ -9,6 +9,7 @@ import { nextPath } from "@/lib/learn/paths";
 import { findProgram } from "@/lib/catalog";
 import { CourseMap } from "@/components/learn/course-map";
 import { AccessProblem, PageSkeleton, ProgressBar } from "@/components/learn/ui";
+import { Leaderboard } from "@/components/gamify/leaderboard";
 
 export const metadata: Metadata = { title: "Mon cours", robots: { index: false } };
 
@@ -69,6 +70,8 @@ async function CourseHome({ params }: { params: Promise<{ courseId: string }> })
       ) : (
         <CourseMap courseId={courseId} outline={outline} currentHref={next} />
       )}
+
+      <Leaderboard courseId={courseId} meId={me.id} />
     </div>
   );
 }

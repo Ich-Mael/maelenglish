@@ -7,6 +7,8 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowLeft, ArrowRight, Check, Loader2, RotateCcw, Timer, Trophy, X } from "lucide-react";
 import { submitQuiz, type QuizResult } from "@/app/(app)/learn-actions";
 import { cn } from "cn";
+import { pushReward } from "@/components/gamify/reward-store";
+import { confetti, playSound } from "@/components/gamify/sound";
 
 export type PublicQuestion = { id: string; text: string; options: { id: string; text: string }[] };
 
@@ -64,6 +66,11 @@ export function QuizRunner({
       }
       setResult(res.result);
       window.scrollTo({ top: 0 });
+      if (res.result.passed) {
+        playSound("complete");
+        void confetti("big");
+      } else playSound("wrong");
+      pushReward(res.result.reward);
     });
   }
 
@@ -123,6 +130,7 @@ export function QuizRunner({
           <p className="mt-1 text-white/85">
             {result.correct} bonne(s) réponse(s) sur {result.total} · {result.passingScore} % requis
           </p>
+          {result.reward && result.reward.xpGained > 0 && <p className="mt-2 font-heading text-xl font-extrabold text-xp">+{result.reward.xpGained} XP</p>}
           <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
             {result.passed ? (
               <button type="button" onClick={() => router.push(nextHref)} className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-6 font-bold text-success">

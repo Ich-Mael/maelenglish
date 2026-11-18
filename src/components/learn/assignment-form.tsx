@@ -1,8 +1,10 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { submitAssignment } from "@/app/(app)/learn-actions";
 import { FormMessage, SubmitButton } from "@/components/auth/form-parts";
+import { pushReward } from "@/components/gamify/reward-store";
+import { playSound } from "@/components/gamify/sound";
 
 export function AssignmentForm({
   courseId,
@@ -18,6 +20,11 @@ export function AssignmentForm({
   label: string;
 }) {
   const [state, action] = useActionState(submitAssignment, undefined);
+  useEffect(() => {
+    if (!state?.success) return;
+    playSound("correct");
+    pushReward(state.reward);
+  }, [state]);
   return (
     <form action={action} className="grid gap-4">
       <input type="hidden" name="courseId" value={courseId} />

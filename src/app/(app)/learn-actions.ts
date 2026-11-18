@@ -7,6 +7,8 @@ import { courseAccess, courseTree } from "@/lib/learn/queries";
 import { checkExercise, type Exercise, type ExerciseResponse } from "@/lib/learn/exercises";
 import { gradeQuiz } from "@/lib/learn/progress";
 import { AssignmentSubmission, LessonProgress, QuizAttempt, type LessonDoc } from "@/models";
+import { award, type AwardInput, type Reward } from "@/lib/gamification/service";
+import { XP, dayKey, practiceXp } from "@/lib/gamification/rules";
 
 /*
  * Learner mutations. Each action re-checks the session, the enrolment and that
@@ -25,11 +27,22 @@ async function context(courseId: string) {
   return { me, access, tree, save: !access.preview };
 }
 
-function lessonOf(ctx: Ctx, lessonId: string): { lesson: LessonDoc; open: boolean } {
+function lessonOf(ctx: Ctx, lessonId: string): { lesson: LessonDoc; open: boolean; done: boolean } {
   const lesson = ctx.tree.lessons.find((l) => String(l._id) === lessonId);
   if (!lesson) throw new Error("Leçon introuvable.");
   const state = ctx.tree.outline.modules.flatMap((m) => m.lessons).find((l) => l.id === lessonId)?.state;
-  return { lesson, open: state !== "locked" };
+  return { lesson, open: state !== "locked", done: state === "completed" };
+}
+
+/** XP & co. — only for saved progress (never in staff preview). */
+async function reward(ctx: Ctx, items: AwardInput[]): Promise<Reward | null> {
+  if (!ctx.save) return null;
+  try {
+    return await award(ctx.me.id, items.map((i) => ({ courseId: ctx.access.course._id, ...i })));
+  } catch (e) {
+    console.error("award failed", e); // gamification must never block learning
+    return null;
+  }
 }
 
 async function markDone(ctx: Ctx, lesson: LessonDoc, practiceScore: number | null = null) {
@@ -43,14 +56,15 @@ async function markDone(ctx: Ctx, lesson: LessonDoc, practiceScore: number | nul
   );
 }
 
-export async function completeLesson(courseId: string, lessonId: string): Promise<{ ok: boolean; error?: string }> {
+export async function completeLesson(courseId: string, lessonId: string): Promise<{ ok: boolean; error?: string; reward?: Reward | null }> {
   try {
     const ctx = await context(courseId);
     const { lesson, open } = lessonOf(ctx, lessonId);
     if (!open) return { ok: false, error: "Terminez d'abord la leçon précédente." };
     await markDone(ctx, lesson);
+    const r = await reward(ctx, [{ key: `lesson:${lessonId}`, source: "lesson", amount: XP.lesson, counters: { lessonsCompleted: 1 } }]);
     refresh();
-    return { ok: true };
+    return { ok: true, reward: r };
   } catch (e) {
     return { ok: false, error: (e as Error).message };
   }
@@ -61,17 +75,22 @@ export async function submitPractice(
   courseId: string,
   lessonId: string,
   responses: Record<string, ExerciseResponse>,
-): Promise<{ ok: boolean; score?: number; error?: string }> {
+): Promise<{ ok: boolean; score?: number; error?: string; reward?: Reward | null }> {
   try {
     const ctx = await context(courseId);
-    const { lesson, open } = lessonOf(ctx, lessonId);
+    const { lesson, open, done } = lessonOf(ctx, lessonId);
     if (!open) return { ok: false, error: "Terminez d'abord la leçon précédente." };
     const exercises = (lesson.exercises ?? []) as unknown as (Exercise & { _id: Types.ObjectId })[];
     const correct = exercises.filter((ex) => checkExercise({ ...ex, id: String(ex._id) }, responses[String(ex._id)])).length;
     const score = exercises.length ? Math.round((correct / exercises.length) * 100) : 100;
     await markDone(ctx, lesson, score);
+    const items: AwardInput[] = done
+      ? [{ key: `replay:${lessonId}:${dayKey()}`, source: "practice_replay", amount: XP.practiceReplay }]
+      : [{ key: `lesson:${lessonId}`, source: "practice", amount: practiceXp(score), counters: { lessonsCompleted: 1 } }];
+    if (score >= 100) items.push({ key: `perfect:${lessonId}`, source: "perfect", amount: 0, counters: { perfectPractices: 1 } });
+    const r = await reward(ctx, items);
     refresh();
-    return { ok: true, score };
+    return { ok: true, score, reward: r };
   } catch (e) {
     return { ok: false, error: (e as Error).message };
   }
@@ -84,6 +103,7 @@ export type QuizResult = {
   correct: number;
   total: number;
   review: { questionId: string; chosen: string | null; correctOptionId: string; explanation: string }[];
+  reward: Reward | null;
 };
 
 /** Graded module quiz (`moduleId`) or final exam (`moduleId` null) — graded here, never on the client. */
@@ -127,10 +147,19 @@ export async function submitQuiz(
         attemptNumber: previous + 1,
       });
     }
+    let r: Reward | null = null;
+    if (passed) {
+      const items: AwardInput[] = moduleId
+        ? [{ key: `quiz:${moduleId}`, source: "quiz", amount: XP.quizPass, counters: { quizzesPassed: 1 } }]
+        : [{ key: `exam:${courseId}`, source: "exam", amount: XP.examPass, counters: { examsPassed: 1 } }];
+      if (graded.score >= 100 && moduleId) items.push({ key: `quiz-perfect:${moduleId}`, source: "quiz_perfect", amount: XP.quizPerfect });
+      r = await reward(ctx, items);
+    }
     refresh();
     return {
       ok: true,
       result: {
+        reward: r,
         ...graded,
         passed,
         passingScore,
@@ -147,7 +176,7 @@ export async function submitQuiz(
   }
 }
 
-export type AssignmentState = { error?: string; success?: string } | undefined;
+export type AssignmentState = { error?: string; success?: string; reward?: Reward | null } | undefined;
 
 /** Module assignment (`moduleId` field) or final project (`moduleId` = "final"). Resubmitting replaces the answer. */
 export async function submitAssignment(_: AssignmentState, form: FormData): Promise<AssignmentState> {
@@ -183,8 +212,9 @@ export async function submitAssignment(_: AssignmentState, form: FormData): Prom
       },
       { upsert: true },
     );
+    const r = await reward(ctx, [{ key: `assignment:${courseId}:${moduleId}`, source: "assignment", amount: XP.assignment, counters: { assignmentsSubmitted: 1 } }]);
     refresh();
-    return { success: ctx.access.course.isChallenge ? "Point de contrôle envoyé. Votre coach va le valider." : "Devoir envoyé. Votre coach va le corriger." };
+    return { reward: r, success: ctx.access.course.isChallenge ? "Point de contrôle envoyé. Votre coach va le valider." : "Devoir envoyé. Votre coach va le corriger." };
   } catch (e) {
     return { error: (e as Error).message };
   }

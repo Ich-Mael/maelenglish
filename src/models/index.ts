@@ -6,3 +6,4 @@ export * from "./Enrollment";
 export * from "./Progress";
 export * from "./TeachingResource";
 export * from "./Auth";
+export * from "./Gamification";

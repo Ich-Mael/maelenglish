@@ -18,7 +18,7 @@ npm run seed:demo   # demo courses + learner « demo » / « anglais2026 » (ref
 
 ## Stack
 
-Next.js 16 (App Router, `src/`), React 19, TypeScript, Tailwind CSS 4 + shadcn/ui (`components.json`, style base-nova, icons lucide), Mongoose (`src/lib/db.ts` → `connectDB()`, cached on `globalThis`, server-only). Motion (`motion/react`), dnd-kit, react-markdown + remark-gfm (lesson text, no raw HTML). Planned: Rive / canvas-confetti / Howler (gamification feedback), PWA. Auth is custom (see below). Hosting: Render (`render.yaml`, Node 22).
+Next.js 16 (App Router, `src/`), React 19, TypeScript, Tailwind CSS 4 + shadcn/ui (`components.json`, style base-nova, icons lucide), Mongoose (`src/lib/db.ts` → `connectDB()`, cached on `globalThis`, server-only). Motion (`motion/react`), dnd-kit, react-markdown + remark-gfm (lesson text, no raw HTML). canvas-confetti, Zustand (reward queue). Feedback sounds are synthesised with Web Audio (no audio files). Planned: PWA. Auth is custom (see below). Hosting: Render (`render.yaml`, Node 22).
 
 Next.js 16 differs from older versions — read `node_modules/next/dist/docs/` before using an API you're unsure about (see `AGENTS.md`).
 
@@ -57,13 +57,20 @@ Route group with the shared header / footer (`src/components/site/`). Pages: `/`
 
 ## Learner app (`src/app/(app)/`)
 
-Signed-in shell (`(app)/layout.tsx`: top bar on desktop, bottom tab bar on phones). Pages: `/mes-cours` (enrolments + progress; welcome banner after activation), `/apprendre/[courseId]` (course map: modules → lesson nodes, quiz, assignment, finals; « Continuer » = `outline.next`), `/apprendre/[courseId]/lecons/[lessonId]` (video / text / PDF + « J'ai terminé », or the practice player), `/modules/[moduleId]/quiz`, `/modules/[moduleId]/devoir`, `/examen`, `/projet`, `/compte`. Login and activation land on `/mes-cours`; programme pages show « Accéder à mon cours » to enrolled learners (`components/site/enrolled-cta.tsx`).
+Signed-in shell (`(app)/layout.tsx`: top bar on desktop, bottom tab bar on phones). Pages: `/mes-cours` (enrolments + progress; welcome banner after activation), `/apprendre/[courseId]` (course map: modules → lesson nodes, quiz, assignment, finals; « Continuer » = `outline.next`), `/apprendre/[courseId]/lecons/[lessonId]` (video / text / PDF + « J'ai terminé », or the practice player), `/modules/[moduleId]/quiz`, `/modules/[moduleId]/devoir`, `/examen`, `/projet`, `/progression`, `/compte`. Login and activation land on `/mes-cours`; programme pages show « Accéder à mon cours » to enrolled learners (`components/site/enrolled-cta.tsx`).
 - **Access** (`src/lib/learn/queries.ts`, server-only): `courseAccess(me, courseId)` — learners need an `Enrollment` whose `accessState` is active (or completed = read-only) on a published course; staff (`isStaff`) preview everything and **nothing is saved**. `courseTree` loads modules, published lessons, progress, best quiz scores, submissions and computes the outline. Every page and action re-checks access and that the step is open.
 - **Progression** (`src/lib/learn/progress.ts`, pure, `tests/progress.test.ts`): lessons open one after another; the module quiz opens when the module's lessons are done; module N+1 opens when module N is complete (lessons + quiz passed); assignments open with their module; final exam / project open when every module is complete. Challenge courses (`isChallenge`): ported legacy rule — day N opens N−1 days after the enrolment start (time ceiling) and only once the previous checkpoint (module assignment, `isCheckpointRequired`) is graded.
 - **Exercises** (`src/lib/learn/exercises.ts`, shared by browser and server): kinds `choice`, `build` (tap words), `order` (dnd-kit), `match`, `listen` (dictation, speech synthesis or `audioUrl`), `speak` (MediaRecorder + SpeechRecognition when available, else self-check; « Passer » when there's no mic), `gap` (`___`). `checkExercise` grades, `exerciseProblem` validates definitions (model pre-validate), shuffles are seeded (`seededShuffle`, no hydration mismatch). Player: `components/learn/practice/player.tsx` (check → feedback → missed exercises come back once; first tries are sent to `submitPractice`, regraded server-side → `LessonProgress.practiceScore`).
 - **Graded quizzes** (module quiz, final exam): questions are sent **without answers**; `submitQuiz` grades on the server (`gradeQuiz`), stores a `QuizAttempt`, returns the review. Optional time limit is enforced client-side only (auto-submit).
 - **Assignments** (module assignment / challenge checkpoint / final project): `submitAssignment` upserts one `AssignmentSubmission` (resubmitting resets it to pending; graded ones are locked).
 - Actions live in `src/app/(app)/learn-actions.ts` and call `refresh()` after writes. Paths: `src/lib/learn/paths.ts`; step order: `src/lib/learn/sequence.ts`; video links → embeds (YouTube nocookie / Vimeo / files): `src/lib/learn/media.ts`.
+
+## Gamification (`src/lib/gamification/`, `src/components/gamify/`)
+
+- **Rules** (`rules.ts`, pure, `tests/gamification.test.ts`): XP per step (`XP`: lesson 10, practice 10 + score bonus + 5 if perfect, practice replay 5 once per lesson per day, quiz pass 25 (+10 perfect), final exam 100, assignment sent 15, daily goal reached +10); levels `levelThreshold(n) = 25·(n−1)·n` (0, 50, 150, 300…); daily streak (`nextStreak` / `displayStreak`, days in `APP_TZ`, default Africa/Ouagadougou); daily goal 10/20/30/50 XP; `BADGES` defined in code from counters; `publicName` = first name + initial (leaderboards).
+- **Service** (`service.ts`, framework-free): `award(userId, items)` — each item has an idempotent `key` (unique `XpEvent` per user: `lesson:<id>`, `quiz:<moduleId>`, `exam:<courseId>`, `assignment:<course>:<module>`, `goal:<day>`…), updates `UserStats` (xp, streak, longest, today's XP, counters) and grants `UserBadge`s; returns a `Reward` (xp gained, level-up, streak, goal, new badges). `statsFor`, `badgesFor`, `xpByDay`, `weeklyLeaderboard(courseId)` (XP since Monday, top 10 + the learner).
+- Called from `learn-actions.ts` after saved steps only (never in staff preview; failures are logged and never block learning). Actions return the reward; client screens call `pushReward` → `RewardCenter` (in the app shell, survives navigation): XP toast, level-up / badge dialogs with confetti and sounds. `playSound` / `confetti` / mute toggle in `components/gamify/sound.ts` (mute stored per device).
+- UI: header `StatsBar` (streak flame, daily-goal ring, level → `/progression`), `/progression` (level, streak, goal picker, 7-day chart, badges), weekly `Leaderboard` on the course page. Models: `XpEvent`, `UserStats`, `UserBadge` (`src/models/Gamification.ts`).
 
 Catalogue: `src/lib/catalog.ts` (`PROGRAMS`, `FORMAT`, `findProgram`, `formatFor`, `programPhoto`, `whatsappLink`; icons are lucide-react names). WhatsApp Cloud API client: `src/lib/whatsapp.ts` (server-only; simulation mode without token; only the enrolment template `maelenglish_inscription`).
 
@@ -77,7 +84,7 @@ Tokens in `src/app/globals.css`: shadcn variables mapped to the brand (`primary`
 - E-Kalan, Institution and the AfroHK pages were removed and are not to be ported.
 - URLs live at the root (`/`, `/programmes/[slug]`, `/coaching`, `/cours/...`); no redirects from the old `/maelenglish/*` URLs (the app had no users).
 - Uses a **new, separate MongoDB database** (`APP_DB`), never the AfroHK one.
-- Phases: 0 scaffold ✅ → 1 models & catalogue ✅ → 2 auth ✅ → 3 public site ✅ → 4 learner app & exercises ✅ → 5 gamification → 6 admin & instructor → 7 PWA & polish → 8 delete `legacy/`, deploy.
+- Phases: 0 scaffold ✅ → 1 models & catalogue ✅ → 2 auth ✅ → 3 public site ✅ → 4 learner app & exercises ✅ → 5 gamification ✅ → 6 admin & instructor → 7 PWA & polish → 8 delete `legacy/`, deploy.
 
 ## Environment
 

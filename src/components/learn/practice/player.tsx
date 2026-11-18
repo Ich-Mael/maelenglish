@@ -8,6 +8,8 @@ import { ArrowRight, Check, Loader2, RotateCcw, Star, X } from "lucide-react";
 import { DEFAULT_PROMPTS, checkExercise, expectedAnswer, type Exercise, type ExerciseResponse } from "@/lib/learn/exercises";
 import { submitPractice } from "@/app/(app)/learn-actions";
 import { EXERCISE_COMPONENTS } from "./exercises";
+import { pushReward } from "@/components/gamify/reward-store";
+import { confetti, playSound } from "@/components/gamify/sound";
 import { cn } from "cn";
 
 type Feedback = { correct: boolean; skipped?: boolean } | null;
@@ -40,7 +42,7 @@ export function PracticePlayer({
   const [response, setResponse] = useState<ExerciseResponse | null>(null);
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [firstTry, setFirstTry] = useState<Record<string, ExerciseResponse>>({});
-  const [result, setResult] = useState<{ score: number; correct: number } | null>(null);
+  const [result, setResult] = useState<{ score: number; correct: number; xp: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -54,6 +56,7 @@ export function PracticePlayer({
     const skipped = response.kind === "speak" && response.selfCheck === false && !response.transcript;
     const correct = !skipped && checkExercise(ex, response);
     setFeedback({ correct, skipped });
+    if (!skipped) playSound(correct ? "correct" : "wrong");
     if (!(ex.id in firstTry)) {
       setFirstTry((f) => ({ ...f, [ex.id]: response }));
       if (!correct && !skipped) setQueue((q) => [...q, ex]); // try again at the end
@@ -80,7 +83,10 @@ export function PracticePlayer({
         return;
       }
       const correct = exercises.filter((e) => checkExercise(e, firstTry[e.id])).length;
-      setResult({ score: res.score ?? 0, correct });
+      setResult({ score: res.score ?? 0, correct, xp: res.reward?.xpGained ?? 0 });
+      playSound("complete");
+      if ((res.score ?? 0) >= 90) void confetti("small");
+      pushReward(res.reward);
     });
   }
 
@@ -109,7 +115,13 @@ export function PracticePlayer({
           <h1 className="text-3xl font-extrabold text-brand-deep">Leçon terminée !</h1>
           <p className="mt-1 text-muted-foreground">{title}</p>
         </div>
-        <dl className="grid w-full grid-cols-2 gap-3">
+        <dl className={cn("grid w-full gap-3", result.xp ? "grid-cols-3" : "grid-cols-2")}>
+          {result.xp > 0 && (
+            <div className="rounded-2xl border-2 border-xp/40 bg-xp/10 p-4">
+              <dt className="text-xs font-bold tracking-wide text-[#9a6200] uppercase">XP</dt>
+              <dd className="font-heading text-3xl font-extrabold text-[#9a6200]">+{result.xp}</dd>
+            </div>
+          )}
           <div className="rounded-2xl border-2 border-success/30 bg-success/10 p-4">
             <dt className="text-xs font-bold tracking-wide text-success uppercase">Précision</dt>
             <dd className="font-heading text-3xl font-extrabold text-success">{result.score} %</dd>

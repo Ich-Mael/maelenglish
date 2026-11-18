@@ -8,7 +8,7 @@
  */
 import mongoose from "mongoose";
 import { existsSync } from "node:fs";
-import { AssignmentSubmission, Course, Enrollment, Lesson, LessonProgress, Module, QuizAttempt, User } from "../src/models";
+import { AssignmentSubmission, Course, Enrollment, Lesson, LessonProgress, Module, QuizAttempt, User, UserBadge, UserStats, XpEvent } from "../src/models";
 import { setPassword } from "../src/lib/auth/service";
 
 for (const f of [".env.local", ".env"]) if (existsSync(f)) process.loadEnvFile(f); // .env.local wins (no override)
@@ -36,6 +36,7 @@ async function main() {
   const old = await Course.find({ title: /\(démo\)$/ }).select("_id").lean();
   const oldIds = old.map((c) => c._id);
   await Promise.all([
+    XpEvent.deleteMany({ courseId: { $in: oldIds } }),
     Module.deleteMany({ courseId: { $in: oldIds } }),
     Lesson.deleteMany({ courseId: { $in: oldIds } }),
     LessonProgress.deleteMany({ courseId: { $in: oldIds } }),
@@ -210,7 +211,9 @@ async function main() {
   let demo = await User.findOne({ username: "demo" });
   if (!demo) demo = await User.create({ name: "Awa", surname: "Démo", username: "demo", phoneNumber: "+226 70 00 00 00" });
   await setPassword(demo._id, "anglais2026");
-  await Promise.all([LessonProgress.deleteMany({ userId: demo._id }), QuizAttempt.deleteMany({ userId: demo._id }), AssignmentSubmission.deleteMany({ userId: demo._id })]);
+  await Promise.all(
+    [LessonProgress, QuizAttempt, AssignmentSubmission, XpEvent, UserStats, UserBadge].map((M) => (M as typeof XpEvent).deleteMany({ userId: demo._id })),
+  );
   await Enrollment.create({ userId: demo._id, courseId: aviation._id, startDate: new Date() });
   await Enrollment.create({ userId: demo._id, courseId: challenge._id, startDate: new Date(Date.now() - 2 * 86400_000) });
 
