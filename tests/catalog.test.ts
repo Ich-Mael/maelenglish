@@ -31,7 +31,7 @@ describe("catalog", () => {
 
   it("builds WhatsApp links naming the programme", () => {
     const link = whatsappLink(findProgram("health"));
-    expect(link.startsWith("https://wa.me/22667323131?text=")).toBe(true);
+    expect(link.startsWith("https://wa.me/22653344444?text=")).toBe(true);
     expect(decodeURIComponent(link)).toContain("m'inscrire à MaelEnglish for Health");
     expect(decodeURIComponent(whatsappLink({ ...findProgram("health")!, status: "soon" }))).toContain("être prévenu(e)");
     expect(decodeURIComponent(whatsappLink())).toContain("informations");

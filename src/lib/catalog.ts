@@ -14,7 +14,7 @@
  * A `Course` delivers a programme through `Course.program` (= a slug below).
  */
 
-export const WHATSAPP_NUMBER = "22667323131";
+export const WHATSAPP_NUMBER = "22653344444";
 
 export type ProgramIcon =
   | "MessagesSquare"

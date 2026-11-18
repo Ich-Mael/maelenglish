@@ -5,7 +5,7 @@ export const SITE_URL = (process.env.APP_URL || "http://localhost:3000").replace
 export const SITE_NAME = "MaelEnglish";
 export const SLOGAN = "Speak the Language of Your Profession";
 
-export const PHONE_DISPLAY = "+226 67 32 31 31";
+export const PHONE_DISPLAY = "+226 53 34 44 44";
 export const PHONE_TEL = `+${WHATSAPP_NUMBER}`;
 
 /** Sign-up form, optionally with a programme / offer pre-selected. */
