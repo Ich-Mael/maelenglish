@@ -22,7 +22,7 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
       </a>
       <header className="sticky top-0 z-30 border-b border-border bg-card/[0.97]">
         <div className="mx-auto flex h-14 max-w-5xl items-center gap-4 px-4">
-          <Link href="/mes-cours" aria-label="MaelEnglish — mes cours" className="shrink-0">
+          <Link href="/" aria-label="MaelEnglish — accueil" className="shrink-0">
             <Image src="/images/maelenglish-logo.webp" alt="MaelEnglish" width={800} height={175} className="h-auto w-28 sm:w-32" />
           </Link>
           <nav aria-label="Navigation" className="hidden gap-1 md:flex">
