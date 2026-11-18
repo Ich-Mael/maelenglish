@@ -63,9 +63,9 @@ function Hero() {
         <div className="hero-photo relative mx-auto w-full max-w-md lg:max-w-none">
           <div className="relative aspect-square overflow-hidden rounded-[2.5rem] border-4 border-white bg-[#070b1d] shadow-[0_30px_70px_-30px_rgb(20_31_77/0.6)]">
             <Photo name={FOUNDER.photo} alt={`${FOUNDER.name}, fondateur de MaelEnglish`} sizes="(max-width: 1023px) 90vw, 480px" position="center 30%" eager />
-            <a href="#votre-coach" className="absolute top-4 left-4 rounded-2xl bg-white/95 px-3.5 py-2 shadow-lg hover:bg-white">
+            <a href="#votre-coach" className="absolute bottom-4 left-4 rounded-2xl bg-white/95 px-3.5 py-2 shadow-lg hover:bg-white">
               <span className="block font-heading text-sm font-extrabold text-brand-deep">{FOUNDER.name}</span>
-              <span className="block text-xs font-semibold text-coral-dark">{FOUNDER.nickname} · fondateur</span>
+              <span className="block text-xs font-semibold text-coral-dark">{FOUNDER.nickname} · Formateur certifié</span>
             </a>
           </div>
         </div>
