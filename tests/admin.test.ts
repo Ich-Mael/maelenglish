@@ -51,7 +51,12 @@ describe("updateAccount", () => {
 
 describe("content", () => {
   it("creates, orders and deletes modules and lessons", async () => {
-    const c = await content.createCourse({ title: "Aviation", program: "aviation" });
+    const c = await content.createCourse({ title: "Aviation", program: "aviation", price: "30 000" });
+    expect(c.price).toBe(30000);
+    expect(content.parsePrice("")).toBeNull();
+    expect(content.parsePrice("45.000 FCFA")).toBe(45000);
+    expect(() => content.parsePrice("trente mille")).toThrow(/Prix invalide/);
+    expect(() => content.parsePrice("-5")).toThrow(/Prix invalide/);
     const id = String(c._id);
     const m1 = await content.createModule(id, "M1");
     const m2 = await content.createModule(id, "M2");

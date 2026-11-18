@@ -10,6 +10,14 @@ const oid = (id: string) => {
 };
 const date = (v?: string | null) => (v ? new Date(`${v}T00:00:00`) : null);
 
+/** « 30 000 » / « 30.000 » / « 30000 FCFA » → 30000; empty → null. */
+export function parsePrice(v?: string | null): number | null {
+  const raw = (v ?? "").replace(/fcfa|f\s*cfa|xof/gi, "").replace(/[\s.\u00a0\u202f]/g, "");
+  if (!raw) return null;
+  if (!/^\d+$/.test(raw)) throw new AdminError("Prix invalide : indiquez un montant en FCFA, par exemple 30000.");
+  return Number(raw);
+}
+
 // ── Courses ────────────────────────────────────────────────────────────────
 
 export type CourseInput = {
@@ -20,6 +28,8 @@ export type CourseInput = {
   level?: string;
   startDate?: string | null;
   endDate?: string | null;
+  /** FCFA, as typed (« 30 000 », « 30000 »); empty = not set. */
+  price?: string;
 };
 export type CourseSettings = { isPublished?: boolean; isChallenge?: boolean; themeLabel?: string };
 
@@ -32,6 +42,7 @@ export async function createCourse(input: CourseInput): Promise<CourseDoc> {
     level: (COURSE_LEVELS.includes(input.level as never) ? input.level : "beginner") as CourseDoc["level"],
     startDate: date(input.startDate),
     endDate: date(input.endDate),
+    price: parsePrice(input.price),
   });
   return c.toObject() as CourseDoc;
 }
@@ -46,6 +57,7 @@ export async function updateCourse(courseId: string, input: CourseInput, setting
   if (COURSE_LEVELS.includes(input.level as never)) c.level = input.level as CourseDoc["level"];
   c.startDate = date(input.startDate);
   c.endDate = date(input.endDate);
+  if (input.price !== undefined) c.price = parsePrice(input.price);
   if (settings) {
     if (settings.isPublished !== undefined) c.isPublished = settings.isPublished;
     if (settings.isChallenge !== undefined) c.isChallenge = settings.isChallenge;

@@ -156,6 +156,7 @@ function courseInput(form: FormData): content.CourseInput {
     level: str(form, "level"),
     startDate: str(form, "startDate") || null,
     endDate: str(form, "endDate") || null,
+    price: str(form, "price"),
   };
 }
 

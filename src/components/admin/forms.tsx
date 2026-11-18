@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { createContext, useActionState, useContext, useEffect, useRef, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { Loader2 } from "lucide-react";
 import { FormMessage } from "@/components/auth/form-parts";
@@ -10,7 +10,15 @@ import { cn } from "cn";
 export type ActionState = { error?: string; success?: string; data?: Record<string, string> } | undefined;
 type Action = (prev: ActionState, form: FormData) => Promise<ActionState>;
 
-/** Form bound to a server action, with inline success / error message. */
+/** Pending state of the surrounding AdminForm (submitted with onSubmit, so useFormStatus doesn't see it). */
+const PendingContext = createContext(false);
+
+/**
+ * Form bound to a server action, with inline success / error message.
+ * Submitted through onSubmit + a transition instead of `action={…}`: React 19 resets a form after
+ * every action submission — even when the server answers with an error — which wiped what staff
+ * had typed. Here the fields keep their values (reset only with `resetOnSuccess`).
+ */
 export function AdminForm({
   action,
   children,
@@ -25,21 +33,35 @@ export function AdminForm({
   onSuccess?: (s: NonNullable<ActionState>) => React.ReactNode;
 }) {
   const [state, formAction] = useActionState(action, undefined);
+  const [pending, startTransition] = useTransition();
   const ref = useRef<HTMLFormElement>(null);
   useEffect(() => {
     if (state?.success && resetOnSuccess) ref.current?.reset();
   }, [state, resetOnSuccess]);
   return (
-    <form ref={ref} action={formAction} className={cn("grid gap-4", className)}>
-      <FormMessage error={state?.error} success={state?.success && !onSuccess ? state.success : undefined} />
-      {state?.success && onSuccess ? onSuccess(state) : null}
-      {children}
+    <form
+      ref={ref}
+      className={cn("grid gap-4", className)}
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (pending) return;
+        const data = new FormData(e.currentTarget, (e.nativeEvent as SubmitEvent).submitter);
+        startTransition(() => formAction(data));
+      }}
+    >
+      <PendingContext.Provider value={pending}>
+        <FormMessage error={state?.error} success={state?.success && !onSuccess ? state.success : undefined} />
+        {state?.success && onSuccess ? onSuccess(state) : null}
+        {children}
+      </PendingContext.Provider>
     </form>
   );
 }
 
 export function Submit({ children, variant = "primary", className, confirm }: { children: React.ReactNode; variant?: keyof typeof btn; className?: string; confirm?: string }) {
-  const { pending } = useFormStatus();
+  const status = useFormStatus();
+  const inAdminForm = useContext(PendingContext);
+  const pending = status.pending || inAdminForm;
   return (
     <button
       type="submit"
@@ -86,7 +108,9 @@ export function ActionButton({
 }
 
 function ActionSubmit({ children, variant, confirm, label, className }: { children: React.ReactNode; variant: keyof typeof btn; confirm?: string; label?: string; className?: string }) {
-  const { pending } = useFormStatus();
+  const status = useFormStatus();
+  const inAdminForm = useContext(PendingContext);
+  const pending = status.pending || inAdminForm;
   return (
     <button
       type="submit"

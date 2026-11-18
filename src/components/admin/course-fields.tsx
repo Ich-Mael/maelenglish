@@ -1,6 +1,6 @@
 import { PROGRAMS } from "@/lib/catalog";
 import type { CourseDoc } from "@/models";
-import { Checkbox, Input, Select, TextArea, isoDate } from "./ui";
+import { Checkbox, Input, Select, TextArea, formatFcfa, isoDate } from "./ui";
 
 const LEVELS = [
   { value: "beginner", label: "Débutant" },
@@ -22,10 +22,18 @@ export function CourseFields({ course, settings }: { course?: Partial<CourseDoc>
           options={[{ value: "", label: "— Aucun —" }, ...PROGRAMS.map((p) => ({ value: p.slug, label: p.name }))]}
         />
         <Select label="Niveau" name="level" defaultValue={course?.level ?? "beginner"} options={LEVELS} />
+        <Input
+          label="Prix (FCFA)"
+          name="price"
+          inputMode="numeric"
+          placeholder="Ex. 30 000"
+          defaultValue={course?.price != null ? formatFcfa(course.price, false) : ""}
+          hint="Pour information : pas de paiement en ligne."
+        />
+        <Input label="Image (lien)" name="imageUrl" type="url" defaultValue={course?.imageUrl ?? ""} hint="Facultatif : sinon la photo du programme." />
         <Input label="Début de la session" name="startDate" type="date" defaultValue={isoDate(course?.startDate)} hint="Dates par défaut des nouvelles inscriptions." />
         <Input label="Fin de la session" name="endDate" type="date" defaultValue={isoDate(course?.endDate)} />
       </div>
-      <Input label="Image (lien)" name="imageUrl" type="url" defaultValue={course?.imageUrl ?? ""} hint="Facultatif : sinon la photo du programme est utilisée." />
       {settings && (
         <div className="grid gap-3 rounded-xl bg-muted/40 p-4">
           {course?._id && <Checkbox name="isPublished" label="Publié" hint="Les apprenants inscrits voient le cours." defaultChecked={!!course?.isPublished} />}

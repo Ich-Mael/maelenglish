@@ -31,6 +31,14 @@ const courseSchema = new Schema(
     },
     level: { type: String, enum: COURSE_LEVELS, default: "beginner" },
 
+    /** Training fee in FCFA (information for staff; no online payment). null = not set. */
+    price: {
+      type: Number,
+      default: null,
+      min: [0, "Le prix ne peut pas être négatif."],
+      validate: { validator: (v: number | null) => v === null || Number.isInteger(v), message: "Le prix doit être un nombre entier de FCFA." },
+    },
+
     /** Draft courses are only visible to staff. */
     isPublished: { type: Boolean, default: false },
 

@@ -7,7 +7,7 @@ import { requireStaff, actorOf, visibleCourseIds } from "@/lib/admin/context";
 import { can } from "@/lib/admin/permissions";
 import { findProgram } from "@/lib/catalog";
 import { AssignmentSubmission, Course, Enrollment, Module, type CourseDoc } from "@/models";
-import { EmptyState, PageHeader, Pill, btn } from "@/components/admin/ui";
+import { formatFcfa, EmptyState, PageHeader, Pill, btn } from "@/components/admin/ui";
 import { PageSkeleton } from "@/components/learn/ui";
 
 export const metadata: Metadata = { title: "Cours" };
@@ -53,6 +53,7 @@ async function Courses() {
                   <p className="text-sm text-muted-foreground">{findProgram(c.program)?.name ?? "Sans programme"}</p>
                   <p className="mt-3 text-sm text-ink/80">
                     {mods.get(id) ?? 0} module(s) · {enr.get(id) ?? 0} inscrit(s) actif(s)
+                    {c.price != null && <> · <span className="font-semibold text-brand-deep">{formatFcfa(c.price)}</span></>}
                   </p>
                 </Link>
               </li>

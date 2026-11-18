@@ -36,11 +36,17 @@ export function Card({ title, description, children, className, actions }: { tit
   );
 }
 
+/** 30000 → « 30 000 FCFA » (or « 30 000 » without the unit). */
+export function formatFcfa(n: number, unit = true): string {
+  const s = new Intl.NumberFormat("fr-FR").format(n).replace(/[\u202f\u00a0]/g, " ");
+  return unit ? `${s} FCFA` : s;
+}
+
 export const inputCls = "h-10 w-full rounded-xl border border-input bg-background px-3 text-sm outline-none focus:border-primary focus:ring-3 focus:ring-ring/30";
 
 export function Input({ label, hint, className, ...props }: React.ComponentProps<"input"> & { label: string; hint?: string; name: string }) {
   return (
-    <label className={cn("grid gap-1 text-sm", className)}>
+    <label className={cn("grid content-start gap-1 text-sm", className)}>
       <span className="font-medium">{label}</span>
       <input className={inputCls} {...props} />
       {hint && <span className="text-xs text-muted-foreground">{hint}</span>}
@@ -50,7 +56,7 @@ export function Input({ label, hint, className, ...props }: React.ComponentProps
 
 export function TextArea({ label, hint, className, ...props }: React.ComponentProps<"textarea"> & { label: string; hint?: string; name: string }) {
   return (
-    <label className={cn("grid gap-1 text-sm", className)}>
+    <label className={cn("grid content-start gap-1 text-sm", className)}>
       <span className="font-medium">{label}</span>
       <textarea className={cn(inputCls, "h-auto min-h-24 py-2 leading-relaxed")} {...props} />
       {hint && <span className="text-xs text-muted-foreground">{hint}</span>}
@@ -60,7 +66,7 @@ export function TextArea({ label, hint, className, ...props }: React.ComponentPr
 
 export function Select({ label, options, className, ...props }: React.ComponentProps<"select"> & { label: string; name: string; options: { value: string; label: string }[] }) {
   return (
-    <label className={cn("grid gap-1 text-sm", className)}>
+    <label className={cn("grid content-start gap-1 text-sm", className)}>
       <span className="font-medium">{label}</span>
       <select className={inputCls} {...props}>
         {options.map((o) => (
