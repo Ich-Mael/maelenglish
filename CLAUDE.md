@@ -47,6 +47,14 @@ No auth library: Better Auth needs an email per account, and many learners only 
 - Cache Components: anything reading cookies, params or the current time sits inside `<Suspense>` (with `await connection()` before time-dependent queries). Don't use `useSearchParams()` in auth forms: it pushes them to client-only rendering (`useNextParam` in `login-form.tsx` reads `?next=` after hydration instead); `safeNext` blocks open redirects.
 - Email: `src/lib/email.ts` (nodemailer, Brevo SMTP; simulation mode without `EMAIL_*`: links are logged in development).
 
+## Public site (`src/app/(site)/`)
+
+Route group with the shared header / footer (`src/components/site/`). Pages: `/` (storefront: hero, catalogue, « Testez-vous » mini quiz, method, stats, testimonials, CTA), `/programmes/[slug]` (all slugs prerendered via `generateStaticParams`; unknown slug → `notFound()`), `/coaching`. Plus `src/app/sitemap.ts`, `robots.ts`, `not-found.tsx`; JSON-LD (`components/site/json-ld.tsx`: EducationalOrganization on `/`, Course per programme). All public content comes from `src/lib/catalog.ts` (programmes) and `src/lib/content.ts` (method, stats, testimonials, coaching texts, `quizItems()`); `src/lib/site.ts` holds `SITE_URL` (from `APP_URL`, also used by `metadataBase`, sitemap, OG images), phone and WhatsApp links.
+- Server Components by default; the only client pieces are `mini-quiz.tsx`, `phrase-flip.tsx` and `speak.tsx` (Web Speech API « écouter », hidden where unsupported). The header's account link reads the session inside `<Suspense>` (fallback = « Connexion »), so the pages stay prerendered. Mobile menu and FAQ use `<details>` (no JS).
+- Photos: `<Photo>` (`components/site/photo.tsx`) renders the pre-sized WebP/JPEG files with a plain `<picture>` (no image optimiser). Catalogue icon names map to lucide components in `components/site/icons.tsx` (`ICONS`, plus `WhatsAppIcon`).
+- UI primitives: `components/site/ui.tsx` (`Container`, `SectionHead`, `Pill`, `BUTTON` styles with the « pressable » 3D shadow, `WhatsAppButton`, `PhraseCard`). Feedback animations `animate-pop` / `animate-shake` / `animate-float` are defined in `globals.css` and disabled with `prefers-reduced-motion`.
+- Enrolled learners still see « S'inscrire » on programme pages: the « Accéder à mon cours » switch comes with the learner app (phase 4).
+
 Catalogue: `src/lib/catalog.ts` (`PROGRAMS`, `FORMAT`, `findProgram`, `formatFor`, `programPhoto`, `whatsappLink`; icons are lucide-react names). WhatsApp Cloud API client: `src/lib/whatsapp.ts` (server-only; simulation mode without token; only the enrolment template `maelenglish_inscription`).
 
 ## Brand
@@ -59,7 +67,7 @@ Tokens in `src/app/globals.css`: shadcn variables mapped to the brand (`primary`
 - E-Kalan, Institution and the AfroHK pages were removed and are not to be ported.
 - URLs live at the root (`/`, `/programmes/[slug]`, `/coaching`, `/cours/...`); no redirects from the old `/maelenglish/*` URLs (the app had no users).
 - Uses a **new, separate MongoDB database** (`APP_DB`), never the AfroHK one.
-- Phases: 0 scaffold ✅ → 1 models & catalogue ✅ → 2 auth ✅ → 3 public site → 4 learner app & exercises → 5 gamification → 6 admin & instructor → 7 PWA & polish → 8 delete `legacy/`, deploy.
+- Phases: 0 scaffold ✅ → 1 models & catalogue ✅ → 2 auth ✅ → 3 public site ✅ → 4 learner app & exercises → 5 gamification → 6 admin & instructor → 7 PWA & polish → 8 delete `legacy/`, deploy.
 
 ## Environment
 

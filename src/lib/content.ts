@@ -1,0 +1,75 @@
+import { PROGRAMS } from "./catalog";
+
+/* Editorial content of the public pages (ported verbatim from the legacy storefront). */
+
+export const METHOD_STEPS = [
+  { title: "On fait le point", text: "Test de niveau, votre métier et vos objectifs : on vous oriente vers le bon programme." },
+  { title: "Vous pratiquez", text: "Des situations réelles de votre quotidien professionnel, à l'oral comme à l'écrit." },
+  { title: "Le coach corrige", text: "Des retours précis sur vos devoirs et vos prises de parole, pour progresser vite." },
+  { title: "Vous êtes certifié", text: "Un certificat MaelEnglish à valoriser sur votre CV et votre profil professionnel." },
+];
+
+export const METHOD_FACTS = [
+  "Essentials : 8 semaines par niveau",
+  "Programmes métiers : 12 semaines",
+  "50 h de contenu par programme",
+  "100 % en ligne",
+  "Certificat à la fin",
+];
+
+export const STATS = [
+  { value: "500", suffix: "+", label: "Apprenants actifs" },
+  { value: "90", suffix: "%", label: "Satisfaction" },
+  { value: "4", suffix: "+", label: "Pays représentés" },
+  { value: "10", suffix: "+", label: "Partenaires" },
+];
+
+export const TESTIMONIALS = [
+  { text: "Grâce au coaching MaelEnglish, j'ai pu décrocher un poste à l'international. La méthode est incroyablement efficace et pragmatique.", name: "Sarah K.", role: "Directrice Marketing · Coaching" },
+  { text: "L'ambiance des cours en groupe est géniale. On apprend sans stress, et les progrès sont visibles dès les premières semaines.", name: "Mohamed D.", role: "Ingénieur logiciel · Cours en groupe" },
+  { text: "J'avais peur de parler anglais, mais les coachs m'ont donné confiance. Aujourd'hui, je mène des réunions en anglais sans hésitation.", name: "Aminata T.", role: "Entrepreneure" },
+  { text: "Une formation adaptée aux réalités du business. Mon anglais est maintenant un atout majeur pour mes négociations.", name: "Jean-Marc B.", role: "Commercial" },
+];
+
+export const COACHING = {
+  audiences: [
+    { icon: "Briefcase", title: "Cadres et managers", text: "Animer une réunion, présenter des résultats, piloter une équipe ou des partenaires anglophones." },
+    { icon: "BadgeCheck", title: "Candidats", text: "Préparer un entretien en anglais, un CV et une lettre de motivation, une prise de poste à l’international." },
+    { icon: "Building2", title: "Professions spécialisées", text: "Santé, finance, tech, juridique, ONG : le vocabulaire et les situations propres à votre secteur." },
+    { icon: "Mic", title: "Prise de parole", text: "Conférences, pitchs, formations à animer : gagner en aisance et en clarté à l’oral." },
+  ],
+  steps: [
+    { title: "Diagnostic", text: "Un premier échange pour évaluer votre niveau et comprendre votre métier et votre objectif." },
+    { title: "Programme sur mesure", text: "Un plan de séances construit autour de vos situations réelles et de votre échéance." },
+    { title: "Séances avec votre coach", text: "Mises en situation, corrections immédiates, exercices ciblés entre les séances." },
+    { title: "Suivi et bilan", text: "Un point régulier sur vos progrès et un bilan final avec des recommandations." },
+  ],
+  phrases: [
+    { role: "Entretien", en: "Tell me about a challenge you overcame.", fr: "Parlez-moi d’une difficulté que vous avez surmontée." },
+    { role: "Présentation", en: "Let me walk you through our proposal.", fr: "Laissez-moi vous présenter notre proposition." },
+    { role: "Négociation", en: "We could meet halfway on the price.", fr: "Nous pourrions trouver un compromis sur le prix." },
+  ],
+  faq: [
+    { q: "Quel niveau faut-il pour commencer ?", a: "Aucun niveau minimum. Le diagnostic de départ sert justement à construire un programme adapté, du débutant qui veut oser parler au cadre qui veut perfectionner son anglais professionnel." },
+    { q: "Les séances se font en ligne ?", a: "Oui, 100 % en ligne, en visioconférence : vous suivez votre coaching depuis votre ordinateur ou votre téléphone, où que vous soyez et selon votre emploi du temps." },
+    { q: "Combien de temps dure un coaching ?", a: "Cela dépend de votre objectif et de votre échéance (un entretien dans deux semaines ou une progression sur plusieurs mois). Le rythme et la durée sont fixés ensemble après le diagnostic." },
+    { q: "Quel est le tarif ?", a: "Le tarif dépend de la formule choisie (nombre et fréquence des séances). Écrivez-nous sur WhatsApp : un conseiller vous envoie une proposition adaptée." },
+    { q: "Mon entreprise peut-elle prendre en charge le coaching ?", a: "Oui. Nous établissons un devis et un programme pour l’entreprise, pour un collaborateur ou pour une équipe." },
+  ],
+} as const;
+
+/**
+ * Home-page « Testez-vous » items: one phrase per programme, its translation
+ * among two translations from other programmes. Deterministic (same on every render).
+ */
+export function quizItems() {
+  return PROGRAMS.map((p, i) => {
+    const pick = (k: number) => PROGRAMS[(i + k) % PROGRAMS.length];
+    const phrase = p.phrases[1] ?? p.phrases[0];
+    const distractors = [pick(3).phrases[0].fr, pick(6).phrases[2]?.fr ?? pick(6).phrases[0].fr];
+    const answer = i % 3;
+    const options = [...distractors];
+    options.splice(answer, 0, phrase.fr);
+    return { slug: p.slug, label: p.name.replace(/^MaelEnglish\s*(for\s*)?/, "") || "Essentials", en: phrase.en, options, answer };
+  });
+}
