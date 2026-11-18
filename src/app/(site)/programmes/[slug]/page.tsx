@@ -310,7 +310,7 @@ function EssentialsDetails({ program: p }: { program: Program }) {
                     </div>
                   ))}
                   <div className="rounded-3xl border-2 border-border bg-card p-6 text-center">
-                    <p className="font-heading text-5xl font-extrabold text-coral-strong">{d.seats}</p>
+                    <p className="font-heading text-5xl font-extrabold text-coral">{d.seats}</p>
                     <p className="mt-1 mb-4 text-muted-foreground">places par session</p>
                     <WhatsAppButton href={whatsappLink(p)} className="w-full">Réserver ma place</WhatsAppButton>
                   </div>

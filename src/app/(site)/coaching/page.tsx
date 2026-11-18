@@ -23,7 +23,7 @@ export default function CoachingPage() {
           <div>
             <Pill>MaelEnglish Coaching</Pill>
             <h1 className="mt-4 text-4xl leading-[1.05] font-extrabold text-brand-deep text-balance sm:text-5xl lg:text-6xl">
-              Un coach. Votre métier. <span className="text-coral-strong">Vos objectifs.</span>
+              Un coach. Votre métier. <span className="text-coral">Vos objectifs.</span>
             </h1>
             <p className="mt-5 max-w-xl text-lg text-muted-foreground text-pretty">
               Un accompagnement individuel en anglais professionnel, construit autour de votre poste, de votre secteur et de vos
@@ -81,7 +81,7 @@ export default function CoachingPage() {
           <ol className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {COACHING.steps.map((s, i) => (
               <li key={s.title} className="rounded-3xl border-2 border-border bg-card p-6">
-                <span className="mb-4 flex size-11 items-center justify-center rounded-2xl bg-coral-strong font-heading text-lg font-extrabold text-white shadow-[0_4px_0_0_var(--color-coral-dark)]">
+                <span className="mb-4 flex size-11 items-center justify-center rounded-2xl bg-coral font-heading text-xl font-extrabold text-white shadow-[0_4px_0_0_var(--color-coral-dark)]">
                   {i + 1}
                 </span>
                 <h3 className="text-lg font-extrabold text-brand-deep">{s.title}</h3>

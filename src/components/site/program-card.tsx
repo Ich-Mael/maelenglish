@@ -22,7 +22,7 @@ function Brand({ name }: { name: string }) {
   const [brand, rest] = splitBrand(name);
   return (
     <>
-      {brand} {rest && <span className="text-coral-strong">{rest}</span>}
+      {brand} {rest && <span className="text-coral">{rest}</span>}
     </>
   );
 }
@@ -89,7 +89,7 @@ export function ProgramCard({ program: p }: { program: Program }) {
         </span>
       </div>
       <div className="flex flex-1 flex-col p-5 pt-7">
-        <h3 className="text-lg font-extrabold text-brand-deep">
+        <h3 className="text-xl font-extrabold text-brand-deep">
           <Brand name={p.name} />
         </h3>
         <p className="text-sm font-semibold text-primary">{p.tagline}</p>

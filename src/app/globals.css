@@ -40,9 +40,9 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
   --color-coral: #ff5757;
-  /* #ff5757 = logo coral, for decoration and on dark backgrounds only. Text / white-on-coral use the accessible shades. */
-  --color-coral-strong: #d63434; /* 4.8:1 on white — buttons, coral text */
-  --color-coral-dark: #b02a2a; /* 6.5:1 — small coral text, button shadows */
+  /* #ff5757 = logo red, used as is everywhere (3.1:1 with white): white text on it must be large (≥ 19px bold or ≥ 24px);
+     small text on red is navy (brand-deep, 5.3:1); small red text on white uses coral-dark. */
+  --color-coral-dark: #b02a2a; /* 6.5:1 — small red text, button shadows */
   --color-coral-soft: #fff0f0;
   --color-brand: #364fab;
   --color-brand-dark: #1f2f73;

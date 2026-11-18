@@ -39,7 +39,7 @@ function Hero() {
         <div>
           <Image src="/images/maelenglish-logo.webp" alt="" width={800} height={175} priority className="mb-6 h-auto w-52 sm:w-60" />
           <h1 lang="en" className="text-4xl leading-[1.05] font-extrabold text-brand-deep text-balance sm:text-5xl lg:text-6xl">
-            Speak the Language of <span className="text-coral-strong">Your Profession</span>
+            Speak the Language of <span className="text-coral">Your Profession</span>
           </h1>
           <p className="mt-5 max-w-xl text-lg text-muted-foreground text-pretty">
             Réunions, e-mails, entretiens, clients : avec MaelEnglish, vous pratiquez l&apos;anglais des situations que vous
@@ -111,7 +111,7 @@ function Programmes() {
             title="MaelEnglish Coaching"
             text="Un coach rien que pour vous, un programme taillé pour votre poste et vos échéances. Idéal si votre secteur n'est pas dans la liste."
             cta="Découvrir"
-            className="bg-brand-deep"
+            tone="navy"
           />
           <AltFormat
             href={CHALLENGE_WA}
@@ -120,7 +120,7 @@ function Programmes() {
             title="MaelEnglish Challenge"
             text="Une mission par jour, un point de contrôle validé par un coach avant de passer à la suivante : idéal pour créer l'habitude."
             cta="Rejoindre"
-            className="bg-gradient-to-br from-coral-strong to-coral-dark"
+            tone="coral"
           />
         </div>
       </Container>
@@ -135,7 +135,7 @@ function AltFormat({
   title,
   text,
   cta,
-  className,
+  tone,
 }: {
   href: string;
   external?: boolean;
@@ -143,18 +143,20 @@ function AltFormat({
   title: string;
   text: string;
   cta: string;
-  className: string;
+  /** navy card with white text, or logo-red card with navy text (small text stays readable on the logo red). */
+  tone: "navy" | "coral";
 }) {
+  const coral = tone === "coral";
   return (
     <a
       href={href}
       {...(external ? { target: "_blank", rel: "noopener" } : {})}
-      className={`group flex flex-col gap-4 rounded-3xl p-6 text-white transition hover:-translate-y-1 sm:flex-row sm:items-center ${className}`}
+      className={`group flex flex-col gap-4 rounded-3xl p-6 transition hover:-translate-y-1 sm:flex-row sm:items-center ${coral ? "bg-coral text-brand-deep" : "bg-brand-deep text-white"}`}
     >
-      <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-white/15">{icon}</span>
+      <span className={`flex size-12 shrink-0 items-center justify-center rounded-2xl ${coral ? "bg-white/35" : "bg-white/15"}`}>{icon}</span>
       <div className="flex-1">
         <h3 className="text-xl font-extrabold">{title}</h3>
-        <p className="mt-1 text-sm text-white/80">{text}</p>
+        <p className={`mt-1 text-sm ${coral ? "text-brand-deep" : "text-white/80"}`}>{text}</p>
       </div>
       <span className="inline-flex items-center gap-1.5 font-bold">
         {cta} <ArrowRight className="size-4 transition group-hover:translate-x-1" aria-hidden />
@@ -186,7 +188,7 @@ function Method() {
         <ol className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {METHOD_STEPS.map((s, i) => (
             <li key={s.title} className="relative rounded-3xl border-2 border-border bg-card p-6">
-              <span className="mb-4 flex size-11 items-center justify-center rounded-2xl bg-coral-strong font-heading text-lg font-extrabold text-white shadow-[0_4px_0_0_var(--color-coral-dark)]">
+              <span className="mb-4 flex size-11 items-center justify-center rounded-2xl bg-coral font-heading text-xl font-extrabold text-white shadow-[0_4px_0_0_var(--color-coral-dark)]">
                 {i + 1}
               </span>
               <h3 className="text-lg font-extrabold text-brand-deep">{s.title}</h3>

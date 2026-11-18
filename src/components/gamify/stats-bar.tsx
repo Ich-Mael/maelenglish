@@ -18,7 +18,7 @@ export async function StatsBar() {
   const c = 2 * Math.PI * r;
   return (
     <Link href="/progression" className="flex items-center gap-3 rounded-2xl px-2 py-1 hover:bg-muted">
-      <span className={cn("flex items-center gap-1 font-heading font-extrabold", s.activeToday ? "text-coral-strong" : "text-muted-foreground")}>
+      <span className={cn("flex items-center gap-1 font-heading font-extrabold", s.activeToday ? "text-coral-dark" : "text-muted-foreground")}>
         <Flame className={cn("size-5", s.activeToday && "fill-coral/30")} aria-hidden /> {s.streak}
         <span className="sr-only"> jour{s.streak > 1 ? "s" : ""} de série,</span>
       </span>

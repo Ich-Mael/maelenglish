@@ -62,7 +62,7 @@ export function CourseMap({ courseId, outline, currentHref }: { courseId: string
       })}
       {(outline.finalExam || outline.finalProject) && (
         <li>
-          <div className="rounded-3xl bg-gradient-to-br from-coral-strong to-coral-dark p-5 text-white">
+          <div className="rounded-3xl bg-coral p-5 text-brand-deep">
             <p className="text-xs font-bold tracking-wide uppercase">Étape finale</p>
             <h2 className="text-xl font-extrabold">Obtenez votre certificat</h2>
           </div>
@@ -125,7 +125,7 @@ function PathNode({ node, current }: { node: Node; current: boolean }) {
       <span className="max-w-44 text-center">
         <span className={cn("block text-sm font-bold", node.state === "locked" ? "text-muted-foreground" : "text-brand-deep")}>{node.label}</span>
         {node.sub && <span className="block text-xs text-muted-foreground">{node.sub}</span>}
-        {current && <span className="mt-1 inline-block rounded-full bg-coral-strong px-2 py-0.5 text-xs font-bold text-white">À vous !</span>}
+        {current && <span className="mt-1 inline-block rounded-full bg-coral px-2 py-0.5 text-xs font-bold text-brand-deep">À vous !</span>}
       </span>
     </>
   );
