@@ -4,6 +4,7 @@ import { PROGRAMS, whatsappLink } from "@/lib/catalog";
 import { METHOD_FACTS, METHOD_STEPS, STATS, TESTIMONIALS } from "@/lib/content";
 import { CHALLENGE_WA } from "@/lib/site";
 import { FeaturedProgramCard, ProgramCard } from "@/components/site/program-card";
+import { Carousel } from "@/components/site/carousel";
 import { Photo } from "@/components/site/photo";
 import { BUTTON, Container, SectionHead, WhatsAppButton } from "@/components/site/ui";
 import { JsonLd, organizationJsonLd } from "@/components/site/json-ld";
@@ -38,7 +39,7 @@ function Hero() {
           <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-sm font-semibold text-brand-deep shadow-sm">
             <span className="size-2 rounded-full bg-coral" aria-hidden /> Anglais professionnel · 100 % en ligne
           </p>
-          <h1 lang="en" className="text-4xl leading-[1.05] font-extrabold text-brand-deep text-balance sm:text-5xl lg:text-6xl">
+          <h1 lang="en" className="text-4xl leading-[1.05] font-extrabold text-primary text-balance sm:text-5xl lg:text-6xl">
             Speak the Language of <span className="text-coral">Your Profession</span>
           </h1>
           <p className="mt-5 max-w-xl text-lg text-muted-foreground text-pretty">
@@ -83,17 +84,28 @@ function Programmes() {
           title="L'anglais général, puis l'anglais de votre métier"
           text="Commencez par les bases avec Essentials, ou choisissez directement le programme de votre secteur."
         />
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {featured && (
-            <div className="reveal lg:col-span-full">
-              <FeaturedProgramCard program={featured} />
-            </div>
-          )}
-          {jobs.map((p) => (
-            <div key={p.slug} className="reveal grid">
-              <ProgramCard program={p} />
-            </div>
-          ))}
+        {featured && (
+          <div className="reveal">
+            <FeaturedProgramCard program={featured} />
+          </div>
+        )}
+
+        <div className="reveal mt-14">
+          <Carousel
+            label="Programmes métiers"
+            heading={
+              <>
+                <p className="text-xs font-bold tracking-wide text-coral-dark uppercase">Puis l&apos;anglais de votre secteur</p>
+                <h3 className="mt-1 text-2xl font-extrabold text-brand-deep sm:text-3xl">
+                  {jobs.length} programmes métiers <span className="text-muted-foreground">· 12 semaines</span>
+                </h3>
+              </>
+            }
+          >
+            {jobs.map((p) => (
+              <ProgramCard key={p.slug} program={p} />
+            ))}
+          </Carousel>
         </div>
 
         <div className="reveal mt-5 grid gap-5 md:grid-cols-2">

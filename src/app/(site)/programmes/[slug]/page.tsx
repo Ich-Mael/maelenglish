@@ -371,7 +371,7 @@ function Others({ current }: { current: string }) {
               <li key={o.slug}>
                 <Link
                   href={`/programmes/${o.slug}`}
-                  className="inline-flex items-center gap-2 rounded-2xl border-2 border-border bg-card px-4 py-2.5 font-semibold text-brand-deep transition hover:-translate-y-0.5 hover:border-primary/40"
+                  className="inline-flex items-center gap-2 rounded-2xl border-2 border-border bg-card px-4 py-2.5 font-semibold text-primary transition hover:-translate-y-0.5 hover:border-primary/40"
                 >
                   <Icon className="size-4 text-primary" aria-hidden /> {shortProgramName(o)}
                 </Link>
