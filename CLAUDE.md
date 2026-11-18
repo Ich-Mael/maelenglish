@@ -13,7 +13,7 @@ npm run lint    # ESLint — must pass before committing
 npm start       # serve the production build
 npm test        # Vitest (tests/); model tests run on an in-memory MongoDB (mongodb-memory-server)
 npm run typecheck
-npm run seed:demo   # demo courses + learner « demo » / « anglais2026 » (refuses an APP_DB containing « afrohk »)
+npm run seed:demo   # demo courses + accounts demo / demo-coach / demo-admin, password « anglais2026 » (refuses an APP_DB containing « afrohk »)
 ```
 
 ## Stack
@@ -67,10 +67,17 @@ Signed-in shell (`(app)/layout.tsx`: top bar on desktop, bottom tab bar on phone
 
 ## Gamification (`src/lib/gamification/`, `src/components/gamify/`)
 
-- **Rules** (`rules.ts`, pure, `tests/gamification.test.ts`): XP per step (`XP`: lesson 10, practice 10 + score bonus + 5 if perfect, practice replay 5 once per lesson per day, quiz pass 25 (+10 perfect), final exam 100, assignment sent 15, daily goal reached +10); levels `levelThreshold(n) = 25·(n−1)·n` (0, 50, 150, 300…); daily streak (`nextStreak` / `displayStreak`, days in `APP_TZ`, default Africa/Ouagadougou); daily goal 10/20/30/50 XP; `BADGES` defined in code from counters; `publicName` = first name + initial (leaderboards).
+- **Rules** (`rules.ts`, pure, `tests/gamification.test.ts`): XP per step (`XP`: lesson 10, practice 10 + score bonus + 5 if perfect, practice replay 5 once per lesson per day, quiz pass 25 (+10 perfect), final exam 100, assignment sent 15, assignment validated by a coach 20, daily goal reached +10); levels `levelThreshold(n) = 25·(n−1)·n` (0, 50, 150, 300…); daily streak (`nextStreak` / `displayStreak`, days in `APP_TZ`, default Africa/Ouagadougou); daily goal 10/20/30/50 XP; `BADGES` defined in code from counters; `publicName` = first name + initial (leaderboards).
 - **Service** (`service.ts`, framework-free): `award(userId, items)` — each item has an idempotent `key` (unique `XpEvent` per user: `lesson:<id>`, `quiz:<moduleId>`, `exam:<courseId>`, `assignment:<course>:<module>`, `goal:<day>`…), updates `UserStats` (xp, streak, longest, today's XP, counters) and grants `UserBadge`s; returns a `Reward` (xp gained, level-up, streak, goal, new badges). `statsFor`, `badgesFor`, `xpByDay`, `weeklyLeaderboard(courseId)` (XP since Monday, top 10 + the learner).
 - Called from `learn-actions.ts` after saved steps only (never in staff preview; failures are logged and never block learning). Actions return the reward; client screens call `pushReward` → `RewardCenter` (in the app shell, survives navigation): XP toast, level-up / badge dialogs with confetti and sounds. `playSound` / `confetti` / mute toggle in `components/gamify/sound.ts` (mute stored per device).
 - UI: header `StatsBar` (streak flame, daily-goal ring, level → `/progression`), `/progression` (level, streak, goal picker, 7-day chart, badges), weekly `Leaderboard` on the course page. Models: `XpEvent`, `UserStats`, `UserBadge` (`src/models/Gamification.ts`).
+
+## Admin & instructor (`src/app/admin/`)
+
+Separate shell (sidebar, role-aware `AdminNav`). Pages: `/admin` (dashboard), `/admin/utilisateurs` (search, filters, pagination), `/nouveau` (create → activation link to copy, emailed if the account has an email, optional « Ouvrir WhatsApp » share link opened by the staff member — no automatic WhatsApp message), `/[userId]` (profile, role, new activation / reset link, deactivate / restore, devices, enrolments); `/admin/cours` (+ `/nouveau`), `/[courseId]` (modules: add / move / delete; info; team; delete), `/modules/[moduleId]` (lessons, quiz editor, assignment / checkpoint, module settings, teaching resources), `/lecons/[lessonId]` (lesson editor: Markdown with preview, video / PDF links, exercise editor for the 7 kinds with live validation), `/final` (final exam + project), `/inscriptions` (enrol by username / email / number with optional notification — WhatsApp enrolment template if configured, else email —, dates, status, remove); `/admin/corrections` (queue by status) + `/[submissionId]` (validate with optional grade, or return with mandatory feedback).
+- **Permissions** (`src/lib/admin/permissions.ts`, pure, `tests/permissions.test.ts`): admin / super-admin everything; account-manager users + enrolments; instructor / english-coach content, grading and resources only for courses listing them in `Course.instructors`. Pages use `requireStaff` / `courseFor(me, id, need)` (`src/lib/admin/context.ts`); every action in `src/app/admin/actions.ts` re-checks.
+- **Services** (framework-free, `tests/admin.test.ts`): `users.ts` (`updateAccount` with role rules, `listUsers`, `revokeDevice`), `content.ts` (courses, modules, lessons, ordering by swap, `saveQuiz`, `saveAssignment`, resources; new lessons are drafts; a course with enrolments can't be deleted), `enrollments.ts`, `grading.ts` (`gradeSubmission`: validating awards the learner `XP.assignmentGraded` = 20 once — key `graded:<submissionId>` — and unlocks the next challenge day). Mongoose validation errors become French messages via `errorMessage`.
+- Files (PDF, images, audio) are links for now: no upload storage yet.
 
 Catalogue: `src/lib/catalog.ts` (`PROGRAMS`, `FORMAT`, `findProgram`, `formatFor`, `programPhoto`, `whatsappLink`; icons are lucide-react names). WhatsApp Cloud API client: `src/lib/whatsapp.ts` (server-only; simulation mode without token; only the enrolment template `maelenglish_inscription`).
 
@@ -84,7 +91,7 @@ Tokens in `src/app/globals.css`: shadcn variables mapped to the brand (`primary`
 - E-Kalan, Institution and the AfroHK pages were removed and are not to be ported.
 - URLs live at the root (`/`, `/programmes/[slug]`, `/coaching`, `/cours/...`); no redirects from the old `/maelenglish/*` URLs (the app had no users).
 - Uses a **new, separate MongoDB database** (`APP_DB`), never the AfroHK one.
-- Phases: 0 scaffold ✅ → 1 models & catalogue ✅ → 2 auth ✅ → 3 public site ✅ → 4 learner app & exercises ✅ → 5 gamification ✅ → 6 admin & instructor → 7 PWA & polish → 8 delete `legacy/`, deploy.
+- Phases: 0 scaffold ✅ → 1 models & catalogue ✅ → 2 auth ✅ → 3 public site ✅ → 4 learner app & exercises ✅ → 5 gamification ✅ → 6 admin & instructor ✅ → 7 PWA & polish → 8 delete `legacy/`, deploy.
 
 ## Environment
 

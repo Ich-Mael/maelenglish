@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { connectDB } from "@/lib/db";
 import { STAFF_ROLES, ADMIN_ROLES, type Role } from "@/models";
@@ -51,8 +52,14 @@ export async function readCurrentUser(): Promise<CurrentUser | null> {
   };
 }
 
-/** Per-render memoised read — use this in Server Components. */
-export const getCurrentUser = cache(readCurrentUser);
+/**
+ * Per-render memoised read — use this in Server Components. `connection()`
+ * marks the render as request-time (session expiry depends on the clock).
+ */
+export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
+  await connection();
+  return readCurrentUser();
+});
 
 /** Signed-in user or redirect to the login page (coming back to `next` afterwards). */
 export async function requireUser(next = "/"): Promise<CurrentUser> {

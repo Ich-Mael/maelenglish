@@ -39,6 +39,11 @@ async function Courses({ searchParams }: { searchParams: Promise<Record<string, 
         </div>
       )}
 
+      {me.isStaff && (
+        <Link href="/admin" className="flex items-center justify-between rounded-2xl border-2 border-dashed border-primary/30 px-4 py-3 text-sm font-semibold text-primary hover:bg-brand-soft">
+          Vous faites partie de l&apos;équipe : ouvrir l&apos;administration <ArrowRight className="size-4" aria-hidden />
+        </Link>
+      )}
       <div>
         <h1 className="text-3xl font-extrabold text-brand-deep">Bonjour {me.name} 👋</h1>
         <p className="text-muted-foreground">{current ? "Prêt(e) pour la leçon du jour ?" : "Retrouvez ici tous vos cours MaelEnglish."}</p>

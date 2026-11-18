@@ -2,8 +2,9 @@
  * Demo content for local testing (until the admin screens of phase 6):
  *   npm run seed:demo
  * Creates (or recreates) two demo courses — « Aviation (démo) » with every
- * exercise type, and « Challenge Business (démo) » — and a learner enrolled in both:
- *   identifiant « demo », mot de passe « anglais2026 ».
+ * exercise type, and « Challenge Business (démo) » — a learner enrolled in both
+ * (« demo »), a coach on both courses (« demo-coach ») and an admin
+ * (« demo-admin »); password « anglais2026 » for all three.
  * Only touches documents it created (courses titled « … (démo) », user « demo »).
  */
 import mongoose from "mongoose";
@@ -217,7 +218,16 @@ async function main() {
   await Enrollment.create({ userId: demo._id, courseId: aviation._id, startDate: new Date() });
   await Enrollment.create({ userId: demo._id, courseId: challenge._id, startDate: new Date(Date.now() - 2 * 86400_000) });
 
-  console.log("Démo prête : identifiant « demo », mot de passe « anglais2026 ».");
+  // Staff demo accounts (only created if missing): an admin and a coach on both demo courses.
+  let admin = await User.findOne({ username: "demo-admin" });
+  if (!admin) admin = await User.create({ name: "Mael", surname: "Admin", username: "demo-admin", email: "demo-admin@example.com", role: "admin", isVerified: true });
+  await setPassword(admin._id, "anglais2026");
+  let coach = await User.findOne({ username: "demo-coach" });
+  if (!coach) coach = await User.create({ name: "Grace", surname: "Coach", username: "demo-coach", email: "demo-coach@example.com", role: "english-coach", isVerified: true });
+  await setPassword(coach._id, "anglais2026");
+  await Course.updateMany({ _id: { $in: [aviation._id, challenge._id] } }, { $set: { instructors: [coach._id] } });
+
+  console.log("Démo prête — mot de passe « anglais2026 » pour : demo (apprenant), demo-coach (coach), demo-admin (admin).");
   await mongoose.disconnect();
 }
 

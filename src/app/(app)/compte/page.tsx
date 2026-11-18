@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { LogOut, Monitor, Smartphone, Tablet } from "lucide-react";
+import Link from "next/link";
+import { LayoutDashboard, LogOut, Monitor, Smartphone, Tablet } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
 import { describeUserAgent } from "@/lib/auth/device";
 import { displayPhone } from "@/lib/phone";
@@ -54,6 +55,12 @@ async function Account() {
           </Button>
         </form>
       </div>
+
+      {me.isStaff && (
+        <Link href="/admin" className="flex items-center gap-3 rounded-3xl bg-brand-deep p-5 font-semibold text-white hover:brightness-110">
+          <LayoutDashboard className="size-6 text-xp" aria-hidden /> Espace administration
+        </Link>
+      )}
 
       <Section title="Profil">
         <dl className="grid gap-3 sm:grid-cols-3">

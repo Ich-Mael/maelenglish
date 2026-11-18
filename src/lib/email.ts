@@ -93,3 +93,20 @@ export function sendPasswordResetEmail(to: string, p: { firstName: string; token
     text: `Bonjour ${p.firstName},\n\nChoisissez un nouveau mot de passe : ${url}\n\nCe lien est valable 1 heure. Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.`,
   });
 }
+
+export function sendEnrollmentEmail(to: string, p: { firstName: string; courseTitle: string; startDate: string; endDate: string | null }) {
+  const url = appUrl("/mes-cours");
+  const period = p.endDate ? `du ${p.startDate} au ${p.endDate}` : `à partir du ${p.startDate}`;
+  return send({
+    to,
+    subject: `Inscription confirmée : ${p.courseTitle}`,
+    html: layout({
+      firstName: p.firstName,
+      intro: `Vous êtes inscrit(e) à <strong>${esc(p.courseTitle)}</strong>, ${esc(period)}. Retrouvez vos leçons dans votre espace :`,
+      button: "Accéder à mes cours",
+      url,
+      outro: "Bonne formation avec MaelEnglish !",
+    }),
+    text: `Bonjour ${p.firstName},\n\nVous êtes inscrit(e) à ${p.courseTitle}, ${period}.\nVos cours : ${url}`,
+  });
+}

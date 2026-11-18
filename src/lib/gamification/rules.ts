@@ -15,6 +15,8 @@ export const XP = {
   quizPerfect: 10,
   examPass: 100,
   assignment: 15,
+  /** When a coach validates an assignment / checkpoint. */
+  assignmentGraded: 20,
   dailyGoal: 10,
 } as const;
 
