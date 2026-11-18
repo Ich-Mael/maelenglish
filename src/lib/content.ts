@@ -77,7 +77,7 @@ export const FOUNDER = {
   facts: [
     { value: "40+", label: "professionnels formés (ONG, secteur minier…)" },
     { value: "TEFL", label: "certification obtenue aux États-Unis" },
-    { value: "Visa & admission", label: "entretiens préparés et réussis (États-Unis, Canada…)" },
+    { value: "Entretiens", label: "d’admission et de visa préparés et réussis (États-Unis, Canada…)" },
   ],
   quote: "L’anglais n’est pas une matière, c’est un outil de travail.",
 } as const;
