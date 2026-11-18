@@ -1,56 +1,108 @@
-import { Quote } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, BadgeCheck, Compass, Lightbulb, Quote, Trophy } from "lucide-react";
 import { FOUNDER } from "@/lib/content";
 import { waLink } from "@/lib/site";
 import { Photo } from "./photo";
-import { Pill, WhatsAppButton } from "./ui";
+import { BUTTON, Pill, WhatsAppButton } from "./ui";
 import { cn } from "cn";
 
 const talkLink = waLink(`Bonjour ${FOUNDER.nickname}, je souhaite des conseils pour choisir mon programme MaelEnglish.`);
 
-/** « Votre coach » section (dark, matches the portrait's navy background). */
+/** Titles of the three story paragraphs (the paragraphs themselves are the founder's own words). */
+const CHAPTERS = [
+  { title: "Mon parcours", icon: Compass },
+  { title: "Mes résultats", icon: Trophy },
+  { title: "Pourquoi MaelEnglish", icon: Lightbulb },
+];
+
+/** « Votre coach » section: portrait, mission, key figures, story timeline, quote. */
 export function FounderSection() {
   return (
-    <section id="votre-coach" className="relative overflow-hidden bg-[#070b1d] py-16 text-white sm:py-20" aria-labelledby="founder-title">
-      <div aria-hidden className="pointer-events-none absolute -top-40 right-0 size-[30rem] bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--color-primary)_30%,transparent),transparent)]" />
-      <div className="relative mx-auto grid w-full max-w-6xl items-start gap-10 px-4 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="relative mx-auto w-full max-w-sm lg:sticky lg:top-24 lg:max-w-none">
-          <div className="reveal aspect-square overflow-hidden rounded-[2.5rem] ring-1 ring-white/10">
-            <Photo name={FOUNDER.photo} alt={`${FOUNDER.name}, ${FOUNDER.title}`} sizes="(max-width: 1023px) 90vw, 480px" position="center 30%" />
-          </div>
-          <div className="absolute -bottom-5 left-1/2 w-max -translate-x-1/2 rounded-2xl border-2 border-coral bg-white px-5 py-2.5 text-center shadow-xl">
-            <p className="font-heading text-xl font-extrabold text-brand-deep">{FOUNDER.name}</p>
-            <p className="text-xs font-bold text-coral-dark">{FOUNDER.title}</p>
+    <section id="votre-coach" className="relative overflow-clip bg-white py-16 sm:py-24" aria-labelledby="founder-title">
+      <div aria-hidden className="pointer-events-none absolute -top-32 -left-40 size-[32rem] bg-[radial-gradient(closest-side,var(--color-brand-soft),transparent)]" />
+      <div aria-hidden className="pointer-events-none absolute -right-40 bottom-0 size-[30rem] bg-[radial-gradient(closest-side,var(--color-coral-soft),transparent)]" />
+
+      <div className="relative mx-auto grid w-full max-w-6xl items-start gap-12 px-4 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+        {/* Portrait */}
+        <div className="relative mx-auto w-full max-w-sm lg:sticky lg:top-28 lg:max-w-none">
+          <div className="reveal relative">
+            <div aria-hidden className="absolute inset-0 translate-x-4 translate-y-4 rotate-3 rounded-[2.5rem] bg-primary" />
+            <div className="relative aspect-[4/5] overflow-hidden rounded-[2.5rem] bg-[#070b1d] shadow-[0_30px_60px_-30px_rgb(20_31_77/0.7)]">
+              <Photo name={FOUNDER.photo} alt={`${FOUNDER.name}, ${FOUNDER.title}`} sizes="(max-width: 1023px) 90vw, 440px" position="center 25%" />
+            </div>
+            <span className="absolute top-5 -left-3 inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-sm font-bold text-primary shadow-lg sm:-left-5">
+              <BadgeCheck className="size-4.5" aria-hidden /> Coach certifié TEFL
+            </span>
+            <div className="absolute -bottom-6 left-1/2 w-max -translate-x-1/2 rounded-2xl border-2 border-coral bg-white px-5 py-2.5 text-center shadow-xl">
+              <p className="font-heading text-xl font-extrabold text-brand-deep">{FOUNDER.name}</p>
+              <p className="text-xs font-bold text-coral-dark">{FOUNDER.nickname} · Formateur certifié</p>
+            </div>
           </div>
         </div>
-        <div className="reveal pt-4 lg:pt-0">
-          <Pill tone="light">Votre coach</Pill>
-          <h2 id="founder-title" className="mt-3 text-3xl font-extrabold text-balance sm:text-4xl">
-            Bonjour, je suis {FOUNDER.firstName}
-          </h2>
-          <p className="mt-1 text-white/70">{FOUNDER.greeting}</p>
-          <p className="mt-3 text-lg font-semibold text-xp">{FOUNDER.tagline}</p>
-          <div className="mt-4 grid gap-3 text-white/80">
-            {FOUNDER.story.map((p) => (
-              <p key={p}>{p}</p>
-            ))}
+
+        {/* Story */}
+        <div className="pt-6 lg:pt-0">
+          <div className="reveal">
+            <Pill>Votre coach</Pill>
+            <h2 id="founder-title" className="mt-3 text-4xl font-extrabold text-primary text-balance sm:text-5xl">
+              Bonjour, je suis {FOUNDER.firstName}
+            </h2>
+            <p className="mt-2 text-lg text-muted-foreground">{FOUNDER.greeting}</p>
+            <p className="mt-6 border-l-4 border-coral pl-5 font-heading text-xl leading-snug font-bold text-brand-deep sm:text-2xl">
+              {FOUNDER.tagline}
+            </p>
           </div>
-          <ul className="mt-6 grid gap-3 sm:grid-cols-3">
+
+          <ul className="reveal mt-8 grid grid-cols-3 gap-2 sm:gap-3">
             {FOUNDER.facts.map((f) => (
-              <li key={f.label} className="rounded-2xl bg-white/8 p-4 ring-1 ring-white/10">
-                <p className="font-heading text-2xl font-extrabold text-coral">{f.value}</p>
-                <p className="text-sm text-white/75">{f.label}</p>
+              <li key={f.label} className="rounded-2xl border border-border bg-card p-3 shadow-[0_1px_2px_rgb(20_31_77/0.05)] sm:p-4">
+                <p className="font-heading text-lg leading-tight font-extrabold text-primary sm:text-2xl">{f.value}</p>
+                <p className="mt-1 text-xs text-muted-foreground sm:text-sm">{f.label}</p>
               </li>
             ))}
           </ul>
-          <figure className="mt-6 border-l-4 border-coral pl-4">
-            <blockquote className="flex gap-3 text-lg italic text-white/90">
-              <Quote className="size-5 shrink-0 text-coral" aria-hidden />« {FOUNDER.quote} »
-            </blockquote>
-            <figcaption className="mt-1 pl-8 text-sm font-semibold text-coral">— {FOUNDER.nickname}</figcaption>
+
+          <ol className="relative mt-10 grid gap-8 before:absolute before:top-2 before:bottom-2 before:left-5 before:w-0.5 before:bg-gradient-to-b before:from-primary/40 before:via-coral/40 before:to-transparent">
+            {FOUNDER.story.map((text, i) => {
+              const c = CHAPTERS[i] ?? CHAPTERS[CHAPTERS.length - 1];
+              return (
+                <li key={c.title} className="reveal relative pl-16">
+                  <span
+                    className={cn(
+                      "absolute top-0 left-0 flex size-10 items-center justify-center rounded-full border-2 bg-white shadow-sm",
+                      i === CHAPTERS.length - 1 ? "border-coral text-coral" : "border-primary text-primary",
+                    )}
+                    aria-hidden
+                  >
+                    <c.icon className="size-5" />
+                  </span>
+                  <h3 className="text-lg font-extrabold text-brand-deep">{c.title}</h3>
+                  <p className="mt-1.5 leading-relaxed text-ink/80">{text}</p>
+                </li>
+              );
+            })}
+          </ol>
+
+          <figure className="reveal relative mt-10 overflow-hidden rounded-3xl bg-brand-deep p-6 text-white sm:p-8">
+            <Quote className="absolute right-4 -bottom-4 size-28 text-white/10" aria-hidden />
+            <blockquote className="relative font-heading text-xl leading-snug font-bold sm:text-2xl">« {FOUNDER.quote} »</blockquote>
+            <figcaption className="relative mt-4 flex items-center gap-3">
+              <span className="size-10 overflow-hidden rounded-full ring-2 ring-coral">
+                <Photo name={FOUNDER.photo} alt="" sizes="40px" position="center 25%" />
+              </span>
+              <span>
+                <span className="block font-bold">{FOUNDER.nickname}</span>
+                <span className="block text-sm text-white/75">{FOUNDER.name}</span>
+              </span>
+            </figcaption>
           </figure>
-          <WhatsAppButton href={talkLink} className="mt-7">
-            Parler à {FOUNDER.nickname}
-          </WhatsAppButton>
+
+          <div className="reveal mt-8 flex flex-wrap gap-3">
+            <WhatsAppButton href={talkLink}>Parler à {FOUNDER.nickname}</WhatsAppButton>
+            <Link href="/coaching" className={BUTTON.outline}>
+              Découvrir le coaching <ArrowRight className="size-4" aria-hidden />
+            </Link>
+          </div>
         </div>
       </div>
     </section>
