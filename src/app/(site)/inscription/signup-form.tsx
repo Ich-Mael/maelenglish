@@ -22,7 +22,7 @@ const input =
 
 function Field({ label, name, hint, error, children }: { label: string; name: string; hint?: string; error?: boolean; children: React.ReactNode }) {
   return (
-    <div className="grid gap-1.5">
+    <div className="grid content-start gap-1.5">
       <label htmlFor={name} className="text-sm font-semibold text-brand-deep">
         {label}
       </label>
