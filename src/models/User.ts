@@ -62,7 +62,13 @@ const userSchema = new Schema(
     phoneE164: { type: String, index: true },
 
     role: { type: String, enum: ROLES, default: "user" },
+    /** true once the learner has chosen a password (activation link) — admins created by bootstrap start verified. */
     isVerified: { type: Boolean, default: false },
+
+    /** scrypt hash (`src/lib/auth/password.ts`); never selected by default. Empty until activation. */
+    passwordHash: { type: String, select: false },
+    passwordChangedAt: { type: Date, default: null },
+    lastLoginAt: { type: Date, default: null },
 
     avatarUrl: { type: String, trim: true },
     about: { type: String, trim: true, default: "" },

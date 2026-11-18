@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 // Temporary home page — the real storefront is built in phase 3.
@@ -18,7 +19,7 @@ export default function Home() {
       </h1>
       <div className="flex flex-wrap justify-center gap-3">
         <Button size="lg">Découvrir les programmes</Button>
-        <Button size="lg" variant="outline" className="border-coral text-coral-dark">
+        <Button size="lg" variant="outline" className="border-coral text-coral-dark" render={<Link href="/connexion" />}>
           Me connecter
         </Button>
       </div>

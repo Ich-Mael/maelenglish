@@ -17,7 +17,7 @@ npm run typecheck
 
 ## Stack
 
-Next.js 16 (App Router, `src/`), React 19, TypeScript, Tailwind CSS 4 + shadcn/ui (`components.json`, style base-nova, icons lucide), Mongoose (`src/lib/db.ts` → `connectDB()`, cached on `globalThis`, server-only). Planned: Motion, Rive / canvas-confetti / Howler (gamification feedback), dnd-kit + MediaRecorder (exercises), TanStack Query + Zustand, Better Auth, PWA. Hosting: Render (`render.yaml`, Node 22).
+Next.js 16 (App Router, `src/`), React 19, TypeScript, Tailwind CSS 4 + shadcn/ui (`components.json`, style base-nova, icons lucide), Mongoose (`src/lib/db.ts` → `connectDB()`, cached on `globalThis`, server-only). Planned: Motion, Rive / canvas-confetti / Howler (gamification feedback), dnd-kit + MediaRecorder (exercises), TanStack Query + Zustand, PWA. Auth is custom (see below). Hosting: Render (`render.yaml`, Node 22).
 
 Next.js 16 differs from older versions — read `node_modules/next/dist/docs/` before using an API you're unsure about (see `AGENTS.md`).
 
@@ -25,14 +25,29 @@ Next.js 16 differs from older versions — read `node_modules/next/dist/docs/` b
 
 Mongoose 9 — **pre-hooks take no `next()`** (throw or `this.invalidate(...)` instead). Models are registered as `models.X || model(...)` (safe with Next.js hot reload); types via `InferSchemaType`.
 
-- `User` — profile + roles only (credentials come with the auth layer, phase 2). Needs an **email OR a WhatsApp number**; `phoneE164` = `normalizePhone(phoneNumber)` (`src/lib/phone.ts`, default country 226), not unique (family phones). `username`/`email` lowercased, email unique + sparse. `ROLES`: user, english-coach, instructor, account-manager, admin, super-admin (`ADMIN_ROLES`, `STAFF_ROLES`, `hasRole`). Soft-delete: `isActive` (undefined = active, `isAccountActive`), `deactivatedAt/By`. Devices + `maxDevices` (3).
+- `User` — profile, roles and `passwordHash` (scrypt, `select: false`; empty until activation). Needs an **email OR a WhatsApp number**; `phoneE164` = `normalizePhone(phoneNumber)` (`src/lib/phone.ts`, default country 226), not unique (family phones). `username`/`email` lowercased, email unique + sparse. `ROLES`: user, english-coach, instructor, account-manager, admin, super-admin (`ADMIN_ROLES`, `STAFF_ROLES`, `hasRole`). Soft-delete: `isActive` (undefined = active, `isAccountActive`), `deactivatedAt/By`. Devices + `maxDevices` (3).
 - `Course` — `program` = catalogue slug (validated against `PROGRAM_SLUGS`, `''` = none), `level`, `isPublished`, default cohort `startDate/endDate`, `instructors`, `finalExam`, `finalProject`, `isChallenge` + `challenge.themeLabel`.
 - `Module` (`courseId`, `order`, `quiz`, `assignment`, `isCheckpointRequired`) → `Lesson` (`courseId`, `moduleId`, `order`, `type` video | text | pdf | practice_quiz). Children point to parents; no id arrays on parents.
 - `Enrollment` — **the only source of course access** (replaces legacy `specialProgram`/`coursesTaken`/`students`): unique (userId, courseId), own `startDate`/`endDate` (null = open), `status` active | suspended | completed, `suspendedReason` (`account-deactivated` = lifted on account restore). `accessState(e, now)` → active | not-started | expired | suspended | completed.
 - `LessonProgress`, `QuizAttempt`, `AssignmentSubmission` (`src/models/Progress.ts`), `TeachingResource` (staff material per module).
+- `Session`, `AuthToken`, `RateLimit` (`src/models/Auth.ts`) — see Auth. All three have TTL indexes on `expiresAt`, but code always re-checks `expiresAt` (TTL deletion is lazy).
 - Quiz questions (`src/models/shared.ts`): `options: [{ id, text }]` (≥ 2), `correctOptionId` must match an option.
 
-Catalogue: `src/lib/catalog.ts` (`PROGRAMS`, `FORMAT`, `findProgram`, `formatFor`, `programPhoto`, `whatsappLink`; icons are lucide-react names). WhatsApp Cloud API client: `src/lib/whatsapp.ts` (server-only; simulation mode without token; template defaults `maelenglish_activation` / `maelenglish_code` / `maelenglish_inscription`).
+## Auth (custom, `src/lib/auth/`)
+
+No auth library: Better Auth needs an email per account, and many learners only have WhatsApp.
+- **No self sign-up.** Staff create accounts without a password (`accounts.ts` → `createAccount`, returns an activation token); the person opens `/activer/<token>` (7 days) and chooses a password. The link is emailed when the account has an email, otherwise staff pass it on by hand. **Passwords never go through WhatsApp** (no WhatsApp activation or reset-code messages).
+- **First admin**: `/installation`, open only while no admin / super-admin exists (`bootstrapAdmin`).
+- **Role rules** (`assignableRoles`): admins assign user, english-coach, instructor, account-manager; account managers only user, english-coach; admin / super-admin are granted only in the database.
+- **Login** (`/connexion`) by username, email or WhatsApp number (`findByIdentifier`; a number shared by several accounts asks for the username). Rate-limited in MongoDB (`hitRateLimit`: 30 / 15 min per IP, 10 per identifier).
+- **Forgotten password** (`/mot-de-passe-oublie`): email link `/reinitialiser/<token>` (1 h); same answer whether or not the account exists; learners without email ask the team on WhatsApp (staff use `issueResetForUser`).
+- **Sessions**: random token in the `me_session` cookie (httpOnly, lax), only its sha256 stored in `Session`; 30 days, extended daily (`validateSession`) and the cookie's lifetime is refreshed by `src/proxy.ts`. A password change / reset signs out the other sessions; deactivation (`deactivateUser`) signs out everywhere and suspends enrolments (`restoreUser` lifts only those tagged `account-deactivated`).
+- **Devices**: `me_device` cookie → `User.devices` (informational, never blocks — same as the legacy app). The learner sees and revokes sessions on `/compte`.
+- Layers: `service.ts` (framework-free, unit-tested in `tests/auth.test.ts`), `session.ts` (cookies; only from Server Actions), `dal.ts` (`getCurrentUser` cached per render for Server Components, `readCurrentUser` uncached for Server Actions — sharing the render cache with an action trips a Next.js dev invariant; `requireUser`, `requireRole`), `src/app/(auth)/actions.ts`. `src/proxy.ts` only does optimistic redirects for `/compte`, `/admin`, `/mes-cours`, `/apprendre`; real checks are in the DAL.
+- Cache Components: anything reading cookies, params or the current time sits inside `<Suspense>` (with `await connection()` before time-dependent queries). Don't use `useSearchParams()` in auth forms: it pushes them to client-only rendering (`useNextParam` in `login-form.tsx` reads `?next=` after hydration instead); `safeNext` blocks open redirects.
+- Email: `src/lib/email.ts` (nodemailer, Brevo SMTP; simulation mode without `EMAIL_*`: links are logged in development).
+
+Catalogue: `src/lib/catalog.ts` (`PROGRAMS`, `FORMAT`, `findProgram`, `formatFor`, `programPhoto`, `whatsappLink`; icons are lucide-react names). WhatsApp Cloud API client: `src/lib/whatsapp.ts` (server-only; simulation mode without token; only the enrolment template `maelenglish_inscription`).
 
 ## Brand
 
@@ -44,7 +59,7 @@ Tokens in `src/app/globals.css`: shadcn variables mapped to the brand (`primary`
 - E-Kalan, Institution and the AfroHK pages were removed and are not to be ported.
 - URLs live at the root (`/`, `/programmes/[slug]`, `/coaching`, `/cours/...`); no redirects from the old `/maelenglish/*` URLs (the app had no users).
 - Uses a **new, separate MongoDB database** (`APP_DB`), never the AfroHK one.
-- Phases: 0 scaffold ✅ → 1 models & catalogue ✅ → 2 auth → 3 public site → 4 learner app & exercises → 5 gamification → 6 admin & instructor → 7 PWA & polish → 8 delete `legacy/`, deploy.
+- Phases: 0 scaffold ✅ → 1 models & catalogue ✅ → 2 auth ✅ → 3 public site → 4 learner app & exercises → 5 gamification → 6 admin & instructor → 7 PWA & polish → 8 delete `legacy/`, deploy.
 
 ## Environment
 

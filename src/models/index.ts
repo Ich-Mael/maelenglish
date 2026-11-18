@@ -5,3 +5,4 @@ export * from "./Lesson";
 export * from "./Enrollment";
 export * from "./Progress";
 export * from "./TeachingResource";
+export * from "./Auth";
