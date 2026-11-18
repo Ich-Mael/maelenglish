@@ -65,7 +65,7 @@ function Hero() {
             <Photo name={FOUNDER.photo} alt={`${FOUNDER.name}, fondateur de MaelEnglish`} sizes="(max-width: 1023px) 90vw, 480px" position="center 30%" eager />
             <a href="#votre-coach" className="absolute top-4 left-4 rounded-2xl bg-white/95 px-3.5 py-2 shadow-lg backdrop-blur hover:bg-white">
               <span className="block font-heading text-sm font-extrabold text-brand-deep">{FOUNDER.name}</span>
-              <span className="block text-xs font-semibold text-coral-dark">Fondateur · votre coach</span>
+              <span className="block text-xs font-semibold text-coral-dark">{FOUNDER.nickname} · fondateur</span>
             </a>
           </div>
           <PhraseCard

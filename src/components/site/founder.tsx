@@ -5,15 +5,15 @@ import { Photo } from "./photo";
 import { Pill, WhatsAppButton } from "./ui";
 import { cn } from "cn";
 
-const talkLink = waLink(`Bonjour ${FOUNDER.firstName}, je souhaite des conseils pour choisir mon programme MaelEnglish.`);
+const talkLink = waLink(`Bonjour ${FOUNDER.nickname}, je souhaite des conseils pour choisir mon programme MaelEnglish.`);
 
 /** « Votre coach » section (dark, matches the portrait's navy background). */
 export function FounderSection() {
   return (
     <section id="votre-coach" className="relative overflow-hidden bg-[#070b1d] py-16 text-white sm:py-20" aria-labelledby="founder-title">
       <div aria-hidden className="pointer-events-none absolute -top-40 right-0 size-[30rem] rounded-full bg-primary/30 blur-3xl" />
-      <div className="relative mx-auto grid w-full max-w-6xl items-center gap-10 px-4 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="relative mx-auto w-full max-w-sm lg:max-w-none">
+      <div className="relative mx-auto grid w-full max-w-6xl items-start gap-10 px-4 lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="relative mx-auto w-full max-w-sm lg:sticky lg:top-24 lg:max-w-none">
           <div className="aspect-square overflow-hidden rounded-[2.5rem] ring-1 ring-white/10">
             <Photo name={FOUNDER.photo} alt={`${FOUNDER.name}, ${FOUNDER.title}`} sizes="(max-width: 1023px) 90vw, 480px" position="center 30%" />
           </div>
@@ -27,6 +27,7 @@ export function FounderSection() {
           <h2 id="founder-title" className="mt-3 text-3xl font-extrabold text-balance sm:text-4xl">
             Bonjour, je suis {FOUNDER.firstName}
           </h2>
+          <p className="mt-1 text-white/70">{FOUNDER.greeting}</p>
           <p className="mt-3 text-lg font-semibold text-xp">{FOUNDER.tagline}</p>
           <div className="mt-4 grid gap-3 text-white/80">
             {FOUNDER.story.map((p) => (
@@ -41,12 +42,14 @@ export function FounderSection() {
               </li>
             ))}
           </ul>
-          <blockquote className="mt-6 flex gap-3 border-l-4 border-coral pl-4 text-lg italic text-white/90">
-            <Quote className="size-5 shrink-0 text-coral" aria-hidden />
-            {FOUNDER.quote}
-          </blockquote>
+          <figure className="mt-6 border-l-4 border-coral pl-4">
+            <blockquote className="flex gap-3 text-lg italic text-white/90">
+              <Quote className="size-5 shrink-0 text-coral" aria-hidden />« {FOUNDER.quote} »
+            </blockquote>
+            <figcaption className="mt-1 pl-8 text-sm font-semibold text-coral">— {FOUNDER.nickname}</figcaption>
+          </figure>
           <WhatsAppButton href={talkLink} className="mt-7">
-            Parler à {FOUNDER.firstName}
+            Parler à {FOUNDER.nickname}
           </WhatsAppButton>
         </div>
       </div>

@@ -74,32 +74,26 @@ export function quizItems() {
   });
 }
 
-/**
- * The founder / lead coach — MaelEnglish is built around his personal brand.
- * ⚠ Texts in [crochets] are placeholders to fill in before going live
- * (see `hasPlaceholders`).
- */
+/** The founder / lead coach — MaelEnglish is built around his personal brand (texts written by him). */
 export const FOUNDER = {
   name: "Ismaël Zerbo",
   firstName: "Ismaël",
+  /** What learners call him. */
+  nickname: "Coach Mael",
   photo: "founder",
-  title: "[Fondateur & coach d'anglais professionnel]",
-  /** Short hook under the name. */
-  tagline: "[Une phrase qui résume votre mission, ex. « J'aide les professionnels francophones à parler l'anglais de leur métier avec assurance. »]",
-  /** 2–3 short paragraphs, first person. */
+  title: "Fondateur de MaelEnglish · coach certifié TEFL",
+  greeting: "mais mes apprenants m’appellent Coach Mael.",
+  tagline: "J’aide les professionnels francophones à parler l’anglais de leur métier avec aisance, en réunion, en négociation et à l’écrit.",
   story: [
-    "[Votre parcours : comment vous avez appris l'anglais, votre expérience d'enseignement, les secteurs où vous avez travaillé.]",
-    "[Pourquoi vous avez créé MaelEnglish : le problème que vous avez constaté chez vos apprenants et votre méthode pour le résoudre.]",
+    "L’anglais fait partie de ma vie depuis l’enfance : nos vacances en famille au Ghana et au Nigeria m’ont plongé très tôt dans la langue, au quotidien. J’ai ensuite suivi une formation en Afrique du Sud, puis obtenu une certification TEFL (Teaching English as a Foreign Language) auprès d’un centre de formation accrédité aux États-Unis.",
+    "À ce jour, j’ai formé plus de 40 professionnels issus d’ONG, du secteur minier et d’autres domaines. J’ai aussi préparé de nombreux jeunes à leurs entretiens d’admission et de visa pour étudier aux États-Unis, au Canada et ailleurs, et ils les ont réussis.",
+    "J’ai créé MaelEnglish après avoir vu le même problème chez presque tous mes apprenants : des années de cours d’anglais, une bonne grammaire, mais un blocage au moment de prendre la parole devant un client, un partenaire ou un jury. Les méthodes classiques enseignent la langue, pas son usage au travail. Mon approche part donc de vos situations réelles (vos réunions, vos e-mails, vos présentations, vos entretiens) pour vous faire pratiquer l’anglais dont vous avez vraiment besoin, dès la première séance.",
   ],
-  /** Key facts shown as chips (value + label). */
   facts: [
-    { value: "[X ans]", label: "[d'enseignement de l'anglais]" },
-    { value: "[Certification]", label: "[ex. TEFL, CELTA, TOEIC…]" },
-    { value: "[XXX+]", label: "[professionnels accompagnés]" },
+    { value: "40+", label: "professionnels formés (ONG, secteur minier…)" },
+    { value: "TEFL", label: "certification obtenue aux États-Unis" },
+    { value: "Visa & admission", label: "entretiens préparés et réussis (États-Unis, Canada…)" },
   ],
-  /** Short quote / signature line. */
-  quote: "[Votre phrase signature, ex. « L'anglais n'est pas une matière, c'est un outil de travail. »]",
+  quote: "L’anglais n’est pas une matière, c’est un outil de travail.",
 } as const;
 
-/** True while some founder texts are still placeholders. */
-export const hasPlaceholders = (v: unknown): boolean => JSON.stringify(v).includes("[");
