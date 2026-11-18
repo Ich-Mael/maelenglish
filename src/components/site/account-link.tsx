@@ -10,7 +10,7 @@ export async function AccountLink() {
   const me = await getCurrentUser();
   if (!me) return <LoginLink />;
   return (
-    <Link href="/compte" className={cls}>
+    <Link href="/mes-cours" className={cls}>
       <CircleUserRound className="size-4.5" aria-hidden />
       <span className="max-w-28 truncate">{me.name}</span>
     </Link>

@@ -1,12 +1,12 @@
 import { Schema, model, models, type InferSchemaType, type Model, type Types } from "mongoose";
-import { quizQuestionSchema } from "./shared";
+import { exerciseSchema } from "./shared";
 
 /**
  * Atomic learning unit inside a module. Only the fields of its `type` are used.
- * Interactive exercise types (ordering, matching, listening, speaking…) are
- * added in phase 4.
+ * `practice` = a sequence of interactive exercises (ungraded self-check; the
+ * first-try score is kept in `LessonProgress.practiceScore`).
  */
-export const LESSON_TYPES = ["video", "text", "pdf", "practice_quiz"] as const;
+export const LESSON_TYPES = ["video", "text", "pdf", "practice"] as const;
 export type LessonType = (typeof LESSON_TYPES)[number];
 
 const lessonSchema = new Schema(
@@ -22,15 +22,13 @@ const lessonSchema = new Schema(
     // video
     videoUrl: { type: String, default: "" },
     durationMinutes: { type: Number, default: 0, min: 0 },
-    // text (rich content)
+    // text — Markdown (rendered without raw HTML); also an optional intro for other types
     content: { type: String, default: "" },
     // pdf
     fileUrl: { type: String, default: "" },
     fileName: { type: String, default: "" },
-    // practice quiz (ungraded self-check)
-    practiceQuiz: {
-      questions: { type: [quizQuestionSchema], default: [] },
-    },
+    // practice: interactive exercises
+    exercises: { type: [exerciseSchema], default: [] },
   },
   { timestamps: true },
 );

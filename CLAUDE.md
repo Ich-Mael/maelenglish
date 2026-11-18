@@ -13,11 +13,12 @@ npm run lint    # ESLint — must pass before committing
 npm start       # serve the production build
 npm test        # Vitest (tests/); model tests run on an in-memory MongoDB (mongodb-memory-server)
 npm run typecheck
+npm run seed:demo   # demo courses + learner « demo » / « anglais2026 » (refuses an APP_DB containing « afrohk »)
 ```
 
 ## Stack
 
-Next.js 16 (App Router, `src/`), React 19, TypeScript, Tailwind CSS 4 + shadcn/ui (`components.json`, style base-nova, icons lucide), Mongoose (`src/lib/db.ts` → `connectDB()`, cached on `globalThis`, server-only). Planned: Motion, Rive / canvas-confetti / Howler (gamification feedback), dnd-kit + MediaRecorder (exercises), TanStack Query + Zustand, PWA. Auth is custom (see below). Hosting: Render (`render.yaml`, Node 22).
+Next.js 16 (App Router, `src/`), React 19, TypeScript, Tailwind CSS 4 + shadcn/ui (`components.json`, style base-nova, icons lucide), Mongoose (`src/lib/db.ts` → `connectDB()`, cached on `globalThis`, server-only). Motion (`motion/react`), dnd-kit, react-markdown + remark-gfm (lesson text, no raw HTML). Planned: Rive / canvas-confetti / Howler (gamification feedback), PWA. Auth is custom (see below). Hosting: Render (`render.yaml`, Node 22).
 
 Next.js 16 differs from older versions — read `node_modules/next/dist/docs/` before using an API you're unsure about (see `AGENTS.md`).
 
@@ -27,7 +28,7 @@ Mongoose 9 — **pre-hooks take no `next()`** (throw or `this.invalidate(...)` i
 
 - `User` — profile, roles and `passwordHash` (scrypt, `select: false`; empty until activation). Needs an **email OR a WhatsApp number**; `phoneE164` = `normalizePhone(phoneNumber)` (`src/lib/phone.ts`, default country 226), not unique (family phones). `username`/`email` lowercased, email unique + sparse. `ROLES`: user, english-coach, instructor, account-manager, admin, super-admin (`ADMIN_ROLES`, `STAFF_ROLES`, `hasRole`). Soft-delete: `isActive` (undefined = active, `isAccountActive`), `deactivatedAt/By`. Devices + `maxDevices` (3).
 - `Course` — `program` = catalogue slug (validated against `PROGRAM_SLUGS`, `''` = none), `level`, `isPublished`, default cohort `startDate/endDate`, `instructors`, `finalExam`, `finalProject`, `isChallenge` + `challenge.themeLabel`.
-- `Module` (`courseId`, `order`, `quiz`, `assignment`, `isCheckpointRequired`) → `Lesson` (`courseId`, `moduleId`, `order`, `type` video | text | pdf | practice_quiz). Children point to parents; no id arrays on parents.
+- `Module` (`courseId`, `order`, `quiz`, `assignment`, `isCheckpointRequired`) → `Lesson` (`courseId`, `moduleId`, `order`, `isPublished`, `type` video | text | pdf | practice; `content` = Markdown; practice lessons hold `exercises[]`, see Learner app). Children point to parents; no id arrays on parents.
 - `Enrollment` — **the only source of course access** (replaces legacy `specialProgram`/`coursesTaken`/`students`): unique (userId, courseId), own `startDate`/`endDate` (null = open), `status` active | suspended | completed, `suspendedReason` (`account-deactivated` = lifted on account restore). `accessState(e, now)` → active | not-started | expired | suspended | completed.
 - `LessonProgress`, `QuizAttempt`, `AssignmentSubmission` (`src/models/Progress.ts`), `TeachingResource` (staff material per module).
 - `Session`, `AuthToken`, `RateLimit` (`src/models/Auth.ts`) — see Auth. All three have TTL indexes on `expiresAt`, but code always re-checks `expiresAt` (TTL deletion is lazy).
@@ -53,7 +54,16 @@ Route group with the shared header / footer (`src/components/site/`). Pages: `/`
 - Server Components by default; the only client pieces are `mini-quiz.tsx`, `phrase-flip.tsx` and `speak.tsx` (Web Speech API « écouter », hidden where unsupported). The header's account link reads the session inside `<Suspense>` (fallback = « Connexion »), so the pages stay prerendered. Mobile menu and FAQ use `<details>` (no JS).
 - Photos: `<Photo>` (`components/site/photo.tsx`) renders the pre-sized WebP/JPEG files with a plain `<picture>` (no image optimiser). Catalogue icon names map to lucide components in `components/site/icons.tsx` (`ICONS`, plus `WhatsAppIcon`).
 - UI primitives: `components/site/ui.tsx` (`Container`, `SectionHead`, `Pill`, `BUTTON` styles with the « pressable » 3D shadow, `WhatsAppButton`, `PhraseCard`). Feedback animations `animate-pop` / `animate-shake` / `animate-float` are defined in `globals.css` and disabled with `prefers-reduced-motion`.
-- Enrolled learners still see « S'inscrire » on programme pages: the « Accéder à mon cours » switch comes with the learner app (phase 4).
+
+## Learner app (`src/app/(app)/`)
+
+Signed-in shell (`(app)/layout.tsx`: top bar on desktop, bottom tab bar on phones). Pages: `/mes-cours` (enrolments + progress; welcome banner after activation), `/apprendre/[courseId]` (course map: modules → lesson nodes, quiz, assignment, finals; « Continuer » = `outline.next`), `/apprendre/[courseId]/lecons/[lessonId]` (video / text / PDF + « J'ai terminé », or the practice player), `/modules/[moduleId]/quiz`, `/modules/[moduleId]/devoir`, `/examen`, `/projet`, `/compte`. Login and activation land on `/mes-cours`; programme pages show « Accéder à mon cours » to enrolled learners (`components/site/enrolled-cta.tsx`).
+- **Access** (`src/lib/learn/queries.ts`, server-only): `courseAccess(me, courseId)` — learners need an `Enrollment` whose `accessState` is active (or completed = read-only) on a published course; staff (`isStaff`) preview everything and **nothing is saved**. `courseTree` loads modules, published lessons, progress, best quiz scores, submissions and computes the outline. Every page and action re-checks access and that the step is open.
+- **Progression** (`src/lib/learn/progress.ts`, pure, `tests/progress.test.ts`): lessons open one after another; the module quiz opens when the module's lessons are done; module N+1 opens when module N is complete (lessons + quiz passed); assignments open with their module; final exam / project open when every module is complete. Challenge courses (`isChallenge`): ported legacy rule — day N opens N−1 days after the enrolment start (time ceiling) and only once the previous checkpoint (module assignment, `isCheckpointRequired`) is graded.
+- **Exercises** (`src/lib/learn/exercises.ts`, shared by browser and server): kinds `choice`, `build` (tap words), `order` (dnd-kit), `match`, `listen` (dictation, speech synthesis or `audioUrl`), `speak` (MediaRecorder + SpeechRecognition when available, else self-check; « Passer » when there's no mic), `gap` (`___`). `checkExercise` grades, `exerciseProblem` validates definitions (model pre-validate), shuffles are seeded (`seededShuffle`, no hydration mismatch). Player: `components/learn/practice/player.tsx` (check → feedback → missed exercises come back once; first tries are sent to `submitPractice`, regraded server-side → `LessonProgress.practiceScore`).
+- **Graded quizzes** (module quiz, final exam): questions are sent **without answers**; `submitQuiz` grades on the server (`gradeQuiz`), stores a `QuizAttempt`, returns the review. Optional time limit is enforced client-side only (auto-submit).
+- **Assignments** (module assignment / challenge checkpoint / final project): `submitAssignment` upserts one `AssignmentSubmission` (resubmitting resets it to pending; graded ones are locked).
+- Actions live in `src/app/(app)/learn-actions.ts` and call `refresh()` after writes. Paths: `src/lib/learn/paths.ts`; step order: `src/lib/learn/sequence.ts`; video links → embeds (YouTube nocookie / Vimeo / files): `src/lib/learn/media.ts`.
 
 Catalogue: `src/lib/catalog.ts` (`PROGRAMS`, `FORMAT`, `findProgram`, `formatFor`, `programPhoto`, `whatsappLink`; icons are lucide-react names). WhatsApp Cloud API client: `src/lib/whatsapp.ts` (server-only; simulation mode without token; only the enrolment template `maelenglish_inscription`).
 
@@ -67,7 +77,7 @@ Tokens in `src/app/globals.css`: shadcn variables mapped to the brand (`primary`
 - E-Kalan, Institution and the AfroHK pages were removed and are not to be ported.
 - URLs live at the root (`/`, `/programmes/[slug]`, `/coaching`, `/cours/...`); no redirects from the old `/maelenglish/*` URLs (the app had no users).
 - Uses a **new, separate MongoDB database** (`APP_DB`), never the AfroHK one.
-- Phases: 0 scaffold ✅ → 1 models & catalogue ✅ → 2 auth ✅ → 3 public site ✅ → 4 learner app & exercises → 5 gamification → 6 admin & instructor → 7 PWA & polish → 8 delete `legacy/`, deploy.
+- Phases: 0 scaffold ✅ → 1 models & catalogue ✅ → 2 auth ✅ → 3 public site ✅ → 4 learner app & exercises ✅ → 5 gamification → 6 admin & instructor → 7 PWA & polish → 8 delete `legacy/`, deploy.
 
 ## Environment
 

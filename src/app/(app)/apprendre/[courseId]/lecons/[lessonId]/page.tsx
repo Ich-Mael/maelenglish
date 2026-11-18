@@ -1,0 +1,117 @@
+import type { Metadata } from "next";
+import { Suspense } from "react";
+import Link from "next/link";
+import { connection } from "next/server";
+import { ChevronLeft, Download, Eye, Lock } from "lucide-react";
+import { requireUser } from "@/lib/auth/dal";
+import { courseAccess, courseTree } from "@/lib/learn/queries";
+import { coursePath, lessonPath } from "@/lib/learn/paths";
+import { stepAfter } from "@/lib/learn/sequence";
+import { videoSource } from "@/lib/learn/media";
+import type { Exercise } from "@/lib/learn/exercises";
+import { AccessProblem, PageSkeleton } from "@/components/learn/ui";
+import { Markdown } from "@/components/learn/markdown";
+import { CompleteButton } from "@/components/learn/complete-button";
+import { PracticePlayer } from "@/components/learn/practice/player";
+
+export const metadata: Metadata = { title: "Leçon", robots: { index: false } };
+
+async function LessonView({ params }: { params: Promise<{ courseId: string; lessonId: string }> }) {
+  const { courseId, lessonId } = await params;
+  await connection();
+  const me = await requireUser(lessonPath(courseId, lessonId));
+  const access = await courseAccess(me, courseId);
+  if (!access.ok) return <AccessProblem reason={access.reason} startDate={access.enrollment?.startDate} />;
+
+  const { lessons, modules, outline } = await courseTree(me, access);
+  const lesson = lessons.find((l) => String(l._id) === lessonId);
+  const state = outline.modules.flatMap((m) => m.lessons).find((l) => l.id === lessonId)?.state;
+  if (!lesson || !state) return <AccessProblem reason="not-found" />;
+
+  const back = coursePath(courseId);
+  if (state === "locked") {
+    return (
+      <div className="mx-auto max-w-md rounded-3xl border-2 border-border bg-card p-8 text-center">
+        <Lock className="mx-auto size-12 text-muted-foreground" aria-hidden />
+        <h1 className="mt-4 text-2xl font-extrabold text-brand-deep">Leçon verrouillée</h1>
+        <p className="mt-2 text-muted-foreground">Terminez les étapes précédentes pour l&apos;ouvrir.</p>
+        <Link href={back} className="mt-6 inline-flex h-11 items-center rounded-2xl bg-primary px-5 font-semibold text-white">
+          Retour au parcours
+        </Link>
+      </div>
+    );
+  }
+
+  const nextHref = stepAfter(courseId, outline, lessonPath(courseId, lessonId));
+  const mod = modules.find((m) => String(m._id) === String(lesson.moduleId));
+
+  if (lesson.type === "practice") {
+    const exercises: Exercise[] = (lesson.exercises ?? []).map((e) => {
+      const { _id, ...rest } = e as unknown as Exercise & { _id: unknown };
+      return JSON.parse(JSON.stringify({ ...rest, id: String(_id) })) as Exercise;
+    });
+    return <PracticePlayer courseId={courseId} lessonId={lessonId} title={lesson.title} exercises={exercises} courseHref={back} nextHref={nextHref} />;
+  }
+
+  const video = lesson.type === "video" ? videoSource(lesson.videoUrl) : null;
+  return (
+    <article className="mx-auto grid max-w-3xl gap-6">
+      {access.preview && (
+        <p className="flex items-center gap-2 rounded-2xl bg-xp/15 px-4 py-2.5 text-sm font-semibold text-[#7a4d00]">
+          <Eye className="size-4" aria-hidden /> Aperçu équipe : rien n&apos;est enregistré.
+        </p>
+      )}
+      <header>
+        <Link href={back} className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-primary">
+          <ChevronLeft className="size-4" aria-hidden /> {mod?.title ?? "Parcours"}
+        </Link>
+        <h1 className="mt-2 text-3xl font-extrabold text-brand-deep">{lesson.title}</h1>
+        {lesson.description && <p className="mt-1 text-muted-foreground">{lesson.description}</p>}
+      </header>
+
+      {lesson.type === "video" &&
+        (video?.kind === "iframe" ? (
+          <div className="aspect-video overflow-hidden rounded-3xl bg-black">
+            <iframe src={video.src} title={lesson.title} className="size-full" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowFullScreen loading="lazy" referrerPolicy="strict-origin-when-cross-origin" />
+          </div>
+        ) : video?.kind === "file" ? (
+          <video src={video.src} controls playsInline preload="metadata" className="aspect-video w-full rounded-3xl bg-black" />
+        ) : (
+          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">La vidéo de cette leçon n&apos;est pas encore disponible.</p>
+        ))}
+
+      {lesson.type === "pdf" && lesson.fileUrl && (
+        <div className="grid gap-3">
+          <iframe src={lesson.fileUrl} title={lesson.fileName || lesson.title} className="h-[70vh] w-full rounded-3xl border-2 border-border bg-card" />
+          <a href={lesson.fileUrl} target="_blank" rel="noopener" download className="inline-flex w-fit items-center gap-2 rounded-2xl border-2 border-border px-4 py-2 font-semibold text-brand-deep hover:bg-brand-soft">
+            <Download className="size-4" aria-hidden /> Télécharger {lesson.fileName || "le PDF"}
+          </a>
+        </div>
+      )}
+
+      {lesson.content && (
+        <div className="rounded-3xl border-2 border-border bg-card p-5 sm:p-8">
+          <Markdown>{lesson.content}</Markdown>
+        </div>
+      )}
+
+      <div className="flex justify-end">
+        {access.readOnly ? (
+          <Link href={nextHref} className="inline-flex h-12 items-center rounded-2xl bg-primary px-6 font-semibold text-white">
+            Étape suivante
+          </Link>
+        ) : (
+          <CompleteButton courseId={courseId} lessonId={lessonId} done={state === "completed"} nextHref={nextHref} />
+        )}
+      </div>
+    </article>
+  );
+}
+
+export default function LessonPage({ params }: PageProps<"/apprendre/[courseId]/lecons/[lessonId]">) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <LessonView params={params} />
+    </Suspense>
+  );
+}

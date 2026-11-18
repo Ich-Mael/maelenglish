@@ -47,7 +47,7 @@ export async function login(_: FormState, form: FormData): Promise<FormState> {
 
   await clearRateLimit(idKey);
   await startSession(result.user._id);
-  redirect(safeNext(str(form, "next"), "/compte"));
+  redirect(safeNext(str(form, "next"), "/mes-cours"));
 }
 
 export async function logout() {
@@ -104,7 +104,7 @@ export async function setPasswordWithToken(_: FormState, form: FormData): Promis
   if (!user) return { error: "Ce lien est invalide ou a expiré. Demandez-en un nouveau." };
 
   await startSession(user._id);
-  redirect("/compte?bienvenue=1");
+  redirect("/mes-cours?bienvenue=1");
 }
 
 // ── First admin ────────────────────────────────────────────────────────────

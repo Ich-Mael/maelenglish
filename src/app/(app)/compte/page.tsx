@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { LogOut, Monitor, PartyPopper, Smartphone, Tablet } from "lucide-react";
+import { LogOut, Monitor, Smartphone, Tablet } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
 import { describeUserAgent } from "@/lib/auth/device";
 import { displayPhone } from "@/lib/phone";
@@ -32,27 +32,15 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-async function Account({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+async function Account() {
   await connection();
   const me = await requireUser("/compte");
-  const { bienvenue } = await searchParams;
   const sessions = await Session.find({ userId: me.id, expiresAt: { $gt: new Date() } })
     .sort({ lastSeenAt: -1 })
     .lean();
 
   return (
     <div className="grid gap-6">
-      {bienvenue && (
-        <div role="status" className="flex items-center gap-3 rounded-3xl bg-brand-deep p-5 text-white">
-          <PartyPopper className="size-8 shrink-0 text-xp" aria-hidden />
-          <p>
-            <strong className="font-heading text-lg">C&apos;est parti, {me.name} !</strong>
-            <br />
-            Votre mot de passe est enregistré. Vos cours arrivent ici très bientôt.
-          </p>
-        </div>
-      )}
-
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-3xl font-extrabold text-brand-deep">Mon compte</h1>
@@ -141,10 +129,10 @@ function AccountFallback() {
   );
 }
 
-export default function AccountPage({ searchParams }: PageProps<"/compte">) {
+export default function AccountPage() {
   return (
     <Suspense fallback={<AccountFallback />}>
-      <Account searchParams={searchParams} />
+      <Account />
     </Suspense>
   );
 }

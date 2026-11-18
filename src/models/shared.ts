@@ -1,4 +1,5 @@
 import { Schema } from "mongoose";
+import { EXERCISE_KINDS, exerciseProblem, type Exercise } from "@/lib/learn/exercises";
 
 /**
  * Multiple-choice question, shared by lesson practice quizzes, module quizzes
@@ -52,3 +53,27 @@ export const assignmentFields = {
   submissionType: { type: String, enum: ["text", "link"], default: "text" },
   maxScore: { type: Number, default: 100, min: 1 },
 };
+
+/** Interactive practice step (see src/lib/learn/exercises.ts for the kinds). */
+export const exerciseSchema = new Schema(
+  {
+    kind: { type: String, enum: EXERCISE_KINDS, required: true },
+    prompt: { type: String, default: "" },
+    text: { type: String, default: "" },
+    translation: { type: String, default: "" },
+    options: { type: [new Schema({ id: { type: String, required: true }, text: { type: String, required: true } }, { _id: false })], default: undefined },
+    correctOptionId: { type: String },
+    distractors: { type: [String], default: undefined },
+    items: { type: [String], default: undefined },
+    pairs: { type: [new Schema({ left: { type: String, required: true }, right: { type: String, required: true } }, { _id: false })], default: undefined },
+    answers: { type: [String], default: undefined },
+    audioUrl: { type: String, default: "" },
+    explanation: { type: String, default: "" },
+  },
+  { _id: true },
+);
+
+exerciseSchema.pre("validate", function () {
+  const problem = exerciseProblem(this.toObject() as unknown as Exercise);
+  if (problem) this.invalidate("kind", problem);
+});

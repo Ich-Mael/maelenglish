@@ -70,24 +70,34 @@ describe("Course / Module / Lesson", () => {
     expect(mod.quiz?.questions).toHaveLength(1);
 
     await expect(
-      Lesson.create({
-        courseId: course._id,
-        moduleId: mod._id,
-        title: "Practice",
-        type: "practice_quiz",
-        practiceQuiz: { questions: [{ text: "Choose", options, correctOptionId: "z" }] },
-      }),
+      Module.create({ courseId: course._id, title: "Day 2", quiz: { questions: [{ text: "Choose", options, correctOptionId: "z" }] } }),
     ).rejects.toThrow(/bonne réponse/);
-
     await expect(
-      Lesson.create({
-        courseId: course._id,
-        moduleId: mod._id,
-        title: "Practice",
-        type: "practice_quiz",
-        practiceQuiz: { questions: [{ text: "One option", options: [options[0]], correctOptionId: "a" }] },
-      }),
+      Module.create({ courseId: course._id, title: "Day 3", quiz: { questions: [{ text: "One", options: [options[0]], correctOptionId: "a" }] } }),
     ).rejects.toThrow(/au moins 2 réponses/);
+  });
+
+  it("validates practice exercises per kind", async () => {
+    const course = await Course.create({ title: "Essentials 1", program: "essentials" });
+    const mod = await Module.create({ courseId: course._id, title: "Day 1" });
+    const lesson = (exercises: object[]) =>
+      Lesson.create({ courseId: course._id, moduleId: mod._id, title: "Practice", type: "practice", exercises });
+
+    const ok = await lesson([
+      { kind: "choice", text: "Hello means…", options: [{ id: "a", text: "Bonjour" }, { id: "b", text: "Merci" }], correctOptionId: "a" },
+      { kind: "build", text: "Nice to meet you", distractors: ["see"] },
+      { kind: "order", items: ["Hello", "How are you?", "Goodbye"] },
+      { kind: "match", pairs: [{ left: "pilot", right: "pilote" }, { left: "runway", right: "piste" }] },
+      { kind: "listen", text: "Fasten your seatbelt" },
+      { kind: "speak", text: "Good morning" },
+      { kind: "gap", text: "I ___ a student", answers: ["am"] },
+    ]);
+    expect(ok.exercises).toHaveLength(7);
+    expect(ok.exercises[0]._id).toBeTruthy();
+
+    await expect(lesson([{ kind: "choice", text: "?", options: [{ id: "a", text: "x" }, { id: "b", text: "y" }], correctOptionId: "z" }])).rejects.toThrow(/bonne réponse/);
+    await expect(lesson([{ kind: "gap", text: "No blank", answers: ["am"] }])).rejects.toThrow(/___/);
+    await expect(lesson([{ kind: "match", pairs: [{ left: "a", right: "b" }] }])).rejects.toThrow(/2 paires/);
   });
 });
 

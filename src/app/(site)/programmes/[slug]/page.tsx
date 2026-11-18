@@ -29,6 +29,7 @@ import { StatusBadge } from "@/components/site/program-card";
 import { PhraseFlip } from "@/components/site/phrase-flip";
 import { BUTTON, Container, PhraseCard, Pill, SectionHead, WhatsAppButton } from "@/components/site/ui";
 import { JsonLd, courseJsonLd } from "@/components/site/json-ld";
+import { EnrolledCta } from "@/components/site/enrolled-cta";
 
 export function generateStaticParams() {
   return PROGRAMS.map((p) => ({ slug: p.slug }));
@@ -102,13 +103,15 @@ function Hero({ program: p, role }: { program: Program; role: string }) {
             ))}
           </ul>
           <div className="mt-8 flex flex-wrap gap-3">
-            {soon ? (
-              <a href={whatsappLink(p)} target="_blank" rel="noopener" className={BUTTON.coral}>
-                <Bell className="size-5" aria-hidden /> Être prévenu(e)
-              </a>
-            ) : (
-              <WhatsAppButton href={whatsappLink(p)}>S&apos;inscrire</WhatsAppButton>
-            )}
+            <EnrolledCta slug={p.slug}>
+              {soon ? (
+                <a href={whatsappLink(p)} target="_blank" rel="noopener" className={BUTTON.coral}>
+                  <Bell className="size-5" aria-hidden /> Être prévenu(e)
+                </a>
+              ) : (
+                <WhatsAppButton href={whatsappLink(p)}>S&apos;inscrire</WhatsAppButton>
+              )}
+            </EnrolledCta>
             <a href="#contenu" className={BUTTON.ghost}>
               Le contenu <ArrowDown className="size-4" aria-hidden />
             </a>
