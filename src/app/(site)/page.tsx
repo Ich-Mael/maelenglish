@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ArrowDown, ArrowRight, BadgeCheck, Laptop, LayoutGrid, Quote, UserRound, Users, Zap } from "lucide-react";
+import { ArrowDown, ArrowRight, BadgeCheck, Laptop, LayoutGrid, Quote, Sprout, UserRound, Users, Zap } from "lucide-react";
 import { PROGRAMS, whatsappLink } from "@/lib/catalog";
 import { METHOD_FACTS, METHOD_STEPS, STATS, TESTIMONIALS } from "@/lib/content";
 import { signupHref } from "@/lib/site";
@@ -105,16 +105,24 @@ function Programmes() {
         </div>
 
         {featured && (
-          <div className="reveal mx-auto mt-16 mb-8 max-w-2xl text-center">
-            <p className="text-xs font-bold tracking-wide text-coral-dark uppercase">Pas encore au niveau intermédiaire ?</p>
-            <h3 className="mt-1 text-2xl font-extrabold text-brand-deep text-balance sm:text-3xl">
-              Commencez par les bases, puis passez à <span className="text-primary">votre programme métier</span>
-            </h3>
-            <p className="mt-3 text-muted-foreground text-pretty">
-              Les programmes métiers sont conçus pour un niveau intermédiaire. Si vous débutez, ou si vous avez du mal à tenir une
-              conversation simple, MaelEnglish Essentials vous donne les fondamentaux en 2 niveaux de 8 semaines. Vous
-              enchaînez ensuite sur l&apos;anglais de votre secteur, avec confiance.
-            </p>
+          <div className="reveal mx-auto mt-16 mb-8 max-w-4xl">
+            <div className="relative flex flex-col gap-5 rounded-3xl border-2 border-coral bg-white p-6 shadow-[0_6px_0_0_var(--color-coral)] sm:flex-row sm:items-center sm:p-8">
+              <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-coral-soft text-coral-dark">
+                <Sprout className="size-7" aria-hidden />
+              </span>
+              <div className="flex-1">
+                <p className="font-heading text-2xl font-extrabold text-coral sm:text-[1.75rem]">Pas encore au niveau intermédiaire ?</p>
+                <p className="mt-1 text-lg font-bold text-brand-deep">
+                  Commencez par les bases, puis passez à <span className="text-primary">votre programme métier</span>.
+                </p>
+                <p className="mt-2 text-ink/80 text-pretty">
+                  Les programmes métiers sont conçus pour un niveau intermédiaire. Si vous débutez, ou si vous avez du mal à tenir
+                  une conversation simple, <strong className="text-brand-deep">MaelEnglish Essentials</strong> vous donne les
+                  fondamentaux en 2 niveaux de 8 semaines. Vous enchaînez ensuite sur l&apos;anglais de votre secteur, avec confiance.
+                </p>
+              </div>
+              <ArrowDown className="hidden size-7 shrink-0 animate-float text-coral sm:block" aria-hidden />
+            </div>
           </div>
         )}
 
