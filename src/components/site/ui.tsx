@@ -20,7 +20,7 @@ export function Pill({ children, tone = "coral", className }: { children: React.
   );
 }
 
-export function SectionHead({ pill, title, text, className }: { pill: string; title: string; text?: string; className?: string }) {
+export function SectionHead({ pill, title, text, className }: { pill: string; title: React.ReactNode; text?: string; className?: string }) {
   return (
     <div className={cn("reveal mx-auto mb-10 max-w-2xl text-center", className)}>
       <Pill>{pill}</Pill>

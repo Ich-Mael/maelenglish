@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ArrowDown, ArrowRight, BadgeCheck, LayoutGrid, Quote, UserRound, Users, Zap } from "lucide-react";
+import { ArrowDown, ArrowRight, BadgeCheck, Laptop, LayoutGrid, Quote, UserRound, Users, Zap } from "lucide-react";
 import { PROGRAMS, whatsappLink } from "@/lib/catalog";
 import { METHOD_FACTS, METHOD_STEPS, STATS, TESTIMONIALS } from "@/lib/content";
 import { signupHref } from "@/lib/site";
@@ -36,9 +36,6 @@ function Hero() {
       <div aria-hidden className="pointer-events-none absolute top-40 -left-48 size-[30rem] bg-[radial-gradient(closest-side,var(--color-brand-soft),transparent)]" />
       <Container className="relative grid items-center gap-12 py-12 sm:py-16 lg:grid-cols-[1.15fr_1fr] lg:py-20">
         <div className="hero-in">
-          <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-sm font-semibold text-brand-deep shadow-sm">
-            <span className="size-2 rounded-full bg-coral" aria-hidden /> Anglais professionnel · 100 % en ligne
-          </p>
           <h1 lang="en" className="text-4xl leading-[1.05] font-extrabold text-primary text-balance sm:text-5xl lg:text-6xl">
             Speak the Language of <span className="text-coral">Your Profession</span>
           </h1>
@@ -58,6 +55,7 @@ function Hero() {
             <li className="flex items-center gap-1.5"><LayoutGrid className="size-4 text-primary" aria-hidden /> {PROGRAMS.length} programmes</li>
             <li className="flex items-center gap-1.5"><Users className="size-4 text-primary" aria-hidden /> 40+ professionnels formés</li>
             <li className="flex items-center gap-1.5"><BadgeCheck className="size-4 text-primary" aria-hidden /> Coach certifié TEFL</li>
+            <li className="flex items-center gap-1.5"><Laptop className="size-4 text-primary" aria-hidden /> 100 % en ligne</li>
           </ul>
         </div>
 
@@ -81,7 +79,11 @@ function Programmes() {
       <Container>
         <SectionHead
           pill="Nos programmes"
-          title="L'anglais de votre métier"
+          title={
+            <>
+              L&apos;anglais de <span className="text-coral">votre métier</span>
+            </>
+          }
           text="Choisissez le programme de votre secteur, ou commencez par les bases avec MaelEnglish Essentials."
         />
         <div className="reveal">
@@ -103,7 +105,21 @@ function Programmes() {
         </div>
 
         {featured && (
-          <div className="reveal mt-12">
+          <div className="reveal mx-auto mt-16 mb-8 max-w-2xl text-center">
+            <p className="text-xs font-bold tracking-wide text-coral-dark uppercase">Pas encore au niveau intermédiaire ?</p>
+            <h3 className="mt-1 text-2xl font-extrabold text-brand-deep text-balance sm:text-3xl">
+              Commencez par les bases, puis passez à <span className="text-primary">votre programme métier</span>
+            </h3>
+            <p className="mt-3 text-muted-foreground text-pretty">
+              Les programmes métiers sont conçus pour un niveau intermédiaire. Si vous débutez, ou si vous avez du mal à tenir une
+              conversation simple, MaelEnglish Essentials vous donne les fondamentaux en 2 niveaux de 8 semaines. Vous
+              enchaînez ensuite sur l&apos;anglais de votre secteur, avec confiance.
+            </p>
+          </div>
+        )}
+
+        {featured && (
+          <div className="reveal">
             <FeaturedProgramCard program={featured} />
           </div>
         )}
