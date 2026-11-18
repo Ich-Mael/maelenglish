@@ -1,10 +1,9 @@
 import Image from "next/image";
 import { ArrowDown, ArrowRight, Briefcase, HeartPulse, Laptop, LayoutGrid, Quote, UserRound, Users, Zap } from "lucide-react";
 import { PROGRAMS, whatsappLink } from "@/lib/catalog";
-import { METHOD_FACTS, METHOD_STEPS, STATS, TESTIMONIALS, quizItems } from "@/lib/content";
+import { METHOD_FACTS, METHOD_STEPS, STATS, TESTIMONIALS } from "@/lib/content";
 import { CHALLENGE_WA } from "@/lib/site";
 import { FeaturedProgramCard, ProgramCard } from "@/components/site/program-card";
-import { MiniQuiz } from "@/components/site/mini-quiz";
 import { Photo } from "@/components/site/photo";
 import { BUTTON, Container, PhraseCard, SectionHead, WhatsAppButton } from "@/components/site/ui";
 import { JsonLd, organizationJsonLd } from "@/components/site/json-ld";
@@ -20,7 +19,6 @@ export default function HomePage() {
       <JsonLd data={organizationJsonLd()} />
       <Hero />
       <Programmes />
-      <TryIt />
       <FounderSection />
       <Method />
       <Stats />
@@ -162,21 +160,6 @@ function AltFormat({
         {cta} <ArrowRight className="size-4 transition group-hover:translate-x-1" aria-hidden />
       </span>
     </a>
-  );
-}
-
-function TryIt() {
-  return (
-    <section id="testez-vous" className="py-16 sm:py-20">
-      <Container>
-        <SectionHead
-          pill="Testez-vous"
-          title="10 secondes pour parler votre métier"
-          text="Choisissez votre secteur et trouvez la bonne traduction. Comme dans les leçons : on gagne de l'XP et on garde sa série."
-        />
-        <MiniQuiz items={quizItems()} />
-      </Container>
-    </section>
   );
 }
 

@@ -59,22 +59,6 @@ export const COACHING = {
   ],
 } as const;
 
-/**
- * Home-page « Testez-vous » items: one phrase per programme, its translation
- * among two translations from other programmes. Deterministic (same on every render).
- */
-export function quizItems() {
-  return PROGRAMS.map((p, i) => {
-    const pick = (k: number) => PROGRAMS[(i + k) % PROGRAMS.length];
-    const phrase = p.phrases[1] ?? p.phrases[0];
-    const distractors = [pick(3).phrases[0].fr, pick(6).phrases[2]?.fr ?? pick(6).phrases[0].fr];
-    const answer = i % 3;
-    const options = [...distractors];
-    options.splice(answer, 0, phrase.fr);
-    return { slug: p.slug, label: p.name.replace(/^MaelEnglish\s*(for\s*)?/, "") || "Essentials", en: phrase.en, options, answer };
-  });
-}
-
 /** The founder / lead coach — MaelEnglish is built around his personal brand (texts written by him). */
 export const FOUNDER = {
   name: "Ismaël Zerbo",
