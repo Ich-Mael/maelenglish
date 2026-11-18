@@ -45,7 +45,7 @@ export function FounderSection() {
           <div className="reveal">
             <Pill>Votre coach</Pill>
             <h2 id="founder-title" className="mt-3 text-4xl font-extrabold text-primary text-balance sm:text-5xl">
-              Bonjour, je suis {FOUNDER.firstName}
+              Bonjour, je suis <span className="text-coral">{FOUNDER.firstName}</span>
             </h2>
             <p className="mt-2 text-lg text-muted-foreground">{FOUNDER.greeting}</p>
             <p className="mt-6 border-l-4 border-coral pl-5 font-heading text-xl leading-snug font-bold text-brand-deep sm:text-2xl">

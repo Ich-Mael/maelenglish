@@ -49,7 +49,15 @@ export function FeaturedProgramCard({ program: p }: { program: Program }) {
           <StatusBadge program={p} long />
         </div>
         <p className="text-xs font-bold tracking-wide text-coral-dark uppercase">Besoin de revoir les bases ?</p>
-        <h3 className="mt-1 text-3xl font-extrabold text-primary sm:text-4xl">{shortProgramName(p)}</h3>
+        <h3 className="mt-1 text-3xl font-extrabold text-primary sm:text-4xl">
+          {p.name.startsWith("MaelEnglish ") ? (
+            <>
+              MaelEnglish <span className="text-coral">{p.name.slice("MaelEnglish ".length)}</span>
+            </>
+          ) : (
+            shortProgramName(p)
+          )}
+        </h3>
         <p className="mt-1 font-semibold text-ink/75">{p.tagline}</p>
         <p className="mt-3 text-muted-foreground">{p.summary}</p>
         <ul className="mt-5 flex flex-wrap gap-2">
