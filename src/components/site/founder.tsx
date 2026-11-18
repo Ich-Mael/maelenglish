@@ -14,7 +14,7 @@ export function FounderSection() {
       <div aria-hidden className="pointer-events-none absolute -top-40 right-0 size-[30rem] bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--color-primary)_30%,transparent),transparent)]" />
       <div className="relative mx-auto grid w-full max-w-6xl items-start gap-10 px-4 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="relative mx-auto w-full max-w-sm lg:sticky lg:top-24 lg:max-w-none">
-          <div className="aspect-square overflow-hidden rounded-[2.5rem] ring-1 ring-white/10">
+          <div className="reveal aspect-square overflow-hidden rounded-[2.5rem] ring-1 ring-white/10">
             <Photo name={FOUNDER.photo} alt={`${FOUNDER.name}, ${FOUNDER.title}`} sizes="(max-width: 1023px) 90vw, 480px" position="center 30%" />
           </div>
           <div className="absolute -bottom-5 left-1/2 w-max -translate-x-1/2 rounded-2xl bg-coral px-5 py-2.5 text-center shadow-xl">
@@ -22,7 +22,7 @@ export function FounderSection() {
             <p className="text-xs font-bold text-brand-deep">{FOUNDER.title}</p>
           </div>
         </div>
-        <div className="pt-4 lg:pt-0">
+        <div className="reveal pt-4 lg:pt-0">
           <Pill tone="light">Votre coach</Pill>
           <h2 id="founder-title" className="mt-3 text-3xl font-extrabold text-balance sm:text-4xl">
             Bonjour, je suis {FOUNDER.firstName}

@@ -1,11 +1,11 @@
 import Image from "next/image";
-import { ArrowDown, ArrowRight, BadgeCheck, Briefcase, HeartPulse, LayoutGrid, Quote, UserRound, Users, Zap } from "lucide-react";
+import { ArrowDown, ArrowRight, BadgeCheck, LayoutGrid, Quote, UserRound, Users, Zap } from "lucide-react";
 import { PROGRAMS, whatsappLink } from "@/lib/catalog";
 import { METHOD_FACTS, METHOD_STEPS, STATS, TESTIMONIALS } from "@/lib/content";
 import { CHALLENGE_WA } from "@/lib/site";
 import { FeaturedProgramCard, ProgramCard } from "@/components/site/program-card";
 import { Photo } from "@/components/site/photo";
-import { BUTTON, Container, PhraseCard, SectionHead, WhatsAppButton } from "@/components/site/ui";
+import { BUTTON, Container, SectionHead, WhatsAppButton } from "@/components/site/ui";
 import { JsonLd, organizationJsonLd } from "@/components/site/json-ld";
 import { FounderSection } from "@/components/site/founder";
 import { FOUNDER } from "@/lib/content";
@@ -34,7 +34,7 @@ function Hero() {
       <div aria-hidden className="pointer-events-none absolute -top-48 -right-40 size-[34rem] bg-[radial-gradient(closest-side,var(--color-coral-soft),transparent)]" />
       <div aria-hidden className="pointer-events-none absolute top-40 -left-48 size-[30rem] bg-[radial-gradient(closest-side,var(--color-brand-soft),transparent)]" />
       <Container className="relative grid items-center gap-12 py-12 sm:py-16 lg:grid-cols-[1.15fr_1fr] lg:py-20">
-        <div>
+        <div className="hero-in">
           <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-sm font-semibold text-brand-deep shadow-sm">
             <span className="size-2 rounded-full bg-coral" aria-hidden /> Anglais professionnel · 100 % en ligne
           </p>
@@ -60,7 +60,7 @@ function Hero() {
           </ul>
         </div>
 
-        <div className="relative mx-auto w-full max-w-md lg:max-w-none" aria-label="Exemples de phrases professionnelles">
+        <div className="hero-photo relative mx-auto w-full max-w-md lg:max-w-none">
           <div className="relative aspect-square overflow-hidden rounded-[2.5rem] border-4 border-white bg-[#070b1d] shadow-[0_30px_70px_-30px_rgb(20_31_77/0.6)]">
             <Photo name={FOUNDER.photo} alt={`${FOUNDER.name}, fondateur de MaelEnglish`} sizes="(max-width: 1023px) 90vw, 480px" position="center 30%" eager />
             <a href="#votre-coach" className="absolute top-4 left-4 rounded-2xl bg-white/95 px-3.5 py-2 shadow-lg hover:bg-white">
@@ -68,20 +68,6 @@ function Hero() {
               <span className="block text-xs font-semibold text-coral-dark">{FOUNDER.nickname} · fondateur</span>
             </a>
           </div>
-          <PhraseCard
-            role="Health"
-            icon={HeartPulse}
-            en="Can you describe the pain?"
-            fr="Pouvez-vous décrire la douleur ?"
-            className="absolute top-[58%] -left-8 hidden max-w-[15rem] animate-float sm:block"
-          />
-          <PhraseCard
-            role="Business"
-            icon={Briefcase}
-            en="Let's go over the agenda for today's meeting."
-            fr="Passons en revue l'ordre du jour de la réunion."
-            className="absolute -right-6 bottom-6 hidden max-w-[16rem] animate-float [animation-delay:-3s] sm:block"
-          />
         </div>
       </Container>
     </section>
@@ -98,13 +84,19 @@ function Programmes() {
           text="Commencez par les bases avec Essentials, ou choisissez directement le programme de votre secteur."
         />
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {featured && <FeaturedProgramCard program={featured} />}
+          {featured && (
+            <div className="reveal lg:col-span-full">
+              <FeaturedProgramCard program={featured} />
+            </div>
+          )}
           {jobs.map((p) => (
-            <ProgramCard key={p.slug} program={p} />
+            <div key={p.slug} className="reveal grid">
+              <ProgramCard program={p} />
+            </div>
           ))}
         </div>
 
-        <div className="mt-5 grid gap-5 md:grid-cols-2">
+        <div className="reveal mt-5 grid gap-5 md:grid-cols-2">
           <AltFormat
             href="/coaching"
             icon={<UserRound className="size-6" aria-hidden />}
@@ -172,7 +164,7 @@ function Method() {
         <SectionHead pill="Comment ça marche" title="Parler d'abord, la grammaire au service de la parole" />
         <ol className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {METHOD_STEPS.map((s, i) => (
-            <li key={s.title} className="relative rounded-3xl border-2 border-border bg-card p-6">
+            <li key={s.title} className="reveal relative rounded-3xl border-2 border-border bg-card p-6">
               <span className="mb-4 flex size-11 items-center justify-center rounded-2xl bg-coral font-heading text-xl font-extrabold text-white shadow-[0_4px_0_0_var(--color-coral-dark)]">
                 {i + 1}
               </span>
@@ -199,7 +191,7 @@ function Stats() {
       <Container>
         <dl className="grid grid-cols-2 gap-8 text-center lg:grid-cols-4">
           {STATS.map((s) => (
-            <div key={s.label} className="flex flex-col">
+            <div key={s.label} className="reveal flex flex-col">
               <dt className="order-2 mt-1 text-sm text-white/70">{s.label}</dt>
               <dd className="font-heading text-4xl font-extrabold sm:text-5xl">
                 {s.value}
@@ -220,7 +212,7 @@ function Testimonials() {
         <SectionHead pill="Ils parlent l'anglais de leur métier" title="Des résultats concrets" />
         <div className="grid gap-5 sm:grid-cols-2">
           {TESTIMONIALS.map((t) => (
-            <figure key={t.name} className="flex flex-col rounded-3xl border-2 border-border bg-card p-6">
+            <figure key={t.name} className="reveal flex flex-col rounded-3xl border-2 border-border bg-card p-6">
               <Quote className="mb-3 size-7 text-coral" aria-hidden />
               <blockquote className="flex-1 text-ink/90">« {t.text} »</blockquote>
               <figcaption className="mt-5 flex items-center gap-3">
@@ -244,7 +236,7 @@ function FinalCta() {
   return (
     <section className="pb-16 sm:pb-20">
       <Container>
-        <div className="relative overflow-hidden rounded-[2.5rem] bg-brand-deep p-8 text-white sm:p-12">
+        <div className="reveal relative overflow-hidden rounded-[2.5rem] bg-brand-deep p-8 text-white sm:p-12">
           <div aria-hidden className="pointer-events-none absolute -top-24 -right-24 size-80 bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--color-primary)_50%,transparent),transparent)]" />
           <div className="relative grid items-center gap-8 lg:grid-cols-[1.4fr_1fr]">
             <div>

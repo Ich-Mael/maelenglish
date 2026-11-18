@@ -22,7 +22,7 @@ export function Pill({ children, tone = "coral", className }: { children: React.
 
 export function SectionHead({ pill, title, text, className }: { pill: string; title: string; text?: string; className?: string }) {
   return (
-    <div className={cn("mx-auto mb-10 max-w-2xl text-center", className)}>
+    <div className={cn("reveal mx-auto mb-10 max-w-2xl text-center", className)}>
       <Pill>{pill}</Pill>
       <h2 className="mt-3 text-3xl font-extrabold text-brand-deep text-balance sm:text-4xl">{title}</h2>
       {text && <p className="mt-3 text-lg text-muted-foreground text-pretty">{text}</p>}

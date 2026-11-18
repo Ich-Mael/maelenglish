@@ -25,7 +25,7 @@ export function FeaturedProgramCard({ program: p }: { program: Program }) {
   return (
     <Link
       href={`/programmes/${p.slug}`}
-      className="group grid overflow-hidden rounded-[2rem] border-2 border-border bg-card shadow-[0_24px_60px_-30px_rgb(54_79_171/0.5)] transition hover:-translate-y-1 hover:border-primary/30 lg:col-span-full lg:grid-cols-[1.1fr_1fr]"
+      className="group grid overflow-hidden rounded-[2rem] border-2 border-border bg-card shadow-[0_24px_60px_-30px_rgb(54_79_171/0.5)] transition hover:-translate-y-1 hover:border-primary/30 lg:grid-cols-[1.1fr_1fr]"
     >
       <div className="flex flex-col p-6 sm:p-8">
         <div className="mb-4 flex items-center justify-between">
