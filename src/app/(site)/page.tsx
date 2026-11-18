@@ -55,7 +55,7 @@ function Hero() {
           </div>
           <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-ink/75">
             <li className="flex items-center gap-1.5"><LayoutGrid className="size-4 text-primary" aria-hidden /> {PROGRAMS.length} programmes</li>
-            <li className="flex items-center gap-1.5"><Users className="size-4 text-primary" aria-hidden /> 500+ apprenants</li>
+            <li className="flex items-center gap-1.5"><Users className="size-4 text-primary" aria-hidden /> 40+ professionnels formés</li>
             <li className="flex items-center gap-1.5"><Laptop className="size-4 text-primary" aria-hidden /> 100 % en ligne</li>
           </ul>
         </div>

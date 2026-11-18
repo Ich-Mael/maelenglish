@@ -17,11 +17,12 @@ export const METHOD_FACTS = [
   "Certificat à la fin",
 ];
 
+/** Verifiable figures only (from the catalogue and the founder's own record). */
 export const STATS = [
-  { value: "500", suffix: "+", label: "Apprenants actifs" },
-  { value: "90", suffix: "%", label: "Satisfaction" },
-  { value: "4", suffix: "+", label: "Pays représentés" },
-  { value: "10", suffix: "+", label: "Partenaires" },
+  { value: "40", suffix: "+", label: "Professionnels formés par Coach Mael" },
+  { value: String(PROGRAMS.length), suffix: "", label: "Programmes, de l'anglais général aux métiers" },
+  { value: "50", suffix: " h", label: "De contenu par programme" },
+  { value: "100", suffix: " %", label: "En ligne, sur ordinateur ou téléphone" },
 ];
 
 export const TESTIMONIALS = [
