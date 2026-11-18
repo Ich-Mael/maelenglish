@@ -17,9 +17,9 @@ export function FounderSection() {
           <div className="reveal aspect-square overflow-hidden rounded-[2.5rem] ring-1 ring-white/10">
             <Photo name={FOUNDER.photo} alt={`${FOUNDER.name}, ${FOUNDER.title}`} sizes="(max-width: 1023px) 90vw, 480px" position="center 30%" />
           </div>
-          <div className="absolute -bottom-5 left-1/2 w-max -translate-x-1/2 rounded-2xl bg-coral px-5 py-2.5 text-center shadow-xl">
-            <p className="font-heading text-xl font-extrabold">{FOUNDER.name}</p>
-            <p className="text-xs font-bold text-brand-deep">{FOUNDER.title}</p>
+          <div className="absolute -bottom-5 left-1/2 w-max -translate-x-1/2 rounded-2xl border-2 border-coral bg-white px-5 py-2.5 text-center shadow-xl">
+            <p className="font-heading text-xl font-extrabold text-brand-deep">{FOUNDER.name}</p>
+            <p className="text-xs font-bold text-coral-dark">{FOUNDER.title}</p>
           </div>
         </div>
         <div className="reveal pt-4 lg:pt-0">

@@ -39,7 +39,7 @@ export function SiteHeader() {
             href={whatsappLink()}
             target="_blank"
             rel="noopener"
-            className="hidden h-10 items-center gap-2 rounded-xl bg-coral px-4 text-sm font-bold text-brand-deep shadow-sm transition hover:brightness-105 sm:inline-flex"
+            className="hidden h-10 items-center gap-2 rounded-xl border-2 border-coral bg-white px-4 text-sm font-bold text-coral-dark transition hover:bg-coral-soft sm:inline-flex"
           >
             <WhatsAppIcon className="size-4" /> S&apos;inscrire
           </a>
@@ -54,7 +54,7 @@ export function SiteHeader() {
                   {n.label}
                 </Link>
               ))}
-              <a href={whatsappLink()} target="_blank" rel="noopener" className="mt-1 flex items-center gap-2 rounded-xl bg-coral px-3 py-2.5 font-bold text-brand-deep">
+              <a href={whatsappLink()} target="_blank" rel="noopener" className="mt-1 flex items-center gap-2 rounded-xl border-2 border-coral bg-white px-3 py-2.5 font-bold text-coral-dark hover:bg-coral-soft">
                 <WhatsAppIcon className="size-4" /> S&apos;inscrire
               </a>
             </nav>

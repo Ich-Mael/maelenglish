@@ -81,7 +81,7 @@ export default function CoachingPage() {
           <ol className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {COACHING.steps.map((s, i) => (
               <li key={s.title} className="rounded-3xl border-2 border-border bg-card p-6">
-                <span className="mb-4 flex size-11 items-center justify-center rounded-2xl bg-coral font-heading text-xl font-extrabold text-white shadow-[0_4px_0_0_var(--color-coral-dark)]">
+                <span className="mb-4 flex size-11 items-center justify-center rounded-2xl border-2 border-coral bg-white font-heading text-xl font-extrabold text-coral shadow-[0_4px_0_0_var(--color-coral)]">
                   {i + 1}
                 </span>
                 <h3 className="text-lg font-extrabold text-brand-deep">{s.title}</h3>

@@ -55,7 +55,7 @@ async function CourseHome({ params }: { params: Promise<{ courseId: string }> })
         {next ? (
           <Link
             href={next}
-            className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-coral text-[19px] font-bold text-white shadow-[0_5px_0_0_var(--color-coral-dark)] transition active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-coral-dark)] sm:w-auto sm:px-8"
+            className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border-2 border-coral bg-white text-[19px] font-bold text-coral hover:bg-coral-soft shadow-[0_5px_0_0_var(--color-coral)] transition active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-coral)] sm:w-auto sm:px-8"
           >
             {outline.lessonsDone ? "Continuer" : "Commencer"} <ArrowRight className="size-4" aria-hidden />
           </Link>

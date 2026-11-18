@@ -143,9 +143,9 @@ function AltFormat({
     <a
       href={href}
       {...(external ? { target: "_blank", rel: "noopener" } : {})}
-      className={`group flex flex-col gap-4 rounded-3xl p-6 transition hover:-translate-y-1 sm:flex-row sm:items-center ${coral ? "bg-coral text-brand-deep" : "bg-brand-deep text-white"}`}
+      className={`group flex flex-col gap-4 rounded-3xl p-6 transition hover:-translate-y-1 sm:flex-row sm:items-center ${coral ? "border-2 border-coral bg-white text-brand-deep" : "bg-brand-deep text-white"}`}
     >
-      <span className={`flex size-12 shrink-0 items-center justify-center rounded-2xl ${coral ? "bg-white/35" : "bg-white/15"}`}>{icon}</span>
+      <span className={`flex size-12 shrink-0 items-center justify-center rounded-2xl ${coral ? "bg-coral-soft text-coral-dark" : "bg-white/15"}`}>{icon}</span>
       <div className="flex-1">
         <h3 className="text-xl font-extrabold">{title}</h3>
         <p className={`mt-1 text-sm ${coral ? "text-brand-deep" : "text-white/80"}`}>{text}</p>
@@ -165,7 +165,7 @@ function Method() {
         <ol className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {METHOD_STEPS.map((s, i) => (
             <li key={s.title} className="reveal relative rounded-3xl border-2 border-border bg-card p-6">
-              <span className="mb-4 flex size-11 items-center justify-center rounded-2xl bg-coral font-heading text-xl font-extrabold text-white shadow-[0_4px_0_0_var(--color-coral-dark)]">
+              <span className="mb-4 flex size-11 items-center justify-center rounded-2xl border-2 border-coral bg-white font-heading text-xl font-extrabold text-coral shadow-[0_4px_0_0_var(--color-coral)]">
                 {i + 1}
               </span>
               <h3 className="text-lg font-extrabold text-brand-deep">{s.title}</h3>

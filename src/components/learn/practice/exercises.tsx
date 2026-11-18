@@ -446,7 +446,7 @@ export function SpeakExercise({ exercise: ex, locked, onChange }: ExerciseProps)
           onClick={recording ? stop : start}
           className={cn(
             "relative flex size-24 items-center justify-center rounded-full text-white transition active:translate-y-1",
-            recording ? "bg-destructive" : "bg-coral shadow-[0_6px_0_0_var(--color-coral-dark)]",
+            recording ? "bg-destructive" : "border-2 border-coral bg-white text-coral shadow-[0_6px_0_0_var(--color-coral)]",
           )}
           aria-label={recording ? "Arrêter l'enregistrement" : "Parler"}
         >

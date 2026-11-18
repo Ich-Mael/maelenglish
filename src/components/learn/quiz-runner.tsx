@@ -137,7 +137,7 @@ export function QuizRunner({
                 Continuer <ArrowRight className="size-4" aria-hidden />
               </button>
             ) : (
-              <button type="button" onClick={retry} className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-coral px-6 text-[19px] font-bold text-white">
+              <button type="button" onClick={retry} className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border-2 border-coral bg-white px-6 text-[19px] font-bold text-coral hover:bg-coral-soft">
                 <RotateCcw className="size-4" aria-hidden /> Réessayer
               </button>
             )}
@@ -253,7 +253,7 @@ export function QuizRunner({
               Suivante <ArrowRight className="size-5" aria-hidden />
             </button>
           ) : (
-            <button type="button" onClick={submit} disabled={pending} className="inline-flex h-13 flex-1 items-center justify-center gap-2 rounded-2xl bg-coral text-[19px] font-bold text-white shadow-[0_5px_0_0_var(--color-coral-dark)] transition active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-coral-dark)]">
+            <button type="button" onClick={submit} disabled={pending} className="inline-flex h-13 flex-1 items-center justify-center gap-2 rounded-2xl border-2 border-coral bg-white text-[19px] font-bold text-coral hover:bg-coral-soft shadow-[0_5px_0_0_var(--color-coral)] transition active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-coral)]">
               {pending && <Loader2 className="size-5 animate-spin" aria-hidden />}
               Envoyer ({answeredCount}/{questions.length})
             </button>

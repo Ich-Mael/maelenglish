@@ -149,7 +149,7 @@ export function PracticePlayer({
           </div>
         </dl>
         <div className="grid w-full gap-3">
-          <button type="button" onClick={() => router.push(nextHref)} className="inline-flex h-13 items-center justify-center gap-2 rounded-2xl bg-coral text-[19px] font-bold text-white shadow-[0_5px_0_0_var(--color-coral-dark)] transition active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-coral-dark)]">
+          <button type="button" onClick={() => router.push(nextHref)} className="inline-flex h-13 items-center justify-center gap-2 rounded-2xl border-2 border-coral bg-white text-[19px] font-bold text-coral hover:bg-coral-soft shadow-[0_5px_0_0_var(--color-coral)] transition active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-coral)]">
             Continuer <ArrowRight className="size-5" aria-hidden />
           </button>
           <button type="button" onClick={restart} className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl font-semibold text-primary hover:bg-brand-soft">

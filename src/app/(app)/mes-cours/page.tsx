@@ -94,7 +94,7 @@ function CourseCard({ course: c }: { course: MyCourse }) {
         ) : null}
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/50 to-transparent" />
         {c.isChallenge && (
-          <span className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-coral px-2.5 py-1 text-xs font-bold text-brand-deep">
+          <span className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full border-2 border-coral bg-white px-2.5 py-1 text-xs font-bold text-coral-dark">
             <Zap className="size-3.5" aria-hidden /> Challenge
           </span>
         )}
