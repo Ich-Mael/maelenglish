@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AdminForm, Submit } from "./forms";
 import { inputCls } from "./ui";
+import { RichTextEditor } from "./rich-text-editor";
 import { gradeAction } from "@/app/admin/actions";
 import { cn } from "cn";
 
@@ -35,10 +36,13 @@ export function GradeForm({ submissionId, maxScore, isCheckpoint, initial }: { s
           <input name="grade" type="number" min={0} max={maxScore} defaultValue={initial.grade ?? ""} className={cn(inputCls, "w-32")} />
         </label>
       )}
-      <label className="grid gap-1 text-sm">
-        <span className="font-medium">Commentaire pour l&apos;apprenant{decision === "returned" ? " (obligatoire)" : ""}</span>
-        <textarea name="feedback" rows={5} defaultValue={initial.feedback} required={decision === "returned"} className={cn(inputCls, "h-auto py-2")} placeholder={decision === "returned" ? "Ce qu'il faut reprendre, avec un exemple…" : "Bravo ! Points forts, conseil pour la suite…"} />
-      </label>
+      <RichTextEditor
+        label={`Commentaire pour l'apprenant${decision === "returned" ? " (obligatoire)" : ""}`}
+        name="feedback"
+        defaultValue={initial.feedback}
+        minHeight={180}
+        placeholder="Points forts, ce qu'il faut reprendre, un exemple, un conseil pour la suite…"
+      />
       <p className="text-xs text-muted-foreground">Valider rapporte 20 XP à l&apos;apprenant (une seule fois).</p>
       <div>
         <Submit>{decision === "graded" ? "Valider" : "Renvoyer"}</Submit>

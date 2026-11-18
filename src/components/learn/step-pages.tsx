@@ -7,7 +7,7 @@ import { assignmentPath, coursePath, examPath, projectPath, quizPath } from "@/l
 import { stepAfter } from "@/lib/learn/sequence";
 import { AssignmentSubmission } from "@/models";
 import { AccessProblem, formatDate } from "./ui";
-import { Markdown } from "./markdown";
+import { RichText } from "./rich-text";
 import { QuizRunner, type PublicQuestion } from "./quiz-runner";
 import { AssignmentForm } from "./assignment-form";
 
@@ -111,7 +111,7 @@ export async function AssignmentStep({ courseId, moduleId }: { courseId: string;
       </header>
 
       <section className="rounded-3xl border-2 border-border bg-card p-5 sm:p-8">
-        <Markdown>{def.instructions ?? ""}</Markdown>
+        <RichText>{def.instructions}</RichText>
       </section>
 
       {submission && (
@@ -132,7 +132,7 @@ export async function AssignmentStep({ courseId, moduleId }: { courseId: string;
                 ? "À reprendre : votre coach vous a fait un retour"
                 : "Envoyé · en attente de correction"}
           </p>
-          {submission.feedback && <p className="mt-2 whitespace-pre-line text-ink">{submission.feedback}</p>}
+          {submission.feedback && <RichText legacy="text" className="mt-2 text-ink">{submission.feedback}</RichText>}
           <p className="mt-2 text-xs text-muted-foreground">Envoyé le {formatDate(submission.updatedAt)}</p>
         </section>
       )}

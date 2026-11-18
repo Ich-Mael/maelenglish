@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { RichText } from "@/components/learn/rich-text";
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -130,7 +131,11 @@ async function CourseAdmin({ params }: { params: Promise<{ courseId: string }> }
           </Card>
         ) : (
           <Card title="Informations">
-            <p className="text-sm whitespace-pre-line text-muted-foreground">{course.description || "Pas de description."}</p>
+            {course.description ? (
+              <RichText legacy="text" className="text-sm text-muted-foreground [&_*]:text-[length:inherit]">{course.description}</RichText>
+            ) : (
+              <p className="text-sm text-muted-foreground">Pas de description.</p>
+            )}
           </Card>
         )}
 

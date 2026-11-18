@@ -1,6 +1,8 @@
 import { PROGRAMS } from "@/lib/catalog";
 import type { CourseDoc } from "@/models";
-import { Checkbox, Input, Select, TextArea, formatFcfa, isoDate } from "./ui";
+import { toEditorHtml } from "@/lib/rich-text";
+import { RichTextEditor } from "./rich-text-editor";
+import { Checkbox, Input, Select, formatFcfa, isoDate } from "./ui";
 
 const LEVELS = [
   { value: "beginner", label: "Débutant" },
@@ -13,7 +15,7 @@ export function CourseFields({ course, settings }: { course?: Partial<CourseDoc>
   return (
     <>
       <Input label="Titre" name="title" required defaultValue={course?.title ?? ""} />
-      <TextArea label="Description" name="description" rows={3} defaultValue={course?.description ?? ""} />
+      <RichTextEditor label="Description" name="description" minHeight={180} defaultValue={toEditorHtml(course?.description, "text")} />
       <div className="grid gap-4 sm:grid-cols-2">
         <Select
           label="Programme du catalogue"

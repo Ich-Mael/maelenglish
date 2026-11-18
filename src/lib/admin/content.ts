@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
 import { AssignmentSubmission, Course, Enrollment, Lesson, LessonProgress, Module, QuizAttempt, TeachingResource, User, STAFF_ROLES, COURSE_LEVELS, LESSON_TYPES, RESOURCE_TYPES, type CourseDoc, type LessonDoc, type ModuleDoc } from "@/models";
 import { AdminError } from "./errors";
+import { normalizeRich } from "@/lib/rich-text";
 
 /* Course content editing (framework-free; permission checks happen in the actions). */
 
@@ -36,7 +37,7 @@ export type CourseSettings = { isPublished?: boolean; isChallenge?: boolean; the
 export async function createCourse(input: CourseInput): Promise<CourseDoc> {
   const c = await Course.create({
     title: input.title.trim(),
-    description: input.description ?? "",
+    description: normalizeRich(input.description),
     imageUrl: input.imageUrl ?? "",
     program: input.program ?? "",
     level: (COURSE_LEVELS.includes(input.level as never) ? input.level : "beginner") as CourseDoc["level"],
@@ -51,7 +52,7 @@ export async function updateCourse(courseId: string, input: CourseInput, setting
   const c = await Course.findById(oid(courseId));
   if (!c) throw new AdminError("Cours introuvable.");
   c.title = input.title.trim();
-  c.description = input.description ?? "";
+  c.description = normalizeRich(input.description);
   c.imageUrl = input.imageUrl?.trim() ?? "";
   c.program = input.program ?? "";
   if (COURSE_LEVELS.includes(input.level as never)) c.level = input.level as CourseDoc["level"];
@@ -167,7 +168,7 @@ export async function updateLesson(lessonId: string, data: LessonInput) {
   l.isPublished = !!data.isPublished;
   l.videoUrl = data.videoUrl?.trim() ?? "";
   l.durationMinutes = Math.max(0, Number(data.durationMinutes) || 0);
-  l.content = data.content ?? "";
+  l.content = normalizeRich(data.content);
   l.fileUrl = data.fileUrl?.trim() ?? "";
   l.fileName = data.fileName?.trim() ?? "";
   if (l.type === "practice") {
@@ -237,7 +238,7 @@ export type AssignmentInput = { title?: string; instructions?: string; submissio
 export async function saveAssignment(target: { moduleId: string } | { courseId: string }, a: AssignmentInput) {
   const doc = {
     title: a.title?.trim() ?? "",
-    instructions: a.instructions?.trim() ?? "",
+    instructions: normalizeRich(a.instructions),
     submissionType: a.submissionType === "link" ? "link" : "text",
     maxScore: Math.max(1, Math.round(Number(a.maxScore ?? 100))),
   };

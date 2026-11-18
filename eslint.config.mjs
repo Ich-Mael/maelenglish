@@ -12,7 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // Old Express/EJS app, kept as reference while porting
+    // Third-party HugeRTE build copied by scripts/copy-hugerte.mjs, and its French strings
+    "public/hugerte/**",
+    "public/hugerte-langs/**",
   ]),
 ]);
 

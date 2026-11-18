@@ -7,7 +7,8 @@ import { requireStaff, courseFor } from "@/lib/admin/context";
 import { AssignmentSubmission, Module, User, type AssignmentSubmissionDoc } from "@/models";
 import { Card, PageHeader, Pill, fmtDate } from "@/components/admin/ui";
 import { GradeForm } from "@/components/admin/grade-form";
-import { Markdown } from "@/components/learn/markdown";
+import { RichText } from "@/components/learn/rich-text";
+import { toEditorHtml } from "@/lib/rich-text";
 import { PageSkeleton } from "@/components/learn/ui";
 
 export const metadata: Metadata = { title: "Correction" };
@@ -53,11 +54,11 @@ async function Grade({ params }: { params: Promise<{ submissionId: string }> }) 
             )}
           </Card>
           <Card title={def?.title || "Consignes"}>
-            <Markdown>{def?.instructions ?? ""}</Markdown>
+            <RichText>{def?.instructions}</RichText>
           </Card>
         </div>
         <Card title="Correction">
-          <GradeForm submissionId={submissionId} maxScore={sub.maxScore ?? 100} isCheckpoint={isCheckpoint} initial={{ grade: sub.grade ?? null, feedback: sub.feedback ?? "" }} />
+          <GradeForm submissionId={submissionId} maxScore={sub.maxScore ?? 100} isCheckpoint={isCheckpoint} initial={{ grade: sub.grade ?? null, feedback: toEditorHtml(sub.feedback, "text") }} />
         </Card>
       </div>
     </div>

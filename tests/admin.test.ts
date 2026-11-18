@@ -132,6 +132,7 @@ describe("grading", () => {
     expect(await gradingQueue({ courseIds: [] })).toHaveLength(0);
 
     await expect(gradeSubmission(String(coach._id), String(sub._id), { decision: "returned", feedback: "" })).rejects.toThrow(/reprendre/);
+    await expect(gradeSubmission(String(coach._id), String(sub._id), { decision: "returned", feedback: "<p>&nbsp;</p>" })).rejects.toThrow(/reprendre/);
     await expect(gradeSubmission(String(coach._id), String(sub._id), { decision: "graded", grade: 150 })).rejects.toThrow(/entre 0 et 100/);
 
     await gradeSubmission(String(coach._id), String(sub._id), { decision: "graded", grade: 90, feedback: "Great" });

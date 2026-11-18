@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { toEditorHtml } from "@/lib/rich-text";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
@@ -37,7 +38,7 @@ async function LessonAdmin({ params }: { params: Promise<{ courseId: string; les
           isPublished: !!lesson.isPublished,
           videoUrl: lesson.videoUrl ?? "",
           durationMinutes: lesson.durationMinutes ?? 0,
-          content: lesson.content ?? "",
+          content: toEditorHtml(lesson.content),
           fileUrl: lesson.fileUrl ?? "",
           fileName: lesson.fileName ?? "",
           exercises,

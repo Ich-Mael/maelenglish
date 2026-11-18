@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowDown, ArrowUp, Copy, Eye, Pencil, Plus, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Copy, Eye, Plus, Trash2 } from "lucide-react";
 import { EXERCISE_KINDS, DEFAULT_PROMPTS, exerciseProblem, type Exercise, type ExerciseKind } from "@/lib/learn/exercises";
-import { Markdown } from "@/components/learn/markdown";
+import { RichTextEditor } from "./rich-text-editor";
 import { AdminForm, Submit } from "./forms";
 import { btn, inputCls } from "./ui";
 import { saveLessonAction } from "@/app/admin/actions";
@@ -194,8 +194,6 @@ type LessonData = {
 
 export function LessonEditor({ lesson, previewHref }: { lesson: LessonData; previewHref: string }) {
   const [drafts, setDrafts] = useState<Draft[]>(() => lesson.exercises.map(toDraft));
-  const [content, setContent] = useState(lesson.content);
-  const [preview, setPreview] = useState(false);
   const exercises = drafts.map(fromDraft);
   const problems = exercises.map((e) => exerciseProblem(e as Exercise));
 
@@ -241,22 +239,13 @@ export function LessonEditor({ lesson, previewHref }: { lesson: LessonData; prev
             </Field>
           </div>
         )}
-        <div className="grid gap-1 text-sm">
-          <div className="flex items-center justify-between">
-            <span className="font-medium">{lesson.type === "text" ? "Contenu (Markdown)" : "Texte d'accompagnement (Markdown, facultatif)"}</span>
-            <button type="button" className="inline-flex items-center gap-1 text-sm font-semibold text-primary" onClick={() => setPreview((p) => !p)}>
-              {preview ? <Pencil className="size-4" aria-hidden /> : <Eye className="size-4" aria-hidden />} {preview ? "Modifier" : "Aperçu"}
-            </button>
-          </div>
-          <input type="hidden" name="content" value={content} />
-          {preview ? (
-            <div className="min-h-40 rounded-xl border border-border p-4">
-              <Markdown>{content || "*Rien à afficher.*"}</Markdown>
-            </div>
-          ) : (
-            <textarea className={cn(inputCls, "h-auto min-h-40 py-2 font-mono text-[13px]")} value={content} onChange={(e) => setContent(e.target.value)} placeholder={"## Titre\n\n**gras**, *italique*, listes avec -, tableaux | a | b |, > astuce"} />
-          )}
-        </div>
+        <RichTextEditor
+          label={lesson.type === "text" ? "Contenu" : "Texte d'accompagnement (facultatif)"}
+          name="content"
+          defaultValue={lesson.content}
+          minHeight={lesson.type === "text" ? 320 : 200}
+          placeholder="Rédigez la leçon : titres, listes, encadrés « astuce », tableaux…"
+        />
       </div>
 
       {lesson.type === "practice" && (

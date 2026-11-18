@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+import { normalizeRich, plainText } from "@/lib/rich-text";
 import { AssignmentSubmission, Course, Module, User, type AssignmentSubmissionDoc } from "@/models";
 import { award } from "@/lib/gamification/service";
 import { XP } from "@/lib/gamification/rules";
@@ -34,13 +35,14 @@ export async function gradeSubmission(graderId: string, submissionId: string, in
   if (!Types.ObjectId.isValid(submissionId)) throw new AdminError("Identifiant invalide.");
   const sub = await AssignmentSubmission.findById(submissionId);
   if (!sub) throw new AdminError("Devoir introuvable.");
-  if (input.decision === "returned" && !input.feedback?.trim()) throw new AdminError("Expliquez à l'apprenant ce qu'il doit reprendre.");
+  const feedback = normalizeRich(input.feedback);
+  if (input.decision === "returned" && !plainText(feedback)) throw new AdminError("Expliquez à l'apprenant ce qu'il doit reprendre.");
   const grade = input.grade === null || input.grade === undefined || Number.isNaN(input.grade) ? null : Math.round(input.grade);
   if (grade !== null && (grade < 0 || grade > sub.maxScore)) throw new AdminError(`La note doit être entre 0 et ${sub.maxScore}.`);
 
   sub.status = input.decision;
   sub.grade = input.decision === "graded" ? grade : null;
-  sub.feedback = input.feedback?.trim() ?? "";
+  sub.feedback = feedback;
   sub.gradedBy = new Types.ObjectId(graderId);
   sub.gradedAt = new Date();
   await sub.save();

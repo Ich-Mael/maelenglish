@@ -43,3 +43,6 @@ next-env.d.ts
 
 # original portrait (2 MB) — the site uses the optimised public/images/photos/founder-* files
 /public/images/Ismael_ZERBO.png
+
+# HugeRTE static files, copied from node_modules by scripts/copy-hugerte.mjs
+/public/hugerte/

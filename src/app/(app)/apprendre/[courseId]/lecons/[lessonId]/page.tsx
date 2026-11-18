@@ -11,7 +11,7 @@ import { stepAfter } from "@/lib/learn/sequence";
 import { videoSource } from "@/lib/learn/media";
 import type { Exercise } from "@/lib/learn/exercises";
 import { AccessProblem, PageSkeleton } from "@/components/learn/ui";
-import { Markdown } from "@/components/learn/markdown";
+import { RichText } from "@/components/learn/rich-text";
 import { CompleteButton } from "@/components/learn/complete-button";
 import { PracticePlayer } from "@/components/learn/practice/player";
 
@@ -96,7 +96,7 @@ async function LessonView({ params }: { params: Promise<{ courseId: string; less
 
       {lesson.content && (
         <div className="rounded-3xl border-2 border-border bg-card p-5 sm:p-8">
-          <Markdown>{lesson.content}</Markdown>
+          <RichText>{lesson.content}</RichText>
         </div>
       )}
 
