@@ -7,7 +7,7 @@
 ## Commands
 
 ```bash
-npm run dev     # Next.js dev server (http://localhost:3000)
+npm run dev     # Next.js dev server (http://localhost:3001)
 npm run build   # production build — must pass before committing
 npm run lint    # ESLint — must pass before committing
 npm start       # serve the production build
