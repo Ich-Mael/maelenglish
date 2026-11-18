@@ -2,7 +2,7 @@ import { Schema, model, models, type InferSchemaType, type Model, type Types } f
 
 /**
  * Staff-only material attached to a module (lesson plan, activities, answer
- * key…). Replaces the legacy `Module.coachResources[]` links and the
+ * key…). Replaces the original app's `Module.coachResources[]` links and the
  * `TeachingResource` lesson plans.
  */
 export const RESOURCE_TYPES = ["lesson_plan", "activities", "answer_key", "slides", "worksheet", "rubric", "other"] as const;

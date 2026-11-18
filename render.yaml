@@ -1,11 +1,46 @@
+# Render Blueprint — MaelEnglish (Next.js, Node 22).
+# Secrets are marked `sync: false`: Render asks for their values when the
+# Blueprint is applied; set them in the dashboard (Environment), never in git.
+# Plan: choose a paid instance (e.g. Starter) — the free plan sleeps after
+# inactivity, which makes the first visit very slow.
 services:
   - type: web
     name: maelenglish
     runtime: node
+    region: frankfurt # closest Render region to West Africa
     buildCommand: npm ci && npm run build
     startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
     envVars:
       - key: NODE_ENV
         value: production
       - key: NODE_VERSION
-        value: 22.12.0
+        value: "22"
+      - key: APP_TZ
+        value: Africa/Ouagadougou
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      # Required
+      - key: APP_DB # mongodb+srv://…/maelenglish (dedicated database)
+        sync: false
+      - key: APP_URL # https://your-final-domain (no trailing slash)
+        sync: false
+      # Email (Brevo SMTP) — activation / reset links, enrolment emails
+      - key: EMAIL_FROM
+        sync: false
+      - key: EMAIL_HOST
+        value: smtp-relay.brevo.com
+      - key: EMAIL_PORT
+        value: "587"
+      - key: EMAIL_USERNAME
+        sync: false
+      - key: EMAIL_PASSWORD
+        sync: false
+      # WhatsApp Cloud API — enrolment notifications only (optional)
+      - key: WHATSAPP_TOKEN
+        sync: false
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        sync: false
+      - key: WHATSAPP_DEFAULT_COUNTRY_CODE
+        value: "226"

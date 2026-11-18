@@ -8,7 +8,7 @@
  *  - the module quiz opens once all the module's lessons are done;
  *  - the module assignment can be submitted as soon as the module is open;
  *  - the final exam and final project open once every module is complete.
- * Challenge course (ported from legacy challengeGate): each module is a "day".
+ * Challenge course (rules of the original app's challenge gate): each module is a "day".
  *  - time is the ceiling: day N opens N−1 days after the enrolment start;
  *  - checkpoints are the floor: day N+1 opens only once day N's checkpoint
  *    (module assignment, when `isCheckpointRequired`) is approved (status graded).

@@ -95,7 +95,7 @@ export async function createSession(userId: Id, meta: SessionMeta = {}): Promise
 }
 
 /**
- * Device registry (`User.devices`). As in the legacy app this is informational —
+ * Device registry (`User.devices`). As in the original app this is informational —
  * shown to the learner and to admins — and never blocks a login.
  */
 export async function trackDevice(userId: Id, deviceId: string, userAgent: string, ipAddress: string) {

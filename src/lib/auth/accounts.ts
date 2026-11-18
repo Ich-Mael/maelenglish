@@ -2,7 +2,7 @@ import { Enrollment, User, ADMIN_ROLES, hasRole, type Role, type UserDoc } from 
 import { deleteUserSessions, issueToken, setPassword } from "./service";
 
 /*
- * Account administration rules (ported from legacy/shared/routes/account.js):
+ * Account administration rules (carried over from the original MaelEnglish app):
  * - accounts are created by staff, never by self sign-up;
  * - while no admin exists, one bootstrap admin can be created (`/installation`);
  * - admin / super-admin roles are never assigned from the app (database only);

@@ -18,7 +18,7 @@ export type UserEdit = {
 };
 
 /**
- * Profile edit by staff. Role rules (legacy): admin / super-admin roles are
+ * Profile edit by staff. Role rules (from the original app): admin / super-admin roles are
  * never granted or removed from the app, and the role must be assignable by
  * the actor (account managers cannot escalate).
  */

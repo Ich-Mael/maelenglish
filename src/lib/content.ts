@@ -1,6 +1,6 @@
 import { PROGRAMS } from "./catalog";
 
-/* Editorial content of the public pages (ported verbatim from the legacy storefront). */
+/* Editorial content of the public pages (from the original MaelEnglish storefront). */
 
 export const METHOD_STEPS = [
   { title: "On fait le point", text: "Test de niveau, votre métier et vos objectifs : on vous oriente vers le bon programme." },

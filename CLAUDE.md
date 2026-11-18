@@ -2,7 +2,7 @@
 
 # CLAUDE.md
 
-**MaelEnglish** — interactive, gamified English learning platform (slogan « Speak the Language of Your Profession »). Being **rewritten** from the old AfroHK Express/EJS app into Next.js. All UI text is in **French**.
+**MaelEnglish** — interactive, gamified English learning platform (slogan « Speak the Language of Your Profession »), built around its founder Ismaël Zerbo (« Coach Mael »). Next.js app, installable as a PWA. All UI text is in **French**; learners are mostly French-speaking professionals in West Africa, often on low-end Android phones with expensive data — keep pages light.
 
 ## Commands
 
@@ -18,7 +18,7 @@ npm run seed:demo   # demo courses + accounts demo / demo-coach / demo-admin, pa
 
 ## Stack
 
-Next.js 16 (App Router, `src/`), React 19, TypeScript, Tailwind CSS 4 + shadcn/ui (`components.json`, style base-nova, icons lucide), Mongoose (`src/lib/db.ts` → `connectDB()`, cached on `globalThis`, server-only). Motion (`motion/react`), dnd-kit, react-markdown + remark-gfm (lesson text, no raw HTML). canvas-confetti, Zustand (reward queue). Feedback sounds are synthesised with Web Audio (no audio files). Planned: PWA. Auth is custom (see below). Hosting: Render (`render.yaml`, Node 22).
+Next.js 16 (App Router, `src/`), React 19, TypeScript, Tailwind CSS 4 + shadcn/ui (`components.json`, style base-nova, icons lucide), Mongoose (`src/lib/db.ts` → `connectDB()`, cached on `globalThis`, server-only). Motion (`motion/react`), dnd-kit, react-markdown + remark-gfm (lesson text, no raw HTML). canvas-confetti, Zustand (reward queue). Feedback sounds are synthesised with Web Audio (no audio files). Auth is custom (see below). Service worker hand-written (`public/sw.js`). Hosting: Render (`render.yaml`, Node 22) — see Deployment.
 
 Next.js 16 differs from older versions — read `node_modules/next/dist/docs/` before using an API you're unsure about (see `AGENTS.md`).
 
@@ -29,7 +29,7 @@ Mongoose 9 — **pre-hooks take no `next()`** (throw or `this.invalidate(...)` i
 - `User` — profile, roles and `passwordHash` (scrypt, `select: false`; empty until activation). Needs an **email OR a WhatsApp number**; `phoneE164` = `normalizePhone(phoneNumber)` (`src/lib/phone.ts`, default country 226), not unique (family phones). `username`/`email` lowercased, email unique + sparse. `ROLES`: user, english-coach, instructor, account-manager, admin, super-admin (`ADMIN_ROLES`, `STAFF_ROLES`, `hasRole`). Soft-delete: `isActive` (undefined = active, `isAccountActive`), `deactivatedAt/By`. Devices + `maxDevices` (3).
 - `Course` — `program` = catalogue slug (validated against `PROGRAM_SLUGS`, `''` = none), `level`, `isPublished`, default cohort `startDate/endDate`, `instructors`, `finalExam`, `finalProject`, `isChallenge` + `challenge.themeLabel`.
 - `Module` (`courseId`, `order`, `quiz`, `assignment`, `isCheckpointRequired`) → `Lesson` (`courseId`, `moduleId`, `order`, `isPublished`, `type` video | text | pdf | practice; `content` = Markdown; practice lessons hold `exercises[]`, see Learner app). Children point to parents; no id arrays on parents.
-- `Enrollment` — **the only source of course access** (replaces legacy `specialProgram`/`coursesTaken`/`students`): unique (userId, courseId), own `startDate`/`endDate` (null = open), `status` active | suspended | completed, `suspendedReason` (`account-deactivated` = lifted on account restore). `accessState(e, now)` → active | not-started | expired | suspended | completed.
+- `Enrollment` — **the only source of course access** (one record per learner and course): unique (userId, courseId), own `startDate`/`endDate` (null = open), `status` active | suspended | completed, `suspendedReason` (`account-deactivated` = lifted on account restore). `accessState(e, now)` → active | not-started | expired | suspended | completed.
 - `LessonProgress`, `QuizAttempt`, `AssignmentSubmission` (`src/models/Progress.ts`), `TeachingResource` (staff material per module).
 - `Session`, `AuthToken`, `RateLimit` (`src/models/Auth.ts`) — see Auth. All three have TTL indexes on `expiresAt`, but code always re-checks `expiresAt` (TTL deletion is lazy).
 - Quiz questions (`src/models/shared.ts`): `options: [{ id, text }]` (≥ 2), `correctOptionId` must match an option.
@@ -43,8 +43,8 @@ No auth library: Better Auth needs an email per account, and many learners only 
 - **Login** (`/connexion`) by username, email or WhatsApp number (`findByIdentifier`; a number shared by several accounts asks for the username). Rate-limited in MongoDB (`hitRateLimit`: 30 / 15 min per IP, 10 per identifier).
 - **Forgotten password** (`/mot-de-passe-oublie`): email link `/reinitialiser/<token>` (1 h); same answer whether or not the account exists; learners without email ask the team on WhatsApp (staff use `issueResetForUser`).
 - **Sessions**: random token in the `me_session` cookie (httpOnly, lax), only its sha256 stored in `Session`; 30 days, extended daily (`validateSession`) and the cookie's lifetime is refreshed by `src/proxy.ts`. A password change / reset signs out the other sessions; deactivation (`deactivateUser`) signs out everywhere and suspends enrolments (`restoreUser` lifts only those tagged `account-deactivated`).
-- **Devices**: `me_device` cookie → `User.devices` (informational, never blocks — same as the legacy app). The learner sees and revokes sessions on `/compte`.
-- Layers: `service.ts` (framework-free, unit-tested in `tests/auth.test.ts`), `session.ts` (cookies; only from Server Actions), `dal.ts` (`getCurrentUser` cached per render for Server Components, `readCurrentUser` uncached for Server Actions — sharing the render cache with an action trips a Next.js dev invariant; `requireUser`, `requireRole`), `src/app/(auth)/actions.ts`. `src/proxy.ts` only does optimistic redirects for `/compte`, `/admin`, `/mes-cours`, `/apprendre`; real checks are in the DAL.
+- **Devices**: `me_device` cookie → `User.devices` (informational, never blocks). The learner sees and revokes sessions on `/compte`.
+- Layers: `service.ts` (framework-free, unit-tested in `tests/auth.test.ts`), `session.ts` (cookies; only from Server Actions), `dal.ts` (`getCurrentUser` cached per render for Server Components, `readCurrentUser` uncached for Server Actions — sharing the render cache with an action trips a Next.js dev invariant; `requireUser`, `requireRole`), `src/app/(auth)/actions.ts`. `src/proxy.ts` only does optimistic redirects for the private areas (`/compte`, `/admin`, `/mes-cours`, `/apprendre`, `/progression`); real checks are in the DAL. `getCurrentUser` calls `connection()` (session expiry depends on the clock — avoids prerender errors).
 - Cache Components: anything reading cookies, params or the current time sits inside `<Suspense>` (with `await connection()` before time-dependent queries). Don't use `useSearchParams()` in auth forms: it pushes them to client-only rendering (`useNextParam` in `login-form.tsx` reads `?next=` after hydration instead); `safeNext` blocks open redirects.
 - Email: `src/lib/email.ts` (nodemailer, Brevo SMTP; simulation mode without `EMAIL_*`: links are logged in development).
 
@@ -60,7 +60,7 @@ Route group with the shared header / footer (`src/components/site/`). Pages: `/`
 
 Signed-in shell (`(app)/layout.tsx`: top bar on desktop, bottom tab bar on phones). Pages: `/mes-cours` (enrolments + progress; welcome banner after activation), `/apprendre/[courseId]` (course map: modules → lesson nodes, quiz, assignment, finals; « Continuer » = `outline.next`), `/apprendre/[courseId]/lecons/[lessonId]` (video / text / PDF + « J'ai terminé », or the practice player), `/modules/[moduleId]/quiz`, `/modules/[moduleId]/devoir`, `/examen`, `/projet`, `/progression`, `/compte`. Login and activation land on `/mes-cours`; programme pages show « Accéder à mon cours » to enrolled learners (`components/site/enrolled-cta.tsx`).
 - **Access** (`src/lib/learn/queries.ts`, server-only): `courseAccess(me, courseId)` — learners need an `Enrollment` whose `accessState` is active (or completed = read-only) on a published course; staff (`isStaff`) preview everything and **nothing is saved**. `courseTree` loads modules, published lessons, progress, best quiz scores, submissions and computes the outline. Every page and action re-checks access and that the step is open.
-- **Progression** (`src/lib/learn/progress.ts`, pure, `tests/progress.test.ts`): lessons open one after another; the module quiz opens when the module's lessons are done; module N+1 opens when module N is complete (lessons + quiz passed); assignments open with their module; final exam / project open when every module is complete. Challenge courses (`isChallenge`): ported legacy rule — day N opens N−1 days after the enrolment start (time ceiling) and only once the previous checkpoint (module assignment, `isCheckpointRequired`) is graded.
+- **Progression** (`src/lib/learn/progress.ts`, pure, `tests/progress.test.ts`): lessons open one after another; the module quiz opens when the module's lessons are done; module N+1 opens when module N is complete (lessons + quiz passed); assignments open with their module; final exam / project open when every module is complete. Challenge courses (`isChallenge`): day N opens N−1 days after the enrolment start (time ceiling) and only once the previous checkpoint (module assignment, `isCheckpointRequired`) is graded.
 - **Exercises** (`src/lib/learn/exercises.ts`, shared by browser and server): kinds `choice`, `build` (tap words), `order` (dnd-kit), `match`, `listen` (dictation, speech synthesis or `audioUrl`), `speak` (MediaRecorder + SpeechRecognition when available, else self-check; « Passer » when there's no mic), `gap` (`___`). `checkExercise` grades, `exerciseProblem` validates definitions (model pre-validate), shuffles are seeded (`seededShuffle`, no hydration mismatch). Player: `components/learn/practice/player.tsx` (check → feedback → missed exercises come back once; first tries are sent to `submitPractice`, regraded server-side → `LessonProgress.practiceScore`).
 - **Graded quizzes** (module quiz, final exam): questions are sent **without answers**; `submitQuiz` grades on the server (`gradeQuiz`), stores a `QuizAttempt`, returns the review. Optional time limit is enforced client-side only (auto-submit).
 - **Assignments** (module assignment / challenge checkpoint / final project): `submitAssignment` upserts one `AssignmentSubmission` (resubmitting resets it to pending; graded ones are locked).
@@ -94,14 +94,19 @@ Catalogue: `src/lib/catalog.ts` (`PROGRAMS`, `FORMAT`, `findProgram`, `formatFor
 
 Tokens in `src/app/globals.css`: shadcn variables mapped to the brand (`primary` = blue #364fab, `accent` = coral) plus Tailwind colours `coral`, `coral-strong`, `coral-dark`, `coral-soft`, `brand`, `brand-dark`, `brand-deep`, `brand-soft`, `ink`, `success`, `xp`. Fonts (`next/font`): **Archivo** for headings (`font-heading`, applied to h1–h4), **Outfit** for body (`font-sans`). Images in `public/images/` (logos `maelenglish-logo*`, `-light` for dark backgrounds, OG image `maelenglish-og.jpg`) and `public/images/photos/<name>-{720,1280}.webp` + `-1280.jpg` (programme photos).
 
-## Rewrite status
+## Conventions & history
 
-- `legacy/` = the old Express/EJS MaelEnglish app, **read-only reference** while porting (models, `catalog.js`, account/WhatsApp/notification flows, course engine). `legacy/CLAUDE.md` documents it in detail. Never run or import it from the new app; it is deleted at the end of the rewrite.
-- E-Kalan, Institution and the AfroHK pages were removed and are not to be ported.
-- URLs live at the root (`/`, `/programmes/[slug]`, `/coaching`, `/cours/...`); no redirects from the old `/maelenglish/*` URLs (the app had no users).
-- Uses a **new, separate MongoDB database** (`APP_DB`), never the AfroHK one.
-- Phases: 0 scaffold ✅ → 1 models & catalogue ✅ → 2 auth ✅ → 3 public site ✅ → 4 learner app & exercises ✅ → 5 gamification ✅ → 6 admin & instructor ✅ → 7 PWA & polish ✅ → 8 delete `legacy/`, deploy → 9 Play Store (Trusted Web Activity).
+- URLs live at the root in French (`/programmes/[slug]`, `/coaching`, `/connexion`, `/mes-cours`, `/apprendre/...`, `/admin/...`). The app replaced the MaelEnglish part of the old AfroHK Express/EJS monolith (deleted; still in git history before the « remove legacy » commit). It had no users, so there are no redirects from old URLs and the database is **new and separate** (`APP_DB`, never the AfroHK one — the server refuses to start with an AfroHK `APP_DB`).
+- Public figures must be verifiable (no invented stats); founder texts in `FOUNDER` are his own words.
+- Product decisions: no self sign-up (staff create accounts); no WhatsApp messages for passwords; coach validation = +20 XP; app icon = logo « M » in blue with the red bar/toggle.
+- Before committing: `npm run lint`, `npm test`, `npm run build`. Tests touching the database use `mongodb-memory-server`; never point a script at a real database without checking `APP_DB`.
 
 ## Environment
 
-See `.env.example`. Required: `APP_DB`, `SECRET`, `APP_URL`. Email via Brevo SMTP (`EMAIL_*`), WhatsApp Cloud API (`WHATSAPP_*`, simulation mode without token).
+See `.env.example`. Required: `APP_DB`, `APP_URL` (prod: the final https domain — baked into email links, sitemap, share images). Optional: `APP_TZ` (default Africa/Ouagadougou), Brevo SMTP (`EMAIL_*`), WhatsApp Cloud API (`WHATSAPP_*`, simulation mode without token). Local: put overrides in `.env.local` (wins over `.env`). `src/instrumentation-node.ts` checks the configuration at startup (exits without `APP_DB`, warns about missing production settings).
+
+## Deployment (Render)
+
+`render.yaml` Blueprint: web service, Frankfurt, `npm ci && npm run build`, `npm start`, health check `GET /api/health` (200 when MongoDB answers within 3 s, else 503). Secrets (`APP_DB`, `APP_URL`, `EMAIL_*`, `WHATSAPP_*`) are `sync: false` — set them in the Render dashboard. After the first deploy: open `/installation` to create the first admin, then link the custom domain (HTTPS). Use a paid instance (the free plan sleeps).
+
+Next: **Play Store** (Trusted Web Activity, after the final domain is live): `/.well-known/assetlinks.json`, Play developer account, store listing + data-safety form, privacy policy link, « store mode » hiding sign-up / payment buttons inside the app.

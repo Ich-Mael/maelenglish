@@ -13,7 +13,6 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     // Old Express/EJS app, kept as reference while porting
-    "legacy/**",
   ]),
 ]);
 

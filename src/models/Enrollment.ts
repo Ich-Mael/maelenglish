@@ -2,7 +2,7 @@ import { Schema, model, models, type InferSchemaType, type Model, type Types } f
 
 /**
  * A learner's access to a course, with its own date window. Replaces the
- * legacy `User.specialProgram[]` (matched by course title) / `coursesTaken[]`
+ * original app's `User.specialProgram[]` (matched by course title) / `coursesTaken[]`
  * / `Course.students[]` trio: this is the only source of truth for access.
  *
  * `suspendedReason: 'account-deactivated'` marks suspensions made when the
