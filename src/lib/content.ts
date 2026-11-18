@@ -73,3 +73,33 @@ export function quizItems() {
     return { slug: p.slug, label: p.name.replace(/^MaelEnglish\s*(for\s*)?/, "") || "Essentials", en: phrase.en, options, answer };
   });
 }
+
+/**
+ * The founder / lead coach — MaelEnglish is built around his personal brand.
+ * ⚠ Texts in [crochets] are placeholders to fill in before going live
+ * (see `hasPlaceholders`).
+ */
+export const FOUNDER = {
+  name: "Ismaël Zerbo",
+  firstName: "Ismaël",
+  photo: "founder",
+  title: "[Fondateur & coach d'anglais professionnel]",
+  /** Short hook under the name. */
+  tagline: "[Une phrase qui résume votre mission, ex. « J'aide les professionnels francophones à parler l'anglais de leur métier avec assurance. »]",
+  /** 2–3 short paragraphs, first person. */
+  story: [
+    "[Votre parcours : comment vous avez appris l'anglais, votre expérience d'enseignement, les secteurs où vous avez travaillé.]",
+    "[Pourquoi vous avez créé MaelEnglish : le problème que vous avez constaté chez vos apprenants et votre méthode pour le résoudre.]",
+  ],
+  /** Key facts shown as chips (value + label). */
+  facts: [
+    { value: "[X ans]", label: "[d'enseignement de l'anglais]" },
+    { value: "[Certification]", label: "[ex. TEFL, CELTA, TOEIC…]" },
+    { value: "[XXX+]", label: "[professionnels accompagnés]" },
+  ],
+  /** Short quote / signature line. */
+  quote: "[Votre phrase signature, ex. « L'anglais n'est pas une matière, c'est un outil de travail. »]",
+} as const;
+
+/** True while some founder texts are still placeholders. */
+export const hasPlaceholders = (v: unknown): boolean => JSON.stringify(v).includes("[");

@@ -3,6 +3,7 @@ import { ArrowDown, BadgeCheck, Briefcase, Building2, CalendarCheck, ChevronDown
 import { COACHING } from "@/lib/content";
 import { COACHING_WA, PHONE_DISPLAY, PHONE_TEL } from "@/lib/site";
 import { BUTTON, ButtonLink, Container, PhraseCard, Pill, SectionHead, WhatsAppButton } from "@/components/site/ui";
+import { FounderCard } from "@/components/site/founder";
 
 export const metadata: Metadata = {
   title: "Coaching individuel en anglais professionnel",
@@ -39,6 +40,10 @@ export default function CoachingPage() {
               <li className="flex items-center gap-1.5"><CalendarCheck className="size-4 text-primary" aria-hidden /> Horaires flexibles</li>
               <li className="flex items-center gap-1.5"><Video className="size-4 text-primary" aria-hidden /> 100 % en ligne</li>
             </ul>
+            <div className="mt-8">
+              <p className="mb-2 text-xs font-bold tracking-wide text-muted-foreground uppercase">Votre coach</p>
+              <FounderCard className="w-fit" />
+            </div>
           </div>
           <div className="grid gap-4" aria-label="Exemples d'objectifs de coaching">
             {COACHING.phrases.map((ph, i) => (

@@ -8,6 +8,8 @@ import { MiniQuiz } from "@/components/site/mini-quiz";
 import { Photo } from "@/components/site/photo";
 import { BUTTON, Container, PhraseCard, SectionHead, WhatsAppButton } from "@/components/site/ui";
 import { JsonLd, organizationJsonLd } from "@/components/site/json-ld";
+import { FounderSection } from "@/components/site/founder";
+import { FOUNDER } from "@/lib/content";
 
 const featured = PROGRAMS.find((p) => p.featured);
 const jobs = PROGRAMS.filter((p) => !p.featured);
@@ -19,6 +21,7 @@ export default function HomePage() {
       <Hero />
       <Programmes />
       <TryIt />
+      <FounderSection />
       <Method />
       <Stats />
       <Testimonials />
@@ -58,22 +61,26 @@ function Hero() {
         </div>
 
         <div className="relative mx-auto w-full max-w-md lg:max-w-none" aria-label="Exemples de phrases professionnelles">
-          <div className="aspect-[4/5] overflow-hidden rounded-[2.5rem] border-4 border-white shadow-[0_30px_70px_-30px_rgb(20_31_77/0.6)] sm:aspect-[5/5]">
-            <Photo name="meeting" alt="Équipe de professionnels en réunion de travail" sizes="(max-width: 1023px) 90vw, 480px" position="62% center" eager />
+          <div className="relative aspect-square overflow-hidden rounded-[2.5rem] border-4 border-white bg-[#070b1d] shadow-[0_30px_70px_-30px_rgb(20_31_77/0.6)]">
+            <Photo name={FOUNDER.photo} alt={`${FOUNDER.name}, fondateur de MaelEnglish`} sizes="(max-width: 1023px) 90vw, 480px" position="center 30%" eager />
+            <a href="#votre-coach" className="absolute top-4 left-4 rounded-2xl bg-white/95 px-3.5 py-2 shadow-lg backdrop-blur hover:bg-white">
+              <span className="block font-heading text-sm font-extrabold text-brand-deep">{FOUNDER.name}</span>
+              <span className="block text-xs font-semibold text-coral-dark">Fondateur · votre coach</span>
+            </a>
           </div>
           <PhraseCard
             role="Health"
             icon={HeartPulse}
             en="Can you describe the pain?"
             fr="Pouvez-vous décrire la douleur ?"
-            className="absolute top-6 left-0 max-w-[15rem] animate-float sm:-left-8"
+            className="absolute top-[58%] -left-8 hidden max-w-[15rem] animate-float sm:block"
           />
           <PhraseCard
             role="Business"
             icon={Briefcase}
             en="Let's go over the agenda for today's meeting."
             fr="Passons en revue l'ordre du jour de la réunion."
-            className="absolute right-0 bottom-8 max-w-[16rem] animate-float [animation-delay:-3s] sm:-right-6"
+            className="absolute -right-6 bottom-6 hidden max-w-[16rem] animate-float [animation-delay:-3s] sm:block"
           />
         </div>
       </Container>

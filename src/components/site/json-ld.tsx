@@ -1,5 +1,6 @@
 import type { Program } from "@/lib/catalog";
 import { PHONE_TEL, SITE_NAME, SITE_URL, SLOGAN } from "@/lib/site";
+import { FOUNDER } from "@/lib/content";
 
 /** schema.org structured data (escaped so a « </script> » in content can't break out). */
 export function JsonLd({ data }: { data: object }) {
@@ -18,6 +19,7 @@ const org = {
   url: SITE_URL,
   logo: `${SITE_URL}/images/maelenglish-logo.png`,
   telephone: PHONE_TEL,
+  founder: { "@type": "Person", name: FOUNDER.name, image: `${SITE_URL}/images/photos/${FOUNDER.photo}-1280.jpg` },
 };
 
 export function organizationJsonLd() {
