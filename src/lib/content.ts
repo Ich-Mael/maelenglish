@@ -19,7 +19,7 @@ export const METHOD_FACTS = [
 
 /** Verifiable figures only (from the catalogue and the founder's own record). */
 export const STATS = [
-  { value: "40", suffix: "+", label: "Professionnels formés par Coach Mael" },
+  { value: "40", suffix: "+", label: "Professionnels formés par Coach Ish" },
   { value: String(PROGRAMS.length), suffix: "", label: "Programmes, de l'anglais général aux métiers" },
   { value: "50", suffix: " h", label: "De contenu par programme" },
   { value: "100", suffix: " %", label: "En ligne, sur ordinateur ou téléphone" },
@@ -64,10 +64,10 @@ export const FOUNDER = {
   name: "Ismaël Zerbo",
   firstName: "Ismaël",
   /** What learners call him. */
-  nickname: "Coach Mael",
+  nickname: "Coach Ish",
   photo: "founder",
   title: "Fondateur de MaelEnglish · coach certifié TEFL",
-  greeting: "mais mes apprenants m’appellent Coach Mael.",
+  greeting: "mais mes apprenants m’appellent Coach Ish.",
   tagline: "J’aide les professionnels francophones à parler l’anglais de leur métier avec aisance, en réunion, en négociation et à l’écrit.",
   story: [
     "L’anglais fait partie de ma vie depuis l’enfance : nos vacances en famille au Ghana et au Nigeria m’ont plongé très tôt dans la langue, au quotidien. J’ai ensuite suivi une formation en Afrique du Sud, puis obtenu une certification TEFL (Teaching English as a Foreign Language) auprès d’un centre de formation accrédité aux États-Unis.",

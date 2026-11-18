@@ -3,7 +3,7 @@ import { CircleUserRound, LogIn } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/dal";
 
 const cls =
-  "inline-flex h-10 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-brand-deep transition-colors hover:bg-brand-soft";
+  "inline-flex h-10 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-brand-deep transition-colors hover:bg-brand-soft group-data-[scrolled=true]/hdr:text-white group-data-[scrolled=true]/hdr:hover:bg-white/10";
 
 /** Header account entry — reads the session, so it renders inside <Suspense> (fallback: the logged-out link). */
 export async function AccountLink() {

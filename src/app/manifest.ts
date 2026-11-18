@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     id: "/",
     name: "MaelEnglish — Speak the Language of Your Profession",
     short_name: "MaelEnglish",
-    description: "L'anglais de votre métier, avec Coach Mael : leçons interactives, exercices, quiz et suivi par un coach.",
+    description: "L'anglais de votre métier, avec Coach Ish : leçons interactives, exercices, quiz et suivi par un coach.",
     lang: "fr",
     dir: "ltr",
     start_url: "/mes-cours?source=pwa",

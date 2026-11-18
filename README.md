@@ -1,6 +1,6 @@
 # MaelEnglish
 
-**Speak the Language of Your Profession** — interactive English learning platform by Coach Mael (Ismaël Zerbo): general English and English for professions (aviation, business, health, tech, finance…), with gamified practice, graded quizzes, coach-corrected assignments, and an installable, offline-capable app.
+**Speak the Language of Your Profession** — interactive English learning platform by Coach Ish (Ismaël Zerbo): general English and English for professions (aviation, business, health, tech, finance…), with gamified practice, graded quizzes, coach-corrected assignments, and an installable, offline-capable app.
 
 Next.js 16 · React 19 · TypeScript · Tailwind CSS 4 · MongoDB (Mongoose) · hosted on Render.
 

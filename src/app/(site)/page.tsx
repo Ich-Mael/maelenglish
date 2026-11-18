@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ArrowDown, ArrowRight, Briefcase, HeartPulse, Laptop, LayoutGrid, Quote, UserRound, Users, Zap } from "lucide-react";
+import { ArrowDown, ArrowRight, BadgeCheck, Briefcase, HeartPulse, LayoutGrid, Quote, UserRound, Users, Zap } from "lucide-react";
 import { PROGRAMS, whatsappLink } from "@/lib/catalog";
 import { METHOD_FACTS, METHOD_STEPS, STATS, TESTIMONIALS } from "@/lib/content";
 import { CHALLENGE_WA } from "@/lib/site";
@@ -35,13 +35,15 @@ function Hero() {
       <div aria-hidden className="pointer-events-none absolute top-40 -left-48 size-[30rem] bg-[radial-gradient(closest-side,var(--color-brand-soft),transparent)]" />
       <Container className="relative grid items-center gap-12 py-12 sm:py-16 lg:grid-cols-[1.15fr_1fr] lg:py-20">
         <div>
-          <Image src="/images/maelenglish-logo.webp" alt="" width={800} height={175} priority className="mb-6 h-auto w-52 sm:w-60" />
+          <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-sm font-semibold text-brand-deep shadow-sm">
+            <span className="size-2 rounded-full bg-coral" aria-hidden /> Anglais professionnel · 100 % en ligne
+          </p>
           <h1 lang="en" className="text-4xl leading-[1.05] font-extrabold text-brand-deep text-balance sm:text-5xl lg:text-6xl">
             Speak the Language of <span className="text-coral">Your Profession</span>
           </h1>
           <p className="mt-5 max-w-xl text-lg text-muted-foreground text-pretty">
-            Réunions, e-mails, entretiens, clients : avec MaelEnglish, vous pratiquez l&apos;anglais des situations que vous
-            vivez vraiment au travail, accompagné par des coachs qui corrigent chaque étape.
+            Réunions, e-mails, entretiens, clients : pratiquez l&apos;anglais des situations que vous vivez vraiment au travail,
+            avec un coach qui corrige chaque étape.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a href="#programmes" className={BUTTON.coral}>
@@ -54,7 +56,7 @@ function Hero() {
           <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-ink/75">
             <li className="flex items-center gap-1.5"><LayoutGrid className="size-4 text-primary" aria-hidden /> {PROGRAMS.length} programmes</li>
             <li className="flex items-center gap-1.5"><Users className="size-4 text-primary" aria-hidden /> 40+ professionnels formés</li>
-            <li className="flex items-center gap-1.5"><Laptop className="size-4 text-primary" aria-hidden /> 100 % en ligne</li>
+            <li className="flex items-center gap-1.5"><BadgeCheck className="size-4 text-primary" aria-hidden /> Coach certifié TEFL</li>
           </ul>
         </div>
 

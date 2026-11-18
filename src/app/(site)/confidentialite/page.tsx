@@ -35,7 +35,7 @@ export default function PrivacyPage() {
       <div className="mt-8 grid gap-8 leading-relaxed">
         <Section title="Qui sommes-nous ?">
           <p>
-            MaelEnglish est une plateforme d&apos;apprentissage de l&apos;anglais professionnel fondée par Ismaël Zerbo (« Coach Mael »). Le
+            MaelEnglish est une plateforme d&apos;apprentissage de l&apos;anglais professionnel fondée par Ismaël Zerbo (« Coach Ish »). Le
             responsable du traitement des données est : {ENTITY}.
           </p>
           <p>

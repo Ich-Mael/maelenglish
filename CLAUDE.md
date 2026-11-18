@@ -2,7 +2,7 @@
 
 # CLAUDE.md
 
-**MaelEnglish** — interactive, gamified English learning platform (slogan « Speak the Language of Your Profession »), built around its founder Ismaël Zerbo (« Coach Mael »). Next.js app, installable as a PWA. All UI text is in **French**; learners are mostly French-speaking professionals in West Africa, often on low-end Android phones with expensive data — keep pages light.
+**MaelEnglish** — interactive, gamified English learning platform (slogan « Speak the Language of Your Profession »), built around its founder Ismaël Zerbo (« Coach Ish »). Next.js app, installable as a PWA. All UI text is in **French**; learners are mostly French-speaking professionals in West Africa, often on low-end Android phones with expensive data — keep pages light.
 
 ## Commands
 
@@ -51,8 +51,8 @@ No auth library: Better Auth needs an email per account, and many learners only 
 ## Public site (`src/app/(site)/`)
 
 Route group with the shared header / footer (`src/components/site/`). Pages: `/` (storefront: hero, catalogue, « Votre coach », method, stats, testimonials, CTA), `/programmes/[slug]` (all slugs prerendered via `generateStaticParams`; unknown slug → `notFound()`), `/coaching`. Plus `src/app/sitemap.ts`, `robots.ts`, `not-found.tsx`; JSON-LD (`components/site/json-ld.tsx`: EducationalOrganization on `/`, Course per programme). All public content comes from `src/lib/catalog.ts` (programmes) and `src/lib/content.ts` (method, stats, testimonials, coaching texts, `FOUNDER`); `src/lib/site.ts` holds `SITE_URL` (from `APP_URL`, also used by `metadataBase`, sitemap, OG images), phone and WhatsApp links.
-- **Personal branding**: the founder Ismaël Zerbo is the face of the brand — portrait `public/images/photos/founder-{720,1280}.webp` + `-1280.jpg` (generated with sharp from the original PNG) in the home hero, the « Votre coach » section (`components/site/founder.tsx`, after the catalogue) and the coaching hero (`FounderCard`); `FOUNDER` (name, « Coach Mael » nickname, title, story, facts, quote) holds his own texts — edit them there.
-- Server Components by default; the only client pieces are `phrase-flip.tsx` and `speak.tsx` (Web Speech API « écouter », hidden where unsupported). The header's account link reads the session inside `<Suspense>` (fallback = « Connexion »), so the pages stay prerendered. Mobile menu and FAQ use `<details>` (no JS).
+- **Personal branding**: the founder Ismaël Zerbo is the face of the brand — portrait `public/images/photos/founder-{720,1280}.webp` + `-1280.jpg` (generated with sharp from the original PNG) in the home hero, the « Votre coach » section (`components/site/founder.tsx`, after the catalogue) and the coaching hero (`FounderCard`); `FOUNDER` (name, « Coach Ish » nickname, title, story, facts, quote) holds his own texts — edit them there.
+- Server Components by default; the only client pieces are `phrase-flip.tsx` and `speak.tsx` (Web Speech API « écouter », hidden where unsupported). The header's account link reads the session inside `<Suspense>` (fallback = « Connexion »), so the pages stay prerendered. The header turns navy once scrolled (`scroll-header.tsx`, `data-scrolled` + `group-data-[scrolled=true]/hdr:` variants; light wordmark `maelenglish-mark-light.webp` swapped in). The hero shows the logo only once (in the header). Mobile menu and FAQ use `<details>` (no JS).
 - Photos: `<Photo>` (`components/site/photo.tsx`) renders the pre-sized WebP/JPEG files with a plain `<picture>` (no image optimiser). Catalogue icon names map to lucide components in `components/site/icons.tsx` (`ICONS`, plus `WhatsAppIcon`).
 - UI primitives: `components/site/ui.tsx` (`Container`, `SectionHead`, `Pill`, `BUTTON` styles with the « pressable » 3D shadow, `WhatsAppButton`, `PhraseCard`). Feedback animations `animate-pop` / `animate-shake` / `animate-float` are defined in `globals.css` and disabled with `prefers-reduced-motion`.
 
