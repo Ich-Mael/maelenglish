@@ -37,3 +37,12 @@ describe("catalog", () => {
     expect(decodeURIComponent(whatsappLink())).toContain("informations");
   });
 });
+
+describe("shortProgramName", () => {
+  it("drops the brand (and « for ») for cards and lists", async () => {
+    const { shortProgramName, findProgram } = await import("@/lib/catalog");
+    expect(shortProgramName(findProgram("aviation")!)).toBe("Aviation");
+    expect(shortProgramName(findProgram("civil-engineering")!)).toBe("Civil Engineering");
+    expect(shortProgramName(findProgram("essentials")!)).toBe("Essentials");
+  });
+});

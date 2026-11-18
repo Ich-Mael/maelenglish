@@ -21,7 +21,7 @@ import {
   UserCheck,
   Wallet,
 } from "lucide-react";
-import { PROGRAMS, findProgram, formatFor, programPhoto, whatsappLink, type Program } from "@/lib/catalog";
+import { PROGRAMS, findProgram, formatFor, programPhoto, shortProgramName, whatsappLink, type Program } from "@/lib/catalog";
 import { PHONE_DISPLAY, PHONE_TEL, splitBrand } from "@/lib/site";
 import { ICONS } from "@/components/site/icons";
 import { Photo } from "@/components/site/photo";
@@ -373,7 +373,7 @@ function Others({ current }: { current: string }) {
                   href={`/programmes/${o.slug}`}
                   className="inline-flex items-center gap-2 rounded-2xl border-2 border-border bg-card px-4 py-2.5 font-semibold text-brand-deep transition hover:-translate-y-0.5 hover:border-primary/40"
                 >
-                  <Icon className="size-4 text-primary" aria-hidden /> {o.name}
+                  <Icon className="size-4 text-primary" aria-hidden /> {shortProgramName(o)}
                 </Link>
               </li>
             );

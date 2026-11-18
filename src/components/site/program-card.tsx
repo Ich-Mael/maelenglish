@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, BarChart3, CircleCheck, Hourglass, Laptop, PlayCircle, Timer } from "lucide-react";
-import type { Program } from "@/lib/catalog";
-import { splitBrand } from "@/lib/site";
+import { shortProgramName, type Program } from "@/lib/catalog";
 import { ICONS } from "./icons";
 import { Photo } from "./photo";
 import { PhraseCard } from "./ui";
@@ -18,14 +17,6 @@ export function StatusBadge({ program, long }: { program: Program; long?: boolea
   );
 }
 
-function Brand({ name }: { name: string }) {
-  const [brand, rest] = splitBrand(name);
-  return (
-    <>
-      {brand} {rest && <span className="text-coral">{rest}</span>}
-    </>
-  );
-}
 
 const meta = "inline-flex items-center gap-1.5";
 
@@ -44,7 +35,7 @@ export function FeaturedProgramCard({ program: p }: { program: Program }) {
           <StatusBadge program={p} long />
         </div>
         <h3 className="text-2xl font-extrabold text-brand-deep sm:text-3xl">
-          <Brand name={p.name} />
+          {shortProgramName(p)}
         </h3>
         <p className="mt-1 font-semibold text-primary">{p.tagline}</p>
         <p className="mt-3 text-muted-foreground">{p.summary}</p>
@@ -90,7 +81,7 @@ export function ProgramCard({ program: p }: { program: Program }) {
       </div>
       <div className="flex flex-1 flex-col p-5 pt-7">
         <h3 className="text-xl font-extrabold text-brand-deep">
-          <Brand name={p.name} />
+          {shortProgramName(p)}
         </h3>
         <p className="text-sm font-semibold text-primary">{p.tagline}</p>
         <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{p.summary}</p>

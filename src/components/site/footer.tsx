@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Phone } from "lucide-react";
-import { PROGRAMS, whatsappLink } from "@/lib/catalog";
+import { PROGRAMS, shortProgramName, whatsappLink } from "@/lib/catalog";
 import { CHALLENGE_WA, PHONE_DISPLAY, PHONE_TEL } from "@/lib/site";
 import { WhatsAppIcon } from "./icons";
 
@@ -23,7 +23,7 @@ export function SiteFooter() {
         <FooterCol title="Programmes">
           {PROGRAMS.slice(0, 6).map((p) => (
             <FooterLink key={p.slug} href={`/programmes/${p.slug}`}>
-              {p.name.replace(/^MaelEnglish\s*/, "") || p.name}
+              {shortProgramName(p)}
             </FooterLink>
           ))}
           <FooterLink href="/#programmes">Tous les programmes</FooterLink>

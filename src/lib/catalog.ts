@@ -309,6 +309,11 @@ export const PROGRAMS: readonly Program[] = [
 
 export const PROGRAM_SLUGS: readonly string[] = PROGRAMS.map((p) => p.slug);
 
+/** « MaelEnglish for Aviation » → « Aviation », « MaelEnglish Essentials » → « Essentials » (cards, lists: avoids repeating the brand). */
+export function shortProgramName(p: Pick<Program, "name">): string {
+  return p.name.replace(/^MaelEnglish\s*/, "").replace(/^for\s+/i, "") || p.name;
+}
+
 export function findProgram(slug: string | null | undefined): Program | null {
   if (!slug) return null;
   return PROGRAMS.find((p) => p.slug === slug) ?? null;
