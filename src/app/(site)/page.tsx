@@ -21,8 +21,8 @@ export default function HomePage() {
       <JsonLd data={organizationJsonLd()} />
       <Hero />
       <Programmes />
-      <CoachingPremium />
       <FounderSection />
+      <CoachingPremium />
       <Method />
       <Stats />
       <Testimonials />
