@@ -5,6 +5,7 @@ import remarkGfm from "remark-gfm";
 import remarkRehype from "remark-rehype";
 import rehypeStringify from "rehype-stringify";
 import { isHtml } from "./rich-detect";
+import { HIGHLIGHT_COLORS, TEXT_COLORS } from "./rich-palette";
 
 /*
  * Long staff-written texts (lesson text, course description, assignment instructions, coach
@@ -18,9 +19,30 @@ import { isHtml } from "./rich-detect";
 
 export { isHtml };
 
+/** Matches exactly the palette colours, written as hex or rgb() (the editor may use either). */
+function colorPattern(colors: readonly { hex: string }[]): RegExp {
+  const forms = colors.flatMap(({ hex }) => {
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+    return [hex, `rgb\\(\\s*${r},\\s*${g},\\s*${b}\\s*\\)`];
+  });
+  return new RegExp(`^(?:${forms.join("|")})$`, "i");
+}
+const ALIGN = { "text-align": [/^(?:left|center|right|justify)$/] };
+
 const OPTIONS: sanitizeHtml.IOptions = {
   allowedTags: ["p", "br", "h2", "h3", "h4", "strong", "b", "em", "i", "u", "s", "ul", "ol", "li", "blockquote", "a", "code", "pre", "hr", "table", "thead", "tbody", "tr", "th", "td", "span", "sub", "sup"],
-  allowedAttributes: { a: ["href", "title", "target", "rel"], th: ["colspan", "rowspan"], td: ["colspan", "rowspan"] },
+  allowedAttributes: {
+    a: ["href", "title", "target", "rel"],
+    th: ["colspan", "rowspan", "style"],
+    td: ["colspan", "rowspan", "style"],
+    span: ["style"],
+    ...Object.fromEntries(["p", "h2", "h3", "h4", "li"].map((t) => [t, ["style"]])),
+  },
+  // Only the editor's palette colours and text alignment; every other style is dropped.
+  allowedStyles: {
+    span: { color: [colorPattern(TEXT_COLORS)], "background-color": [colorPattern(HIGHLIGHT_COLORS)] },
+    ...Object.fromEntries(["p", "h2", "h3", "h4", "li", "th", "td"].map((t) => [t, ALIGN])),
+  },
   allowedSchemes: ["http", "https", "mailto", "tel"],
   allowProtocolRelative: false,
   transformTags: {
@@ -31,6 +53,7 @@ const OPTIONS: sanitizeHtml.IOptions = {
     div: "p",
     a: (tagName, attribs) => ({ tagName, attribs: { ...attribs, target: "_blank", rel: "noopener noreferrer" } }),
   },
+  // Empty spans (left by removed formatting) go.
   exclusiveFilter: (frame) => frame.tag === "span" && !frame.text.trim(),
 };
 

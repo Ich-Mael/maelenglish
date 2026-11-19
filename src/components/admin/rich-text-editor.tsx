@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import { Editor } from "@hugerte/hugerte-react";
+import { HIGHLIGHT_COLORS, TEXT_COLORS, colorMap } from "@/lib/rich-palette";
 
 /*
  * HugeRTE rich-text field for long staff texts. HugeRTE is served from /hugerte (copied from
@@ -50,9 +51,17 @@ export function RichTextEditor({
             statusbar: false,
             branding: false,
             plugins: "lists link autolink table autoresize",
-            toolbar: "blocks | bold italic underline | bullist numlist | blockquote link table | removeformat | undo redo",
+            toolbar:
+              "blocks | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright | bullist numlist | blockquote link table | superscript subscript | removeformat | undo redo",
             toolbar_mode: "wrap",
-            block_formats: "Paragraphe=p; Titre=h2; Sous-titre=h3",
+            block_formats: "Paragraphe=p; Titre=h2; Sous-titre=h3; Petit titre=h4",
+            // Only the brand palette (the server keeps these exact colours and nothing else).
+            color_map_foreground: colorMap(TEXT_COLORS),
+            color_map_background: colorMap(HIGHLIGHT_COLORS),
+            color_default_foreground: TEXT_COLORS[2].hex,
+            color_default_background: HIGHLIGHT_COLORS[0].hex,
+            custom_colors: false,
+            color_cols: 4,
             min_height: minHeight,
             max_height: 640,
             autoresize_bottom_margin: 16,
@@ -71,7 +80,8 @@ export function RichTextEditor({
             iframe_aria_text: label,
             content_style: [
               "body{font-family:Outfit,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px;line-height:1.6;color:#1c2140;margin:12px 14px}",
-              "h2{font-size:1.45em;color:#141f4d;margin:.6em 0 .3em} h3{font-size:1.2em;color:#141f4d;margin:.6em 0 .3em}",
+              "h2{font-size:1.45em;color:#141f4d;margin:.6em 0 .3em} h3{font-size:1.2em;color:#141f4d;margin:.6em 0 .3em} h4{font-size:1.05em;color:#141f4d;margin:.6em 0 .2em}",
+              "span[style*=color] strong{color:inherit} span[style*=background]{padding:0 2px;border-radius:3px}",
               "a{color:#364fab} strong{color:#141f4d}",
               "blockquote{border-left:4px solid #ff5757;background:#fff1f1;margin:.5em 0;padding:8px 14px;border-radius:12px}",
               "table{border-collapse:collapse;width:100%} td,th{border:1px solid #e3e6f0;padding:6px 10px} th{background:#eef1fb;text-align:left}",

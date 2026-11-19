@@ -17,6 +17,15 @@ describe("rich text", () => {
     expect(sanitizeRich("<h1>Big</h1><div>block</div>")).toBe("<h2>Big</h2><p>block</p>");
   });
 
+  it("keeps palette colours and alignment, drops every other style", () => {
+    const ok = '<p style="text-align: center;"><span style="color: #b02a2a;">rouge</span> <span style="background-color: #fff3b0;">surligné</span> <s>barré</s> x<sup>2</sup></p><h4>Petit titre</h4>';
+    expect(sanitizeRich(ok)).toBe(ok.replace(/: /g, ":").replace(/;"/g, '"'));
+    expect(sanitizeRich('<span style="color: rgb(54, 79, 171);">bleu</span>')).toBe('<span style="color:rgb(54, 79, 171)">bleu</span>');
+    const bad = sanitizeRich('<p style="position:fixed;text-align:center"><span style="color:#ff00ff;background-image:url(x)">a</span><span style="background-color:#b02a2a">b</span></p>');
+    expect(bad).not.toMatch(/ff00ff|url\(|position|background-color/);
+    expect(bad).toContain("text-align:center");
+  });
+
   it("detects HTML vs Markdown and converts older content for the editor", () => {
     expect(isHtml("<p>x</p>")).toBe(true);
     expect(isHtml("## Titre\n\n**gras**")).toBe(false);
