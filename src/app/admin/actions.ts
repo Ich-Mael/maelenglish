@@ -65,8 +65,7 @@ export async function createUserAction(_: State, form: FormData): Promise<State>
     let emailed = false;
     if (user.email) {
       try {
-        await sendActivationEmail(user.email, { firstName: user.name, username: user.username, token: activationToken });
-        emailed = true;
+        emailed = !(await sendActivationEmail(user.email, { firstName: user.name, username: user.username, token: activationToken })).simulated;
       } catch (e) {
         console.error("activation email", e);
       }
@@ -123,9 +122,11 @@ export async function accountLinkAction(_: State, form: FormData): Promise<State
     let emailed = false;
     if (user.email && form.get("email") === "on") {
       try {
-        if (kind === "activation") await sendActivationEmail(user.email, { firstName: user.name, username: user.username, token });
-        else await sendPasswordResetEmail(user.email, { firstName: user.name, token });
-        emailed = true;
+        const sent =
+          kind === "activation"
+            ? await sendActivationEmail(user.email, { firstName: user.name, username: user.username, token })
+            : await sendPasswordResetEmail(user.email, { firstName: user.name, token });
+        emailed = !sent.simulated;
       } catch (e) {
         console.error("link email", e);
       }
@@ -420,8 +421,7 @@ export async function enrollAction(_: State, form: FormData): Promise<State> {
           await sendEnrollment(user.phoneE164, { ...p, endDate: p.endDate ?? "—" });
           notice = " Message WhatsApp envoyé.";
         } else if (user.email) {
-          await sendEnrollmentEmail(user.email, p);
-          notice = " Email envoyé.";
+          if (!(await sendEnrollmentEmail(user.email, p)).simulated) notice = " Email envoyé.";
         }
       } catch (e) {
         console.error("enrolment notice", e);

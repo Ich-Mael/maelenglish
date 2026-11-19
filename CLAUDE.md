@@ -107,7 +107,7 @@ Tokens in `src/app/globals.css`: shadcn variables mapped to the brand (`primary`
 
 ## Environment
 
-See `.env.example`. Required: `APP_DB`, `APP_URL` (prod: the final https domain — baked into email links, sitemap, share images). Optional: `APP_TZ` (default Africa/Ouagadougou), Brevo SMTP (`EMAIL_*`), WhatsApp Cloud API (`WHATSAPP_*`, simulation mode without token). Local: put overrides in `.env.local` (wins over `.env`). `src/instrumentation-node.ts` checks the configuration at startup (exits without `APP_DB`, warns about missing production settings).
+See `.env.example`. Required: `APP_DB`, `APP_URL` (prod: the final https domain — baked into email links, sitemap, share images). Optional: `APP_TZ` (default Africa/Ouagadougou), Brevo SMTP (`EMAIL_*`; `EMAIL_FROM` must be a sender verified in Brevo — the `…@smtp-brevo.com` login is not one and Brevo silently drops such mail, so without a valid `EMAIL_FROM` email stays in simulation mode), WhatsApp Cloud API (`WHATSAPP_*`, simulation mode without token). Local: put overrides in `.env.local` (wins over `.env`). `src/instrumentation-node.ts` checks the configuration at startup (exits without `APP_DB`, warns about missing production settings).
 
 ## Deployment (Render)
 

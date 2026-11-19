@@ -20,6 +20,9 @@ export function checkConfig() {
   }
   if (!process.env.EMAIL_HOST || !process.env.EMAIL_USERNAME || !process.env.EMAIL_PASSWORD) {
     warn("EMAIL_* non configuré : les liens d'activation et de réinitialisation ne seront pas envoyés par email.");
+  } else if (!process.env.EMAIL_FROM?.trim() || /@smtp-brevo\.com>?$/i.test(process.env.EMAIL_FROM.trim())) {
+    // same rule as emailSender() in src/lib/email.ts (not imported: server-only)
+    warn("EMAIL_FROM manquant ou invalide : indiquez une adresse d'expéditeur vérifiée dans Brevo (ex. « MaelEnglish <contact@votre-domaine> »). Aucun email ne sera envoyé.");
   }
   if (!process.env.WHATSAPP_TOKEN || !process.env.WHATSAPP_PHONE_NUMBER_ID) {
     warn("WHATSAPP_* non configuré : les notifications d'inscription WhatsApp sont en simulation (email utilisé à la place).");

@@ -2,13 +2,24 @@ import "server-only";
 import nodemailer, { type Transporter } from "nodemailer";
 
 /**
- * Transactional email via SMTP (Brevo). Without EMAIL_HOST / EMAIL_USERNAME the
- * module runs in simulation mode: nothing is sent and, outside production, the
- * message (with its link) is logged so the flows can be tested locally.
+ * Transactional email via SMTP (Brevo). Without EMAIL_HOST / EMAIL_USERNAME / EMAIL_PASSWORD
+ * and a valid EMAIL_FROM the module runs in simulation mode: nothing is sent and, outside
+ * production, the message (with its link) is logged so the flows can be tested locally.
+ * Callers check `simulated` before telling staff an email went out.
  */
 
+/**
+ * Sender address: must be a sender verified in Brevo (Senders & IP), e.g.
+ * « MaelEnglish <contact@your-domain> ». The Brevo SMTP login (…@smtp-brevo.com) is not a
+ * sender: Brevo accepts the message but never delivers it.
+ */
+export function emailSender(): string | null {
+  const from = process.env.EMAIL_FROM?.trim();
+  return from && !/@smtp-brevo\.com>?$/i.test(from) ? from : null;
+}
+
 export function isEmailConfigured(): boolean {
-  return Boolean(process.env.EMAIL_HOST && process.env.EMAIL_USERNAME && process.env.EMAIL_PASSWORD);
+  return Boolean(process.env.EMAIL_HOST && process.env.EMAIL_USERNAME && process.env.EMAIL_PASSWORD && emailSender());
 }
 
 let transporter: Transporter | null = null;
@@ -30,6 +41,9 @@ type Mail = { to: string; subject: string; html: string; text: string };
 
 async function send(mail: Mail): Promise<{ simulated: boolean }> {
   if (!isEmailConfigured()) {
+    if (process.env.EMAIL_HOST && !emailSender()) {
+      console.warn(`[email] EMAIL_FROM manquant ou invalide (adresse d'expéditeur vérifiée dans Brevo requise) : "${mail.subject}" non envoyé.`);
+    }
     if (process.env.NODE_ENV !== "production") {
       console.info(`[email:simulation] to=${mail.to} subject="${mail.subject}"\n${mail.text}`);
     } else {
@@ -37,7 +51,7 @@ async function send(mail: Mail): Promise<{ simulated: boolean }> {
     }
     return { simulated: true };
   }
-  await transport().sendMail({ from: process.env.EMAIL_FROM || process.env.EMAIL_USERNAME, ...mail });
+  await transport().sendMail({ from: emailSender()!, ...mail });
   return { simulated: false };
 }
 
