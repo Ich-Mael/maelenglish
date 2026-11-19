@@ -53,7 +53,7 @@ export function FounderSection() {
             </p>
           </div>
 
-          <ul className="reveal mt-8 grid grid-cols-3 gap-2 sm:gap-3">
+          <ul className="reveal mt-8 grid grid-cols-2 gap-2 sm:gap-3">
             {FOUNDER.facts.map((f) => (
               <li key={f.label} className="rounded-2xl border border-border bg-card p-3 shadow-[0_1px_2px_rgb(20_31_77/0.05)] sm:p-4">
                 <p className="font-heading text-lg leading-tight font-extrabold text-primary sm:text-2xl">{f.value}</p>

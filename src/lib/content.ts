@@ -64,17 +64,18 @@ export const FOUNDER = {
   /** What learners call him. */
   nickname: "Coach Ish",
   photo: "founder",
-  title: "Fondateur de MaelEnglish · coach certifié TEFL",
+  title: "Fondateur de MaelEnglish · coach certifié TEFL · contrôleur aérien",
   greeting: "mais mes apprenants m’appellent Coach Ish.",
   tagline: "J’aide les professionnels francophones à parler l’anglais de leur métier avec aisance, en réunion, en négociation et à l’écrit.",
   story: [
-    "L’anglais fait partie de ma vie depuis l’enfance : nos vacances en famille au Ghana et au Nigeria m’ont plongé très tôt dans la langue, au quotidien. J’ai ensuite suivi une formation en Afrique du Sud, puis obtenu une certification TEFL (Teaching English as a Foreign Language) auprès d’un centre de formation accrédité aux États-Unis.",
+    "L’anglais fait partie de ma vie depuis l’enfance : nos vacances en famille au Ghana et au Nigeria m’ont plongé très tôt dans la langue, au quotidien. J’ai ensuite suivi une formation en Afrique du Sud, puis obtenu une certification TEFL (Teaching English as a Foreign Language) auprès d’un institut de formation accrédité aux États-Unis. Je suis également contrôleur aérien : chaque jour, je travaille en anglais avec des pilotes du monde entier, dans un métier où chaque mot doit être compris du premier coup. L’anglais professionnel, je le pratique avant de l’enseigner.",
     "À ce jour, j’ai formé plus de 40 professionnels issus d’ONG, du secteur minier et d’autres domaines. J’ai aussi préparé de nombreux jeunes à leurs entretiens d’admission et de visa pour étudier aux États-Unis, au Canada et ailleurs, et ils les ont réussis.",
     "J’ai créé MaelEnglish après avoir vu le même problème chez presque tous mes apprenants : des années de cours d’anglais, une bonne grammaire, mais un blocage au moment de prendre la parole devant un client, un partenaire ou un jury. Les méthodes classiques enseignent la langue, pas son usage au travail. Mon approche part donc de vos situations réelles (vos réunions, vos e-mails, vos présentations, vos entretiens) pour vous faire pratiquer l’anglais dont vous avez vraiment besoin, dès la première séance.",
   ],
   facts: [
     { value: "40+", label: "professionnels formés (ONG, secteur minier…)" },
     { value: "TEFL", label: "certification obtenue aux États-Unis" },
+    { value: "Aviation", label: "contrôleur aérien : l’anglais au quotidien avec les pilotes" },
     { value: "Entretiens", label: "d’admission et de visa préparés et réussis (États-Unis, Canada…)" },
   ],
   quote: "L’anglais n’est pas une matière, c’est un outil de travail.",
