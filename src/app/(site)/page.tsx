@@ -60,8 +60,8 @@ function Hero() {
 
         <div className="hero-photo relative mx-auto w-full max-w-md lg:max-w-none">
           <div className="relative aspect-square overflow-hidden rounded-[2.5rem] border-4 border-white bg-[#070b1d] shadow-[0_30px_70px_-30px_rgb(20_31_77/0.6)]">
-            <Photo name="speaker" alt="Une professionnelle africaine prend la parole en anglais lors d'une conférence" sizes="(max-width: 1023px) 90vw, 480px" position="38% center" eager />
-            <PhraseCard role="En réunion" en="Let me walk you through the key figures." fr="Je vous présente les chiffres clés." className="absolute right-4 bottom-4 left-4 sm:left-auto sm:max-w-xs" />
+            <Photo name="team" alt="Des professionnels africains travaillent ensemble sur un dossier en réunion" sizes="(max-width: 1023px) 90vw, 480px" position="80% center" eager />
+            <PhraseCard role="En équipe" en="Could you walk me through this part?" fr="Pouvez-vous m’expliquer cette partie ?" className="absolute right-4 bottom-4 left-4 sm:left-auto sm:max-w-xs" />
           </div>
         </div>
       </Container>
