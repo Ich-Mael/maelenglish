@@ -7,7 +7,7 @@ import { requireUser } from "@/lib/auth/dal";
 import { courseAccess, courseTree } from "@/lib/learn/queries";
 import { coursePath, lessonPath, nextPath } from "@/lib/learn/paths";
 import { DownloadCourse } from "@/components/pwa/download-course";
-import { findProgram } from "@/lib/catalog";
+import { findProgram, sameName } from "@/lib/catalog";
 import { CourseMap } from "@/components/learn/course-map";
 import { AccessProblem, PageSkeleton, ProgressBar } from "@/components/learn/ui";
 import { Leaderboard } from "@/components/gamify/leaderboard";
@@ -38,7 +38,8 @@ async function CourseHome({ params }: { params: Promise<{ courseId: string }> })
       )}
 
       <section className="rounded-3xl border-2 border-border bg-card p-5 sm:p-6">
-        {program && <p className="text-sm font-semibold text-coral-dark">{program.name}</p>}
+        {/* programme line hidden when the course has the same name (e.g. « MaelEnglish Essentials ») */}
+        {program && !sameName(program.name, course.title) && <p className="text-sm font-semibold text-coral-dark">{program.name}</p>}
         <h1 className="text-2xl font-extrabold text-brand-deep sm:text-3xl">{course.title}</h1>
         {outline.challenge && (
           <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-coral-soft px-3 py-1 text-sm font-bold text-coral-dark">

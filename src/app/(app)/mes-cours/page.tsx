@@ -5,7 +5,7 @@ import { connection } from "next/server";
 import { ArrowRight, BookOpen, PartyPopper, Zap } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
 import { myCourses, type MyCourse } from "@/lib/learn/queries";
-import { whatsappLink } from "@/lib/catalog";
+import { sameName, whatsappLink } from "@/lib/catalog";
 import { Photo } from "@/components/site/photo";
 import { PageSkeleton, ProgressBar, formatDate } from "@/components/learn/ui";
 import { cn } from "cn";
@@ -99,7 +99,7 @@ function CourseCard({ course: c }: { course: MyCourse }) {
           </span>
         )}
         {badge && <span className={cn("absolute top-3 right-3 rounded-full px-2.5 py-1 text-xs font-bold", badge.cls)}>{badge.label}</span>}
-        {c.programName && <span className="absolute bottom-3 left-4 text-sm font-semibold text-white">{c.programName}</span>}
+        {c.programName && !sameName(c.programName, c.title) && <span className="absolute bottom-3 left-4 text-sm font-semibold text-white">{c.programName}</span>}
       </div>
       <div className="p-5">
         <h2 className="text-xl font-extrabold text-brand-deep">{c.title}</h2>

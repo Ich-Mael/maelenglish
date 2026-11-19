@@ -349,3 +349,9 @@ export function whatsappLink(program?: Program | null): string {
       : `Bonjour, je souhaite m'inscrire à ${program.name}.`;
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
 }
+
+/** Same name, ignoring case, spaces and accents (to avoid showing « MaelEnglish Essentials » twice). */
+export function sameName(a: string, b: string): boolean {
+  const norm = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, " ").trim().toLowerCase();
+  return norm(a) === norm(b);
+}

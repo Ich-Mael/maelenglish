@@ -45,4 +45,11 @@ describe("shortProgramName", () => {
     expect(shortProgramName(findProgram("civil-engineering")!)).toBe("Civil Engineering");
     expect(shortProgramName(findProgram("essentials")!)).toBe("MaelEnglish Essentials");
   });
+
+  it("compares programme and course names loosely", async () => {
+    const { sameName } = await import("@/lib/catalog");
+    expect(sameName("MaelEnglish Essentials", " maelenglish  essentials ")).toBe(true);
+    expect(sameName("Débutant", "debutant")).toBe(true);
+    expect(sameName("MaelEnglish Essentials", "Essentials niveau 1")).toBe(false);
+  });
 });
