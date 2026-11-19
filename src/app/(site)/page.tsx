@@ -43,7 +43,7 @@ function Hero() {
             avec un coach qui corrige chaque étape.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <a href="#programmes" className={BUTTON.coral}>
+            <a href="#programmes" className={BUTTON.blue}>
               Voir les programmes <ArrowDown className="size-4" aria-hidden />
             </a>
             <WhatsAppButton href={whatsappLink()} variant="outline">

@@ -116,7 +116,9 @@ export function FounderSection() {
           </figure>
 
           <div className="reveal mt-8 flex flex-wrap gap-3">
-            <WhatsAppButton href={talkLink}>Parler à {FOUNDER.nickname}</WhatsAppButton>
+            <WhatsAppButton href={talkLink} variant="blue">
+              Parler à {FOUNDER.nickname}
+            </WhatsAppButton>
             <Link href="/coaching" className={BUTTON.outline}>
               Découvrir le coaching <ArrowRight className="size-4" aria-hidden />
             </Link>
