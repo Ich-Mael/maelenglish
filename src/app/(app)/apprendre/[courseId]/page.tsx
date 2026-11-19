@@ -29,12 +29,12 @@ async function CourseHome({ params }: { params: Promise<{ courseId: string }> })
   return (
     <div className="mx-auto grid max-w-2xl gap-6">
       {access.preview && (
-        <p className="flex items-center gap-2 rounded-2xl bg-xp/15 px-4 py-2.5 text-sm font-semibold text-[#7a4d00]">
+        <p className="flex items-center gap-2 rounded-2xl bg-brand-soft px-4 py-2.5 text-sm font-semibold text-primary">
           <Eye className="size-4" aria-hidden /> Aperçu équipe : tout est ouvert et rien n&apos;est enregistré.
         </p>
       )}
       {access.readOnly && (
-        <p className="rounded-2xl bg-success/10 px-4 py-2.5 text-sm font-semibold text-success">Cours terminé : vous pouvez tout revoir.</p>
+        <p className="rounded-2xl bg-brand-soft px-4 py-2.5 text-sm font-semibold text-primary">Cours terminé : vous pouvez tout revoir.</p>
       )}
 
       <section className="rounded-3xl border-2 border-border bg-card p-5 sm:p-6">
@@ -49,7 +49,7 @@ async function CourseHome({ params }: { params: Promise<{ courseId: string }> })
           <span className="text-ink/75">
             {outline.lessonsDone} / {outline.lessonsTotal} leçons
           </span>
-          <span className="text-success">{outline.percent} %</span>
+          <span className="text-primary">{outline.percent} %</span>
         </div>
         <ProgressBar value={outline.percent} className="mt-1.5" />
         {next ? (
@@ -60,7 +60,7 @@ async function CourseHome({ params }: { params: Promise<{ courseId: string }> })
             {outline.lessonsDone ? "Continuer" : "Commencer"} <ArrowRight className="size-4" aria-hidden />
           </Link>
         ) : outline.lessonsTotal > 0 && outline.percent === 100 ? (
-          <p className="mt-5 flex items-center gap-2 font-heading text-lg font-bold text-success">
+          <p className="mt-5 flex items-center gap-2 font-heading text-lg font-bold text-primary">
             <PartyPopper className="size-6" aria-hidden /> Bravo, tout est fait pour l&apos;instant !
           </p>
         ) : null}

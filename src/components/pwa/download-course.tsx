@@ -51,7 +51,7 @@ export function DownloadCourse({ courseId, urls }: { courseId: string; urls: str
     <div className="flex flex-wrap items-center gap-3 rounded-2xl border-2 border-dashed border-border p-3 text-sm">
       {state === "done" ? (
         <>
-          <CheckCircle2 className="size-5 text-success" aria-hidden />
+          <CheckCircle2 className="size-5 text-primary" aria-hidden />
           <span className="flex-1 font-semibold text-ink">Disponible hors ligne</span>
           {online && (
             <button type="button" onClick={download} className="font-semibold text-primary hover:underline">

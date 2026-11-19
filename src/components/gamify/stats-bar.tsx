@@ -25,9 +25,9 @@ export async function StatsBar() {
       <span className="relative flex size-9 items-center justify-center">
         <svg viewBox="0 0 36 36" className="absolute inset-0 -rotate-90" aria-hidden>
           <circle cx="18" cy="18" r={r} fill="none" strokeWidth="4" className="stroke-muted" />
-          <circle cx="18" cy="18" r={r} fill="none" strokeWidth="4" strokeLinecap="round" className={goal >= 100 ? "stroke-success" : "stroke-xp"} strokeDasharray={c} strokeDashoffset={c * (1 - goal / 100)} />
+          <circle cx="18" cy="18" r={r} fill="none" strokeWidth="4" strokeLinecap="round" className={goal >= 100 ? "stroke-primary" : "stroke-coral"} strokeDasharray={c} strokeDashoffset={c * (1 - goal / 100)} />
         </svg>
-        <Sparkles className={cn("size-4", goal >= 100 ? "text-success" : "text-[#9a6200]")} aria-hidden />
+        <Sparkles className={cn("size-4", goal >= 100 ? "text-primary" : "text-coral-dark")} aria-hidden />
         <span className="sr-only">
           {s.todayXp} XP sur {s.dailyGoal} aujourd&apos;hui,
         </span>

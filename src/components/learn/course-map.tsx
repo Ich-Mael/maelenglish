@@ -95,7 +95,7 @@ export function CourseMap({ courseId, outline, currentHref }: { courseId: string
 function ModuleBanner({ module: m }: { module: ModuleOutline }) {
   const locked = m.state === "locked";
   return (
-    <div className={cn("flex items-center gap-4 rounded-3xl p-5", locked ? "bg-muted text-muted-foreground" : m.state === "completed" ? "bg-success text-white" : "bg-primary text-white")}>
+    <div className={cn("flex items-center gap-4 rounded-3xl p-5", locked ? "bg-muted text-muted-foreground" : m.state === "completed" ? "border-2 border-primary bg-white text-primary" : "bg-primary text-white")}>
       <div className="flex-1">
         <p className="text-xs font-bold tracking-wide uppercase">
           {m.day ? `Jour ${m.day.number}` : `Module ${m.index + 1}`}
@@ -130,14 +130,14 @@ function PathNode({ node, current }: { node: Node; current: boolean }) {
   const circle = cn(
     "relative flex items-center justify-center rounded-full border-b-[6px] transition",
     node.big ? "size-20" : "size-16",
-    node.state === "completed" && "border-[#178a5c] bg-success text-white",
+    node.state === "completed" && "border-2 border-b-[6px] border-primary bg-white text-primary",
     node.state === "available" && "border-brand-dark bg-primary text-white group-hover:brightness-110 group-active:translate-y-1 group-active:border-b-2",
     node.state === "locked" && "border-border bg-muted text-muted-foreground",
   );
   const content = (
     <>
       <span className={circle}>
-        {current && <span className="absolute -inset-2 animate-ping rounded-full border-4 border-primary/30 motion-reduce:animate-none" aria-hidden />}
+        {current && <span className="absolute -inset-2 animate-ping rounded-full border-4 border-coral/50 motion-reduce:animate-none" aria-hidden />}
         <Icon className={node.big ? "size-9" : "size-7"} aria-hidden />
       </span>
       <span className="max-w-44 text-center">

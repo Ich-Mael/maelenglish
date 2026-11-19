@@ -16,7 +16,7 @@ export function ProgressBar({ value, className, label }: { value: number; classN
       aria-label={label ?? "Progression"}
       className={cn("h-3 overflow-hidden rounded-full bg-brand-soft", className)}
     >
-      <div className="h-full rounded-full bg-success transition-[width] duration-700" style={{ width: `${Math.max(value, value > 0 ? 4 : 0)}%` }} />
+      <div className="h-full rounded-full bg-primary transition-[width] duration-700" style={{ width: `${Math.max(value, value > 0 ? 4 : 0)}%` }} />
     </div>
   );
 }
