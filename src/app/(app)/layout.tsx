@@ -6,6 +6,7 @@ import { StatsBar, StatsBarFallback } from "@/components/gamify/stats-bar";
 import { SoundToggle } from "@/components/gamify/sound-toggle";
 import { RewardCenter } from "@/components/gamify/reward-center";
 import { OfflineSync } from "@/components/pwa/pwa-client";
+import { LogoutButton } from "@/components/pwa/logout-button";
 
 const NAV = [
   { href: "/mes-cours", label: "Mes cours", icon: BookOpen },
@@ -37,6 +38,7 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
               <StatsBar />
             </Suspense>
             <SoundToggle />
+            <LogoutButton variant="compact" />
           </div>
         </div>
       </header>

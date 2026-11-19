@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { AdminNav } from "@/components/admin/nav";
+import { LogoutButton } from "@/components/pwa/logout-button";
 
 export const metadata: Metadata = { title: { template: "%s · Admin MaelEnglish", default: "Admin" }, robots: { index: false } };
 
@@ -16,6 +17,7 @@ export default function AdminLayout({ children }: LayoutProps<"/admin">) {
             <Image src="/images/maelenglish-logo.webp" alt="MaelEnglish" width={800} height={175} className="h-auto w-28 lg:w-36" />
           </Link>
           <span className="rounded-full bg-coral-soft px-2 py-0.5 text-xs font-bold text-coral-dark lg:mt-2 lg:inline-block">Admin</span>
+          <LogoutButton variant="compact" className="ml-auto lg:hidden" />
         </div>
         <div className="hidden px-3 lg:block">
           <Suspense>
@@ -24,6 +26,7 @@ export default function AdminLayout({ children }: LayoutProps<"/admin">) {
           <Link href="/mes-cours" className="mt-6 flex items-center gap-2 px-3 text-sm text-muted-foreground hover:text-primary">
             <ArrowLeft className="size-4" aria-hidden /> Espace apprenant
           </Link>
+          <LogoutButton variant="nav" className="mt-3" />
         </div>
         <div className="px-2 pb-2 lg:hidden">
           <Suspense>

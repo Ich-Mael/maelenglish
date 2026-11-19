@@ -32,7 +32,7 @@ export async function StatsBar() {
           {s.todayXp} XP sur {s.dailyGoal} aujourd&apos;hui,
         </span>
       </span>
-      <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold text-white">
+      <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold whitespace-nowrap text-white">
         Niv. {s.level.level}
       </span>
     </Link>
