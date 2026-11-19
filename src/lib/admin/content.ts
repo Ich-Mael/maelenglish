@@ -266,7 +266,7 @@ export async function saveResource(moduleId: string, actorId: string, data: Reso
     title: data.title.trim(),
     resourceType: (RESOURCE_TYPES.includes(data.resourceType as never) ? data.resourceType : "other") as (typeof RESOURCE_TYPES)[number],
     link: data.link?.trim() ?? "",
-    "content.notes": data.notes ?? "",
+    "content.notes": normalizeRich(data.notes),
     isPublished: data.isPublished ?? true,
     lastEditedBy: new Types.ObjectId(actorId),
   };

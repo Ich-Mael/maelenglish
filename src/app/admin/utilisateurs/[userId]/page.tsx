@@ -9,11 +9,13 @@ import { can } from "@/lib/admin/permissions";
 import { assignableRoles } from "@/lib/auth/accounts";
 import { userDetail } from "@/lib/admin/users";
 import { accessState, ADMIN_ROLES } from "@/models";
-import { Card, Input, PageHeader, Pill, ROLE_LABELS, Select, TextArea, fmtDate } from "@/components/admin/ui";
+import { Card, Input, PageHeader, Pill, ROLE_LABELS, Select, fmtDate } from "@/components/admin/ui";
 import { ActionButton, AdminForm, Submit } from "@/components/admin/forms";
 import { AccountLinkForm } from "@/components/admin/user-forms";
 import { revokeDeviceAction, toggleUserAction, updateUserAction } from "../../actions";
 import { PageSkeleton } from "@/components/learn/ui";
+import { RichTextEditor } from "@/components/admin/rich-text-editor";
+import { toEditorHtml } from "@/lib/rich-text";
 
 export const metadata: Metadata = { title: "Compte" };
 
@@ -81,7 +83,7 @@ async function UserView({ params }: { params: Promise<{ userId: string }> }) {
               <Input label="Niveau d'anglais" name="englishLevel" defaultValue={u.englishLevel ?? ""} />
               <Input label="Appareils max." name="maxDevices" type="number" min={1} max={20} defaultValue={u.maxDevices ?? 3} hint="Indicatif (non bloquant)." />
             </div>
-            <TextArea label="Notes" name="about" defaultValue={u.about ?? ""} rows={3} />
+            <RichTextEditor label="Notes" name="about" minHeight={160} defaultValue={toEditorHtml(u.about, "text")} />
             <div>
               <Submit>Enregistrer</Submit>
             </div>

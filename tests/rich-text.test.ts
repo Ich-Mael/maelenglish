@@ -26,6 +26,13 @@ describe("rich text", () => {
     expect(bad).toContain("text-align:center");
   });
 
+  it("keeps only the editor's fonts", () => {
+    expect(sanitizeRich('<p><span style="font-family: Georgia, serif;">g</span></p>')).toBe('<p><span style="font-family:Georgia, serif">g</span></p>');
+    expect(sanitizeRich(`<p><span style="font-family: 'courier new', courier, monospace;">c</span></p>`)).toContain("font-family:");
+    expect(sanitizeRich('<p><span style="font-family: Papyrus;">p</span></p>')).not.toContain("font-family");
+    expect(sanitizeRich('<p><span style="font-family: Arial, Helvetica, sans-serif; color: #ff00ff">a</span></p>')).toBe('<p><span style="font-family:Arial, Helvetica, sans-serif">a</span></p>');
+  });
+
   it("detects HTML vs Markdown and converts older content for the editor", () => {
     expect(isHtml("<p>x</p>")).toBe(true);
     expect(isHtml("## Titre\n\n**gras**")).toBe(false);

@@ -12,6 +12,8 @@ import { AssignmentFields } from "@/components/admin/assignment-fields";
 import { QuizEditor, type EditableQuiz } from "@/components/admin/quiz-editor";
 import { createLessonAction, deleteLessonAction, deleteResourceAction, moveLessonAction, saveAssignmentAction, saveResourceAction, updateModuleAction } from "../../../../actions";
 import { PageSkeleton } from "@/components/learn/ui";
+import { RichText } from "@/components/learn/rich-text";
+import { RichTextEditor } from "@/components/admin/rich-text-editor";
 
 export const metadata: Metadata = { title: "Module" };
 
@@ -162,7 +164,7 @@ async function ModuleAdmin({ params }: { params: Promise<{ courseId: string; mod
                     </ActionButton>
                   )}
                 </div>
-                {r.content?.notes && <p className="mt-1 whitespace-pre-line text-muted-foreground">{r.content.notes}</p>}
+                {r.content?.notes && <RichText legacy="text" className="mt-1 text-sm text-muted-foreground">{r.content.notes}</RichText>}
               </li>
             ))}
           </ul>
@@ -175,7 +177,7 @@ async function ModuleAdmin({ params }: { params: Promise<{ courseId: string; mod
               <Select label="Type" name="resourceType" defaultValue="lesson_plan" options={RESOURCE_TYPES.map((t) => ({ value: t, label: RESOURCE_LABELS[t] }))} />
             </div>
             <Input label="Lien (Drive, YouTube…)" name="link" type="url" />
-            <TextArea label="Notes" name="notes" rows={3} />
+            <RichTextEditor label="Notes" name="notes" minHeight={160} />
             <div>
               <Submit variant="secondary">Ajouter la ressource</Submit>
             </div>

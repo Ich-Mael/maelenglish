@@ -5,7 +5,7 @@ import remarkGfm from "remark-gfm";
 import remarkRehype from "remark-rehype";
 import rehypeStringify from "rehype-stringify";
 import { isHtml } from "./rich-detect";
-import { HIGHLIGHT_COLORS, TEXT_COLORS } from "./rich-palette";
+import { FONTS, HIGHLIGHT_COLORS, TEXT_COLORS } from "./rich-palette";
 
 /*
  * Long staff-written texts (lesson text, course description, assignment instructions, coach
@@ -27,6 +27,17 @@ function colorPattern(colors: readonly { hex: string }[]): RegExp {
   });
   return new RegExp(`^(?:${forms.join("|")})$`, "i");
 }
+/** Matches the font stacks offered by the editor (quotes and spacing may vary). */
+function fontPattern(): RegExp {
+  const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const stacks = FONTS.map((f) =>
+    f.stack
+      .split(",")
+      .map((part) => `["']?${esc(part.trim().replace(/^['"]|['"]$/g, ""))}["']?`)
+      .join("\\s*,\\s*"),
+  );
+  return new RegExp(`^(?:${stacks.join("|")})$`, "i");
+}
 const ALIGN = { "text-align": [/^(?:left|center|right|justify)$/] };
 
 const OPTIONS: sanitizeHtml.IOptions = {
@@ -40,7 +51,7 @@ const OPTIONS: sanitizeHtml.IOptions = {
   },
   // Only the editor's palette colours and text alignment; every other style is dropped.
   allowedStyles: {
-    span: { color: [colorPattern(TEXT_COLORS)], "background-color": [colorPattern(HIGHLIGHT_COLORS)] },
+    span: { color: [colorPattern(TEXT_COLORS)], "background-color": [colorPattern(HIGHLIGHT_COLORS)], "font-family": [fontPattern()] },
     ...Object.fromEntries(["p", "h2", "h3", "h4", "li", "th", "td"].map((t) => [t, ALIGN])),
   },
   allowedSchemes: ["http", "https", "mailto", "tel"],

@@ -82,6 +82,8 @@ hugerte.addI18n("fr_FR", {
   Superscript: "Exposant",
   Subscript: "Indice",
   "Heading 4": "Petit titre",
+  Fonts: "Police",
+  "Font {0}": "Police : {0}",
   "Your browser doesn't support direct access to the clipboard. Please use the Ctrl+X/C/V keyboard shortcuts instead.":
     "Votre navigateur ne permet pas l'accès direct au presse-papiers : utilisez Ctrl+X/C/V.",
 });
