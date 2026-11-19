@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { ArrowDown, ArrowRight, BadgeCheck, Laptop, LayoutGrid, Quote, Sprout, UserRound, Users, Zap } from "lucide-react";
+import Link from "next/link";
+import { ArrowDown, ArrowRight, BadgeCheck, Laptop, LayoutGrid, Quote, Sprout, UserPlus, UserRound, Users, Zap } from "lucide-react";
 import { PROGRAMS, whatsappLink } from "@/lib/catalog";
 import { METHOD_FACTS, METHOD_STEPS, STATS, TESTIMONIALS } from "@/lib/content";
 import { signupHref } from "@/lib/site";
@@ -270,17 +271,20 @@ function FinalCta() {
           <div className="relative grid items-center gap-8 lg:grid-cols-[1.4fr_1fr]">
             <div>
               <Image src="/images/maelenglish-logo-light.webp" alt="" width={800} height={259} className="mb-5 h-auto w-44" />
-              <h2 className="text-3xl font-extrabold text-balance">Vous hésitez entre deux programmes ?</h2>
+              <h2 className="text-3xl font-extrabold text-balance">Prêt à parler l&apos;anglais de votre métier ?</h2>
               <p className="mt-3 text-white/80">
-                Dites-nous votre métier et votre niveau : un conseiller vous oriente. Si besoin, commencez par Essentials puis
-                poursuivez avec le programme de votre secteur.
+                Inscrivez-vous en quelques minutes : indiquez votre métier, votre niveau et vos disponibilités. Nous vous
+                recontactons sur WhatsApp pour vous orienter vers le bon programme, ou vers MaelEnglish Essentials pour bien
+                démarrer.
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
-              <WhatsAppButton href={whatsappLink()}>Écrire sur WhatsApp</WhatsAppButton>
-              <a href="#programmes" className={BUTTON.ghost}>
-                Voir les programmes
-              </a>
+              <Link href={signupHref()} className={BUTTON.coral}>
+                <UserPlus className="size-5" aria-hidden /> S&apos;inscrire
+              </Link>
+              <WhatsAppButton href={whatsappLink()} variant="ghost">
+                Une question ? Écrire sur WhatsApp
+              </WhatsAppButton>
             </div>
           </div>
         </div>
