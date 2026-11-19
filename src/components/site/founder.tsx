@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, Compass, Lightbulb, Quote, Trophy } from "lucide-react";
+import { ArrowRight, BadgeCheck, Compass, Lightbulb, Plane, Quote, Trophy } from "lucide-react";
 import { FOUNDER } from "@/lib/content";
 import { waLink } from "@/lib/site";
 import { Photo } from "./photo";
@@ -38,6 +38,24 @@ export function FounderSection() {
               <p className="text-xs font-bold text-coral-dark">{FOUNDER.nickname} · Formateur certifié</p>
             </div>
           </div>
+
+          {/* Credentials under the portrait */}
+          <ul className="reveal mt-12 grid gap-3">
+            {FOUNDER.credentials.map((c, i) => {
+              const Icon = i === 0 ? BadgeCheck : Plane;
+              return (
+                <li key={c.title} className="flex items-start gap-3 rounded-2xl border border-border bg-card p-4 shadow-[0_1px_2px_rgb(20_31_77/0.05)]">
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-primary">
+                    <Icon className="size-5" aria-hidden />
+                  </span>
+                  <span>
+                    <span className="block font-heading text-lg leading-tight font-extrabold text-primary">{c.title}</span>
+                    <span className="mt-0.5 block text-sm text-muted-foreground">{c.text}</span>
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
         </div>
 
         {/* Story */}

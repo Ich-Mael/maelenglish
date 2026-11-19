@@ -72,11 +72,15 @@ export const FOUNDER = {
     "À ce jour, j’ai formé plus de 40 professionnels issus d’ONG, du secteur minier et d’autres domaines. J’ai aussi préparé de nombreux jeunes à leurs entretiens d’admission et de visa pour étudier aux États-Unis, au Canada et ailleurs, et ils les ont réussis.",
     "J’ai créé MaelEnglish après avoir vu le même problème chez presque tous mes apprenants : des années de cours d’anglais, une bonne grammaire, mais un blocage au moment de prendre la parole devant un client, un partenaire ou un jury. Les méthodes classiques enseignent la langue, pas son usage au travail. Mon approche part donc de vos situations réelles (vos réunions, vos e-mails, vos présentations, vos entretiens) pour vous faire pratiquer l’anglais dont vous avez vraiment besoin, dès la première séance.",
   ],
+  /** Key figures, next to the story. */
   facts: [
     { value: "40+", label: "professionnels formés (ONG, secteur minier…)" },
-    { value: "TEFL", label: "certification obtenue aux États-Unis" },
-    { value: "Aviation", label: "contrôleur aérien : l’anglais au quotidien avec les pilotes" },
     { value: "Entretiens", label: "d’admission et de visa préparés et réussis (États-Unis, Canada…)" },
+  ],
+  /** Credentials, under the portrait. */
+  credentials: [
+    { title: "Certifié TEFL", text: "Teaching English as a Foreign Language, institut de formation accrédité aux États-Unis" },
+    { title: "Professionnel de l’aviation", text: "Contrôleur aérien : l’anglais au quotidien avec les pilotes du monde entier" },
   ],
   quote: "L’anglais n’est pas une matière, c’est un outil de travail.",
 } as const;
