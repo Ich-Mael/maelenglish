@@ -29,10 +29,8 @@ export function SiteFooter() {
           <FooterLink href="/#programmes">Tous les programmes</FooterLink>
         </FooterCol>
         <FooterCol title="MaelEnglish">
-          <FooterLink href="/coaching">Coaching individuel</FooterLink>
-          <FooterLink href={signupHref("challenge")}>
-            Challenge
-          </FooterLink>
+          <FooterLink href={signupHref("challenge")}>Challenge (défi quotidien)</FooterLink>
+          <FooterLink href="/coaching">Coaching premium</FooterLink>
           <FooterLink href="/#methode">La méthode</FooterLink>
           <FooterLink href="/inscription">S&apos;inscrire</FooterLink>
           <FooterLink href="/connexion">Espace apprenant</FooterLink>

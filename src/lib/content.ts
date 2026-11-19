@@ -29,12 +29,17 @@ export const TESTIMONIALS = [
   { text: "Une formation adaptée aux réalités du business. Mon anglais est maintenant un atout majeur pour mes négociations.", name: "Jean-Marc B.", role: "Commercial" },
 ];
 
+/**
+ * MaelEnglish Coaching = premium product: one-on-one classes for one specific goal and deadline
+ * (user definition). Not to be confused with the Challenge (a course with daily, coach-validated checkpoints).
+ */
 export const COACHING = {
-  audiences: [
-    { icon: "Briefcase", title: "Cadres et managers", text: "Animer une réunion, présenter des résultats, piloter une équipe ou des partenaires anglophones." },
-    { icon: "BadgeCheck", title: "Candidats", text: "Préparer un entretien en anglais, un CV et une lettre de motivation, une prise de poste à l’international." },
-    { icon: "Building2", title: "Professions spécialisées", text: "Santé, finance, tech, juridique, ONG : le vocabulaire et les situations propres à votre secteur." },
-    { icon: "Mic", title: "Prise de parole", text: "Conférences, pitchs, formations à animer : gagner en aisance et en clarté à l’oral." },
+  /** The goals a coaching is built for (home « Coaching premium » section + /coaching). */
+  goals: [
+    { icon: "Briefcase", title: "Entretien", text: "Embauche, admission ou visa : anticiper les questions, structurer vos réponses, répondre avec assurance." },
+    { icon: "Mic", title: "Présentation et prise de parole", text: "Présentation, pitch, conférence ou formation à animer : un discours clair, prononcé avec aisance." },
+    { icon: "Handshake", title: "Négociation et réunion clé", text: "Rendez-vous client, réunion décisive, négociation : les bons mots pour défendre votre position." },
+    { icon: "GraduationCap", title: "Examen (IELTS, TOEFL…)", text: "Préparer les épreuves orales et écrites avec une méthode et des entraînements ciblés." },
   ],
   steps: [
     { title: "Diagnostic", text: "Un premier échange pour évaluer votre niveau et comprendre votre métier et votre objectif." },
@@ -50,7 +55,8 @@ export const COACHING = {
   faq: [
     { q: "Quel niveau faut-il pour commencer ?", a: "Aucun niveau minimum. Le diagnostic de départ sert justement à construire un programme adapté, du débutant qui veut oser parler au cadre qui veut perfectionner son anglais professionnel." },
     { q: "Les séances se font en ligne ?", a: "Oui, 100 % en ligne, en visioconférence : vous suivez votre coaching depuis votre ordinateur ou votre téléphone, où que vous soyez et selon votre emploi du temps." },
-    { q: "Combien de temps dure un coaching ?", a: "Cela dépend de votre objectif et de votre échéance (un entretien dans deux semaines ou une progression sur plusieurs mois). Le rythme et la durée sont fixés ensemble après le diagnostic." },
+    { q: "Combien de temps dure un coaching ?", a: "Il est construit autour de votre échéance : les séances s’enchaînent jusqu’au jour J (votre entretien, votre présentation, votre examen). Le nombre et le rythme des séances sont fixés ensemble après le diagnostic." },
+    { q: "Quelle différence avec les programmes et le Challenge ?", a: "Les programmes et le Challenge sont des cours sur l’application, avec des leçons, des exercices et des devoirs corrigés. Le coaching est un accompagnement premium en cours individuels, en direct avec votre coach, entièrement consacré à un objectif précis." },
     { q: "Quel est le tarif ?", a: "Le tarif dépend de la formule choisie (nombre et fréquence des séances). Écrivez-nous sur WhatsApp : un conseiller vous envoie une proposition adaptée." },
     { q: "Mon entreprise peut-elle prendre en charge le coaching ?", a: "Oui. Nous établissons un devis et un programme pour l’entreprise, pour un collaborateur ou pour une équipe." },
   ],

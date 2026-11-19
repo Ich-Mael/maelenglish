@@ -5,7 +5,7 @@ import { normalizePhone } from "@/lib/phone";
 
 /* Public sign-up requests (framework-free; tested in tests/requests.test.ts). */
 
-export const OTHER_OFFERS: Record<string, string> = { coaching: "MaelEnglish Coaching (individuel)", challenge: "MaelEnglish Challenge" };
+export const OTHER_OFFERS: Record<string, string> = { coaching: "MaelEnglish Coaching (premium, cours individuels)", challenge: "MaelEnglish Challenge (une mission par jour)" };
 
 export function offerName(slug: string): string {
   return findProgram(slug)?.name ?? OTHER_OFFERS[slug] ?? "À définir avec un conseiller";

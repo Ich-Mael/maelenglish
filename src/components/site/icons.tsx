@@ -5,10 +5,13 @@ import {
   Construction,
   Cpu,
   Dumbbell,
+  GraduationCap,
+  Handshake,
   HeartPulse,
   Landmark,
   Laptop,
   MessagesSquare,
+  Mic,
   Plane,
   Timer,
   Truck,
@@ -34,6 +37,9 @@ export const ICONS: Record<ProgramIcon | FormatIcon, LucideIcon> = {
   Laptop,
   Award,
 };
+
+/** Coaching goal icons (`COACHING.goals[].icon`). */
+export const GOAL_ICONS: Record<string, LucideIcon> = { Briefcase, Mic, Handshake, GraduationCap };
 
 /** WhatsApp glyph (not in lucide). */
 export function WhatsAppIcon({ className }: { className?: string }) {

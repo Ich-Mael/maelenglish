@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowDown, ArrowRight, BadgeCheck, Laptop, LayoutGrid, Quote, Sprout, UserPlus, UserRound, Users, Zap } from "lucide-react";
+import { ArrowDown, ArrowRight, BadgeCheck, Laptop, LayoutGrid, Quote, Crown, Sprout, UserPlus, Users, Zap } from "lucide-react";
 import { PROGRAMS, whatsappLink } from "@/lib/catalog";
-import { METHOD_FACTS, METHOD_STEPS, STATS, TESTIMONIALS } from "@/lib/content";
+import { COACHING, METHOD_FACTS, METHOD_STEPS, STATS, TESTIMONIALS } from "@/lib/content";
+import { GOAL_ICONS } from "@/components/site/icons";
 import { signupHref } from "@/lib/site";
 import { FeaturedProgramCard, ProgramCard } from "@/components/site/program-card";
 import { Carousel } from "@/components/site/carousel";
@@ -20,6 +21,7 @@ export default function HomePage() {
       <JsonLd data={organizationJsonLd()} />
       <Hero />
       <Programmes />
+      <CoachingPremium />
       <FounderSection />
       <Method />
       <Stats />
@@ -127,63 +129,79 @@ function Programmes() {
           </div>
         )}
 
-        <div className="reveal mt-5 grid gap-5 md:grid-cols-2">
-          <AltFormat
-            href="/coaching"
-            icon={<UserRound className="size-6" aria-hidden />}
-            title="MaelEnglish Coaching"
-            text="Un coach rien que pour vous, un programme taillé pour votre poste et vos échéances. Idéal si votre secteur n'est pas dans la liste."
-            cta="Découvrir"
-            tone="navy"
-          />
-          <AltFormat
+        {/* MaelEnglish Challenge: a product of its own — a course with daily, coach-validated checkpoints */}
+        <div className="reveal mt-5">
+          <Link
             href={signupHref("challenge")}
-            icon={<Zap className="size-6" aria-hidden />}
-            title="MaelEnglish Challenge"
-            text="Une mission par jour, un point de contrôle validé par un coach avant de passer à la suivante : idéal pour créer l'habitude."
-            cta="Rejoindre"
-            tone="coral"
-          />
+            className="group flex flex-col gap-4 rounded-3xl border-2 border-coral bg-white p-6 text-brand-deep shadow-[0_6px_0_0_var(--color-coral)] transition hover:-translate-y-1 sm:flex-row sm:items-center sm:p-7"
+          >
+            <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-coral-soft text-coral-dark">
+              <Zap className="size-7" aria-hidden />
+            </span>
+            <div className="flex-1">
+              <p className="text-xs font-bold tracking-wide text-coral-dark uppercase">Défi quotidien</p>
+              <h3 className="mt-0.5 text-2xl font-extrabold">
+                MaelEnglish <span className="text-coral">Challenge</span>
+              </h3>
+              <p className="mt-1 text-ink/80">
+                Une mission par jour, un point de contrôle validé par votre coach avant de passer au jour suivant : la régularité
+                qui fait progresser.
+              </p>
+            </div>
+            <span className="inline-flex items-center gap-1.5 font-bold text-coral-dark">
+              Relever le défi <ArrowRight className="size-4 transition group-hover:translate-x-1" aria-hidden />
+            </span>
+          </Link>
         </div>
       </Container>
     </section>
   );
 }
 
-function AltFormat({
-  href,
-  external,
-  icon,
-  title,
-  text,
-  cta,
-  tone,
-}: {
-  href: string;
-  external?: boolean;
-  icon: React.ReactNode;
-  title: string;
-  text: string;
-  cta: string;
-  /** navy card with white text, or logo-red card with navy text (small text stays readable on the logo red). */
-  tone: "navy" | "coral";
-}) {
-  const coral = tone === "coral";
+/** MaelEnglish Coaching: the premium product — one-on-one classes for a specific goal (not a course). */
+function CoachingPremium() {
   return (
-    <a
-      href={href}
-      {...(external ? { target: "_blank", rel: "noopener" } : {})}
-      className={`group flex flex-col gap-4 rounded-3xl p-6 transition hover:-translate-y-1 sm:flex-row sm:items-center ${coral ? "border-2 border-coral bg-white text-brand-deep" : "bg-brand-deep text-white"}`}
-    >
-      <span className={`flex size-12 shrink-0 items-center justify-center rounded-2xl ${coral ? "bg-coral-soft text-coral-dark" : "bg-white/15"}`}>{icon}</span>
-      <div className="flex-1">
-        <h3 className="text-xl font-extrabold">{title}</h3>
-        <p className={`mt-1 text-sm ${coral ? "text-brand-deep" : "text-white/80"}`}>{text}</p>
-      </div>
-      <span className="inline-flex items-center gap-1.5 font-bold">
-        {cta} <ArrowRight className="size-4 transition group-hover:translate-x-1" aria-hidden />
-      </span>
-    </a>
+    <section className="py-16 sm:py-20" aria-labelledby="coaching-title">
+      <Container>
+        <div className="reveal relative overflow-hidden rounded-[2.5rem] bg-brand-deep p-7 text-white sm:p-12">
+          <div aria-hidden className="pointer-events-none absolute -top-24 -left-24 size-80 bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--color-primary)_55%,transparent),transparent)]" />
+          <div className="relative grid gap-10 lg:grid-cols-[1fr_1.15fr] lg:items-center">
+            <div>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/12 px-3 py-1 text-xs font-bold tracking-wide uppercase">
+                <Crown className="size-3.5 text-coral" aria-hidden /> MaelEnglish Coaching · Premium
+              </span>
+              <h2 id="coaching-title" className="mt-4 text-3xl font-extrabold text-balance sm:text-4xl">
+                Un objectif précis ? <span className="text-coral">Un coach rien que pour vous.</span>
+              </h2>
+              <p className="mt-4 text-white/80">
+                Des cours individuels, en direct avec votre coach, entièrement consacrés à votre échéance. Chaque séance prépare
+                votre jour J.
+              </p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Link href="/coaching" className={BUTTON.coral}>
+                  Découvrir le coaching <ArrowRight className="size-4" aria-hidden />
+                </Link>
+                <Link href={signupHref("coaching")} className={BUTTON.ghost}>
+                  Demander mon diagnostic
+                </Link>
+              </div>
+            </div>
+            <ul className="grid gap-3 sm:grid-cols-2">
+              {COACHING.goals.map((g) => {
+                const Icon = GOAL_ICONS[g.icon];
+                return (
+                  <li key={g.title} className="rounded-2xl bg-white/8 p-4 ring-1 ring-white/12">
+                    <Icon className="size-6 text-coral" aria-hidden />
+                    <h3 className="mt-2 font-heading text-lg font-extrabold">{g.title}</h3>
+                    <p className="mt-1 text-sm text-white/75">{g.text}</p>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+      </Container>
+    </section>
   );
 }
 

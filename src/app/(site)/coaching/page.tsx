@@ -1,19 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowDown, ArrowRight, BadgeCheck, Briefcase, Building2, CalendarCheck, ChevronDown, Mic, Phone, UserCheck, Video } from "lucide-react";
+import { ArrowDown, ArrowRight, CalendarCheck, ChevronDown, Crown, Phone, UserCheck, Video } from "lucide-react";
 import { COACHING } from "@/lib/content";
 import { COACHING_WA, PHONE_DISPLAY, PHONE_TEL, signupHref } from "@/lib/site";
 import { BUTTON, ButtonLink, Container, PhraseCard, Pill, SectionHead, WhatsAppButton } from "@/components/site/ui";
 import { FounderCard } from "@/components/site/founder";
+import { GOAL_ICONS } from "@/components/site/icons";
 
 export const metadata: Metadata = {
-  title: "Coaching individuel en anglais professionnel",
+  title: "Coaching premium en anglais : entretien, présentation, examen",
   description:
-    "MaelEnglish Coaching : un coach, votre métier, vos objectifs. Accompagnement individuel 100 % en ligne pour entretiens, réunions, présentations et négociations en anglais.",
+    "MaelEnglish Coaching, l’offre premium : des cours individuels avec votre coach pour un objectif précis — entretien, présentation, négociation, examen (IELTS, TOEFL). 100 % en ligne.",
   alternates: { canonical: "/coaching" },
 };
-
-const AUDIENCE_ICONS = { Briefcase, BadgeCheck, Building2, Mic };
 
 export default function CoachingPage() {
   return (
@@ -22,13 +21,18 @@ export default function CoachingPage() {
         <div aria-hidden className="pointer-events-none absolute -top-48 -right-40 size-[34rem] bg-[radial-gradient(closest-side,var(--color-coral-soft),transparent)]" />
         <Container className="relative grid items-center gap-12 py-12 sm:py-16 lg:grid-cols-[1.3fr_1fr] lg:py-20">
           <div>
-            <Pill>MaelEnglish Coaching</Pill>
+            <div className="flex flex-wrap items-center gap-2">
+              <Pill>MaelEnglish Coaching</Pill>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-deep px-3 py-1 text-xs font-bold tracking-wide text-white uppercase">
+                <Crown className="size-3.5" aria-hidden /> Premium · individuel
+              </span>
+            </div>
             <h1 className="mt-4 text-4xl leading-[1.05] font-extrabold text-brand-deep text-balance sm:text-5xl lg:text-6xl">
               Un coach. Votre métier. <span className="text-coral">Vos objectifs.</span>
             </h1>
             <p className="mt-5 max-w-xl text-lg text-muted-foreground text-pretty">
-              Un accompagnement individuel en anglais professionnel, construit autour de votre poste, de votre secteur et de vos
-              échéances. Vous travaillez exactement ce dont vous avez besoin, au rythme qui vous convient.
+              Notre offre premium : des cours individuels, en direct avec votre coach, pour un objectif précis — un entretien,
+              une présentation, une négociation ou un examen. Chaque séance prépare votre jour J.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href={signupHref("coaching")} className={BUTTON.coral}>
@@ -58,10 +62,10 @@ export default function CoachingPage() {
 
       <section className="py-16 sm:py-20">
         <Container>
-          <SectionHead pill="Pour qui ?" title="Pour celles et ceux dont l’anglais est un enjeu professionnel" />
+          <SectionHead pill="Pour quel objectif ?" title="Un coaching pour un objectif précis" />
           <ul className="grid gap-5 sm:grid-cols-2">
-            {COACHING.audiences.map((a) => {
-              const Icon = AUDIENCE_ICONS[a.icon];
+            {COACHING.goals.map((a) => {
+              const Icon = GOAL_ICONS[a.icon];
               return (
                 <li key={a.title} className="flex gap-4 rounded-3xl border-2 border-border bg-card p-6">
                   <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-brand-soft text-primary">
