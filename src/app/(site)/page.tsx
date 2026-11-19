@@ -46,9 +46,6 @@ function Hero() {
             <a href="#programmes" className={BUTTON.blue}>
               Voir les programmes <ArrowDown className="size-4" aria-hidden />
             </a>
-            <WhatsAppButton href={whatsappLink()} variant="outline">
-              Parler à un conseiller
-            </WhatsAppButton>
           </div>
           <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-ink/75">
             <li className="flex items-center gap-1.5"><LayoutGrid className="size-4 text-primary" aria-hidden /> {PROGRAMS.length} programmes</li>
