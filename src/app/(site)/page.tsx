@@ -56,9 +56,10 @@ function Hero() {
         </div>
 
         <div className="hero-photo relative mx-auto w-full max-w-md lg:max-w-none">
-          <div className="relative aspect-square overflow-hidden rounded-[2.5rem] border-4 border-white bg-[#070b1d] shadow-[0_30px_70px_-30px_rgb(20_31_77/0.6)]">
-            <Photo name="team" alt="Des professionnels africains travaillent ensemble sur un dossier en réunion" sizes="(max-width: 1023px) 90vw, 480px" position="80% center" eager />
-            <PhraseCard role="En équipe" en="Could you walk me through this part?" fr="Pouvez-vous m’expliquer cette partie ?" className="absolute right-4 bottom-4 left-4 sm:left-auto sm:max-w-xs" />
+          {/* hover: the frame lifts, the photo zooms slowly, the phrase card rises (motion-safe only) */}
+          <div className="group relative aspect-square overflow-hidden rounded-[2.5rem] border-4 border-white bg-[#070b1d] shadow-[0_30px_70px_-30px_rgb(20_31_77/0.6)] transition duration-500 ease-out hover:shadow-[0_40px_80px_-30px_rgb(20_31_77/0.7)] motion-safe:hover:-translate-y-1.5">
+            <Photo name="team" alt="Des professionnels africains travaillent ensemble sur un dossier en réunion" sizes="(max-width: 1023px) 90vw, 480px" position="80% center" eager className="transition duration-700 ease-out motion-safe:group-hover:scale-[1.06]" />
+            <PhraseCard role="En équipe" en="Could you walk me through this part?" fr="Pouvez-vous m’expliquer cette partie ?" className="absolute right-4 bottom-4 left-4 transition duration-500 ease-out sm:left-auto sm:max-w-xs motion-safe:group-hover:-translate-y-1.5" />
           </div>
         </div>
       </Container>
@@ -190,7 +191,7 @@ function Method() {
     <section id="methode" className="bg-brand-soft/60 py-16 sm:py-20">
       <Container>
         <SectionHead pill="Comment ça marche" title="Parler d'abord, la grammaire au service de la parole" />
-        <ol className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <ol className="grid gap-5 md:grid-cols-3">
           {METHOD_STEPS.map((s, i) => (
             <li key={s.title} className="reveal relative rounded-3xl border-2 border-border bg-card p-6">
               <span className="mb-4 flex size-11 items-center justify-center rounded-2xl border-2 border-coral bg-white font-heading text-xl font-extrabold text-coral shadow-[0_4px_0_0_var(--color-coral)]">

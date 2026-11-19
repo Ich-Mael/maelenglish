@@ -6,7 +6,6 @@ export const METHOD_STEPS = [
   { title: "On fait le point", text: "Test de niveau, votre métier et vos objectifs : on vous oriente vers le bon programme." },
   { title: "Vous pratiquez", text: "Des situations réelles de votre quotidien professionnel, à l'oral comme à l'écrit." },
   { title: "Le coach corrige", text: "Des retours précis sur vos devoirs et vos prises de parole, pour progresser vite." },
-  { title: "Vous êtes certifié", text: "Un certificat MaelEnglish à valoriser sur votre CV et votre profil professionnel." },
 ];
 
 export const METHOD_FACTS = [

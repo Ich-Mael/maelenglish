@@ -25,10 +25,11 @@ export function FounderSection() {
       <div className="relative mx-auto grid w-full max-w-6xl items-start gap-12 px-4 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
         {/* Portrait */}
         <div className="relative mx-auto w-full max-w-sm lg:sticky lg:top-28 lg:max-w-none">
-          <div className="reveal relative">
-            <div aria-hidden className="absolute inset-0 translate-x-4 translate-y-4 rotate-3 rounded-[2.5rem] bg-primary" />
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[2.5rem] bg-[#070b1d] shadow-[0_30px_60px_-30px_rgb(20_31_77/0.7)]">
-              <Photo name={FOUNDER.photo} alt={`${FOUNDER.name}, ${FOUNDER.title}`} sizes="(max-width: 1023px) 90vw, 440px" position="center 25%" />
+          {/* hover: the blue card swings out, the photo lifts and zooms (no transform on .reveal itself) */}
+          <div className="group reveal relative">
+            <div aria-hidden className="absolute inset-0 translate-x-4 translate-y-4 rotate-3 rounded-[2.5rem] bg-primary transition duration-500 ease-out motion-safe:group-hover:translate-x-6 motion-safe:group-hover:translate-y-6 motion-safe:group-hover:rotate-6" />
+            <div className="relative aspect-[4/5] overflow-hidden rounded-[2.5rem] bg-[#070b1d] shadow-[0_30px_60px_-30px_rgb(20_31_77/0.7)] transition duration-500 ease-out motion-safe:group-hover:-translate-y-1.5 motion-safe:group-hover:-rotate-1">
+              <Photo name={FOUNDER.photo} alt={`${FOUNDER.name}, ${FOUNDER.title}`} sizes="(max-width: 1023px) 90vw, 440px" position="center 25%" className="transition duration-700 ease-out motion-safe:group-hover:scale-[1.05]" />
             </div>
             <span className="absolute top-5 -left-3 inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-sm font-bold text-primary shadow-lg sm:-left-5">
               <BadgeCheck className="size-4.5" aria-hidden /> Coach certifié TEFL
