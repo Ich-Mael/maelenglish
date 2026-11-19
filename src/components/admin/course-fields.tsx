@@ -10,13 +10,20 @@ const LEVELS = [
   { value: "advanced", label: "Avancé" },
 ];
 
-/** Course info fields (+ access settings for admins). */
-export function CourseFields({ course, settings }: { course?: Partial<CourseDoc>; settings: boolean }) {
-  return (
+/**
+ * Course info fields (+ access settings for admins). `wide` (full-page form): title and
+ * description on the left, the other fields in a side column from xl screens.
+ */
+export function CourseFields({ course, settings, wide }: { course?: Partial<CourseDoc>; settings: boolean; wide?: boolean }) {
+  const main = (
     <>
       <Input label="Titre" name="title" required defaultValue={course?.title ?? ""} />
-      <RichTextEditor label="Description" name="description" minHeight={180} defaultValue={toEditorHtml(course?.description, "text")} />
-      <div className="grid gap-4 sm:grid-cols-2">
+      <RichTextEditor label="Description" name="description" minHeight={wide ? 320 : 180} defaultValue={toEditorHtml(course?.description, "text")} />
+    </>
+  );
+  const side = (
+    <>
+      <div className={wide ? "grid gap-4 sm:grid-cols-2 xl:grid-cols-1" : "grid gap-4 sm:grid-cols-2"}>
         <Select
           label="Programme du catalogue"
           name="program"
@@ -44,5 +51,18 @@ export function CourseFields({ course, settings }: { course?: Partial<CourseDoc>
         </div>
       )}
     </>
+  );
+  if (!wide)
+    return (
+      <>
+        {main}
+        {side}
+      </>
+    );
+  return (
+    <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] xl:gap-8">
+      <div className="grid gap-4">{main}</div>
+      <div className="grid gap-4">{side}</div>
+    </div>
   );
 }

@@ -15,11 +15,11 @@ async function NewCourse() {
   const me = await requireStaff("/admin/cours/nouveau");
   if (!can.createCourse(actorOf(me))) redirect("/admin/cours");
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-6xl">
       <PageHeader title="Nouveau cours" back={{ href: "/admin/cours", label: "Cours" }} subtitle="Le cours est créé en brouillon : publiez-le quand le contenu est prêt." />
       <Card>
         <AdminForm action={createCourseAction}>
-          <CourseFields settings />
+          <CourseFields settings wide />
           <div>
             <Submit>Créer le cours</Submit>
           </div>
