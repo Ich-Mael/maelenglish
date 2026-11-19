@@ -1,9 +1,8 @@
-import Link from "next/link";
-import { ArrowRight, BadgeCheck, Compass, Lightbulb, Plane, Quote, Trophy } from "lucide-react";
+import { BadgeCheck, Compass, Lightbulb, Plane, Quote, Trophy } from "lucide-react";
 import { FOUNDER } from "@/lib/content";
 import { waLink } from "@/lib/site";
 import { Photo } from "./photo";
-import { BUTTON, Pill, WhatsAppButton } from "./ui";
+import { Pill, WhatsAppButton } from "./ui";
 import { cn } from "cn";
 
 const talkLink = waLink(`Bonjour ${FOUNDER.nickname}, je souhaite des conseils pour choisir mon programme MaelEnglish.`);
@@ -120,9 +119,6 @@ export function FounderSection() {
             <WhatsAppButton href={talkLink} variant="blue">
               Parler à {FOUNDER.nickname}
             </WhatsAppButton>
-            <Link href="/coaching" className={BUTTON.outline}>
-              Découvrir le coaching <ArrowRight className="size-4" aria-hidden />
-            </Link>
           </div>
         </div>
       </div>
