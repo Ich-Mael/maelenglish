@@ -10,12 +10,14 @@ import nodemailer, { type Transporter } from "nodemailer";
 
 /**
  * Sender address: must be a sender verified in Brevo (Senders & IP), e.g.
- * « MaelEnglish <contact@your-domain> ». The Brevo SMTP login (…@smtp-brevo.com) is not a
+ * « MaelEnglish <contact@your-domain> » (a bare address gets the « MaelEnglish » display name). The Brevo SMTP login (…@smtp-brevo.com) is not a
  * sender: Brevo accepts the message but never delivers it.
  */
 export function emailSender(): string | null {
   const from = process.env.EMAIL_FROM?.trim();
-  return from && !/@smtp-brevo\.com>?$/i.test(from) ? from : null;
+  if (!from || /@smtp-brevo\.com>?$/i.test(from)) return null;
+  // A bare address shows as its local part in inboxes (« contact »): add the brand name.
+  return from.includes("<") ? from : `"MaelEnglish" <${from}>`;
 }
 
 export function isEmailConfigured(): boolean {
