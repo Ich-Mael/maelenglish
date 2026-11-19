@@ -238,7 +238,7 @@ export async function updateModuleAction(_: State, form: FormData): Promise<Stat
     const moduleId = str(form, "moduleId");
     await moduleCourse(me, moduleId, "edit");
     if (!str(form, "title")) return { error: "Donnez un titre au module." };
-    await content.updateModule(moduleId, { title: str(form, "title"), summary: str(form, "summary"), isCheckpointRequired: form.get("isCheckpointRequired") === "on" });
+    await content.updateModule(moduleId, { title: str(form, "title"), summary: str(form, "summary"), description: String(form.get("description") ?? ""), isCheckpointRequired: form.get("isCheckpointRequired") === "on" });
     refresh();
     return { success: "Module enregistré." };
   } catch (e) {

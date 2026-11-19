@@ -114,11 +114,12 @@ export async function createModule(courseId: string, title: string, summary = ""
   return m.toObject() as ModuleDoc;
 }
 
-export async function updateModule(moduleId: string, data: { title: string; summary?: string; isCheckpointRequired?: boolean }) {
+export async function updateModule(moduleId: string, data: { title: string; summary?: string; description?: string; isCheckpointRequired?: boolean }) {
   const m = await Module.findById(oid(moduleId));
   if (!m) throw new AdminError("Module introuvable.");
   m.title = data.title.trim();
-  m.summary = data.summary ?? "";
+  m.summary = data.summary?.trim() ?? "";
+  if (data.description !== undefined) m.description = normalizeRich(data.description);
   if (data.isCheckpointRequired !== undefined) m.isCheckpointRequired = data.isCheckpointRequired;
   await m.save();
 }

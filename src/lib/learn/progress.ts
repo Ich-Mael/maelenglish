@@ -21,6 +21,9 @@ export type OutlineInput = {
   modules: {
     id: string;
     title: string;
+    /** Objective (one line) and rich-text description, passed through for display. */
+    summary?: string;
+    description?: string;
     hasQuiz: boolean;
     hasAssignment: boolean;
     isCheckpointRequired: boolean;
@@ -46,6 +49,8 @@ export type DayState = "done" | "current" | "pending_review" | "redo" | "locked_
 export type ModuleOutline = {
   id: string;
   title: string;
+  summary: string;
+  description: string;
   index: number;
   state: StepState;
   /** Challenge only. */
@@ -128,6 +133,8 @@ export function computeOutline(input: OutlineInput): Outline {
     const outline: ModuleOutline = {
       id: m.id,
       title: m.title,
+      summary: m.summary ?? "",
+      description: m.description ?? "",
       index,
       state: complete && open ? "completed" : open ? "available" : "locked",
       day: dayInfo(index),

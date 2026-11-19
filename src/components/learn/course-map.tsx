@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { Check, ClipboardCheck, FileText, Lock, PenLine, PlayCircle, Sparkles, Star, Trophy, Type } from "lucide-react";
+import { Check, ChevronDown, ClipboardCheck, FileText, Lock, PenLine, PlayCircle, Sparkles, Star, Trophy, Type } from "lucide-react";
 import type { ModuleOutline, Outline, StepState } from "@/lib/learn/progress";
 import { assignmentPath, examPath, lessonPath, projectPath, quizPath } from "@/lib/learn/paths";
 import { formatDate } from "./ui";
+import { RichText } from "./rich-text";
 import { cn } from "cn";
 
 const LESSON_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -50,6 +51,7 @@ export function CourseMap({ courseId, outline, currentHref }: { courseId: string
         return (
           <li key={m.id}>
             <ModuleBanner module={m} />
+            {m.description.trim() && <ModuleAbout html={m.description} />}
             <ol className="mt-6 grid justify-items-center gap-5">
               {nodes.map((node) => (
                 <li key={node.key} className={cn("transition-transform", OFFSETS[n++ % OFFSETS.length])}>
@@ -100,10 +102,26 @@ function ModuleBanner({ module: m }: { module: ModuleOutline }) {
           {m.day && ` · ${DAY_LABEL[m.day.state]}`}
         </p>
         <h2 className="text-xl font-extrabold">{m.title}</h2>
+        {m.summary && <p className="mt-0.5 text-sm opacity-90">{m.summary}</p>}
         {m.day?.state === "locked_time" && <p className="mt-0.5 text-sm">S&apos;ouvre le {formatDate(m.day.opensOn)}</p>}
       </div>
       {locked ? <Lock className="size-7 shrink-0" aria-hidden /> : m.state === "completed" ? <Check className="size-8 shrink-0" aria-hidden /> : null}
     </div>
+  );
+}
+
+/** Module description, folded by default so the path stays the focus (no JS: <details>). */
+function ModuleAbout({ html }: { html: string }) {
+  return (
+    <details className="group mt-3 rounded-2xl border border-border bg-card">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-3 text-sm font-bold text-brand-deep [&::-webkit-details-marker]:hidden">
+        À propos de ce module
+        <ChevronDown className="size-4 transition group-open:rotate-180" aria-hidden />
+      </summary>
+      <RichText legacy="text" className="border-t border-border px-5 py-4 text-base">
+        {html}
+      </RichText>
+    </details>
   );
 }
 

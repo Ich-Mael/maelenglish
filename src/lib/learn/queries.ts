@@ -91,6 +91,8 @@ export async function courseTree(me: CurrentUser, access: Extract<CourseAccess, 
     modules: modules.map((m) => ({
       id: String(m._id),
       title: m.title,
+      summary: m.summary ?? "",
+      description: m.description ?? "",
       hasQuiz: (m.quiz?.questions?.length ?? 0) > 0,
       hasAssignment: !!m.assignment?.instructions?.trim(),
       isCheckpointRequired: m.isCheckpointRequired !== false,

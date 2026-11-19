@@ -6,7 +6,7 @@ import { connection } from "next/server";
 import { ArrowDown, ArrowUp, ExternalLink, FileText, PlayCircle, Sparkles, Trash2, Type } from "lucide-react";
 import { requireStaff, allowed, courseFor } from "@/lib/admin/context";
 import { Lesson, Module, TeachingResource, RESOURCE_TYPES, type LessonDoc, type ModuleDoc } from "@/models";
-import { Card, Checkbox, EmptyState, Input, PageHeader, Pill, Select, TextArea } from "@/components/admin/ui";
+import { Card, Checkbox, EmptyState, Input, PageHeader, Pill, Select } from "@/components/admin/ui";
 import { ActionButton, AdminForm, Submit } from "@/components/admin/forms";
 import { AssignmentFields } from "@/components/admin/assignment-fields";
 import { QuizEditor, type EditableQuiz } from "@/components/admin/quiz-editor";
@@ -14,6 +14,7 @@ import { createLessonAction, deleteLessonAction, deleteResourceAction, moveLesso
 import { PageSkeleton } from "@/components/learn/ui";
 import { RichText } from "@/components/learn/rich-text";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
+import { toEditorHtml } from "@/lib/rich-text";
 
 export const metadata: Metadata = { title: "Module" };
 
@@ -133,7 +134,8 @@ async function ModuleAdmin({ params }: { params: Promise<{ courseId: string; mod
             <AdminForm action={updateModuleAction}>
               <input type="hidden" name="moduleId" value={moduleId} />
               <Input label="Titre" name="title" defaultValue={mod.title} required />
-              <TextArea label="Objectif" name="summary" rows={2} defaultValue={mod.summary ?? ""} />
+              <Input label="Objectif" name="summary" defaultValue={mod.summary ?? ""} placeholder="Ce que l'apprenant saura faire" hint="Une phrase, affichée sous le titre du module." />
+              <RichTextEditor label="Description" name="description" minHeight={200} defaultValue={toEditorHtml(mod.description, "text")} hint="Présentation du module, affichée aux apprenants sur la page du cours (facultatif)." />
               {checkpoint && <Checkbox name="isCheckpointRequired" label="Validation obligatoire du point de contrôle" hint="Décochez pour un jour « libre » (repos, révision)." defaultChecked={mod.isCheckpointRequired !== false} />}
               <div>
                 <Submit variant="secondary">Enregistrer</Submit>

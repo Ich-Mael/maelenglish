@@ -66,6 +66,13 @@ describe("content", () => {
     const order = (await Module.find({ courseId: id }).sort({ order: 1 }).lean()).map((m) => m.title);
     expect(order).toEqual(["M1", "M3", "M2"]);
 
+    await content.updateModule(String(m2._id), { title: "M2", summary: " Se présenter ", description: '<p>Intro <script>x()</script><span style="color:#b02a2a">rouge</span></p>' });
+    const saved = await Module.findById(m2._id).lean();
+    expect(saved?.summary).toBe("Se présenter");
+    expect(saved?.description).toBe('<p>Intro <span style="color:#b02a2a">rouge</span></p>');
+    await content.updateModule(String(m2._id), { title: "M2", description: "<p>&nbsp;</p>" });
+    expect((await Module.findById(m2._id).lean())?.description).toBe("");
+
     const l = await content.createLesson(String(m1._id), "Practice", "practice");
     expect(l.isPublished).toBe(false);
     await expect(content.updateLesson(String(l._id), { title: "Practice", isPublished: true, exercises: [] })).rejects.toThrow(/au moins un exercice/);

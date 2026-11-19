@@ -9,7 +9,8 @@ const moduleSchema = new Schema(
   {
     courseId: { type: Schema.Types.ObjectId, ref: "Course", required: true },
     title: { type: String, required: true, trim: true },
-    summary: { type: String, default: "" }, // what the learner will learn
+    summary: { type: String, default: "" }, // objective: one line, what the learner will be able to do
+    description: { type: String, default: "" }, // rich text (HTML, sanitised on save), shown on the course map
     order: { type: Number, default: 0 },
 
     /** Challenge courses: the checkpoint (module assignment) must be approved before the next day unlocks. */
