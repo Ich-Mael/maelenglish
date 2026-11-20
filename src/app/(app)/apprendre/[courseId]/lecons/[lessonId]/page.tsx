@@ -14,6 +14,7 @@ import { AccessProblem, PageSkeleton } from "@/components/learn/ui";
 import { RichText } from "@/components/learn/rich-text";
 import { CompleteButton } from "@/components/learn/complete-button";
 import { PracticePlayer } from "@/components/learn/practice/player";
+import { TvPlayer } from "@/components/learn/tv-player";
 
 export const metadata: Metadata = { title: "Leçon", robots: { index: false } };
 
@@ -75,12 +76,8 @@ async function LessonView({ params }: { params: Promise<{ courseId: string; less
       </header>
 
       {lesson.type === "video" &&
-        (video?.kind === "iframe" ? (
-          <div className="aspect-video overflow-hidden rounded-3xl bg-black">
-            <iframe src={video.src} title={lesson.title} className="size-full" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowFullScreen loading="lazy" referrerPolicy="strict-origin-when-cross-origin" />
-          </div>
-        ) : video?.kind === "file" ? (
-          <video src={video.src} controls playsInline preload="metadata" className="aspect-video w-full rounded-3xl bg-black" />
+        (video ? (
+          <TvPlayer source={video} title={lesson.title} />
         ) : (
           <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">La vidéo de cette leçon n&apos;est pas encore disponible.</p>
         ))}

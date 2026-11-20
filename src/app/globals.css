@@ -176,6 +176,41 @@
   .animate-pop, .animate-shake, .animate-float { animation: none; }
 }
 
+/* TV player (components/learn/tv-player.tsx): screen switching on, and the progress bar. */
+@keyframes tv-on {
+  0% { transform: scale(1, 0.006); filter: brightness(3); }
+  45% { transform: scale(1, 0.006); filter: brightness(3); }
+  100% { transform: scale(1, 1); filter: brightness(1); }
+}
+.tv-on { animation: tv-on 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .tv-on { animation: none; }
+}
+.tv-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  cursor: pointer;
+  background: linear-gradient(to right, var(--color-coral) var(--p, 0%), rgb(255 255 255 / 0.3) var(--p, 0%));
+}
+.tv-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 0 0 3px var(--color-coral);
+}
+.tv-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 0 0 3px var(--color-coral);
+}
+
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 5rem;
