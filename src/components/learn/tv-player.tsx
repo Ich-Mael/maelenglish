@@ -1,14 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Maximize, Minimize, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import type { VideoSource } from "@/lib/learn/media";
 import { cn } from "cn";
 
 /*
- * Lesson video in a « smart TV » frame: navy bezel with the MaelEnglish logo on top, power
+ * Lesson video in a « smart TV » frame: white bezel with the MaelEnglish logo on top, power
  * light, stand. Nothing is downloaded until the learner switches the TV on (data is expensive).
+ * Cache Components keeps a page mounted but hidden (<Activity>) after navigating away, so the
+ * TV switches itself off when hidden — otherwise the video kept playing in the background.
  * - Video files: custom controls (play, 10 s back, seek, speed for listening practice, sound,
  *   full screen; keyboard Space/K, ←/→, M, F).
  * - YouTube / Vimeo: the provider's own controls inside the screen (their iframes can't be restyled).
@@ -35,16 +37,18 @@ const fmt = (s: number) => {
 
 export function TvPlayer({ source, title }: { source: NonNullable<VideoSource>; title: string }) {
   const [on, setOn] = useState(false);
+  // Runs when the page is hidden by <Activity> (navigation) or unmounted: stop the video.
+  useLayoutEffect(() => () => setOn(false), []);
   return (
     <figure className="mx-auto w-full" aria-label={`Vidéo : ${title}`}>
-      <div className="relative rounded-[1.4rem] bg-gradient-to-b from-[#1d2650] to-[#0b1030] px-2 pt-9 pb-2.5 shadow-[0_30px_60px_-25px_rgb(20_31_77/0.75)] ring-1 ring-white/10 sm:rounded-[2rem] sm:px-3.5 sm:pt-12 sm:pb-4">
+      <div className="relative rounded-[1.4rem] bg-gradient-to-b from-white to-[#eef1fb] px-2 pt-9 pb-2.5 shadow-[0_30px_60px_-25px_rgb(20_31_77/0.45)] ring-1 ring-border sm:rounded-[2rem] sm:px-3.5 sm:pt-12 sm:pb-4">
         {/* top bezel: logo + camera */}
         <div className="absolute inset-x-0 top-0 flex h-9 items-center justify-center sm:h-12">
-          <Image src="/images/maelenglish-mark-light.webp" alt="MaelEnglish" width={800} height={175} className="h-auto w-24 opacity-95 sm:w-32" />
-          <span aria-hidden className="absolute top-1/2 right-5 size-1.5 -translate-y-1/2 rounded-full bg-[#2a3466] ring-1 ring-white/10 sm:right-7" />
+          <Image src="/images/maelenglish-logo.webp" alt="MaelEnglish" width={800} height={175} className="h-auto w-24 sm:w-32" />
+          <span aria-hidden className="absolute top-1/2 right-5 size-1.5 -translate-y-1/2 rounded-full bg-brand-deep/70 ring-2 ring-brand-soft sm:right-7" />
         </div>
 
-        <div className="relative aspect-video overflow-hidden rounded-lg bg-black ring-1 ring-black/60 sm:rounded-xl">
+        <div className="relative aspect-video overflow-hidden rounded-lg bg-black ring-1 ring-border sm:rounded-xl">
           {on ? (
             <div className="tv-on size-full">
               {source.kind === "iframe" ? (
@@ -64,14 +68,14 @@ export function TvPlayer({ source, title }: { source: NonNullable<VideoSource>; 
             <button
               type="button"
               onClick={() => setOn(true)}
-              className="group absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[radial-gradient(ellipse_at_center,#25307a_0%,#0b1030_70%)] p-4 text-white"
+              className="group absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[radial-gradient(ellipse_at_center,#ffffff_0%,#eef1fb_75%)] p-4 text-brand-deep"
             >
-              <span aria-hidden className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,rgb(255_255_255/0.09),transparent_38%)]" />
-              <span className="flex size-16 items-center justify-center rounded-full bg-white text-primary shadow-[0_6px_0_0_var(--color-coral)] transition group-hover:scale-105 group-active:translate-y-1 group-active:shadow-[0_2px_0_0_var(--color-coral)] sm:size-20">
+              <span aria-hidden className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,rgb(54_79_171/0.06),transparent_40%)]" />
+              <span className="flex size-16 items-center justify-center rounded-full bg-primary text-white shadow-[0_6px_0_0_var(--color-coral)] transition group-hover:scale-105 group-active:translate-y-1 group-active:shadow-[0_2px_0_0_var(--color-coral)] sm:size-20">
                 <Play className="ml-1 size-8 fill-current sm:size-9" aria-hidden />
               </span>
               <span className="max-w-md text-center font-heading text-base font-extrabold text-balance sm:text-xl">{title}</span>
-              <span className="text-xs font-semibold text-white/70 sm:text-sm">Appuyez pour allumer</span>
+              <span className="text-xs font-semibold text-muted-foreground sm:text-sm">Appuyez sur lecture, c&apos;est parti !</span>
             </button>
           )}
         </div>
@@ -81,13 +85,13 @@ export function TvPlayer({ source, title }: { source: NonNullable<VideoSource>; 
           aria-hidden
           className={cn(
             "absolute right-5 bottom-1 size-1.5 rounded-full transition sm:right-8 sm:bottom-1.5",
-            on ? "bg-[#6f86ff] shadow-[0_0_8px_2px_rgb(111_134_255/0.7)]" : "bg-coral shadow-[0_0_8px_2px_rgb(255_87_87/0.6)]",
+            on ? "bg-primary shadow-[0_0_8px_2px_rgb(54_79_171/0.6)]" : "bg-coral shadow-[0_0_8px_2px_rgb(255_87_87/0.6)]",
           )}
         />
       </div>
       {/* stand */}
-      <div aria-hidden className="mx-auto h-4 w-14 bg-gradient-to-b from-[#0b1030] to-[#1d2650] sm:h-5 sm:w-20" />
-      <div aria-hidden className="mx-auto h-2 w-40 rounded-full bg-brand-deep shadow-[0_8px_16px_-6px_rgb(20_31_77/0.6)] sm:h-2.5 sm:w-56" />
+      <div aria-hidden className="mx-auto h-4 w-14 bg-gradient-to-b from-[#dfe4f4] to-[#eef1fb] sm:h-5 sm:w-20" />
+      <div aria-hidden className="mx-auto h-2 w-40 rounded-full bg-white shadow-[0_8px_16px_-6px_rgb(20_31_77/0.35)] ring-1 ring-border sm:h-2.5 sm:w-56" />
     </figure>
   );
 }
