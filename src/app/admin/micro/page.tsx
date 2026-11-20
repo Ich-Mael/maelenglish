@@ -11,7 +11,7 @@ async function MicPage() {
   await requireStaff("/admin/micro");
   return (
     <div className="max-w-2xl">
-      <PageHeader title="Tester le micro" subtitle="Vérifiez votre micro avant d’enregistrer un retour vocal ou un audio de cours. Rien n’est envoyé." />
+      <PageHeader title="Tester le micro" subtitle="Vérifiez votre micro avant d’enregistrer un retour vocal ou un audio de cours. Rien n’est envoyé, sauf si vous testez l’envoi." />
       <Card>
         <MicTest />
       </Card>

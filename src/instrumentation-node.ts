@@ -24,6 +24,11 @@ export function checkConfig() {
     // same rule as emailSender() in src/lib/email.ts (not imported: server-only)
     warn("EMAIL_FROM manquant ou invalide : indiquez une adresse d'expéditeur vérifiée dans Brevo (ex. « MaelEnglish <contact@votre-domaine> »). Aucun email ne sera envoyé.");
   }
+  if (process.env.STORAGE_DRIVER === "local") {
+    warn("STORAGE_DRIVER=local : fichiers stockés sur le disque du serveur (tests locaux uniquement, jamais en production réelle).");
+  } else if (!process.env.STORAGE_ENDPOINT || !process.env.STORAGE_BUCKET || !process.env.STORAGE_ACCESS_KEY_ID || !process.env.STORAGE_SECRET_ACCESS_KEY) {
+    warn("STORAGE_* non configuré : les enregistrements audio ne peuvent pas être envoyés (Cloudflare R2, voir DECISIONS.md).");
+  }
   if (!process.env.WHATSAPP_TOKEN || !process.env.WHATSAPP_PHONE_NUMBER_ID) {
     warn("WHATSAPP_* non configuré : les notifications d'inscription WhatsApp sont en simulation (email utilisé à la place).");
   }
