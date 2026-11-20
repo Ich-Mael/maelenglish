@@ -1,5 +1,6 @@
 import "server-only";
 import nodemailer, { type Transporter } from "nodemailer";
+import { PHONE_DISPLAY } from "./site";
 
 /**
  * Transactional email via SMTP (Brevo). Without EMAIL_HOST / EMAIL_USERNAME / EMAIL_PASSWORD
@@ -60,14 +61,18 @@ async function send(mail: Mail): Promise<{ simulated: boolean }> {
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
 /** Table layout, inlined styles and a "bulletproof" button (some clients strip <style>). */
-function layout(p: { firstName: string; intro: string; button: string; url: string; outro: string }) {
+function layout(p: { firstName: string; intro: string; button: string; url: string; outro: string; hero?: { src: string; alt: string }; extra?: string }) {
   return `<!doctype html><html lang="fr"><body style="margin:0;background:#f7f8fd;font-family:Arial,Helvetica,sans-serif;color:#151a33">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f7f8fd;padding:24px 12px"><tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:14px;border:1px solid #e3e7f3">
-<tr><td style="padding:28px 28px 8px"><img src="${appUrl("/images/maelenglish-logo.png")}" alt="MaelEnglish" width="160" style="display:block;border:0;height:auto"></td></tr>
+<tr><td style="padding:28px 28px 8px"><img src="${appUrl("/images/maelenglish-logo.png")}" alt="MaelEnglish" width="160" style="display:block;border:0;height:auto"></td></tr>${
+    p.hero
+      ? `\n<tr><td style="padding:12px 28px 4px"><img src="${p.hero.src}" alt="${esc(p.hero.alt)}" width="464" style="display:block;width:100%;max-width:464px;height:auto;border:0;border-radius:12px"></td></tr>`
+      : ""
+  }
 <tr><td style="padding:8px 28px;font-size:16px;line-height:1.55">
 <p style="margin:0 0 12px">Bonjour ${esc(p.firstName)},</p>
-<p style="margin:0 0 20px">${p.intro}</p>
+<p style="margin:0 0 20px">${p.intro}</p>${p.extra ?? ""}
 <table role="presentation" cellpadding="0" cellspacing="0"><tr><td bgcolor="#364fab" style="border-radius:10px">
 <a href="${p.url}" style="display:inline-block;padding:13px 24px;color:#ffffff;font-weight:bold;text-decoration:none;font-size:16px">${p.button}</a>
 </td></tr></table>
@@ -110,21 +115,57 @@ export function sendPasswordResetEmail(to: string, p: { firstName: string; token
   });
 }
 
-export function sendEnrollmentEmail(to: string, p: { firstName: string; courseTitle: string; startDate: string; endDate: string | null }) {
-  const url = appUrl("/mes-cours");
-  const period = p.endDate ? `du ${p.startDate} au ${p.endDate}` : `à partir du ${p.startDate}`;
-  return send({
-    to,
-    subject: `Inscription confirmée : ${p.courseTitle}`,
+/**
+ * Enrolment confirmation: course image, dates, what the learner will be able to do (programme
+ * objectives, else the course description), a button straight to the course.
+ */
+export type EnrollmentEmail = { firstName: string; courseTitle: string; startDate: string; endDate: string | null; courseUrl?: string; imageUrl?: string | null; objectives?: readonly string[]; summary?: string };
+
+export function sendEnrollmentEmail(to: string, p: EnrollmentEmail) {
+  return send({ to, ...enrollmentEmail(p) });
+}
+
+/** Subject, HTML and text of the enrolment email (separate for previews and tests). */
+export function enrollmentEmail(p: EnrollmentEmail): Omit<Mail, "to"> {
+  const url = p.courseUrl ?? appUrl("/mes-cours");
+  const dates = p.endDate ? `Du ${p.startDate} au ${p.endDate}` : `À partir du ${p.startDate}`;
+  const goals = (p.objectives ?? []).slice(0, 5);
+  const blue = "#364fab";
+  const extra = [
+    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#eef1fb;border-radius:10px"><tr><td style="padding:12px 16px;font-size:15px;color:#141f4d"><strong>Vos dates</strong><br>${esc(dates)}</td></tr></table>`,
+    goals.length
+      ? `<p style="margin:0 0 8px;font-weight:bold;color:#141f4d">Ce que vous saurez faire</p><table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 22px">${goals
+          .map((g) => `<tr><td valign="top" style="padding:3px 10px 3px 0;color:${blue};font-weight:bold">&#10003;</td><td style="padding:3px 0;font-size:15px">${esc(g)}</td></tr>`)
+          .join("")}</table>`
+      : p.summary
+        ? `<p style="margin:0 0 8px;font-weight:bold;color:#141f4d">Au programme</p><p style="margin:0 0 22px;font-size:15px">${esc(p.summary)}</p>`
+        : "",
+  ].join("");
+  return {
+    subject: `Bienvenue dans ${p.courseTitle} !`,
     html: layout({
       firstName: p.firstName,
-      intro: `Vous êtes inscrit(e) à <strong>${esc(p.courseTitle)}</strong>, ${esc(period)}. Retrouvez vos leçons dans votre espace :`,
-      button: "Accéder à mes cours",
+      hero: p.imageUrl ? { src: p.imageUrl, alt: p.courseTitle } : undefined,
+      intro: `Votre inscription à <strong>${esc(p.courseTitle)}</strong> est confirmée. Votre parcours est prêt : il ne vous reste plus qu’à commencer.`,
+      extra,
+      button: "Commencer mon cours",
       url,
-      outro: "Bonne formation avec MaelEnglish !",
+      outro: `Notre conseil : un peu chaque jour, même 15 minutes, fait toute la différence. Une question ? Écrivez-nous sur WhatsApp au ${esc(PHONE_DISPLAY)}.<br><br>Bonne formation !<br>Coach Ish et l’équipe MaelEnglish`,
     }),
-    text: `Bonjour ${p.firstName},\n\nVous êtes inscrit(e) à ${p.courseTitle}, ${period}.\nVos cours : ${url}`,
-  });
+    text: [
+      `Bonjour ${p.firstName},`,
+      "",
+      `Votre inscription à ${p.courseTitle} est confirmée. Votre parcours est prêt : il ne vous reste plus qu'à commencer.`,
+      "",
+      dates,
+      ...(goals.length ? ["", "Ce que vous saurez faire :", ...goals.map((g) => `- ${g}`)] : p.summary ? ["", `Au programme : ${p.summary}`] : []),
+      "",
+      `Commencer mon cours : ${url}`,
+      "",
+      `Une question ? WhatsApp : ${PHONE_DISPLAY}`,
+      "Bonne formation ! Coach Ish et l'équipe MaelEnglish",
+    ].join("\n"),
+  };
 }
 
 /** Staff notification: a new sign-up request arrived from /inscription. */

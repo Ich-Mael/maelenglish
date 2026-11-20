@@ -14,6 +14,8 @@ import { gradeSubmission } from "@/lib/admin/grading";
 import { RequestError, updateRequest } from "@/lib/requests";
 import { createAccount, deactivateUser, issueResetForUser, reissueActivation, restoreUser } from "@/lib/auth/accounts";
 import { appUrl, sendActivationEmail, sendEnrollmentEmail, sendPasswordResetEmail } from "@/lib/email";
+import { findProgram, programPhoto } from "@/lib/catalog";
+import { plainText } from "@/lib/rich-text";
 import { isWhatsAppConfigured, sendEnrollment } from "@/lib/whatsapp";
 import { AssignmentSubmission, Course, Enrollment, Lesson, Module, TeachingResource, User, type CourseDoc, type Role } from "@/models";
 import type { CurrentUser } from "@/lib/auth/dal";
@@ -425,12 +427,20 @@ export async function enrollAction(_: State, form: FormData): Promise<State> {
         startDate: dateFr.format(enrollment.startDate ?? new Date()),
         endDate: enrollment.endDate ? dateFr.format(enrollment.endDate) : null,
       };
+      const program = findProgram(course.program);
+      const image = /^https?:\/\/.+\.(jpe?g|png|gif)(\?.*)?$/i.test(course.imageUrl ?? "") ? course.imageUrl! : program ? appUrl(programPhoto(program).fallback) : null;
+      const emailDetails = {
+        courseUrl: appUrl(`/apprendre/${courseId}`),
+        imageUrl: image,
+        objectives: program?.objectives ?? [],
+        summary: plainText(course.description).slice(0, 280),
+      };
       try {
         if (user.phoneE164 && isWhatsAppConfigured()) {
           await sendEnrollment(user.phoneE164, { ...p, endDate: p.endDate ?? "—" });
           notice = " Message WhatsApp envoyé.";
         } else if (user.email) {
-          if (!(await sendEnrollmentEmail(user.email, p)).simulated) notice = " Email envoyé.";
+          if (!(await sendEnrollmentEmail(user.email, { ...p, ...emailDetails })).simulated) notice = " Email envoyé.";
         }
       } catch (e) {
         console.error("enrolment notice", e);
