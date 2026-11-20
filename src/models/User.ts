@@ -76,6 +76,10 @@ const userSchema = new Schema(
 
     devices: { type: [deviceSchema], default: [] },
     maxDevices: { type: Number, default: 3, min: 1 },
+    /** Main coach (reviews this learner's speaking submissions); set by an admin. */
+    coachId: { type: Schema.Types.ObjectId, ref: "User", default: null },
+    /** Monthly AI minutes override (null = the default in AppSettings). */
+    aiMonthlyMinutes: { type: Number, default: null, min: 0 },
 
     isActive: { type: Boolean, default: true },
     deactivatedAt: { type: Date, default: null },

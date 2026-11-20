@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, ClipboardCheck, Inbox, LayoutDashboard, Users } from "lucide-react";
+import { BookOpen, ClipboardCheck, Inbox, LayoutDashboard, Mic, Users } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { can } from "@/lib/admin/permissions";
 
@@ -14,6 +14,7 @@ export async function AdminNav({ mobile }: { mobile?: boolean }) {
     { href: "/admin/utilisateurs", label: "Utilisateurs", icon: Users, show: can.manageUsers(a) },
     { href: "/admin/cours", label: "Cours", icon: BookOpen, show: true },
     { href: "/admin/corrections", label: "Corrections", icon: ClipboardCheck, show: a.role !== "account-manager" },
+    { href: "/admin/micro", label: "Tester le micro", icon: Mic, show: true },
   ].filter((i) => i.show);
   return (
     <nav aria-label="Administration" className={mobile ? "flex gap-1 overflow-x-auto" : "grid gap-1"}>
