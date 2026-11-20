@@ -2,7 +2,7 @@ import mongoose, { Types } from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { AssignmentSubmission, Course, Enrollment, Lesson, Module, User, UserStats, type Role } from "@/models";
-import { updateAccount, listUsers } from "@/lib/admin/users";
+import { updateAccount, listUsers, searchLearners } from "@/lib/admin/users";
 import * as content from "@/lib/admin/content";
 import { enroll, updateEnrollment } from "@/lib/admin/enrollments";
 import { gradeSubmission, gradingQueue } from "@/lib/admin/grading";
@@ -157,5 +157,26 @@ describe("grading", () => {
       start: new Date(Date.now() - 3 * 86400_000),
     });
     expect(outline.modules[1].day?.state).toBe("current");
+  });
+});
+
+describe("searchLearners (enrolment picker)", () => {
+  it("finds active accounts by name, full name, email or number, learners first, flags enrolled ones", async () => {
+    const c = await Course.create({ title: "C" });
+    const awa = await mk("awa.diallo", "user", { name: "Awa", surname: "Diallo", phoneNumber: "70112233" });
+    await mk("awa.coach", "english-coach", { name: "Awa", surname: "Coach" });
+    const enrolled = await mk("awa.k", "user", { name: "Awa", surname: "Kaboré" });
+    await mk("awa.off", "user", { name: "Awa", surname: "Off", isActive: false });
+    await Enrollment.create({ userId: enrolled._id, courseId: c._id });
+
+    const r = await searchLearners("awa", String(c._id));
+    expect(r.map((m) => m.username)).toEqual(["awa.diallo", "awa.k", "awa.coach"]);
+    expect(r.find((m) => m.username === "awa.k")?.enrolled).toBe(true);
+    expect(r.find((m) => m.username === "awa.coach")?.staff).toBe(true);
+    expect((await searchLearners("Awa Diallo", String(c._id))).map((m) => m.id)).toEqual([String(awa._id)]);
+    expect((await searchLearners("awa.diallo@example", String(c._id)))[0]?.username).toBe("awa.diallo");
+    expect((await searchLearners("70 11 22", String(c._id)))[0]?.username).toBe("awa.diallo");
+    expect(await searchLearners("a", String(c._id))).toEqual([]);
+    expect(await searchLearners("(.*", String(c._id))).toEqual([]);
   });
 });

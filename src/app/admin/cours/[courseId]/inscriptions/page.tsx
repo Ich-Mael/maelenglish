@@ -10,6 +10,7 @@ import { displayPhone } from "@/lib/phone";
 import { accessState } from "@/models";
 import { Card, Checkbox, EmptyState, Input, PageHeader, Pill, inputCls, isoDate } from "@/components/admin/ui";
 import { ActionButton, AdminForm, Submit } from "@/components/admin/forms";
+import { LearnerPicker } from "@/components/admin/learner-picker";
 import { enrollAction, removeEnrollmentAction, updateEnrollmentAction } from "../../../actions";
 import { PageSkeleton } from "@/components/learn/ui";
 
@@ -39,7 +40,7 @@ async function Enrollments({ params }: { params: Promise<{ courseId: string }> }
         <AdminForm action={enrollAction} resetOnSuccess>
           <input type="hidden" name="courseId" value={courseId} />
           <div className="grid gap-3 sm:grid-cols-[1.4fr_1fr_1fr]">
-            <Input label="Identifiant, email ou numéro" name="identifier" required autoComplete="off" />
+            <LearnerPicker courseId={courseId} />
             <Input label="Début" name="startDate" type="date" defaultValue={isoDate(course.startDate) || isoDate(new Date())} />
             <Input label="Fin (facultatif)" name="endDate" type="date" defaultValue={isoDate(course.endDate)} />
           </div>

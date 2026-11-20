@@ -6,7 +6,7 @@ import { refresh } from "next/cache";
 import { actorOf, allowed, staffOrThrow } from "@/lib/admin/context";
 import { can } from "@/lib/admin/permissions";
 import { errorMessage, AdminError } from "@/lib/admin/errors";
-import { revokeDevice, updateAccount } from "@/lib/admin/users";
+import { revokeDevice, searchLearners, updateAccount, type LearnerMatch } from "@/lib/admin/users";
 import * as content from "@/lib/admin/content";
 import { setDefaultMonthlyMinutes } from "@/lib/ai/metering";
 import { enroll, removeEnrollment, updateEnrollment } from "@/lib/admin/enrollments";
@@ -399,6 +399,13 @@ export async function deleteResourceAction(form: FormData) {
 }
 
 // ── Enrolments ─────────────────────────────────────────────────────────────
+
+/** Enrolment picker: accounts matching what staff type (name, email, number…). */
+export async function searchLearnersAction(courseId: string, q: string): Promise<LearnerMatch[]> {
+  const me = await staffOrThrow();
+  await courseOf(me, String(courseId), "enroll");
+  return searchLearners(String(q).slice(0, 80), String(courseId));
+}
 
 export async function enrollAction(_: State, form: FormData): Promise<State> {
   try {

@@ -73,6 +73,46 @@ export type UserListItem = {
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 /** Search by name, username, email or phone digits; filter by role / status; 25 per page. */
+export type LearnerMatch = { id: string; name: string; surname: string; username: string; contact: string; staff: boolean; enrolled: boolean };
+
+/**
+ * Accounts matching `q` (name, surname, username, email, WhatsApp number) for the enrolment
+ * picker: active accounts only, learners first, with whether they're already in `courseId`.
+ */
+export async function searchLearners(q: string, courseId: string, limit = 8): Promise<LearnerMatch[]> {
+  const term = q.trim();
+  if (term.length < 2) return [];
+  const re = new RegExp(escapeRe(term), "i");
+  const digits = term.replace(/\D/g, "");
+  // « Awa Diallo » also matches name + surname typed together.
+  const [first, ...rest] = term.split(/\s+/);
+  const full = rest.length ? [{ name: new RegExp(escapeRe(first), "i"), surname: new RegExp(escapeRe(rest.join(" ")), "i") }] : [];
+  const users = await User.find({
+    isActive: { $ne: false },
+    $or: [{ name: re }, { surname: re }, { username: re }, { email: re }, ...full, ...(digits.length >= 4 ? [{ phoneE164: new RegExp(digits) }] : [])],
+  })
+    .select("name surname username email phoneNumber role")
+    .limit(limit * 3)
+    .lean();
+  const enrolled = new Set(
+    Types.ObjectId.isValid(courseId)
+      ? (await Enrollment.find({ courseId: new Types.ObjectId(courseId), userId: { $in: users.map((u) => u._id) } }).select("userId").lean()).map((e) => String(e.userId))
+      : [],
+  );
+  return users
+    .map((u) => ({
+      id: String(u._id),
+      name: u.name,
+      surname: u.surname,
+      username: u.username,
+      contact: u.email || u.phoneNumber || "",
+      staff: (u.role ?? "user") !== "user",
+      enrolled: enrolled.has(String(u._id)),
+    }))
+    .sort((a, b) => Number(a.staff) - Number(b.staff) || Number(a.enrolled) - Number(b.enrolled) || a.name.localeCompare(b.name, "fr"))
+    .slice(0, limit);
+}
+
 export async function listUsers(opts: { q?: string; role?: string; status?: string; page?: number }) {
   const filter: Record<string, unknown> = {};
   const q = opts.q?.trim();
