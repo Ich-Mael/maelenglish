@@ -6,7 +6,7 @@ import { readCurrentUser } from "@/lib/auth/dal";
 import { courseAccess, courseTree } from "@/lib/learn/queries";
 import { checkExercise, type Exercise, type ExerciseResponse } from "@/lib/learn/exercises";
 import { gradeQuiz } from "@/lib/learn/progress";
-import { AssignmentSubmission, LessonProgress, QuizAttempt, type LessonDoc } from "@/models";
+import { AssignmentSubmission, LessonProgress, Media, QuizAttempt, type LessonDoc } from "@/models";
 import { award, type AwardInput, type Reward } from "@/lib/gamification/service";
 import { XP, dayKey, practiceXp } from "@/lib/gamification/rules";
 
@@ -29,7 +29,7 @@ async function context(courseId: string) {
 
 function lessonOf(ctx: Ctx, lessonId: string): { lesson: LessonDoc; open: boolean; done: boolean } {
   const lesson = ctx.tree.lessons.find((l) => String(l._id) === lessonId);
-  if (!lesson) throw new Error("Leçon introuvable.");
+  if (!lesson) throw new Error("Activité introuvable.");
   const state = ctx.tree.outline.modules.flatMap((m) => m.lessons).find((l) => l.id === lessonId)?.state;
   return { lesson, open: state !== "locked", done: state === "completed" };
 }
@@ -60,7 +60,7 @@ export async function completeLesson(courseId: string, lessonId: string): Promis
   try {
     const ctx = await context(courseId);
     const { lesson, open } = lessonOf(ctx, lessonId);
-    if (!open) return { ok: false, error: "Terminez d'abord la leçon précédente." };
+    if (!open) return { ok: false, error: "Terminez d'abord l'activité précédente." };
     await markDone(ctx, lesson);
     const r = await reward(ctx, [{ key: `lesson:${lessonId}`, source: "lesson", amount: XP.lesson, counters: { lessonsCompleted: 1 } }]);
     refresh();
@@ -79,7 +79,7 @@ export async function submitPractice(
   try {
     const ctx = await context(courseId);
     const { lesson, open, done } = lessonOf(ctx, lessonId);
-    if (!open) return { ok: false, error: "Terminez d'abord la leçon précédente." };
+    if (!open) return { ok: false, error: "Terminez d'abord l'activité précédente." };
     const exercises = (lesson.exercises ?? []) as unknown as (Exercise & { _id: Types.ObjectId })[];
     const correct = exercises.filter((ex) => checkExercise({ ...ex, id: String(ex._id) }, responses[String(ex._id)])).length;
     const score = exercises.length ? Math.round((correct / exercises.length) * 100) : 100;
@@ -117,7 +117,7 @@ export async function submitQuiz(
     let quiz;
     if (moduleId) {
       const outline = ctx.tree.outline.modules.find((m) => m.id === moduleId);
-      if (!outline?.quiz || outline.quiz.state === "locked") return { ok: false, error: "Terminez d'abord les leçons du module." };
+      if (!outline?.quiz || outline.quiz.state === "locked") return { ok: false, error: "Terminez d'abord les activités du module." };
       quiz = ctx.tree.modules.find((m) => String(m._id) === moduleId)?.quiz;
     } else {
       if (!ctx.tree.outline.finalExam || ctx.tree.outline.finalExam.state === "locked") {
@@ -220,3 +220,40 @@ export async function submitAssignment(_: AssignmentState, form: FormData): Prom
   }
 }
 
+
+/**
+ * Unit speaking challenge: the recording was uploaded first (`uploadMedia`, kind « recording »);
+ * this records it as the learner's answer. Sending it completes the unit and opens the next one;
+ * a coach then listens and gives feedback in « Corrections ». Re-sending replaces the answer
+ * until the coach validates it.
+ */
+export async function submitUnitChallenge(input: { courseId: string; unitId: string; mediaId: string | null }): Promise<AssignmentState> {
+  const { courseId, unitId, mediaId } = input;
+  try {
+    const ctx = await context(courseId);
+    const mod = ctx.tree.outline.modules.find((m) => m.units.some((u) => u.id === unitId));
+    const step = mod?.units.find((u) => u.id === unitId)?.challenge;
+    const unit = ctx.tree.units.find((u) => String(u._id) === unitId);
+    if (!mod || !step || !unit) return { error: "Défi introuvable." };
+    if (step.state === "locked") return { error: "Terminez d'abord les activités de l'unité." };
+    if (step.status === "graded") return { error: "Ce défi est déjà validé par votre coach." };
+    if (!ctx.save) return { success: "Aperçu : l'enregistrement n'est pas envoyé." };
+
+    if (!mediaId || !Types.ObjectId.isValid(mediaId)) return { error: "Enregistrement introuvable : réessayez." };
+    const media = await Media.findById(mediaId).lean();
+    if (!media || String(media.ownerId) !== ctx.me.id || media.kind !== "recording" || media.status !== "ready") return { error: "Enregistrement introuvable : réessayez." };
+
+    await AssignmentSubmission.updateOne(
+      { userId: ctx.me.id, courseId, moduleId: unit.moduleId, unitId: unit._id, assignmentType: "unit_challenge" },
+      {
+        $set: { submissionType: "audio", content: "", mediaId: media._id, durationS: media.durationS ?? 0, status: "pending", maxScore: 100, grade: null, gradedAt: null, gradedBy: null },
+      },
+      { upsert: true },
+    );
+    const r = await reward(ctx, [{ key: `challenge:${unitId}`, source: "challenge", amount: XP.assignment, counters: { assignmentsSubmitted: 1 } }]);
+    refresh();
+    return { reward: r, success: "Défi envoyé ! La suite du parcours est ouverte. Votre coach va vous écouter et vous faire un retour." };
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}

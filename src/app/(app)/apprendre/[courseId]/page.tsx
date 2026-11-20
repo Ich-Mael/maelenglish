@@ -45,7 +45,7 @@ async function CourseHome({ params }: { params: Promise<{ courseId: string }> })
         )}
         <div className="mt-4 flex items-center justify-between text-sm font-semibold">
           <span className="text-ink/75">
-            {outline.lessonsDone} / {outline.lessonsTotal} leçons
+            {outline.lessonsDone} / {outline.lessonsTotal} activités
           </span>
           <span className="text-primary">{outline.percent} %</span>
         </div>

@@ -50,3 +50,13 @@ export async function mediaUrlFor(viewer: MediaViewer | null, mediaId: string, o
   });
   return ok ? signedReadUrl(m.key) : null;
 }
+
+/**
+ * Signed URL for staff reviewing a submission. The caller has already checked the grading right
+ * on the submission's course (`courseFor(me, courseId, "grade")`), which is the access rule here.
+ */
+export async function reviewMediaUrl(mediaId: string): Promise<string | null> {
+  if (!Types.ObjectId.isValid(mediaId)) return null;
+  const m = await Media.findById(mediaId).select("key status").lean();
+  return m?.status === "ready" ? signedReadUrl(m.key) : null;
+}

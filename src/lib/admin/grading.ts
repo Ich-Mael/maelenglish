@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { normalizeRich, plainText } from "@/lib/rich-text";
-import { AssignmentSubmission, Course, Module, User, type AssignmentSubmissionDoc } from "@/models";
+import { AssignmentSubmission, Course, Module, Unit, User, type AssignmentSubmissionDoc } from "@/models";
 import { award } from "@/lib/gamification/service";
 import { XP } from "@/lib/gamification/rules";
 import { AdminError } from "./errors";
@@ -12,16 +12,18 @@ export async function gradingQueue({ courseIds, status = "pending" }: QueueFilte
   const filter: Record<string, unknown> = { status: ["pending", "graded", "returned"].includes(status) ? status : "pending" };
   if (courseIds) filter.courseId = { $in: courseIds };
   const subs = await AssignmentSubmission.find(filter).sort({ updatedAt: status === "pending" ? 1 : -1 }).limit(100).lean<AssignmentSubmissionDoc[]>();
-  const [users, courses, modules] = await Promise.all([
+  const [users, courses, modules, units] = await Promise.all([
     User.find({ _id: { $in: subs.map((s) => s.userId) } }).select("name surname username").lean(),
     Course.find({ _id: { $in: subs.map((s) => s.courseId) } }).select("title isChallenge").lean(),
     Module.find({ _id: { $in: subs.flatMap((s) => (s.moduleId ? [s.moduleId] : [])) } }).select("title order").lean(),
+    Unit.find({ _id: { $in: subs.flatMap((s) => (s.unitId ? [s.unitId] : [])) } }).select("title").lean(),
   ]);
   return subs.map((s) => ({
     ...s,
     user: users.find((u) => String(u._id) === String(s.userId)),
     course: courses.find((c) => String(c._id) === String(s.courseId)),
     module: modules.find((m) => String(m._id) === String(s.moduleId)),
+    unit: s.unitId ? units.find((u) => String(u._id) === String(s.unitId)) : undefined,
   }));
 }
 

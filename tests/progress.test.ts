@@ -77,6 +77,123 @@ describe("computeOutline — regular course", () => {
   });
 });
 
+describe("computeOutline — units", () => {
+  const withUnits = () =>
+    mod("m1", 0, {
+      hasQuiz: true,
+      units: [
+        { id: "u1", title: "Accueillir", objective: "Saluer les passagers" },
+        { id: "u2", title: "Annoncer" },
+        { id: "u3", title: "Vide" },
+      ],
+      // Input order is by lesson order within each unit, not across units.
+      lessons: [
+        { id: "a", title: "A", type: "text", unitId: "u2" },
+        { id: "b", title: "B", type: "text", unitId: "u1" },
+        { id: "c", title: "C", type: "text", unitId: "u1" },
+        { id: "old", title: "Old", type: "text", unitId: null },
+      ],
+    });
+
+  it("groups lessons by unit, in unit order, untitled lessons first; hides empty units", () => {
+    const o = computeOutline(base({ modules: [withUnits()] }));
+    const m = o.modules[0];
+    expect(m.units.map((u) => [u.id, u.index, u.lessons.map((l) => l.id)])).toEqual([
+      ["", -1, ["old"]],
+      ["u1", 0, ["b", "c"]],
+      ["u2", 1, ["a"]],
+    ]);
+    expect(m.units[1].objective).toBe("Saluer les passagers");
+    expect(m.lessons.map((l) => l.id)).toEqual(["old", "b", "c", "a"]);
+  });
+
+  it("opens lessons one after the other across units and tracks unit progress", () => {
+    const o = computeOutline(base({ modules: [withUnits()], completedLessonIds: new Set(["old", "b", "c"]) }));
+    const [, u1, u2] = o.modules[0].units;
+    expect([u1.state, u1.done, u1.total]).toEqual(["completed", 2, 2]);
+    expect([u2.state, u2.done, u2.lessons[0].state]).toEqual(["available", 0, "available"]);
+    expect(o.next).toEqual({ type: "lesson", moduleId: "m1", lessonId: "a" });
+    expect(o.modules[0].quiz?.state).toBe("locked");
+
+    const fresh = computeOutline(base({ modules: [withUnits()] }));
+    expect(fresh.modules[0].units.map((u) => u.state)).toEqual(["available", "locked", "locked"]);
+  });
+
+  it("treats a lesson pointing to an unknown unit as untitled", () => {
+    const m: OutlineInput["modules"][number] = withUnits();
+    m.lessons[0].unitId = "gone";
+    const o = computeOutline(base({ modules: [m] }));
+    expect(o.modules[0].units[0].lessons.map((l) => l.id)).toEqual(["a", "old"]);
+  });
+});
+
+describe("computeOutline — unit speaking challenge", () => {
+  const twoUnits = (): OutlineInput["modules"][number] => ({
+    ...mod("m1", 0, { hasQuiz: true }),
+    units: [
+      { id: "u1", title: "U1", hasChallenge: true },
+      { id: "u2", title: "U2", hasChallenge: true },
+    ],
+    lessons: [
+      { id: "a", title: "A", type: "text", unitId: "u1" },
+      { id: "b", title: "B", type: "text", unitId: "u2" },
+    ],
+  });
+
+  it("opens the challenge after the unit's lessons and keeps the next unit locked until it is sent", () => {
+    let o = computeOutline(base({ modules: [twoUnits(), mod("m2", 1)] }));
+    expect(o.modules[0].units[0].challenge).toEqual({ state: "locked", status: null });
+
+    o = computeOutline(base({ modules: [twoUnits(), mod("m2", 1)], completedLessonIds: new Set(["a"]) }));
+    const [u1, u2] = o.modules[0].units;
+    expect(u1.challenge).toEqual({ state: "available", status: null });
+    expect([u1.state, u1.done, u1.total]).toEqual(["available", 1, 2]);
+    expect(u2.lessons[0].state).toBe("locked");
+    expect(o.next).toEqual({ type: "challenge", moduleId: "m1", unitId: "u1" });
+  });
+
+  it("sending the challenge completes the unit and opens the next one (before the coach's review)", () => {
+    const o = computeOutline(base({ modules: [twoUnits()], completedLessonIds: new Set(["a"]), unitChallenges: new Map([["u1", "pending"]]) }));
+    const [u1, u2] = o.modules[0].units;
+    expect(u1.challenge?.state).toBe("completed");
+    expect([u1.state, u1.done]).toEqual(["completed", 2]);
+    expect(u2.lessons[0].state).toBe("available");
+    expect(o.next).toEqual({ type: "lesson", moduleId: "m1", lessonId: "b" });
+  });
+
+  it("a returned challenge stays sent (next unit open) but can be recorded again", () => {
+    const o = computeOutline(base({ modules: [twoUnits()], completedLessonIds: new Set(["a"]), unitChallenges: new Map([["u1", "returned"]]) }));
+    expect(o.modules[0].units[0].challenge).toEqual({ state: "available", status: "returned" });
+    expect(o.modules[0].units[1].lessons[0].state).toBe("available");
+  });
+
+  it("the module quiz and the next module wait for every challenge", () => {
+    let o = computeOutline(base({ modules: [twoUnits(), mod("m2", 1)], completedLessonIds: new Set(["a", "b"]), unitChallenges: new Map([["u1", "graded"]]) }));
+    expect(o.modules[0].quiz?.state).toBe("locked");
+    expect(o.next).toEqual({ type: "challenge", moduleId: "m1", unitId: "u2" });
+
+    o = computeOutline(
+      base({
+        modules: [twoUnits(), mod("m2", 1)],
+        completedLessonIds: new Set(["a", "b"]),
+        unitChallenges: new Map([["u1", "graded"], ["u2", "pending"]]),
+        quizResults: new Map([["m1", { bestScore: 90, passed: true }]]),
+      }),
+    );
+    expect(o.modules[0].state).toBe("completed");
+    expect(o.modules[1].lessons[0].state).toBe("available");
+  });
+
+  it("shows a unit that only has a challenge", () => {
+    const m = { ...twoUnits(), lessons: [] };
+    const o = computeOutline(base({ modules: [m] }));
+    expect(o.modules[0].units.map((u) => [u.id, u.challenge?.state])).toEqual([
+      ["u1", "available"],
+      ["u2", "locked"],
+    ]);
+  });
+});
+
 describe("computeOutline — challenge", () => {
   const challenge = (over: Partial<OutlineInput> = {}) =>
     base({

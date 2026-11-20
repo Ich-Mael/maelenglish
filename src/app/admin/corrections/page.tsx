@@ -27,7 +27,7 @@ async function Queue({ searchParams }: { searchParams: Promise<Record<string, st
 
   return (
     <div className="max-w-4xl">
-      <PageHeader title="Corrections" subtitle="Devoirs, points de contrôle et projets finals de vos cours." />
+      <PageHeader title="Corrections" subtitle="Défis oraux, devoirs, points de contrôle et projets finals de vos cours." />
       <nav className="mb-4 flex gap-1" aria-label="Filtrer">
         {TABS.map((t) => (
           <Link key={t.value} href={`?statut=${t.value}`} aria-current={status === t.value ? "page" : undefined} className={cn("rounded-xl px-3 py-2 text-sm font-semibold", status === t.value ? "bg-primary text-white" : "text-ink/80 hover:bg-brand-soft")}>
@@ -48,9 +48,10 @@ async function Queue({ searchParams }: { searchParams: Promise<Record<string, st
                   </span>
                   <span className="block truncate text-sm text-muted-foreground">
                     {s.course?.title} · {s.assignmentType === "final_project" ? "Projet final" : s.module?.title ?? "Module"}
+                    {s.unit && ` · ${s.unit.title}`}
                   </span>
                 </span>
-                {s.assignmentType === "final_project" ? <Pill tone="amber">Projet final</Pill> : s.course?.isChallenge ? <Pill tone="red">Point de contrôle</Pill> : <Pill tone="blue">Devoir</Pill>}
+                {s.assignmentType === "unit_challenge" ? <Pill tone="green">Défi oral</Pill> : s.assignmentType === "final_project" ? <Pill tone="amber">Projet final</Pill> : s.course?.isChallenge ? <Pill tone="red">Point de contrôle</Pill> : <Pill tone="blue">Devoir</Pill>}
                 <span className="text-xs text-muted-foreground">{fmtDate(s.updatedAt)}</span>
               </Link>
             </li>

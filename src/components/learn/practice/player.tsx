@@ -126,7 +126,7 @@ export function PracticePlayer({
           ))}
         </div>
         <div>
-          <h1 className="text-3xl font-extrabold text-brand-deep">Leçon terminée !</h1>
+          <h1 className="text-3xl font-extrabold text-brand-deep">Activité terminée !</h1>
           <p className="mt-1 text-muted-foreground">{title}</p>
           {offlineSaved && <p className="mt-2 rounded-xl bg-muted px-3 py-2 text-sm text-ink">Hors ligne : votre résultat est enregistré sur l&apos;appareil et sera envoyé à la reconnexion.</p>}
         </div>
@@ -163,10 +163,10 @@ export function PracticePlayer({
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-10rem)] max-w-2xl flex-col">
       <div className="flex items-center gap-3">
-        <Link href={courseHref} className="flex size-10 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted" aria-label="Quitter la leçon">
+        <Link href={courseHref} className="flex size-10 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted" aria-label="Quitter l'activité">
           <X className="size-6" aria-hidden />
         </Link>
-        <div className="h-4 flex-1 overflow-hidden rounded-full bg-muted" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} aria-label="Avancement de la leçon">
+        <div className="h-4 flex-1 overflow-hidden rounded-full bg-muted" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} aria-label="Avancement de l'activité">
           <motion.div className="h-full rounded-full bg-success" animate={{ width: `${Math.max(progress, 3)}%` }} transition={{ type: "spring", stiffness: 120, damping: 20 }} />
         </div>
       </div>

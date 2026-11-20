@@ -244,7 +244,7 @@ export function LessonEditor({ lesson, previewHref }: { lesson: LessonData; prev
           name="content"
           defaultValue={lesson.content}
           minHeight={lesson.type === "text" ? 320 : 200}
-          placeholder="Rédigez la leçon : titres, listes, encadrés « astuce », tableaux…"
+          placeholder="Rédigez l'activité : titres, listes, encadrés « astuce », tableaux…"
         />
       </div>
 
@@ -301,7 +301,7 @@ export function LessonEditor({ lesson, previewHref }: { lesson: LessonData; prev
         <label className="flex items-center gap-2 text-sm font-medium">
           <input type="checkbox" name="isPublished" defaultChecked={lesson.isPublished} className="size-4 accent-primary" /> Publiée
         </label>
-        <Submit>Enregistrer la leçon</Submit>
+        <Submit>Enregistrer l&apos;activité</Submit>
         <a href={previewHref} target="_blank" rel="noopener" className={btn.secondary}>
           <Eye className="size-4" aria-hidden /> Aperçu apprenant
         </a>

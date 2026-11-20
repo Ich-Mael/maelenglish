@@ -1,7 +1,7 @@
 import mongoose, { Types } from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { AssignmentSubmission, Course, Enrollment, Lesson, Module, User, UserStats, type Role } from "@/models";
+import { AssignmentSubmission, Course, Enrollment, Lesson, LessonProgress, Module, Unit, User, UserStats, type Role } from "@/models";
 import { updateAccount, listUsers, searchLearners } from "@/lib/admin/users";
 import * as content from "@/lib/admin/content";
 import { enroll, updateEnrollment } from "@/lib/admin/enrollments";
@@ -82,6 +82,79 @@ describe("content", () => {
 
     await content.deleteModule(String(m1._id));
     expect(await Lesson.countDocuments({ moduleId: m1._id })).toBe(0);
+  });
+
+  it("manages units: first unit per module, lessons in units, order, delete, adoption of older lessons", async () => {
+    const c = await content.createCourse({ title: "Units" });
+    const m = await content.createModule(String(c._id), "M");
+    const [first] = await Unit.find({ moduleId: m._id }).lean();
+    expect(first.title).toBe("Unité 1");
+
+    // A module id puts the lesson in the module's first unit.
+    const l1 = await content.createLesson(String(m._id), "L1", "text");
+    expect(String(l1.unitId)).toBe(String(first._id));
+    const u2 = await content.createUnit(String(m._id), " Annoncer ", "Faire une annonce");
+    expect([u2.title, u2.order]).toEqual(["Annoncer", 2]);
+    const l2 = await content.createLesson(String(u2._id), "L2", "text");
+    const l3 = await content.createLesson(String(u2._id), "L3", "practice");
+    expect([String(l2.moduleId), l2.order, l3.order]).toEqual([String(m._id), 1, 2]);
+
+    // Lessons move within their unit only.
+    await content.moveLesson(String(l3._id), "up");
+    expect((await Lesson.find({ unitId: u2._id }).sort({ order: 1 }).lean()).map((l) => l.title)).toEqual(["L3", "L2"]);
+    await content.moveLesson(String(l1._id), "down");
+    expect((await Lesson.findById(l1._id).lean())?.order).toBe(1);
+
+    await content.moveUnit(String(u2._id), "up");
+    expect((await Unit.find({ moduleId: m._id }).sort({ order: 1 }).lean()).map((u) => u.title)).toEqual(["Annoncer", "Unité 1"]);
+    await content.updateUnit(String(first._id), { title: "Accueillir", objective: " Saluer " });
+    expect((await Unit.findById(first._id).lean())?.objective).toBe("Saluer");
+    await expect(content.updateUnit(String(first._id), { title: " " })).rejects.toThrow(/titre/);
+
+    // Deleting a unit removes its lessons and their progress; the last unit can't be deleted.
+    const learner = await mk("awa");
+    await LessonProgress.create({ userId: learner._id, courseId: c._id, moduleId: m._id, lessonId: l2._id, status: "completed" });
+    await content.deleteUnit(String(u2._id));
+    expect(await Lesson.countDocuments({ moduleId: m._id })).toBe(1);
+    expect(await LessonProgress.countDocuments({ lessonId: l2._id })).toBe(0);
+    await expect(content.deleteUnit(String(first._id))).rejects.toThrow(/au moins une unité/);
+
+    // Older lessons without a unit are adopted, after the unit's lessons, once.
+    const old = await Lesson.create({ courseId: c._id, moduleId: m._id, title: "Old", type: "text", order: 1 });
+    expect(await content.adoptOrphanLessons(String(m._id))).toBe(1);
+    expect(await content.adoptOrphanLessons(String(m._id))).toBe(0);
+    const adopted = await Lesson.findById(old._id).lean();
+    expect([String(adopted?.unitId), adopted?.order]).toEqual([String(first._id), 2]);
+
+    // A module that predates units gets « Unité 1 » on adoption.
+    const legacy = await Module.create({ courseId: c._id, title: "Legacy", order: 9 });
+    await Lesson.create({ courseId: c._id, moduleId: legacy._id, title: "X", type: "text" });
+    await content.adoptOrphanLessons(String(legacy._id));
+    expect((await Unit.find({ moduleId: legacy._id }).lean()).map((u) => u.title)).toEqual(["Unité 1"]);
+
+    await content.deleteModule(String(m._id));
+    expect(await Unit.countDocuments({ moduleId: m._id })).toBe(0);
+  });
+
+  it("saves a unit speaking challenge (sanitised, bounded) and lets two units of a module have submissions", async () => {
+    const c = await content.createCourse({ title: "Défi" });
+    const m = await content.createModule(String(c._id), "M");
+    const [u1] = await Unit.find({ moduleId: m._id }).lean();
+    const u2 = await content.createUnit(String(m._id), "U2");
+    await content.saveUnitChallenge(String(u1._id), { title: " Accueil ", instructions: "<p>Say hello<script>x()</script></p>", maxSeconds: 999, prepSeconds: -3 });
+    const saved = (await Unit.findById(u1._id).lean())!.challenge!;
+    expect(saved).toMatchObject({ title: "Accueil", instructions: "<p>Say hello</p>", maxSeconds: 300, prepSeconds: 0 });
+    await content.saveUnitChallenge(String(u1._id), { instructions: "<p>&nbsp;</p>" });
+    expect((await Unit.findById(u1._id).lean())?.challenge?.instructions).toBe("");
+
+    // One submission per unit (the unique index includes unitId).
+    const learner = await mk("awa");
+    const sub = { userId: learner._id, courseId: c._id, moduleId: m._id, assignmentType: "unit_challenge" as const, submissionType: "audio" as const };
+    await AssignmentSubmission.create({ ...sub, unitId: u1._id });
+    await AssignmentSubmission.create({ ...sub, unitId: u2._id });
+    await expect(AssignmentSubmission.create({ ...sub, unitId: u2._id })).rejects.toThrow(/duplicate key/);
+    await content.deleteUnit(String(u2._id));
+    expect(await AssignmentSubmission.countDocuments({ userId: learner._id })).toBe(1);
   });
 
   it("saves quizzes (validated) and assignments", async () => {

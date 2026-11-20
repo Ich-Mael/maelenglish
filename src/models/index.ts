@@ -1,6 +1,7 @@
 export * from "./User";
 export * from "./Course";
 export * from "./Module";
+export * from "./Unit";
 export * from "./Lesson";
 export * from "./Enrollment";
 export * from "./Progress";

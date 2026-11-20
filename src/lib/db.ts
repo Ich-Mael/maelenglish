@@ -20,6 +20,21 @@ const cache: MongooseCache = (globalForMongoose._mongoose ??= {
   promise: null,
 });
 
+/**
+ * Indexes replaced by a new definition: Mongoose creates new indexes but never drops old ones.
+ * - assignmentsubmissions: the unique index gained `unitId` (several unit challenges per module).
+ */
+const LEGACY_INDEXES: [collection: string, index: string][] = [["assignmentsubmissions", "userId_1_courseId_1_moduleId_1_assignmentType_1"]];
+
+async function dropLegacyIndexes(m: typeof mongoose) {
+  for (const [collection, index] of LEGACY_INDEXES) {
+    await m.connection
+      .collection(collection)
+      .dropIndex(index)
+      .catch(() => {}); // already gone (or the collection doesn't exist yet)
+  }
+}
+
 export async function connectDB(): Promise<typeof mongoose> {
   if (cache.conn) return cache.conn;
 
@@ -28,7 +43,10 @@ export async function connectDB(): Promise<typeof mongoose> {
     throw new Error("APP_DB is not set (MongoDB connection string).");
   }
 
-  cache.promise ??= mongoose.connect(uri, { bufferCommands: false });
+  cache.promise ??= mongoose.connect(uri, { bufferCommands: false }).then(async (m) => {
+    await dropLegacyIndexes(m);
+    return m;
+  });
   try {
     cache.conn = await cache.promise;
   } catch (err) {

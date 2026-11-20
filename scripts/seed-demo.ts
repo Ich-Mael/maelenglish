@@ -9,7 +9,7 @@
  */
 import mongoose from "mongoose";
 import { existsSync } from "node:fs";
-import { AssignmentSubmission, Course, Enrollment, Lesson, LessonProgress, Module, QuizAttempt, User, UserBadge, UserStats, XpEvent } from "../src/models";
+import { AssignmentSubmission, Course, Enrollment, Lesson, LessonProgress, Module, QuizAttempt, Unit, User, UserBadge, UserStats, XpEvent } from "../src/models";
 import { setPassword } from "../src/lib/auth/service";
 
 for (const f of [".env.local", ".env"]) if (existsSync(f)) process.loadEnvFile(f); // .env.local wins (no override)
@@ -39,6 +39,7 @@ async function main() {
   await Promise.all([
     XpEvent.deleteMany({ courseId: { $in: oldIds } }),
     Module.deleteMany({ courseId: { $in: oldIds } }),
+    Unit.deleteMany({ courseId: { $in: oldIds } }),
     Lesson.deleteMany({ courseId: { $in: oldIds } }),
     LessonProgress.deleteMany({ courseId: { $in: oldIds } }),
     QuizAttempt.deleteMany({ courseId: { $in: oldIds } }),
@@ -111,10 +112,26 @@ async function main() {
 
   const m3 = await Module.create({ courseId: aviation._id, order: 3, title: "Safety first", summary: "Les consignes de sécurité." });
 
-  const lesson = (moduleId: mongoose.Types.ObjectId, order: number, data: Record<string, unknown>) =>
-    Lesson.create({ courseId: aviation._id, moduleId, order, ...data });
+  const unit = async (moduleId: mongoose.Types.ObjectId, order: number, title: string, objective = "", challenge?: { title: string; instructions: string; maxSeconds?: number; prepSeconds?: number }) =>
+    (await Unit.create({ courseId: aviation._id, moduleId, order, title, objective, ...(challenge ? { challenge } : {}) }))._id;
+  const u1a = await unit(m1._id, 1, "Les premières annonces", "Comprendre et dire les annonces d'accueil.", {
+    title: "Votre annonce de bienvenue",
+    instructions: "<p>Vous êtes chef de cabine. <strong>Accueillez les passagers à bord</strong> : saluez, annoncez la destination et la durée du vol, puis demandez d'attacher les ceintures.</p>",
+    maxSeconds: 45,
+    prepSeconds: 15,
+  });
+  const u1b = await unit(m1._id, 2, "À vous de parler", "S'entraîner à voix haute.");
+  const u2 = await unit(m2._id, 1, "Retards et changements de porte", "", {
+    title: "Annoncez un retard",
+    instructions: "<p>Annoncez aux passagers que le vol a <strong>30 minutes de retard</strong> à cause de la météo, et qu'il part maintenant de la porte 12.</p>",
+    maxSeconds: 60,
+  });
+  const u3 = await unit(m3._id, 1, "Les consignes de sécurité");
+  const unitModule = new Map([[u1a, m1._id], [u1b, m1._id], [u2, m2._id], [u3, m3._id]]);
+  const lesson = (unitId: mongoose.Types.ObjectId, order: number, data: Record<string, unknown>) =>
+    Lesson.create({ courseId: aviation._id, moduleId: unitModule.get(unitId), unitId, order, ...data });
 
-  await lesson(m1._id, 1, {
+  await lesson(u1a, 1, {
     title: "Les annonces à bord",
     type: "text",
     description: "Le vocabulaire des premières minutes du vol.",
@@ -136,7 +153,7 @@ async function main() {
     ].join("\n"),
   });
 
-  await lesson(m1._id, 2, {
+  await lesson(u1b, 1, {
     title: "Pratique : à bord",
     type: "practice",
     exercises: [
@@ -150,12 +167,12 @@ async function main() {
     ],
   });
 
-  await lesson(m2._id, 1, {
+  await lesson(u2, 1, {
     title: "Retards et changements de porte",
     type: "text",
     content: "## À la porte d'embarquement\n\n- **Boarding** : l'embarquement\n- **Delay** : un retard\n- **Gate change** : un changement de porte\n\n*We are experiencing a slight delay due to the weather.*",
   });
-  await lesson(m2._id, 2, {
+  await lesson(u2, 2, {
     title: "Pratique : à la porte",
     type: "practice",
     exercises: [
@@ -164,7 +181,7 @@ async function main() {
       { kind: "gap", text: "Please proceed to ___ 12.", translation: "Veuillez vous rendre à la porte 12.", answers: ["gate"] },
     ],
   });
-  await lesson(m3._id, 1, {
+  await lesson(u3, 1, {
     title: "Pratique : sécurité",
     type: "practice",
     exercises: [
@@ -195,9 +212,11 @@ async function main() {
       isCheckpointRequired: true,
       assignment: { title: `Mission du jour ${i + 1}`, instructions: `Écrivez 3 phrases en anglais pour : **${d.title.toLowerCase()}**.`, submissionType: "text" },
     });
+    const dayUnit = await Unit.create({ courseId: challenge._id, moduleId: day._id, order: 1, title: "Mission du jour" });
     await Lesson.create({
       courseId: challenge._id,
       moduleId: day._id,
+      unitId: dayUnit._id,
       order: 1,
       title: `Échauffement : ${d.title}`,
       type: "practice",

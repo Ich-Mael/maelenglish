@@ -56,7 +56,7 @@ export function OfflineSync() {
         </>
       ) : (
         <>
-          <CloudOff className="size-4" aria-hidden /> Hors ligne — les leçons téléchargées restent disponibles{pending ? ` · ${pending} résultat(s) en attente` : ""}.
+          <CloudOff className="size-4" aria-hidden /> Hors ligne — les activités téléchargées restent disponibles{pending ? ` · ${pending} résultat(s) en attente` : ""}.
         </>
       )}
     </div>

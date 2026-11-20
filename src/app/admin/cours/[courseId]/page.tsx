@@ -8,7 +8,7 @@ import { ArrowDown, ArrowUp, Eye, GraduationCap, Trash2, Trophy } from "lucide-r
 import { requireStaff, actorOf, allowed, courseFor } from "@/lib/admin/context";
 import { can } from "@/lib/admin/permissions";
 import { findProgram } from "@/lib/catalog";
-import { Lesson, Module, User, type ModuleDoc } from "@/models";
+import { Lesson, Module, Unit, User, type ModuleDoc } from "@/models";
 import { Card, Checkbox, EmptyState, Input, PageHeader, Pill, ROLE_LABELS, btn } from "@/components/admin/ui";
 import { ActionButton, AdminForm, Submit } from "@/components/admin/forms";
 import { CourseFields } from "@/components/admin/course-fields";
@@ -27,12 +27,13 @@ async function CourseAdmin({ params }: { params: Promise<{ courseId: string }> }
   const edit = allowed(me, course, "edit");
   const settings = can.manageCourseSettings(a);
 
-  const [modules, lessonCounts, staff] = await Promise.all([
+  const [modules, lessonCounts, unitCounts, staff] = await Promise.all([
     Module.find({ courseId }).sort({ order: 1, createdAt: 1 }).lean<ModuleDoc[]>(),
     Lesson.aggregate<{ _id: unknown; n: number; drafts: number }>([
       { $match: { courseId: course._id } },
       { $group: { _id: "$moduleId", n: { $sum: 1 }, drafts: { $sum: { $cond: ["$isPublished", 0, 1] } } } },
     ]),
+    Unit.aggregate<{ _id: unknown; n: number }>([{ $match: { courseId: course._id } }, { $group: { _id: "$moduleId", n: { $sum: 1 } } }]),
     settings ? User.find({ role: { $in: ["instructor", "english-coach", "admin", "super-admin"] }, isActive: { $ne: false } }).select("name surname role").sort({ name: 1 }).lean() : Promise.resolve([]),
   ]);
   const countOf = (id: unknown) => lessonCounts.find((r) => String(r._id) === String(id));
@@ -70,7 +71,7 @@ async function CourseAdmin({ params }: { params: Promise<{ courseId: string }> }
         }
       />
 
-      <Card title={course.isChallenge ? "Jours" : "Modules"} description={course.isChallenge ? "Chaque jour s'ouvre après validation du point de contrôle précédent." : "Les modules s'ouvrent dans l'ordre : leçons terminées et quiz réussi."}>
+      <Card title={course.isChallenge ? "Jours" : "Modules"} description={course.isChallenge ? "Chaque jour s'ouvre après validation du point de contrôle précédent." : "Les modules s'ouvrent dans l'ordre : activités terminées et quiz réussi."}>
         {modules.length === 0 ? (
           <EmptyState>Aucun {unit.toLowerCase()} pour l&apos;instant.</EmptyState>
         ) : (
@@ -83,7 +84,7 @@ async function CourseAdmin({ params }: { params: Promise<{ courseId: string }> }
                   <Link href={`/admin/cours/${courseId}/modules/${m._id}`} className="min-w-0 flex-1">
                     <span className="block truncate font-semibold text-brand-deep hover:underline">{m.title}</span>
                     <span className="flex flex-wrap gap-1.5 text-xs text-muted-foreground">
-                      {c?.n ?? 0} leçon(s){c?.drafts ? ` dont ${c.drafts} brouillon(s)` : ""}
+                      {unitCounts.find((r) => String(r._id) === String(m._id))?.n ?? 1} unité(s) · {c?.n ?? 0} activité(s){c?.drafts ? ` dont ${c.drafts} brouillon(s)` : ""}
                       {m.quiz?.questions?.length ? <Pill tone="blue">Quiz · {m.quiz.questions.length} q.</Pill> : null}
                       {m.assignment?.instructions ? <Pill tone="amber">{course.isChallenge ? "Point de contrôle" : "Devoir"}</Pill> : null}
                     </span>
@@ -96,7 +97,7 @@ async function CourseAdmin({ params }: { params: Promise<{ courseId: string }> }
                       <ActionButton action={moveModuleAction} fields={{ moduleId: String(m._id), dir: "down" }} label="Descendre">
                         <ArrowDown className="size-4" aria-hidden />
                       </ActionButton>
-                      <ActionButton action={deleteModuleAction} fields={{ moduleId: String(m._id) }} label="Supprimer" confirm={`Supprimer « ${m.title} » et toutes ses leçons ?`}>
+                      <ActionButton action={deleteModuleAction} fields={{ moduleId: String(m._id) }} label="Supprimer" confirm={`Supprimer « ${m.title} », ses unités et toutes ses activités ?`}>
                         <Trash2 className="size-4" aria-hidden />
                       </ActionButton>
                     </span>

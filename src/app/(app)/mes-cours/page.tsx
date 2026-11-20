@@ -47,7 +47,7 @@ async function Courses({ searchParams }: { searchParams: Promise<Record<string, 
       )}
       <div>
         <h1 className="text-3xl font-extrabold text-brand-deep">Bonjour {me.name} 👋</h1>
-        <p className="text-muted-foreground">{current ? "Prêt(e) pour la leçon du jour ?" : "Retrouvez ici tous vos cours MaelEnglish."}</p>
+        <p className="text-muted-foreground">{current ? "Prêt(e) pour l'activité du jour ?" : "Retrouvez ici tous vos cours MaelEnglish."}</p>
       </div>
 
       <InstallPrompt />
@@ -112,7 +112,7 @@ function CourseCard({ course: c }: { course: MyCourse }) {
           <>
             <div className="mt-4 flex items-center justify-between text-sm font-semibold">
               <span className="text-ink/75">
-                {c.lessonsDone} / {c.lessonsTotal} leçons
+                {c.lessonsDone} / {c.lessonsTotal} activités
               </span>
               <span className="text-success">{percent} %</span>
             </div>

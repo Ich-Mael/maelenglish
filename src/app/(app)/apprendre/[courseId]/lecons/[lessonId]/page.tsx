@@ -17,7 +17,7 @@ import { PracticePlayer } from "@/components/learn/practice/player";
 import { TvPlayer } from "@/components/learn/tv-player";
 import { PreviewBar, adminPaths } from "@/components/learn/preview-bar";
 
-export const metadata: Metadata = { title: "Leçon", robots: { index: false } };
+export const metadata: Metadata = { title: "Activité", robots: { index: false } };
 
 async function LessonView({ params }: { params: Promise<{ courseId: string; lessonId: string }> }) {
   const { courseId, lessonId } = await params;
@@ -40,7 +40,7 @@ async function LessonView({ params }: { params: Promise<{ courseId: string; less
     return (
       <div className="mx-auto max-w-md rounded-3xl border-2 border-border bg-card p-8 text-center">
         <Lock className="mx-auto size-12 text-muted-foreground" aria-hidden />
-        <h1 className="mt-4 text-2xl font-extrabold text-brand-deep">Leçon verrouillée</h1>
+        <h1 className="mt-4 text-2xl font-extrabold text-brand-deep">Activité verrouillée</h1>
         <p className="mt-2 text-muted-foreground">Terminez les étapes précédentes pour l&apos;ouvrir.</p>
         <Link href={back} className="mt-6 inline-flex h-11 items-center rounded-2xl bg-primary px-5 font-semibold text-white">
           Retour au parcours
@@ -51,6 +51,7 @@ async function LessonView({ params }: { params: Promise<{ courseId: string; less
 
   const nextHref = stepAfter(courseId, outline, lessonPath(courseId, lessonId));
   const mod = modules.find((m) => String(m._id) === String(lesson.moduleId));
+  const unit = outline.modules.find((m) => m.id === String(lesson.moduleId))?.units.find((u) => u.id && u.lessons.some((l) => l.id === lessonId));
 
   if (lesson.type === "practice") {
     const exercises: Exercise[] = (lesson.exercises ?? []).map((e) => {
@@ -73,6 +74,11 @@ async function LessonView({ params }: { params: Promise<{ courseId: string; less
         <Link href={back} className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-primary">
           <ChevronLeft className="size-4" aria-hidden /> {mod?.title ?? "Parcours"}
         </Link>
+        {unit && (
+          <p className="mt-3 text-xs font-bold tracking-wide text-primary uppercase">
+            Unité {unit.index + 1} · {unit.title}
+          </p>
+        )}
         <h1 className="mt-2 text-3xl font-extrabold text-brand-deep">{lesson.title}</h1>
         {lesson.description && <p className="mt-1 text-muted-foreground">{lesson.description}</p>}
       </header>
@@ -81,7 +87,7 @@ async function LessonView({ params }: { params: Promise<{ courseId: string; less
         (video ? (
           <TvPlayer source={video} title={lesson.title} />
         ) : (
-          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">La vidéo de cette leçon n&apos;est pas encore disponible.</p>
+          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">La vidéo de cette activité n&apos;est pas encore disponible.</p>
         ))}
 
       {lesson.type === "pdf" && lesson.fileUrl && (

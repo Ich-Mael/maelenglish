@@ -47,16 +47,22 @@ export type QuizAttemptDoc = InferSchemaType<typeof quizAttemptSchema> & { _id: 
 export const QuizAttempt: Model<QuizAttemptDoc> =
   (models.QuizAttempt as Model<QuizAttemptDoc>) || model<QuizAttemptDoc>("QuizAttempt", quizAttemptSchema);
 
-// ── AssignmentSubmission: module assignment / final project, graded by staff ──
+// ── AssignmentSubmission: module assignment / final project / unit speaking challenge, graded by staff ──
 const assignmentSubmissionSchema = new Schema(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     courseId: { type: Schema.Types.ObjectId, ref: "Course", required: true },
     /** null for a final project. */
     moduleId: { type: Schema.Types.ObjectId, ref: "Module", default: null },
-    assignmentType: { type: String, required: true, enum: ["module_assignment", "final_project"] },
-    submissionType: { type: String, required: true, enum: ["text", "link"] },
-    content: { type: String, required: true },
+    /** Unit speaking challenge only. */
+    unitId: { type: Schema.Types.ObjectId, ref: "Unit", default: null },
+    assignmentType: { type: String, required: true, enum: ["module_assignment", "final_project", "unit_challenge"] },
+    submissionType: { type: String, required: true, enum: ["text", "link", "audio"] },
+    /** Text or link answer (empty for audio). */
+    content: { type: String, default: "" },
+    /** Audio answer (unit speaking challenge): the learner's recording. */
+    mediaId: { type: Schema.Types.ObjectId, ref: "Media", default: null },
+    durationS: { type: Number, default: 0, min: 0 },
     status: { type: String, enum: ["pending", "graded", "returned"], default: "pending" },
     grade: { type: Number, default: null, min: 0 },
     maxScore: { type: Number, default: 100, min: 1 },
@@ -67,7 +73,8 @@ const assignmentSubmissionSchema = new Schema(
   { timestamps: true },
 );
 // One submission per learner per assignment (resubmitting updates it).
-assignmentSubmissionSchema.index({ userId: 1, courseId: 1, moduleId: 1, assignmentType: 1 }, { unique: true });
+// (The older index without unitId is dropped at startup: see LEGACY_INDEXES in src/lib/db.ts.)
+assignmentSubmissionSchema.index({ userId: 1, courseId: 1, moduleId: 1, unitId: 1, assignmentType: 1 }, { unique: true, name: "one_submission_per_step" });
 // Grading queue.
 assignmentSubmissionSchema.index({ courseId: 1, status: 1 });
 

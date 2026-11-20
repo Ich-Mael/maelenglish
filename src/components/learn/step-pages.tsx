@@ -1,15 +1,17 @@
 import Link from "next/link";
 import { connection } from "next/server";
-import { CalendarClock, ChevronLeft, CircleCheck, Clock, Lock, RotateCcw } from "lucide-react";
+import { CalendarClock, ChevronLeft, CircleCheck, Clock, Lock, Mic, RotateCcw, Timer } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
 import { courseAccess, courseTree } from "@/lib/learn/queries";
-import { assignmentPath, coursePath, examPath, projectPath, quizPath } from "@/lib/learn/paths";
+import { assignmentPath, challengePath, coursePath, examPath, projectPath, quizPath } from "@/lib/learn/paths";
 import { stepAfter } from "@/lib/learn/sequence";
-import { AssignmentSubmission } from "@/models";
+import { AssignmentSubmission, type AssignmentSubmissionDoc } from "@/models";
+import { mediaUrlFor } from "@/lib/media";
 import { AccessProblem, formatDate } from "./ui";
 import { RichText } from "./rich-text";
 import { QuizRunner, type PublicQuestion } from "./quiz-runner";
 import { AssignmentForm } from "./assignment-form";
+import { ChallengeRecorder } from "./challenge-recorder";
 import { PreviewBar, adminPaths } from "./preview-bar";
 
 function Locked({ courseId, text }: { courseId: string; text: string }) {
@@ -39,7 +41,7 @@ export async function QuizStep({ courseId, moduleId }: { courseId: string; modul
   const step = moduleId ? outline.modules.find((m) => m.id === moduleId)?.quiz : outline.finalExam;
   if (!quiz?.questions?.length || !step) return <AccessProblem reason="not-found" />;
   if (step.state === "locked") {
-    return <Locked courseId={courseId} text={moduleId ? "Terminez toutes les leçons du module pour ouvrir le quiz." : "L'examen final s'ouvre quand tous les modules sont terminés."} />;
+    return <Locked courseId={courseId} text={moduleId ? "Terminez toutes les activités du module pour ouvrir le quiz." : "L'examen final s'ouvre quand tous les modules sont terminés."} />;
   }
 
   // Never send the answers to the browser.
@@ -161,6 +163,95 @@ export async function AssignmentStep({ courseId, moduleId }: { courseId: string;
             initial={submission?.content ?? ""}
             label={submission ? "Renvoyer" : "Envoyer à mon coach"}
           />
+        </section>
+      )}
+    </div>
+  );
+}
+
+const secs = (s: number) => (s >= 60 ? `${Math.floor(s / 60)} min${s % 60 ? ` ${s % 60} s` : ""}` : `${s} s`);
+
+/** Unit speaking challenge: instructions, recorder, then the status and the coach's feedback. */
+export async function ChallengeStep({ courseId, unitId }: { courseId: string; unitId: string }) {
+  await connection();
+  const here = challengePath(courseId, unitId);
+  const me = await requireUser(here);
+  const access = await courseAccess(me, courseId);
+  if (!access.ok) return <AccessProblem reason={access.reason} startDate={access.enrollment?.startDate} />;
+  const { modules, units, outline } = await courseTree(me, access);
+
+  const unit = units.find((u) => String(u._id) === unitId);
+  const modOutline = outline.modules.find((m) => m.units.some((u) => u.id === unitId));
+  const unitOutline = modOutline?.units.find((u) => u.id === unitId);
+  const step = unitOutline?.challenge;
+  if (!unit || !step || !unitOutline) return <AccessProblem reason="not-found" />;
+  if (step.state === "locked" && !step.status) return <Locked courseId={courseId} text="Terminez les activités de l'unité pour ouvrir son défi oral." />;
+
+  const mod = modules.find((m) => String(m._id) === String(unit.moduleId));
+  const c = unit.challenge!;
+  const submission = access.preview
+    ? null
+    : await AssignmentSubmission.findOne({ userId: me.id, courseId, unitId, assignmentType: "unit_challenge" }).lean<AssignmentSubmissionDoc>();
+  const audio = submission?.mediaId ? await mediaUrlFor({ id: me.id, isAdmin: false }, String(submission.mediaId)).catch(() => null) : null;
+
+  return (
+    <div className="mx-auto grid max-w-3xl gap-6">
+      {access.preview && <PreviewBar text="Aperçu équipe : l’enregistrement n’est pas envoyé." editHref={adminPaths.unit(courseId, unitId)} />}
+      <header>
+        <Link href={coursePath(courseId)} className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-primary">
+          <ChevronLeft className="size-4" aria-hidden /> {mod?.title ?? "Parcours"}
+        </Link>
+        <p className="mt-3 text-xs font-bold tracking-wide text-primary uppercase">
+          Unité {unitOutline.index + 1} · {unit.title}
+        </p>
+        <h1 className="mt-1 flex items-center gap-2 text-3xl font-extrabold text-brand-deep">
+          <Mic className="size-7 shrink-0 text-primary" aria-hidden /> {c.title || "Défi oral"}
+        </h1>
+        <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+          <Timer className="size-4" aria-hidden /> {secs(c.maxSeconds ?? 60)} maximum{c.prepSeconds ? ` · ${secs(c.prepSeconds)} pour vous préparer` : ""} · votre coach vous fait un retour
+        </p>
+      </header>
+
+      <section className="rounded-3xl border-2 border-border bg-card p-5 sm:p-8">
+        <RichText>{c.instructions}</RichText>
+      </section>
+
+      {submission && (
+        <section
+          className={
+            submission.status === "graded"
+              ? "rounded-3xl border-2 border-success/30 bg-success/10 p-5"
+              : submission.status === "returned"
+                ? "rounded-3xl border-2 border-coral/30 bg-coral-soft p-5"
+                : "rounded-3xl border-2 border-primary/20 bg-brand-soft p-5"
+          }
+        >
+          <p className="flex items-center gap-2 font-heading text-lg font-bold text-brand-deep">
+            {submission.status === "graded" ? <CircleCheck className="size-5 text-success" aria-hidden /> : submission.status === "returned" ? <RotateCcw className="size-5 text-coral-dark" aria-hidden /> : <Clock className="size-5 text-primary" aria-hidden />}
+            {submission.status === "graded" ? "Validé par votre coach" : submission.status === "returned" ? "À reprendre : votre coach vous a fait un retour" : "Envoyé · votre coach va vous écouter"}
+          </p>
+          {submission.feedback && <RichText legacy="text" className="mt-2 text-ink">{submission.feedback}</RichText>}
+          {audio && (
+            <div className="mt-3">
+              <p className="mb-1 text-sm font-semibold text-brand-deep">Votre enregistrement</p>
+              <audio src={audio} controls preload="none" className="w-full" />
+            </div>
+          )}
+          <p className="mt-2 text-xs text-muted-foreground">Envoyé le {formatDate(submission.updatedAt)}</p>
+        </section>
+      )}
+
+      {submission?.status === "graded" ? (
+        <Link href={stepAfter(courseId, outline, here)} className="inline-flex h-12 w-fit items-center rounded-2xl bg-primary px-6 font-semibold text-white">
+          Étape suivante
+        </Link>
+      ) : access.readOnly ? (
+        <p className="text-muted-foreground">Cours terminé : les envois sont fermés.</p>
+      ) : (
+        <section className="grid gap-3">
+          <h2 className="text-xl font-extrabold text-brand-deep">{submission ? "Vous pouvez vous réenregistrer" : "À vous de parler"}</h2>
+          {submission?.status === "pending" && <p className="text-sm text-muted-foreground">Tant que votre coach n’a pas validé, un nouvel envoi remplace le précédent.</p>}
+          <ChallengeRecorder courseId={courseId} unitId={unitId} maxSeconds={c.maxSeconds ?? 60} prepSeconds={c.prepSeconds ?? 0} preview={access.preview} resend={!!submission} courseHref={coursePath(courseId)} />
         </section>
       )}
     </div>

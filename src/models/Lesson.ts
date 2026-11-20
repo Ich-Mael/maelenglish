@@ -2,7 +2,7 @@ import { Schema, model, models, type InferSchemaType, type Model, type Types } f
 import { exerciseSchema } from "./shared";
 
 /**
- * Atomic learning unit inside a module. Only the fields of its `type` are used.
+ * Activity inside a unit (and its module). Only the fields of its `type` are used.
  * `practice` = a sequence of interactive exercises (ungraded self-check; the
  * first-try score is kept in `LessonProgress.practiceScore`).
  */
@@ -13,6 +13,8 @@ const lessonSchema = new Schema(
   {
     courseId: { type: Schema.Types.ObjectId, ref: "Course", required: true, index: true },
     moduleId: { type: Schema.Types.ObjectId, ref: "Module", required: true },
+    /** Unit inside the module (null = older lesson not yet placed in a unit; see `adoptOrphanLessons`). */
+    unitId: { type: Schema.Types.ObjectId, ref: "Unit", default: null },
     title: { type: String, required: true, trim: true },
     order: { type: Number, default: 0 },
     isPublished: { type: Boolean, default: true },
@@ -35,6 +37,7 @@ const lessonSchema = new Schema(
 
 // Not unique: reordering lessons swaps orders without index conflicts.
 lessonSchema.index({ moduleId: 1, order: 1 });
+lessonSchema.index({ unitId: 1, order: 1 });
 
 export type LessonDoc = InferSchemaType<typeof lessonSchema> & { _id: Types.ObjectId };
 

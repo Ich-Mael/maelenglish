@@ -90,9 +90,9 @@ export type BadgeIcon = "Footprints" | "BookOpen" | "Library" | "Flame" | "Zap" 
 export type Badge = { id: string; name: string; description: string; icon: BadgeIcon; earned: (s: StatCounters) => boolean };
 
 export const BADGES: readonly Badge[] = [
-  { id: "first-lesson", name: "Premier pas", description: "Terminer votre première leçon", icon: "Footprints", earned: (s) => s.lessonsCompleted >= 1 },
-  { id: "lessons-10", name: "Lancé(e)", description: "Terminer 10 leçons", icon: "BookOpen", earned: (s) => s.lessonsCompleted >= 10 },
-  { id: "lessons-50", name: "Infatigable", description: "Terminer 50 leçons", icon: "Library", earned: (s) => s.lessonsCompleted >= 50 },
+  { id: "first-lesson", name: "Premier pas", description: "Terminer votre première activité", icon: "Footprints", earned: (s) => s.lessonsCompleted >= 1 },
+  { id: "lessons-10", name: "Lancé(e)", description: "Terminer 10 activités", icon: "BookOpen", earned: (s) => s.lessonsCompleted >= 10 },
+  { id: "lessons-50", name: "Infatigable", description: "Terminer 50 activités", icon: "Library", earned: (s) => s.lessonsCompleted >= 50 },
   { id: "streak-3", name: "En rythme", description: "3 jours d'affilée", icon: "Flame", earned: (s) => s.longestStreak >= 3 },
   { id: "streak-7", name: "Une semaine pleine", description: "7 jours d'affilée", icon: "Zap", earned: (s) => s.longestStreak >= 7 },
   { id: "streak-30", name: "Habitude en or", description: "30 jours d'affilée", icon: "Crown", earned: (s) => s.longestStreak >= 30 },

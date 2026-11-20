@@ -6,6 +6,7 @@ export const adminPaths = {
   course: (courseId: string) => `/admin/cours/${courseId}`,
   lesson: (courseId: string, lessonId: string) => `/admin/cours/${courseId}/lecons/${lessonId}`,
   module: (courseId: string, moduleId: string) => `/admin/cours/${courseId}/modules/${moduleId}`,
+  unit: (courseId: string, unitId: string) => `/admin/cours/${courseId}/unites/${unitId}`,
   finals: (courseId: string) => `/admin/cours/${courseId}/final`,
 };
 

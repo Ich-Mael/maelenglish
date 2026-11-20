@@ -44,7 +44,7 @@ async function Progress() {
           </p>
           <p className="font-heading text-5xl font-extrabold text-brand-deep">{s.streak}</p>
           <p className="text-sm text-muted-foreground">
-            {s.activeToday ? "Bravo, la série continue aujourd'hui !" : s.streak ? "Faites une leçon aujourd'hui pour la garder." : "Faites une leçon pour la lancer."}
+            {s.activeToday ? "Bravo, la série continue aujourd'hui !" : s.streak ? "Faites une activité aujourd'hui pour la garder." : "Faites une activité pour la lancer."}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">Record : {s.longestStreak} jour(s)</p>
         </div>

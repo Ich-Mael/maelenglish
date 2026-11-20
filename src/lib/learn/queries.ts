@@ -11,12 +11,14 @@ import {
   LessonProgress,
   Module,
   QuizAttempt,
+  Unit,
   accessState,
   type AccessState,
   type CourseDoc,
   type EnrollmentDoc,
   type LessonDoc,
   type ModuleDoc,
+  type UnitDoc,
 } from "@/models";
 import { computeOutline, type Outline, type SubmissionStatus } from "./progress";
 
@@ -50,6 +52,7 @@ export async function courseAccess(me: CurrentUser, courseId: string): Promise<C
 
 export type CourseTree = {
   modules: ModuleDoc[];
+  units: UnitDoc[];
   lessons: LessonDoc[];
   outline: Outline;
 };
@@ -57,8 +60,9 @@ export type CourseTree = {
 /** Modules, published lessons and the learner's computed progression. */
 export async function courseTree(me: CurrentUser, access: Extract<CourseAccess, { ok: true }>): Promise<CourseTree> {
   const courseId = access.course._id;
-  const [modules, lessons] = await Promise.all([
+  const [modules, units, lessons] = await Promise.all([
     Module.find({ courseId }).sort({ order: 1, createdAt: 1 }).lean<ModuleDoc[]>(),
+    Unit.find({ courseId }).sort({ order: 1, createdAt: 1 }).lean<UnitDoc[]>(),
     Lesson.find({ courseId, isPublished: true }).sort({ order: 1, createdAt: 1 }).lean<LessonDoc[]>(),
   ]);
 
@@ -68,7 +72,7 @@ export async function courseTree(me: CurrentUser, access: Extract<CourseAccess, 
       { $match: { userId: new Types.ObjectId(me.id), courseId } },
       { $group: { _id: { moduleId: "$moduleId", quizType: "$quizType" }, best: { $max: "$score" }, passed: { $max: "$passed" } } },
     ]),
-    AssignmentSubmission.find({ userId: me.id, courseId }).select("moduleId assignmentType status").lean(),
+    AssignmentSubmission.find({ userId: me.id, courseId }).select("moduleId unitId assignmentType status").lean(),
   ]);
 
   const quizResults = new Map<string, { bestScore: number; passed: boolean }>();
@@ -81,9 +85,13 @@ export async function courseTree(me: CurrentUser, access: Extract<CourseAccess, 
     } else if (a._id.moduleId) quizResults.set(String(a._id.moduleId), { bestScore: a.best, passed: a.passed });
   }
   const assignments = new Map<string, SubmissionStatus>();
+  const unitChallenges = new Map<string, SubmissionStatus>();
   let projectStatus: SubmissionStatus | null = null;
   for (const s of submissions) {
     if (s.assignmentType === "final_project") projectStatus = s.status as SubmissionStatus;
+    else if (s.assignmentType === "unit_challenge") {
+      if (s.unitId) unitChallenges.set(String(s.unitId), s.status as SubmissionStatus);
+    }
     else if (s.moduleId) assignments.set(String(s.moduleId), s.status as SubmissionStatus);
   }
 
@@ -96,13 +104,15 @@ export async function courseTree(me: CurrentUser, access: Extract<CourseAccess, 
       hasQuiz: (m.quiz?.questions?.length ?? 0) > 0,
       hasAssignment: !!m.assignment?.instructions?.trim(),
       isCheckpointRequired: m.isCheckpointRequired !== false,
+      units: units.filter((u) => String(u.moduleId) === String(m._id)).map((u) => ({ id: String(u._id), title: u.title, objective: u.objective ?? "", hasChallenge: !!u.challenge?.instructions?.trim() })),
       lessons: lessons
         .filter((l) => String(l.moduleId) === String(m._id))
-        .map((l) => ({ id: String(l._id), title: l.title, type: l.type })),
+        .map((l) => ({ id: String(l._id), title: l.title, type: l.type, unitId: l.unitId ? String(l.unitId) : null })),
     })),
     completedLessonIds: new Set(progress.map((p) => String(p.lessonId))),
     quizResults,
     assignments,
+    unitChallenges,
     finalExam: { exists: (access.course.finalExam?.questions?.length ?? 0) > 0, bestScore: finalBest, passed: finalPassed },
     finalProject: { exists: !!access.course.finalProject?.instructions?.trim(), status: projectStatus },
     isChallenge: !!access.course.isChallenge,
@@ -110,7 +120,7 @@ export async function courseTree(me: CurrentUser, access: Extract<CourseAccess, 
     preview: access.preview,
   });
 
-  return { modules, lessons, outline };
+  return { modules, units, lessons, outline };
 }
 
 export type MyCourse = {

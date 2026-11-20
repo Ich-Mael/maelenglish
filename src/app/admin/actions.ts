@@ -17,7 +17,7 @@ import { appUrl, sendActivationEmail, sendEnrollmentEmail, sendPasswordResetEmai
 import { findProgram, programPhoto } from "@/lib/catalog";
 import { plainText } from "@/lib/rich-text";
 import { isWhatsAppConfigured, sendEnrollment } from "@/lib/whatsapp";
-import { AssignmentSubmission, Course, Enrollment, Lesson, Module, TeachingResource, User, type CourseDoc, type Role } from "@/models";
+import { AssignmentSubmission, Course, Enrollment, Lesson, Module, TeachingResource, Unit, User, type CourseDoc, type Role } from "@/models";
 import type { CurrentUser } from "@/lib/auth/dal";
 
 type State = { error?: string; success?: string; data?: Record<string, string> } | undefined;
@@ -38,9 +38,15 @@ async function moduleCourse(me: CurrentUser, moduleId: string, need: Parameters<
   if (!m) throw new AdminError("Module introuvable.");
   return courseOf(me, String(m.courseId), need);
 }
+async function unitCourse(me: CurrentUser, unitId: string) {
+  const u = Types.ObjectId.isValid(unitId) ? await Unit.findById(unitId).select("courseId moduleId").lean() : null;
+  if (!u) throw new AdminError("Unité introuvable.");
+  const course = await courseOf(me, String(u.courseId), "edit");
+  return { course, unit: u };
+}
 async function lessonCourse(me: CurrentUser, lessonId: string) {
-  const l = Types.ObjectId.isValid(lessonId) ? await Lesson.findById(lessonId).select("courseId moduleId").lean() : null;
-  if (!l) throw new AdminError("Leçon introuvable.");
+  const l = Types.ObjectId.isValid(lessonId) ? await Lesson.findById(lessonId).select("courseId moduleId unitId").lean() : null;
+  if (!l) throw new AdminError("Activité introuvable.");
   await courseOf(me, String(l.courseId), "edit");
   return l;
 }
@@ -265,16 +271,83 @@ export async function deleteModuleAction(form: FormData) {
   redirect(`/admin/cours/${course._id}`);
 }
 
+// ── Units ──────────────────────────────────────────────────────────────────
+
+export async function createUnitAction(_: State, form: FormData): Promise<State> {
+  try {
+    const me = await staffOrThrow();
+    const moduleId = str(form, "moduleId");
+    await moduleCourse(me, moduleId, "edit");
+    if (!str(form, "title")) return { error: "Donnez un titre à l'unité." };
+    await content.createUnit(moduleId, str(form, "title"), str(form, "objective"));
+    refresh();
+    return { success: "Unité ajoutée." };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+export async function updateUnitAction(_: State, form: FormData): Promise<State> {
+  try {
+    const me = await staffOrThrow();
+    const unitId = str(form, "unitId");
+    await unitCourse(me, unitId);
+    await content.updateUnit(unitId, { title: str(form, "title"), objective: str(form, "objective") });
+    refresh();
+    return { success: "Unité enregistrée." };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+export async function saveUnitChallengeAction(_: State, form: FormData): Promise<State> {
+  try {
+    const me = await staffOrThrow();
+    const unitId = str(form, "unitId");
+    await unitCourse(me, unitId);
+    await content.saveUnitChallenge(unitId, {
+      title: str(form, "title"),
+      instructions: String(form.get("instructions") ?? ""),
+      maxSeconds: Number(str(form, "maxSeconds")),
+      prepSeconds: Number(str(form, "prepSeconds")),
+    });
+    refresh();
+    return { success: plainText(String(form.get("instructions") ?? "")) ? "Défi oral enregistré." : "Défi oral retiré : l'unité se termine avec ses activités." };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+export async function moveUnitAction(form: FormData) {
+  const me = await staffOrThrow();
+  await unitCourse(me, str(form, "unitId"));
+  await content.moveUnit(str(form, "unitId"), str(form, "dir") === "up" ? "up" : "down");
+  refresh();
+}
+
+export async function deleteUnitAction(_: State, form: FormData): Promise<State> {
+  let target: string;
+  try {
+    const me = await staffOrThrow();
+    const { course, unit } = await unitCourse(me, str(form, "unitId"));
+    await content.deleteUnit(str(form, "unitId"));
+    target = `/admin/cours/${course._id}/modules/${unit.moduleId}`;
+  } catch (e) {
+    return fail(e);
+  }
+  redirect(target);
+}
+
 // ── Lessons ────────────────────────────────────────────────────────────────
 
 export async function createLessonAction(_: State, form: FormData): Promise<State> {
   let target: string;
   try {
     const me = await staffOrThrow();
-    const moduleId = str(form, "moduleId");
-    const course = await moduleCourse(me, moduleId, "edit");
-    if (!str(form, "title")) return { error: "Donnez un titre à la leçon." };
-    const l = await content.createLesson(moduleId, str(form, "title"), str(form, "type"));
+    const unitId = str(form, "unitId");
+    const { course } = await unitCourse(me, unitId);
+    if (!str(form, "title")) return { error: "Donnez un titre à l'activité." };
+    const l = await content.createLesson(unitId, str(form, "title"), str(form, "type"));
     target = `/admin/cours/${course._id}/lecons/${l._id}`;
   } catch (e) {
     return fail(e);
@@ -308,7 +381,7 @@ export async function saveLessonAction(_: State, form: FormData): Promise<State>
       exercises,
     });
     refresh();
-    return { success: "Leçon enregistrée." };
+    return { success: "Activité enregistrée." };
   } catch (e) {
     return fail(e);
   }
@@ -325,7 +398,7 @@ export async function deleteLessonAction(form: FormData) {
   const me = await staffOrThrow();
   const l = await lessonCourse(me, str(form, "lessonId"));
   await content.deleteLesson(str(form, "lessonId"));
-  redirect(`/admin/cours/${l.courseId}/modules/${l.moduleId}`);
+  redirect(l.unitId ? `/admin/cours/${l.courseId}/unites/${l.unitId}` : `/admin/cours/${l.courseId}/modules/${l.moduleId}`);
 }
 
 // ── Quizzes, assignments, resources ────────────────────────────────────────

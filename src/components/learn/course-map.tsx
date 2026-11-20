@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { Check, ChevronDown, ClipboardCheck, FileText, Lock, PenLine, PlayCircle, Sparkles, Star, Trophy, Type } from "lucide-react";
-import type { ModuleOutline, Outline, StepState } from "@/lib/learn/progress";
-import { assignmentPath, examPath, lessonPath, projectPath, quizPath } from "@/lib/learn/paths";
+import { Check, ChevronDown, ClipboardCheck, FileText, Lock, Mic, PenLine, PlayCircle, Sparkles, Star, Trophy, Type } from "lucide-react";
+import type { ModuleOutline, Outline, StepState, UnitOutline } from "@/lib/learn/progress";
+import { assignmentPath, challengePath, examPath, lessonPath, projectPath, quizPath } from "@/lib/learn/paths";
 import { formatDate } from "./ui";
 import { RichText } from "./rich-text";
 import { cn } from "cn";
@@ -22,6 +22,13 @@ const DAY_LABEL: Record<NonNullable<ModuleOutline["day"]>["state"], string> = {
   locked_time: "Pas encore ouvert",
 };
 
+const CHALLENGE_SUB: Record<string, string | undefined> = {
+  none: "Enregistrez-vous pour finir l'unité",
+  pending: "Envoyé · en attente du coach",
+  returned: "À reprendre",
+  graded: "Validé par votre coach",
+};
+
 /** Zig-zag offsets give the path its playful shape (lg screens only; stays straight on phones for reach). */
 const OFFSETS = ["sm:translate-x-0", "sm:translate-x-12", "sm:translate-x-20", "sm:translate-x-12", "sm:translate-x-0", "sm:-translate-x-12", "sm:-translate-x-20", "sm:-translate-x-12"];
 
@@ -32,8 +39,13 @@ export function CourseMap({ courseId, outline, currentHref }: { courseId: string
   return (
     <ol className="grid gap-10">
       {outline.modules.map((m) => {
-        const nodes: Node[] = [
-          ...m.lessons.map((l) => ({ key: l.id, href: lessonPath(courseId, l.id), label: l.title, state: l.state, icon: LESSON_ICON[l.type] ?? Type })),
+        const lessonNodes = (u: UnitOutline): Node[] => [
+          ...u.lessons.map((l) => ({ key: l.id, href: lessonPath(courseId, l.id), label: l.title, state: l.state, icon: LESSON_ICON[l.type] ?? Type })),
+          ...(u.challenge
+            ? [{ key: `${u.id}-challenge`, href: challengePath(courseId, u.id), label: "Défi oral", sub: CHALLENGE_SUB[u.challenge.status ?? "none"], state: u.challenge.state, icon: Mic, big: true }]
+            : []),
+        ];
+        const moduleNodes: Node[] = [
           ...(m.quiz
             ? [{ key: `${m.id}-quiz`, href: quizPath(courseId, m.id), label: "Quiz du module", sub: m.quiz.bestScore !== null ? `Meilleur score : ${m.quiz.bestScore} %` : undefined, state: m.quiz.state, icon: Star, big: true }]
             : []),
@@ -52,13 +64,27 @@ export function CourseMap({ courseId, outline, currentHref }: { courseId: string
           <li key={m.id}>
             <ModuleBanner module={m} />
             {m.description.trim() && <ModuleAbout html={m.description} />}
-            <ol className="mt-6 grid justify-items-center gap-5">
-              {nodes.map((node) => (
-                <li key={node.key} className={cn("transition-transform", OFFSETS[n++ % OFFSETS.length])}>
-                  <PathNode node={node} current={node.href === currentHref} />
-                </li>
-              ))}
-            </ol>
+            {m.units.map((u) => (
+              <section key={u.id || "untitled"} aria-label={u.id ? `Unité ${u.index + 1} : ${u.title}` : undefined}>
+                {u.id && <UnitHeader unit={u} />}
+                <ol className="mt-6 grid justify-items-center gap-5">
+                  {lessonNodes(u).map((node) => (
+                    <li key={node.key} className={cn("transition-transform", OFFSETS[n++ % OFFSETS.length])}>
+                      <PathNode node={node} current={node.href === currentHref} />
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            ))}
+            {moduleNodes.length > 0 && (
+              <ol className="mt-6 grid justify-items-center gap-5">
+                {moduleNodes.map((node) => (
+                  <li key={node.key} className={cn("transition-transform", OFFSETS[n++ % OFFSETS.length])}>
+                    <PathNode node={node} current={node.href === currentHref} />
+                  </li>
+                ))}
+              </ol>
+            )}
           </li>
         );
       })}
@@ -106,6 +132,29 @@ function ModuleBanner({ module: m }: { module: ModuleOutline }) {
         {m.day?.state === "locked_time" && <p className="mt-0.5 text-sm">S&apos;ouvre le {formatDate(m.day.opensOn)}</p>}
       </div>
       {locked ? <Lock className="size-7 shrink-0" aria-hidden /> : m.state === "completed" ? <Check className="size-8 shrink-0" aria-hidden /> : null}
+    </div>
+  );
+}
+
+/** Unit sub-header: number, title, objective and a progress ring (lessons done / total). */
+function UnitHeader({ unit: u }: { unit: UnitOutline }) {
+  const locked = u.state === "locked";
+  const r = 18;
+  const c = 2 * Math.PI * r;
+  return (
+    <div className={cn("mt-6 flex items-center gap-3 rounded-2xl border-2 px-4 py-3", locked ? "border-border bg-muted/50 text-muted-foreground" : "border-brand-soft bg-white text-brand-deep")}>
+      <span className="relative flex size-11 shrink-0 items-center justify-center" role="img" aria-label={`${u.done} activité(s) terminée(s) sur ${u.total}`}>
+        <svg viewBox="0 0 44 44" className="absolute inset-0 -rotate-90" aria-hidden>
+          <circle cx="22" cy="22" r={r} fill="none" strokeWidth="5" className="stroke-muted" />
+          {u.done > 0 && <circle cx="22" cy="22" r={r} fill="none" strokeWidth="5" strokeLinecap="round" className="stroke-primary" strokeDasharray={c} strokeDashoffset={c * (1 - u.done / u.total)} />}
+        </svg>
+        {u.state === "completed" ? <Check className="size-5 text-primary" aria-hidden /> : locked ? <Lock className="size-4" aria-hidden /> : <span className="text-xs font-bold tabular-nums">{u.done}/{u.total}</span>}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className={cn("block text-xs font-bold tracking-wide uppercase", locked ? "" : "text-primary")}>Unité {u.index + 1}</span>
+        <span className="block font-heading font-extrabold">{u.title}</span>
+        {u.objective && <span className="block text-sm text-muted-foreground">{u.objective}</span>}
+      </span>
     </div>
   );
 }

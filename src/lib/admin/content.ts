@@ -1,7 +1,10 @@
 import { Types } from "mongoose";
-import { AssignmentSubmission, Course, Enrollment, Lesson, LessonProgress, Module, QuizAttempt, TeachingResource, User, STAFF_ROLES, COURSE_LEVELS, LESSON_TYPES, RESOURCE_TYPES, type CourseDoc, type LessonDoc, type ModuleDoc } from "@/models";
+import { AssignmentSubmission, Course, Enrollment, Lesson, LessonProgress, Module, QuizAttempt, TeachingResource, Unit, User, STAFF_ROLES, COURSE_LEVELS, LESSON_TYPES, RESOURCE_TYPES, type CourseDoc, type LessonDoc, type ModuleDoc, type UnitDoc } from "@/models";
 import { AdminError } from "./errors";
 import { normalizeRich } from "@/lib/rich-text";
+import { adoptOrphanLessons } from "./unit-migration";
+
+export { adoptOrphanLessons };
 
 /* Course content editing (framework-free; permission checks happen in the actions). */
 
@@ -80,6 +83,7 @@ export async function deleteCourse(courseId: string) {
   if (await Enrollment.exists({ courseId: id })) throw new AdminError("Des apprenants sont inscrits : dépubliez le cours au lieu de le supprimer.");
   await Promise.all([
     Module.deleteMany({ courseId: id }),
+    Unit.deleteMany({ courseId: id }),
     Lesson.deleteMany({ courseId: id }),
     TeachingResource.deleteMany({ courseId: id }),
     LessonProgress.deleteMany({ courseId: id }),
@@ -111,6 +115,8 @@ export async function createModule(courseId: string, title: string, summary = ""
   const id = oid(courseId);
   const last = await Module.findOne({ courseId: id }).sort({ order: -1 }).select("order").lean();
   const m = await Module.create({ courseId: id, title: title.trim(), summary, order: (last?.order ?? 0) + 1 });
+  // Every module starts with one unit, so lessons can be added straight away.
+  await Unit.create({ courseId: id, moduleId: m._id, title: "Unité 1", order: 1 });
   return m.toObject() as ModuleDoc;
 }
 
@@ -133,19 +139,92 @@ export async function moveModule(moduleId: string, dir: "up" | "down") {
 
 export async function deleteModule(moduleId: string) {
   const id = oid(moduleId);
-  await Promise.all([Lesson.deleteMany({ moduleId: id }), TeachingResource.deleteMany({ moduleId: id })]);
+  const lessonIds = (await Lesson.find({ moduleId: id }).select("_id").lean()).map((l) => l._id);
+  await Promise.all([
+    Lesson.deleteMany({ moduleId: id }),
+    LessonProgress.deleteMany({ lessonId: { $in: lessonIds } }),
+    Unit.deleteMany({ moduleId: id }),
+    TeachingResource.deleteMany({ moduleId: id }),
+  ]);
   await Module.deleteOne({ _id: id });
+}
+
+// ── Units ──────────────────────────────────────────────────────────────────
+
+export async function createUnit(moduleId: string, title: string, objective = ""): Promise<UnitDoc> {
+  const m = await Module.findById(oid(moduleId)).select("courseId").lean();
+  if (!m) throw new AdminError("Module introuvable.");
+  if (!title.trim()) throw new AdminError("Donnez un titre à l'unité.");
+  const last = await Unit.findOne({ moduleId: m._id }).sort({ order: -1 }).select("order").lean();
+  const u = await Unit.create({ courseId: m.courseId, moduleId: m._id, title: title.trim(), objective: objective.trim(), order: (last?.order ?? 0) + 1 });
+  return u.toObject() as UnitDoc;
+}
+
+export async function updateUnit(unitId: string, data: { title: string; objective?: string }) {
+  const u = await Unit.findById(oid(unitId));
+  if (!u) throw new AdminError("Unité introuvable.");
+  if (!data.title.trim()) throw new AdminError("Donnez un titre à l'unité.");
+  u.title = data.title.trim();
+  u.objective = data.objective?.trim() ?? "";
+  await u.save();
+}
+
+export type UnitChallengeInput = { title?: string; instructions?: string; maxSeconds?: number; prepSeconds?: number };
+
+/** Speaking challenge closing the unit. Empty instructions = no challenge. */
+export async function saveUnitChallenge(unitId: string, c: UnitChallengeInput) {
+  const u = await Unit.findById(oid(unitId));
+  if (!u) throw new AdminError("Unité introuvable.");
+  const clamp = (v: unknown, min: number, max: number, dflt: number) => {
+    const n = Math.round(Number(v));
+    return Number.isFinite(n) ? Math.max(min, Math.min(max, n)) : dflt;
+  };
+  u.set("challenge", {
+    title: c.title?.trim() ?? "",
+    instructions: normalizeRich(c.instructions),
+    maxSeconds: clamp(c.maxSeconds, 15, 300, 60),
+    prepSeconds: clamp(c.prepSeconds, 0, 120, 0),
+  });
+  await u.save();
+}
+
+export async function moveUnit(unitId: string, dir: "up" | "down") {
+  const u = await Unit.findById(oid(unitId)).lean();
+  if (!u) return;
+  const siblings = await Unit.find({ moduleId: u.moduleId }).sort({ order: 1, createdAt: 1 }).select("_id order").lean();
+  await moveIn(siblings, unitId, dir, (id, order) => Unit.updateOne({ _id: id }, { order }));
+}
+
+/** Deletes the unit with its lessons (and the learners' progress on them). A module keeps at least one unit. */
+export async function deleteUnit(unitId: string) {
+  const u = await Unit.findById(oid(unitId)).lean();
+  if (!u) return;
+  if ((await Unit.countDocuments({ moduleId: u.moduleId })) <= 1) throw new AdminError("Un module garde au moins une unité : renommez-la plutôt.");
+  const lessonIds = (await Lesson.find({ unitId: u._id }).select("_id").lean()).map((l) => l._id);
+  await Promise.all([
+    LessonProgress.deleteMany({ lessonId: { $in: lessonIds } }),
+    Lesson.deleteMany({ unitId: u._id }),
+    AssignmentSubmission.deleteMany({ unitId: u._id, assignmentType: "unit_challenge" }),
+  ]);
+  await Unit.deleteOne({ _id: u._id });
 }
 
 // ── Lessons ────────────────────────────────────────────────────────────────
 
-export async function createLesson(moduleId: string, title: string, type: string): Promise<LessonDoc> {
-  const m = await Module.findById(oid(moduleId)).select("courseId").lean();
-  if (!m) throw new AdminError("Module introuvable.");
-  if (!LESSON_TYPES.includes(type as never)) throw new AdminError("Type de leçon inconnu.");
-  const last = await Lesson.findOne({ moduleId: m._id }).sort({ order: -1 }).select("order").lean();
+/** New lesson at the end of a unit (`parentId` = unit id; a module id means its first unit). */
+export async function createLesson(parentId: string, title: string, type: string): Promise<LessonDoc> {
+  if (!LESSON_TYPES.includes(type as never)) throw new AdminError("Type d'activité inconnu.");
+  const id = oid(parentId);
+  let unit = await Unit.findById(id).lean<UnitDoc>();
+  if (!unit && (await Module.exists({ _id: id }))) {
+    await adoptOrphanLessons(parentId);
+    unit = await Unit.findOne({ moduleId: id }).sort({ order: 1, createdAt: 1 }).lean<UnitDoc>();
+    if (!unit) unit = await createUnit(parentId, "Unité 1");
+  }
+  if (!unit) throw new AdminError("Unité introuvable.");
+  const last = await Lesson.findOne({ unitId: unit._id }).sort({ order: -1 }).select("order").lean();
   // New lessons start as drafts so learners never see an empty lesson.
-  const l = await Lesson.create({ courseId: m.courseId, moduleId: m._id, title: title.trim(), type: type as LessonDoc["type"], order: (last?.order ?? 0) + 1, isPublished: false });
+  const l = await Lesson.create({ courseId: unit.courseId, moduleId: unit.moduleId, unitId: unit._id, title: title.trim(), type: type as LessonDoc["type"], order: (last?.order ?? 0) + 1, isPublished: false });
   return l.toObject() as LessonDoc;
 }
 
@@ -163,7 +242,7 @@ export type LessonInput = {
 
 export async function updateLesson(lessonId: string, data: LessonInput) {
   const l = await Lesson.findById(oid(lessonId));
-  if (!l) throw new AdminError("Leçon introuvable.");
+  if (!l) throw new AdminError("Activité introuvable.");
   l.title = data.title.trim();
   l.description = data.description ?? "";
   l.isPublished = !!data.isPublished;
@@ -184,7 +263,7 @@ export async function updateLesson(lessonId: string, data: LessonInput) {
 export async function moveLesson(lessonId: string, dir: "up" | "down") {
   const l = await Lesson.findById(oid(lessonId)).lean();
   if (!l) return;
-  const siblings = await Lesson.find({ moduleId: l.moduleId }).sort({ order: 1, createdAt: 1 }).select("_id order").lean();
+  const siblings = await Lesson.find(l.unitId ? { unitId: l.unitId } : { moduleId: l.moduleId, unitId: null }).sort({ order: 1, createdAt: 1 }).select("_id order").lean();
   await moveIn(siblings, lessonId, dir, (id, order) => Lesson.updateOne({ _id: id }, { order }));
 }
 
