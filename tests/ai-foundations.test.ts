@@ -5,7 +5,8 @@ import { AiUsage, AppSettings, User } from "@/models";
 import { canReadMedia } from "@/lib/media-access";
 import { normalizeEnglish } from "@/lib/ai/text";
 import { FakeFeedbackService, FakePronunciationService, FakeSpeechService, FakeTtsService, fakeAudio } from "@/lib/ai/fake";
-import { AiQuotaError, assertCanUse, monthlyCapSeconds, recordUsage, remainingSeconds, usedSecondsThisMonth } from "@/lib/ai/metering";
+import { AiQuotaError, assertCanUse, monthlyCapSeconds, recordUsage, remainingSeconds, setDefaultMonthlyMinutes, usageReport, usedSecondsThisMonth } from "@/lib/ai/metering";
+import { updateAccount } from "@/lib/admin/users";
 
 describe("canReadMedia", () => {
   const learner = { id: "L", isAdmin: false };
@@ -96,5 +97,28 @@ describe("AI metering", () => {
     expect(await monthlyCapSeconds(String(u._id))).toBe(1800);
     await User.updateOne({ _id: u._id }, { aiMonthlyMinutes: 120 });
     expect(await monthlyCapSeconds(String(u._id))).toBe(7200);
+  });
+
+  it("reports usage per learner and per day, and lets admins set the default and an override", async () => {
+    const admin = await User.create({ name: "Boss", surname: "A", username: "boss", email: "boss@example.com", role: "admin" });
+    const u = await User.create({ name: "Awa", surname: "T", username: "awa2", email: "awa2@example.com" });
+    const now = new Date("2026-11-20T10:00:00Z");
+    await recordUsage(String(u._id), { kind: "pronunciation", feature: "shadowing", provider: "fake", seconds: 90, costMicros: 30000 }, now);
+    await recordUsage(String(u._id), { kind: "llm", feature: "drill", provider: "fake", tokens: 800, costMicros: 4000 }, now);
+    const r = await usageReport(now);
+    expect(r.month).toBe("2026-11");
+    expect(r.rows).toHaveLength(1);
+    expect(r.rows[0]).toMatchObject({ username: "awa2", seconds: 90, costMicros: 34000, calls: 2 });
+    expect(r.days[0]).toMatchObject({ day: "2026-11-20", seconds: 90, calls: 2 });
+
+    await setDefaultMonthlyMinutes(45);
+    expect(await monthlyCapSeconds(String(u._id))).toBe(2700);
+    const actor = { _id: admin._id, role: "admin" as const };
+    const base = { name: "Awa", surname: "T", username: "awa2", email: "awa2@example.com" };
+    await updateAccount(actor, String(u._id), { ...base, aiMonthlyMinutes: 200 });
+    expect(await monthlyCapSeconds(String(u._id))).toBe(12000);
+    await updateAccount(actor, String(u._id), { ...base, aiMonthlyMinutes: null });
+    expect(await monthlyCapSeconds(String(u._id))).toBe(2700);
+    await expect(updateAccount(actor, String(u._id), { ...base, aiMonthlyMinutes: -5 })).rejects.toThrow(/Minutes IA/);
   });
 });

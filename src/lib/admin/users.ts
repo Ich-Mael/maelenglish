@@ -16,6 +16,8 @@ export type UserEdit = {
   englishLevel?: string;
   about?: string;
   maxDevices?: number;
+  /** Monthly AI minutes override; null = the default (AppSettings). Undefined = unchanged. */
+  aiMonthlyMinutes?: number | null;
 };
 
 /**
@@ -47,6 +49,11 @@ export async function updateAccount(actor: Actor, userId: string, data: UserEdit
   user.englishLevel = data.englishLevel?.trim() || undefined;
   user.about = normalizeRich(data.about);
   if (data.maxDevices) user.maxDevices = Math.max(1, Math.min(20, Math.round(data.maxDevices)));
+  if (data.aiMonthlyMinutes !== undefined) {
+    const m = data.aiMonthlyMinutes;
+    if (m !== null && (!Number.isFinite(m) || m < 0 || m > 10000)) throw new AdminError("Minutes IA : indiquez un nombre entre 0 et 10 000, ou laissez vide.");
+    user.aiMonthlyMinutes = m === null ? null : Math.round(m);
+  }
   await user.save();
 }
 

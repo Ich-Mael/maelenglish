@@ -55,3 +55,44 @@ export async function assertCanUse(userId: string, seconds: number, now = new Da
   const left = await remainingSeconds(userId, now);
   if (left < seconds) throw new AiQuotaError(left);
 }
+
+// ── Admin report ──────────────────────────────────────────────────────────
+
+export type UsageRow = { userId: string; name: string; username: string; seconds: number; costMicros: number; calls: number };
+
+/** Month totals per learner (most expensive first) and per day (last `days` days). */
+export async function usageReport(now = new Date(), days = 14) {
+  const month = monthOf(dayKey(now));
+  const since = dayKey(new Date(now.getTime() - (days - 1) * 86_400_000));
+  const [perUser, perDay, settings] = await Promise.all([
+    AiUsage.aggregate<{ _id: Types.ObjectId; seconds: number; costMicros: number; calls: number }>([
+      { $match: { month } },
+      { $group: { _id: "$userId", seconds: { $sum: { $cond: [{ $in: ["$kind", MINUTE_KINDS] }, "$seconds", 0] } }, costMicros: { $sum: "$costMicros" }, calls: { $sum: 1 } } },
+      { $sort: { costMicros: -1, seconds: -1 } },
+      { $limit: 100 },
+    ]),
+    AiUsage.aggregate<{ _id: string; seconds: number; costMicros: number; calls: number }>([
+      { $match: { day: { $gte: since } } },
+      { $group: { _id: "$day", seconds: { $sum: { $cond: [{ $in: ["$kind", MINUTE_KINDS] }, "$seconds", 0] } }, costMicros: { $sum: "$costMicros" }, calls: { $sum: 1 } } },
+      { $sort: { _id: -1 } },
+    ]),
+    AppSettings.findOne({ key: "global" }).lean(),
+  ]);
+  const users = await User.find({ _id: { $in: perUser.map((r) => r._id) } }).select("name surname username").lean();
+  const byId = new Map(users.map((u) => [String(u._id), u]));
+  const rows: UsageRow[] = perUser.map((r) => {
+    const u = byId.get(String(r._id));
+    return { userId: String(r._id), name: u ? `${u.name} ${u.surname}` : "Compte supprimé", username: u?.username ?? "", seconds: r.seconds, costMicros: r.costMicros, calls: r.calls };
+  });
+  return {
+    month,
+    defaultMinutes: settings?.aiMonthlyMinutes ?? 60,
+    rows,
+    days: perDay.map((d) => ({ day: d._id, seconds: d.seconds, costMicros: d.costMicros, calls: d.calls })),
+  };
+}
+
+export async function setDefaultMonthlyMinutes(minutes: number) {
+  if (!Number.isFinite(minutes) || minutes < 0 || minutes > 10000) throw new Error("Indiquez un nombre de minutes entre 0 et 10 000.");
+  await AppSettings.updateOne({ key: "global" }, { $set: { aiMonthlyMinutes: Math.round(minutes) } }, { upsert: true });
+}

@@ -82,6 +82,7 @@ async function UserView({ params }: { params: Promise<{ userId: string }> }) {
               <Input label="Numéro WhatsApp" name="phoneNumber" defaultValue={u.phoneNumber ?? ""} />
               <Input label="Niveau d'anglais" name="englishLevel" defaultValue={u.englishLevel ?? ""} />
               <Input label="Appareils max." name="maxDevices" type="number" min={1} max={20} defaultValue={u.maxDevices ?? 3} hint="Indicatif (non bloquant)." />
+              <Input label="Minutes IA par mois" name="aiMonthlyMinutes" type="number" min={0} max={10000} defaultValue={u.aiMonthlyMinutes ?? ""} placeholder="Par défaut" hint="Vide = valeur par défaut (page Usage IA)." />
             </div>
             <RichTextEditor label="Notes" name="about" minHeight={160} defaultValue={toEditorHtml(u.about, "text")} />
             <div>

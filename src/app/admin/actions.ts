@@ -8,6 +8,7 @@ import { can } from "@/lib/admin/permissions";
 import { errorMessage, AdminError } from "@/lib/admin/errors";
 import { revokeDevice, updateAccount } from "@/lib/admin/users";
 import * as content from "@/lib/admin/content";
+import { setDefaultMonthlyMinutes } from "@/lib/ai/metering";
 import { enroll, removeEnrollment, updateEnrollment } from "@/lib/admin/enrollments";
 import { gradeSubmission } from "@/lib/admin/grading";
 import { RequestError, updateRequest } from "@/lib/requests";
@@ -93,6 +94,7 @@ export async function updateUserAction(_: State, form: FormData): Promise<State>
       englishLevel: str(form, "englishLevel"),
       about: str(form, "about"),
       maxDevices: Number(str(form, "maxDevices")) || undefined,
+      aiMonthlyMinutes: form.has("aiMonthlyMinutes") ? (str(form, "aiMonthlyMinutes") === "" ? null : Number(str(form, "aiMonthlyMinutes"))) : undefined,
     });
     refresh();
     return { success: "Modifications enregistrées." };
@@ -493,6 +495,22 @@ export async function updateRequestAction(_: State, form: FormData): Promise<Sta
     return { success: "Demande mise à jour." };
   } catch (e) {
     if (e instanceof RequestError) return { error: e.message };
+    return fail(e);
+  }
+}
+
+// ── AI usage settings (admins) ─────────────────────────────────────────────
+
+export async function saveAiSettingsAction(_: State, form: FormData): Promise<State> {
+  try {
+    const me = await staffOrThrow();
+    if (!me.isAdmin) throw new AdminError("Accès réservé aux administrateurs.");
+    const minutes = Number(str(form, "aiMonthlyMinutes"));
+    if (!Number.isFinite(minutes) || minutes < 0 || minutes > 10000) throw new AdminError("Indiquez un nombre de minutes entre 0 et 10 000.");
+    await setDefaultMonthlyMinutes(minutes);
+    refresh();
+    return { success: "Réglage enregistré." };
+  } catch (e) {
     return fail(e);
   }
 }
