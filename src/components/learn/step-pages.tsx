@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { connection } from "next/server";
-import { CalendarClock, ChevronLeft, CircleCheck, Clock, Eye, Lock, RotateCcw } from "lucide-react";
+import { CalendarClock, ChevronLeft, CircleCheck, Clock, Lock, RotateCcw } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
 import { courseAccess, courseTree } from "@/lib/learn/queries";
 import { assignmentPath, coursePath, examPath, projectPath, quizPath } from "@/lib/learn/paths";
@@ -10,6 +10,7 @@ import { AccessProblem, formatDate } from "./ui";
 import { RichText } from "./rich-text";
 import { QuizRunner, type PublicQuestion } from "./quiz-runner";
 import { AssignmentForm } from "./assignment-form";
+import { PreviewBar, adminPaths } from "./preview-bar";
 
 function Locked({ courseId, text }: { courseId: string; text: string }) {
   return (
@@ -48,18 +49,23 @@ export async function QuizStep({ courseId, moduleId }: { courseId: string; modul
     options: q.options.map((o) => ({ id: o.id, text: o.text })),
   }));
   return (
-    <QuizRunner
-      courseId={courseId}
-      moduleId={moduleId}
-      title={quiz.title || (moduleId ? `Quiz : ${mod?.title}` : "Examen final")}
-      questions={questions}
-      passingScore={quiz.passingScore ?? 70}
-      timeLimit={quiz.timeLimit ?? 0}
-      bestScore={step.bestScore}
-      courseHref={coursePath(courseId)}
-      nextHref={stepAfter(courseId, outline, here)}
-      readOnly={access.readOnly}
-    />
+    <>
+      {access.preview && (
+        <PreviewBar text="Aperçu équipe : le résultat n’est pas enregistré." editHref={moduleId ? adminPaths.module(courseId, moduleId) : adminPaths.finals(courseId)} className="mx-auto mb-6 max-w-2xl" />
+      )}
+      <QuizRunner
+        courseId={courseId}
+        moduleId={moduleId}
+        title={quiz.title || (moduleId ? `Quiz : ${mod?.title}` : "Examen final")}
+        questions={questions}
+        passingScore={quiz.passingScore ?? 70}
+        timeLimit={quiz.timeLimit ?? 0}
+        bestScore={step.bestScore}
+        courseHref={coursePath(courseId)}
+        nextHref={stepAfter(courseId, outline, here)}
+        readOnly={access.readOnly}
+      />
+    </>
   );
 }
 
@@ -93,9 +99,7 @@ export async function AssignmentStep({ courseId, moduleId }: { courseId: string;
   return (
     <div className="mx-auto grid max-w-3xl gap-6">
       {access.preview && (
-        <p className="flex items-center gap-2 rounded-2xl bg-xp/15 px-4 py-2.5 text-sm font-semibold text-[#7a4d00]">
-          <Eye className="size-4" aria-hidden /> Aperçu équipe : la réponse n&apos;est pas enregistrée.
-        </p>
+        <PreviewBar text="Aperçu équipe : la réponse n’est pas enregistrée." editHref={moduleId ? adminPaths.module(courseId, moduleId) : adminPaths.finals(courseId)} />
       )}
       <header>
         <Link href={coursePath(courseId)} className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-primary">

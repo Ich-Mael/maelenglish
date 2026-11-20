@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { connection } from "next/server";
-import { ArrowRight, Eye, Flame, PartyPopper } from "lucide-react";
+import { ArrowRight, Flame, PartyPopper } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
 import { courseAccess, courseTree } from "@/lib/learn/queries";
 import { coursePath, lessonPath, nextPath } from "@/lib/learn/paths";
@@ -11,6 +11,7 @@ import { findProgram, sameName } from "@/lib/catalog";
 import { CourseMap } from "@/components/learn/course-map";
 import { AccessProblem, PageSkeleton, ProgressBar } from "@/components/learn/ui";
 import { Leaderboard } from "@/components/gamify/leaderboard";
+import { PreviewBar, adminPaths } from "@/components/learn/preview-bar";
 
 export const metadata: Metadata = { title: "Mon cours", robots: { index: false } };
 
@@ -28,11 +29,7 @@ async function CourseHome({ params }: { params: Promise<{ courseId: string }> })
 
   return (
     <div className="mx-auto grid max-w-2xl gap-6">
-      {access.preview && (
-        <p className="flex items-center gap-2 rounded-2xl bg-brand-soft px-4 py-2.5 text-sm font-semibold text-primary">
-          <Eye className="size-4" aria-hidden /> Aperçu équipe : tout est ouvert et rien n&apos;est enregistré.
-        </p>
-      )}
+      {access.preview && <PreviewBar text="Aperçu équipe : tout est ouvert et rien n’est enregistré." editHref={adminPaths.course(courseId)} />}
       {access.readOnly && (
         <p className="rounded-2xl bg-brand-soft px-4 py-2.5 text-sm font-semibold text-primary">Cours terminé : vous pouvez tout revoir.</p>
       )}

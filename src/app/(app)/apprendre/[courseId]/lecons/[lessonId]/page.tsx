@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { connection } from "next/server";
 import { headers } from "next/headers";
-import { ChevronLeft, Download, Eye, Lock } from "lucide-react";
+import { ChevronLeft, Download, Lock } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
 import { courseAccess, courseTree } from "@/lib/learn/queries";
 import { coursePath, lessonPath } from "@/lib/learn/paths";
@@ -15,6 +15,7 @@ import { RichText } from "@/components/learn/rich-text";
 import { CompleteButton } from "@/components/learn/complete-button";
 import { PracticePlayer } from "@/components/learn/practice/player";
 import { TvPlayer } from "@/components/learn/tv-player";
+import { PreviewBar, adminPaths } from "@/components/learn/preview-bar";
 
 export const metadata: Metadata = { title: "Leçon", robots: { index: false } };
 
@@ -56,17 +57,18 @@ async function LessonView({ params }: { params: Promise<{ courseId: string; less
       const { _id, ...rest } = e as unknown as Exercise & { _id: unknown };
       return JSON.parse(JSON.stringify({ ...rest, id: String(_id) })) as Exercise;
     });
-    return <PracticePlayer courseId={courseId} lessonId={lessonId} title={lesson.title} exercises={exercises} courseHref={back} nextHref={nextHref} />;
+    return (
+      <>
+        {access.preview && <PreviewBar text="Aperçu équipe : les résultats ne sont pas enregistrés." editHref={adminPaths.lesson(courseId, lessonId)} className="mx-auto mb-6 max-w-2xl" />}
+        <PracticePlayer courseId={courseId} lessonId={lessonId} title={lesson.title} exercises={exercises} courseHref={back} nextHref={nextHref} />
+      </>
+    );
   }
 
   const video = lesson.type === "video" ? videoSource(lesson.videoUrl) : null;
   return (
     <article className="mx-auto grid max-w-3xl gap-6">
-      {access.preview && (
-        <p className="flex items-center gap-2 rounded-2xl bg-xp/15 px-4 py-2.5 text-sm font-semibold text-[#7a4d00]">
-          <Eye className="size-4" aria-hidden /> Aperçu équipe : rien n&apos;est enregistré.
-        </p>
-      )}
+      {access.preview && <PreviewBar text="Aperçu équipe : rien n’est enregistré." editHref={adminPaths.lesson(courseId, lessonId)} />}
       <header>
         <Link href={back} className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-primary">
           <ChevronLeft className="size-4" aria-hidden /> {mod?.title ?? "Parcours"}

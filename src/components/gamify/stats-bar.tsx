@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { connection } from "next/server";
-import { Flame, Sparkles } from "lucide-react";
+import { Flame, LayoutDashboard, Sparkles } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { connectDB } from "@/lib/db";
 import { statsFor } from "@/lib/gamification/service";
 import { cn } from "cn";
 
-/** Streak · daily goal ring · level, in the app header (reads the session → inside <Suspense>). */
+/** Streak · daily goal ring · level, in the app header (reads the session → inside <Suspense>); staff also get an « Admin » link. */
 export async function StatsBar() {
   await connection(); // streak and daily goal depend on today's date
   const me = await getCurrentUser();
@@ -17,25 +17,33 @@ export async function StatsBar() {
   const r = 15;
   const c = 2 * Math.PI * r;
   return (
-    <Link href="/progression" className="flex items-center gap-3 rounded-2xl px-2 py-1 hover:bg-muted">
-      <span className={cn("flex items-center gap-1 font-heading font-extrabold", s.activeToday ? "text-coral-dark" : "text-muted-foreground")}>
-        <Flame className={cn("size-5", s.activeToday && "fill-coral/30")} aria-hidden /> {s.streak}
-        <span className="sr-only"> jour{s.streak > 1 ? "s" : ""} de série,</span>
-      </span>
-      <span className="relative flex size-9 items-center justify-center">
-        <svg viewBox="0 0 36 36" className="absolute inset-0 -rotate-90" aria-hidden>
-          <circle cx="18" cy="18" r={r} fill="none" strokeWidth="4" className="stroke-muted" />
-          <circle cx="18" cy="18" r={r} fill="none" strokeWidth="4" strokeLinecap="round" className={goal >= 100 ? "stroke-primary" : "stroke-coral"} strokeDasharray={c} strokeDashoffset={c * (1 - goal / 100)} />
-        </svg>
-        <Sparkles className={cn("size-4", goal >= 100 ? "text-primary" : "text-coral-dark")} aria-hidden />
-        <span className="sr-only">
-          {s.todayXp} XP sur {s.dailyGoal} aujourd&apos;hui,
+    <>
+      {me.isStaff && (
+        <Link href="/admin" className="hidden h-9 items-center gap-1.5 rounded-xl px-2 text-sm font-bold text-primary hover:bg-brand-soft sm:flex" title="Administration">
+          <LayoutDashboard className="size-4.5" aria-hidden />
+          <span className="sr-only lg:not-sr-only">Admin</span>
+        </Link>
+      )}
+      <Link href="/progression" className="flex items-center gap-3 rounded-2xl px-2 py-1 hover:bg-muted">
+        <span className={cn("flex items-center gap-1 font-heading font-extrabold", s.activeToday ? "text-coral-dark" : "text-muted-foreground")}>
+          <Flame className={cn("size-5", s.activeToday && "fill-coral/30")} aria-hidden /> {s.streak}
+          <span className="sr-only"> jour{s.streak > 1 ? "s" : ""} de série,</span>
         </span>
-      </span>
-      <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold whitespace-nowrap text-white">
-        Niv. {s.level.level}
-      </span>
-    </Link>
+        <span className="relative flex size-9 items-center justify-center">
+          <svg viewBox="0 0 36 36" className="absolute inset-0 -rotate-90" aria-hidden>
+            <circle cx="18" cy="18" r={r} fill="none" strokeWidth="4" className="stroke-muted" />
+            <circle cx="18" cy="18" r={r} fill="none" strokeWidth="4" strokeLinecap="round" className={goal >= 100 ? "stroke-primary" : "stroke-coral"} strokeDasharray={c} strokeDashoffset={c * (1 - goal / 100)} />
+          </svg>
+          <Sparkles className={cn("size-4", goal >= 100 ? "text-primary" : "text-coral-dark")} aria-hidden />
+          <span className="sr-only">
+            {s.todayXp} XP sur {s.dailyGoal} aujourd&apos;hui,
+          </span>
+        </span>
+        <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold whitespace-nowrap text-white">
+          Niv. {s.level.level}
+        </span>
+      </Link>
+    </>
   );
 }
 
