@@ -1,4 +1,5 @@
-import { Schema, model, models, type InferSchemaType, type Model, type Types } from "mongoose";
+import { Schema, type InferSchemaType, type Model, type Types } from "mongoose";
+import { defineModel } from "./define";
 
 /* Auth records: login sessions, one-time links (activation / reset), rate-limit counters. */
 
@@ -21,7 +22,7 @@ sessionSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 export type SessionDoc = InferSchemaType<typeof sessionSchema> & { _id: Types.ObjectId };
 export const Session: Model<SessionDoc> =
-  (models.Session as Model<SessionDoc>) || model<SessionDoc>("Session", sessionSchema);
+  defineModel<SessionDoc>("Session", sessionSchema);
 
 // ── AuthToken: single-use link (activation = first password, reset = forgotten password) ──
 export const AUTH_TOKEN_PURPOSES = ["activation", "reset"] as const;
@@ -40,7 +41,7 @@ authTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 export type AuthTokenDoc = InferSchemaType<typeof authTokenSchema> & { _id: Types.ObjectId };
 export const AuthToken: Model<AuthTokenDoc> =
-  (models.AuthToken as Model<AuthTokenDoc>) || model<AuthTokenDoc>("AuthToken", authTokenSchema);
+  defineModel<AuthTokenDoc>("AuthToken", authTokenSchema);
 
 // ── RateLimit: fixed-window counter per key (e.g. "login:ip:1.2.3.4") ──────
 const rateLimitSchema = new Schema({
@@ -52,4 +53,4 @@ rateLimitSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 export type RateLimitDoc = InferSchemaType<typeof rateLimitSchema> & { _id: Types.ObjectId };
 export const RateLimit: Model<RateLimitDoc> =
-  (models.RateLimit as Model<RateLimitDoc>) || model<RateLimitDoc>("RateLimit", rateLimitSchema);
+  defineModel<RateLimitDoc>("RateLimit", rateLimitSchema);

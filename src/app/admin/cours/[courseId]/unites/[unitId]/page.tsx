@@ -3,19 +3,21 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
-import { ArrowDown, ArrowUp, Trash2 } from "lucide-react";
-import { requireStaff, allowed, courseFor } from "@/lib/admin/context";
-import { Lesson, Module, Unit, type LessonDoc, type UnitDoc } from "@/models";
-import { Card, EmptyState, Input, PageHeader, Pill, Select } from "@/components/admin/ui";
-import { ActionButton, AdminForm, Submit } from "@/components/admin/forms";
-import { LESSON_TYPE } from "@/components/admin/lesson-types";
+import { BookOpen, FlaskConical, Mic, Plus, Trash2 } from "lucide-react";
+import { requireStaff, allowed, courseFor, actorOf } from "@/lib/admin/context";
+import { can } from "@/lib/admin/permissions";
+import { Activity, Module, Step, Unit, type ActivityDoc, type UnitDoc } from "@/models";
+import { stepsOf } from "@/lib/admin/steps";
+import { unitStepInputs } from "@/lib/course/unit-check";
+import { ACTIVITY_INFO, ACTIVITY_TYPES, type ActivityType } from "@/lib/lab/types";
+import { Card, Input, PageHeader, Select, TextArea } from "@/components/admin/ui";
+import { AdminForm, Submit } from "@/components/admin/forms";
+import { StepList, type StepRow } from "@/components/admin/step-list";
 import { PageSkeleton } from "@/components/learn/ui";
-import { RichText } from "@/components/learn/rich-text";
-import { createLessonAction, deleteLessonAction, deleteUnitAction, moveLessonAction, saveUnitChallengeAction, updateUnitAction } from "../../../../actions";
-import { RichTextEditor } from "@/components/admin/rich-text-editor";
-import { toEditorHtml } from "@/lib/rich-text";
+import { addLessonAction, addStepActivityAction, deleteUnitAction, updateUnitAction } from "../../../../actions";
+import { createActivityAction } from "../../../../labo/actions";
 
-export const metadata: Metadata = { title: "Unité" };
+export const metadata: Metadata = { title: "Unit" };
 
 async function UnitAdmin({ params }: { params: Promise<{ courseId: string; unitId: string }> }) {
   const { courseId, unitId } = await params;
@@ -26,132 +28,159 @@ async function UnitAdmin({ params }: { params: Promise<{ courseId: string; unitI
   const unit = await Unit.findOne({ _id: unitId, courseId }).lean<UnitDoc>().catch(() => null);
   if (!unit) notFound();
   const edit = allowed(me, course, "edit");
-  const [mod, siblings, lessons] = await Promise.all([
+  const useLab = edit && can.useLab(actorOf(me));
+  const [mod, siblings, steps] = await Promise.all([
     Module.findById(unit.moduleId).select("title").lean(),
     Unit.find({ moduleId: unit.moduleId }).sort({ order: 1, createdAt: 1 }).select("_id").lean(),
-    Lesson.find({ unitId }).sort({ order: 1, createdAt: 1 }).lean<LessonDoc[]>(),
+    stepsOf(unit._id),
   ]);
+  const placed = steps.flatMap((s) => (s.activityId ? [s.activityId] : []));
+  const [used, library] = await Promise.all([
+    placed.length ? Activity.find({ _id: { $in: placed } }).select("type title status").lean<ActivityDoc[]>() : Promise.resolve([] as ActivityDoc[]),
+    useLab ? Activity.find().sort({ updatedAt: -1 }).limit(300).select("type title status").lean<ActivityDoc[]>() : Promise.resolve([] as ActivityDoc[]),
+  ]);
+  // How many units already use each library activity (shown in the pickers: activities are shared across courses).
+  const useCounts = new Map(
+    library.length ? (await Step.aggregate<{ _id: unknown; n: number }>([{ $match: { activityId: { $in: library.map((a) => a._id) } } }, { $group: { _id: "$activityId", n: { $sum: 1 } } }])).map((r) => [String(r._id), r.n]) : [],
+  );
+  const usedElsewhere = (a: Pick<ActivityDoc, "_id">) => {
+    const n = useCounts.get(String(a._id)) ?? 0;
+    return n ? ` · used in ${n} unit(s)` : "";
+  };
+  const ready = new Set(used.filter((a) => a.status === "ready").map((a) => String(a._id)));
+  const inputs = unitStepInputs(steps, ready);
+  const rows: StepRow[] = steps.map((s, i) => {
+    const a = used.find((x) => String(x._id) === String(s.activityId));
+    return {
+      ...inputs[i],
+      href: s.kind === "lesson" ? `/admin/cours/${courseId}/etapes/${s._id}` : `/admin/labo/${s.activityId}`,
+      typeLabel: s.kind === "lesson" ? "Lesson" : a ? ACTIVITY_INFO[a.type as ActivityType]?.label ?? a.type : "Missing Lab activity",
+      passScore: s.passScore ?? 60,
+      estimatedMinutes: s.estimatedMinutes ?? 0,
+    };
+  });
+
+  const inUnit = new Set(placed.map(String));
+  const status = (a: Pick<ActivityDoc, "status">) => (a.status === "ready" ? "" : " (draft)");
+  const practiceChoices = library.filter((a) => ACTIVITY_INFO[a.type as ActivityType]?.role === "practice" && !inUnit.has(String(a._id)));
+  const challenge = steps.find((s) => s.kind === "challenge");
+  const challengeChoices = library.filter((a) => ACTIVITY_INFO[a.type as ActivityType]?.role === "challenge" && String(a._id) !== String(challenge?.activityId ?? ""));
+  const lessons = steps.filter((s) => s.kind === "lesson");
+  const practiceTypes = ACTIVITY_TYPES.filter((t) => ACTIVITY_INFO[t].role === "practice");
   const number = siblings.findIndex((s) => String(s._id) === unitId) + 1;
 
   return (
     <div className="grid max-w-5xl gap-5">
-      <PageHeader title={unit.title} back={{ href: `/admin/cours/${courseId}/modules/${unit.moduleId}`, label: mod?.title ?? "Module" }} subtitle={`Unité ${number}${unit.objective ? ` · ${unit.objective}` : ""}`} />
+      <PageHeader
+        title={unit.title}
+        back={{ href: `/admin/cours/${courseId}/modules/${unit.moduleId}`, label: mod?.title ?? "Module" }}
+        subtitle={`Unit ${number}${unit.estimatedMinutes ? ` · ${unit.estimatedMinutes} min` : ""}`}
+      />
 
-      <Card title="Activités" description="Les nouvelles activités sont en brouillon : publiez-les depuis leur page.">
-        {lessons.length === 0 ? (
-          <EmptyState>Aucune activité dans cette unité.</EmptyState>
-        ) : (
-          <ol className="grid gap-2">
-            {lessons.map((l) => {
-              const T = LESSON_TYPE[l.type as keyof typeof LESSON_TYPE];
-              return (
-                <li key={String(l._id)} className="flex items-center gap-3 rounded-xl border border-border px-3 py-2.5">
-                  <T.icon className="size-5 shrink-0 text-primary" aria-hidden />
-                  <Link href={`/admin/cours/${courseId}/lecons/${l._id}`} className="min-w-0 flex-1">
-                    <span className="block truncate font-semibold text-brand-deep hover:underline">{l.title}</span>
-                    <span className="flex gap-1.5 text-xs text-muted-foreground">
-                      {T.label}
-                      {l.type === "practice" && ` · ${l.exercises?.length ?? 0} exercice(s)`}
-                      {!l.isPublished && <Pill tone="amber">Brouillon</Pill>}
-                    </span>
-                  </Link>
-                  {edit && (
-                    <span className="flex items-center gap-1">
-                      <ActionButton action={moveLessonAction} fields={{ lessonId: String(l._id), dir: "up" }} label="Monter">
-                        <ArrowUp className="size-4" aria-hidden />
-                      </ActionButton>
-                      <ActionButton action={moveLessonAction} fields={{ lessonId: String(l._id), dir: "down" }} label="Descendre">
-                        <ArrowDown className="size-4" aria-hidden />
-                      </ActionButton>
-                      <ActionButton action={deleteLessonAction} fields={{ lessonId: String(l._id) }} label="Supprimer" confirm={`Supprimer l'activité « ${l.title} » ?`}>
-                        <Trash2 className="size-4" aria-hidden />
-                      </ActionButton>
-                    </span>
-                  )}
-                </li>
-              );
-            })}
-          </ol>
-        )}
+      <Card title="Steps" description="Rhythm of every unit: a lesson, then 2 or 3 activities practising it — repeated — and the speaking challenge last.">
+        {/* Remount when the server data changes (after an add / delete / save). */}
+        <StepList key={steps.map((s) => `${s._id}:${s.position}:${s.lessonId ?? ""}:${s.title}`).join("|")} unitId={unitId} steps={rows} edit={edit} />
+
         {edit && (
-          <AdminForm action={createLessonAction} className="mt-5 rounded-xl bg-muted/40 p-4">
-            <input type="hidden" name="unitId" value={unitId} />
-            <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto] sm:items-end">
-              <Input label="Nouvelle activité" name="title" required placeholder="Ex. Les annonces à bord" />
-              <Select label="Type" name="type" defaultValue="practice" options={Object.entries(LESSON_TYPE).map(([value, t]) => ({ value, label: t.label }))} />
-              <Submit>Créer</Submit>
-            </div>
-          </AdminForm>
+          <div className="mt-5 grid gap-3 lg:grid-cols-2">
+            <AdminForm action={addLessonAction} className="rounded-xl bg-muted/40 p-4">
+              <input type="hidden" name="unitId" value={unitId} />
+              <p className="flex items-center gap-2 text-sm font-semibold text-brand-deep">
+                <BookOpen className="size-4 text-primary" aria-hidden /> Add a lesson
+              </p>
+              <Input label="Title" name="title" required placeholder="E.g. How to greet people at work" />
+              <div>
+                <Submit>
+                  <Plus className="size-4" aria-hidden /> Create the lesson
+                </Submit>
+              </div>
+            </AdminForm>
+
+            {useLab && (
+              <div className="rounded-xl border border-dashed border-primary/40 bg-brand-soft/40 p-4">
+                <p className="flex items-center gap-2 text-sm font-semibold text-brand-deep">
+                  <FlaskConical className="size-4 text-primary" aria-hidden /> Add an activity from the Lab
+                </p>
+                {practiceChoices.length > 0 && lessons.length > 0 ? (
+                  <AdminForm action={addStepActivityAction} className="mt-2">
+                    <input type="hidden" name="unitId" value={unitId} />
+                    <Select label="Activity" name="activityId" options={practiceChoices.map((a) => ({ value: String(a._id), label: `${ACTIVITY_INFO[a.type as ActivityType].label} · ${a.title}${status(a)}${usedElsewhere(a)}` }))} />
+                    <Select label="Practises the lesson" name="lessonId" defaultValue={String(lessons.at(-1)!._id)} options={lessons.map((l) => ({ value: String(l._id), label: l.title }))} />
+                    <div>
+                      <Submit variant="secondary">Add before the challenge</Submit>
+                    </div>
+                  </AdminForm>
+                ) : (
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {!lessons.length ? "Add a lesson first: every activity practises a lesson." : practiceTypes.length ? "No other activity in the Lab." : "Exercise types are arriving in the Lab one by one."}{" "}
+                    <Link href="/admin/labo" className="font-semibold text-primary underline">
+                      Open the Lab
+                    </Link>
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
         )}
       </Card>
 
-      <Card
-        title="Défi oral de fin d'unité"
-        description="L'apprenant s'enregistre (consigne ci-dessous), puis un coach lui fait un retour dans « Corrections ». L'envoi termine l'unité et ouvre la suite du parcours. Sans consigne, pas de défi."
-      >
-        {edit ? (
-          <AdminForm action={saveUnitChallengeAction}>
-            <input type="hidden" name="unitId" value={unitId} />
-            <Input label="Titre (facultatif)" name="title" defaultValue={unit.challenge?.title ?? ""} placeholder="Ex. Accueillez vos passagers" />
-            <RichTextEditor
-              label="Consigne"
-              name="instructions"
-              minHeight={180}
-              defaultValue={toEditorHtml(unit.challenge?.instructions, "text")}
-              hint="Ce que l'apprenant doit dire, en réutilisant le vocabulaire de l'unité. Ex. « Présentez-vous et accueillez les passagers à bord en 45 secondes. »"
-            />
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Select
-                label="Durée maximale"
-                name="maxSeconds"
-                defaultValue={String(unit.challenge?.maxSeconds ?? 60)}
-                options={[
-                  ["30", "30 secondes"],
-                  ["45", "45 secondes"],
-                  ["60", "1 minute"],
-                  ["90", "1 min 30"],
-                  ["120", "2 minutes"],
-                  ["180", "3 minutes"],
-                ].map(([value, label]) => ({ value, label }))}
-              />
-              <Select
-                label="Temps de préparation"
-                name="prepSeconds"
-                defaultValue={String(unit.challenge?.prepSeconds ?? 0)}
-                options={[0, 10, 15, 30, 60].map((n) => ({ value: String(n), label: n ? `${n} secondes` : "Aucun" }))}
-              />
-            </div>
-            <div>
-              <Submit>Enregistrer le défi</Submit>
-            </div>
-          </AdminForm>
-        ) : unit.challenge?.instructions ? (
-          <RichText>{unit.challenge.instructions}</RichText>
-        ) : (
-          <EmptyState>Pas de défi oral.</EmptyState>
-        )}
-      </Card>
+      {useLab && (
+        <Card
+          title="Speaking challenge"
+          description="Always the last step: the learner records an answer, a coach gives feedback in Grading. Sending it completes the unit and opens the next one. Designed in the Lab (instructions, timers, checklist, model answer)."
+        >
+          <div className="grid gap-3 sm:grid-cols-2">
+            <AdminForm action={createActivityAction} className="rounded-xl bg-muted/40 p-4">
+              <input type="hidden" name="type" value="speaking_challenge" />
+              <input type="hidden" name="unitId" value={unitId} />
+              <Input label={challenge ? "Replace with a new challenge" : "Create the challenge"} name="title" required placeholder="E.g. Introduce yourself in 60 seconds" />
+              <div>
+                <Submit>
+                  <Mic className="size-4" aria-hidden /> Create in the Lab
+                </Submit>
+              </div>
+            </AdminForm>
+            {challengeChoices.length > 0 && (
+              <AdminForm action={addStepActivityAction} className="rounded-xl bg-muted/40 p-4">
+                <input type="hidden" name="unitId" value={unitId} />
+                <Select label="Or pick one from the Lab" name="activityId" options={challengeChoices.map((a) => ({ value: String(a._id), label: `${a.title}${status(a)}${usedElsewhere(a)}` }))} />
+                <div>
+                  <Submit variant="secondary">{challenge ? "Replace the challenge" : "Use this challenge"}</Submit>
+                </div>
+              </AdminForm>
+            )}
+          </div>
+        </Card>
+      )}
 
       {edit && (
-        <Card title="Réglages de l'unité">
+        <Card title="Unit settings">
           <AdminForm action={updateUnitAction}>
             <input type="hidden" name="unitId" value={unitId} />
-            <Input label="Titre" name="title" defaultValue={unit.title} required />
-            <Input label="Objectif" name="objective" defaultValue={unit.objective ?? ""} placeholder="Ce que l'apprenant saura faire" hint="Une phrase, affichée sous le titre de l'unité sur le parcours." />
+            <Input label="Title" name="title" defaultValue={unit.title} required />
+            <TextArea
+              label="Objectives"
+              name="objectives"
+              rows={3}
+              defaultValue={(unit.objectives ?? []).join("\n")}
+              placeholder={"Saluer de façon formelle et informelle\nVous présenter, vous et votre métier"}
+              hint="One per line, in French (shown to learners under the unit title)."
+            />
+            <Input label="Estimated minutes" name="estimatedMinutes" type="number" min={0} defaultValue={unit.estimatedMinutes || ""} className="sm:max-w-40" />
             <div>
-              <Submit variant="secondary">Enregistrer</Submit>
+              <Submit variant="secondary">Save</Submit>
             </div>
           </AdminForm>
         </Card>
       )}
 
       {edit && siblings.length > 1 && (
-        <Card title="Supprimer l'unité" description="Ses activités et la progression des apprenants sur ces activités sont supprimées aussi.">
+        <Card title="Delete unit" description="Its steps and the learners' progress on them are deleted too. Lab activities stay in the Lab.">
           <AdminForm action={deleteUnitAction}>
             <input type="hidden" name="unitId" value={unitId} />
             <div>
-              <Submit variant="danger" confirm={`Supprimer l'unité « ${unit.title} » et ses ${lessons.length} activité(s) ?`}>
-                <Trash2 className="size-4" aria-hidden /> Supprimer l&apos;unité
+              <Submit variant="danger" confirm={`Delete the unit “${unit.title}” and its ${steps.length} step(s)?`}>
+                <Trash2 className="size-4" aria-hidden /> Delete unit
               </Submit>
             </div>
           </AdminForm>

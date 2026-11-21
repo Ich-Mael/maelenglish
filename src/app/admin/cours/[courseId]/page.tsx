@@ -8,14 +8,14 @@ import { ArrowDown, ArrowUp, Eye, GraduationCap, Trash2, Trophy } from "lucide-r
 import { requireStaff, actorOf, allowed, courseFor } from "@/lib/admin/context";
 import { can } from "@/lib/admin/permissions";
 import { findProgram } from "@/lib/catalog";
-import { Lesson, Module, Unit, User, type ModuleDoc } from "@/models";
+import { Module, Step, Unit, User, type ModuleDoc } from "@/models";
 import { Card, Checkbox, EmptyState, Input, PageHeader, Pill, ROLE_LABELS, btn } from "@/components/admin/ui";
 import { ActionButton, AdminForm, Submit } from "@/components/admin/forms";
 import { CourseFields } from "@/components/admin/course-fields";
 import { createModuleAction, deleteCourseAction, deleteModuleAction, moveModuleAction, setInstructorsAction, updateCourseAction } from "../../actions";
 import { PageSkeleton } from "@/components/learn/ui";
 
-export const metadata: Metadata = { title: "Cours" };
+export const metadata: Metadata = { title: "Courses" };
 
 async function CourseAdmin({ params }: { params: Promise<{ courseId: string }> }) {
   const { courseId } = await params;
@@ -27,53 +27,69 @@ async function CourseAdmin({ params }: { params: Promise<{ courseId: string }> }
   const edit = allowed(me, course, "edit");
   const settings = can.manageCourseSettings(a);
 
-  const [modules, lessonCounts, unitCounts, staff] = await Promise.all([
+  const [modules, stepCounts, unitCounts, staff] = await Promise.all([
     Module.find({ courseId }).sort({ order: 1, createdAt: 1 }).lean<ModuleDoc[]>(),
-    Lesson.aggregate<{ _id: unknown; n: number; drafts: number }>([
-      { $match: { courseId: course._id } },
-      { $group: { _id: "$moduleId", n: { $sum: 1 }, drafts: { $sum: { $cond: ["$isPublished", 0, 1] } } } },
-    ]),
+    Step.aggregate<{ _id: unknown; n: number }>([{ $match: { courseId: course._id } }, { $group: { _id: "$moduleId", n: { $sum: 1 } } }]),
     Unit.aggregate<{ _id: unknown; n: number }>([{ $match: { courseId: course._id } }, { $group: { _id: "$moduleId", n: { $sum: 1 } } }]),
     settings ? User.find({ role: { $in: ["instructor", "english-coach", "admin", "super-admin"] }, isActive: { $ne: false } }).select("name surname role").sort({ name: 1 }).lean() : Promise.resolve([]),
   ]);
-  const countOf = (id: unknown) => lessonCounts.find((r) => String(r._id) === String(id));
+  const countOf = (id: unknown) => stepCounts.find((r) => String(r._id) === String(id));
   const instructors = new Set((course.instructors ?? []).map(String));
-  const unit = course.isChallenge ? "Jour" : "Module";
+  const unit = course.isChallenge ? "Day" : "Module";
 
   return (
-    <div className="grid max-w-5xl gap-5">
+    <div className="grid max-w-6xl gap-5">
       <PageHeader
         title={course.title}
-        back={{ href: "/admin/cours", label: "Cours" }}
+        back={{ href: "/admin/cours", label: "Courses" }}
         subtitle={
           <span className="flex flex-wrap items-center gap-2">
-            {course.isPublished ? <Pill tone="green">Publié</Pill> : <Pill tone="amber">Brouillon</Pill>}
+            {course.isPublished ? <Pill tone="green">Published</Pill> : <Pill tone="amber">Draft</Pill>}
             {course.isChallenge && <Pill tone="red">Challenge</Pill>}
-            {findProgram(course.program)?.name ?? "Sans programme"}
+            {findProgram(course.program)?.name ?? "No programme"}
           </span>
         }
         actions={
           <>
             <Link href={`/apprendre/${courseId}`} className={btn.secondary} target="_blank">
-              <Eye className="size-4" aria-hidden /> Aperçu
+              <Eye className="size-4" aria-hidden /> Preview
             </Link>
             {can.manageEnrollments(a) && (
               <Link href={`/admin/cours/${courseId}/inscriptions`} className={btn.secondary}>
-                <GraduationCap className="size-4" aria-hidden /> Inscriptions
+                <GraduationCap className="size-4" aria-hidden /> Enrolments
               </Link>
             )}
             {edit && (
               <Link href={`/admin/cours/${courseId}/final`} className={btn.secondary}>
-                <Trophy className="size-4" aria-hidden /> Examen & projet final
+                <Trophy className="size-4" aria-hidden /> Final exam
               </Link>
             )}
           </>
         }
       />
 
-      <Card title={course.isChallenge ? "Jours" : "Modules"} description={course.isChallenge ? "Chaque jour s'ouvre après validation du point de contrôle précédent." : "Les modules s'ouvrent dans l'ordre : activités terminées et quiz réussi."}>
+      {settings && (
+        <Card title="Teaching team" description="Instructors and coaches who edit the content and grade submissions for this course.">
+          <AdminForm action={setInstructorsAction}>
+            <input type="hidden" name="courseId" value={courseId} />
+            {staff.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No instructors or coaches yet: create an account with that role.</p>
+            ) : (
+              <div className="grid gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
+                {staff.map((s) => (
+                  <Checkbox key={String(s._id)} name="instructors" value={String(s._id)} label={`${s.name} ${s.surname}`} hint={ROLE_LABELS[s.role as string]} defaultChecked={instructors.has(String(s._id))} />
+                ))}
+              </div>
+            )}
+            <div>
+              <Submit variant="secondary">Save team</Submit>
+            </div>
+          </AdminForm>
+        </Card>
+      )}
+      <Card title={course.isChallenge ? "Days" : "Modules"} description={course.isChallenge ? "Each day opens on its date, once a coach has validated the previous day's last speaking challenge." : "Modules open in order: a module is complete when every unit's speaking challenge is sent."}>
         {modules.length === 0 ? (
-          <EmptyState>Aucun {unit.toLowerCase()} pour l&apos;instant.</EmptyState>
+          <EmptyState>No {unit.toLowerCase()}s yet.</EmptyState>
         ) : (
           <ol className="grid gap-2">
             {modules.map((m, i) => {
@@ -84,20 +100,19 @@ async function CourseAdmin({ params }: { params: Promise<{ courseId: string }> }
                   <Link href={`/admin/cours/${courseId}/modules/${m._id}`} className="min-w-0 flex-1">
                     <span className="block truncate font-semibold text-brand-deep hover:underline">{m.title}</span>
                     <span className="flex flex-wrap gap-1.5 text-xs text-muted-foreground">
-                      {unitCounts.find((r) => String(r._id) === String(m._id))?.n ?? 1} unité(s) · {c?.n ?? 0} activité(s){c?.drafts ? ` dont ${c.drafts} brouillon(s)` : ""}
-                      {m.quiz?.questions?.length ? <Pill tone="blue">Quiz · {m.quiz.questions.length} q.</Pill> : null}
-                      {m.assignment?.instructions ? <Pill tone="amber">{course.isChallenge ? "Point de contrôle" : "Devoir"}</Pill> : null}
+                      {unitCounts.find((r) => String(r._id) === String(m._id))?.n ?? 1} unit(s) · {c?.n ?? 0} step(s)
+                      {m.level ? <Pill tone="blue">{m.level}</Pill> : null}
                     </span>
                   </Link>
                   {edit && (
                     <span className="flex items-center gap-1">
-                      <ActionButton action={moveModuleAction} fields={{ moduleId: String(m._id), dir: "up" }} label="Monter">
+                      <ActionButton action={moveModuleAction} fields={{ moduleId: String(m._id), dir: "up" }} label="Move up">
                         <ArrowUp className="size-4" aria-hidden />
                       </ActionButton>
-                      <ActionButton action={moveModuleAction} fields={{ moduleId: String(m._id), dir: "down" }} label="Descendre">
+                      <ActionButton action={moveModuleAction} fields={{ moduleId: String(m._id), dir: "down" }} label="Move down">
                         <ArrowDown className="size-4" aria-hidden />
                       </ActionButton>
-                      <ActionButton action={deleteModuleAction} fields={{ moduleId: String(m._id) }} label="Supprimer" confirm={`Supprimer « ${m.title} », ses unités et toutes ses activités ?`}>
+                      <ActionButton action={deleteModuleAction} fields={{ moduleId: String(m._id) }} label="Delete" confirm={`Delete “${m.title}”, its units and all their steps?`}>
                         <Trash2 className="size-4" aria-hidden />
                       </ActionButton>
                     </span>
@@ -111,69 +126,46 @@ async function CourseAdmin({ params }: { params: Promise<{ courseId: string }> }
           <AdminForm action={createModuleAction} resetOnSuccess className="mt-5 rounded-xl bg-muted/40 p-4">
             <input type="hidden" name="courseId" value={courseId} />
             <div className="grid gap-3 sm:grid-cols-[1fr_1.4fr_auto] sm:items-end">
-              <Input label={`Nouveau ${unit.toLowerCase()}`} name="title" placeholder={course.isChallenge ? "Ex. Se présenter en réunion" : "Ex. Welcome on board"} required />
-              <Input label="Objectif (facultatif)" name="summary" placeholder="Ce que l'apprenant saura faire" />
-              <Submit>Ajouter</Submit>
+              <Input label={`New ${unit.toLowerCase()}`} name="title" placeholder={course.isChallenge ? "E.g. Se présenter en réunion" : "E.g. Welcome on board"} required />
+              <Input label="Objective (optional)" name="summary" placeholder="What the learner will be able to do" />
+              <Submit>Add</Submit>
             </div>
           </AdminForm>
         )}
       </Card>
 
-      <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
-        {edit ? (
-          <Card title="Informations">
-            <AdminForm action={updateCourseAction}>
-              <input type="hidden" name="courseId" value={courseId} />
-              <CourseFields course={course} settings={settings} />
-              <div>
-                <Submit>Enregistrer</Submit>
-              </div>
-            </AdminForm>
-          </Card>
-        ) : (
-          <Card title="Informations">
-            {course.description ? (
-              <RichText legacy="text" className="text-sm text-muted-foreground [&_*]:text-[length:inherit]">{course.description}</RichText>
-            ) : (
-              <p className="text-sm text-muted-foreground">Pas de description.</p>
-            )}
-          </Card>
-        )}
+      {edit ? (
+        <Card title="Details">
+          <AdminForm action={updateCourseAction}>
+            <input type="hidden" name="courseId" value={courseId} />
+            <CourseFields course={course} settings={settings} wide />
+            <div>
+              <Submit>Save</Submit>
+            </div>
+          </AdminForm>
+        </Card>
+      ) : (
+        <Card title="Details">
+          {course.description ? (
+            <RichText legacy="text" className="text-sm text-muted-foreground [&_*]:text-[length:inherit]">{course.description}</RichText>
+          ) : (
+            <p className="text-sm text-muted-foreground">No description.</p>
+          )}
+        </Card>
+      )}
 
-        <div className="grid content-start gap-5">
-          {settings && (
-            <Card title="Équipe pédagogique" description="Formateurs et coachs qui modifient le contenu et corrigent les devoirs de ce cours.">
-              <AdminForm action={setInstructorsAction}>
-                <input type="hidden" name="courseId" value={courseId} />
-                {staff.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">Aucun formateur ni coach : créez un compte avec ce rôle.</p>
-                ) : (
-                  <div className="grid gap-2">
-                    {staff.map((s) => (
-                      <Checkbox key={String(s._id)} name="instructors" value={String(s._id)} label={`${s.name} ${s.surname}`} hint={ROLE_LABELS[s.role as string]} defaultChecked={instructors.has(String(s._id))} />
-                    ))}
-                  </div>
-                )}
-                <div>
-                  <Submit variant="secondary">Enregistrer l&apos;équipe</Submit>
-                </div>
-              </AdminForm>
-            </Card>
-          )}
-          {can.deleteCourse(a) && (
-            <Card title="Supprimer le cours" description="Impossible tant que des apprenants sont inscrits (dépubliez-le plutôt).">
-              <AdminForm action={deleteCourseAction}>
-                <input type="hidden" name="courseId" value={courseId} />
-                <div>
-                  <Submit variant="danger" confirm="Supprimer définitivement ce cours et tout son contenu ?">
-                    Supprimer
-                  </Submit>
-                </div>
-              </AdminForm>
-            </Card>
-          )}
-        </div>
-      </div>
+      {can.deleteCourse(a) && (
+        <Card title="Delete course" description="Not possible while learners are enrolled (unpublish it instead).">
+          <AdminForm action={deleteCourseAction}>
+            <input type="hidden" name="courseId" value={courseId} />
+            <div>
+              <Submit variant="danger" confirm="Permanently delete this course and all its content?">
+                Delete
+              </Submit>
+            </div>
+          </AdminForm>
+        </Card>
+      )}
     </div>
   );
 }

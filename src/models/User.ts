@@ -1,4 +1,5 @@
-import { Schema, model, models, type InferSchemaType, type Model, type Types } from "mongoose";
+import { Schema, type InferSchemaType, type Model, type Types } from "mongoose";
+import { defineModel } from "./define";
 import { normalizePhone } from "@/lib/phone";
 
 /**
@@ -104,7 +105,7 @@ userSchema.pre("validate", function () {
 
 export type UserDoc = InferSchemaType<typeof userSchema> & { _id: Types.ObjectId };
 
-export const User: Model<UserDoc> = (models.User as Model<UserDoc>) || model<UserDoc>("User", userSchema);
+export const User: Model<UserDoc> = defineModel<UserDoc>("User", userSchema);
 
 /** `isActive` undefined is treated as active; only an explicit false blocks. */
 export function isAccountActive(user: Pick<UserDoc, "isActive">): boolean {

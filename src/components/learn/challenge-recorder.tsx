@@ -16,7 +16,7 @@ import { playSound } from "@/components/gamify/sound";
  */
 export function ChallengeRecorder({
   courseId,
-  unitId,
+  stepId,
   maxSeconds,
   prepSeconds,
   preview,
@@ -24,7 +24,7 @@ export function ChallengeRecorder({
   courseHref,
 }: {
   courseId: string;
-  unitId: string;
+  stepId: string;
   maxSeconds: number;
   prepSeconds: number;
   preview: boolean;
@@ -40,7 +40,7 @@ export function ChallengeRecorder({
     setPhase("sending");
     try {
       const mediaId = preview ? null : await uploadMedia(rec.blob, { kind: "recording", durationS: rec.durationS, onProgress: (s) => setNote(s === "retrying" ? "Connexion instable : nouvel essai…" : "Envoi de votre enregistrement…") });
-      const r = await submitUnitChallenge({ courseId, unitId, mediaId });
+      const r = await submitUnitChallenge({ courseId, stepId, mediaId });
       if (r?.error) throw new Error(r.error);
       playSound("correct");
       pushReward(r?.reward ?? null);

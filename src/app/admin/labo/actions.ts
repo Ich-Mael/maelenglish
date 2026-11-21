@@ -1,0 +1,121 @@
+"use server";
+
+import { Types } from "mongoose";
+import { redirect } from "next/navigation";
+import { refresh } from "next/cache";
+import { actorOf, allowed, staffOrThrow } from "@/lib/admin/context";
+import { can } from "@/lib/admin/permissions";
+import { AdminError, errorMessage } from "@/lib/admin/errors";
+import * as lab from "@/lib/lab/service";
+import { Course, Step, Unit, type CourseDoc } from "@/models";
+import type { CurrentUser } from "@/lib/auth/dal";
+
+type State = { error?: string; success?: string } | undefined;
+
+const str = (f: FormData, k: string) => String(f.get(k) ?? "").trim();
+const fail = (e: unknown): State => ({ error: errorMessage(e) });
+
+async function labUser() {
+  const me = await staffOrThrow();
+  if (!can.useLab(actorOf(me))) throw new AdminError("The Lab is for instructors, coaches and administrators.");
+  return me;
+}
+
+/** The unit (and its course), if the staff member may edit that course's content. */
+async function editableUnit(me: CurrentUser, unitId: string) {
+  const u = Types.ObjectId.isValid(unitId) ? await Unit.findById(unitId).select("courseId moduleId").lean() : null;
+  if (!u) throw new AdminError("Unit not found.");
+  const course = await Course.findById(u.courseId).lean<CourseDoc>();
+  if (!course || !allowed(me, course, "edit")) throw new AdminError("You don't have rights on this course.");
+  return { unit: u, course };
+}
+
+/** New activity; with `unitId`, it is added to that unit straight away. Opens its page. */
+export async function createActivityAction(_: State, form: FormData): Promise<State> {
+  let target: string;
+  try {
+    const me = await labUser();
+    const unitId = str(form, "unitId");
+    if (unitId) await editableUnit(me, unitId);
+    const a = await lab.createActivity(str(form, "type"), str(form, "title"), me.id);
+    if (unitId) await lab.attachActivity(String(a._id), unitId);
+    target = `/admin/labo/${a._id}${unitId ? `?unite=${unitId}` : ""}`;
+  } catch (e) {
+    return fail(e);
+  }
+  redirect(target);
+}
+
+export async function saveActivityAction(_: State, form: FormData): Promise<State> {
+  try {
+    const me = await labUser();
+    // Type-specific fields are named « c_<field> » by the editors (components/lab/editors.tsx).
+    const content: Record<string, string> = {};
+    for (const [k, v] of form.entries()) if (k.startsWith("c_") && typeof v === "string") content[k.slice(2)] = v;
+    await lab.updateActivity(
+      str(form, "activityId"),
+      {
+        title: str(form, "title"),
+        level: str(form, "level"),
+        skills: form.getAll("skills").map(String),
+        theme: str(form, "theme"),
+        durationMin: str(form, "durationMin"),
+        instructions: str(form, "instructions"),
+        maelTip: str(form, "maelTip"),
+        tags: str(form, "tags").split(","),
+        ready: form.get("ready") === "on",
+        content,
+      },
+      me.id,
+    );
+    refresh();
+    return { success: form.get("ready") === "on" ? "Activity saved (ready)." : "Draft saved: learners can't see it yet." };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+export async function duplicateActivityAction(_: State, form: FormData): Promise<State> {
+  let target: string;
+  try {
+    const me = await labUser();
+    const copy = await lab.duplicateActivity(str(form, "activityId"), me.id);
+    target = `/admin/labo/${copy._id}`;
+  } catch (e) {
+    return fail(e);
+  }
+  redirect(target);
+}
+
+export async function deleteActivityAction(_: State, form: FormData): Promise<State> {
+  try {
+    await labUser();
+    await lab.deleteActivity(str(form, "activityId"));
+  } catch (e) {
+    return fail(e);
+  }
+  redirect("/admin/labo");
+}
+
+export async function attachActivityAction(_: State, form: FormData): Promise<State> {
+  try {
+    const me = await labUser();
+    const unitId = str(form, "unitId");
+    await editableUnit(me, unitId);
+    const role = await lab.attachActivity(str(form, "activityId"), unitId);
+    refresh();
+    return { success: role === "challenge" ? "Unit speaking challenge set." : "Activity added before the unit's challenge, practising its last lesson." };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+/** Removes an activity step or a unit challenge (from « Used in »). */
+export async function removeStepAction(form: FormData) {
+  const me = await labUser();
+  const s = Types.ObjectId.isValid(str(form, "stepId")) ? await Step.findById(str(form, "stepId")).select("unitId").lean() : null;
+  if (!s) throw new AdminError("Step not found.");
+  await editableUnit(me, String(s.unitId));
+  await lab.deleteStep(str(form, "stepId"));
+  refresh();
+}

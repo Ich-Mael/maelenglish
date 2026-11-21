@@ -25,6 +25,8 @@ export const can = {
   manageCourseSettings: (a: Actor) => isAdmin(a),
   viewCourse: (a: Actor, c: CourseLike) => isAdmin(a) || a.role === "account-manager" || (isTeacher(a) && teaches(a, c)),
   editContent: (a: Actor, c: CourseLike) => isAdmin(a) || (isTeacher(a) && teaches(a, c)),
+  /** Labo (reusable practice activities): admins and teachers. Adding one to a unit also needs `editContent` on its course. */
+  useLab: (a: Actor) => isAdmin(a) || isTeacher(a),
   manageEnrollments: (a: Actor) => isAdmin(a) || a.role === "account-manager",
   grade: (a: Actor, c: CourseLike) => isAdmin(a) || (isTeacher(a) && teaches(a, c)),
   /** Course list filter: null = all courses, else only the ones they teach. */

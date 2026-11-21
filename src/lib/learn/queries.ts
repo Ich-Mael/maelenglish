@@ -4,22 +4,26 @@ import { connectDB } from "@/lib/db";
 import { findProgram } from "@/lib/catalog";
 import type { CurrentUser } from "@/lib/auth/dal";
 import {
-  AssignmentSubmission,
+  Activity,
+  ChallengeSubmission,
   Course,
   Enrollment,
-  Lesson,
-  LessonProgress,
   Module,
   QuizAttempt,
+  Step,
+  StepProgress,
   Unit,
   accessState,
   type AccessState,
+  type ActivityDoc,
   type CourseDoc,
   type EnrollmentDoc,
-  type LessonDoc,
   type ModuleDoc,
+  type StepDoc,
   type UnitDoc,
 } from "@/models";
+import { checkUnit } from "@/lib/course/unit-check";
+import type { UnitProblem } from "@/lib/course/validate-unit";
 import { computeOutline, type Outline, type SubmissionStatus } from "./progress";
 
 /*
@@ -50,50 +54,37 @@ export async function courseAccess(me: CurrentUser, courseId: string): Promise<C
   return { ok: false, reason: state, course, enrollment };
 }
 
-export type CourseTree = {
-  modules: ModuleDoc[];
-  units: UnitDoc[];
-  lessons: LessonDoc[];
-  outline: Outline;
-};
-
-/** Modules, published lessons and the learner's computed progression. */
-export async function courseTree(me: CurrentUser, access: Extract<CourseAccess, { ok: true }>): Promise<CourseTree> {
-  const courseId = access.course._id;
-  const [modules, units, lessons] = await Promise.all([
+/** A course's structure with each unit's rule check (valid units are the ones learners see). */
+export async function courseStructure(courseId: Types.ObjectId | string) {
+  const [modules, units, steps] = await Promise.all([
     Module.find({ courseId }).sort({ order: 1, createdAt: 1 }).lean<ModuleDoc[]>(),
     Unit.find({ courseId }).sort({ order: 1, createdAt: 1 }).lean<UnitDoc[]>(),
-    Lesson.find({ courseId, isPublished: true }).sort({ order: 1, createdAt: 1 }).lean<LessonDoc[]>(),
+    Step.find({ courseId }).sort({ position: 1 }).lean<StepDoc[]>(),
   ]);
+  const activityIds = steps.flatMap((s) => (s.activityId ? [s.activityId] : []));
+  const activities = activityIds.length ? await Activity.find({ _id: { $in: activityIds } }).lean<ActivityDoc[]>() : [];
+  const ready = new Set(activities.filter((a) => a.status === "ready").map((a) => String(a._id)));
+  const problems = new Map<string, UnitProblem[]>(units.map((u) => [String(u._id), checkUnit(steps.filter((s) => String(s.unitId) === String(u._id)), ready)]));
+  return { modules, units, steps, activities, problems };
+}
+
+export type CourseTree = Awaited<ReturnType<typeof courseStructure>> & { outline: Outline };
+
+/** The course structure and the learner's computed progression. */
+export async function courseTree(me: CurrentUser, access: Extract<CourseAccess, { ok: true }>): Promise<CourseTree> {
+  const courseId = access.course._id;
+  const structure = await courseStructure(courseId);
+  const { modules, units, steps, activities, problems } = structure;
+  const activityType = new Map(activities.map((a) => [String(a._id), a.type]));
 
   const [progress, attempts, submissions] = await Promise.all([
-    LessonProgress.find({ userId: me.id, courseId, status: "completed" }).select("lessonId").lean(),
-    QuizAttempt.aggregate<{ _id: { moduleId: Types.ObjectId | null; quizType: string }; best: number; passed: boolean }>([
-      { $match: { userId: new Types.ObjectId(me.id), courseId } },
-      { $group: { _id: { moduleId: "$moduleId", quizType: "$quizType" }, best: { $max: "$score" }, passed: { $max: "$passed" } } },
+    StepProgress.find({ userId: me.id, courseId }).select("stepId score").lean(),
+    QuizAttempt.aggregate<{ best: number; passed: boolean }>([
+      { $match: { userId: new Types.ObjectId(me.id), courseId, quizType: "final_exam" } },
+      { $group: { _id: null, best: { $max: "$score" }, passed: { $max: "$passed" } } },
     ]),
-    AssignmentSubmission.find({ userId: me.id, courseId }).select("moduleId unitId assignmentType status").lean(),
+    ChallengeSubmission.find({ userId: me.id, courseId }).select("unitId status").lean(),
   ]);
-
-  const quizResults = new Map<string, { bestScore: number; passed: boolean }>();
-  let finalBest: number | null = null;
-  let finalPassed = false;
-  for (const a of attempts) {
-    if (a._id.quizType === "final_exam") {
-      finalBest = a.best;
-      finalPassed = a.passed;
-    } else if (a._id.moduleId) quizResults.set(String(a._id.moduleId), { bestScore: a.best, passed: a.passed });
-  }
-  const assignments = new Map<string, SubmissionStatus>();
-  const unitChallenges = new Map<string, SubmissionStatus>();
-  let projectStatus: SubmissionStatus | null = null;
-  for (const s of submissions) {
-    if (s.assignmentType === "final_project") projectStatus = s.status as SubmissionStatus;
-    else if (s.assignmentType === "unit_challenge") {
-      if (s.unitId) unitChallenges.set(String(s.unitId), s.status as SubmissionStatus);
-    }
-    else if (s.moduleId) assignments.set(String(s.moduleId), s.status as SubmissionStatus);
-  }
 
   const outline = computeOutline({
     modules: modules.map((m) => ({
@@ -101,26 +92,38 @@ export async function courseTree(me: CurrentUser, access: Extract<CourseAccess, 
       title: m.title,
       summary: m.summary ?? "",
       description: m.description ?? "",
-      hasQuiz: (m.quiz?.questions?.length ?? 0) > 0,
-      hasAssignment: !!m.assignment?.instructions?.trim(),
-      isCheckpointRequired: m.isCheckpointRequired !== false,
-      units: units.filter((u) => String(u.moduleId) === String(m._id)).map((u) => ({ id: String(u._id), title: u.title, objective: u.objective ?? "", hasChallenge: !!u.challenge?.instructions?.trim() })),
-      lessons: lessons
-        .filter((l) => String(l.moduleId) === String(m._id))
-        .map((l) => ({ id: String(l._id), title: l.title, type: l.type, unitId: l.unitId ? String(l.unitId) : null })),
+      level: m.level ?? "",
+      units: units
+        .filter((u) => String(u.moduleId) === String(m._id))
+        .map((u) => ({
+          id: String(u._id),
+          title: u.title,
+          objectives: u.objectives ?? [],
+          estimatedMinutes: u.estimatedMinutes ?? 0,
+          valid: (problems.get(String(u._id)) ?? []).length === 0,
+          steps: steps
+            .filter((s) => String(s.unitId) === String(u._id))
+            .map((s) => ({
+              id: String(s._id),
+              kind: s.kind as "lesson" | "activity" | "challenge",
+              title: s.title,
+              type: s.kind === "activity" ? (activityType.get(String(s.activityId)) ?? "activity") : s.kind,
+              estimatedMinutes: s.estimatedMinutes ?? 0,
+              lessonId: s.lessonId ? String(s.lessonId) : null,
+              passScore: s.passScore ?? undefined,
+            })),
+        })),
     })),
-    completedLessonIds: new Set(progress.map((p) => String(p.lessonId))),
-    quizResults,
-    assignments,
-    unitChallenges,
-    finalExam: { exists: (access.course.finalExam?.questions?.length ?? 0) > 0, bestScore: finalBest, passed: finalPassed },
-    finalProject: { exists: !!access.course.finalProject?.instructions?.trim(), status: projectStatus },
+    completedStepIds: new Set(progress.map((p) => String(p.stepId))),
+    scores: new Map(progress.filter((p) => p.score !== null && p.score !== undefined).map((p) => [String(p.stepId), p.score as number])),
+    challenges: new Map(submissions.map((s) => [String(s.unitId), s.status as SubmissionStatus])),
+    finalExam: { exists: (access.course.finalExam?.questions?.length ?? 0) > 0, bestScore: attempts[0]?.best ?? null, passed: !!attempts[0]?.passed },
     isChallenge: !!access.course.isChallenge,
     start: access.enrollment?.startDate ?? new Date(),
     preview: access.preview,
   });
 
-  return { modules, units, lessons, outline };
+  return { ...structure, outline };
 }
 
 export type MyCourse = {
@@ -134,8 +137,8 @@ export type MyCourse = {
   state: AccessState;
   startDate: Date | null;
   endDate: Date | null;
-  lessonsDone: number;
-  lessonsTotal: number;
+  stepsDone: number;
+  stepsTotal: number;
 };
 
 /** The learner's enrolments (published courses), with progress counts. */
@@ -143,20 +146,16 @@ export async function myCourses(me: CurrentUser): Promise<MyCourse[]> {
   await connectDB();
   const enrollments = await Enrollment.find({ userId: me.id }).sort({ startDate: -1 }).lean<EnrollmentDoc[]>();
   if (!enrollments.length) return [];
-  const courseIds = enrollments.map((e) => e.courseId);
-  const [courses, totals, done] = await Promise.all([
-    Course.find({ _id: { $in: courseIds }, isPublished: true }).lean<CourseDoc[]>(),
-    Lesson.aggregate<{ _id: Types.ObjectId; n: number }>([
-      { $match: { courseId: { $in: courseIds }, isPublished: true } },
-      { $group: { _id: "$courseId", n: { $sum: 1 } } },
-    ]),
-    LessonProgress.aggregate<{ _id: Types.ObjectId; n: number }>([
-      { $match: { userId: new Types.ObjectId(me.id), courseId: { $in: courseIds }, status: "completed" } },
-      { $group: { _id: "$courseId", n: { $sum: 1 } } },
-    ]),
-  ]);
+  const courses = await Course.find({ _id: { $in: enrollments.map((e) => e.courseId) }, isPublished: true }).lean<CourseDoc[]>();
   const byId = new Map(courses.map((c) => [String(c._id), c]));
-  const count = (rows: { _id: Types.ObjectId; n: number }[], id: string) => rows.find((r) => String(r._id) === id)?.n ?? 0;
+  // Progress counts come from the same outline as the course page (valid units only).
+  const counts = new Map<string, { done: number; total: number }>();
+  for (const e of enrollments) {
+    const c = byId.get(String(e.courseId));
+    if (!c) continue;
+    const { outline } = await courseTree(me, { ok: true, course: c, enrollment: e, preview: false, readOnly: false });
+    counts.set(String(c._id), { done: outline.stepsDone, total: outline.stepsTotal });
+  }
 
   return enrollments.flatMap((e) => {
     const c = byId.get(String(e.courseId));
@@ -175,8 +174,8 @@ export async function myCourses(me: CurrentUser): Promise<MyCourse[]> {
         state: accessState(e),
         startDate: e.startDate ?? null,
         endDate: e.endDate ?? null,
-        lessonsDone: count(done, id),
-        lessonsTotal: count(totals, id),
+        stepsDone: counts.get(id)?.done ?? 0,
+        stepsTotal: counts.get(id)?.total ?? 0,
       },
     ];
   });

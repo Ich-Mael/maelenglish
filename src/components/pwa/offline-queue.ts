@@ -1,14 +1,10 @@
 "use client";
 
-import type { ExerciseResponse } from "@/lib/learn/exercises";
-
 /**
- * Lesson results made offline, kept on the device (localStorage) and sent
+ * Lesson steps completed offline (« Continuer »), kept on the device (localStorage) and sent
  * when the connection comes back (OfflineSync). Cleared at logout.
  */
-export type QueuedItem =
-  | { id: string; kind: "complete"; courseId: string; lessonId: string; at: number }
-  | { id: string; kind: "practice"; courseId: string; lessonId: string; responses: Record<string, ExerciseResponse>; at: number };
+export type QueuedItem = { id: string; kind: "complete"; courseId: string; stepId: string; at: number };
 
 const KEY = "me-offline-queue";
 type NewItem = QueuedItem extends infer T ? (T extends QueuedItem ? Omit<T, "id" | "at"> : never) : never;
@@ -31,8 +27,8 @@ function write(items: QueuedItem[]) {
 }
 
 export function enqueue(item: NewItem) {
-  // One entry per lesson: the latest result wins.
-  const rest = readQueue().filter((q) => !(q.lessonId === item.lessonId && q.kind === item.kind));
+  // One entry per step.
+  const rest = readQueue().filter((q) => !(q.stepId === item.stepId && q.kind === item.kind));
   write([...rest, { ...item, id: Math.random().toString(36).slice(2), at: Date.now() } as QueuedItem]);
 }
 

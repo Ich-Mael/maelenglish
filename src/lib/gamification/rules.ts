@@ -1,22 +1,23 @@
 /**
  * Gamification rules (pure — shared by server and UI, unit-tested).
- * XP is awarded once per item (idempotent keys); replaying a practice lesson
- * earns a small bonus at most once per lesson per day.
+ * XP is awarded once per item (idempotent keys); replaying an activity step
+ * earns a small bonus at most once per step per day.
  */
 
 export const XP = {
+  /** Lesson step (« Continuer »). */
   lesson: 10,
+  /** Activity step: base + score bonus (+ perfect). */
   practiceBase: 10,
   /** + up to 10 according to the first-try score. */
   practiceScore: 10,
   practicePerfect: 5,
   practiceReplay: 5,
-  quizPass: 25,
-  quizPerfect: 10,
   examPass: 100,
-  assignment: 15,
-  /** When a coach validates an assignment / checkpoint. */
-  assignmentGraded: 20,
+  /** Unit speaking challenge sent. */
+  challenge: 15,
+  /** When a coach validates a speaking challenge. */
+  challengeValidated: 20,
   dailyGoal: 10,
 } as const;
 
@@ -75,6 +76,11 @@ export function weekStart(now: Date = new Date()): Date {
   return d;
 }
 
+/**
+ * Stored counters (UserStats). Names kept from the first course structure: `lessonsCompleted` counts
+ * completed steps (lessons and activities), `perfectPractices` activities at 100 %,
+ * `assignmentsSubmitted` speaking challenges sent; `quizzesPassed` is no longer incremented.
+ */
 export type StatCounters = {
   xp: number;
   longestStreak: number;
@@ -96,11 +102,10 @@ export const BADGES: readonly Badge[] = [
   { id: "streak-3", name: "En rythme", description: "3 jours d'affilée", icon: "Flame", earned: (s) => s.longestStreak >= 3 },
   { id: "streak-7", name: "Une semaine pleine", description: "7 jours d'affilée", icon: "Zap", earned: (s) => s.longestStreak >= 7 },
   { id: "streak-30", name: "Habitude en or", description: "30 jours d'affilée", icon: "Crown", earned: (s) => s.longestStreak >= 30 },
-  { id: "perfect-1", name: "Sans faute", description: "Réussir une pratique à 100 %", icon: "Target", earned: (s) => s.perfectPractices >= 1 },
-  { id: "perfect-10", name: "Précision chirurgicale", description: "10 pratiques à 100 %", icon: "Gem", earned: (s) => s.perfectPractices >= 10 },
-  { id: "quiz-1", name: "Premier quiz", description: "Réussir un quiz de module", icon: "Star", earned: (s) => s.quizzesPassed >= 1 },
-  { id: "quiz-5", name: "As des quiz", description: "Réussir 5 quiz de module", icon: "Trophy", earned: (s) => s.quizzesPassed >= 5 },
-  { id: "assignment-1", name: "Plume", description: "Envoyer un premier devoir", icon: "PenLine", earned: (s) => s.assignmentsSubmitted >= 1 },
+  { id: "perfect-1", name: "Sans faute", description: "Réussir une activité à 100 %", icon: "Target", earned: (s) => s.perfectPractices >= 1 },
+  { id: "perfect-10", name: "Précision chirurgicale", description: "10 activités à 100 %", icon: "Gem", earned: (s) => s.perfectPractices >= 10 },
+  { id: "challenge-1", name: "Première prise de parole", description: "Envoyer votre premier défi oral", icon: "Star", earned: (s) => s.assignmentsSubmitted >= 1 },
+  { id: "challenge-5", name: "Orateur", description: "Envoyer 5 défis oraux", icon: "Trophy", earned: (s) => s.assignmentsSubmitted >= 5 },
   { id: "xp-1000", name: "Mille points", description: "Gagner 1 000 XP", icon: "Sparkles", earned: (s) => s.xp >= 1000 },
   { id: "graduate", name: "Diplômé(e)", description: "Réussir un examen final", icon: "GraduationCap", earned: (s) => s.examsPassed >= 1 },
 ];

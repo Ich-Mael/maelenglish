@@ -8,6 +8,7 @@ import { can } from "@/lib/admin/permissions";
 import { errorMessage, AdminError } from "@/lib/admin/errors";
 import { revokeDevice, searchLearners, updateAccount, type LearnerMatch } from "@/lib/admin/users";
 import * as content from "@/lib/admin/content";
+import * as steps from "@/lib/admin/steps";
 import { setDefaultMonthlyMinutes } from "@/lib/ai/metering";
 import { enroll, removeEnrollment, updateEnrollment } from "@/lib/admin/enrollments";
 import { gradeSubmission } from "@/lib/admin/grading";
@@ -17,7 +18,7 @@ import { appUrl, sendActivationEmail, sendEnrollmentEmail, sendPasswordResetEmai
 import { findProgram, programPhoto } from "@/lib/catalog";
 import { plainText } from "@/lib/rich-text";
 import { isWhatsAppConfigured, sendEnrollment } from "@/lib/whatsapp";
-import { AssignmentSubmission, Course, Enrollment, Lesson, Module, TeachingResource, Unit, User, type CourseDoc, type Role } from "@/models";
+import { ChallengeSubmission, Course, Enrollment, Module, Step, TeachingResource, Unit, User, type CourseDoc, type Role } from "@/models";
 import type { CurrentUser } from "@/lib/auth/dal";
 
 type State = { error?: string; success?: string; data?: Record<string, string> } | undefined;
@@ -27,32 +28,32 @@ const fail = (e: unknown): State => ({ error: errorMessage(e) });
 const dateFr = new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" });
 
 async function courseOf(me: CurrentUser, courseId: string, need: Parameters<typeof allowed>[2]): Promise<CourseDoc> {
-  if (!Types.ObjectId.isValid(courseId)) throw new AdminError("Cours introuvable.");
+  if (!Types.ObjectId.isValid(courseId)) throw new AdminError("Course not found.");
   const course = await Course.findById(courseId).lean<CourseDoc>();
-  if (!course) throw new AdminError("Cours introuvable.");
-  if (!allowed(me, course, need)) throw new AdminError("Vous n'avez pas les droits sur ce cours.");
+  if (!course) throw new AdminError("Course not found.");
+  if (!allowed(me, course, need)) throw new AdminError("You don't have rights on this course.");
   return course;
 }
 async function moduleCourse(me: CurrentUser, moduleId: string, need: Parameters<typeof allowed>[2]) {
   const m = Types.ObjectId.isValid(moduleId) ? await Module.findById(moduleId).select("courseId").lean() : null;
-  if (!m) throw new AdminError("Module introuvable.");
+  if (!m) throw new AdminError("Module not found.");
   return courseOf(me, String(m.courseId), need);
 }
 async function unitCourse(me: CurrentUser, unitId: string) {
   const u = Types.ObjectId.isValid(unitId) ? await Unit.findById(unitId).select("courseId moduleId").lean() : null;
-  if (!u) throw new AdminError("Unité introuvable.");
+  if (!u) throw new AdminError("Unit not found.");
   const course = await courseOf(me, String(u.courseId), "edit");
   return { course, unit: u };
 }
-async function lessonCourse(me: CurrentUser, lessonId: string) {
-  const l = Types.ObjectId.isValid(lessonId) ? await Lesson.findById(lessonId).select("courseId moduleId unitId").lean() : null;
-  if (!l) throw new AdminError("Activité introuvable.");
-  await courseOf(me, String(l.courseId), "edit");
-  return l;
+async function stepCourse(me: CurrentUser, stepId: string) {
+  const s = Types.ObjectId.isValid(stepId) ? await Step.findById(stepId).select("courseId moduleId unitId kind").lean() : null;
+  if (!s) throw new AdminError("Step not found.");
+  await courseOf(me, String(s.courseId), "edit");
+  return s;
 }
 async function usersGuard() {
   const me = await staffOrThrow();
-  if (!can.manageUsers(actorOf(me))) throw new AdminError("Accès réservé à la gestion des comptes.");
+  if (!can.manageUsers(actorOf(me))) throw new AdminError("Account managers only.");
   return me;
 }
 
@@ -69,7 +70,7 @@ export async function createUserAction(_: State, form: FormData): Promise<State>
       phoneNumber: str(form, "phoneNumber") || undefined,
       role: (str(form, "role") || "user") as Role,
     };
-    if (!data.name || !data.surname || !data.username) return { error: "Prénom, nom et identifiant sont obligatoires." };
+    if (!data.name || !data.surname || !data.username) return { error: "First name, last name and username are required." };
     const { user, activationToken } = await createAccount({ _id: new Types.ObjectId(me.id), role: me.role }, data);
     let emailed = false;
     if (user.email) {
@@ -81,7 +82,7 @@ export async function createUserAction(_: State, form: FormData): Promise<State>
     }
     refresh();
     return {
-      success: emailed ? `Compte créé. Le lien d'activation a été envoyé à ${user.email}.` : "Compte créé. Transmettez le lien d'activation à la personne.",
+      success: emailed ? `Account created. The activation link was sent to ${user.email}.` : "Account created. Pass the activation link on to the person.",
       data: { userId: String(user._id), url: appUrl(`/activer/${activationToken}`), phone: user.phoneE164 ?? "", name: user.name, username: user.username },
     };
   } catch (e) {
@@ -105,7 +106,7 @@ export async function updateUserAction(_: State, form: FormData): Promise<State>
       aiMonthlyMinutes: form.has("aiMonthlyMinutes") ? (str(form, "aiMonthlyMinutes") === "" ? null : Number(str(form, "aiMonthlyMinutes"))) : undefined,
     });
     refresh();
-    return { success: "Modifications enregistrées." };
+    return { success: "Changes saved." };
   } catch (e) {
     return fail(e);
   }
@@ -125,7 +126,7 @@ export async function accountLinkAction(_: State, form: FormData): Promise<State
     await usersGuard();
     const userId = str(form, "userId");
     const user = await User.findById(userId).lean();
-    if (!user) return { error: "Compte introuvable." };
+    if (!user) return { error: "Account not found." };
     const kind = str(form, "kind") === "activation" ? "activation" : "reset";
     const token = kind === "activation" ? await reissueActivation(userId) : await issueResetForUser(userId);
     const url = appUrl(kind === "activation" ? `/activer/${token}` : `/reinitialiser/${token}`);
@@ -142,7 +143,7 @@ export async function accountLinkAction(_: State, form: FormData): Promise<State
       }
     }
     return {
-      success: `${kind === "activation" ? "Nouveau lien d'activation (7 jours)" : "Lien de réinitialisation (1 heure)"}${emailed ? ` envoyé à ${user.email}` : ""}.`,
+      success: `${kind === "activation" ? "New activation link (7 days)" : "Password reset link (1 hour)"}${emailed ? ` sent to ${user.email}` : ""}.`,
       data: { url, phone: user.phoneE164 ?? "", name: user.name, kind },
     };
   } catch (e) {
@@ -175,8 +176,8 @@ export async function createCourseAction(_: State, form: FormData): Promise<Stat
   let id: string;
   try {
     const me = await staffOrThrow();
-    if (!can.createCourse(actorOf(me))) return { error: "Seul un administrateur peut créer un cours." };
-    if (!str(form, "title")) return { error: "Donnez un titre au cours." };
+    if (!can.createCourse(actorOf(me))) return { error: "Only an administrator can create a course." };
+    if (!str(form, "title")) return { error: "Give the course a title." };
     const c = await content.createCourse(courseInput(form));
     await content.updateCourse(String(c._id), courseInput(form), { isChallenge: form.get("isChallenge") === "on", themeLabel: str(form, "themeLabel") });
     id = String(c._id);
@@ -191,13 +192,13 @@ export async function updateCourseAction(_: State, form: FormData): Promise<Stat
     const me = await staffOrThrow();
     const courseId = str(form, "courseId");
     await courseOf(me, courseId, "edit");
-    if (!str(form, "title")) return { error: "Donnez un titre au cours." };
+    if (!str(form, "title")) return { error: "Give the course a title." };
     const settings = can.manageCourseSettings(actorOf(me))
       ? { isPublished: form.get("isPublished") === "on", isChallenge: form.get("isChallenge") === "on", themeLabel: str(form, "themeLabel") }
       : undefined;
     await content.updateCourse(courseId, courseInput(form), settings);
     refresh();
-    return { success: "Cours enregistré." };
+    return { success: "Course saved." };
   } catch (e) {
     return fail(e);
   }
@@ -210,7 +211,7 @@ export async function setInstructorsAction(_: State, form: FormData): Promise<St
     await courseOf(me, courseId, "settings");
     await content.setInstructors(courseId, form.getAll("instructors").map(String));
     refresh();
-    return { success: "Équipe pédagogique mise à jour." };
+    return { success: "Teaching team updated." };
   } catch (e) {
     return fail(e);
   }
@@ -219,7 +220,7 @@ export async function setInstructorsAction(_: State, form: FormData): Promise<St
 export async function deleteCourseAction(_: State, form: FormData): Promise<State> {
   try {
     const me = await staffOrThrow();
-    if (!can.deleteCourse(actorOf(me))) return { error: "Seul un administrateur peut supprimer un cours." };
+    if (!can.deleteCourse(actorOf(me))) return { error: "Only an administrator can delete a course." };
     await content.deleteCourse(str(form, "courseId"));
   } catch (e) {
     return fail(e);
@@ -234,10 +235,10 @@ export async function createModuleAction(_: State, form: FormData): Promise<Stat
     const me = await staffOrThrow();
     const courseId = str(form, "courseId");
     await courseOf(me, courseId, "edit");
-    if (!str(form, "title")) return { error: "Donnez un titre au module." };
+    if (!str(form, "title")) return { error: "Give the module a title." };
     await content.createModule(courseId, str(form, "title"), str(form, "summary"));
     refresh();
-    return { success: "Module ajouté." };
+    return { success: "Module added." };
   } catch (e) {
     return fail(e);
   }
@@ -248,10 +249,10 @@ export async function updateModuleAction(_: State, form: FormData): Promise<Stat
     const me = await staffOrThrow();
     const moduleId = str(form, "moduleId");
     await moduleCourse(me, moduleId, "edit");
-    if (!str(form, "title")) return { error: "Donnez un titre au module." };
-    await content.updateModule(moduleId, { title: str(form, "title"), summary: str(form, "summary"), description: String(form.get("description") ?? ""), isCheckpointRequired: form.get("isCheckpointRequired") === "on" });
+    if (!str(form, "title")) return { error: "Give the module a title." };
+    await content.updateModule(moduleId, { title: str(form, "title"), summary: str(form, "summary"), description: String(form.get("description") ?? ""), level: str(form, "level") });
     refresh();
-    return { success: "Module enregistré." };
+    return { success: "Module saved." };
   } catch (e) {
     return fail(e);
   }
@@ -278,10 +279,10 @@ export async function createUnitAction(_: State, form: FormData): Promise<State>
     const me = await staffOrThrow();
     const moduleId = str(form, "moduleId");
     await moduleCourse(me, moduleId, "edit");
-    if (!str(form, "title")) return { error: "Donnez un titre à l'unité." };
-    await content.createUnit(moduleId, str(form, "title"), str(form, "objective"));
+    if (!str(form, "title")) return { error: "Give the unit a title." };
+    await content.createUnit(moduleId, str(form, "title"), String(form.get("objectives") ?? ""));
     refresh();
-    return { success: "Unité ajoutée." };
+    return { success: "Unit added." };
   } catch (e) {
     return fail(e);
   }
@@ -292,27 +293,9 @@ export async function updateUnitAction(_: State, form: FormData): Promise<State>
     const me = await staffOrThrow();
     const unitId = str(form, "unitId");
     await unitCourse(me, unitId);
-    await content.updateUnit(unitId, { title: str(form, "title"), objective: str(form, "objective") });
+    await content.updateUnit(unitId, { title: str(form, "title"), objectives: String(form.get("objectives") ?? ""), estimatedMinutes: Number(str(form, "estimatedMinutes")) || 0 });
     refresh();
-    return { success: "Unité enregistrée." };
-  } catch (e) {
-    return fail(e);
-  }
-}
-
-export async function saveUnitChallengeAction(_: State, form: FormData): Promise<State> {
-  try {
-    const me = await staffOrThrow();
-    const unitId = str(form, "unitId");
-    await unitCourse(me, unitId);
-    await content.saveUnitChallenge(unitId, {
-      title: str(form, "title"),
-      instructions: String(form.get("instructions") ?? ""),
-      maxSeconds: Number(str(form, "maxSeconds")),
-      prepSeconds: Number(str(form, "prepSeconds")),
-    });
-    refresh();
-    return { success: plainText(String(form.get("instructions") ?? "")) ? "Défi oral enregistré." : "Défi oral retiré : l'unité se termine avec ses activités." };
+    return { success: "Unit saved." };
   } catch (e) {
     return fail(e);
   }
@@ -338,113 +321,114 @@ export async function deleteUnitAction(_: State, form: FormData): Promise<State>
   redirect(target);
 }
 
-// ── Lessons ────────────────────────────────────────────────────────────────
+// ── Steps (lesson + 2–3 activities, …, speaking challenge) ─────────────────
 
-export async function createLessonAction(_: State, form: FormData): Promise<State> {
+export async function addLessonAction(_: State, form: FormData): Promise<State> {
   let target: string;
   try {
     const me = await staffOrThrow();
     const unitId = str(form, "unitId");
     const { course } = await unitCourse(me, unitId);
-    if (!str(form, "title")) return { error: "Donnez un titre à l'activité." };
-    const l = await content.createLesson(unitId, str(form, "title"), str(form, "type"));
-    target = `/admin/cours/${course._id}/lecons/${l._id}`;
+    const s = await steps.addLesson(unitId, str(form, "title"));
+    target = `/admin/cours/${course._id}/etapes/${s._id}`;
   } catch (e) {
     return fail(e);
   }
   redirect(target);
 }
 
-export async function saveLessonAction(_: State, form: FormData): Promise<State> {
+/** Lesson step editor: title, minutes and the structured content (JSON in « content »). */
+export async function saveLessonStepAction(_: State, form: FormData): Promise<State> {
   try {
     const me = await staffOrThrow();
-    const lessonId = str(form, "lessonId");
-    await lessonCourse(me, lessonId);
-    let exercises: unknown[] | undefined;
-    const raw = form.get("exercises");
-    if (raw) {
-      try {
-        exercises = JSON.parse(String(raw));
-      } catch {
-        return { error: "Exercices illisibles." };
-      }
+    const stepId = str(form, "stepId");
+    await stepCourse(me, stepId);
+    let data: Record<string, unknown>;
+    try {
+      data = JSON.parse(String(form.get("content") ?? "{}"));
+    } catch {
+      return { error: "Unreadable lesson content." };
     }
-    await content.updateLesson(lessonId, {
-      title: str(form, "title"),
-      description: str(form, "description"),
-      isPublished: form.get("isPublished") === "on",
-      videoUrl: str(form, "videoUrl"),
-      durationMinutes: Number(str(form, "durationMinutes")) || 0,
-      content: String(form.get("content") ?? ""),
-      fileUrl: str(form, "fileUrl"),
-      fileName: str(form, "fileName"),
-      exercises,
-    });
+    await steps.updateLesson(stepId, { title: str(form, "title"), estimatedMinutes: Number(str(form, "estimatedMinutes")) || 0, content: { ...data, intro: String(form.get("intro") ?? "") } });
     refresh();
-    return { success: "Activité enregistrée." };
+    return { success: "Lesson saved." };
   } catch (e) {
     return fail(e);
   }
 }
 
-export async function moveLessonAction(form: FormData) {
+/** Adds a Lab activity to a unit (an activity step practising a lesson, or the speaking challenge). */
+export async function addStepActivityAction(_: State, form: FormData): Promise<State> {
+  try {
+    const me = await staffOrThrow();
+    const unitId = str(form, "unitId");
+    await unitCourse(me, unitId);
+    if (!str(form, "activityId")) return { error: "Pick an activity." };
+    const kind = await steps.attachActivity(str(form, "activityId"), unitId, str(form, "lessonId") || null);
+    refresh();
+    return { success: kind === "challenge" ? "Speaking challenge set." : "Activity added." };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+export async function saveActivityStepAction(_: State, form: FormData): Promise<State> {
+  try {
+    const me = await staffOrThrow();
+    const stepId = str(form, "stepId");
+    await stepCourse(me, stepId);
+    await steps.updateActivityStep(stepId, { lessonId: str(form, "lessonId") || null, passScore: Number(str(form, "passScore")), estimatedMinutes: Number(str(form, "estimatedMinutes")) || 0 });
+    refresh();
+    return { success: "Saved." };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+/** Drag-and-drop order of a unit's steps. */
+export async function reorderStepsAction(unitId: string, orderedIds: string[]): Promise<{ error?: string }> {
+  try {
+    const me = await staffOrThrow();
+    await unitCourse(me, String(unitId));
+    await steps.reorderSteps(String(unitId), orderedIds.map(String));
+    refresh();
+    return {};
+  } catch (e) {
+    return { error: errorMessage(e) };
+  }
+}
+
+export async function moveStepAction(form: FormData) {
   const me = await staffOrThrow();
-  await lessonCourse(me, str(form, "lessonId"));
-  await content.moveLesson(str(form, "lessonId"), str(form, "dir") === "up" ? "up" : "down");
+  await stepCourse(me, str(form, "stepId"));
+  await steps.moveStep(str(form, "stepId"), str(form, "dir") === "up" ? "up" : "down");
   refresh();
 }
 
-export async function deleteLessonAction(form: FormData) {
+export async function deleteStepAction(form: FormData) {
   const me = await staffOrThrow();
-  const l = await lessonCourse(me, str(form, "lessonId"));
-  await content.deleteLesson(str(form, "lessonId"));
-  redirect(l.unitId ? `/admin/cours/${l.courseId}/unites/${l.unitId}` : `/admin/cours/${l.courseId}/modules/${l.moduleId}`);
+  const s = await stepCourse(me, str(form, "stepId"));
+  await steps.deleteStep(str(form, "stepId"));
+  if (form.get("redirect") === "unit") redirect(`/admin/cours/${s.courseId}/unites/${s.unitId}`);
+  refresh();
 }
 
-// ── Quizzes, assignments, resources ────────────────────────────────────────
+// ── Final exam, resources ──────────────────────────────────────────────────
 
-async function targetOf(me: CurrentUser, form: FormData): Promise<{ moduleId: string } | { courseId: string }> {
-  const moduleId = str(form, "moduleId");
-  if (moduleId) {
-    await moduleCourse(me, moduleId, "edit");
-    return { moduleId };
-  }
-  const courseId = str(form, "courseId");
-  await courseOf(me, courseId, "edit");
-  return { courseId };
-}
-
-export async function saveQuizAction(_: State, form: FormData): Promise<State> {
+export async function saveFinalExamAction(_: State, form: FormData): Promise<State> {
   try {
     const me = await staffOrThrow();
-    const target = await targetOf(me, form);
+    const courseId = str(form, "courseId");
+    await courseOf(me, courseId, "edit");
     let quiz: content.QuizInput;
     try {
       quiz = JSON.parse(String(form.get("quiz") ?? ""));
     } catch {
-      return { error: "Quiz illisible." };
+      return { error: "Unreadable exam." };
     }
-    await content.saveQuiz(target, quiz);
+    await content.saveFinalExam(courseId, quiz);
     refresh();
-    return { success: quiz.questions.length ? "Quiz enregistré." : "Quiz supprimé (aucune question)." };
-  } catch (e) {
-    return fail(e);
-  }
-}
-
-export async function saveAssignmentAction(_: State, form: FormData): Promise<State> {
-  try {
-    const me = await staffOrThrow();
-    const target = await targetOf(me, form);
-    await content.saveAssignment(target, {
-      title: str(form, "title"),
-      instructions: String(form.get("instructions") ?? ""),
-      submissionType: str(form, "submissionType"),
-      maxScore: Number(str(form, "maxScore")) || 100,
-      dueDate: str(form, "dueDate") || null,
-    });
-    refresh();
-    return { success: str(form, "instructions") ? "Devoir enregistré." : "Devoir retiré (consignes vides)." };
+    return { success: quiz.questions.length ? "Final exam saved." : "Final exam removed (no questions)." };
   } catch (e) {
     return fail(e);
   }
@@ -455,10 +439,10 @@ export async function saveResourceAction(_: State, form: FormData): Promise<Stat
     const me = await staffOrThrow();
     const moduleId = str(form, "moduleId");
     await moduleCourse(me, moduleId, "edit");
-    if (!str(form, "title")) return { error: "Donnez un titre à la ressource." };
+    if (!str(form, "title")) return { error: "Give the resource a title." };
     await content.saveResource(moduleId, me.id, { title: str(form, "title"), resourceType: str(form, "resourceType"), link: str(form, "link"), notes: String(form.get("notes") ?? "") }, str(form, "resourceId") || undefined);
     refresh();
-    return { success: "Ressource enregistrée." };
+    return { success: "Resource saved." };
   } catch (e) {
     return fail(e);
   }
@@ -511,17 +495,17 @@ export async function enrollAction(_: State, form: FormData): Promise<State> {
       try {
         if (user.phoneE164 && isWhatsAppConfigured()) {
           await sendEnrollment(user.phoneE164, { ...p, endDate: p.endDate ?? "—" });
-          notice = " Message WhatsApp envoyé.";
+          notice = " WhatsApp message sent.";
         } else if (user.email) {
-          if (!(await sendEnrollmentEmail(user.email, { ...p, ...emailDetails })).simulated) notice = " Email envoyé.";
+          if (!(await sendEnrollmentEmail(user.email, { ...p, ...emailDetails })).simulated) notice = " Email sent.";
         }
       } catch (e) {
         console.error("enrolment notice", e);
-        notice = " (La notification n'a pas pu être envoyée.)";
+        notice = " (The notification could not be sent.)";
       }
     }
     refresh();
-    return { success: `${user.name} ${user.surname} est inscrit(e).${notice}` };
+    return { success: `${user.name} ${user.surname} is enrolled.${notice}` };
   } catch (e) {
     return fail(e);
   }
@@ -531,7 +515,7 @@ export async function updateEnrollmentAction(_: State, form: FormData): Promise<
   try {
     const me = await staffOrThrow();
     const e = Types.ObjectId.isValid(str(form, "enrollmentId")) ? await Enrollment.findById(str(form, "enrollmentId")).select("courseId").lean() : null;
-    if (!e) return { error: "Inscription introuvable." };
+    if (!e) return { error: "Enrolment not found." };
     await courseOf(me, String(e.courseId), "enroll");
     const status = str(form, "status");
     await updateEnrollment(str(form, "enrollmentId"), {
@@ -540,7 +524,7 @@ export async function updateEnrollmentAction(_: State, form: FormData): Promise<
       ...(status === "active" || status === "suspended" || status === "completed" ? { status } : {}),
     });
     refresh();
-    return { success: "Inscription mise à jour." };
+    return { success: "Enrolment updated." };
   } catch (err) {
     return fail(err);
   }
@@ -562,8 +546,8 @@ export async function gradeAction(_: State, form: FormData): Promise<State> {
   try {
     const me = await staffOrThrow();
     const id = str(form, "submissionId");
-    const sub = Types.ObjectId.isValid(id) ? await AssignmentSubmission.findById(id).select("courseId").lean() : null;
-    if (!sub) return { error: "Devoir introuvable." };
+    const sub = Types.ObjectId.isValid(id) ? await ChallengeSubmission.findById(id).select("courseId").lean() : null;
+    if (!sub) return { error: "Submission not found." };
     await courseOf(me, String(sub.courseId), "grade");
     const decision = str(form, "decision") === "returned" ? "returned" : "graded";
     const gradeRaw = str(form, "grade");
@@ -582,7 +566,7 @@ export async function updateRequestAction(_: State, form: FormData): Promise<Sta
     const me = await usersGuard();
     await updateRequest(str(form, "requestId"), me.id, { status: str(form, "status"), notes: String(form.get("notes") ?? "") });
     refresh();
-    return { success: "Demande mise à jour." };
+    return { success: "Request updated." };
   } catch (e) {
     if (e instanceof RequestError) return { error: e.message };
     return fail(e);
@@ -594,12 +578,12 @@ export async function updateRequestAction(_: State, form: FormData): Promise<Sta
 export async function saveAiSettingsAction(_: State, form: FormData): Promise<State> {
   try {
     const me = await staffOrThrow();
-    if (!me.isAdmin) throw new AdminError("Accès réservé aux administrateurs.");
+    if (!me.isAdmin) throw new AdminError("Administrators only.");
     const minutes = Number(str(form, "aiMonthlyMinutes"));
-    if (!Number.isFinite(minutes) || minutes < 0 || minutes > 10000) throw new AdminError("Indiquez un nombre de minutes entre 0 et 10 000.");
+    if (!Number.isFinite(minutes) || minutes < 0 || minutes > 10000) throw new AdminError("Enter a number of minutes between 0 and 10,000.");
     await setDefaultMonthlyMinutes(minutes);
     refresh();
-    return { success: "Réglage enregistré." };
+    return { success: "Setting saved." };
   } catch (e) {
     return fail(e);
   }

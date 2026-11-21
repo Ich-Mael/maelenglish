@@ -1,15 +1,14 @@
 import { Types } from "mongoose";
-import { AssignmentSubmission, Course, Enrollment, Lesson, LessonProgress, Module, QuizAttempt, TeachingResource, Unit, User, STAFF_ROLES, COURSE_LEVELS, LESSON_TYPES, RESOURCE_TYPES, type CourseDoc, type LessonDoc, type ModuleDoc, type UnitDoc } from "@/models";
+import { Course, Enrollment, Module, QuizAttempt, TeachingResource, Unit, User, STAFF_ROLES, COURSE_LEVELS, RESOURCE_TYPES, type CourseDoc, type ModuleDoc, type UnitDoc } from "@/models";
+import { CEFR_LEVELS } from "@/lib/lab/meta";
 import { AdminError } from "./errors";
 import { normalizeRich } from "@/lib/rich-text";
-import { adoptOrphanLessons } from "./unit-migration";
+import { deleteUnitSteps } from "./steps";
 
-export { adoptOrphanLessons };
-
-/* Course content editing (framework-free; permission checks happen in the actions). */
+/* Course content editing: courses, modules, units (steps: ./steps.ts). Framework-free; permission checks happen in the actions. */
 
 const oid = (id: string) => {
-  if (!Types.ObjectId.isValid(id)) throw new AdminError("Identifiant invalide.");
+  if (!Types.ObjectId.isValid(id)) throw new AdminError("Invalid ID.");
   return new Types.ObjectId(id);
 };
 const date = (v?: string | null) => (v ? new Date(`${v}T00:00:00`) : null);
@@ -18,7 +17,7 @@ const date = (v?: string | null) => (v ? new Date(`${v}T00:00:00`) : null);
 export function parsePrice(v?: string | null): number | null {
   const raw = (v ?? "").replace(/fcfa|f\s*cfa|xof/gi, "").replace(/[\s.\u00a0\u202f]/g, "");
   if (!raw) return null;
-  if (!/^\d+$/.test(raw)) throw new AdminError("Prix invalide : indiquez un montant en FCFA, par exemple 30000.");
+  if (!/^\d+$/.test(raw)) throw new AdminError("Invalid price: enter an amount in FCFA, e.g. 30000.");
   return Number(raw);
 }
 
@@ -53,7 +52,7 @@ export async function createCourse(input: CourseInput): Promise<CourseDoc> {
 
 export async function updateCourse(courseId: string, input: CourseInput, settings?: CourseSettings) {
   const c = await Course.findById(oid(courseId));
-  if (!c) throw new AdminError("Cours introuvable.");
+  if (!c) throw new AdminError("Course not found.");
   c.title = input.title.trim();
   c.description = normalizeRich(input.description);
   c.imageUrl = input.imageUrl?.trim() ?? "";
@@ -80,16 +79,10 @@ export async function setInstructors(courseId: string, userIds: string[]) {
 /** Deleting is refused while learners are enrolled (deactivate the course instead: unpublish). */
 export async function deleteCourse(courseId: string) {
   const id = oid(courseId);
-  if (await Enrollment.exists({ courseId: id })) throw new AdminError("Des apprenants sont inscrits : dépubliez le cours au lieu de le supprimer.");
-  await Promise.all([
-    Module.deleteMany({ courseId: id }),
-    Unit.deleteMany({ courseId: id }),
-    Lesson.deleteMany({ courseId: id }),
-    TeachingResource.deleteMany({ courseId: id }),
-    LessonProgress.deleteMany({ courseId: id }),
-    QuizAttempt.deleteMany({ courseId: id }),
-    AssignmentSubmission.deleteMany({ courseId: id }),
-  ]);
+  if (await Enrollment.exists({ courseId: id })) throw new AdminError("Learners are enrolled: unpublish the course instead of deleting it.");
+  const unitIds = (await Unit.find({ courseId: id }).select("_id").lean()).map((u) => u._id);
+  await deleteUnitSteps(unitIds);
+  await Promise.all([Module.deleteMany({ courseId: id }), Unit.deleteMany({ courseId: id }), TeachingResource.deleteMany({ courseId: id }), QuizAttempt.deleteMany({ courseId: id })]);
   await Course.deleteOne({ _id: id });
 }
 
@@ -115,18 +108,18 @@ export async function createModule(courseId: string, title: string, summary = ""
   const id = oid(courseId);
   const last = await Module.findOne({ courseId: id }).sort({ order: -1 }).select("order").lean();
   const m = await Module.create({ courseId: id, title: title.trim(), summary, order: (last?.order ?? 0) + 1 });
-  // Every module starts with one unit, so lessons can be added straight away.
+  // Every module starts with one unit, so steps can be added straight away.
   await Unit.create({ courseId: id, moduleId: m._id, title: "Unité 1", order: 1 });
   return m.toObject() as ModuleDoc;
 }
 
-export async function updateModule(moduleId: string, data: { title: string; summary?: string; description?: string; isCheckpointRequired?: boolean }) {
+export async function updateModule(moduleId: string, data: { title: string; summary?: string; description?: string; level?: string }) {
   const m = await Module.findById(oid(moduleId));
-  if (!m) throw new AdminError("Module introuvable.");
+  if (!m) throw new AdminError("Module not found.");
   m.title = data.title.trim();
   m.summary = data.summary?.trim() ?? "";
   if (data.description !== undefined) m.description = normalizeRich(data.description);
-  if (data.isCheckpointRequired !== undefined) m.isCheckpointRequired = data.isCheckpointRequired;
+  if (data.level !== undefined) m.level = (CEFR_LEVELS.includes(data.level as never) ? data.level : "") as ModuleDoc["level"];
   await m.save();
 }
 
@@ -139,52 +132,32 @@ export async function moveModule(moduleId: string, dir: "up" | "down") {
 
 export async function deleteModule(moduleId: string) {
   const id = oid(moduleId);
-  const lessonIds = (await Lesson.find({ moduleId: id }).select("_id").lean()).map((l) => l._id);
-  await Promise.all([
-    Lesson.deleteMany({ moduleId: id }),
-    LessonProgress.deleteMany({ lessonId: { $in: lessonIds } }),
-    Unit.deleteMany({ moduleId: id }),
-    TeachingResource.deleteMany({ moduleId: id }),
-  ]);
+  await deleteUnitSteps((await Unit.find({ moduleId: id }).select("_id").lean()).map((u) => u._id));
+  await Promise.all([Unit.deleteMany({ moduleId: id }), TeachingResource.deleteMany({ moduleId: id })]);
   await Module.deleteOne({ _id: id });
 }
 
 // ── Units ──────────────────────────────────────────────────────────────────
 
-export async function createUnit(moduleId: string, title: string, objective = ""): Promise<UnitDoc> {
+/** One objective per line → list (empty lines dropped). */
+const objectiveList = (v: string | string[] = []) => (Array.isArray(v) ? v : v.split("\n")).map((x) => x.trim()).filter(Boolean).slice(0, 8);
+
+export async function createUnit(moduleId: string, title: string, objectives: string | string[] = []): Promise<UnitDoc> {
   const m = await Module.findById(oid(moduleId)).select("courseId").lean();
-  if (!m) throw new AdminError("Module introuvable.");
-  if (!title.trim()) throw new AdminError("Donnez un titre à l'unité.");
+  if (!m) throw new AdminError("Module not found.");
+  if (!title.trim()) throw new AdminError("Give the unit a title.");
   const last = await Unit.findOne({ moduleId: m._id }).sort({ order: -1 }).select("order").lean();
-  const u = await Unit.create({ courseId: m.courseId, moduleId: m._id, title: title.trim(), objective: objective.trim(), order: (last?.order ?? 0) + 1 });
+  const u = await Unit.create({ courseId: m.courseId, moduleId: m._id, title: title.trim(), objectives: objectiveList(objectives), order: (last?.order ?? 0) + 1 });
   return u.toObject() as UnitDoc;
 }
 
-export async function updateUnit(unitId: string, data: { title: string; objective?: string }) {
+export async function updateUnit(unitId: string, data: { title: string; objectives?: string | string[]; estimatedMinutes?: number }) {
   const u = await Unit.findById(oid(unitId));
-  if (!u) throw new AdminError("Unité introuvable.");
-  if (!data.title.trim()) throw new AdminError("Donnez un titre à l'unité.");
+  if (!u) throw new AdminError("Unit not found.");
+  if (!data.title.trim()) throw new AdminError("Give the unit a title.");
   u.title = data.title.trim();
-  u.objective = data.objective?.trim() ?? "";
-  await u.save();
-}
-
-export type UnitChallengeInput = { title?: string; instructions?: string; maxSeconds?: number; prepSeconds?: number };
-
-/** Speaking challenge closing the unit. Empty instructions = no challenge. */
-export async function saveUnitChallenge(unitId: string, c: UnitChallengeInput) {
-  const u = await Unit.findById(oid(unitId));
-  if (!u) throw new AdminError("Unité introuvable.");
-  const clamp = (v: unknown, min: number, max: number, dflt: number) => {
-    const n = Math.round(Number(v));
-    return Number.isFinite(n) ? Math.max(min, Math.min(max, n)) : dflt;
-  };
-  u.set("challenge", {
-    title: c.title?.trim() ?? "",
-    instructions: normalizeRich(c.instructions),
-    maxSeconds: clamp(c.maxSeconds, 15, 300, 60),
-    prepSeconds: clamp(c.prepSeconds, 0, 120, 0),
-  });
+  if (data.objectives !== undefined) u.objectives = objectiveList(data.objectives);
+  if (data.estimatedMinutes !== undefined) u.estimatedMinutes = Math.max(0, Math.round(Number(data.estimatedMinutes) || 0));
   await u.save();
 }
 
@@ -195,85 +168,16 @@ export async function moveUnit(unitId: string, dir: "up" | "down") {
   await moveIn(siblings, unitId, dir, (id, order) => Unit.updateOne({ _id: id }, { order }));
 }
 
-/** Deletes the unit with its lessons (and the learners' progress on them). A module keeps at least one unit. */
+/** Deletes the unit with its steps (and the learners' progress on them). A module keeps at least one unit. */
 export async function deleteUnit(unitId: string) {
   const u = await Unit.findById(oid(unitId)).lean();
   if (!u) return;
-  if ((await Unit.countDocuments({ moduleId: u.moduleId })) <= 1) throw new AdminError("Un module garde au moins une unité : renommez-la plutôt.");
-  const lessonIds = (await Lesson.find({ unitId: u._id }).select("_id").lean()).map((l) => l._id);
-  await Promise.all([
-    LessonProgress.deleteMany({ lessonId: { $in: lessonIds } }),
-    Lesson.deleteMany({ unitId: u._id }),
-    AssignmentSubmission.deleteMany({ unitId: u._id, assignmentType: "unit_challenge" }),
-  ]);
+  if ((await Unit.countDocuments({ moduleId: u.moduleId })) <= 1) throw new AdminError("A module keeps at least one unit: rename it instead.");
+  await deleteUnitSteps([u._id]);
   await Unit.deleteOne({ _id: u._id });
 }
 
-// ── Lessons ────────────────────────────────────────────────────────────────
-
-/** New lesson at the end of a unit (`parentId` = unit id; a module id means its first unit). */
-export async function createLesson(parentId: string, title: string, type: string): Promise<LessonDoc> {
-  if (!LESSON_TYPES.includes(type as never)) throw new AdminError("Type d'activité inconnu.");
-  const id = oid(parentId);
-  let unit = await Unit.findById(id).lean<UnitDoc>();
-  if (!unit && (await Module.exists({ _id: id }))) {
-    await adoptOrphanLessons(parentId);
-    unit = await Unit.findOne({ moduleId: id }).sort({ order: 1, createdAt: 1 }).lean<UnitDoc>();
-    if (!unit) unit = await createUnit(parentId, "Unité 1");
-  }
-  if (!unit) throw new AdminError("Unité introuvable.");
-  const last = await Lesson.findOne({ unitId: unit._id }).sort({ order: -1 }).select("order").lean();
-  // New lessons start as drafts so learners never see an empty lesson.
-  const l = await Lesson.create({ courseId: unit.courseId, moduleId: unit.moduleId, unitId: unit._id, title: title.trim(), type: type as LessonDoc["type"], order: (last?.order ?? 0) + 1, isPublished: false });
-  return l.toObject() as LessonDoc;
-}
-
-export type LessonInput = {
-  title: string;
-  description?: string;
-  isPublished?: boolean;
-  videoUrl?: string;
-  durationMinutes?: number;
-  content?: string;
-  fileUrl?: string;
-  fileName?: string;
-  exercises?: unknown[];
-};
-
-export async function updateLesson(lessonId: string, data: LessonInput) {
-  const l = await Lesson.findById(oid(lessonId));
-  if (!l) throw new AdminError("Activité introuvable.");
-  l.title = data.title.trim();
-  l.description = data.description ?? "";
-  l.isPublished = !!data.isPublished;
-  l.videoUrl = data.videoUrl?.trim() ?? "";
-  l.durationMinutes = Math.max(0, Number(data.durationMinutes) || 0);
-  l.content = normalizeRich(data.content);
-  l.fileUrl = data.fileUrl?.trim() ?? "";
-  l.fileName = data.fileName?.trim() ?? "";
-  if (l.type === "practice") {
-    if (data.isPublished && !(data.exercises?.length)) throw new AdminError("Ajoutez au moins un exercice avant de publier.");
-    l.set("exercises", data.exercises ?? []);
-  }
-  if (l.type === "video" && data.isPublished && !l.videoUrl) throw new AdminError("Indiquez le lien de la vidéo avant de publier.");
-  if (l.type === "pdf" && data.isPublished && !l.fileUrl) throw new AdminError("Indiquez le lien du PDF avant de publier.");
-  await l.save();
-}
-
-export async function moveLesson(lessonId: string, dir: "up" | "down") {
-  const l = await Lesson.findById(oid(lessonId)).lean();
-  if (!l) return;
-  const siblings = await Lesson.find(l.unitId ? { unitId: l.unitId } : { moduleId: l.moduleId, unitId: null }).sort({ order: 1, createdAt: 1 }).select("_id order").lean();
-  await moveIn(siblings, lessonId, dir, (id, order) => Lesson.updateOne({ _id: id }, { order }));
-}
-
-export async function deleteLesson(lessonId: string) {
-  const id = oid(lessonId);
-  await LessonProgress.deleteMany({ lessonId: id });
-  await Lesson.deleteOne({ _id: id });
-}
-
-// ── Quizzes & assignments ──────────────────────────────────────────────────
+// ── Final exam ──────────────────────────────────────────────────
 
 export type QuizInput = {
   title?: string;
@@ -297,42 +201,12 @@ function quizDoc(q: QuizInput) {
   };
 }
 
-/** Module quiz (`moduleId`) or final exam (`courseId`). */
-export async function saveQuiz(target: { moduleId: string } | { courseId: string }, q: QuizInput) {
-  if ("moduleId" in target) {
-    const m = await Module.findById(oid(target.moduleId));
-    if (!m) throw new AdminError("Module introuvable.");
-    m.set("quiz", quizDoc(q));
-    await m.save();
-  } else {
-    const c = await Course.findById(oid(target.courseId));
-    if (!c) throw new AdminError("Cours introuvable.");
-    c.set("finalExam", quizDoc(q));
-    await c.save();
-  }
-}
-
-export type AssignmentInput = { title?: string; instructions?: string; submissionType?: string; maxScore?: number; dueDate?: string | null };
-
-/** Module assignment / checkpoint (`moduleId`) or final project (`courseId`). Empty instructions = no assignment. */
-export async function saveAssignment(target: { moduleId: string } | { courseId: string }, a: AssignmentInput) {
-  const doc = {
-    title: a.title?.trim() ?? "",
-    instructions: normalizeRich(a.instructions),
-    submissionType: a.submissionType === "link" ? "link" : "text",
-    maxScore: Math.max(1, Math.round(Number(a.maxScore ?? 100))),
-  };
-  if ("moduleId" in target) {
-    const m = await Module.findById(oid(target.moduleId));
-    if (!m) throw new AdminError("Module introuvable.");
-    m.set("assignment", { ...doc, dueDate: date(a.dueDate) });
-    await m.save();
-  } else {
-    const c = await Course.findById(oid(target.courseId));
-    if (!c) throw new AdminError("Cours introuvable.");
-    c.set("finalProject", doc);
-    await c.save();
-  }
+/** The course final exam (opens once every module is complete). */
+export async function saveFinalExam(courseId: string, q: QuizInput) {
+  const c = await Course.findById(oid(courseId));
+  if (!c) throw new AdminError("Course not found.");
+  c.set("finalExam", quizDoc(q));
+  await c.save();
 }
 
 // ── Teaching resources (staff only) ────────────────────────────────────────
@@ -341,7 +215,7 @@ export type ResourceInput = { title: string; resourceType?: string; link?: strin
 
 export async function saveResource(moduleId: string, actorId: string, data: ResourceInput, resourceId?: string) {
   const m = await Module.findById(oid(moduleId)).select("courseId").lean();
-  if (!m) throw new AdminError("Module introuvable.");
+  if (!m) throw new AdminError("Module not found.");
   const fields = {
     title: data.title.trim(),
     resourceType: (RESOURCE_TYPES.includes(data.resourceType as never) ? data.resourceType : "other") as (typeof RESOURCE_TYPES)[number],

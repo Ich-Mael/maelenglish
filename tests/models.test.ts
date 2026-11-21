@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { Course, Enrollment, Lesson, Module, User, accessState, isAccountActive, type EnrollmentDoc } from "@/models";
+import { Course, Enrollment, Step, User, accessState, isAccountActive, type EnrollmentDoc } from "@/models";
 
 let mongo: MongoMemoryServer;
 
@@ -52,52 +52,29 @@ describe("User", () => {
   });
 });
 
-describe("Course / Module / Lesson", () => {
+describe("Course / Step", () => {
   it("only accepts catalogue programmes", async () => {
     await expect(Course.create({ title: "Business A1", program: "business" })).resolves.toBeTruthy();
     await expect(Course.create({ title: "Sans programme" })).resolves.toBeTruthy();
-    await expect(Course.create({ title: "X", program: "astrology" })).rejects.toThrow(/Programme MaelEnglish inconnu/);
+    await expect(Course.create({ title: "X", program: "astrology" })).rejects.toThrow(/Unknown MaelEnglish programme/);
   });
 
-  it("validates quiz questions", async () => {
-    const course = await Course.create({ title: "Essentials 1", program: "essentials" });
+  it("validates final exam questions", async () => {
     const options = [{ id: "a", text: "I am" }, { id: "b", text: "I is" }];
-    const mod = await Module.create({
-      courseId: course._id,
-      title: "Day 1",
-      quiz: { title: "Quiz", questions: [{ text: "Choose", options, correctOptionId: "a" }] },
-    });
-    expect(mod.quiz?.questions).toHaveLength(1);
-
-    await expect(
-      Module.create({ courseId: course._id, title: "Day 2", quiz: { questions: [{ text: "Choose", options, correctOptionId: "z" }] } }),
-    ).rejects.toThrow(/bonne réponse/);
-    await expect(
-      Module.create({ courseId: course._id, title: "Day 3", quiz: { questions: [{ text: "One", options: [options[0]], correctOptionId: "a" }] } }),
-    ).rejects.toThrow(/au moins 2 réponses/);
+    const course = await Course.create({ title: "Essentials 1", finalExam: { title: "Exam", questions: [{ text: "Choose", options, correctOptionId: "a" }] } });
+    expect(course.finalExam?.questions).toHaveLength(1);
+    await expect(Course.create({ title: "X", finalExam: { questions: [{ text: "Choose", options, correctOptionId: "z" }] } })).rejects.toThrow(/correct answer/);
+    await expect(Course.create({ title: "Y", finalExam: { questions: [{ text: "One", options: [options[0]], correctOptionId: "a" }] } })).rejects.toThrow(/at least 2 answers/);
   });
 
-  it("validates practice exercises per kind", async () => {
-    const course = await Course.create({ title: "Essentials 1", program: "essentials" });
-    const mod = await Module.create({ courseId: course._id, title: "Day 1" });
-    const lesson = (exercises: object[]) =>
-      Lesson.create({ courseId: course._id, moduleId: mod._id, title: "Practice", type: "practice", exercises });
-
-    const ok = await lesson([
-      { kind: "choice", text: "Hello means…", options: [{ id: "a", text: "Bonjour" }, { id: "b", text: "Merci" }], correctOptionId: "a" },
-      { kind: "build", text: "Nice to meet you", distractors: ["see"] },
-      { kind: "order", items: ["Hello", "How are you?", "Goodbye"] },
-      { kind: "match", pairs: [{ left: "pilot", right: "pilote" }, { left: "runway", right: "piste" }] },
-      { kind: "listen", text: "Fasten your seatbelt" },
-      { kind: "speak", text: "Good morning" },
-      { kind: "gap", text: "I ___ a student", answers: ["am"] },
-    ]);
-    expect(ok.exercises).toHaveLength(7);
-    expect(ok.exercises[0]._id).toBeTruthy();
-
-    await expect(lesson([{ kind: "choice", text: "?", options: [{ id: "a", text: "x" }, { id: "b", text: "y" }], correctOptionId: "z" }])).rejects.toThrow(/bonne réponse/);
-    await expect(lesson([{ kind: "gap", text: "No blank", answers: ["am"] }])).rejects.toThrow(/___/);
-    await expect(lesson([{ kind: "match", pairs: [{ left: "a", right: "b" }] }])).rejects.toThrow(/2 paires/);
+  it("allows one challenge step per unit", async () => {
+    const course = await Course.create({ title: "C" });
+    const ids = { courseId: course._id, moduleId: new mongoose.Types.ObjectId(), unitId: new mongoose.Types.ObjectId() };
+    await Step.create({ ...ids, position: 1, kind: "challenge", title: "C1" });
+    await expect(Step.create({ ...ids, position: 2, kind: "challenge", title: "C2" })).rejects.toThrow(/duplicate key/);
+    await expect(Step.create({ ...ids, position: 2, kind: "nope" as "lesson", title: "X" })).rejects.toThrow(/not a valid enum/);
+    await Step.create({ ...ids, position: 2, kind: "lesson", title: "L" });
+    expect(await Step.countDocuments({ unitId: ids.unitId })).toBe(2);
   });
 });
 
@@ -110,7 +87,7 @@ describe("Enrollment", () => {
     const other = await Course.create({ title: "Tech 2", program: "tech" });
     await expect(
       Enrollment.create({ userId: user._id, courseId: other._id, startDate: new Date("2027-02-01"), endDate: new Date("2027-01-01") }),
-    ).rejects.toThrow(/date de fin/);
+    ).rejects.toThrow(/end date/);
   });
 
   it("computes the access state", () => {

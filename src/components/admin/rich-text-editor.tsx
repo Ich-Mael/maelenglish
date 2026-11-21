@@ -80,8 +80,6 @@ export function RichTextEditor({
             setReady(true);
           }}
           init={{
-            language: "fr_FR",
-            language_url: "/hugerte-langs/fr_FR.js",
             base_url: "/hugerte",
             suffix: ".min",
             menubar: false,
@@ -92,7 +90,7 @@ export function RichTextEditor({
               "blocks fontfamily | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright | bullist numlist | blockquote link table | superscript subscript | removeformat | undo redo",
             toolbar_mode: "wrap",
             font_family_formats: fontFormats(),
-            block_formats: "Paragraphe=p; Titre=h2; Sous-titre=h3; Petit titre=h4",
+            block_formats: "Paragraph=p; Heading=h2; Subheading=h3; Small heading=h4",
             // Only the brand palette (the server keeps these exact colours and nothing else).
             color_map_foreground: colorMap(TEXT_COLORS),
             color_map_background: colorMap(HIGHLIGHT_COLORS),

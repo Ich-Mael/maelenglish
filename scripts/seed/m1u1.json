@@ -1,0 +1,181 @@
+{
+  "course": { "title": "MaelEnglish Professional English (démo)", "description": "Cours de démonstration construit selon la structure des cours : leçon, 2 ou 3 activités, puis le défi oral de l'unité." },
+  "module": {
+    "position": 1,
+    "title": "Getting to Know Each Other",
+    "summary": "Saluer, vous présenter et parler de votre métier.",
+    "level": "A2",
+    "units": [
+      {
+        "position": 1,
+        "title": "Greetings & Self-Introduction",
+        "objectives": ["Saluer de façon formelle et informelle", "Vous présenter, vous et votre métier", "Utiliser le verbe « to be » et le présent simple"],
+        "estimatedMinutes": 45,
+        "steps": [
+          {
+            "position": 1,
+            "kind": "lesson",
+            "title": "How to greet people at work",
+            "estimatedMinutes": 6,
+            "content": {
+              "intro": "In a professional context, how you greet someone depends on how well you know them and the time of day.",
+              "sections": [
+                {
+                  "type": "vocabulary",
+                  "items": [
+                    { "term": "Good morning", "meaning": "Salutation formelle avant midi", "example": "Good morning, Mr Ouédraogo." },
+                    { "term": "Nice to meet you", "meaning": "À la première rencontre", "example": "Hi, I'm Awa. Nice to meet you." },
+                    { "term": "How are you doing?", "meaning": "Question amicale", "example": "Hi Paul, how are you doing?" }
+                  ]
+                },
+                {
+                  "type": "dialogue",
+                  "lines": [
+                    { "speaker": "Awa", "text": "Good morning. I'm Awa Traoré, the new HR assistant." },
+                    { "speaker": "Paul", "text": "Nice to meet you, Awa. I'm Paul, from Finance." }
+                  ]
+                },
+                { "type": "tip", "text": "Ne répondez jamais « Me too » à « Nice to meet you » : dites « Nice to meet you too »." }
+              ]
+            }
+          },
+          {
+            "position": 2,
+            "kind": "activity",
+            "lessonRef": 1,
+            "activityType": "listen_choose",
+            "title": "Listening: first day at the office",
+            "estimatedMinutes": 5,
+            "instructions": "Écoutez la conversation et choisissez la bonne réponse.",
+            "settings": { "maxPlays": 3 },
+            "passScore": 60,
+            "items": [
+              { "prompt": "What is Awa's job?", "options": ["HR assistant", "Accountant", "Manager"], "answers": ["HR assistant"], "feedback": "Elle dit : « I'm the new HR assistant. »" },
+              { "prompt": "Which department is Paul from?", "options": ["Sales", "Finance", "IT"], "answers": ["Finance"], "feedback": "Paul dit : « I'm Paul, from Finance. »" }
+            ]
+          },
+          {
+            "position": 3,
+            "kind": "activity",
+            "lessonRef": 1,
+            "activityType": "matching",
+            "title": "Matching: the right greeting for the situation",
+            "estimatedMinutes": 4,
+            "instructions": "Associez chaque situation à la meilleure salutation.",
+            "passScore": 60,
+            "items": [
+              { "prompt": "Meeting a client for the first time at 9:00", "answers": ["Good morning, nice to meet you."], "feedback": "Formel + première rencontre." },
+              { "prompt": "Seeing a colleague you know well", "answers": ["Hi, how are you doing?"], "feedback": "Informel et amical." },
+              { "prompt": "Someone says 'Nice to meet you'", "answers": ["Nice to meet you too."], "feedback": "Ajoutez « too » — jamais « Me too »." }
+            ]
+          },
+          {
+            "position": 4,
+            "kind": "lesson",
+            "title": "Grammar: the verb 'to be'",
+            "estimatedMinutes": 6,
+            "content": {
+              "intro": "We use 'to be' to give our name, job, nationality and to describe things.",
+              "sections": [
+                {
+                  "type": "grammar_rule",
+                  "rule": "I am / You are / He, She, It is / We are / They are",
+                  "table": [
+                    ["Subject", "Positive", "Negative", "Question"],
+                    ["I", "I am (I'm)", "I'm not", "Am I?"],
+                    ["He/She", "She is (She's)", "She isn't", "Is she?"],
+                    ["We/You/They", "We are (We're)", "We aren't", "Are we?"]
+                  ],
+                  "examples": ["I'm a project manager.", "She is from Ghana.", "Are you new here?"]
+                }
+              ]
+            }
+          },
+          {
+            "position": 5,
+            "kind": "activity",
+            "lessonRef": 4,
+            "activityType": "fill_gaps",
+            "title": "Practice: am, is or are?",
+            "estimatedMinutes": 5,
+            "instructions": "Complétez les présentations avec am, is ou are.",
+            "settings": { "wordBank": true },
+            "passScore": 60,
+            "items": [
+              { "prompt": "I ___ the new sales manager.", "options": ["am", "is", "are"], "answers": ["am"], "feedback": "I + am." },
+              { "prompt": "This ___ my colleague, Fatou.", "options": ["am", "is", "are"], "answers": ["is"], "feedback": "This (singulier) + is." },
+              { "prompt": "We ___ from the Ouagadougou office.", "options": ["am", "is", "are"], "answers": ["are"], "feedback": "We + are." }
+            ]
+          },
+          {
+            "position": 6,
+            "kind": "activity",
+            "lessonRef": 4,
+            "activityType": "error_hunt",
+            "title": "Error hunt: fix the introduction",
+            "estimatedMinutes": 4,
+            "instructions": "Touchez le mot faux dans chaque phrase et corrigez-le.",
+            "passScore": 60,
+            "items": [
+              { "prompt": "I is the new accountant.", "answers": ["am"], "feedback": "I + am." },
+              { "prompt": "My manager are very friendly.", "answers": ["is"], "feedback": "My manager (= he/she) + is." },
+              { "prompt": "They is from the Abidjan office.", "answers": ["are"], "feedback": "They + are." }
+            ]
+          },
+          {
+            "position": 7,
+            "kind": "lesson",
+            "title": "Grammar: present simple for jobs and routines",
+            "estimatedMinutes": 6,
+            "content": {
+              "intro": "We use the present simple to talk about our job, company and routines.",
+              "sections": [{ "type": "grammar_rule", "rule": "I/You/We/They work — He/She/It works (add -s)", "examples": ["I work in marketing.", "She manages a team of five.", "Do you work from home?"] }]
+            }
+          },
+          {
+            "position": 8,
+            "kind": "activity",
+            "lessonRef": 7,
+            "activityType": "sentence_builder",
+            "title": "Practice: build your introduction",
+            "estimatedMinutes": 5,
+            "instructions": "Remettez les mots dans le bon ordre.",
+            "passScore": 60,
+            "items": [
+              { "prompt": "work / I / a bank / for", "answers": ["I work for a bank."], "feedback": "Sujet + verbe + complément." },
+              { "prompt": "manages / she / the team / IT", "answers": ["She manages the IT team."], "feedback": "He/She + verbe-s." }
+            ]
+          },
+          {
+            "position": 9,
+            "kind": "activity",
+            "lessonRef": 7,
+            "activityType": "listen_fill_gaps",
+            "title": "Listening: Fatou talks about her job",
+            "estimatedMinutes": 5,
+            "instructions": "Écoutez Fatou et complétez le texte.",
+            "settings": { "maxPlays": 3, "wordBank": true },
+            "passScore": 60,
+            "items": [
+              { "prompt": "I ___ for a telecom company in Dakar.", "answers": ["work"], "feedback": "I + work (pas de -s)." },
+              { "prompt": "My team ___ customer accounts.", "answers": ["manages"], "feedback": "My team (= it) + manages." },
+              { "prompt": "I usually ___ at 8 a.m.", "answers": ["start"], "feedback": "Présent simple pour les habitudes." }
+            ]
+          },
+          {
+            "position": 10,
+            "kind": "challenge",
+            "challengeType": "speaking",
+            "title": "Speaking Challenge: introduce yourself",
+            "estimatedMinutes": 5,
+            "prompt": "Vous êtes à un événement de networking. Présentez-vous à un nouveau contact en 60 secondes.",
+            "prepSeconds": 30,
+            "recordSeconds": 60,
+            "mustInclude": ["une salutation", "votre nom", "votre métier et votre entreprise (verbe to be)", "ce que vous faites (présent simple)", "une formule de politesse pour finir"],
+            "modelAnswer": { "text": "Good evening, nice to meet you. I'm Mael. I'm an English coach, and I work with professionals who want to communicate with confidence..." }
+          }
+        ]
+      }
+    ]
+  }
+}

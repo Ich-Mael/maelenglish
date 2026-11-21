@@ -27,19 +27,19 @@ export type UserEdit = {
  */
 export async function updateAccount(actor: Actor, userId: string, data: UserEdit): Promise<void> {
   const user = await User.findById(userId);
-  if (!user) throw new AdminError("Compte introuvable.");
-  if (hasRole(user, ADMIN_ROLES) && !hasRole(actor, ADMIN_ROLES)) throw new AdminError("Seul un administrateur peut modifier ce compte.");
+  if (!user) throw new AdminError("Account not found.");
+  if (hasRole(user, ADMIN_ROLES) && !hasRole(actor, ADMIN_ROLES)) throw new AdminError("Only an administrator can edit this account.");
 
   if (data.role && data.role !== user.role) {
-    if (hasRole(user, ADMIN_ROLES)) throw new AdminError("Le rôle d'un administrateur se change directement dans la base de données.");
-    if (!assignableRoles(actor).includes(data.role)) throw new AdminError("Vous ne pouvez pas attribuer ce rôle.");
+    if (hasRole(user, ADMIN_ROLES)) throw new AdminError("An administrator's role can only be changed in the database.");
+    if (!assignableRoles(actor).includes(data.role)) throw new AdminError("You can't assign this role.");
     user.role = data.role;
   }
   const username = data.username.trim().toLowerCase();
-  if (!/^[a-z0-9._-]{3,30}$/.test(username)) throw new AdminError("Nom d'utilisateur : 3 à 30 caractères (lettres, chiffres, point, tiret).");
-  if (username !== user.username && (await User.exists({ username, _id: { $ne: user._id } }))) throw new AdminError("Ce nom d'utilisateur est déjà pris.");
+  if (!/^[a-z0-9._-]{3,30}$/.test(username)) throw new AdminError("Username: 3 to 30 characters (letters, digits, dot, dash).");
+  if (username !== user.username && (await User.exists({ username, _id: { $ne: user._id } }))) throw new AdminError("This username is already taken.");
   const email = data.email?.trim().toLowerCase() || undefined;
-  if (email && (await User.exists({ email, _id: { $ne: user._id } }))) throw new AdminError("Cette adresse email est déjà utilisée.");
+  if (email && (await User.exists({ email, _id: { $ne: user._id } }))) throw new AdminError("This email address is already in use.");
 
   user.name = data.name.trim();
   user.surname = data.surname.trim();
@@ -51,7 +51,7 @@ export async function updateAccount(actor: Actor, userId: string, data: UserEdit
   if (data.maxDevices) user.maxDevices = Math.max(1, Math.min(20, Math.round(data.maxDevices)));
   if (data.aiMonthlyMinutes !== undefined) {
     const m = data.aiMonthlyMinutes;
-    if (m !== null && (!Number.isFinite(m) || m < 0 || m > 10000)) throw new AdminError("Minutes IA : indiquez un nombre entre 0 et 10 000, ou laissez vide.");
+    if (m !== null && (!Number.isFinite(m) || m < 0 || m > 10000)) throw new AdminError("AI minutes: enter a number between 0 and 10,000, or leave empty.");
     user.aiMonthlyMinutes = m === null ? null : Math.round(m);
   }
   await user.save();

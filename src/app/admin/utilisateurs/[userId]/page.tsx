@@ -17,14 +17,14 @@ import { PageSkeleton } from "@/components/learn/ui";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
 import { toEditorHtml } from "@/lib/rich-text";
 
-export const metadata: Metadata = { title: "Compte" };
+export const metadata: Metadata = { title: "Account" };
 
 const STATE: Record<string, { label: string; tone: "green" | "amber" | "red" | "grey" | "blue" }> = {
-  active: { label: "Actif", tone: "green" },
-  "not-started": { label: "À venir", tone: "blue" },
-  expired: { label: "Expiré", tone: "grey" },
-  suspended: { label: "Suspendu", tone: "red" },
-  completed: { label: "Terminé", tone: "green" },
+  active: { label: "Active", tone: "green" },
+  "not-started": { label: "Not started", tone: "blue" },
+  expired: { label: "Expired", tone: "grey" },
+  suspended: { label: "Suspended", tone: "red" },
+  completed: { label: "Completed", tone: "green" },
 };
 
 async function UserView({ params }: { params: Promise<{ userId: string }> }) {
@@ -45,10 +45,10 @@ async function UserView({ params }: { params: Promise<{ userId: string }> }) {
     <div className="grid max-w-5xl gap-5">
       <PageHeader
         title={`${u.name} ${u.surname}`}
-        back={{ href: "/admin/utilisateurs", label: "Utilisateurs" }}
+        back={{ href: "/admin/utilisateurs", label: "Users" }}
         subtitle={
           <span className="flex flex-wrap items-center gap-2">
-            @{u.username} · {ROLE_LABELS[u.role as string]} {!active ? <Pill tone="red">Désactivé</Pill> : d.activated ? <Pill tone="green">Activé</Pill> : <Pill tone="amber">À activer</Pill>}
+            @{u.username} · {ROLE_LABELS[u.role as string]} {!active ? <Pill tone="red">Deactivated</Pill> : d.activated ? <Pill tone="green">Activated</Pill> : <Pill tone="amber">Not activated</Pill>}
           </span>
         }
         actions={
@@ -57,61 +57,61 @@ async function UserView({ params }: { params: Promise<{ userId: string }> }) {
               action={toggleUserAction}
               fields={{ userId: String(u._id), op: active ? "deactivate" : "restore" }}
               variant={active ? "danger" : "secondary"}
-              confirm={active ? "Désactiver ce compte ? La personne sera déconnectée et ses inscriptions suspendues." : undefined}
+              confirm={active ? "Deactivate this account? The person will be signed out and their enrolments suspended." : undefined}
             >
-              {active ? "Désactiver le compte" : "Réactiver le compte"}
+              {active ? "Deactivate account" : "Reactivate account"}
             </ActionButton>
           ) : undefined
         }
       />
 
       <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
-        <Card title="Profil">
+        <Card title="Profile">
           <AdminForm action={updateUserAction}>
             <input type="hidden" name="userId" value={String(u._id)} />
             <div className="grid gap-4 sm:grid-cols-2">
-              <Input label="Prénom" name="name" defaultValue={u.name} required />
-              <Input label="Nom" name="surname" defaultValue={u.surname} required />
-              <Input label="Nom d'utilisateur" name="username" defaultValue={u.username} required />
+              <Input label="First name" name="name" defaultValue={u.name} required />
+              <Input label="Last name" name="surname" defaultValue={u.surname} required />
+              <Input label="Username" name="username" defaultValue={u.username} required />
               {isAdminAccount ? (
-                <Input label="Rôle" name="roleDisplay" value={ROLE_LABELS[u.role as string]} readOnly hint="Modifiable uniquement dans la base de données." />
+                <Input label="Role" name="roleDisplay" value={ROLE_LABELS[u.role as string]} readOnly hint="Can only be changed in the database." />
               ) : (
-                <Select label="Rôle" name="role" defaultValue={u.role as string} options={roleOptions} />
+                <Select label="Role" name="role" defaultValue={u.role as string} options={roleOptions} />
               )}
               <Input label="Email" name="email" type="email" defaultValue={u.email ?? ""} />
-              <Input label="Numéro WhatsApp" name="phoneNumber" defaultValue={u.phoneNumber ?? ""} />
-              <Input label="Niveau d'anglais" name="englishLevel" defaultValue={u.englishLevel ?? ""} />
-              <Input label="Appareils max." name="maxDevices" type="number" min={1} max={20} defaultValue={u.maxDevices ?? 3} hint="Indicatif (non bloquant)." />
-              <Input label="Minutes IA par mois" name="aiMonthlyMinutes" type="number" min={0} max={10000} defaultValue={u.aiMonthlyMinutes ?? ""} placeholder="Par défaut" hint="Vide = valeur par défaut (page Usage IA)." />
+              <Input label="WhatsApp number" name="phoneNumber" defaultValue={u.phoneNumber ?? ""} />
+              <Input label="English level" name="englishLevel" defaultValue={u.englishLevel ?? ""} />
+              <Input label="Max devices" name="maxDevices" type="number" min={1} max={20} defaultValue={u.maxDevices ?? 3} hint="For information (not enforced)." />
+              <Input label="AI minutes per month" name="aiMonthlyMinutes" type="number" min={0} max={10000} defaultValue={u.aiMonthlyMinutes ?? ""} placeholder="Default" hint="Empty = the default (AI usage page)." />
             </div>
             <RichTextEditor label="Notes" name="about" minHeight={160} defaultValue={toEditorHtml(u.about, "text")} />
             <div>
-              <Submit>Enregistrer</Submit>
+              <Submit>Save</Submit>
             </div>
           </AdminForm>
         </Card>
 
         <div className="grid content-start gap-5">
-          <Card title={d.activated ? "Mot de passe" : "Activation"} description={d.activated ? "La personne a oublié son mot de passe ? Générez un lien valable 1 heure." : "La personne n'a pas encore choisi son mot de passe."}>
+          <Card title={d.activated ? "Password" : "Activation"} description={d.activated ? "Forgotten password? Generate a link valid for 1 hour." : "The person hasn't chosen their password yet."}>
             <AccountLinkForm userId={String(u._id)} kind={d.activated ? "reset" : "activation"} hasEmail={!!u.email} />
           </Card>
-          <Card title="Activité">
+          <Card title="Activity">
             <dl className="grid grid-cols-2 gap-3 text-sm">
               <div>
-                <dt className="text-muted-foreground">Créé le</dt>
+                <dt className="text-muted-foreground">Created on</dt>
                 <dd>{fmtDate(u.createdAt)}</dd>
               </div>
               <div>
-                <dt className="text-muted-foreground">Dernière connexion</dt>
+                <dt className="text-muted-foreground">Last sign-in</dt>
                 <dd>{fmtDate(u.lastLoginAt)}</dd>
               </div>
               <div>
-                <dt className="text-muted-foreground">Sessions ouvertes</dt>
+                <dt className="text-muted-foreground">Open sessions</dt>
                 <dd>{d.sessions}</dd>
               </div>
               {!active && (
                 <div>
-                  <dt className="text-muted-foreground">Désactivé le</dt>
+                  <dt className="text-muted-foreground">Deactivated on</dt>
                   <dd>{fmtDate(u.deactivatedAt)}</dd>
                 </div>
               )}
@@ -120,9 +120,9 @@ async function UserView({ params }: { params: Promise<{ userId: string }> }) {
         </div>
       </div>
 
-      <Card title="Inscriptions">
+      <Card title="Enrolments">
         {d.enrollments.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Aucune inscription.</p>
+          <p className="text-sm text-muted-foreground">No enrolments.</p>
         ) : (
           <ul className="grid gap-2">
             {d.enrollments.map((e) => {
@@ -133,7 +133,7 @@ async function UserView({ params }: { params: Promise<{ userId: string }> }) {
                     {e.courseId.title}
                   </Link>
                   <span className="flex items-center gap-2 text-muted-foreground">
-                    {fmtDate(e.startDate)} → {e.endDate ? fmtDate(e.endDate) : "sans fin"} <Pill tone={st.tone}>{st.label}</Pill>
+                    {fmtDate(e.startDate)} → {e.endDate ? fmtDate(e.endDate) : "no end"} <Pill tone={st.tone}>{st.label}</Pill>
                   </span>
                 </li>
               );
@@ -142,9 +142,9 @@ async function UserView({ params }: { params: Promise<{ userId: string }> }) {
         )}
       </Card>
 
-      <Card title={`Appareils (${u.devices?.length ?? 0} / ${u.maxDevices ?? 3})`} description="Informatif : un appareil retiré est aussi déconnecté.">
+      <Card title={`Devices (${u.devices?.length ?? 0} / ${u.maxDevices ?? 3})`} description="For information: removing a device also signs it out.">
         {!u.devices?.length ? (
-          <p className="text-sm text-muted-foreground">Aucun appareil enregistré.</p>
+          <p className="text-sm text-muted-foreground">No devices recorded.</p>
         ) : (
           <ul className="grid gap-2">
             {u.devices.map((dv) => {
@@ -154,10 +154,10 @@ async function UserView({ params }: { params: Promise<{ userId: string }> }) {
                   <Icon className="size-5 text-primary" aria-hidden />
                   <span className="flex-1">
                     {dv.browser} · {dv.os}
-                    <span className="block text-xs text-muted-foreground">Vu le {fmtDate(dv.lastLogin)} · IP {dv.ipAddress || "?"}</span>
+                    <span className="block text-xs text-muted-foreground">Seen on {fmtDate(dv.lastLogin)} · IP {dv.ipAddress || "?"}</span>
                   </span>
-                  <ActionButton action={revokeDeviceAction} fields={{ userId: String(u._id), deviceId: dv.deviceId }} variant="secondary" confirm="Retirer cet appareil et le déconnecter ?">
-                    Retirer
+                  <ActionButton action={revokeDeviceAction} fields={{ userId: String(u._id), deviceId: dv.deviceId }} variant="secondary" confirm="Remove this device and sign it out?">
+                    Remove
                   </ActionButton>
                 </li>
               );

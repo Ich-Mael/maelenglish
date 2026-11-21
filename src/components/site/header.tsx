@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, UserPlus } from "lucide-react";
-import { AccountLink, LoginLink } from "./account-link";
+import { Menu } from "lucide-react";
+import { AccountLink, LoggedOut, MobileSignup, MobileSignupLink } from "./account-link";
 import { ScrollHeader } from "./scroll-header";
 
 const NAV = [
@@ -30,15 +30,9 @@ export function SiteHeader() {
         </nav>
 
         <div className="ml-auto flex items-center gap-1.5">
-          <Suspense fallback={<LoginLink />}>
+          <Suspense fallback={<LoggedOut />}>
             <AccountLink />
           </Suspense>
-          <Link
-            href="/inscription"
-            className="hidden h-10 items-center gap-2 rounded-xl border-2 border-coral bg-white px-4 text-sm font-bold text-coral-dark transition hover:bg-coral-soft sm:inline-flex"
-          >
-            <UserPlus className="size-4" aria-hidden /> S&apos;inscrire
-          </Link>
           {/* Mobile menu: <details> works without JavaScript. */}
           <details className="group relative md:hidden">
             <summary className="flex size-10 cursor-pointer list-none items-center justify-center rounded-xl text-brand-deep hover:bg-brand-soft group-data-[scrolled=true]/hdr:text-white group-data-[scrolled=true]/hdr:hover:bg-white/10 [&::-webkit-details-marker]:hidden" aria-label="Menu">
@@ -50,9 +44,9 @@ export function SiteHeader() {
                   {n.label}
                 </Link>
               ))}
-              <Link href="/inscription" className="mt-1 flex items-center gap-2 rounded-xl border-2 border-coral bg-white px-3 py-2.5 font-bold text-coral-dark hover:bg-coral-soft">
-                <UserPlus className="size-4" aria-hidden /> S&apos;inscrire
-              </Link>
+              <Suspense fallback={<MobileSignupLink />}>
+                <MobileSignup />
+              </Suspense>
             </nav>
           </details>
         </div>

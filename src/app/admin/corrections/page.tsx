@@ -9,12 +9,12 @@ import { EmptyState, PageHeader, Pill, fmtDate } from "@/components/admin/ui";
 import { PageSkeleton } from "@/components/learn/ui";
 import { cn } from "cn";
 
-export const metadata: Metadata = { title: "Corrections" };
+export const metadata: Metadata = { title: "Grading" };
 
 const TABS = [
-  { value: "pending", label: "À corriger" },
-  { value: "returned", label: "Renvoyés" },
-  { value: "graded", label: "Validés" },
+  { value: "pending", label: "To grade" },
+  { value: "returned", label: "Returned" },
+  { value: "graded", label: "Validated" },
 ];
 
 async function Queue({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
@@ -27,8 +27,8 @@ async function Queue({ searchParams }: { searchParams: Promise<Record<string, st
 
   return (
     <div className="max-w-4xl">
-      <PageHeader title="Corrections" subtitle="Défis oraux, devoirs, points de contrôle et projets finals de vos cours." />
-      <nav className="mb-4 flex gap-1" aria-label="Filtrer">
+      <PageHeader title="Grading" subtitle="Speaking challenges, assignments, checkpoints and final projects from your courses." />
+      <nav className="mb-4 flex gap-1" aria-label="Filter">
         {TABS.map((t) => (
           <Link key={t.value} href={`?statut=${t.value}`} aria-current={status === t.value ? "page" : undefined} className={cn("rounded-xl px-3 py-2 text-sm font-semibold", status === t.value ? "bg-primary text-white" : "text-ink/80 hover:bg-brand-soft")}>
             {t.label}
@@ -36,7 +36,7 @@ async function Queue({ searchParams }: { searchParams: Promise<Record<string, st
         ))}
       </nav>
       {items.length === 0 ? (
-        <EmptyState>{status === "pending" ? "Rien à corriger. Bravo !" : "Aucun devoir ici."}</EmptyState>
+        <EmptyState>{status === "pending" ? "Nothing to grade. Well done!" : "Nothing here."}</EmptyState>
       ) : (
         <ul className="grid gap-2">
           {items.map((s) => (
@@ -44,14 +44,14 @@ async function Queue({ searchParams }: { searchParams: Promise<Record<string, st
               <Link href={`/admin/corrections/${s._id}`} className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 hover:shadow-md">
                 <span className="min-w-0 flex-1">
                   <span className="block font-semibold text-brand-deep">
-                    {s.user ? `${s.user.name} ${s.user.surname}` : "Apprenant"}
+                    {s.user ? `${s.user.name} ${s.user.surname}` : "Learner"}
                   </span>
                   <span className="block truncate text-sm text-muted-foreground">
-                    {s.course?.title} · {s.assignmentType === "final_project" ? "Projet final" : s.module?.title ?? "Module"}
+                    {s.course?.title} · {s.module?.title ?? "Module"}
                     {s.unit && ` · ${s.unit.title}`}
                   </span>
                 </span>
-                {s.assignmentType === "unit_challenge" ? <Pill tone="green">Défi oral</Pill> : s.assignmentType === "final_project" ? <Pill tone="amber">Projet final</Pill> : s.course?.isChallenge ? <Pill tone="red">Point de contrôle</Pill> : <Pill tone="blue">Devoir</Pill>}
+                {s.course?.isChallenge ? <Pill tone="red">Day checkpoint</Pill> : <Pill tone="green">Speaking challenge</Pill>}
                 <span className="text-xs text-muted-foreground">{fmtDate(s.updatedAt)}</span>
               </Link>
             </li>

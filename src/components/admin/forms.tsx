@@ -35,13 +35,23 @@ export function AdminForm({
   const [state, formAction] = useActionState(action, undefined);
   const [pending, startTransition] = useTransition();
   const ref = useRef<HTMLFormElement>(null);
+  const messageRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (state?.success && resetOnSuccess) ref.current?.reset();
   }, [state, resetOnSuccess]);
+  // An error is shown at the top of the form, often far above the button that was pressed
+  // (long editors): bring it into view.
+  useEffect(() => {
+    const el = messageRef.current;
+    if (!state?.error || !el) return;
+    const r = el.getBoundingClientRect();
+    if (r.top < 0 || r.bottom > window.innerHeight) el.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  }, [state]);
   return (
     <form
       ref={ref}
-      className={cn("grid gap-4", className)}
+      // Red frame while the last submission failed (outline: no layout shift).
+      className={cn("grid gap-4 rounded-xl", state?.error && "outline-2 outline-offset-[6px] outline-destructive", className)}
       onSubmit={(e) => {
         e.preventDefault();
         if (pending) return;
@@ -50,7 +60,9 @@ export function AdminForm({
       }}
     >
       <PendingContext.Provider value={pending}>
-        <FormMessage error={state?.error} success={state?.success && !onSuccess ? state.success : undefined} />
+        <div ref={messageRef} className="scroll-mt-6 empty:hidden">
+          <FormMessage error={state?.error} success={state?.success && !onSuccess ? state.success : undefined} />
+        </div>
         {state?.success && onSuccess ? onSuccess(state) : null}
         {children}
       </PendingContext.Provider>

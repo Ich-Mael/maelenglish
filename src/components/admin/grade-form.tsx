@@ -13,7 +13,7 @@ export function GradeForm({ submissionId, maxScore, isCheckpoint, initial }: { s
     <AdminForm action={gradeAction}>
       <input type="hidden" name="submissionId" value={submissionId} />
       <input type="hidden" name="decision" value={decision} />
-      <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Décision">
+      <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Decision">
         {(["graded", "returned"] as const).map((d) => (
           <button
             key={d}
@@ -26,26 +26,26 @@ export function GradeForm({ submissionId, maxScore, isCheckpoint, initial }: { s
               decision === d ? (d === "graded" ? "border-success bg-success/10 text-success" : "border-coral bg-coral-soft text-coral-dark") : "border-border text-muted-foreground",
             )}
           >
-            {d === "graded" ? (isCheckpoint ? "Valider (ouvre le jour suivant)" : "Valider") : "Renvoyer à l'apprenant"}
+            {d === "graded" ? (isCheckpoint ? "Validate (opens the next day)" : "Validate") : "Return to the learner"}
           </button>
         ))}
       </div>
       {decision === "graded" && (
         <label className="grid gap-1 text-sm">
-          <span className="font-medium">Note sur {maxScore} (facultatif)</span>
+          <span className="font-medium">Grade out of {maxScore} (optional)</span>
           <input name="grade" type="number" min={0} max={maxScore} defaultValue={initial.grade ?? ""} className={cn(inputCls, "w-32")} />
         </label>
       )}
       <RichTextEditor
-        label={`Commentaire pour l'apprenant${decision === "returned" ? " (obligatoire)" : ""}`}
+        label={`Comment for the learner${decision === "returned" ? " (required)" : ""}`}
         name="feedback"
         defaultValue={initial.feedback}
         minHeight={180}
-        placeholder="Points forts, ce qu'il faut reprendre, un exemple, un conseil pour la suite…"
+        placeholder="Strengths, what to redo, an example, a tip for next time… (the learner reads it in French)"
       />
-      <p className="text-xs text-muted-foreground">Valider rapporte 20 XP à l&apos;apprenant (une seule fois).</p>
+      <p className="text-xs text-muted-foreground">Validating gives the learner 20 XP (once).</p>
       <div>
-        <Submit>{decision === "graded" ? "Valider" : "Renvoyer"}</Submit>
+        <Submit>{decision === "graded" ? "Validate" : "Return"}</Submit>
       </div>
     </AdminForm>
   );

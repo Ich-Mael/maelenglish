@@ -36,9 +36,9 @@ export function Card({ title, description, children, className, actions }: { tit
   );
 }
 
-/** 30000 → « 30 000 FCFA » (or « 30 000 » without the unit). */
+/** 30000 → « 30,000 FCFA » (or « 30,000 » without the unit). */
 export function formatFcfa(n: number, unit = true): string {
-  const s = new Intl.NumberFormat("fr-FR").format(n).replace(/[\u202f\u00a0]/g, " ");
+  const s = new Intl.NumberFormat("en-GB").format(n);
   return unit ? `${s} FCFA` : s;
 }
 
@@ -114,15 +114,15 @@ export function EmptyState({ children }: { children: React.ReactNode }) {
 }
 
 export const ROLE_LABELS: Record<string, string> = {
-  user: "Apprenant·e",
+  user: "Learner",
   "english-coach": "Coach",
-  instructor: "Formateur·rice",
-  "account-manager": "Gestion des comptes",
+  instructor: "Instructor",
+  "account-manager": "Account manager",
   admin: "Admin",
   "super-admin": "Super admin",
 };
 
-const shortDate = new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" });
+const shortDate = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium" });
 export const fmtDate = (d?: Date | string | null) => (d ? shortDate.format(new Date(d)) : "—");
 /** yyyy-mm-dd for <input type="date">. */
 export const isoDate = (d?: Date | string | null) => (d ? new Date(d).toISOString().slice(0, 10) : "");

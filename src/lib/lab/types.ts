@@ -1,0 +1,99 @@
+/*
+ * Lab activity types (labels and descriptions are shown in the admin, in English) (shared by browser and server, no imports). Each type gets its own editor
+ * (admin) and its own player (learner), designed one by one. Add a type here, then its content
+ * rules in `content.ts`, its editor in components/lab/editors and its player in components/lab/players.
+ */
+
+export const ACTIVITY_TYPES = ["listen_choose", "speaking_challenge"] as const;
+export type ActivityType = (typeof ACTIVITY_TYPES)[number];
+
+/** `challenge`: closes a unit (its last step, kind challenge); `practice`: an activity step practising a lesson. */
+export type ActivityRole = "practice" | "challenge";
+
+export const ACTIVITY_INFO: Record<ActivityType, { label: string; description: string; role: ActivityRole }> = {
+  "listen_choose": {
+    label: "Listening comprehension",
+    description: "An audio clip and multiple-choice questions. At correction, the learner replays the exact passage of each answer.",
+    role: "practice",
+  },
+  "speaking_challenge": {
+    label: "Speaking challenge",
+    description: "The learner records an answer to instructions; a coach gives feedback. Closes a unit.",
+    role: "challenge",
+  },
+};
+
+export const isActivityType = (t: unknown): t is ActivityType => ACTIVITY_TYPES.includes(t as ActivityType);
+
+/**
+ * Unit speaking challenge (owner spec: prompt, prep and record timers, « must include » checklist,
+ * model answer). The model answer (text + optional audio) is shown once the recording is sent.
+ */
+export type SpeakingChallengeContent = {
+  instructions: string;
+  maxSeconds: number;
+  prepSeconds: number;
+  mustInclude: string[];
+  modelAnswerText: string;
+  modelAnswerAudioMediaId: string;
+};
+
+/** A question of a listening comprehension. `startS`: where the answer is heard (replayed at correction). */
+export type ListeningQuestion = { id: string; text: string; options: { id: string; text: string }[]; correctOptionId: string; explanation: string; startS: number | null };
+
+export type ListeningContent = {
+  audioMediaId: string;
+  audioDurationS: number;
+  /** Rich text shown above the player (situation, in French). */
+  context: string;
+  /** Plain text, shown after the answers are sent. */
+  transcript: string;
+  /** 0 = unlimited; 2 or 3 for exam-style activities (lifted once the answers are sent). */
+  maxPlays: number;
+  questions: ListeningQuestion[];
+};
+
+/** What the learner's browser receives before answering: no answers, explanations or transcript. */
+export type PublicListeningQuestion = Pick<ListeningQuestion, "id" | "text" | "options">;
+
+export type ActivityContent = { "listen_choose": ListeningContent; "speaking_challenge": SpeakingChallengeContent };
+
+export const MAX_PLAYS = [0, 2, 3] as const;
+
+/** « 1:05 » → 65; « 42 » → 42; empty or invalid → null. */
+export function parseTime(v: string): number | null {
+  const m = v.trim().match(/^(?:(\d+):)?(\d+(?:[.,]\d)?)$/);
+  if (!m) return null;
+  const sec = Number(m[2].replace(",", "."));
+  if (m[1] && sec >= 60) return null;
+  return (m[1] ? Number(m[1]) * 60 : 0) + sec;
+}
+export const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+
+export const MAX_SECONDS = [30, 45, 60, 90, 120, 180] as const;
+export const PREP_SECONDS = [0, 10, 15, 30, 60] as const;
+
+/**
+ * Transcript lines, each optionally starting with its time: « [0:12] Flight 512 is now boarding. »
+ * Used to highlight the line where an answer is heard.
+ */
+export type TranscriptLine = { startS: number | null; text: string };
+export function parseTranscript(text: string): TranscriptLine[] {
+  return text
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .map((l) => {
+      const m = l.match(/^\[(\d+:\d{1,2}(?:[.,]\d)?|\d+(?:[.,]\d)?)\]\s*(.*)$/);
+      return m ? { startS: parseTime(m[1]), text: m[2] } : { startS: null, text: l };
+    });
+}
+/** Index of the timed line playing at `t` (the last line starting at or before it), or -1. */
+export function lineAt(lines: TranscriptLine[], t: number | null): number {
+  if (t === null) return -1;
+  let best = -1;
+  lines.forEach((l, i) => {
+    if (l.startS !== null && l.startS <= t + 0.05 && (best === -1 || l.startS >= (lines[best].startS ?? 0))) best = i;
+  });
+  return best;
+}

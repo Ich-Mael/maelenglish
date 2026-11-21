@@ -9,19 +9,19 @@ import { CourseFields } from "@/components/admin/course-fields";
 import { createCourseAction } from "../../actions";
 import { PageSkeleton } from "@/components/learn/ui";
 
-export const metadata: Metadata = { title: "Nouveau cours" };
+export const metadata: Metadata = { title: "New course" };
 
 async function NewCourse() {
   const me = await requireStaff("/admin/cours/nouveau");
   if (!can.createCourse(actorOf(me))) redirect("/admin/cours");
   return (
     <div className="max-w-6xl">
-      <PageHeader title="Nouveau cours" back={{ href: "/admin/cours", label: "Cours" }} subtitle="Le cours est créé en brouillon : publiez-le quand le contenu est prêt." />
+      <PageHeader title="New course" back={{ href: "/admin/cours", label: "Courses" }} subtitle="The course is created as a draft: publish it when the content is ready." />
       <Card>
         <AdminForm action={createCourseAction}>
           <CourseFields settings wide />
           <div>
-            <Submit>Créer le cours</Submit>
+            <Submit>Create course</Submit>
           </div>
         </AdminForm>
       </Card>

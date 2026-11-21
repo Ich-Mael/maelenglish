@@ -1,4 +1,5 @@
-import { Schema, model, models, type InferSchemaType, type Model, type Types } from "mongoose";
+import { Schema, type InferSchemaType, type Model, type Types } from "mongoose";
+import { defineModel } from "./define";
 
 /**
  * Metering of paid AI / speech calls (DECISIONS.md « Metering »): one row per call.
@@ -28,7 +29,7 @@ aiUsageSchema.index({ userId: 1, month: 1 });
 aiUsageSchema.index({ day: 1 });
 
 export type AiUsageDoc = InferSchemaType<typeof aiUsageSchema> & { _id: Types.ObjectId };
-export const AiUsage: Model<AiUsageDoc> = (models.AiUsage as Model<AiUsageDoc>) || model<AiUsageDoc>("AiUsage", aiUsageSchema);
+export const AiUsage: Model<AiUsageDoc> = defineModel<AiUsageDoc>("AiUsage", aiUsageSchema);
 
 /** App-wide settings (single document, `key: "global"`), editable in admin. */
 const appSettingsSchema = new Schema(
@@ -40,4 +41,4 @@ const appSettingsSchema = new Schema(
   { timestamps: true },
 );
 export type AppSettingsDoc = InferSchemaType<typeof appSettingsSchema> & { _id: Types.ObjectId };
-export const AppSettings: Model<AppSettingsDoc> = (models.AppSettings as Model<AppSettingsDoc>) || model<AppSettingsDoc>("AppSettings", appSettingsSchema);
+export const AppSettings: Model<AppSettingsDoc> = defineModel<AppSettingsDoc>("AppSettings", appSettingsSchema);

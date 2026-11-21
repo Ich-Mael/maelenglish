@@ -19,7 +19,7 @@ export async function requireStaff(next = "/admin"): Promise<CurrentUser> {
 /** Actions: the staff member or an error message. */
 export async function staffOrThrow(): Promise<CurrentUser> {
   const me = await readCurrentUser();
-  if (!me || !can.enterAdmin(actorOf(me))) throw new Error("Accès réservé à l'équipe.");
+  if (!me || !can.enterAdmin(actorOf(me))) throw new Error("Staff only.");
   await connectDB();
   return me;
 }

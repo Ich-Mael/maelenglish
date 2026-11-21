@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, ClipboardCheck, Cpu, Inbox, LayoutDashboard, Mic, Users } from "lucide-react";
+import { BookOpen, ClipboardCheck, Cpu, FlaskConical, Inbox, LayoutDashboard, Mic, Users } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { can } from "@/lib/admin/permissions";
 
@@ -9,13 +9,14 @@ export async function AdminNav({ mobile }: { mobile?: boolean }) {
   if (!me) return null;
   const a = { id: me.id, role: me.role };
   const items = [
-    { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard, show: true },
-    { href: "/admin/demandes", label: "Demandes", icon: Inbox, show: can.manageUsers(a) },
-    { href: "/admin/utilisateurs", label: "Utilisateurs", icon: Users, show: can.manageUsers(a) },
-    { href: "/admin/cours", label: "Cours", icon: BookOpen, show: true },
-    { href: "/admin/corrections", label: "Corrections", icon: ClipboardCheck, show: a.role !== "account-manager" },
-    { href: "/admin/usage-ia", label: "Usage IA", icon: Cpu, show: ["admin", "super-admin"].includes(a.role) },
-    { href: "/admin/micro", label: "Tester le micro", icon: Mic, show: true },
+    { href: "/admin", label: "Dashboard", icon: LayoutDashboard, show: true },
+    { href: "/admin/demandes", label: "Requests", icon: Inbox, show: can.manageUsers(a) },
+    { href: "/admin/utilisateurs", label: "Users", icon: Users, show: can.manageUsers(a) },
+    { href: "/admin/cours", label: "Courses", icon: BookOpen, show: true },
+    { href: "/admin/labo", label: "Lab", icon: FlaskConical, show: can.useLab(a) },
+    { href: "/admin/corrections", label: "Grading", icon: ClipboardCheck, show: a.role !== "account-manager" },
+    { href: "/admin/usage-ia", label: "AI usage", icon: Cpu, show: ["admin", "super-admin"].includes(a.role) },
+    { href: "/admin/micro", label: "Microphone test", icon: Mic, show: true },
   ].filter((i) => i.show);
   return (
     <nav aria-label="Administration" className={mobile ? "flex gap-1 overflow-x-auto" : "grid gap-1"}>

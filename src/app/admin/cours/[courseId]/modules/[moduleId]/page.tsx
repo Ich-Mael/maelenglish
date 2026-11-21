@@ -3,16 +3,14 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
-import { ArrowDown, ArrowUp, ExternalLink, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, CircleCheck, EyeOff, ExternalLink, Trash2 } from "lucide-react";
 import { requireStaff, allowed, courseFor } from "@/lib/admin/context";
-import { Lesson, Module, TeachingResource, Unit, RESOURCE_TYPES, type LessonDoc, type ModuleDoc, type UnitDoc } from "@/models";
-import { Card, Checkbox, Input, PageHeader, Pill, Select } from "@/components/admin/ui";
+import { Activity, Module, Step, TeachingResource, Unit, RESOURCE_TYPES, type ModuleDoc, type StepDoc, type UnitDoc } from "@/models";
+import { checkUnit } from "@/lib/course/unit-check";
+import { CEFR_LEVELS } from "@/lib/lab/meta";
+import { Card, Input, PageHeader, Pill, Select, TextArea } from "@/components/admin/ui";
 import { ActionButton, AdminForm, Submit } from "@/components/admin/forms";
-import { AssignmentFields } from "@/components/admin/assignment-fields";
-import { QuizEditor, type EditableQuiz } from "@/components/admin/quiz-editor";
-import { createUnitAction, deleteResourceAction, moveUnitAction, saveAssignmentAction, saveResourceAction, updateModuleAction } from "../../../../actions";
-import { adoptOrphanLessons } from "@/lib/admin/content";
-import { LESSON_TYPE } from "@/components/admin/lesson-types";
+import { createUnitAction, deleteResourceAction, moveUnitAction, saveResourceAction, updateModuleAction } from "../../../../actions";
 import { PageSkeleton } from "@/components/learn/ui";
 import { RichText } from "@/components/learn/rich-text";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
@@ -21,13 +19,13 @@ import { toEditorHtml } from "@/lib/rich-text";
 export const metadata: Metadata = { title: "Module" };
 
 const RESOURCE_LABELS: Record<string, string> = {
-  lesson_plan: "Plan de séance",
-  activities: "Activités",
-  answer_key: "Corrigé",
-  slides: "Diaporama",
-  worksheet: "Fiche d'exercices",
-  rubric: "Grille d'évaluation",
-  other: "Autre",
+  lesson_plan: "Lesson plan",
+  activities: "Activities",
+  answer_key: "Answer key",
+  slides: "Slides",
+  worksheet: "Worksheet",
+  rubric: "Rubric",
+  other: "Other",
 };
 
 async function ModuleAdmin({ params }: { params: Promise<{ courseId: string; moduleId: string }> }) {
@@ -39,74 +37,64 @@ async function ModuleAdmin({ params }: { params: Promise<{ courseId: string; mod
   const mod = await Module.findOne({ _id: moduleId, courseId }).lean<ModuleDoc>().catch(() => null);
   if (!mod) notFound();
   const edit = allowed(me, course, "edit");
-  await adoptOrphanLessons(moduleId); // lessons created before units existed go into the first unit
-  const [units, lessons, resources] = await Promise.all([
+  const [units, steps, resources] = await Promise.all([
     Unit.find({ moduleId }).sort({ order: 1, createdAt: 1 }).lean<UnitDoc[]>(),
-    Lesson.find({ moduleId }).sort({ order: 1, createdAt: 1 }).lean<LessonDoc[]>(),
+    Step.find({ moduleId }).sort({ position: 1 }).lean<StepDoc[]>(),
     TeachingResource.find({ moduleId }).sort({ createdAt: 1 }).lean(),
   ]);
-  const quiz: EditableQuiz = {
-    title: mod.quiz?.title ?? "",
-    passingScore: mod.quiz?.passingScore ?? 70,
-    timeLimit: mod.quiz?.timeLimit ?? 0,
-    questions: (mod.quiz?.questions ?? []).map((q) => ({
-      _id: String((q as unknown as { _id: unknown })._id),
-      text: q.text,
-      options: q.options.map((o) => ({ id: o.id, text: o.text })),
-      correctOptionId: q.correctOptionId,
-      explanation: q.explanation ?? "",
-    })),
-  };
+  const activityIds = steps.flatMap((x) => (x.activityId ? [x.activityId] : []));
+  const ready = new Set((activityIds.length ? await Activity.find({ _id: { $in: activityIds }, status: "ready" }).select("_id").lean() : []).map((a) => String(a._id)));
   const checkpoint = course.isChallenge;
 
   return (
     <div className="grid max-w-5xl gap-5">
-      <PageHeader title={mod.title} back={{ href: `/admin/cours/${courseId}`, label: course.title }} subtitle={checkpoint ? "Jour du challenge" : "Module"} />
+      <PageHeader title={mod.title} back={{ href: `/admin/cours/${courseId}`, label: course.title }} subtitle={checkpoint ? "Challenge day" : "Module"} />
 
-      <Card title="Unités" description="Chaque unité regroupe des activités autour d'un objectif et se termine par un défi oral corrigé par un coach : l'unité suivante s'ouvre quand l'apprenant l'a envoyé. Ouvrez une unité pour gérer ses activités et son défi.">
+      <Card title="Units" description="A unit is one topic: a lesson, 2 or 3 activities practising it — repeated — and a speaking challenge last. A unit breaking these rules stays hidden from learners. Open a unit to build its steps.">
         <ol className="grid gap-3">
           {units.map((u, i) => {
-            const own = lessons.filter((l) => String(l.unitId) === String(u._id));
-            const drafts = own.filter((l) => !l.isPublished).length;
+            const own = steps.filter((x) => String(x.unitId) === String(u._id));
+            const problems = checkUnit(own, ready);
+            const count = (k: string) => own.filter((x) => x.kind === k).length;
             return (
               <li key={String(u._id)} className="rounded-xl border border-border p-3">
                 <div className="flex items-center gap-3">
                   <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-soft text-sm font-bold text-primary">{i + 1}</span>
                   <Link href={`/admin/cours/${courseId}/unites/${u._id}`} className="min-w-0 flex-1">
-                    <span className="flex items-center gap-2">
+                    <span className="flex flex-wrap items-center gap-2">
                       <span className="truncate font-semibold text-brand-deep hover:underline">{u.title}</span>
-                      {u.challenge?.instructions ? <Pill tone="blue">Défi oral</Pill> : <Pill tone="amber">Sans défi oral</Pill>}
+                      {problems.length === 0 ? (
+                        <Pill tone="green">
+                          <CircleCheck className="mr-1 size-3" aria-hidden /> Visible to learners
+                        </Pill>
+                      ) : (
+                        <Pill tone="amber">
+                          <EyeOff className="mr-1 size-3" aria-hidden /> Hidden: {problems.length} problem(s)
+                        </Pill>
+                      )}
                     </span>
                     <span className="block truncate text-xs text-muted-foreground">
-                      {own.length} activité(s){drafts ? ` dont ${drafts} brouillon(s)` : ""}
-                      {u.objective && ` · ${u.objective}`}
+                      {count("lesson")} lesson(s) · {count("activity")} activity(ies) · {count("challenge") ? "challenge" : "no challenge"}
+                      {u.estimatedMinutes ? ` · ${u.estimatedMinutes} min` : ""}
                     </span>
+                    {problems[0] && <span className="block truncate text-xs text-amber-800">{problems[0].message}</span>}
                   </Link>
                   {edit && units.length > 1 && (
                     <span className="flex items-center gap-1">
-                      <ActionButton action={moveUnitAction} fields={{ unitId: String(u._id), dir: "up" }} label="Monter">
+                      <ActionButton action={moveUnitAction} fields={{ unitId: String(u._id), dir: "up" }} label="Move up">
                         <ArrowUp className="size-4" aria-hidden />
                       </ActionButton>
-                      <ActionButton action={moveUnitAction} fields={{ unitId: String(u._id), dir: "down" }} label="Descendre">
+                      <ActionButton action={moveUnitAction} fields={{ unitId: String(u._id), dir: "down" }} label="Move down">
                         <ArrowDown className="size-4" aria-hidden />
                       </ActionButton>
                     </span>
                   )}
                 </div>
-                {own.length > 0 && (
-                  <ul className="mt-2 ml-11 grid gap-1">
-                    {own.map((l) => {
-                      const T = LESSON_TYPE[l.type as keyof typeof LESSON_TYPE];
-                      return (
-                        <li key={String(l._id)}>
-                          <Link href={`/admin/cours/${courseId}/lecons/${l._id}`} className="flex items-center gap-2 text-sm text-brand-deep hover:underline">
-                            <T.icon className="size-4 shrink-0 text-primary" aria-hidden />
-                            <span className="truncate">{l.title}</span>
-                            {!l.isPublished && <Pill tone="amber">Brouillon</Pill>}
-                          </Link>
-                        </li>
-                      );
-                    })}
+                {(u.objectives ?? []).length > 0 && (
+                  <ul className="mt-2 ml-11 list-disc pl-4 text-sm text-muted-foreground">
+                    {u.objectives.map((o, k) => (
+                      <li key={k}>{o}</li>
+                    ))}
                   </ul>
                 )}
               </li>
@@ -116,10 +104,10 @@ async function ModuleAdmin({ params }: { params: Promise<{ courseId: string; mod
         {edit && (
           <AdminForm action={createUnitAction} resetOnSuccess className="mt-5 rounded-xl bg-muted/40 p-4">
             <input type="hidden" name="moduleId" value={moduleId} />
-            <div className="grid gap-3 sm:grid-cols-[1fr_1.4fr_auto] sm:items-end">
-              <Input label="Nouvelle unité" name="title" required placeholder="Ex. Accueillir les passagers" />
-              <Input label="Objectif (facultatif)" name="objective" placeholder="Ce que l'apprenant saura faire" />
-              <Submit>Ajouter</Submit>
+            <Input label="New unit" name="title" required placeholder="E.g. Greetings & Self-Introduction" />
+            <TextArea label="Objectives (optional)" name="objectives" rows={2} placeholder={"Saluer de façon formelle et informelle\nVous présenter, vous et votre métier"} hint="One per line, in French." />
+            <div>
+              <Submit>Add the unit</Submit>
             </div>
           </AdminForm>
         )}
@@ -127,38 +115,24 @@ async function ModuleAdmin({ params }: { params: Promise<{ courseId: string; mod
 
       {edit && (
         <>
-          <Card title="Quiz du module" description="Noté sur le serveur. Il s'ouvre quand toutes les activités sont terminées ; le réussir ouvre le module suivant. Sans question, pas de quiz.">
-            <QuizEditor target={{ moduleId }} initial={quiz} />
-          </Card>
-
-          <Card title={checkpoint ? "Point de contrôle du jour" : "Devoir"} description={checkpoint ? "Validé par un coach : le jour suivant ne s'ouvre qu'après validation." : "Corrigé par un coach depuis « Corrections »."}>
-            <AdminForm action={saveAssignmentAction}>
-              <input type="hidden" name="moduleId" value={moduleId} />
-              <AssignmentFields a={mod.assignment} withDueDate />
-              <div>
-                <Submit>Enregistrer</Submit>
-              </div>
-            </AdminForm>
-          </Card>
-
-          <Card title="Réglages du module">
+          <Card title="Module settings">
             <AdminForm action={updateModuleAction}>
               <input type="hidden" name="moduleId" value={moduleId} />
-              <Input label="Titre" name="title" defaultValue={mod.title} required />
-              <Input label="Objectif" name="summary" defaultValue={mod.summary ?? ""} placeholder="Ce que l'apprenant saura faire" hint="Une phrase, affichée sous le titre du module." />
-              <RichTextEditor label="Description" name="description" minHeight={200} defaultValue={toEditorHtml(mod.description, "text")} hint="Présentation du module, affichée aux apprenants sur la page du cours (facultatif)." />
-              {checkpoint && <Checkbox name="isCheckpointRequired" label="Validation obligatoire du point de contrôle" hint="Décochez pour un jour « libre » (repos, révision)." defaultChecked={mod.isCheckpointRequired !== false} />}
+              <Input label="Title" name="title" defaultValue={mod.title} required />
+              <Input label="Objective" name="summary" defaultValue={mod.summary ?? ""} placeholder="What the learner will be able to do" hint="One sentence, shown under the module title (in French, for learners)." />
+              <RichTextEditor label="Description" name="description" minHeight={200} defaultValue={toEditorHtml(mod.description, "text")} hint="Module introduction, shown to learners on the course page (optional, in French)." />
+              <Select label="Level (CEFR, optional)" name="level" defaultValue={mod.level ?? ""} options={[{ value: "", label: "—" }, ...CEFR_LEVELS.map((l) => ({ value: l, label: l }))]} className="sm:max-w-40" />
               <div>
-                <Submit variant="secondary">Enregistrer</Submit>
+                <Submit variant="secondary">Save</Submit>
               </div>
             </AdminForm>
           </Card>
         </>
       )}
 
-      <Card title="Ressources pédagogiques" description="Réservées à l'équipe : plans de séance, corrigés, diaporamas…">
+      <Card title="Teaching resources" description="Staff only: lesson plans, answer keys, slides…">
         {resources.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Aucune ressource.</p>
+          <p className="text-sm text-muted-foreground">No resources.</p>
         ) : (
           <ul className="grid gap-2">
             {resources.map((r) => (
@@ -167,12 +141,12 @@ async function ModuleAdmin({ params }: { params: Promise<{ courseId: string; mod
                   <span className="flex-1 font-semibold text-brand-deep">{r.title}</span>
                   <Pill tone="blue">{RESOURCE_LABELS[r.resourceType] ?? r.resourceType}</Pill>
                   {r.link && (
-                    <a href={r.link} target="_blank" rel="noopener" className="text-primary" aria-label="Ouvrir la ressource">
+                    <a href={r.link} target="_blank" rel="noopener" className="text-primary" aria-label="Open resource">
                       <ExternalLink className="size-4" aria-hidden />
                     </a>
                   )}
                   {edit && (
-                    <ActionButton action={deleteResourceAction} fields={{ resourceId: String(r._id) }} label="Supprimer" confirm="Supprimer cette ressource ?">
+                    <ActionButton action={deleteResourceAction} fields={{ resourceId: String(r._id) }} label="Delete" confirm="Delete this resource?">
                       <Trash2 className="size-4" aria-hidden />
                     </ActionButton>
                   )}
@@ -186,13 +160,13 @@ async function ModuleAdmin({ params }: { params: Promise<{ courseId: string; mod
           <AdminForm action={saveResourceAction} resetOnSuccess className="mt-4 rounded-xl bg-muted/40 p-4">
             <input type="hidden" name="moduleId" value={moduleId} />
             <div className="grid gap-3 sm:grid-cols-2">
-              <Input label="Titre" name="title" required />
+              <Input label="Title" name="title" required />
               <Select label="Type" name="resourceType" defaultValue="lesson_plan" options={RESOURCE_TYPES.map((t) => ({ value: t, label: RESOURCE_LABELS[t] }))} />
             </div>
-            <Input label="Lien (Drive, YouTube…)" name="link" type="url" />
+            <Input label="Link (Drive, YouTube…)" name="link" type="url" />
             <RichTextEditor label="Notes" name="notes" minHeight={160} />
             <div>
-              <Submit variant="secondary">Ajouter la ressource</Submit>
+              <Submit variant="secondary">Add resource</Submit>
             </div>
           </AdminForm>
         )}

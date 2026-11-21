@@ -13,7 +13,7 @@ import { cn } from "cn";
  * move, Entrée to choose, Échap to close. Typing an exact username / email / number without
  * choosing still works (the typed text is sent). A form reset clears the choice.
  */
-export function LearnerPicker({ courseId, name = "identifier", label = "Apprenant" }: { courseId: string; name?: string; label?: string }) {
+export function LearnerPicker({ courseId, name = "identifier", label = "Learner" }: { courseId: string; name?: string; label?: string }) {
   const id = useId();
   const box = useRef<HTMLDivElement>(null);
   const [q, setQ] = useState("");
@@ -97,7 +97,7 @@ export function LearnerPicker({ courseId, name = "identifier", label = "Apprenan
             </span>{" "}
             <span className="text-muted-foreground">· {picked.username}</span>
           </span>
-          <button type="button" onClick={() => { setPicked(null); setQ(""); }} className="rounded-lg p-1 text-muted-foreground hover:bg-white hover:text-brand-deep" aria-label="Changer d’apprenant">
+          <button type="button" onClick={() => { setPicked(null); setQ(""); }} className="rounded-lg p-1 text-muted-foreground hover:bg-white hover:text-brand-deep" aria-label="Change learner">
             <X className="size-4" aria-hidden />
           </button>
         </div>
@@ -110,7 +110,7 @@ export function LearnerPicker({ courseId, name = "identifier", label = "Apprenan
             onChange={(e) => setQ(e.target.value)}
             onFocus={() => results.length && setOpen(true)}
             onKeyDown={onKey}
-            placeholder="Nom, email ou numéro WhatsApp"
+            placeholder="Name, email or WhatsApp number"
             autoComplete="off"
             role="combobox"
             aria-expanded={open}
@@ -122,7 +122,7 @@ export function LearnerPicker({ courseId, name = "identifier", label = "Apprenan
         </div>
       )}
       <span className="text-xs text-muted-foreground" aria-live="polite">
-        {picked ? "Identifiant rempli automatiquement." : loading ? "Recherche…" : q.trim().length >= 2 && open && results.length === 0 ? "Aucun compte trouvé : créez-le d’abord dans Utilisateurs." : "Tapez au moins 2 lettres, puis choisissez dans la liste."}
+        {picked ? "Username filled in automatically." : loading ? "Recherche…" : q.trim().length >= 2 && open && results.length === 0 ? "No account found: create it first in Users." : "Type at least 2 letters, then pick from the list."}
       </span>
       {open && !picked && results.length > 0 && (
         <ul id={`${id}-list`} role="listbox" className="absolute top-[4.25rem] right-0 left-0 z-20 grid max-h-72 gap-0.5 overflow-auto rounded-xl border border-border bg-card p-1 shadow-xl">
@@ -145,7 +145,7 @@ export function LearnerPicker({ courseId, name = "identifier", label = "Apprenan
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-semibold text-brand-deep">
                   {m.name} {m.surname}
-                  {m.staff && <span className="ml-2 rounded-full bg-muted px-1.5 py-0.5 text-[11px] font-bold text-muted-foreground">Équipe</span>}
+                  {m.staff && <span className="ml-2 rounded-full bg-muted px-1.5 py-0.5 text-[11px] font-bold text-muted-foreground">Staff</span>}
                 </span>
                 <span className="block truncate text-xs text-muted-foreground">
                   {m.username}
@@ -154,7 +154,7 @@ export function LearnerPicker({ courseId, name = "identifier", label = "Apprenan
               </span>
               {m.enrolled ? (
                 <span className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-muted-foreground">
-                  <Check className="size-3.5" aria-hidden /> Déjà inscrit(e)
+                  <Check className="size-3.5" aria-hidden /> Already enrolled
                 </span>
               ) : null}
             </li>

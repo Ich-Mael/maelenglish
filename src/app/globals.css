@@ -211,6 +211,20 @@
   box-shadow: 0 0 0 3px var(--color-coral);
 }
 
+/* Same slider on a white card (listening player): visible track, logo-blue progress. */
+.tv-range.on-light {
+  background: linear-gradient(to right, var(--color-primary) var(--p, 0%), rgb(54 79 171 / 0.16) var(--p, 0%));
+}
+.tv-range.on-light::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px var(--color-primary);
+}
+.tv-range.on-light::-moz-range-thumb {
+  box-shadow: 0 0 0 3px var(--color-primary);
+}
+.tv-range:disabled {
+  cursor: default;
+}
+
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 5rem;

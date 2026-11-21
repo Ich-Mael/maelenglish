@@ -18,17 +18,17 @@ export function CreateUserForm({ roles, defaults = {} }: { roles: string[]; defa
       )}
     >
       <div className="grid gap-4 sm:grid-cols-2">
-        <Input label="Prénom" name="name" required autoComplete="off" defaultValue={defaults.name} />
-        <Input label="Nom" name="surname" required autoComplete="off" defaultValue={defaults.surname} />
+        <Input label="First name" name="name" required autoComplete="off" defaultValue={defaults.name} />
+        <Input label="Last name" name="surname" required autoComplete="off" defaultValue={defaults.surname} />
       </div>
-      <Input label="Nom d'utilisateur" name="username" required autoCapitalize="none" autoComplete="off" hint="3 à 30 caractères : lettres, chiffres, point, tiret. Sert à se connecter." />
+      <Input label="Username" name="username" required autoCapitalize="none" autoComplete="off" hint="3 to 30 characters: letters, digits, dot, dash. Used to sign in." />
       <div className="grid gap-4 sm:grid-cols-2">
-        <Input label="Email" name="email" type="email" autoComplete="off" hint="Le lien d'activation y sera envoyé." defaultValue={defaults.email} />
-        <Input label="Numéro WhatsApp" name="phoneNumber" type="tel" autoComplete="off" hint="Email ou numéro : au moins l'un des deux." defaultValue={defaults.phoneNumber} />
+        <Input label="Email" name="email" type="email" autoComplete="off" hint="The activation link will be sent there." defaultValue={defaults.email} />
+        <Input label="WhatsApp number" name="phoneNumber" type="tel" autoComplete="off" hint="Email or number: at least one of the two." defaultValue={defaults.phoneNumber} />
       </div>
-      <Select label="Rôle" name="role" defaultValue="user" options={roles.map((r) => ({ value: r, label: ROLE_LABELS[r] ?? r }))} />
+      <Select label="Role" name="role" defaultValue="user" options={roles.map((r) => ({ value: r, label: ROLE_LABELS[r] ?? r }))} />
       <div>
-        <Submit>Créer le compte</Submit>
+        <Submit>Create account</Submit>
       </div>
     </AdminForm>
   );
@@ -44,9 +44,9 @@ export function AccountLinkForm({ userId, kind, hasEmail }: { userId: string; ki
     )}>
       <input type="hidden" name="userId" value={userId} />
       <input type="hidden" name="kind" value={kind} />
-      {hasEmail && <Checkbox name="email" label="Envoyer aussi par email" defaultChecked />}
+      {hasEmail && <Checkbox name="email" label="Also send by email" defaultChecked />}
       <div>
-        <Submit variant="secondary">{kind === "activation" ? "Générer un nouveau lien d'activation" : "Générer un lien de réinitialisation"}</Submit>
+        <Submit variant="secondary">{kind === "activation" ? "Generate a new activation link" : "Generate a password reset link"}</Submit>
       </div>
     </AdminForm>
   );

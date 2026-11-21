@@ -1,18 +1,23 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { connection } from "next/server";
-import { CalendarClock, ChevronLeft, CircleCheck, Clock, Lock, Mic, RotateCcw, Timer } from "lucide-react";
+import { ChevronLeft, ChevronRight, CircleCheck, Clock, ListChecks, Lock, Mic, RotateCcw, Timer } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
 import { courseAccess, courseTree } from "@/lib/learn/queries";
-import { assignmentPath, challengePath, coursePath, examPath, projectPath, quizPath } from "@/lib/learn/paths";
-import { stepAfter } from "@/lib/learn/sequence";
-import { AssignmentSubmission, type AssignmentSubmissionDoc } from "@/models";
+import { coursePath, examPath, stepPath } from "@/lib/learn/paths";
+import { stepAfter, stepBefore } from "@/lib/learn/sequence";
+import { ChallengeSubmission, type ChallengeSubmissionDoc } from "@/models";
+import type { ListeningContent, SpeakingChallengeContent } from "@/lib/lab/types";
+import { cleanLessonContent } from "@/lib/course/lesson-content";
 import { mediaUrlFor } from "@/lib/media";
 import { AccessProblem, formatDate } from "./ui";
 import { RichText } from "./rich-text";
 import { QuizRunner, type PublicQuestion } from "./quiz-runner";
-import { AssignmentForm } from "./assignment-form";
 import { ChallengeRecorder } from "./challenge-recorder";
+import { CompleteButton } from "./complete-button";
+import { LessonView, lessonMediaIds } from "./lesson-view";
 import { PreviewBar, adminPaths } from "./preview-bar";
+import { ListeningPlayer } from "@/components/lab/players/listening-player";
 
 function Locked({ courseId, text }: { courseId: string; text: string }) {
   return (
@@ -27,194 +32,171 @@ function Locked({ courseId, text }: { courseId: string; text: string }) {
   );
 }
 
-/** Module quiz (`moduleId`) or final exam (`moduleId` null). */
-export async function QuizStep({ courseId, moduleId }: { courseId: string; moduleId: string | null }) {
-  await connection();
-  const here = moduleId ? quizPath(courseId, moduleId) : examPath(courseId);
-  const me = await requireUser(here);
-  const access = await courseAccess(me, courseId);
-  if (!access.ok) return <AccessProblem reason={access.reason} startDate={access.enrollment?.startDate} />;
-  const { modules, outline } = await courseTree(me, access);
-
-  const mod = moduleId ? modules.find((m) => String(m._id) === moduleId) : null;
-  const quiz = moduleId ? mod?.quiz : access.course.finalExam;
-  const step = moduleId ? outline.modules.find((m) => m.id === moduleId)?.quiz : outline.finalExam;
-  if (!quiz?.questions?.length || !step) return <AccessProblem reason="not-found" />;
-  if (step.state === "locked") {
-    return <Locked courseId={courseId} text={moduleId ? "Terminez toutes les activités du module pour ouvrir le quiz." : "L'examen final s'ouvre quand tous les modules sont terminés."} />;
-  }
-
-  // Never send the answers to the browser.
-  const questions: PublicQuestion[] = quiz.questions.map((q) => ({
-    id: String((q as unknown as { _id: unknown })._id),
-    text: q.text,
-    options: q.options.map((o) => ({ id: o.id, text: o.text })),
-  }));
-  return (
-    <>
-      {access.preview && (
-        <PreviewBar text="Aperçu équipe : le résultat n’est pas enregistré." editHref={moduleId ? adminPaths.module(courseId, moduleId) : adminPaths.finals(courseId)} className="mx-auto mb-6 max-w-2xl" />
-      )}
-      <QuizRunner
-        courseId={courseId}
-        moduleId={moduleId}
-        title={quiz.title || (moduleId ? `Quiz : ${mod?.title}` : "Examen final")}
-        questions={questions}
-        passingScore={quiz.passingScore ?? 70}
-        timeLimit={quiz.timeLimit ?? 0}
-        bestScore={step.bestScore}
-        courseHref={coursePath(courseId)}
-        nextHref={stepAfter(courseId, outline, here)}
-        readOnly={access.readOnly}
-      />
-    </>
-  );
-}
-
-/** Module assignment / challenge checkpoint (`moduleId`) or final project (`moduleId` null). */
-export async function AssignmentStep({ courseId, moduleId }: { courseId: string; moduleId: string | null }) {
-  await connection();
-  const here = moduleId ? assignmentPath(courseId, moduleId) : projectPath(courseId);
-  const me = await requireUser(here);
-  const access = await courseAccess(me, courseId);
-  if (!access.ok) return <AccessProblem reason={access.reason} startDate={access.enrollment?.startDate} />;
-  const { modules, outline } = await courseTree(me, access);
-
-  const mod = moduleId ? modules.find((m) => String(m._id) === moduleId) : null;
-  const def = moduleId ? mod?.assignment : access.course.finalProject;
-  const step = moduleId ? outline.modules.find((m) => m.id === moduleId)?.assignment : outline.finalProject;
-  if (!def?.instructions?.trim() || !step) return <AccessProblem reason="not-found" />;
-  if (step.state === "locked") {
-    return <Locked courseId={courseId} text={moduleId ? "Ce devoir s'ouvre avec son module." : "Le projet final s'ouvre quand tous les modules sont terminés."} />;
-  }
-
-  const submission = await AssignmentSubmission.findOne({
-    userId: me.id,
-    courseId,
-    moduleId: moduleId ?? null,
-    assignmentType: moduleId ? "module_assignment" : "final_project",
-  }).lean();
-  const isCheckpoint = !!access.course.isChallenge && !!moduleId;
-  const label = isCheckpoint ? "Point de contrôle" : moduleId ? "Devoir" : "Projet final";
-  const dueDate = moduleId ? (def as { dueDate?: Date | null }).dueDate : null;
-
-  return (
-    <div className="mx-auto grid max-w-3xl gap-6">
-      {access.preview && (
-        <PreviewBar text="Aperçu équipe : la réponse n’est pas enregistrée." editHref={moduleId ? adminPaths.module(courseId, moduleId) : adminPaths.finals(courseId)} />
-      )}
-      <header>
-        <Link href={coursePath(courseId)} className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-primary">
-          <ChevronLeft className="size-4" aria-hidden /> {mod?.title ?? "Parcours"}
-        </Link>
-        <p className="mt-2 text-sm font-bold tracking-wide text-coral-dark uppercase">{label}</p>
-        <h1 className="text-3xl font-extrabold text-brand-deep">{def.title || label}</h1>
-        {dueDate && (
-          <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-            <CalendarClock className="size-4" aria-hidden /> À rendre avant le {formatDate(dueDate)}
-          </p>
-        )}
-      </header>
-
-      <section className="rounded-3xl border-2 border-border bg-card p-5 sm:p-8">
-        <RichText>{def.instructions}</RichText>
-      </section>
-
-      {submission && (
-        <section
-          className={
-            submission.status === "graded"
-              ? "rounded-3xl border-2 border-success/30 bg-success/10 p-5"
-              : submission.status === "returned"
-                ? "rounded-3xl border-2 border-coral/30 bg-coral-soft p-5"
-                : "rounded-3xl border-2 border-primary/20 bg-brand-soft p-5"
-          }
-        >
-          <p className="flex items-center gap-2 font-heading text-lg font-bold text-brand-deep">
-            {submission.status === "graded" ? <CircleCheck className="size-5 text-success" aria-hidden /> : submission.status === "returned" ? <RotateCcw className="size-5 text-coral-dark" aria-hidden /> : <Clock className="size-5 text-primary" aria-hidden />}
-            {submission.status === "graded"
-              ? isCheckpoint ? "Validé par votre coach" : `Corrigé${submission.grade !== null && submission.grade !== undefined ? ` : ${submission.grade} / ${submission.maxScore}` : ""}`
-              : submission.status === "returned"
-                ? "À reprendre : votre coach vous a fait un retour"
-                : "Envoyé · en attente de correction"}
-          </p>
-          {submission.feedback && <RichText legacy="text" className="mt-2 text-ink">{submission.feedback}</RichText>}
-          <p className="mt-2 text-xs text-muted-foreground">Envoyé le {formatDate(submission.updatedAt)}</p>
-        </section>
-      )}
-
-      {submission?.status === "graded" ? (
-        <div className="rounded-3xl border-2 border-border bg-card p-5">
-          <h2 className="mb-2 font-bold text-brand-deep">Votre réponse</h2>
-          <p className="whitespace-pre-line text-ink/85">{submission.content}</p>
-          <Link href={stepAfter(courseId, outline, here)} className="mt-5 inline-flex h-12 items-center rounded-2xl bg-primary px-6 font-semibold text-white">
-            Étape suivante
-          </Link>
-        </div>
-      ) : access.readOnly ? (
-        <p className="text-muted-foreground">Cours terminé : les envois sont fermés.</p>
-      ) : (
-        <section className="grid gap-3">
-          <h2 className="text-xl font-extrabold text-brand-deep">{submission ? "Modifier ma réponse" : "Ma réponse"}</h2>
-          <AssignmentForm
-            courseId={courseId}
-            moduleId={moduleId ?? "final"}
-            type={def.submissionType === "link" ? "link" : "text"}
-            initial={submission?.content ?? ""}
-            label={submission ? "Renvoyer" : "Envoyer à mon coach"}
-          />
-        </section>
-      )}
-    </div>
-  );
-}
-
 const secs = (s: number) => (s >= 60 ? `${Math.floor(s / 60)} min${s % 60 ? ` ${s % 60} s` : ""}` : `${s} s`);
+const KIND_LABEL = { lesson: "Leçon", activity: "Activité", challenge: "Défi oral" } as const;
 
-/** Unit speaking challenge: instructions, recorder, then the status and the coach's feedback. */
-export async function ChallengeStep({ courseId, unitId }: { courseId: string; unitId: string }) {
+/** Media id → URL (public staff media: lesson audio, listening clips, model answers). */
+async function mediaUrls(viewerId: string, ids: string[]): Promise<Record<string, string>> {
+  const entries = await Promise.all(ids.map(async (id) => [id, await mediaUrlFor({ id: viewerId, isAdmin: false }, id).catch(() => null)] as const));
+  return Object.fromEntries(entries.filter((e): e is [string, string] => !!e[1]));
+}
+
+/**
+ * Step player (owner spec §9.4): the unit's current step — a lesson (LessonView + « Continuer »),
+ * an activity (its Lab player; below the pass score « Revoir la leçon ») or the speaking challenge —
+ * with « Précédent » / « Suivant ».
+ */
+export async function StepPage({ courseId, stepId }: { courseId: string; stepId: string }) {
   await connection();
-  const here = challengePath(courseId, unitId);
+  const here = stepPath(courseId, stepId);
   const me = await requireUser(here);
   const access = await courseAccess(me, courseId);
   if (!access.ok) return <AccessProblem reason={access.reason} startDate={access.enrollment?.startDate} />;
-  const { modules, units, outline } = await courseTree(me, access);
+  const tree = await courseTree(me, access);
+  const { outline, steps, activities } = tree;
 
-  const unit = units.find((u) => String(u._id) === unitId);
-  const modOutline = outline.modules.find((m) => m.units.some((u) => u.id === unitId));
-  const unitOutline = modOutline?.units.find((u) => u.id === unitId);
-  const step = unitOutline?.challenge;
-  if (!unit || !step || !unitOutline) return <AccessProblem reason="not-found" />;
-  if (step.state === "locked" && !step.status) return <Locked courseId={courseId} text="Terminez les activités de l'unité pour ouvrir son défi oral." />;
+  const mod = outline.modules.find((m) => m.units.some((u) => u.steps.some((s) => s.id === stepId)));
+  const unit = mod?.units.find((u) => u.steps.some((s) => s.id === stepId));
+  const at = unit?.steps.findIndex((s) => s.id === stepId) ?? -1;
+  const so = unit?.steps[at];
+  const step = steps.find((s) => String(s._id) === stepId);
+  if (!mod || !unit || !so || !step) return <AccessProblem reason="not-found" />;
 
-  const mod = modules.find((m) => String(m._id) === String(unit.moduleId));
-  const c = unit.challenge!;
-  const submission = access.preview
-    ? null
-    : await AssignmentSubmission.findOne({ userId: me.id, courseId, unitId, assignmentType: "unit_challenge" }).lean<AssignmentSubmissionDoc>();
-  const audio = submission?.mediaId ? await mediaUrlFor({ id: me.id, isAdmin: false }, String(submission.mediaId)).catch(() => null) : null;
+  let state = so.state;
+  // Offline download (service worker): steps of an open module are fetched ahead of order so they
+  // can be done offline; completions are replayed in order and re-checked by the server.
+  if (state === "locked" && mod.state !== "locked" && (await headers()).get("x-me-offline") === "1") state = "available";
+  if (state === "locked" && !(so.kind === "challenge" && so.status)) return <Locked courseId={courseId} text="Terminez les activités précédentes pour ouvrir celle-ci." />;
+
+  const prevHref = stepBefore(courseId, outline, here);
+  const nextHref = stepAfter(courseId, outline, here);
+  const course = coursePath(courseId);
+  const activity = step.activityId ? activities.find((a) => String(a._id) === String(step.activityId)) : undefined;
+  const editHref = so.kind === "lesson" ? adminPaths.step(courseId, stepId) : activity ? `/admin/labo/${activity._id}` : adminPaths.unit(courseId, unit.id);
+
+  const header = (
+    <header className="grid gap-3">
+      {access.preview && <PreviewBar text={unit.hidden ? "Staff preview: this unit breaks the unit rules, learners don't see it. Nothing is saved." : "Staff preview: nothing is saved."} editHref={editHref} />}
+      <nav aria-label="Activités" className="flex items-center justify-between gap-2 text-sm font-semibold">
+        <Link href={prevHref} className="inline-flex items-center gap-1 text-muted-foreground hover:text-primary">
+          <ChevronLeft className="size-4" aria-hidden /> {prevHref === course ? mod.title : "Précédent"}
+        </Link>
+        {(so.state === "completed" || (so.kind === "challenge" && so.status)) && nextHref !== course && (
+          <Link href={nextHref} className="inline-flex items-center gap-1 text-primary">
+            Suivant <ChevronRight className="size-4" aria-hidden />
+          </Link>
+        )}
+      </nav>
+      <div>
+        <p className="text-xs font-bold tracking-wide text-primary uppercase">
+          Unité {unit.index + 1} · {unit.title}
+        </p>
+        <div className="mt-2 flex gap-1" aria-label={`Activité ${at + 1} sur ${unit.steps.length}`} role="img">
+          {unit.steps.map((s, i) => (
+            <span key={s.id} className={`h-1.5 flex-1 rounded-full ${i === at ? "bg-coral" : s.state === "completed" || (s.kind === "challenge" && s.status) ? "bg-primary" : "bg-border"}`} />
+          ))}
+        </div>
+        <p className="mt-2 text-xs font-semibold text-muted-foreground">
+          {KIND_LABEL[so.kind]} · {at + 1} / {unit.steps.length}
+          {so.estimatedMinutes ? ` · ${so.estimatedMinutes} min` : ""}
+        </p>
+      </div>
+    </header>
+  );
+
+  // ── Lesson ──
+  if (so.kind === "lesson") {
+    const content = cleanLessonContent(step.content);
+    const audio = await mediaUrls(me.id, lessonMediaIds(content));
+    return (
+      <article className="mx-auto grid max-w-3xl gap-6">
+        {header}
+        <h1 className="-mt-2 text-3xl font-extrabold text-brand-deep">{step.title}</h1>
+        <LessonView title={step.title} content={content} audio={audio} />
+        <div className="flex justify-end">
+          {access.readOnly ? (
+            <Link href={nextHref} className="inline-flex h-12 items-center rounded-2xl bg-primary px-6 font-semibold text-white">
+              Activité suivante
+            </Link>
+          ) : (
+            <CompleteButton courseId={courseId} stepId={stepId} done={so.state === "completed"} nextHref={nextHref} />
+          )}
+        </div>
+      </article>
+    );
+  }
+
+  if (!activity) return <AccessProblem reason="not-found" />;
+
+  // ── Activity: its Lab player ──
+  if (so.kind === "activity") {
+    if (activity.type !== "listen_choose") return <AccessProblem reason="not-found" />;
+    const c = activity.content as ListeningContent;
+    const audio = await mediaUrls(me.id, c.audioMediaId ? [c.audioMediaId] : []);
+    return (
+      <div className="mx-auto grid max-w-2xl gap-4">
+        {header}
+        {/* A block wrapper: the player centres itself (mx-auto), which would shrink it inside a grid cell. */}
+        <div>
+          <ListeningPlayer
+          courseId={courseId}
+          stepId={stepId}
+          passScore={so.passScore}
+          lessonHref={so.lessonId ? stepPath(courseId, so.lessonId) : null}
+          title={activity.title}
+          level={activity.level ?? ""}
+          skills={activity.skills ?? []}
+          instructions={activity.instructions ?? ""}
+          maelTip={activity.maelTip ?? ""}
+          context={c.context ? <RichText>{c.context}</RichText> : null}
+          audioUrl={audio[c.audioMediaId] ?? null}
+          content={c}
+          courseHref={course}
+          nextHref={nextHref}
+          readOnly={access.readOnly}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // ── Speaking challenge ──
+  const c = activity.content as SpeakingChallengeContent;
+  const submission = access.preview ? null : await ChallengeSubmission.findOne({ userId: me.id, unitId: unit.id }).lean<ChallengeSubmissionDoc>();
+  const mine = submission?.mediaId ? await mediaUrlFor({ id: me.id, isAdmin: false }, String(submission.mediaId)).catch(() => null) : null;
+  const model = submission && c.modelAnswerAudioMediaId ? (await mediaUrls(me.id, [c.modelAnswerAudioMediaId]))[c.modelAnswerAudioMediaId] : undefined;
+  const mustInclude = c.mustInclude ?? [];
 
   return (
     <div className="mx-auto grid max-w-3xl gap-6">
-      {access.preview && <PreviewBar text="Aperçu équipe : l’enregistrement n’est pas envoyé." editHref={adminPaths.unit(courseId, unitId)} />}
-      <header>
-        <Link href={coursePath(courseId)} className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-primary">
-          <ChevronLeft className="size-4" aria-hidden /> {mod?.title ?? "Parcours"}
-        </Link>
-        <p className="mt-3 text-xs font-bold tracking-wide text-primary uppercase">
-          Unité {unitOutline.index + 1} · {unit.title}
-        </p>
-        <h1 className="mt-1 flex items-center gap-2 text-3xl font-extrabold text-brand-deep">
-          <Mic className="size-7 shrink-0 text-primary" aria-hidden /> {c.title || "Défi oral"}
+      {header}
+      <div className="-mt-2">
+        <h1 className="flex items-center gap-2 text-3xl font-extrabold text-brand-deep">
+          <Mic className="size-7 shrink-0 text-primary" aria-hidden /> {activity.title || "Défi oral"}
         </h1>
         <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
           <Timer className="size-4" aria-hidden /> {secs(c.maxSeconds ?? 60)} maximum{c.prepSeconds ? ` · ${secs(c.prepSeconds)} pour vous préparer` : ""} · votre coach vous fait un retour
         </p>
-      </header>
+      </div>
 
       <section className="rounded-3xl border-2 border-border bg-card p-5 sm:p-8">
         <RichText>{c.instructions}</RichText>
       </section>
+
+      {mustInclude.length > 0 && (
+        <section className="rounded-3xl border-2 border-primary/20 bg-brand-soft p-5">
+          <h2 className="flex items-center gap-2 font-heading font-extrabold text-brand-deep">
+            <ListChecks className="size-5 text-primary" aria-hidden /> Dans votre réponse, pensez à…
+          </h2>
+          <ul className="mt-2 grid gap-1.5">
+            {mustInclude.map((m, i) => (
+              <li key={i} className="flex gap-2 text-ink">
+                <CircleCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden /> {m}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {submission && (
         <section
@@ -230,20 +212,37 @@ export async function ChallengeStep({ courseId, unitId }: { courseId: string; un
             {submission.status === "graded" ? <CircleCheck className="size-5 text-success" aria-hidden /> : submission.status === "returned" ? <RotateCcw className="size-5 text-coral-dark" aria-hidden /> : <Clock className="size-5 text-primary" aria-hidden />}
             {submission.status === "graded" ? "Validé par votre coach" : submission.status === "returned" ? "À reprendre : votre coach vous a fait un retour" : "Envoyé · votre coach va vous écouter"}
           </p>
-          {submission.feedback && <RichText legacy="text" className="mt-2 text-ink">{submission.feedback}</RichText>}
-          {audio && (
+          {submission.feedback && (
+            <RichText legacy="text" className="mt-2 text-ink">
+              {submission.feedback}
+            </RichText>
+          )}
+          {mine && (
             <div className="mt-3">
               <p className="mb-1 text-sm font-semibold text-brand-deep">Votre enregistrement</p>
-              <audio src={audio} controls preload="none" className="w-full" />
+              <audio src={mine} controls preload="none" className="w-full" />
             </div>
           )}
           <p className="mt-2 text-xs text-muted-foreground">Envoyé le {formatDate(submission.updatedAt)}</p>
         </section>
       )}
 
+      {/* The model answer comes once the learner has answered (no copying). */}
+      {submission && (c.modelAnswerText || model) && (
+        <section className="rounded-3xl border-2 border-border bg-card p-5">
+          <h2 className="font-heading font-extrabold text-brand-deep">Un exemple de réponse</h2>
+          {model && <audio src={model} controls preload="none" className="mt-2 w-full" />}
+          {c.modelAnswerText && (
+            <p lang="en" className="mt-2 whitespace-pre-line text-ink">
+              {c.modelAnswerText}
+            </p>
+          )}
+        </section>
+      )}
+
       {submission?.status === "graded" ? (
-        <Link href={stepAfter(courseId, outline, here)} className="inline-flex h-12 w-fit items-center rounded-2xl bg-primary px-6 font-semibold text-white">
-          Étape suivante
+        <Link href={nextHref} className="inline-flex h-12 w-fit items-center rounded-2xl bg-primary px-6 font-semibold text-white">
+          Activité suivante
         </Link>
       ) : access.readOnly ? (
         <p className="text-muted-foreground">Cours terminé : les envois sont fermés.</p>
@@ -251,9 +250,46 @@ export async function ChallengeStep({ courseId, unitId }: { courseId: string; un
         <section className="grid gap-3">
           <h2 className="text-xl font-extrabold text-brand-deep">{submission ? "Vous pouvez vous réenregistrer" : "À vous de parler"}</h2>
           {submission?.status === "pending" && <p className="text-sm text-muted-foreground">Tant que votre coach n’a pas validé, un nouvel envoi remplace le précédent.</p>}
-          <ChallengeRecorder courseId={courseId} unitId={unitId} maxSeconds={c.maxSeconds ?? 60} prepSeconds={c.prepSeconds ?? 0} preview={access.preview} resend={!!submission} courseHref={coursePath(courseId)} />
+          <ChallengeRecorder courseId={courseId} stepId={stepId} maxSeconds={c.maxSeconds ?? 60} prepSeconds={c.prepSeconds ?? 0} preview={access.preview} resend={!!submission} courseHref={course} />
         </section>
       )}
     </div>
+  );
+}
+
+/** Course final exam (opens once every module is complete). */
+export async function ExamStep({ courseId }: { courseId: string }) {
+  await connection();
+  const here = examPath(courseId);
+  const me = await requireUser(here);
+  const access = await courseAccess(me, courseId);
+  if (!access.ok) return <AccessProblem reason={access.reason} startDate={access.enrollment?.startDate} />;
+  const { outline } = await courseTree(me, access);
+  const quiz = access.course.finalExam;
+  const step = outline.finalExam;
+  if (!quiz?.questions?.length || !step) return <AccessProblem reason="not-found" />;
+  if (step.state === "locked") return <Locked courseId={courseId} text="L'examen final s'ouvre quand tous les modules sont terminés." />;
+
+  // Never send the answers to the browser.
+  const questions: PublicQuestion[] = quiz.questions.map((q) => ({
+    id: String((q as unknown as { _id: unknown })._id),
+    text: q.text,
+    options: q.options.map((o) => ({ id: o.id, text: o.text })),
+  }));
+  return (
+    <>
+      {access.preview && <PreviewBar text="Staff preview: the result isn't saved." editHref={adminPaths.finals(courseId)} className="mx-auto mb-6 max-w-2xl" />}
+      <QuizRunner
+        courseId={courseId}
+        title={quiz.title || "Examen final"}
+        questions={questions}
+        passingScore={quiz.passingScore ?? 70}
+        timeLimit={quiz.timeLimit ?? 0}
+        bestScore={step.bestScore}
+        courseHref={coursePath(courseId)}
+        nextHref={stepAfter(courseId, outline, here)}
+        readOnly={access.readOnly}
+      />
+    </>
   );
 }

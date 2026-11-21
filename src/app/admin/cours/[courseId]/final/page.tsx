@@ -4,13 +4,10 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { requireStaff, courseFor } from "@/lib/admin/context";
 import { Card, PageHeader } from "@/components/admin/ui";
-import { AdminForm, Submit } from "@/components/admin/forms";
-import { AssignmentFields } from "@/components/admin/assignment-fields";
 import { QuizEditor, type EditableQuiz } from "@/components/admin/quiz-editor";
-import { saveAssignmentAction } from "../../../actions";
 import { PageSkeleton } from "@/components/learn/ui";
 
-export const metadata: Metadata = { title: "Examen et projet final" };
+export const metadata: Metadata = { title: "Final exam" };
 
 async function Finals({ params }: { params: Promise<{ courseId: string }> }) {
   const { courseId } = await params;
@@ -32,18 +29,9 @@ async function Finals({ params }: { params: Promise<{ courseId: string }> }) {
   };
   return (
     <div className="grid max-w-4xl gap-5">
-      <PageHeader title="Examen et projet final" back={{ href: `/admin/cours/${courseId}`, label: course.title }} subtitle="Ils s'ouvrent quand tous les modules sont terminés." />
-      <Card title="Examen final" description="Noté sur le serveur ; réussi = 100 XP et badge « Diplômé(e) ». Sans question, pas d'examen.">
-        <QuizEditor target={{ courseId }} initial={exam} label="examen" />
-      </Card>
-      <Card title="Projet final" description="Corrigé par un coach. Consignes vides = pas de projet.">
-        <AdminForm action={saveAssignmentAction}>
-          <input type="hidden" name="courseId" value={courseId} />
-          <AssignmentFields a={course.finalProject} />
-          <div>
-            <Submit>Enregistrer le projet</Submit>
-          </div>
-        </AdminForm>
+      <PageHeader title="Final exam" back={{ href: `/admin/cours/${courseId}`, label: course.title }} subtitle="It opens when every module is complete." />
+      <Card title="Final exam" description="Graded on the server; passing = 100 XP and the « Diplômé(e) » badge. No questions = no exam.">
+        <QuizEditor courseId={courseId} initial={exam} />
       </Card>
     </div>
   );

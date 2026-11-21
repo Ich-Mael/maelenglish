@@ -1,4 +1,5 @@
-import { Schema, model, models, type InferSchemaType, type Model, type Types } from "mongoose";
+import { Schema, type InferSchemaType, type Model, type Types } from "mongoose";
+import { defineModel } from "./define";
 
 /**
  * A stored file (audio for now): learner recordings, coach voice notes, listening clips,
@@ -27,4 +28,4 @@ const mediaSchema = new Schema(
 mediaSchema.index({ status: 1, createdAt: 1 }); // cleanup of abandoned uploads
 
 export type MediaDoc = InferSchemaType<typeof mediaSchema> & { _id: Types.ObjectId };
-export const Media: Model<MediaDoc> = (models.Media as Model<MediaDoc>) || model<MediaDoc>("Media", mediaSchema);
+export const Media: Model<MediaDoc> = defineModel<MediaDoc>("Media", mediaSchema);

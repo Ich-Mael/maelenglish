@@ -24,7 +24,7 @@ export async function StatsBar() {
           <span className="sr-only lg:not-sr-only">Admin</span>
         </Link>
       )}
-      <Link href="/progression" className="flex items-center gap-3 rounded-2xl px-2 py-1 hover:bg-muted">
+      <Link href="/progression" className="flex items-center gap-2 rounded-2xl px-1 py-1 hover:bg-muted sm:gap-3 sm:px-2">
         <span className={cn("flex items-center gap-1 font-heading font-extrabold", s.activeToday ? "text-coral-dark" : "text-muted-foreground")}>
           <Flame className={cn("size-5", s.activeToday && "fill-coral/30")} aria-hidden /> {s.streak}
           <span className="sr-only"> jour{s.streak > 1 ? "s" : ""} de série,</span>
@@ -39,7 +39,7 @@ export async function StatsBar() {
             {s.todayXp} XP sur {s.dailyGoal} aujourd&apos;hui,
           </span>
         </span>
-        <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold whitespace-nowrap text-white">
+        <span className="hidden rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold whitespace-nowrap text-white sm:inline">
           Niv. {s.level.level}
         </span>
       </Link>
@@ -48,5 +48,5 @@ export async function StatsBar() {
 }
 
 export function StatsBarFallback() {
-  return <span className="h-9 w-36 animate-pulse rounded-2xl bg-muted" aria-hidden />;
+  return <span className="h-9 w-24 animate-pulse rounded-2xl bg-muted sm:w-36" aria-hidden />;
 }

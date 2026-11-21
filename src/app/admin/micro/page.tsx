@@ -5,13 +5,13 @@ import { Card, PageHeader } from "@/components/admin/ui";
 import { PageSkeleton } from "@/components/learn/ui";
 import { MicTest } from "./mic-test";
 
-export const metadata: Metadata = { title: "Tester le micro" };
+export const metadata: Metadata = { title: "Microphone test" };
 
 async function MicPage() {
   await requireStaff("/admin/micro");
   return (
     <div className="max-w-2xl">
-      <PageHeader title="Tester le micro" subtitle="Vérifiez votre micro avant d’enregistrer un retour vocal ou un audio de cours. Rien n’est envoyé, sauf si vous testez l’envoi." />
+      <PageHeader title="Microphone test" subtitle="Check your microphone before recording voice feedback or course audio. Nothing is sent unless you test the upload." />
       <Card>
         <MicTest />
       </Card>

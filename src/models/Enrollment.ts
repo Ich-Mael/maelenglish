@@ -1,4 +1,5 @@
-import { Schema, model, models, type InferSchemaType, type Model, type Types } from "mongoose";
+import { Schema, type InferSchemaType, type Model, type Types } from "mongoose";
+import { defineModel } from "./define";
 
 /**
  * A learner's access to a course, with its own date window. Replaces the
@@ -29,14 +30,14 @@ enrollmentSchema.index({ userId: 1, courseId: 1 }, { unique: true });
 
 enrollmentSchema.pre("validate", function () {
   if (this.endDate && this.startDate && this.endDate < this.startDate) {
-    this.invalidate("endDate", "La date de fin doit être après la date de début.");
+    this.invalidate("endDate", "The end date must be after the start date.");
   }
 });
 
 export type EnrollmentDoc = InferSchemaType<typeof enrollmentSchema> & { _id: Types.ObjectId };
 
 export const Enrollment: Model<EnrollmentDoc> =
-  (models.Enrollment as Model<EnrollmentDoc>) || model<EnrollmentDoc>("Enrollment", enrollmentSchema);
+  defineModel<EnrollmentDoc>("Enrollment", enrollmentSchema);
 
 export type AccessState = "active" | "not-started" | "expired" | "suspended" | "completed";
 

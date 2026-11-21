@@ -30,11 +30,40 @@ const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).p
 
 type Phase = "idle" | "prep" | "recording" | "review" | "error";
 
+/** Learners see French; staff screens (admin, Lab) pass `locale="en"`. */
+const TEXT = {
+  fr: {
+    use: "Utiliser cet enregistrement",
+    unsupported: "Votre navigateur ne permet pas d’enregistrer. Essayez avec Chrome ou Safari à jour.",
+    noMic: "Micro inaccessible : autorisez l’accès au micro dans votre navigateur, puis réessayez.",
+    stop: "Arrêter l’enregistrement",
+    again: "Recommencer l’enregistrement",
+    start: "Commencer l’enregistrement",
+    prep: "Préparez-vous…",
+    recording: "Enregistrement",
+    idle: (max: string) => `Appuyez sur le micro pour enregistrer (maximum ${max}).`,
+    review: "Écoutez-vous, puis gardez cet enregistrement ou recommencez.",
+  },
+  en: {
+    use: "Use this recording",
+    unsupported: "This browser can't record. Try an up-to-date Chrome or Safari.",
+    noMic: "Microphone unavailable: allow microphone access in your browser, then try again.",
+    stop: "Stop recording",
+    again: "Record again",
+    start: "Start recording",
+    prep: "Get ready…",
+    recording: "Recording",
+    idle: (max: string) => `Press the microphone to record (max ${max}).`,
+    review: "Listen back, then keep this recording or record again.",
+  },
+};
+
 export function Recorder({
   maxSeconds,
   prepSeconds = 0,
   onUse,
-  useLabel = "Utiliser cet enregistrement",
+  useLabel,
+  locale = "fr",
   disabled,
   className,
 }: {
@@ -43,6 +72,7 @@ export function Recorder({
   /** Called with the chosen take. */
   onUse?: (rec: Recording) => void;
   useLabel?: string;
+  locale?: "fr" | "en";
   disabled?: boolean;
   className?: string;
 }) {
@@ -51,6 +81,7 @@ export function Recorder({
   const [level, setLevel] = useState(0);
   const [take, setTake] = useState<Recording | null>(null);
   const [error, setError] = useState("");
+  const t = TEXT[locale];
 
   const stream = useRef<MediaStream | null>(null);
   const recorder = useRef<MediaRecorder | null>(null);
@@ -136,14 +167,14 @@ export function Recorder({
     setTake(null);
     if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
       setPhase("error");
-      setError("Votre navigateur ne permet pas d’enregistrer. Essayez avec Chrome ou Safari à jour.");
+      setError(t.unsupported);
       return;
     }
     try {
       stream.current = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
     } catch {
       setPhase("error");
-      setError("Micro inaccessible : autorisez l’accès au micro dans votre navigateur, puis réessayez.");
+      setError(t.noMic);
       return;
     }
     if (prepSeconds > 0) {
@@ -175,7 +206,7 @@ export function Recorder({
             type="button"
             onClick={stop}
             className="flex size-16 shrink-0 items-center justify-center rounded-full bg-destructive text-white shadow-[0_5px_0_0_#991b1b] active:translate-y-1 active:shadow-[0_1px_0_0_#991b1b]"
-            aria-label="Arrêter l’enregistrement"
+            aria-label={t.stop}
           >
             <Square className="size-6 fill-current" aria-hidden />
           </button>
@@ -185,25 +216,25 @@ export function Recorder({
             onClick={() => void start()}
             disabled={disabled || phase === "prep"}
             className="flex size-16 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-[0_5px_0_0_var(--color-brand-dark)] active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-brand-dark)] disabled:opacity-50"
-            aria-label={take ? "Recommencer l’enregistrement" : "Commencer l’enregistrement"}
+            aria-label={take ? t.again : t.start}
           >
             {take ? <RotateCcw className="size-6" aria-hidden /> : <Mic className="size-7" aria-hidden />}
           </button>
         )}
         <div className="min-w-0 flex-1" aria-live="polite">
-          {phase === "prep" && <p className="font-heading text-lg font-extrabold text-brand-deep">Préparez-vous… {Math.ceil(left)}</p>}
+          {phase === "prep" && <p className="font-heading text-lg font-extrabold text-brand-deep">{t.prep} {Math.ceil(left)}</p>}
           {recording && (
             <>
               <p className="flex items-center gap-2 font-heading text-lg font-extrabold text-brand-deep">
-                <span className="size-2.5 animate-pulse rounded-full bg-destructive motion-reduce:animate-none" aria-hidden /> Enregistrement · {fmt(left)}
+                <span className="size-2.5 animate-pulse rounded-full bg-destructive motion-reduce:animate-none" aria-hidden /> {t.recording} · {fmt(left)}
               </p>
               <div className="mt-2 h-2 overflow-hidden rounded-full bg-muted" aria-hidden>
                 <div className="h-full rounded-full bg-primary transition-[width] duration-75" style={{ width: `${Math.round(level * 100)}%` }} />
               </div>
             </>
           )}
-          {phase === "idle" && <p className="text-sm text-muted-foreground">Appuyez sur le micro pour enregistrer (maximum {fmt(maxSeconds)}).</p>}
-          {phase === "review" && take && <p className="text-sm font-semibold text-brand-deep">Écoutez-vous, puis gardez cet enregistrement ou recommencez.</p>}
+          {phase === "idle" && <p className="text-sm text-muted-foreground">{t.idle(fmt(maxSeconds))}</p>}
+          {phase === "review" && take && <p className="text-sm font-semibold text-brand-deep">{t.review}</p>}
           {phase === "error" && <p className="text-sm font-semibold text-coral-dark">{error}</p>}
         </div>
       </div>
@@ -212,7 +243,7 @@ export function Recorder({
           <audio src={take.url} controls className="w-full" />
           {onUse && (
             <button type="button" onClick={() => onUse(take)} className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-primary px-5 font-bold text-white hover:brightness-110">
-              <Check className="size-5" aria-hidden /> {useLabel}
+              <Check className="size-5" aria-hidden /> {useLabel ?? t.use}
             </button>
           )}
         </div>

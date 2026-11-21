@@ -80,7 +80,7 @@ async function Courses({ searchParams }: { searchParams: Promise<Record<string, 
 }
 
 function CourseCard({ course: c }: { course: MyCourse }) {
-  const percent = c.lessonsTotal ? Math.round((c.lessonsDone / c.lessonsTotal) * 100) : 0;
+  const percent = c.stepsTotal ? Math.round((c.stepsDone / c.stepsTotal) * 100) : 0;
   const badge = STATE_LABEL[c.state];
   const usable = c.state === "active" || c.state === "completed";
   const body = (
@@ -112,13 +112,13 @@ function CourseCard({ course: c }: { course: MyCourse }) {
           <>
             <div className="mt-4 flex items-center justify-between text-sm font-semibold">
               <span className="text-ink/75">
-                {c.lessonsDone} / {c.lessonsTotal} activités
+                {c.stepsDone} / {c.stepsTotal} activités
               </span>
               <span className="text-success">{percent} %</span>
             </div>
             <ProgressBar value={percent} className="mt-1.5" />
             <span className="mt-4 inline-flex items-center gap-1.5 font-bold text-coral-dark">
-              {c.state === "completed" ? "Revoir le cours" : c.lessonsDone ? "Continuer" : "Commencer"}{" "}
+              {c.state === "completed" ? "Revoir le cours" : c.stepsDone ? "Continuer" : "Commencer"}{" "}
               <ArrowRight className="size-4 transition group-hover:translate-x-1" aria-hidden />
             </span>
           </>

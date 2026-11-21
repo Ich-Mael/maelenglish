@@ -1,15 +1,16 @@
-import { Schema, model, models, type InferSchemaType, type Model, type Types } from "mongoose";
+import { Schema, type InferSchemaType, type Model, type Types } from "mongoose";
+import { defineModel } from "./define";
 import { PROGRAM_SLUGS } from "@/lib/catalog";
-import { assignmentFields, gradedQuizFields } from "./shared";
+import { gradedQuizFields } from "./shared";
 
 /**
  * A course = one delivery of a catalogue programme (`program` = slug from
- * src/lib/catalog.ts, '' = not linked). Structure: Course → Module (ordered by
- * `order`) → Lesson. Learners get access through an `Enrollment`.
+ * src/lib/catalog.ts, '' = not linked). The owner spec calls it the « Program ». Structure:
+ * Course → Module → Unit → Step (src/lib/course/types.ts). Learners get access through an `Enrollment`.
  *
  * Challenge courses (`isChallenge`) run day by day: each module is a "day",
- * revealed relative to the learner's enrolment start, and a day's checkpoint
- * (its module assignment) must be approved before the next one unlocks.
+ * revealed relative to the learner's enrolment start, and the coach must validate the
+ * day's last unit speaking challenge before the next day unlocks.
  */
 
 export const COURSE_LEVELS = ["beginner", "intermediate", "advanced"] as const;
@@ -26,7 +27,7 @@ const courseSchema = new Schema(
       index: true,
       validate: {
         validator: (v: string) => v === "" || PROGRAM_SLUGS.includes(v),
-        message: "Programme MaelEnglish inconnu.",
+        message: "Unknown MaelEnglish programme.",
       },
     },
     level: { type: String, enum: COURSE_LEVELS, default: "beginner" },
@@ -36,7 +37,7 @@ const courseSchema = new Schema(
       type: Number,
       default: null,
       min: [0, "Le prix ne peut pas être négatif."],
-      validate: { validator: (v: number | null) => v === null || Number.isInteger(v), message: "Le prix doit être un nombre entier de FCFA." },
+      validate: { validator: (v: number | null) => v === null || Number.isInteger(v), message: "The price must be a whole number of FCFA." },
     },
 
     /** Draft courses are only visible to staff. */
@@ -49,7 +50,6 @@ const courseSchema = new Schema(
     instructors: [{ type: Schema.Types.ObjectId, ref: "User" }],
 
     finalExam: { type: new Schema(gradedQuizFields, { _id: false }), default: () => ({}) },
-    finalProject: { type: new Schema(assignmentFields, { _id: false }), default: () => ({}) },
 
     isChallenge: { type: Boolean, default: false },
     challenge: {
@@ -61,4 +61,4 @@ const courseSchema = new Schema(
 
 export type CourseDoc = InferSchemaType<typeof courseSchema> & { _id: Types.ObjectId };
 
-export const Course: Model<CourseDoc> = (models.Course as Model<CourseDoc>) || model<CourseDoc>("Course", courseSchema);
+export const Course: Model<CourseDoc> = defineModel<CourseDoc>("Course", courseSchema);

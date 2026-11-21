@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowLeft, ArrowRight, Check, Loader2, RotateCcw, Timer, Trophy, X } from "lucide-react";
-import { submitQuiz, type QuizResult } from "@/app/(app)/learn-actions";
+import { submitFinalExam, type QuizResult } from "@/app/(app)/learn-actions";
 import { cn } from "cn";
 import { pushReward } from "@/components/gamify/reward-store";
 import { confetti, playSound } from "@/components/gamify/sound";
@@ -13,12 +13,11 @@ import { confetti, playSound } from "@/components/gamify/sound";
 export type PublicQuestion = { id: string; text: string; options: { id: string; text: string }[] };
 
 /**
- * Graded quiz (module quiz or final exam). Questions arrive without their
+ * Graded course final exam. Questions arrive without their
  * answers; the server grades and returns the review.
  */
 export function QuizRunner({
   courseId,
-  moduleId,
   title,
   questions,
   passingScore,
@@ -29,7 +28,6 @@ export function QuizRunner({
   readOnly,
 }: {
   courseId: string;
-  moduleId: string | null;
   title: string;
   questions: PublicQuestion[];
   passingScore: number;
@@ -58,7 +56,7 @@ export function QuizRunner({
     submitted.current = true;
     setError(null);
     start(async () => {
-      const res = await submitQuiz(courseId, moduleId, answers);
+      const res = await submitFinalExam(courseId, answers);
       if (!res.ok) {
         submitted.current = false;
         setError(res.error);

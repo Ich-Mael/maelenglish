@@ -11,13 +11,13 @@ export type EnrollInput = { identifier: string; startDate?: string | null; endDa
 /** Enrols a learner (found by username, email or WhatsApp number). Dates default to the course's cohort dates. */
 export async function enroll(actorId: string, courseId: string, input: EnrollInput): Promise<{ user: UserDoc; course: CourseDoc; enrollment: EnrollmentDoc }> {
   const course = await Course.findById(courseId).lean<CourseDoc>();
-  if (!course) throw new AdminError("Cours introuvable.");
+  if (!course) throw new AdminError("Course not found.");
   const found = await findByIdentifier(input.identifier);
-  if (found.ambiguous) throw new AdminError("Plusieurs comptes utilisent ce numéro : indiquez le nom d'utilisateur.");
+  if (found.ambiguous) throw new AdminError("Several accounts use this number: enter the username.");
   const user = found.user;
-  if (!user) throw new AdminError("Aucun compte trouvé avec cet identifiant. Créez d'abord le compte.");
-  if (!isAccountActive(user)) throw new AdminError("Ce compte est désactivé.");
-  if (await Enrollment.exists({ userId: user._id, courseId: course._id })) throw new AdminError(`${user.name} est déjà inscrit(e) à ce cours.`);
+  if (!user) throw new AdminError("No account found with this identifier. Create the account first.");
+  if (!isAccountActive(user)) throw new AdminError("This account is deactivated.");
+  if (await Enrollment.exists({ userId: user._id, courseId: course._id })) throw new AdminError(`${user.name} is already enrolled in this course.`);
 
   const enrollment = await Enrollment.create({
     userId: user._id,
@@ -32,9 +32,9 @@ export async function enroll(actorId: string, courseId: string, input: EnrollInp
 export type EnrollmentChange = { startDate?: string | null; endDate?: string | null; status?: "active" | "suspended" | "completed" };
 
 export async function updateEnrollment(enrollmentId: string, change: EnrollmentChange) {
-  if (!Types.ObjectId.isValid(enrollmentId)) throw new AdminError("Identifiant invalide.");
+  if (!Types.ObjectId.isValid(enrollmentId)) throw new AdminError("Invalid ID.");
   const e = await Enrollment.findById(enrollmentId);
-  if (!e) throw new AdminError("Inscription introuvable.");
+  if (!e) throw new AdminError("Enrolment not found.");
   if (change.startDate !== undefined) e.startDate = date(change.startDate) ?? e.startDate;
   if (change.endDate !== undefined) e.endDate = endOfDay(change.endDate);
   if (change.status) {
@@ -45,7 +45,7 @@ export async function updateEnrollment(enrollmentId: string, change: EnrollmentC
 }
 
 export async function removeEnrollment(enrollmentId: string) {
-  if (!Types.ObjectId.isValid(enrollmentId)) throw new AdminError("Identifiant invalide.");
+  if (!Types.ObjectId.isValid(enrollmentId)) throw new AdminError("Invalid ID.");
   await Enrollment.deleteOne({ _id: enrollmentId });
 }
 

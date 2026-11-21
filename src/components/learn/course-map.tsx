@@ -1,16 +1,18 @@
 import Link from "next/link";
-import { Check, ChevronDown, ClipboardCheck, FileText, Lock, Mic, PenLine, PlayCircle, Sparkles, Star, Trophy, Type } from "lucide-react";
-import type { ModuleOutline, Outline, StepState, UnitOutline } from "@/lib/learn/progress";
-import { assignmentPath, challengePath, examPath, lessonPath, projectPath, quizPath } from "@/lib/learn/paths";
+import { BookOpen, Check, ChevronDown, Clock, EyeOff, Headphones, Lock, Mic, Sparkles, Target, Trophy } from "lucide-react";
+import type { ModuleOutline, Outline, StepOutline, StepState, UnitOutline } from "@/lib/learn/progress";
+import { examPath, stepPath } from "@/lib/learn/paths";
 import { formatDate } from "./ui";
 import { RichText } from "./rich-text";
+import { PathRow, PathStep } from "./path-row";
 import { cn } from "cn";
 
-const LESSON_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
-  video: PlayCircle,
-  text: Type,
-  pdf: FileText,
-  practice: Sparkles,
+/** Step icon: lesson, Lab activity type, challenge. */
+const STEP_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
+  lesson: BookOpen,
+  activity: Sparkles,
+  listen_choose: Headphones,
+  challenge: Mic,
 };
 
 const DAY_LABEL: Record<NonNullable<ModuleOutline["day"]>["state"], string> = {
@@ -29,92 +31,66 @@ const CHALLENGE_SUB: Record<string, string | undefined> = {
   graded: "Validé par votre coach",
 };
 
-/** Zig-zag offsets give the path its playful shape (lg screens only; stays straight on phones for reach). */
-const OFFSETS = ["sm:translate-x-0", "sm:translate-x-12", "sm:translate-x-20", "sm:translate-x-12", "sm:translate-x-0", "sm:-translate-x-12", "sm:-translate-x-20", "sm:-translate-x-12"];
-
 type Node = { key: string; href: string; label: string; sub?: string; state: StepState; icon: React.ComponentType<{ className?: string }>; big?: boolean };
 
+function stepNode(courseId: string, s: StepOutline): Node {
+  const below = s.kind === "activity" && s.score !== null && s.passScore !== null && s.score < s.passScore;
+  return {
+    key: s.id,
+    href: stepPath(courseId, s.id),
+    label: s.kind === "challenge" ? "Défi oral" : s.title,
+    sub: s.kind === "challenge" ? CHALLENGE_SUB[s.status ?? "none"] : below ? `À revoir · ${s.score} %` : s.kind === "activity" && s.score !== null ? `${s.score} %` : undefined,
+    state: s.state,
+    icon: STEP_ICON[s.type] ?? STEP_ICON[s.kind] ?? Sparkles,
+    big: s.kind === "challenge",
+  };
+}
+
 export function CourseMap({ courseId, outline, currentHref }: { courseId: string; outline: Outline; currentHref: string | null }) {
-  let n = 0;
+  // minmax(0,1fr): the horizontal unit paths scroll instead of widening the page.
   return (
-    <ol className="grid gap-10">
-      {outline.modules.map((m) => {
-        const lessonNodes = (u: UnitOutline): Node[] => [
-          ...u.lessons.map((l) => ({ key: l.id, href: lessonPath(courseId, l.id), label: l.title, state: l.state, icon: LESSON_ICON[l.type] ?? Type })),
-          ...(u.challenge
-            ? [{ key: `${u.id}-challenge`, href: challengePath(courseId, u.id), label: "Défi oral", sub: CHALLENGE_SUB[u.challenge.status ?? "none"], state: u.challenge.state, icon: Mic, big: true }]
-            : []),
-        ];
-        const moduleNodes: Node[] = [
-          ...(m.quiz
-            ? [{ key: `${m.id}-quiz`, href: quizPath(courseId, m.id), label: "Quiz du module", sub: m.quiz.bestScore !== null ? `Meilleur score : ${m.quiz.bestScore} %` : undefined, state: m.quiz.state, icon: Star, big: true }]
-            : []),
-          ...(m.assignment
-            ? [{
-                key: `${m.id}-assignment`,
-                href: assignmentPath(courseId, m.id),
-                label: m.day ? "Point de contrôle" : "Devoir",
-                sub: m.assignment.status === "pending" ? "En correction" : m.assignment.status === "returned" ? "À reprendre" : undefined,
-                state: m.assignment.state,
-                icon: PenLine,
-              }]
-            : []),
-        ];
-        return (
-          <li key={m.id}>
-            <ModuleBanner module={m} />
-            {m.description.trim() && <ModuleAbout html={m.description} />}
-            {m.units.map((u) => (
-              <section key={u.id || "untitled"} aria-label={u.id ? `Unité ${u.index + 1} : ${u.title}` : undefined}>
-                {u.id && <UnitHeader unit={u} />}
-                <ol className="mt-6 grid justify-items-center gap-5">
-                  {lessonNodes(u).map((node) => (
-                    <li key={node.key} className={cn("transition-transform", OFFSETS[n++ % OFFSETS.length])}>
-                      <PathNode node={node} current={node.href === currentHref} />
-                    </li>
-                  ))}
-                </ol>
-              </section>
-            ))}
-            {moduleNodes.length > 0 && (
-              <ol className="mt-6 grid justify-items-center gap-5">
-                {moduleNodes.map((node) => (
-                  <li key={node.key} className={cn("transition-transform", OFFSETS[n++ % OFFSETS.length])}>
-                    <PathNode node={node} current={node.href === currentHref} />
-                  </li>
-                ))}
-              </ol>
-            )}
-          </li>
-        );
-      })}
-      {(outline.finalExam || outline.finalProject) && (
+    <ol className="grid grid-cols-[minmax(0,1fr)] gap-10">
+      {outline.modules.map((m) => (
+        <li key={m.id}>
+          <ModuleBanner module={m} />
+          {m.description.trim() && <ModuleAbout html={m.description} />}
+          <div className="mt-4 grid grid-cols-[minmax(0,1fr)] gap-3">
+            {m.units.map((u) => {
+              const nodes = u.steps.map((s) => stepNode(courseId, s));
+              return <UnitCard key={u.id} unit={u} open={nodes.some((n) => n.href === currentHref)} path={<Path label={`Activités de l'unité ${u.index + 1}`} nodes={nodes} currentHref={currentHref} />} />;
+            })}
+          </div>
+        </li>
+      ))}
+      {outline.finalExam && (
         <li>
           <div className="rounded-3xl border-2 border-coral bg-white p-5 text-brand-deep">
-            <p className="text-xs font-bold tracking-wide uppercase">Étape finale</p>
-            <h2 className="text-xl font-extrabold">Obtenez votre certificat</h2>
+            <p className="text-xs font-bold tracking-wide uppercase">Activité finale</p>
+            <h2 className="text-xl font-extrabold">L&apos;examen final</h2>
           </div>
-          <ol className="mt-6 grid justify-items-center gap-5">
-            {outline.finalExam && (
-              <li>
-                <PathNode
-                  node={{ key: "exam", href: examPath(courseId), label: "Examen final", sub: outline.finalExam.bestScore !== null ? `Meilleur score : ${outline.finalExam.bestScore} %` : undefined, state: outline.finalExam.state, icon: Trophy, big: true }}
-                  current={examPath(courseId) === currentHref}
-                />
-              </li>
-            )}
-            {outline.finalProject && (
-              <li>
-                <PathNode
-                  node={{ key: "project", href: projectPath(courseId), label: "Projet final", sub: outline.finalProject.status === "pending" ? "En correction" : undefined, state: outline.finalProject.state, icon: ClipboardCheck }}
-                  current={projectPath(courseId) === currentHref}
-                />
-              </li>
-            )}
-          </ol>
+          <div className="mt-6">
+            <Path
+              label="Activité finale"
+              currentHref={currentHref}
+              nodes={[{ key: "exam", href: examPath(courseId), label: "Examen final", sub: outline.finalExam.bestScore !== null ? `Meilleur score : ${outline.finalExam.bestScore} %` : undefined, state: outline.finalExam.state, icon: Trophy, big: true }]}
+            />
+          </div>
         </li>
       )}
     </ol>
+  );
+}
+
+/** A horizontal row of steps (see PathRow). */
+function Path({ label, nodes, currentHref }: { label: string; nodes: Node[]; currentHref: string | null }) {
+  return (
+    <PathRow label={label}>
+      {nodes.map((node, i) => (
+        <PathStep key={node.key} first={i === 0} reached={i > 0 && nodes[i - 1].state === "completed"} current={node.href === currentHref}>
+          <PathNode node={node} current={node.href === currentHref} />
+        </PathStep>
+      ))}
+    </PathRow>
   );
 }
 
@@ -136,26 +112,72 @@ function ModuleBanner({ module: m }: { module: ModuleOutline }) {
   );
 }
 
-/** Unit sub-header: number, title, objective and a progress ring (lessons done / total). */
-function UnitHeader({ unit: u }: { unit: UnitOutline }) {
+/**
+ * A unit as a foldable card (<details>, works without JS): the summary shows its number / state,
+ * title, progress and minutes; open, its objectives and the path of steps. Only the unit holding
+ * the learner's next step starts open — done and locked units stay folded so the map stays short.
+ */
+function UnitCard({ unit: u, open, path }: { unit: UnitOutline; open: boolean; path: React.ReactNode }) {
   const locked = u.state === "locked";
-  const r = 18;
-  const c = 2 * Math.PI * r;
+  const complete = u.state === "completed";
+  const percent = u.total ? Math.round((u.done / u.total) * 100) : 0;
   return (
-    <div className={cn("mt-6 flex items-center gap-3 rounded-2xl border-2 px-4 py-3", locked ? "border-border bg-muted/50 text-muted-foreground" : "border-brand-soft bg-white text-brand-deep")}>
-      <span className="relative flex size-11 shrink-0 items-center justify-center" role="img" aria-label={`${u.done} activité(s) terminée(s) sur ${u.total}`}>
-        <svg viewBox="0 0 44 44" className="absolute inset-0 -rotate-90" aria-hidden>
-          <circle cx="22" cy="22" r={r} fill="none" strokeWidth="5" className="stroke-muted" />
-          {u.done > 0 && <circle cx="22" cy="22" r={r} fill="none" strokeWidth="5" strokeLinecap="round" className="stroke-primary" strokeDasharray={c} strokeDashoffset={c * (1 - u.done / u.total)} />}
-        </svg>
-        {u.state === "completed" ? <Check className="size-5 text-primary" aria-hidden /> : locked ? <Lock className="size-4" aria-hidden /> : <span className="text-xs font-bold tabular-nums">{u.done}/{u.total}</span>}
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className={cn("block text-xs font-bold tracking-wide uppercase", locked ? "" : "text-primary")}>Unité {u.index + 1}</span>
-        <span className="block font-heading font-extrabold">{u.title}</span>
-        {u.objective && <span className="block text-sm text-muted-foreground">{u.objective}</span>}
-      </span>
-    </div>
+    <details open={open} className={cn("group rounded-3xl border-2 bg-card transition-colors", open ? "border-primary/30" : "border-border", "open:border-primary/30 open:shadow-sm")}>
+      <summary className="flex cursor-pointer list-none items-center gap-3 rounded-3xl p-4 outline-none focus-visible:ring-4 focus-visible:ring-ring/40 sm:gap-4 sm:p-5 [&::-webkit-details-marker]:hidden">
+        <span
+          className={cn(
+            "flex size-11 shrink-0 items-center justify-center rounded-2xl font-heading text-lg font-extrabold",
+            complete ? "border-2 border-primary bg-white text-primary" : locked ? "bg-muted text-muted-foreground" : "bg-primary text-white",
+          )}
+        >
+          {complete ? <Check className="size-5" aria-hidden /> : locked ? <Lock className="size-5" aria-hidden /> : u.index + 1}
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className={cn("block text-xs font-bold tracking-wide uppercase", locked ? "text-muted-foreground" : "text-primary")}>
+            Unité {u.index + 1}
+            {complete ? " · Terminée" : locked ? " · Verrouillée" : ""}
+          </span>
+          <span className={cn("block text-base leading-snug font-extrabold sm:text-lg", locked ? "text-muted-foreground" : "text-brand-deep")}>{u.title}</span>
+          <span className="mt-1.5 flex items-center gap-2.5 text-xs font-semibold text-muted-foreground">
+            <span className="h-1.5 w-20 overflow-hidden rounded-full bg-brand-soft sm:w-28" aria-hidden>
+              <span className="block h-full rounded-full bg-primary" style={{ width: `${percent}%` }} />
+            </span>
+            <span>
+              {u.done}/{u.total} <span className="sr-only">activité(s) terminée(s)</span>
+            </span>
+            {u.estimatedMinutes > 0 && (
+              <span className="inline-flex items-center gap-1">
+                <Clock className="size-3" aria-hidden /> {u.estimatedMinutes} min
+              </span>
+            )}
+          </span>
+        </span>
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-brand-deep transition group-open:rotate-180 motion-reduce:transition-none" aria-hidden>
+          <ChevronDown className="size-5" />
+        </span>
+      </summary>
+      <div className="border-t border-border px-4 pt-3 pb-2 sm:px-5">
+        {u.hidden && (
+          <p lang="en" className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-coral-soft px-3 py-1 text-xs font-bold text-coral-dark">
+            <EyeOff className="size-3.5" aria-hidden /> Hidden from learners: this unit breaks the unit rules
+          </p>
+        )}
+        {u.objectives.length > 0 && (
+          <div className="rounded-2xl bg-brand-soft/60 px-4 py-3">
+            <p className="text-xs font-bold tracking-wide text-primary uppercase">Objectifs</p>
+            <ul className="mt-1 grid gap-1 text-sm text-ink/80">
+              {u.objectives.map((o, i) => (
+                <li key={i} className="flex gap-2">
+                  <Target className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden />
+                  {o}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        <div className="mt-1">{path}</div>
+      </div>
+    </details>
   );
 }
 
@@ -177,7 +199,7 @@ function ModuleAbout({ html }: { html: string }) {
 function PathNode({ node, current }: { node: Node; current: boolean }) {
   const Icon = node.state === "completed" ? Check : node.state === "locked" ? Lock : node.icon;
   const circle = cn(
-    "relative flex items-center justify-center rounded-full border-b-[6px] transition",
+    "relative flex items-center justify-center rounded-full border-b-[6px] transition group-focus-visible:ring-4 group-focus-visible:ring-ring/50",
     node.big ? "size-20" : "size-16",
     node.state === "completed" && "border-2 border-b-[6px] border-primary bg-white text-primary",
     node.state === "available" && "border-brand-dark bg-primary text-white group-hover:brightness-110 group-active:translate-y-1 group-active:border-b-2",
@@ -185,11 +207,14 @@ function PathNode({ node, current }: { node: Node; current: boolean }) {
   );
   const content = (
     <>
-      <span className={circle}>
-        {current && <span className="absolute -inset-2 animate-ping rounded-full border-4 border-coral/50 motion-reduce:animate-none" aria-hidden />}
-        <Icon className={node.big ? "size-9" : "size-7"} aria-hidden />
+      {/* Fixed-height slot: every circle's centre sits on the PathRow connector line. */}
+      <span className="relative z-[1] flex h-20 items-center">
+        <span className={circle}>
+          {current && <span className="absolute -inset-2 animate-ping rounded-full border-4 border-coral/50 motion-reduce:animate-none" aria-hidden />}
+          <Icon className={node.big ? "size-9" : "size-7"} aria-hidden />
+        </span>
       </span>
-      <span className="max-w-44 text-center">
+      <span className="max-w-30 px-1 text-center">
         <span className={cn("block text-sm font-bold", node.state === "locked" ? "text-muted-foreground" : "text-brand-deep")}>{node.label}</span>
         {node.sub && <span className="block text-xs text-muted-foreground">{node.sub}</span>}
         {current && <span className="mt-1 inline-block rounded-full border-2 border-coral bg-white px-2 py-0.5 text-xs font-bold text-coral-dark">À vous !</span>}
@@ -204,7 +229,7 @@ function PathNode({ node, current }: { node: Node; current: boolean }) {
     );
   }
   return (
-    <Link href={node.href} className="group flex flex-col items-center gap-2 focus-visible:outline-none [&:focus-visible>span:first-child]:ring-4 [&:focus-visible>span:first-child]:ring-ring/50">
+    <Link href={node.href} className="group flex flex-col items-center gap-2 focus-visible:outline-none">
       {content}
     </Link>
   );

@@ -1,4 +1,5 @@
-import { Schema, model, models, type InferSchemaType, type Model, type Types } from "mongoose";
+import { Schema, type InferSchemaType, type Model, type Types } from "mongoose";
+import { defineModel } from "./define";
 
 /* Gamification records — rules in src/lib/gamification/. */
 
@@ -21,7 +22,7 @@ xpEventSchema.index({ courseId: 1, createdAt: -1 }); // weekly leaderboard
 xpEventSchema.index({ userId: 1, day: 1 });
 
 export type XpEventDoc = InferSchemaType<typeof xpEventSchema> & { _id: Types.ObjectId };
-export const XpEvent: Model<XpEventDoc> = (models.XpEvent as Model<XpEventDoc>) || model<XpEventDoc>("XpEvent", xpEventSchema);
+export const XpEvent: Model<XpEventDoc> = defineModel<XpEventDoc>("XpEvent", xpEventSchema);
 
 // ── UserStats: running totals per learner ─────────────────────────────────
 const userStatsSchema = new Schema(
@@ -46,7 +47,7 @@ const userStatsSchema = new Schema(
 
 export type UserStatsDoc = InferSchemaType<typeof userStatsSchema> & { _id: Types.ObjectId };
 export const UserStats: Model<UserStatsDoc> =
-  (models.UserStats as Model<UserStatsDoc>) || model<UserStatsDoc>("UserStats", userStatsSchema);
+  defineModel<UserStatsDoc>("UserStats", userStatsSchema);
 
 // ── UserBadge: earned badges (definitions in src/lib/gamification/rules.ts) ──
 const userBadgeSchema = new Schema(
@@ -60,4 +61,4 @@ userBadgeSchema.index({ userId: 1, badgeId: 1 }, { unique: true });
 
 export type UserBadgeDoc = InferSchemaType<typeof userBadgeSchema> & { _id: Types.ObjectId };
 export const UserBadge: Model<UserBadgeDoc> =
-  (models.UserBadge as Model<UserBadgeDoc>) || model<UserBadgeDoc>("UserBadge", userBadgeSchema);
+  defineModel<UserBadgeDoc>("UserBadge", userBadgeSchema);

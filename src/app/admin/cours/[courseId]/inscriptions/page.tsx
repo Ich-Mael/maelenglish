@@ -14,14 +14,14 @@ import { LearnerPicker } from "@/components/admin/learner-picker";
 import { enrollAction, removeEnrollmentAction, updateEnrollmentAction } from "../../../actions";
 import { PageSkeleton } from "@/components/learn/ui";
 
-export const metadata: Metadata = { title: "Inscriptions" };
+export const metadata: Metadata = { title: "Enrolments" };
 
 const STATE: Record<string, { label: string; tone: "green" | "amber" | "red" | "grey" | "blue" }> = {
-  active: { label: "Actif", tone: "green" },
-  "not-started": { label: "À venir", tone: "blue" },
-  expired: { label: "Expiré", tone: "grey" },
-  suspended: { label: "Suspendu", tone: "red" },
-  completed: { label: "Terminé", tone: "green" },
+  active: { label: "Active", tone: "green" },
+  "not-started": { label: "Not started", tone: "blue" },
+  expired: { label: "Expired", tone: "grey" },
+  suspended: { label: "Suspended", tone: "red" },
+  completed: { label: "Completed", tone: "green" },
 };
 
 async function Enrollments({ params }: { params: Promise<{ courseId: string }> }) {
@@ -34,26 +34,26 @@ async function Enrollments({ params }: { params: Promise<{ courseId: string }> }
 
   return (
     <div className="grid max-w-5xl gap-5">
-      <PageHeader title="Inscriptions" back={{ href: `/admin/cours/${courseId}`, label: course.title }} subtitle={`${rows.length} inscrit(s)`} />
+      <PageHeader title="Enrolments" back={{ href: `/admin/cours/${courseId}`, label: course.title }} subtitle={`${rows.length} enrolled`} />
 
-      <Card title="Inscrire un apprenant" description="Le compte doit exister (créez-le d'abord dans Utilisateurs).">
+      <Card title="Enrol a learner" description="The account must exist (create it first in Users).">
         <AdminForm action={enrollAction} resetOnSuccess>
           <input type="hidden" name="courseId" value={courseId} />
           <div className="grid gap-3 sm:grid-cols-[1.4fr_1fr_1fr]">
             <LearnerPicker courseId={courseId} />
-            <Input label="Début" name="startDate" type="date" defaultValue={isoDate(course.startDate) || isoDate(new Date())} />
-            <Input label="Fin (facultatif)" name="endDate" type="date" defaultValue={isoDate(course.endDate)} />
+            <Input label="Start" name="startDate" type="date" defaultValue={isoDate(course.startDate) || isoDate(new Date())} />
+            <Input label="End (optional)" name="endDate" type="date" defaultValue={isoDate(course.endDate)} />
           </div>
-          <Checkbox name="notify" label="Prévenir l'apprenant" hint="Par WhatsApp (modèle d'inscription) si configuré, sinon par email." defaultChecked />
+          <Checkbox name="notify" label="Notify the learner" hint="By WhatsApp (enrolment template) if configured, otherwise by email. The message is in French." defaultChecked />
           <div>
-            <Submit>Inscrire</Submit>
+            <Submit>Enrol</Submit>
           </div>
         </AdminForm>
       </Card>
 
-      <Card title="Inscrits">
+      <Card title="Enrolled learners">
         {rows.length === 0 ? (
-          <EmptyState>Personne n&apos;est encore inscrit.</EmptyState>
+          <EmptyState>Nobody is enrolled yet.</EmptyState>
         ) : (
           <ul className="grid gap-3">
             {rows.map((e) => {
@@ -70,9 +70,9 @@ async function Enrollments({ params }: { params: Promise<{ courseId: string }> }
                       {u.phoneE164 ? ` · ${displayPhone(u.phoneE164)}` : ""}
                     </span>
                     <Pill tone={st.tone}>{st.label}</Pill>
-                    {u.isActive === false && <Pill tone="red">Compte désactivé</Pill>}
+                    {u.isActive === false && <Pill tone="red">Account deactivated</Pill>}
                     <span className="ml-auto">
-                      <ActionButton action={removeEnrollmentAction} fields={{ enrollmentId: String(e._id) }} label="Retirer l'inscription" confirm={`Retirer ${u.name} de ce cours ? Sa progression est conservée.`}>
+                      <ActionButton action={removeEnrollmentAction} fields={{ enrollmentId: String(e._id) }} label="Remove enrolment" confirm={`Remove ${u.name} from this course? Their progress is kept.`}>
                         <Trash2 className="size-4" aria-hidden />
                       </ActionButton>
                     </span>
@@ -81,22 +81,22 @@ async function Enrollments({ params }: { params: Promise<{ courseId: string }> }
                     <input type="hidden" name="enrollmentId" value={String(e._id)} />
                     <div className="grid gap-2 sm:grid-cols-[1fr_1fr_1fr_auto] sm:items-end">
                       <label className="grid gap-1 text-xs">
-                        Début
+                        Start
                         <input type="date" name="startDate" defaultValue={isoDate(e.startDate)} className={inputCls} />
                       </label>
                       <label className="grid gap-1 text-xs">
-                        Fin
+                        End
                         <input type="date" name="endDate" defaultValue={isoDate(e.endDate)} className={inputCls} />
                       </label>
                       <label className="grid gap-1 text-xs">
-                        Statut
+                        Status
                         <select name="status" defaultValue={e.status} className={inputCls}>
-                          <option value="active">Actif</option>
-                          <option value="suspended">Suspendu</option>
-                          <option value="completed">Terminé (lecture seule)</option>
+                          <option value="active">Active</option>
+                          <option value="suspended">Suspended</option>
+                          <option value="completed">Completed (read-only)</option>
                         </select>
                       </label>
-                      <Submit variant="secondary">Mettre à jour</Submit>
+                      <Submit variant="secondary">Update</Submit>
                     </div>
                   </AdminForm>
                 </li>

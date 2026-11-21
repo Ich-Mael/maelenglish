@@ -1,4 +1,5 @@
-import { Schema, model, models, type InferSchemaType, type Model, type Types } from "mongoose";
+import { Schema, type InferSchemaType, type Model, type Types } from "mongoose";
+import { defineModel } from "./define";
 
 /**
  * Staff-only material attached to a module (lesson plan, activities, answer
@@ -42,5 +43,4 @@ const teachingResourceSchema = new Schema(
 export type TeachingResourceDoc = InferSchemaType<typeof teachingResourceSchema> & { _id: Types.ObjectId };
 
 export const TeachingResource: Model<TeachingResourceDoc> =
-  (models.TeachingResource as Model<TeachingResourceDoc>) ||
-  model<TeachingResourceDoc>("TeachingResource", teachingResourceSchema);
+  defineModel<TeachingResourceDoc>("TeachingResource", teachingResourceSchema);

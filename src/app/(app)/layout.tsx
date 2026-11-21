@@ -7,6 +7,7 @@ import { SoundToggle } from "@/components/gamify/sound-toggle";
 import { RewardCenter } from "@/components/gamify/reward-center";
 import { OfflineSync } from "@/components/pwa/pwa-client";
 import { LogoutButton } from "@/components/pwa/logout-button";
+import { UserChip } from "@/components/account/user-chip";
 
 const NAV = [
   { href: "/mes-cours", label: "Mes cours", icon: BookOpen },
@@ -22,23 +23,27 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
         Aller au contenu
       </a>
       <header className="sticky top-0 z-30 border-b border-border bg-card/[0.97]">
-        <div className="mx-auto flex h-14 max-w-5xl items-center gap-4 px-4">
+        <div className="mx-auto flex h-14 max-w-5xl items-center gap-2 px-3 sm:gap-4 sm:px-4">
           <Link href="/" aria-label="MaelEnglish — accueil" className="shrink-0">
-            <Image src="/images/maelenglish-logo.webp" alt="MaelEnglish" width={800} height={175} className="h-auto w-28 sm:w-32" />
+            <Image src="/images/maelenglish-logo.webp" alt="MaelEnglish" width={800} height={175} className="h-auto w-24 sm:w-32" />
           </Link>
           <nav aria-label="Navigation" className="hidden gap-1 md:flex">
             {NAV.map((n) => (
-              <Link key={n.href} href={n.href} className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-ink/80 hover:bg-brand-soft hover:text-brand-deep">
+              <Link key={n.href} href={n.href} className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold whitespace-nowrap text-ink/80 hover:bg-brand-soft hover:text-brand-deep">
                 <n.icon className="size-4.5" aria-hidden /> {n.label}
               </Link>
             ))}
           </nav>
-          <div className="ml-auto flex items-center gap-1">
+          <div className="ml-auto flex min-w-0 items-center gap-1">
             <Suspense fallback={<StatsBarFallback />}>
               <StatsBar />
             </Suspense>
             <SoundToggle />
-            <LogoutButton variant="compact" />
+            <Suspense>
+              <UserChip className="max-w-28 sm:max-w-44 md:shrink-0" />
+            </Suspense>
+            {/* Phones: sign out from « Compte » (bottom tab bar), so the username always fits. */}
+            <LogoutButton variant="compact" className="hidden md:inline-flex" />
           </div>
         </div>
       </header>

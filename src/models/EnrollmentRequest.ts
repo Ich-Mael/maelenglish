@@ -1,4 +1,5 @@
-import { Schema, model, models, type InferSchemaType, type Model, type Types } from "mongoose";
+import { Schema, type InferSchemaType, type Model, type Types } from "mongoose";
+import { defineModel } from "./define";
 
 /**
  * Sign-up request sent from the public « S'inscrire » form (/inscription).
@@ -34,4 +35,4 @@ enrollmentRequestSchema.index({ createdAt: -1 });
 
 export type EnrollmentRequestDoc = InferSchemaType<typeof enrollmentRequestSchema> & { _id: Types.ObjectId };
 export const EnrollmentRequest: Model<EnrollmentRequestDoc> =
-  (models.EnrollmentRequest as Model<EnrollmentRequestDoc>) || model<EnrollmentRequestDoc>("EnrollmentRequest", enrollmentRequestSchema);
+  defineModel<EnrollmentRequestDoc>("EnrollmentRequest", enrollmentRequestSchema);

@@ -119,6 +119,6 @@ describe("AI metering", () => {
     expect(await monthlyCapSeconds(String(u._id))).toBe(12000);
     await updateAccount(actor, String(u._id), { ...base, aiMonthlyMinutes: null });
     expect(await monthlyCapSeconds(String(u._id))).toBe(2700);
-    await expect(updateAccount(actor, String(u._id), { ...base, aiMonthlyMinutes: -5 })).rejects.toThrow(/Minutes IA/);
+    await expect(updateAccount(actor, String(u._id), { ...base, aiMonthlyMinutes: -5 })).rejects.toThrow(/AI minutes/);
   });
 });

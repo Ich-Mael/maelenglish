@@ -1,16 +1,22 @@
 /**
- * Demo content for local testing (until the admin screens of phase 6):
+ * Demo content for local testing:
  *   npm run seed:demo
- * Creates (or recreates) two demo courses — « Aviation (démo) » with every
- * exercise type, and « Challenge Business (démo) » — a learner enrolled in both
- * (« demo »), a coach on both courses (« demo-coach ») and an admin
- * (« demo-admin »); password « anglais2026 » for all three.
- * Only touches documents it created (courses titled « … (démo) », user « demo »).
+ * Creates (or recreates) the course « MaelEnglish Professional English (démo) » from
+ * scripts/seed/m1u1.json (owner spec COURSE_STRUCTURE.md §7: Module 1, Unit 1, 10 steps), a learner
+ * enrolled in it (« demo »), a coach on it (« demo-coach ») and an admin (« demo-admin »);
+ * password « anglais2026 » for all three. Only touches documents it created (courses titled
+ * « … (démo) », Lab activities tagged « démo », the « demo » learner's progress).
+ *
+ * Seed format: steps in `position` order; an activity names its lesson with `lessonRef` (the
+ * lesson's position), converted to `lessonId`. Activity types the Lab doesn't have yet are skipped
+ * (logged), so the unit stays hidden from learners until they exist — as the unit rules require.
  */
 import mongoose from "mongoose";
-import { existsSync } from "node:fs";
-import { AssignmentSubmission, Course, Enrollment, Lesson, LessonProgress, Module, QuizAttempt, Unit, User, UserBadge, UserStats, XpEvent } from "../src/models";
+import { existsSync, readFileSync } from "node:fs";
+import { Activity, ChallengeSubmission, Course, Enrollment, LabAttempt, LabMistake, Module, QuizAttempt, Step, StepProgress, Unit, User, UserBadge, UserStats, XpEvent } from "../src/models";
 import { setPassword } from "../src/lib/auth/service";
+import { cleanLessonContent } from "../src/lib/course/lesson-content";
+import { isActivityType } from "../src/lib/lab/types";
 
 for (const f of [".env.local", ".env"]) if (existsSync(f)) process.loadEnvFile(f); // .env.local wins (no override)
 
@@ -21,230 +27,136 @@ if (/afrohk/i.test(uri)) {
   process.exit(1);
 }
 
-const opts = (...texts: string[]) => texts.map((text, i) => ({ id: String.fromCharCode(97 + i), text }));
-const q = (text: string, options: string[], correct: number, explanation = "") => ({
-  text,
-  options: opts(...options),
-  correctOptionId: String.fromCharCode(97 + correct),
-  explanation,
-});
+type SeedItem = { prompt: string; options?: string[]; answers: string[]; feedback: string };
+type SeedStep = {
+  position: number;
+  kind: "lesson" | "activity" | "challenge";
+  title: string;
+  estimatedMinutes?: number;
+  content?: unknown;
+  lessonRef?: number;
+  activityType?: string;
+  instructions?: string;
+  settings?: { maxPlays?: number };
+  passScore?: number;
+  items?: SeedItem[];
+  prompt?: string;
+  prepSeconds?: number;
+  recordSeconds?: number;
+  mustInclude?: string[];
+  modelAnswer?: { text: string };
+};
+type Seed = {
+  course: { title: string; description: string };
+  module: { title: string; summary?: string; level?: "" | "A1" | "A2" | "B1" | "B2" | "C1"; units: { title: string; objectives: string[]; estimatedMinutes?: number; steps: SeedStep[] }[] };
+};
+
+const letter = (k: number) => String.fromCharCode(97 + k);
+const nearest = <T extends number>(allowed: readonly T[], v: number) => allowed.reduce((a, b) => (Math.abs(b - v) < Math.abs(a - v) ? b : a));
+
+/** Lab content for a seeded activity of a type that exists (only `listen_choose` so far). */
+function labContent(s: SeedStep): Record<string, unknown> | null {
+  if (s.activityType !== "listen_choose") return null;
+  return {
+    audioMediaId: "", // to upload in the Lab — the activity stays a draft until then
+    audioDurationS: 0,
+    context: "",
+    transcript: "",
+    maxPlays: [0, 2, 3].includes(s.settings?.maxPlays ?? 0) ? (s.settings?.maxPlays ?? 0) : 0,
+    questions: (s.items ?? []).map((it, i) => {
+      const options = (it.options ?? []).map((text, k) => ({ id: letter(k), text }));
+      return { id: `q${i + 1}`, text: it.prompt, options, correctOptionId: options.find((o) => o.text === it.answers[0])?.id ?? "", explanation: it.feedback, startS: null };
+    }),
+  };
+}
 
 async function main() {
   await mongoose.connect(uri!);
   console.log(`Base : ${mongoose.connection.name}`);
+  const seed = JSON.parse(readFileSync("scripts/seed/m1u1.json", "utf8")) as Seed;
 
   // Clean previous demo data.
-  const old = await Course.find({ title: /\(démo\)$/ }).select("_id").lean();
-  const oldIds = old.map((c) => c._id);
+  const oldIds = (await Course.find({ title: /\(démo\)$/ }).select("_id").lean()).map((c) => c._id);
+  const oldSteps = (await Step.find({ courseId: { $in: oldIds } }).select("_id").lean()).map((s) => s._id);
   await Promise.all([
     XpEvent.deleteMany({ courseId: { $in: oldIds } }),
     Module.deleteMany({ courseId: { $in: oldIds } }),
     Unit.deleteMany({ courseId: { $in: oldIds } }),
-    Lesson.deleteMany({ courseId: { $in: oldIds } }),
-    LessonProgress.deleteMany({ courseId: { $in: oldIds } }),
+    Step.deleteMany({ courseId: { $in: oldIds } }),
+    StepProgress.deleteMany({ stepId: { $in: oldSteps } }),
+    LabAttempt.deleteMany({ courseId: { $in: oldIds } }),
+    LabMistake.deleteMany({ courseId: { $in: oldIds } }),
     QuizAttempt.deleteMany({ courseId: { $in: oldIds } }),
-    AssignmentSubmission.deleteMany({ courseId: { $in: oldIds } }),
+    ChallengeSubmission.deleteMany({ courseId: { $in: oldIds } }),
     Enrollment.deleteMany({ courseId: { $in: oldIds } }),
     Course.deleteMany({ _id: { $in: oldIds } }),
+    Activity.deleteMany({ tags: "démo" }),
   ]);
 
-  // ── Aviation (démo) ─────────────────────────────────────────────────────
-  const aviation = await Course.create({
-    title: "Aviation (démo)",
-    description: "Cours de démonstration : toutes les étapes et tous les types d'exercices.",
-    program: "aviation",
-    level: "intermediate",
-    isPublished: true,
-    finalExam: {
-      title: "Examen final — Aviation",
-      passingScore: 70,
-      timeLimit: 10,
-      questions: [
-        q("« Fasten your seatbelt » signifie :", ["Attachez votre ceinture", "Éteignez votre téléphone", "Restez assis"], 0),
-        q("Le « boarding pass » est :", ["Le passeport", "La carte d'embarquement", "Le billet de train"], 1),
-        q("« We are experiencing a slight delay » annonce :", ["Une annulation", "Un léger retard", "Un changement de porte"], 1),
-        q("Le « runway » est :", ["La piste", "La cabine", "La soute"], 0),
-      ],
-    },
-    finalProject: {
-      title: "Votre annonce de bienvenue",
-      instructions:
-        "Enregistrez-vous en train de lire **votre propre annonce de bienvenue à bord** (30 secondes environ), déposez l'audio sur Google Drive ou WhatsApp Web, puis collez le lien ici.",
-      submissionType: "link",
-    },
-  });
+  const course = await Course.create({ title: seed.course.title, description: seed.course.description, level: "beginner", isPublished: true });
+  const mod = await Module.create({ courseId: course._id, order: 1, title: seed.module.title, summary: seed.module.summary ?? "", level: seed.module.level ?? "" });
 
-  const m1 = await Module.create({
-    courseId: aviation._id,
-    order: 1,
-    title: "Welcome on board",
-    summary: "Accueillir les passagers et faire les premières annonces.",
-    quiz: {
-      title: "Quiz : Welcome on board",
-      passingScore: 70,
-      questions: [
-        q("Comment dit-on « Bienvenue à bord » ?", ["Welcome on board", "Welcome in plane", "Good board"], 0, "On dit « on board » pour « à bord »."),
-        q("« Please remain seated » signifie :", ["Veuillez rester assis", "Veuillez vous lever", "Veuillez patienter"], 0),
-        q("« Cabin crew » désigne :", ["Les pilotes", "Le personnel de cabine", "Les passagers"], 1),
-      ],
-    },
-    assignment: {
-      title: "Votre première annonce",
-      instructions: "Écrivez **en anglais** une courte annonce de bienvenue (4 à 6 phrases) : nom de la compagnie, destination, durée du vol, consignes de sécurité.",
-      submissionType: "text",
-    },
-  });
-
-  const m2 = await Module.create({
-    courseId: aviation._id,
-    order: 2,
-    title: "At the gate",
-    summary: "Embarquement, retards et changements de porte.",
-    quiz: {
-      title: "Quiz : At the gate",
-      passingScore: 70,
-      questions: [
-        q("« Gate » se traduit par :", ["Porte d'embarquement", "Guichet", "Bagage"], 0),
-        q("« The flight is delayed » :", ["Le vol est annulé", "Le vol est retardé", "Le vol est complet"], 1),
-      ],
-    },
-  });
-
-  const m3 = await Module.create({ courseId: aviation._id, order: 3, title: "Safety first", summary: "Les consignes de sécurité." });
-
-  const unit = async (moduleId: mongoose.Types.ObjectId, order: number, title: string, objective = "", challenge?: { title: string; instructions: string; maxSeconds?: number; prepSeconds?: number }) =>
-    (await Unit.create({ courseId: aviation._id, moduleId, order, title, objective, ...(challenge ? { challenge } : {}) }))._id;
-  const u1a = await unit(m1._id, 1, "Les premières annonces", "Comprendre et dire les annonces d'accueil.", {
-    title: "Votre annonce de bienvenue",
-    instructions: "<p>Vous êtes chef de cabine. <strong>Accueillez les passagers à bord</strong> : saluez, annoncez la destination et la durée du vol, puis demandez d'attacher les ceintures.</p>",
-    maxSeconds: 45,
-    prepSeconds: 15,
-  });
-  const u1b = await unit(m1._id, 2, "À vous de parler", "S'entraîner à voix haute.");
-  const u2 = await unit(m2._id, 1, "Retards et changements de porte", "", {
-    title: "Annoncez un retard",
-    instructions: "<p>Annoncez aux passagers que le vol a <strong>30 minutes de retard</strong> à cause de la météo, et qu'il part maintenant de la porte 12.</p>",
-    maxSeconds: 60,
-  });
-  const u3 = await unit(m3._id, 1, "Les consignes de sécurité");
-  const unitModule = new Map([[u1a, m1._id], [u1b, m1._id], [u2, m2._id], [u3, m3._id]]);
-  const lesson = (unitId: mongoose.Types.ObjectId, order: number, data: Record<string, unknown>) =>
-    Lesson.create({ courseId: aviation._id, moduleId: unitModule.get(unitId), unitId, order, ...data });
-
-  await lesson(u1a, 1, {
-    title: "Les annonces à bord",
-    type: "text",
-    description: "Le vocabulaire des premières minutes du vol.",
-    content: [
-      "## Bienvenue à bord !",
-      "Les premières annonces suivent toujours le même schéma : **saluer**, **présenter le vol**, puis **donner les consignes**.",
-      "",
-      "| Anglais | Français |",
-      "|---|---|",
-      "| Welcome on board | Bienvenue à bord |",
-      "| Fasten your seatbelt | Attachez votre ceinture |",
-      "| Cabin crew | Personnel de cabine |",
-      "| Flight time | Durée du vol |",
-      "",
-      "> Astuce : parlez lentement et articulez — les passagers ne sont pas tous anglophones.",
-      "",
-      "### Exemple",
-      "*Good morning ladies and gentlemen, welcome on board this flight to Paris. Our flight time today will be five hours.*",
-    ].join("\n"),
-  });
-
-  await lesson(u1b, 1, {
-    title: "Pratique : à bord",
-    type: "practice",
-    exercises: [
-      { kind: "choice", text: "Welcome on board!", prompt: "Que signifie cette phrase ?", options: opts("Bienvenue à bord !", "Bon voyage !", "Embarquement immédiat !"), correctOptionId: "a" },
-      { kind: "build", text: "Please fasten your seatbelt", translation: "Veuillez attacher votre ceinture", distractors: ["close", "the"] },
-      { kind: "match", pairs: [{ left: "pilot", right: "pilote" }, { left: "runway", right: "piste" }, { left: "seat", right: "siège" }, { left: "luggage", right: "bagages" }] },
-      { kind: "gap", text: "Our flight ___ today is five hours.", translation: "La durée de notre vol aujourd'hui est de cinq heures.", answers: ["time"] },
-      { kind: "listen", text: "Please remain seated.", answers: ["Please remain seated"] },
-      { kind: "order", prompt: "Remettez l'annonce dans l'ordre", items: ["Good morning, ladies and gentlemen.", "Welcome on board this flight to Paris.", "Please fasten your seatbelt.", "We wish you a pleasant flight."] },
-      { kind: "speak", text: "Welcome on board this flight to Paris.", translation: "Bienvenue à bord de ce vol pour Paris." },
-    ],
-  });
-
-  await lesson(u2, 1, {
-    title: "Retards et changements de porte",
-    type: "text",
-    content: "## À la porte d'embarquement\n\n- **Boarding** : l'embarquement\n- **Delay** : un retard\n- **Gate change** : un changement de porte\n\n*We are experiencing a slight delay due to the weather.*",
-  });
-  await lesson(u2, 2, {
-    title: "Pratique : à la porte",
-    type: "practice",
-    exercises: [
-      { kind: "choice", text: "Boarding will begin at gate 3.", prompt: "Où commence l'embarquement ?", options: opts("Porte 3", "Terminal 3", "Dans 3 minutes"), correctOptionId: "a" },
-      { kind: "build", text: "The flight is delayed", translation: "Le vol est retardé", distractors: ["cancel"] },
-      { kind: "gap", text: "Please proceed to ___ 12.", translation: "Veuillez vous rendre à la porte 12.", answers: ["gate"] },
-    ],
-  });
-  await lesson(u3, 1, {
-    title: "Pratique : sécurité",
-    type: "practice",
-    exercises: [
-      { kind: "match", pairs: [{ left: "life jacket", right: "gilet de sauvetage" }, { left: "oxygen mask", right: "masque à oxygène" }, { left: "emergency exit", right: "sortie de secours" }] },
-      { kind: "speak", text: "In case of emergency, follow the lights to the exit." },
-    ],
-  });
-
-  // ── Challenge Business (démo) ───────────────────────────────────────────
-  const challenge = await Course.create({
-    title: "Challenge Business (démo)",
-    description: "Une mission par jour, validée par un coach.",
-    program: "business",
-    isPublished: true,
-    isChallenge: true,
-    challenge: { themeLabel: "Anglais des réunions" },
-  });
-  const days = [
-    { title: "Se présenter en réunion", text: "Hello everyone, I'm in charge of sales." },
-    { title: "Proposer un ordre du jour", text: "Let's go over the agenda for today's meeting." },
-    { title: "Conclure une réunion", text: "Thank you all, let's wrap up here." },
-  ];
-  for (const [i, d] of days.entries()) {
-    const day = await Module.create({
-      courseId: challenge._id,
-      order: i + 1,
-      title: d.title,
-      isCheckpointRequired: true,
-      assignment: { title: `Mission du jour ${i + 1}`, instructions: `Écrivez 3 phrases en anglais pour : **${d.title.toLowerCase()}**.`, submissionType: "text" },
-    });
-    const dayUnit = await Unit.create({ courseId: challenge._id, moduleId: day._id, order: 1, title: "Mission du jour" });
-    await Lesson.create({
-      courseId: challenge._id,
-      moduleId: day._id,
-      unitId: dayUnit._id,
-      order: 1,
-      title: `Échauffement : ${d.title}`,
-      type: "practice",
-      exercises: [
-        { kind: "speak", text: d.text },
-        { kind: "build", text: d.text.replace(/[.,!?]/g, "") },
-      ],
-    });
+  let created = 0;
+  for (const [ui, u] of seed.module.units.entries()) {
+    const unit = await Unit.create({ courseId: course._id, moduleId: mod._id, order: ui + 1, title: u.title, objectives: u.objectives, estimatedMinutes: u.estimatedMinutes ?? 0 });
+    const lessonByRef = new Map<number, mongoose.Types.ObjectId>();
+    let position = 0;
+    for (const s of [...u.steps].sort((a, b) => a.position - b.position)) {
+      const base = { courseId: course._id, moduleId: mod._id, unitId: unit._id, title: s.title, estimatedMinutes: s.estimatedMinutes ?? 0 };
+      if (s.kind === "lesson") {
+        const raw = (s.content ?? {}) as { intro?: string };
+        const content = cleanLessonContent({ ...raw, intro: raw.intro ? `<p>${raw.intro}</p>` : "" });
+        const step = await Step.create({ ...base, position: ++position, kind: "lesson", content });
+        lessonByRef.set(s.position, step._id);
+      } else if (s.kind === "activity") {
+        const content = isActivityType(s.activityType) ? labContent(s) : null;
+        if (!content) {
+          console.log(`  · ignoré : « ${s.title} » (type ${s.activityType} pas encore dans le Labo)`);
+          continue;
+        }
+        const a = await Activity.create({ type: s.activityType as "listen_choose", title: s.title, level: seed.module.level ?? "", skills: ["listening"], durationMin: s.estimatedMinutes ?? 0, instructions: s.instructions ?? "", tags: ["démo"], status: "draft", content });
+        console.log(`  · « ${s.title} » créée en brouillon : ajoutez l'audio dans le Labo, puis cochez « Ready ».`);
+        await Step.create({ ...base, position: ++position, kind: "activity", activityId: a._id, lessonId: lessonByRef.get(s.lessonRef ?? -1) ?? null, passScore: s.passScore ?? 60 });
+      } else {
+        const a = await Activity.create({
+          type: "speaking_challenge",
+          title: s.title,
+          level: seed.module.level ?? "",
+          skills: ["speaking"],
+          durationMin: s.estimatedMinutes ?? 0,
+          tags: ["démo"],
+          status: "ready",
+          content: {
+            instructions: `<p>${s.prompt ?? ""}</p>`,
+            maxSeconds: nearest([30, 45, 60, 90, 120, 180] as const, s.recordSeconds ?? 60),
+            prepSeconds: nearest([0, 10, 15, 30, 60] as const, s.prepSeconds ?? 0),
+            mustInclude: s.mustInclude ?? [],
+            modelAnswerText: s.modelAnswer?.text ?? "",
+            modelAnswerAudioMediaId: "",
+          },
+        });
+        await Step.create({ ...base, position: ++position, kind: "challenge", activityId: a._id });
+      }
+      created++;
+    }
   }
+  console.log(`${created} étape(s) créée(s) dans « ${seed.module.title} ».`);
 
   // ── Demo learner ────────────────────────────────────────────────────────
   let demo = await User.findOne({ username: "demo" });
   if (!demo) demo = await User.create({ name: "Awa", surname: "Démo", username: "demo", phoneNumber: "+226 70 00 00 00" });
   await setPassword(demo._id, "anglais2026");
-  await Promise.all(
-    [LessonProgress, QuizAttempt, AssignmentSubmission, XpEvent, UserStats, UserBadge].map((M) => (M as typeof XpEvent).deleteMany({ userId: demo._id })),
-  );
-  await Enrollment.create({ userId: demo._id, courseId: aviation._id, startDate: new Date() });
-  await Enrollment.create({ userId: demo._id, courseId: challenge._id, startDate: new Date(Date.now() - 2 * 86400_000) });
+  await Promise.all([StepProgress, QuizAttempt, ChallengeSubmission, LabAttempt, LabMistake, XpEvent, UserStats, UserBadge].map((M) => (M as typeof XpEvent).deleteMany({ userId: demo._id })));
+  await Enrollment.create({ userId: demo._id, courseId: course._id, startDate: new Date() });
 
-  // Staff demo accounts (only created if missing): an admin and a coach on both demo courses.
+  // Staff demo accounts (only created if missing): an admin and a coach on the demo course.
   let admin = await User.findOne({ username: "demo-admin" });
   if (!admin) admin = await User.create({ name: "Mael", surname: "Admin", username: "demo-admin", email: "demo-admin@example.com", role: "admin", isVerified: true });
   await setPassword(admin._id, "anglais2026");
   let coach = await User.findOne({ username: "demo-coach" });
   if (!coach) coach = await User.create({ name: "Grace", surname: "Coach", username: "demo-coach", email: "demo-coach@example.com", role: "english-coach", isVerified: true });
   await setPassword(coach._id, "anglais2026");
-  await Course.updateMany({ _id: { $in: [aviation._id, challenge._id] } }, { $set: { instructors: [coach._id] } });
+  await Course.updateOne({ _id: course._id }, { $set: { instructors: [coach._id] } });
 
   console.log("Démo prête — mot de passe « anglais2026 » pour : demo (apprenant), demo-coach (coach), demo-admin (admin).");
   await mongoose.disconnect();

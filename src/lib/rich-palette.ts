@@ -6,25 +6,25 @@
  * Text colours keep ≥ 4.5:1 contrast on white; highlights keep dark text readable.
  */
 export const TEXT_COLORS = [
-  { hex: "#364fab", name: "Bleu" },
-  { hex: "#141f4d", name: "Bleu nuit" },
-  { hex: "#b02a2a", name: "Rouge" },
-  { hex: "#12855a", name: "Vert" },
+  { hex: "#364fab", name: "Blue" },
+  { hex: "#141f4d", name: "Navy" },
+  { hex: "#b02a2a", name: "Red" },
+  { hex: "#12855a", name: "Green" },
 ] as const;
 
 export const HIGHLIGHT_COLORS = [
-  { hex: "#fff3b0", name: "Jaune" },
-  { hex: "#ffe0e0", name: "Rose" },
-  { hex: "#dfe5fb", name: "Bleu clair" },
-  { hex: "#dcf3e8", name: "Vert clair" },
+  { hex: "#fff3b0", name: "Yellow" },
+  { hex: "#ffe0e0", name: "Pink" },
+  { hex: "#dfe5fb", name: "Light blue" },
+  { hex: "#dcf3e8", name: "Light green" },
 ] as const;
 
 export const FONTS = [
-  { name: "Outfit (par défaut)", stack: "Outfit, sans-serif" },
-  { name: "Archivo (titres)", stack: "Archivo, sans-serif" },
+  { name: "Outfit (default)", stack: "Outfit, sans-serif" },
+  { name: "Archivo (headings)", stack: "Archivo, sans-serif" },
   { name: "Arial", stack: "Arial, Helvetica, sans-serif" },
   { name: "Georgia", stack: "Georgia, serif" },
-  { name: "Machine à écrire", stack: "'Courier New', Courier, monospace" },
+  { name: "Typewriter", stack: "'Courier New', Courier, monospace" },
 ] as const;
 
 /** HugeRTE `font_family_formats` format: "Name=stack; …". */

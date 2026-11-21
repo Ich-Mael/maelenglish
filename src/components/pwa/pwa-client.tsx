@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CloudOff, RefreshCw } from "lucide-react";
-import { completeLesson, submitPractice } from "@/app/(app)/learn-actions";
+import { completeStep } from "@/app/(app)/learn-actions";
 import { pushReward } from "@/components/gamify/reward-store";
 import { readQueue, removeFromQueue } from "./offline-queue";
 import { useOnline } from "./online";
@@ -35,7 +35,7 @@ export function OfflineSync() {
     (async () => {
       for (const item of readQueue()) {
         try {
-          const res = item.kind === "complete" ? await completeLesson(item.courseId, item.lessonId) : await submitPractice(item.courseId, item.lessonId, item.responses);
+          const res = await completeStep(item.courseId, item.stepId);
           // Refused by the server (e.g. access ended): drop it; network errors keep it for later.
           removeFromQueue(item.id);
           if (res.ok) pushReward(res.reward);
