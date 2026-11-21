@@ -79,11 +79,11 @@ export function PathRow({ label, children }: { label: string; children: React.Re
   );
 }
 
-/** One step of a PathRow, joined to the previous one by a line (blue once the previous step is done; the step's circle sits above it with z-[1]). */
+/** One step of a PathRow, joined to the previous one by a line (green once the previous step is done; the step's circle sits above it with z-[1]). */
 export function PathStep({ first, reached, current, children }: { first: boolean; reached: boolean; current: boolean; children: React.ReactNode }) {
   return (
     <li data-current={current || undefined} className="relative flex w-32 shrink-0 snap-center justify-center">
-      {!first && <span aria-hidden className={cn("absolute top-10 right-1/2 -left-1/2 h-1 -translate-y-1/2 rounded-full", reached ? "bg-primary" : "bg-border")} />}
+      {!first && <span aria-hidden className={cn("absolute top-10 right-1/2 -left-1/2 h-1 -translate-y-1/2 rounded-full", reached ? "bg-success" : "bg-border")} />}
       {children}
     </li>
   );

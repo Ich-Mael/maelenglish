@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { BookOpen, CircleUserRound, Trophy } from "lucide-react";
+import { BookOpen, CircleUserRound, Mic, Trophy } from "lucide-react";
 import { StatsBar, StatsBarFallback } from "@/components/gamify/stats-bar";
 import { SoundToggle } from "@/components/gamify/sound-toggle";
 import { RewardCenter } from "@/components/gamify/reward-center";
@@ -11,6 +11,7 @@ import { UserChip } from "@/components/account/user-chip";
 
 const NAV = [
   { href: "/mes-cours", label: "Mes cours", icon: BookOpen },
+  { href: "/mes-defis", label: "Mes défis", icon: Mic },
   { href: "/progression", label: "Progression", icon: Trophy },
   { href: "/compte", label: "Compte", icon: CircleUserRound },
 ];
@@ -49,7 +50,7 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
       </header>
       <OfflineSync />
       <main id="contenu-app" className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:py-8">{children}</main>
-      <nav aria-label="Navigation" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-3 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] md:hidden">
+      <nav aria-label="Navigation" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] md:hidden">
         {NAV.map((n) => (
           <Link key={n.href} href={n.href} className="flex flex-col items-center gap-0.5 py-2 text-xs font-semibold text-ink/75">
             <n.icon className="size-5.5" aria-hidden /> {n.label}

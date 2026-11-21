@@ -62,6 +62,14 @@ const challengeSubmissionSchema = new Schema(
     feedback: { type: String, default: "" },
     gradedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
     gradedAt: { type: Date, default: null },
+    /** Sends so far (limit: src/lib/learn/challenge.ts) and the extra sends granted by coach returns. */
+    attempts: { type: Number, default: 0, min: 0 },
+    extraAttempts: { type: Number, default: 0, min: 0 },
+    /** Every recording sent, oldest first (the learner's « Mes défis » history). */
+    history: {
+      type: [new Schema({ mediaId: { type: Schema.Types.ObjectId, ref: "Media", required: true }, durationS: { type: Number, default: 0 }, sentAt: { type: Date, default: Date.now } }, { _id: false })],
+      default: [],
+    },
   },
   { timestamps: true },
 );

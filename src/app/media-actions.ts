@@ -14,8 +14,14 @@ async function run<T>(fn: () => Promise<T>): Promise<Result<T>> {
   } catch (e) {
     if (e instanceof MediaError) return { ok: false, error: e.message };
     console.error("media action", e);
-    // Missing STORAGE_* settings: say so (staff need to see it to fix the server configuration).
-    if (e instanceof Error && e.message.startsWith("Stockage non configuré")) return { ok: false, error: e.message };
+    // Missing STORAGE_* settings: the technical reason for staff (they fix the server), a plain message for learners.
+    if (e instanceof Error && e.message.startsWith("Stockage non configuré")) {
+      const me = await readCurrentUser().catch(() => null);
+      return {
+        ok: false,
+        error: me?.isStaff ? `${e.message} (message visible to staff only)` : "L’envoi des enregistrements est momentanément indisponible. Gardez la page ouverte et réessayez dans quelques minutes, ou prévenez votre coach.",
+      };
+    }
     return { ok: false, error: "Envoi impossible pour le moment. Réessayez." };
   }
 }

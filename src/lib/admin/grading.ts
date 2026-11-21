@@ -1,3 +1,4 @@
+import { sendsLeft } from "@/lib/learn/challenge";
 import { Types } from "mongoose";
 import { normalizeRich, plainText } from "@/lib/rich-text";
 import { ChallengeSubmission, Course, Module, Unit, User, type ChallengeSubmissionDoc } from "@/models";
@@ -42,6 +43,8 @@ export async function gradeSubmission(graderId: string, submissionId: string, in
   const grade = input.grade === null || input.grade === undefined || Number.isNaN(input.grade) ? null : Math.round(input.grade);
   if (grade !== null && (grade < 0 || grade > sub.maxScore)) throw new AdminError(`The grade must be between 0 and ${sub.maxScore}.`);
 
+  // Returned with no send left: grant one more, so the learner can redo it.
+  if (input.decision === "returned" && sendsLeft(sub) <= 0) sub.extraAttempts = (sub.extraAttempts ?? 0) + 1;
   sub.status = input.decision;
   sub.grade = input.decision === "graded" ? grade : null;
   sub.feedback = feedback;

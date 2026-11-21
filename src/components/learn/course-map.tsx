@@ -97,18 +97,52 @@ function Path({ label, nodes, currentHref }: { label: string; nodes: Node[]; cur
 
 function ModuleBanner({ module: m }: { module: ModuleOutline }) {
   const locked = m.state === "locked";
+  const complete = m.state === "completed";
+  const units = m.units.length;
+  const doneUnits = m.units.filter((u) => u.state === "completed").length;
+  const steps = m.units.reduce((n, u) => n + u.total, 0);
+  const doneSteps = m.units.reduce((n, u) => n + u.done, 0);
+  const percent = steps ? Math.round((doneSteps / steps) * 100) : 0;
   return (
-    <div className={cn("flex items-center gap-4 rounded-3xl p-5", locked ? "bg-muted text-muted-foreground" : m.state === "completed" ? "border-2 border-primary bg-white text-primary" : "bg-primary text-white")}>
-      <div className="flex-1">
-        <p className="text-xs font-bold tracking-wide uppercase">
-          {m.day ? `Jour ${m.day.number}` : `Module ${m.index + 1}`}
-          {m.day && ` · ${DAY_LABEL[m.day.state]}`}
-        </p>
-        <h2 className="text-xl font-extrabold">{m.title}</h2>
-        {m.summary && <p className="mt-0.5 text-sm opacity-90">{m.summary}</p>}
-        {m.day?.state === "locked_time" && <p className="mt-0.5 text-sm">S&apos;ouvre le {formatDate(m.day.opensOn)}</p>}
+    <div
+      className={cn(
+        "relative overflow-clip rounded-3xl p-5",
+        locked ? "bg-muted text-muted-foreground" : complete ? "bg-gradient-to-br from-success to-[#0b6343] text-white" : "bg-primary text-white",
+      )}
+    >
+      <div className="flex items-center gap-4">
+        <div className="min-w-0 flex-1">
+          <p className="flex flex-wrap items-center gap-2 text-xs font-bold tracking-wide uppercase">
+            {m.day ? `Jour ${m.day.number}` : `Module ${m.index + 1}`}
+            {m.day && ` · ${DAY_LABEL[m.day.state]}`}
+            {complete && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[11px] text-success normal-case">
+                <Check className="size-3" strokeWidth={3} aria-hidden /> Module terminé
+              </span>
+            )}
+          </p>
+          <h2 className="text-xl font-extrabold">{m.title}</h2>
+          {m.summary && <p className="mt-0.5 text-sm opacity-90">{m.summary}</p>}
+          {m.day?.state === "locked_time" && <p className="mt-0.5 text-sm">S&apos;ouvre le {formatDate(m.day.opensOn)}</p>}
+        </div>
+        {locked ? (
+          <Lock className="size-7 shrink-0" aria-hidden />
+        ) : complete ? (
+          <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-white text-success shadow-[0_4px_0_0_rgb(0_0_0/0.15)]">
+            <Trophy className="size-7" aria-hidden />
+          </span>
+        ) : null}
       </div>
-      {locked ? <Lock className="size-7 shrink-0" aria-hidden /> : m.state === "completed" ? <Check className="size-8 shrink-0" aria-hidden /> : null}
+      {!locked && units > 0 && (
+        <div className="mt-3 flex items-center gap-3 text-xs font-semibold">
+          <span className="h-2 flex-1 overflow-hidden rounded-full bg-white/20" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} aria-label={`Progression du module : ${percent} %`}>
+            <span className="block h-full rounded-full bg-white" style={{ width: `${Math.max(percent, percent ? 3 : 0)}%` }} />
+          </span>
+          <span className="shrink-0">
+            {doneUnits} / {units} unité{units > 1 ? "s" : ""}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
@@ -123,25 +157,33 @@ function UnitCard({ unit: u, open, path }: { unit: UnitOutline; open: boolean; p
   const complete = u.state === "completed";
   const percent = u.total ? Math.round((u.done / u.total) * 100) : 0;
   return (
-    <details open={open} className={cn("group rounded-3xl border-2 bg-card transition-colors", open ? "border-primary/30" : "border-border", "open:border-primary/30 open:shadow-sm")}>
+    <details
+      open={open}
+      className={cn("group rounded-3xl border-2 transition-colors", complete ? "border-success/40 bg-success/[0.06]" : cn("bg-card", open ? "border-primary/30" : "border-border", "open:border-primary/30 open:shadow-sm"))}
+    >
       <summary className="flex cursor-pointer list-none items-center gap-3 rounded-3xl p-4 outline-none focus-visible:ring-4 focus-visible:ring-ring/40 sm:gap-4 sm:p-5 [&::-webkit-details-marker]:hidden">
         <span
           className={cn(
             "flex size-11 shrink-0 items-center justify-center rounded-2xl font-heading text-lg font-extrabold",
-            complete ? "border-2 border-primary bg-white text-primary" : locked ? "bg-muted text-muted-foreground" : "bg-primary text-white",
+            complete ? "bg-success text-white shadow-[0_3px_0_0_#0b6343]" : locked ? "bg-muted text-muted-foreground" : "bg-primary text-white",
           )}
         >
-          {complete ? <Check className="size-5" aria-hidden /> : locked ? <Lock className="size-5" aria-hidden /> : u.index + 1}
+          {complete ? <Check className="size-6" strokeWidth={3} aria-hidden /> : locked ? <Lock className="size-5" aria-hidden /> : u.index + 1}
         </span>
         <span className="min-w-0 flex-1">
-          <span className={cn("block text-xs font-bold tracking-wide uppercase", locked ? "text-muted-foreground" : "text-primary")}>
+          <span className={cn("flex flex-wrap items-center gap-2 text-xs font-bold tracking-wide uppercase", locked ? "text-muted-foreground" : complete ? "text-success" : "text-primary")}>
             Unité {u.index + 1}
-            {complete ? " · Terminée" : locked ? " · Verrouillée" : ""}
+            {locked && " · Verrouillée"}
+            {complete && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-success/15 px-2 py-0.5 text-[11px] normal-case">
+                <Check className="size-3" strokeWidth={3} aria-hidden /> Terminée
+              </span>
+            )}
           </span>
           <span className={cn("block text-base leading-snug font-extrabold sm:text-lg", locked ? "text-muted-foreground" : "text-brand-deep")}>{u.title}</span>
           <span className="mt-1.5 flex items-center gap-2.5 text-xs font-semibold text-muted-foreground">
-            <span className="h-1.5 w-20 overflow-hidden rounded-full bg-brand-soft sm:w-28" aria-hidden>
-              <span className="block h-full rounded-full bg-primary" style={{ width: `${percent}%` }} />
+            <span className={cn("h-1.5 w-20 overflow-hidden rounded-full sm:w-28", complete ? "bg-success/20" : "bg-brand-soft")} aria-hidden>
+              <span className={cn("block h-full rounded-full", complete ? "bg-success" : "bg-primary")} style={{ width: `${percent}%` }} />
             </span>
             <span>
               {u.done}/{u.total} <span className="sr-only">activité(s) terminée(s)</span>
@@ -202,7 +244,7 @@ function PathNode({ node, current }: { node: Node; current: boolean }) {
   const circle = cn(
     "relative flex items-center justify-center rounded-full border-b-[6px] transition group-focus-visible:ring-4 group-focus-visible:ring-ring/50",
     node.big ? "size-20" : "size-16",
-    node.state === "completed" && "border-2 border-b-[6px] border-primary bg-white text-primary",
+    node.state === "completed" && "border-2 border-b-[6px] border-success bg-white text-success",
     node.state === "available" && "border-brand-dark bg-primary text-white group-hover:brightness-110 group-active:translate-y-1 group-active:border-b-2",
     node.state === "locked" && "border-border bg-muted text-muted-foreground",
   );

@@ -7,6 +7,7 @@ import * as content from "@/lib/admin/content";
 import * as steps from "@/lib/admin/steps";
 import { enroll, updateEnrollment } from "@/lib/admin/enrollments";
 import { gradeSubmission, gradingQueue } from "@/lib/admin/grading";
+import { sendsAllowed, sendsLeft, sendsUsed } from "@/lib/learn/challenge";
 import { computeOutline } from "@/lib/learn/progress";
 
 let mongo: MongoMemoryServer;
@@ -217,6 +218,25 @@ describe("enroll", () => {
 });
 
 describe("grading", () => {
+  it("limits a challenge to 3 sends; a return after the last send grants one more", async () => {
+    const coach = await mk("coach2", "english-coach");
+    const learner = await mk("ali");
+    const c = await Course.create({ title: "C", instructors: [coach._id] });
+    const m = await Module.create({ courseId: c._id, order: 1, title: "M" });
+    const u = await Unit.create({ courseId: c._id, moduleId: m._id, title: "U" });
+    expect([sendsUsed(null), sendsLeft(null)]).toEqual([0, 3]);
+    // Submissions made before the counter count as one send.
+    expect(sendsLeft({ mediaId: new Types.ObjectId() })).toBe(2);
+    const sub = await ChallengeSubmission.create({ userId: learner._id, courseId: c._id, moduleId: m._id, unitId: u._id, stepId: new Types.ObjectId(), mediaId: new Types.ObjectId(), attempts: 2 });
+    await gradeSubmission(String(coach._id), String(sub._id), { decision: "returned", feedback: "Again" });
+    expect(sendsLeft(await ChallengeSubmission.findById(sub._id).lean())).toBe(1); // sends left: nothing granted
+    await ChallengeSubmission.updateOne({ _id: sub._id }, { attempts: 3 });
+    expect(sendsLeft(await ChallengeSubmission.findById(sub._id).lean())).toBe(0);
+    await gradeSubmission(String(coach._id), String(sub._id), { decision: "returned", feedback: "Once more" });
+    const after = await ChallengeSubmission.findById(sub._id).lean();
+    expect([after?.extraAttempts, sendsAllowed(after), sendsLeft(after)]).toEqual([1, 4, 1]);
+  });
+
   it("validates with XP once, returns with mandatory feedback, and unlocks the next challenge day", async () => {
     const coach = await mk("coach", "english-coach");
     const learner = await mk("awa");

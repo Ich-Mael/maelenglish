@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { Photo } from "@/components/site/photo";
+import { sendsAllowed, sendsLeft, sendsUsed } from "@/lib/learn/challenge";
 import { headers } from "next/headers";
 import { connection } from "next/server";
-import { ChevronLeft, ChevronRight, CircleCheck, Clock, ListChecks, Lock, Mic, RotateCcw, Timer } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, CircleCheck, Clock, Headphones, ListChecks, Lock, Mic, RotateCcw, Timer } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
 import { courseAccess, courseTree } from "@/lib/learn/queries";
 import { coursePath, examPath, stepPath } from "@/lib/learn/paths";
@@ -189,19 +191,30 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
   const c = activity.content as SpeakingChallengeContent;
   const submission = access.preview ? null : await ChallengeSubmission.findOne({ userId: me.id, unitId: unit.id }).lean<ChallengeSubmissionDoc>();
   const mine = submission?.mediaId ? await mediaUrlFor({ id: me.id, isAdmin: false }, String(submission.mediaId)).catch(() => null) : null;
-  const model = submission && c.modelAnswerAudioMediaId ? (await mediaUrls(me.id, [c.modelAnswerAudioMediaId]))[c.modelAnswerAudioMediaId] : undefined;
+  const model = c.modelAnswerAudioMediaId ? (await mediaUrls(me.id, [c.modelAnswerAudioMediaId]))[c.modelAnswerAudioMediaId] : undefined;
   const mustInclude = c.mustInclude ?? [];
+  const used = sendsUsed(submission);
+  const allowed = sendsAllowed(submission);
+  const left = sendsLeft(submission);
 
   return (
     <div className="mx-auto grid max-w-3xl gap-6">
       {header}
-      <div className="-mt-2">
-        <h1 className="flex items-center gap-2 text-3xl font-extrabold text-brand-deep">
-          <Mic className="size-7 shrink-0 text-primary" aria-hidden /> {activity.title || "Défi oral"}
-        </h1>
-        <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-          <Timer className="size-4" aria-hidden /> {secs(c.maxSeconds ?? 60)} maximum{c.prepSeconds ? ` · ${secs(c.prepSeconds)} pour vous préparer` : ""} · votre coach vous fait un retour
-        </p>
+      {/* Banner: someone speaking (same photo as « My Speaking Challenge »). */}
+      <div className="relative isolate -mt-2 overflow-clip rounded-3xl bg-brand-deep text-white">
+        <div className="absolute inset-0 -z-20 sm:left-1/3">
+          <Photo name="speaker" alt="" sizes="(max-width: 639px) 100vw, 520px" position="60% 30%" />
+        </div>
+        <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-t from-brand-deep via-brand-deep/85 to-brand-deep/25 sm:bg-gradient-to-r sm:from-brand-deep sm:via-brand-deep/90 sm:to-brand-deep/10" />
+        <div className="grid gap-2 p-5 pt-32 sm:max-w-[65%] sm:p-7">
+          <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-bold tracking-wide uppercase">
+            <Mic className="size-3.5" aria-hidden /> Défi oral · à vous de parler
+          </p>
+          <h1 className="text-2xl leading-tight font-extrabold text-white sm:text-3xl">{activity.title || "Défi oral"}</h1>
+          <p className="inline-flex items-center gap-1.5 text-sm text-white/85">
+            <Timer className="size-4 shrink-0" aria-hidden /> {secs(c.maxSeconds ?? 60)} maximum{c.prepSeconds ? ` · ${secs(c.prepSeconds)} pour vous préparer` : ""} · votre coach vous fait un retour
+          </p>
+        </div>
       </div>
 
       <section className="rounded-3xl border-2 border-border bg-card p-5 sm:p-8">
@@ -252,17 +265,25 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
         </section>
       )}
 
-      {/* The model answer comes once the learner has answered (no copying). */}
-      {submission && (c.modelAnswerText || model) && (
-        <section className="rounded-3xl border-2 border-border bg-card p-5">
-          <h2 className="font-heading font-extrabold text-brand-deep">Un exemple de réponse</h2>
-          {model && <audio src={model} controls preload="none" className="mt-2 w-full" />}
-          {c.modelAnswerText && (
-            <p lang="en" className="mt-2 whitespace-pre-line text-ink">
-              {c.modelAnswerText}
-            </p>
-          )}
-        </section>
+      {/* Example answer: available from the start, folded so the learner tries first; open once they have sent. */}
+      {(c.modelAnswerText || model) && (
+        <details open={!!submission} className="group rounded-3xl border-2 border-border bg-card">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-5 font-heading font-extrabold text-brand-deep [&::-webkit-details-marker]:hidden">
+            <span className="flex items-center gap-2">
+              <Headphones className="size-5 text-primary" aria-hidden /> Écouter un exemple de réponse
+            </span>
+            <ChevronDown className="size-5 transition group-open:rotate-180 motion-reduce:transition-none" aria-hidden />
+          </summary>
+          <div className="border-t border-border px-5 pt-3 pb-5">
+            {!submission && <p className="mb-2 text-sm text-muted-foreground">Conseil : essayez d&apos;abord seul(e), puis comparez.</p>}
+            {model && <audio src={model} controls preload="none" className="w-full" />}
+            {c.modelAnswerText && (
+              <p lang="en" className="mt-2 whitespace-pre-line text-ink">
+                {c.modelAnswerText}
+              </p>
+            )}
+          </div>
+        </details>
       )}
 
       {submission?.status === "graded" ? (
@@ -273,12 +294,43 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
         <p className="text-muted-foreground">Cours terminé : les envois sont fermés.</p>
       ) : (
         <section className="grid gap-3">
-          <h2 className="text-xl font-extrabold text-brand-deep">{submission ? "Vous pouvez vous réenregistrer" : "À vous de parler"}</h2>
-          {submission?.status === "pending" && <p className="text-sm text-muted-foreground">Tant que votre coach n’a pas validé, un nouvel envoi remplace le précédent.</p>}
-          <ChallengeRecorder courseId={courseId} stepId={stepId} maxSeconds={c.maxSeconds ?? 60} prepSeconds={c.prepSeconds ?? 0} preview={access.preview} resend={!!submission} courseHref={course} />
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-xl font-extrabold text-brand-deep">{submission ? (left > 0 ? "Vous pouvez vous réenregistrer" : "Envois terminés") : "À vous de parler"}</h2>
+            <SendsLeft used={used} allowed={allowed} />
+          </div>
+          {left > 0 ? (
+            <>
+              <p className="text-sm text-muted-foreground">
+                {submission?.status === "pending" ? "Tant que votre coach n’a pas validé, un nouvel envoi remplace le précédent. " : ""}
+                {left === 1 ? "C'est votre dernier envoi : prenez le temps de vous réécouter avant d'envoyer." : `Il vous reste ${left} envois pour ce défi.`}
+              </p>
+              <ChallengeRecorder courseId={courseId} stepId={stepId} maxSeconds={c.maxSeconds ?? 60} prepSeconds={c.prepSeconds ?? 0} preview={access.preview} resend={!!submission} courseHref={course} />
+            </>
+          ) : (
+            <p className="rounded-2xl border-2 border-border bg-card p-4 text-ink">
+              Vous avez utilisé vos {allowed} envois. Votre coach va écouter le dernier et vous faire un retour ; s&apos;il vous demande de le reprendre, un nouvel envoi s&apos;ouvrira.
+            </p>
+          )}
+          <Link href="/mes-defis" className="w-fit text-sm font-semibold text-primary hover:underline">
+            Voir « My Speaking Challenge » : tous mes défis et les retours de mon coach
+          </Link>
         </section>
       )}
     </div>
+  );
+}
+
+/** « Envoi 2 / 3 » as dots. */
+function SendsLeft({ used, allowed }: { used: number; allowed: number }) {
+  return (
+    <p className="flex items-center gap-2 text-sm font-semibold text-muted-foreground" aria-label={`${used} envoi(s) utilisé(s) sur ${allowed}`}>
+      <span className="flex gap-1" aria-hidden>
+        {Array.from({ length: allowed }, (_, i) => (
+          <span key={i} className={i < used ? "size-2.5 rounded-full bg-primary" : "size-2.5 rounded-full border-2 border-primary/40"} />
+        ))}
+      </span>
+      {used} / {allowed} envois
+    </p>
   );
 }
 
