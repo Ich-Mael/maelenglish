@@ -1,6 +1,6 @@
 import { normalizeRich, plainText } from "@/lib/rich-text";
 import { Types } from "mongoose";
-import { MAX_PLAYS, MAX_SECONDS, PREP_SECONDS, type ActivityContent, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type ListeningQuestion } from "./types";
+import { MAX_PLAYS, MAX_SECONDS, PREP_SECONDS, type ActivityContent, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type ListeningQuestion, type GapsContent, GAP_HINTS, parseGaps } from "./types";
 
 /*
  * Content rules per activity type (server: rich text is sanitised here). `cleanContent` turns what
@@ -53,11 +53,26 @@ function cleanListening(r: Record<string, unknown>): ListeningContent {
   };
 }
 
+function cleanGaps(r: Record<string, unknown>): GapsContent {
+  const j = typeof r.json === "string" ? parseJson(r.json) : r;
+  const list = (v: unknown, max: number, len: number) => (Array.isArray(v) ? v : typeof v === "string" ? v.split(",") : []).map((x) => str(x, len)).slice(0, max);
+  return {
+    text: str(j.text, 6000),
+    explanations: list(j.explanations, 60, 500),
+    hint: GAP_HINTS.includes(j.hint as GapsContent["hint"]) ? (j.hint as GapsContent["hint"]) : "letters",
+    wordBank: j.wordBank === true || j.wordBank === "on",
+    distractors: list(j.distractors, 20, 60).filter(Boolean),
+    typos: j.typos !== false && j.typos !== "off",
+  };
+}
+
 export function cleanContent<T extends ActivityType>(type: T, raw: unknown): ActivityContent[T] {
   const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
   switch (type) {
     case "listen_choose":
       return cleanListening(r) as ActivityContent[T];
+    case "fill_gaps":
+      return cleanGaps(r) as ActivityContent[T];
     case "speaking_challenge":
       return {
         instructions: normalizeRich(typeof r.instructions === "string" ? r.instructions : ""),
@@ -86,6 +101,13 @@ export function contentProblem(type: ActivityType, content: unknown): string | n
         if (q.options.length < 2) return `Question ${i + 1}: give at least 2 answers.`;
         if (!q.correctOptionId) return `Question ${i + 1}: tick the correct answer.`;
       }
+      return null;
+    }
+    case "fill_gaps": {
+      const c = content as Partial<GapsContent>;
+      const { gaps } = parseGaps({ text: c.text ?? "", explanations: c.explanations ?? [] });
+      if (!gaps.length) return "Write the text with at least one answer in [square brackets].";
+      if (gaps.length > 40) return "Keep it to 40 blanks at most.";
       return null;
     }
     case "speaking_challenge": {

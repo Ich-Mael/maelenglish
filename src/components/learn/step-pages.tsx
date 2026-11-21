@@ -7,7 +7,7 @@ import { courseAccess, courseTree } from "@/lib/learn/queries";
 import { coursePath, examPath, stepPath } from "@/lib/learn/paths";
 import { stepAfter, stepBefore } from "@/lib/learn/sequence";
 import { ChallengeSubmission, type ChallengeSubmissionDoc } from "@/models";
-import type { ListeningContent, SpeakingChallengeContent } from "@/lib/lab/types";
+import type { GapsContent, ListeningContent, SpeakingChallengeContent } from "@/lib/lab/types";
 import { cleanLessonContent } from "@/lib/course/lesson-content";
 import { mediaUrlFor } from "@/lib/media";
 import { AccessProblem, formatDate } from "./ui";
@@ -18,6 +18,7 @@ import { CompleteButton } from "./complete-button";
 import { LessonView, lessonMediaIds } from "./lesson-view";
 import { PreviewBar, adminPaths } from "./preview-bar";
 import { ListeningPlayer } from "@/components/lab/players/listening-player";
+import { GapsPlayer } from "@/components/lab/players/gaps-player";
 
 function Locked({ courseId, text }: { courseId: string; text: string }) {
   return (
@@ -129,6 +130,30 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
   if (!activity) return <AccessProblem reason="not-found" />;
 
   // ── Activity: its Lab player ──
+  if (so.kind === "activity" && activity.type === "fill_gaps") {
+    return (
+      <div className="mx-auto grid max-w-2xl gap-4">
+        {header}
+        <div>
+          <GapsPlayer
+            courseId={courseId}
+            stepId={stepId}
+            passScore={so.passScore}
+            lessonHref={so.lessonId ? stepPath(courseId, so.lessonId) : null}
+            title={activity.title}
+            level={activity.level ?? ""}
+            skills={activity.skills ?? []}
+            instructions={activity.instructions ?? ""}
+            maelTip={activity.maelTip ?? ""}
+            content={activity.content as GapsContent}
+            courseHref={course}
+            nextHref={nextHref}
+            readOnly={access.readOnly}
+          />
+        </div>
+      </div>
+    );
+  }
   if (so.kind === "activity") {
     if (activity.type !== "listen_choose") return <AccessProblem reason="not-found" />;
     const c = activity.content as ListeningContent;

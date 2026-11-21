@@ -8,7 +8,8 @@ import * as content from "@/lib/admin/content";
 import * as lab from "@/lib/lab/service";
 import { can } from "@/lib/admin/permissions";
 import { cleanContent, contentProblem } from "@/lib/lab/content";
-import { parseTime, formatTime } from "@/lib/lab/types";
+import { parseTime, formatTime, parseGaps } from "@/lib/lab/types";
+import { gradeActivity } from "@/lib/lab/grade";
 
 let mongo: MongoMemoryServer;
 beforeAll(async () => {
@@ -139,6 +140,38 @@ describe("Labo", () => {
     const placed = await Step.findOne({ unitId: u1._id, activityId: a._id }).lean();
     expect(placed).toMatchObject({ kind: "activity", title: "À la porte", position: 2, passScore: 60 });
     expect(String(placed?.lessonId)).toBe(String(lesson._id));
+  });
+
+  it("fill the gaps: parses the [bracketed] answers, cleans the editor's JSON, checks and grades", async () => {
+    const c = cleanContent("fill_gaps", {
+      json: JSON.stringify({ text: "I [am|'m] the new [sales manager].\n\nThis [is] my colleague. [ ] stays text.", explanations: ["I + am.", "", "This + is.", "extra"], hint: "nope", wordBank: true, distractors: ["be", " ", "were"], typos: false }),
+    });
+    expect(c.hint).toBe("letters");
+    expect(c.distractors).toEqual(["be", "were"]);
+    expect(c.typos).toBe(false);
+    const { lines, gaps } = parseGaps(c);
+    expect(lines).toHaveLength(2);
+    expect(gaps.map((g) => [g.id, g.answers, g.explanation])).toEqual([
+      ["g1", ["am", "'m"], "I + am."],
+      ["g2", ["sales manager"], ""],
+      ["g3", ["is"], "This + is."],
+    ]);
+    expect(lines[1].at(-1)).toEqual({ kind: "text", text: " my colleague. [ ] stays text." });
+    expect(contentProblem("fill_gaps", c)).toBeNull();
+    expect(contentProblem("fill_gaps", cleanContent("fill_gaps", { json: JSON.stringify({ text: "No blank here." }) }))).toMatch(/square brackets/);
+
+    // Alternatives, capitals / punctuation / contractions ignored; typos only when allowed.
+    expect(gradeActivity("fill_gaps", c, { g1: "'M", g2: "Sales  manager!", g3: "is" }).score).toBe(100);
+    expect(gradeActivity("fill_gaps", c, { g1: "am", g2: "sales manger", g3: "are" }).items.map((i) => i.correct)).toEqual([true, false, false]);
+    expect(gradeActivity("fill_gaps", { ...c, typos: true }, { g1: "am", g2: "sales manger", g3: "is" }).score).toBe(100);
+    expect(gradeActivity("fill_gaps", c, {}).score).toBe(0);
+
+    // Saved as « ready » once it has a blank.
+    const { actor } = await setup();
+    const a = await lab.createActivity("fill_gaps", "am, is or are?", actor);
+    await expect(lab.updateActivity(String(a._id), { title: "am, is or are?", ready: true, content: { json: JSON.stringify({ text: "No blank." }) } }, actor)).rejects.toThrow(/square brackets/);
+    await lab.updateActivity(String(a._id), { title: "am, is or are?", ready: true, content: { json: JSON.stringify({ text: "I [am] here." }) } }, actor);
+    expect((await Activity.findById(a._id).lean())?.status).toBe("ready");
   });
 
   it("parses and formats audio times", () => {

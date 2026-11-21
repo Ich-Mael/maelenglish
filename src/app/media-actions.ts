@@ -14,6 +14,8 @@ async function run<T>(fn: () => Promise<T>): Promise<Result<T>> {
   } catch (e) {
     if (e instanceof MediaError) return { ok: false, error: e.message };
     console.error("media action", e);
+    // Missing STORAGE_* settings: say so (staff need to see it to fix the server configuration).
+    if (e instanceof Error && e.message.startsWith("Stockage non configuré")) return { ok: false, error: e.message };
     return { ok: false, error: "Envoi impossible pour le moment. Réessayez." };
   }
 }

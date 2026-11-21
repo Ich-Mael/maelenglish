@@ -1,7 +1,8 @@
-import type { ActivityType, ListeningContent } from "./types";
+import { parseGaps, type ActivityType, type GapsContent, type ListeningContent } from "./types";
+import { matchAnswer } from "./match";
 
 /*
- * Scoring of Lab activities (shared by browser and server, no imports): the browser checks each
+ * Scoring of Lab activities (shared by browser and server): the browser checks each
  * item for instant feedback, the server recomputes the score from the same answers before saving.
  * One rule across the Lab: score 0–100 = first-try answers right / items (see `starsFor`).
  */
@@ -16,6 +17,11 @@ export function checkItem(type: ActivityType, content: unknown, itemId: string, 
       const q = (content as ListeningContent).questions.find((x) => x.id === itemId);
       return !!q && answer === q.correctOptionId;
     }
+    case "fill_gaps": {
+      const c = content as GapsContent;
+      const gap = parseGaps(c).gaps.find((g) => g.id === itemId);
+      return !!gap && typeof answer === "string" && matchAnswer(answer, gap.answers, { typo: c.typos }).ok;
+    }
     default:
       return false;
   }
@@ -25,6 +31,8 @@ export function itemIds(type: ActivityType, content: unknown): string[] {
   switch (type) {
     case "listen_choose":
       return (content as ListeningContent).questions.map((q) => q.id);
+    case "fill_gaps":
+      return parseGaps(content as GapsContent).gaps.map((g) => g.id);
     default:
       return [];
   }

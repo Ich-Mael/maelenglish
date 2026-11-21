@@ -4,7 +4,7 @@
  * rules in `content.ts`, its editor in components/lab/editors and its player in components/lab/players.
  */
 
-export const ACTIVITY_TYPES = ["listen_choose", "speaking_challenge"] as const;
+export const ACTIVITY_TYPES = ["listen_choose", "fill_gaps", "speaking_challenge"] as const;
 export type ActivityType = (typeof ACTIVITY_TYPES)[number];
 
 /** `challenge`: closes a unit (its last step, kind challenge); `practice`: an activity step practising a lesson. */
@@ -14,6 +14,11 @@ export const ACTIVITY_INFO: Record<ActivityType, { label: string; description: s
   "listen_choose": {
     label: "Listening comprehension",
     description: "An audio clip and multiple-choice questions. At correction, the learner replays the exact passage of each answer.",
+    role: "practice",
+  },
+  "fill_gaps": {
+    label: "Fill the gaps",
+    description: "A text with blanks to complete. Each blank shows the shape of its answer (words and letters); optional word bank.",
     role: "practice",
   },
   "speaking_challenge": {
@@ -56,7 +61,53 @@ export type ListeningContent = {
 /** What the learner's browser receives before answering: no answers, explanations or transcript. */
 export type PublicListeningQuestion = Pick<ListeningQuestion, "id" | "text" | "options">;
 
-export type ActivityContent = { "listen_choose": ListeningContent; "speaking_challenge": SpeakingChallengeContent };
+/**
+ * Fill the gaps: one text (one sentence or paragraph per line) where each answer is written in
+ * square brackets — « I [am] the new sales manager. » —, alternatives separated by « | »
+ * (« I [am|'m] from Ghana. »; the first one sets the blank's shape and is the answer shown).
+ */
+export type GapHint = "letters" | "first" | "words";
+export const GAP_HINTS: readonly GapHint[] = ["letters", "first", "words"];
+export type GapsContent = {
+  text: string;
+  /** One per blank, in order (French, optional). */
+  explanations: string[];
+  /** What each blank shows: one dash per letter (words apart) · the same with the first letter · only one box per word. */
+  hint: GapHint;
+  /** Answers (+ distractors) offered as tappable chips. */
+  wordBank: boolean;
+  distractors: string[];
+  /** Accept one typo in answers of 4+ letters. */
+  typos: boolean;
+};
+export type Gap = { id: string; index: number; answers: string[]; explanation: string };
+export type GapSegment = { kind: "text"; text: string } | { kind: "gap"; gap: Gap };
+
+/** The text as lines of segments, and its blanks (ids g1, g2… in reading order). */
+export function parseGaps(c: Pick<GapsContent, "text" | "explanations">): { lines: GapSegment[][]; gaps: Gap[] } {
+  const gaps: Gap[] = [];
+  const lines = c.text
+    .split(/\r?\n/)
+    .filter((l) => l.trim())
+    .map((line) => {
+      const out: GapSegment[] = [];
+      let last = 0;
+      for (const m of line.matchAll(/\[([^\[\]]*)\]/g)) {
+        const answers = m[1].split("|").map((a) => a.trim().replace(/\s+/g, " ")).filter(Boolean);
+        if (!answers.length) continue;
+        if (m.index! > last) out.push({ kind: "text", text: line.slice(last, m.index) });
+        const gap: Gap = { id: `g${gaps.length + 1}`, index: gaps.length, answers, explanation: c.explanations?.[gaps.length] ?? "" };
+        gaps.push(gap);
+        out.push({ kind: "gap", gap });
+        last = m.index! + m[0].length;
+      }
+      if (last < line.length) out.push({ kind: "text", text: line.slice(last) });
+      return out;
+    });
+  return { lines, gaps };
+}
+
+export type ActivityContent = { "listen_choose": ListeningContent; "fill_gaps": GapsContent; "speaking_challenge": SpeakingChallengeContent };
 
 export const MAX_PLAYS = [0, 2, 3] as const;
 

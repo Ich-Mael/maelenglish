@@ -37,7 +37,7 @@ type SeedStep = {
   lessonRef?: number;
   activityType?: string;
   instructions?: string;
-  settings?: { maxPlays?: number };
+  settings?: { maxPlays?: number; wordBank?: boolean };
   passScore?: number;
   items?: SeedItem[];
   prompt?: string;
@@ -54,8 +54,21 @@ type Seed = {
 const letter = (k: number) => String.fromCharCode(97 + k);
 const nearest = <T extends number>(allowed: readonly T[], v: number) => allowed.reduce((a, b) => (Math.abs(b - v) < Math.abs(a - v) ? b : a));
 
-/** Lab content for a seeded activity of a type that exists (only `listen_choose` so far). */
+/** Lab content for a seeded activity of a type that exists (`listen_choose`, `fill_gaps` so far). */
 function labContent(s: SeedStep): Record<string, unknown> | null {
+  if (s.activityType === "fill_gaps") {
+    // One line per item, its « ___ » replaced by [answer|alternatives]; the options not used as answers become distractors.
+    const items = s.items ?? [];
+    const answers = new Set(items.flatMap((it) => it.answers));
+    return {
+      text: items.map((it) => it.prompt.replace("___", `[${it.answers.join("|")}]`)).join("\n"),
+      explanations: items.map((it) => it.feedback),
+      hint: "letters",
+      wordBank: (s.settings as { wordBank?: boolean } | undefined)?.wordBank === true,
+      distractors: [...new Set(items.flatMap((it) => it.options ?? []))].filter((o) => !answers.has(o)),
+      typos: true,
+    };
+  }
   if (s.activityType !== "listen_choose") return null;
   return {
     audioMediaId: "", // to upload in the Lab — the activity stays a draft until then
@@ -114,8 +127,9 @@ async function main() {
           console.log(`  · ignoré : « ${s.title} » (type ${s.activityType} pas encore dans le Labo)`);
           continue;
         }
-        const a = await Activity.create({ type: s.activityType as "listen_choose", title: s.title, level: seed.module.level ?? "", skills: ["listening"], durationMin: s.estimatedMinutes ?? 0, instructions: s.instructions ?? "", tags: ["démo"], status: "draft", content });
-        console.log(`  · « ${s.title} » créée en brouillon : ajoutez l'audio dans le Labo, puis cochez « Ready ».`);
+        const gaps = s.activityType === "fill_gaps";
+        const a = await Activity.create({ type: s.activityType as "listen_choose", title: s.title, level: seed.module.level ?? "", skills: gaps ? ["grammar"] : ["listening"], durationMin: s.estimatedMinutes ?? 0, instructions: s.instructions ?? "", tags: ["démo"], status: gaps ? "ready" : "draft", content });
+        if (!gaps) console.log(`  · « ${s.title} » créée en brouillon : ajoutez l'audio dans le Labo, puis cochez « Ready ».`);
         await Step.create({ ...base, position: ++position, kind: "activity", activityId: a._id, lessonId: lessonByRef.get(s.lessonRef ?? -1) ?? null, passScore: s.passScore ?? 60 });
       } else {
         const a = await Activity.create({
