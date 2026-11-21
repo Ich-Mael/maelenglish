@@ -61,8 +61,9 @@ async function send(mail: Mail): Promise<{ simulated: boolean }> {
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
 /** Table layout, inlined styles and a "bulletproof" button (some clients strip <style>). */
-function layout(p: { firstName: string; intro: string; button: string; url: string; outro: string; hero?: { src: string; alt: string }; extra?: string }) {
-  return `<!doctype html><html lang="fr"><body style="margin:0;background:#f7f8fd;font-family:Arial,Helvetica,sans-serif;color:#151a33">
+function layout(p: { firstName: string; intro: string; button: string; url: string; outro: string; hero?: { src: string; alt: string }; extra?: string; lang?: "fr" | "en" }) {
+  const en = p.lang === "en"; // staff emails (coach digests) are in English, like the admin
+  return `<!doctype html><html lang="${en ? "en" : "fr"}"><body style="margin:0;background:#f7f8fd;font-family:Arial,Helvetica,sans-serif;color:#151a33">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f7f8fd;padding:24px 12px"><tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:14px;border:1px solid #e3e7f3">
 <tr><td style="padding:28px 28px 8px"><img src="${appUrl("/images/maelenglish-logo.png")}" alt="MaelEnglish" width="160" style="display:block;border:0;height:auto"></td></tr>${
@@ -71,12 +72,12 @@ function layout(p: { firstName: string; intro: string; button: string; url: stri
       : ""
   }
 <tr><td style="padding:8px 28px;font-size:16px;line-height:1.55">
-<p style="margin:0 0 12px">Bonjour ${esc(p.firstName)},</p>
+<p style="margin:0 0 12px">${en ? "Hello" : "Bonjour"} ${esc(p.firstName)},</p>
 <p style="margin:0 0 20px">${p.intro}</p>${p.extra ?? ""}
 <table role="presentation" cellpadding="0" cellspacing="0"><tr><td bgcolor="#364fab" style="border-radius:10px">
 <a href="${p.url}" style="display:inline-block;padding:13px 24px;color:#ffffff;font-weight:bold;text-decoration:none;font-size:16px">${p.button}</a>
 </td></tr></table>
-<p style="margin:20px 0 0;font-size:13px;color:#5b6283">Si le bouton ne fonctionne pas, copiez ce lien :<br><a href="${p.url}" style="color:#364fab;word-break:break-all">${p.url}</a></p>
+<p style="margin:20px 0 0;font-size:13px;color:#5b6283">${en ? "If the button doesn't work, copy this link:" : "Si le bouton ne fonctionne pas, copiez ce lien :"}<br><a href="${p.url}" style="color:#364fab;word-break:break-all">${p.url}</a></p>
 <p style="margin:16px 0 0;font-size:13px;color:#5b6283">${p.outro}</p>
 </td></tr>
 <tr><td style="padding:20px 28px 28px;font-size:12px;color:#8a90ab">MaelEnglish · Speak the Language of Your Profession</td></tr>
@@ -183,5 +184,88 @@ export function sendNewRequestEmail(to: string[], r: { name: string; phone: stri
       outro: "Recontactez la personne sur WhatsApp, puis créez son compte depuis l'administration.",
     }),
     text: `${lines.join("\n")}\n\nDemandes : ${url}`,
+  });
+}
+
+// ── Speaking challenges ────────────────────────────────────────────────────
+
+/** Learner: their coach validated or returned a speaking challenge (French). */
+export function sendChallengeReviewedEmail(
+  to: string,
+  p: { firstName: string; challengeTitle: string; courseTitle: string; decision: "graded" | "returned"; grade: number | null; maxScore: number; coachName: string; feedback: string; url: string },
+) {
+  const ok = p.decision === "graded";
+  const coach = p.coachName ? `Votre coach ${p.coachName}` : "Votre coach";
+  const intro = ok
+    ? `${esc(coach)} a validé votre défi oral <strong>« ${esc(p.challengeTitle)} »</strong> (${esc(p.courseTitle)})${p.grade !== null ? ` avec la note <strong>${p.grade} / ${p.maxScore}</strong>` : ""}. Bravo !`
+    : `${esc(coach)} a écouté votre défi oral <strong>« ${esc(p.challengeTitle)} »</strong> (${esc(p.courseTitle)}) et vous demande de le reprendre.`;
+  const feedback = p.feedback.trim();
+  const extra = feedback
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#eef1fb;border-radius:10px"><tr><td style="padding:12px 16px;font-size:15px;color:#141f4d"><strong>Son retour</strong><br>${esc(feedback.slice(0, 600))}${feedback.length > 600 ? "…" : ""}</td></tr></table>`
+    : "";
+  return send({
+    to,
+    subject: ok ? `Défi validé : ${p.challengeTitle}` : `Votre coach vous a fait un retour : ${p.challengeTitle}`,
+    html: layout({
+      firstName: p.firstName,
+      intro,
+      extra,
+      button: ok ? "Voir mes défis" : "Reprendre le défi",
+      url: p.url,
+      outro: ok ? "Continuez sur votre lancée : chaque défi vous rapproche d'un anglais fluide au travail." : "Réécoutez votre enregistrement, appliquez le conseil de votre coach et renvoyez votre défi.",
+    }),
+    text: `Bonjour ${p.firstName},\n\n${intro.replace(/<[^>]+>/g, "")}\n${feedback ? `\nSon retour : ${feedback}\n` : ""}\n${p.url}`,
+  });
+}
+
+export type DigestItem = { learner: string; course: string; unit: string; hoursWaiting: number; late: boolean; url: string };
+
+const waited = (h: number) => (h >= 48 ? `${Math.floor(h / 24)} days` : `${Math.max(1, Math.round(h))} h`);
+function digestTable(items: DigestItem[], withCoach?: (i: DigestItem) => string) {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px;border-collapse:collapse;font-size:14px">${items
+    .slice(0, 30)
+    .map(
+      (i) =>
+        `<tr><td style="padding:8px 0;border-bottom:1px solid #e3e7f3"><strong>${esc(i.learner)}</strong>${withCoach ? ` <span style="color:#5b6283">· ${esc(withCoach(i))}</span>` : ""}<br><span style="color:#5b6283">${esc(i.course)} · ${esc(i.unit)}</span></td><td align="right" style="padding:8px 0;border-bottom:1px solid #e3e7f3;white-space:nowrap;color:${i.late ? "#b02a2a" : "#5b6283"};font-weight:${i.late ? "bold" : "normal"}">${i.late ? "Late · " : ""}${waited(i.hoursWaiting)}</td></tr>`,
+    )
+    .join("")}</table>${items.length > 30 ? `<p style="margin:0 0 16px;font-size:13px;color:#5b6283">…and ${items.length - 30} more.</p>` : ""}`;
+}
+
+/** Coach: daily list of the speaking challenges waiting for them (English, like the admin). */
+export function sendCoachDigestEmail(to: string, p: { firstName: string; items: DigestItem[]; dueHours: number }) {
+  const late = p.items.filter((i) => i.late).length;
+  const url = appUrl("/admin/corrections?coach=me");
+  return send({
+    to,
+    subject: late ? `${late} late speaking challenge(s) · ${p.items.length} to grade` : `${p.items.length} speaking challenge(s) to grade`,
+    html: layout({
+      lang: "en",
+      firstName: p.firstName,
+      intro: `${p.items.length} speaking challenge(s) are waiting for your feedback${late ? `, <strong style="color:#b02a2a">${late} of them waiting more than ${p.dueHours} hours</strong>` : ""}. Learners stay motivated when they hear back quickly.`,
+      extra: digestTable(p.items),
+      button: "Open my grading queue",
+      url,
+      outro: `Target: every challenge reviewed within ${p.dueHours} hours of being sent.`,
+    }),
+    text: `Hello ${p.firstName},\n\n${p.items.length} speaking challenge(s) to grade (${late} late).\n\n${p.items.map((i) => `- ${i.learner} · ${i.course} · ${i.unit} · ${i.late ? "LATE · " : ""}${waited(i.hoursWaiting)}`).join("\n")}\n\n${url}`,
+  });
+}
+
+/** Admins: late speaking challenges across coaches (English). */
+export function sendAdminLateDigestEmail(to: string[], p: { items: (DigestItem & { coach: string })[]; dueHours: number }) {
+  const url = appUrl("/admin/suivi");
+  return send({
+    to: to.join(", "),
+    subject: `${p.items.length} speaking challenge(s) waiting more than ${p.dueHours} h`,
+    html: layout({
+      lang: "en",
+      firstName: "team",
+      intro: `These speaking challenges have been waiting for a coach for more than ${p.dueHours} hours:`,
+      extra: digestTable(p.items, (i) => (i as DigestItem & { coach: string }).coach || "no coach"),
+      button: "Open coach oversight",
+      url,
+      outro: "Check in with the coaches concerned, or reassign the learners from their user page.",
+    }),
+    text: `Late speaking challenges (> ${p.dueHours} h):\n\n${p.items.map((i) => `- ${i.learner} · ${i.coach || "no coach"} · ${i.course} · ${waited(i.hoursWaiting)}`).join("\n")}\n\n${url}`,
   });
 }

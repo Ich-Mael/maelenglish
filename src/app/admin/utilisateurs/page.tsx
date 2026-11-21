@@ -8,9 +8,10 @@ import { requireStaff, actorOf } from "@/lib/admin/context";
 import { can } from "@/lib/admin/permissions";
 import { listUsers } from "@/lib/admin/users";
 import { displayPhone } from "@/lib/phone";
+import { EmptyState, PageHeader, Pill, ROLE_LABELS, btn, fmtDate } from "@/components/admin/ui";
 import { ROLES } from "@/models/User";
-import { EmptyState, PageHeader, Pill, ROLE_LABELS, btn, fmtDate, inputCls } from "@/components/admin/ui";
 import { PageSkeleton } from "@/components/learn/ui";
+import { UserSearch } from "@/components/admin/user-search";
 
 export const metadata: Metadata = { title: "Users" };
 
@@ -37,23 +38,7 @@ async function Users({ searchParams }: { searchParams: Promise<Record<string, st
           </Link>
         }
       />
-      <form className="mb-4 grid gap-2 sm:grid-cols-[1fr_auto_auto_auto]" role="search">
-        <input name="q" defaultValue={q} placeholder="Name, username, email or number…" aria-label="Search" className={inputCls} />
-        <select name="role" defaultValue={role} aria-label="Role" className={inputCls}>
-          <option value="">All roles</option>
-          {ROLES.map((r) => (
-            <option key={r} value={r}>
-              {ROLE_LABELS[r]}
-            </option>
-          ))}
-        </select>
-        <select name="status" defaultValue={status} aria-label="Status" className={inputCls}>
-          <option value="">All</option>
-          <option value="active">Active</option>
-          <option value="inactive">Deactivated</option>
-        </select>
-        <button className={btn.secondary}>Filter</button>
-      </form>
+      <UserSearch q={q} role={role} status={status} roles={ROLES} />
 
       {items.length === 0 ? (
         <EmptyState>No matching accounts.</EmptyState>

@@ -157,7 +157,7 @@ export async function submitUnitChallenge(input: { courseId: string; stepId: str
     await ChallengeSubmission.updateOne(
       { userId: ctx.me.id, unitId: step.unitId },
       {
-        $set: { courseId: step.courseId, moduleId: step.moduleId, stepId: step._id, activityId: step.activityId, mediaId: media._id, durationS: media.durationS ?? 0, status: "pending", grade: null, gradedAt: null, gradedBy: null, attempts: sendsUsed(existing) + 1 },
+        $set: { courseId: step.courseId, moduleId: step.moduleId, stepId: step._id, activityId: step.activityId, mediaId: media._id, durationS: media.durationS ?? 0, status: "pending", grade: null, gradedAt: null, gradedBy: null, attempts: sendsUsed(existing) + 1, submittedAt: new Date() },
         $push: { history: { mediaId: media._id, durationS: media.durationS ?? 0, sentAt: new Date() } },
       },
       { upsert: true },

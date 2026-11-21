@@ -4,7 +4,8 @@
  *  - admin / super-admin: everything;
  *  - account-manager: accounts and enrolments (no content editing, no grading);
  *  - instructor / english-coach: content editing, grading and teaching
- *    resources only for courses that list them in `Course.instructors`.
+ *    resources only for courses that list them in `Course.instructors`; they also grade the
+ *    submissions of the learners whose main coach they are (`User.coachId`).
  */
 import type { Role } from "@/models/User";
 
@@ -29,6 +30,12 @@ export const can = {
   useLab: (a: Actor) => isAdmin(a) || isTeacher(a),
   manageEnrollments: (a: Actor) => isAdmin(a) || a.role === "account-manager",
   grade: (a: Actor, c: CourseLike) => isAdmin(a) || (isTeacher(a) && teaches(a, c)),
+  /** One learner's submission: the course team, or the learner's main coach (`User.coachId`). */
+  gradeSubmission: (a: Actor, c: CourseLike, learnerCoachId: unknown) => isAdmin(a) || (isTeacher(a) && (teaches(a, c) || (learnerCoachId != null && String(learnerCoachId) === a.id))),
+  /** Assign a learner's main coach. */
+  assignCoach: (a: Actor) => isAdmin(a) || a.role === "account-manager",
+  /** Coach oversight dashboard and digests. */
+  overseeCoaches: (a: Actor) => isAdmin(a),
   /** Course list filter: null = all courses, else only the ones they teach. */
   courseScope: (a: Actor): { instructors: string } | null => (isAdmin(a) || a.role === "account-manager" ? null : { instructors: a.id }),
 };

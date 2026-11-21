@@ -12,10 +12,14 @@ import { accessState, ADMIN_ROLES } from "@/models";
 import { Card, Input, PageHeader, Pill, ROLE_LABELS, Select, fmtDate } from "@/components/admin/ui";
 import { ActionButton, AdminForm, Submit } from "@/components/admin/forms";
 import { AccountLinkForm } from "@/components/admin/user-forms";
-import { revokeDeviceAction, toggleUserAction, updateUserAction } from "../../actions";
+import { revokeDeviceAction, setCoachAction, toggleUserAction, updateUserAction } from "../../actions";
+import { coachOptions } from "@/lib/admin/coaching";
 import { PageSkeleton } from "@/components/learn/ui";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
 import { toEditorHtml } from "@/lib/rich-text";
+import { ENGLISH_LEVELS, isEnglishLevel } from "@/lib/levels";
+import { Avatar } from "@/components/account/avatar";
+import { AvatarPicker } from "@/components/account/avatar-picker";
 
 export const metadata: Metadata = { title: "Account" };
 
@@ -38,13 +42,19 @@ async function UserView({ params }: { params: Promise<{ userId: string }> }) {
   const isAdminAccount = ADMIN_ROLES.includes(u.role as never);
   const roles = assignableRoles({ _id: me.id as never, role: me.role });
   const roleOptions = [...new Set([u.role as string, ...roles])].map((r) => ({ value: r, label: ROLE_LABELS[r] ?? r }));
+  const coaches = u.role === "user" && can.assignCoach(actorOf(me)) ? await coachOptions() : [];
   const active = u.isActive !== false;
   const isSelf = String(u._id) === me.id;
 
   return (
     <div className="grid max-w-5xl gap-5">
       <PageHeader
-        title={`${u.name} ${u.surname}`}
+        title={
+          <span className="flex items-center gap-3">
+            <Avatar src={u.avatarUrl} name={u.name || u.username} className="size-11 text-lg" />
+            {u.name} {u.surname}
+          </span>
+        }
         back={{ href: "/admin/utilisateurs", label: "Users" }}
         subtitle={
           <span className="flex flex-wrap items-center gap-2">
@@ -80,7 +90,16 @@ async function UserView({ params }: { params: Promise<{ userId: string }> }) {
               )}
               <Input label="Email" name="email" type="email" defaultValue={u.email ?? ""} />
               <Input label="WhatsApp number" name="phoneNumber" defaultValue={u.phoneNumber ?? ""} />
-              <Input label="English level" name="englishLevel" defaultValue={u.englishLevel ?? ""} />
+              <Select
+                label="English level (CEFR)"
+                name="englishLevel"
+                defaultValue={u.englishLevel ?? ""}
+                options={[
+                  { value: "", label: "— Not assessed —" },
+                  ...(u.englishLevel && !isEnglishLevel(u.englishLevel) ? [{ value: u.englishLevel, label: `${u.englishLevel} (old value)` }] : []),
+                  ...ENGLISH_LEVELS.map((l) => ({ value: l.value, label: `${l.value} · ${l.en}` })),
+                ]}
+              />
               <Input label="Max devices" name="maxDevices" type="number" min={1} max={20} defaultValue={u.maxDevices ?? 3} hint="For information (not enforced)." />
               <Input label="AI minutes per month" name="aiMonthlyMinutes" type="number" min={0} max={10000} defaultValue={u.aiMonthlyMinutes ?? ""} placeholder="Default" hint="Empty = the default (AI usage page)." />
             </div>
@@ -92,6 +111,25 @@ async function UserView({ params }: { params: Promise<{ userId: string }> }) {
         </Card>
 
         <div className="grid content-start gap-5">
+          <Card title="Profile photo" description="Shown in the navigation bars and to coaches.">
+            <AvatarPicker userId={String(u._id)} src={u.avatarUrl ?? null} name={u.name || u.username} locale="en" />
+          </Card>
+          {u.role === "user" && can.assignCoach(actorOf(me)) && (
+            <Card title="Main coach" description="Reviews this learner's speaking challenges and receives the daily email about them. Without one, the course's teaching team does.">
+              <AdminForm action={setCoachAction}>
+                <input type="hidden" name="userId" value={String(u._id)} />
+                <Select
+                  label="Coach"
+                  name="coachId"
+                  defaultValue={u.coachId ? String(u.coachId) : ""}
+                  options={[{ value: "", label: "— None (course team) —" }, ...coaches.map((c) => ({ value: String(c._id), label: `${c.name} ${c.surname} · ${ROLE_LABELS[c.role as string] ?? c.role}` }))]}
+                />
+                <div>
+                  <Submit variant="secondary">Save coach</Submit>
+                </div>
+              </AdminForm>
+            </Card>
+          )}
           <Card title={d.activated ? "Password" : "Activation"} description={d.activated ? "Forgotten password? Generate a link valid for 1 hour." : "The person hasn't chosen their password yet."}>
             <AccountLinkForm userId={String(u._id)} kind={d.activated ? "reset" : "activation"} hasEmail={!!u.email} />
           </Card>

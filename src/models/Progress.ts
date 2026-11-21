@@ -62,6 +62,8 @@ const challengeSubmissionSchema = new Schema(
     feedback: { type: String, default: "" },
     gradedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
     gradedAt: { type: Date, default: null },
+    /** When the current recording was sent (waiting time / coach response time; older rows: updatedAt). */
+    submittedAt: { type: Date, default: null },
     /** Sends so far (limit: src/lib/learn/challenge.ts) and the extra sends granted by coach returns. */
     attempts: { type: Number, default: 0, min: 0 },
     extraAttempts: { type: Number, default: 0, min: 0 },
@@ -77,6 +79,9 @@ const challengeSubmissionSchema = new Schema(
 challengeSubmissionSchema.index({ userId: 1, unitId: 1 }, { unique: true });
 // Grading queue.
 challengeSubmissionSchema.index({ courseId: 1, status: 1 });
+// Coach oversight (pending by age, recent reviews).
+challengeSubmissionSchema.index({ status: 1, submittedAt: 1 });
+challengeSubmissionSchema.index({ gradedAt: -1 });
 
 export type ChallengeSubmissionDoc = InferSchemaType<typeof challengeSubmissionSchema> & { _id: Types.ObjectId };
 export const ChallengeSubmission: Model<ChallengeSubmissionDoc> = defineModel<ChallengeSubmissionDoc>("ChallengeSubmission", challengeSubmissionSchema);

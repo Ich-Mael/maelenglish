@@ -34,6 +34,7 @@ async function MyChallenges() {
   const me = await requireUser("/mes-defis");
   await connectDB();
   const subs = await ChallengeSubmission.find({ userId: me.id }).sort({ updatedAt: -1 }).lean<Sub[]>();
+  const mainCoach = await User.findById(me.id).select("coachId").lean().then((u) => (u?.coachId ? User.findById(u.coachId).select("name surname").lean() : null));
   const [courses, modules, units, activities, coaches] = await Promise.all([
     Course.find({ _id: { $in: subs.map((s) => s.courseId) } }).select("title").lean(),
     Module.find({ _id: { $in: subs.map((s) => s.moduleId) } }).select("title order").lean(),
@@ -97,6 +98,14 @@ async function MyChallenges() {
           <p className="leading-relaxed text-white/90">
             <strong className="text-white">Lancez-vous, chaque défi compte !</strong> C&apos;est en parlant qu&apos;on progresse : enregistrez-vous sans avoir peur de l&apos;erreur, votre coach est là pour vous guider. Réécoutez vos premiers essais : vous entendrez le chemin parcouru.
           </p>
+          {mainCoach && (
+            <p className="inline-flex w-fit items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-sm font-semibold">
+              <span aria-hidden className="flex size-6 items-center justify-center rounded-full bg-white font-heading text-xs font-extrabold text-primary">
+                {mainCoach.name?.slice(0, 1)}
+              </span>
+              Votre coach : {mainCoach.name} {mainCoach.surname}
+            </p>
+          )}
           {subs.length > 0 && (
             <dl className="mt-1 grid grid-cols-4 gap-2">
               {totals.map((t) => (

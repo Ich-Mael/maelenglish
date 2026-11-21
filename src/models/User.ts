@@ -71,8 +71,11 @@ const userSchema = new Schema(
     passwordChangedAt: { type: Date, default: null },
     lastLoginAt: { type: Date, default: null },
 
+    /** Profile photo: `/api/avatar/<userId>?v=<mediaId>` (set by `setAvatar`, src/lib/avatar.ts), with its Media record. */
     avatarUrl: { type: String, trim: true },
+    avatarMediaId: { type: Schema.Types.ObjectId, ref: "Media", default: null },
     about: { type: String, trim: true, default: "" },
+    /** CEFR level A1…C2 (`ENGLISH_LEVELS`, src/lib/levels.ts); checked by `updateAccount`. */
     englishLevel: { type: String, trim: true },
 
     devices: { type: [deviceSchema], default: [] },

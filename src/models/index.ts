@@ -13,3 +13,4 @@ export * from "./Gamification";
 export * from "./EnrollmentRequest";
 export * from "./Media";
 export * from "./AiUsage";
+export * from "./Notification";

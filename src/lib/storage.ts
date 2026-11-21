@@ -53,7 +53,7 @@ const localSecret = () => process.env.MEDIA_LOCAL_SECRET || process.env.APP_DB |
 /** Storage keys look like `recording/2026-11/<id>.webm` — no `..`, no leading slash. */
 export function isSafeKey(key: string): boolean {
   // Optional top folder (keys made before the students_audio / courses_audios layout have none).
-  return /^(?:(?:students_audio|courses_audios)\/)?[a-z-]+\/\d{4}-\d{2}\/[a-f0-9]{24}\.[a-z0-9]{2,5}$/.test(key);
+  return /^(?:(?:students_audio|courses_audios|profile_photos)\/)?[a-z-]+\/\d{4}-\d{2}\/[a-f0-9]{24}\.[a-z0-9]{2,5}$/.test(key);
 }
 function localPath(key: string) {
   if (!isSafeKey(key)) throw new Error("Clé de fichier invalide.");

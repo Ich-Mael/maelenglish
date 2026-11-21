@@ -16,6 +16,7 @@ const AUDIO: Record<string, string> = {
   "audio/x-wav": "wav",
 };
 const VIDEO: Record<string, string> = { "video/mp4": "mp4", "video/webm": "webm" };
+const IMAGE: Record<string, string> = { "image/webp": "webp", "image/jpeg": "jpg", "image/png": "png" };
 
 const MB = 1024 * 1024;
 export const MAX_BYTES: Record<MediaKind, number> = {
@@ -24,6 +25,7 @@ export const MAX_BYTES: Record<MediaKind, number> = {
   "model-audio": 10 * MB,
   clip: 30 * MB,
   instruction: 60 * MB, // short instruction video recorded by Mael
+  avatar: 2 * MB, // resized to 320 px in the browser (≈ 20 KB)
 };
 
 /** Base type without parameters: "audio/webm;codecs=opus" → "audio/webm". */
@@ -31,27 +33,30 @@ export const baseMime = (mime: string) => mime.split(";")[0].trim().toLowerCase(
 
 export function extensionFor(kind: MediaKind, mime: string): string | null {
   const m = baseMime(mime);
+  if (kind === "avatar") return IMAGE[m] ?? null;
   return AUDIO[m] ?? (kind === "instruction" ? VIDEO[m] : undefined) ?? null;
 }
 
-/** Learners upload their own recordings; everything else is staff work. */
+/** Learners upload their own recordings and profile photo; everything else is staff work. */
 export function canUpload(kind: MediaKind, viewer: { isStaff: boolean }): boolean {
-  return kind === "recording" || viewer.isStaff;
+  return kind === "recording" || kind === "avatar" || viewer.isStaff;
 }
 
-/** Course content is playable by any signed-in learner; recordings and voice notes are private. */
+/** Course content and profile photos are readable by any signed-in user; recordings and voice notes are private. */
 export const visibilityFor = (kind: MediaKind): "private" | "public" => (kind === "recording" || kind === "voice-note" ? "private" : "public");
 
 /**
  * Top-level bucket folder (owner's R2 layout): learners' audio (their recordings, coach voice
- * notes to them — private) vs course audio uploaded by staff (clips, model answers, instructions).
+ * notes to them — private) vs course audio uploaded by staff (clips, model answers, instructions),
+ * plus profile photos.
  */
-export const MEDIA_FOLDER: Record<MediaKind, "students_audio" | "courses_audios"> = {
+export const MEDIA_FOLDER: Record<MediaKind, "students_audio" | "courses_audios" | "profile_photos"> = {
   recording: "students_audio",
   "voice-note": "students_audio",
   clip: "courses_audios",
   "model-audio": "courses_audios",
   instruction: "courses_audios",
+  avatar: "profile_photos",
 };
 
 /** `<folder>/<kind>/<yyyy-mm>/<id>.<ext>`, e.g. `students_audio/recording/2026-11/…webm`. Older files keep their stored key. */
@@ -71,7 +76,7 @@ export function uploadProblem(kind: MediaKind, mime: string, size: number, viewe
 /** Content type to serve for a stored key (local driver). */
 export function mimeForKey(key: string): string {
   const ext = key.split(".").pop() ?? "";
-  const all = { ...AUDIO, ...VIDEO };
+  const all = { ...AUDIO, ...VIDEO, ...IMAGE };
   const hit = Object.entries(all).find(([, e]) => e === ext);
   if (ext === "webm" && /(^|\/)instruction\//.test(key)) return "video/webm";
   return hit?.[0] ?? "application/octet-stream";

@@ -3,6 +3,7 @@ import { Enrollment, Session, User, ADMIN_ROLES, ROLES, hasRole, type Role, type
 import { assignableRoles } from "@/lib/auth/accounts";
 import { AdminError } from "./errors";
 import { normalizeRich } from "@/lib/rich-text";
+import { isEnglishLevel } from "@/lib/levels";
 
 type Actor = Pick<UserDoc, "_id" | "role">;
 
@@ -46,7 +47,9 @@ export async function updateAccount(actor: Actor, userId: string, data: UserEdit
   user.username = username;
   user.email = email;
   user.phoneNumber = data.phoneNumber?.trim() || undefined;
-  user.englishLevel = data.englishLevel?.trim() || undefined;
+  const level = data.englishLevel?.trim() || undefined;
+  if (level && level !== user.englishLevel && !isEnglishLevel(level)) throw new AdminError("English level: choose one of the CEFR levels (A1 to C2).");
+  user.englishLevel = level;
   user.about = normalizeRich(data.about);
   if (data.maxDevices) user.maxDevices = Math.max(1, Math.min(20, Math.round(data.maxDevices)));
   if (data.aiMonthlyMinutes !== undefined) {

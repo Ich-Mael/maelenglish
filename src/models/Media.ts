@@ -2,13 +2,13 @@ import { Schema, type InferSchemaType, type Model, type Types } from "mongoose";
 import { defineModel } from "./define";
 
 /**
- * A stored file (audio for now): learner recordings, coach voice notes, listening clips,
- * model audio, instruction media. The bytes live in object storage (`src/lib/storage.ts`,
+ * A stored file: learner recordings, coach voice notes, listening clips, model audio,
+ * instruction media, profile photos (`avatar`). The bytes live in object storage (`src/lib/storage.ts`,
  * key = `key`); this record holds ownership and access (`src/lib/media-access.ts`).
  * Browsers upload straight to storage with a presigned URL, then the upload is confirmed
  * (`status` pending → ready). Learner recordings and voice notes are private.
  */
-export const MEDIA_KINDS = ["recording", "voice-note", "clip", "model-audio", "instruction"] as const;
+export const MEDIA_KINDS = ["recording", "voice-note", "clip", "model-audio", "instruction", "avatar"] as const;
 export type MediaKind = (typeof MEDIA_KINDS)[number];
 
 const mediaSchema = new Schema(

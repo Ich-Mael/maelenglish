@@ -6,7 +6,9 @@ import { LayoutDashboard, Monitor, Smartphone, Tablet } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
 import { describeUserAgent } from "@/lib/auth/device";
 import { displayPhone } from "@/lib/phone";
-import { Session } from "@/models";
+import { Session, User } from "@/models";
+import { levelLabel } from "@/lib/levels";
+import { AvatarPicker } from "@/components/account/avatar-picker";
 import { Button } from "@/components/ui/button";
 import { revokeSession } from "@/app/(auth)/actions";
 import { LogoutButton } from "@/components/pwa/logout-button";
@@ -37,6 +39,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 async function Account() {
   await connection();
   const me = await requireUser("/compte");
+  const level = await User.findById(me.id).select("englishLevel").lean();
   const sessions = await Session.find({ userId: me.id, expiresAt: { $gt: new Date() } })
     .sort({ lastSeenAt: -1 })
     .lean();
@@ -60,9 +63,13 @@ async function Account() {
       )}
 
       <Section title="Profil">
-        <dl className="grid gap-3 sm:grid-cols-3">
+        <div className="mb-5">
+          <AvatarPicker userId={me.id} src={me.avatarUrl} name={me.name || me.username} />
+        </div>
+        <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {[
             ["Identifiant", me.username],
+            ["Niveau d’anglais", levelLabel(level?.englishLevel) || "Pas encore évalué"],
             ["Email", me.email ?? "—"],
             ["WhatsApp", me.phoneE164 ? displayPhone(me.phoneE164) : "—"],
           ].map(([k, v]) => (

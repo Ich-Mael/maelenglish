@@ -12,6 +12,8 @@ import * as steps from "@/lib/admin/steps";
 import { setDefaultMonthlyMinutes } from "@/lib/ai/metering";
 import { enroll, removeEnrollment, updateEnrollment } from "@/lib/admin/enrollments";
 import { gradeSubmission } from "@/lib/admin/grading";
+import { notifyChallengeReviewed, runCoachDigest } from "@/lib/notifications";
+import { assignCourseCoach, setMainCoach } from "@/lib/admin/coaching";
 import { RequestError, updateRequest } from "@/lib/requests";
 import { createAccount, deactivateUser, issueResetForUser, reissueActivation, restoreUser } from "@/lib/auth/accounts";
 import { appUrl, sendActivationEmail, sendEnrollmentEmail, sendPasswordResetEmail } from "@/lib/email";
@@ -546,12 +548,15 @@ export async function gradeAction(_: State, form: FormData): Promise<State> {
   try {
     const me = await staffOrThrow();
     const id = str(form, "submissionId");
-    const sub = Types.ObjectId.isValid(id) ? await ChallengeSubmission.findById(id).select("courseId").lean() : null;
+    const sub = Types.ObjectId.isValid(id) ? await ChallengeSubmission.findById(id).select("courseId userId").lean() : null;
     if (!sub) return { error: "Submission not found." };
-    await courseOf(me, String(sub.courseId), "grade");
+    // The course team, or the learner's main coach.
+    const [course, learner] = await Promise.all([Course.findById(sub.courseId).select("instructors").lean(), User.findById(sub.userId).select("coachId").lean()]);
+    if (!course || !can.gradeSubmission(actorOf(me), course, learner?.coachId)) return { error: "You can't grade this learner's work." };
     const decision = str(form, "decision") === "returned" ? "returned" : "graded";
     const gradeRaw = str(form, "grade");
     await gradeSubmission(me.id, id, { decision, grade: gradeRaw === "" ? null : Number(gradeRaw), feedback: str(form, "feedback") });
+    await notifyChallengeReviewed(id);
     next = "/admin/corrections";
   } catch (e) {
     return fail(e);
@@ -584,6 +589,48 @@ export async function saveAiSettingsAction(_: State, form: FormData): Promise<St
     await setDefaultMonthlyMinutes(minutes);
     refresh();
     return { success: "Setting saved." };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+// ── Coaching ───────────────────────────────────────────────────────────────
+
+/** A learner's main coach (user page). Empty = none. */
+export async function setCoachAction(_: State, form: FormData): Promise<State> {
+  try {
+    const me = await staffOrThrow();
+    if (!can.assignCoach(actorOf(me))) return { error: "Only admins and account managers assign coaches." };
+    await setMainCoach(str(form, "userId"), str(form, "coachId") || null);
+    refresh();
+    return { success: str(form, "coachId") ? "Main coach saved." : "Main coach removed." };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+/** Gives a course's enrolled learners a main coach (only those without one, unless « all »). */
+export async function assignCourseCoachAction(_: State, form: FormData): Promise<State> {
+  try {
+    const me = await staffOrThrow();
+    if (!can.assignCoach(actorOf(me))) return { error: "Only admins and account managers assign coaches." };
+    await courseOf(me, str(form, "courseId"), "enroll");
+    const n = await assignCourseCoach(str(form, "courseId"), str(form, "coachId"), { all: form.get("all") === "on" });
+    refresh();
+    return { success: n ? `Main coach set for ${n} learner(s).` : "No learner to update." };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+/** Coach oversight: send the coach digest now (also tests the email setup). */
+export async function sendDigestNowAction(): Promise<State> {
+  try {
+    const me = await staffOrThrow();
+    if (!can.overseeCoaches(actorOf(me))) return { error: "Admins only." };
+    const r = await runCoachDigest(new Date(), { force: true });
+    refresh();
+    return { success: r.pending ? `Digest sent: ${r.emails} email(s) for ${r.pending} challenge(s) waiting (${r.late} late).` : "Nothing is waiting: no email sent." };
   } catch (e) {
     return fail(e);
   }

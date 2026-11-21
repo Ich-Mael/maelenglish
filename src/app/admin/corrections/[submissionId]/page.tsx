@@ -3,8 +3,9 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Types } from "mongoose";
-import { requireStaff, courseFor } from "@/lib/admin/context";
-import { Activity, ChallengeSubmission, Module, Unit, User, type ActivityDoc, type ChallengeSubmissionDoc } from "@/models";
+import { actorOf, requireStaff } from "@/lib/admin/context";
+import { can } from "@/lib/admin/permissions";
+import { Activity, ChallengeSubmission, Course, Module, Unit, User, type ActivityDoc, type ChallengeSubmissionDoc, type CourseDoc } from "@/models";
 import type { SpeakingChallengeContent } from "@/lib/lab/types";
 import { reviewMediaUrl } from "@/lib/media";
 import { Card, PageHeader, Pill, fmtDate } from "@/components/admin/ui";
@@ -22,8 +23,9 @@ async function Grade({ params }: { params: Promise<{ submissionId: string }> }) 
   if (!Types.ObjectId.isValid(submissionId)) notFound();
   const sub = await ChallengeSubmission.findById(submissionId).lean<ChallengeSubmissionDoc>();
   if (!sub) notFound();
-  const course = await courseFor(me, String(sub.courseId), "grade");
-  if (!course) notFound();
+  // The course team, or the learner's main coach.
+  const [course, owner] = await Promise.all([Course.findById(sub.courseId).lean<CourseDoc>(), User.findById(sub.userId).select("coachId").lean()]);
+  if (!course || !can.gradeSubmission(actorOf(me), course, owner?.coachId)) notFound();
   const [user, mod, unit, audio, challenge] = await Promise.all([
     User.findById(sub.userId).select("name surname username").lean(),
     Module.findById(sub.moduleId).select("title").lean(),
@@ -49,7 +51,7 @@ async function Grade({ params }: { params: Promise<{ submissionId: string }> }) 
       />
       <div className="grid gap-5 lg:grid-cols-[1.3fr_1fr]">
         <div className="grid content-start gap-5">
-          <Card title="Learner's answer" description={`Sent on ${fmtDate(sub.updatedAt)}`}>
+          <Card title="Learner's answer" description={`Sent on ${fmtDate(sub.submittedAt ?? sub.updatedAt)}`}>
             {audio ? (
               <div className="grid gap-1">
                 <audio src={audio} controls preload="metadata" className="w-full" />

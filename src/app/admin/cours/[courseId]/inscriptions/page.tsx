@@ -4,14 +4,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Trash2 } from "lucide-react";
-import { requireStaff, courseFor } from "@/lib/admin/context";
+import { actorOf, requireStaff, courseFor } from "@/lib/admin/context";
+import { can } from "@/lib/admin/permissions";
+import { coachOptions } from "@/lib/admin/coaching";
 import { courseEnrollments } from "@/lib/admin/enrollments";
 import { displayPhone } from "@/lib/phone";
 import { accessState } from "@/models";
 import { Card, Checkbox, EmptyState, Input, PageHeader, Pill, inputCls, isoDate } from "@/components/admin/ui";
 import { ActionButton, AdminForm, Submit } from "@/components/admin/forms";
 import { LearnerPicker } from "@/components/admin/learner-picker";
-import { enrollAction, removeEnrollmentAction, updateEnrollmentAction } from "../../../actions";
+import { assignCourseCoachAction, enrollAction, removeEnrollmentAction, updateEnrollmentAction } from "../../../actions";
 import { PageSkeleton } from "@/components/learn/ui";
 
 export const metadata: Metadata = { title: "Enrolments" };
@@ -31,6 +33,13 @@ async function Enrollments({ params }: { params: Promise<{ courseId: string }> }
   const course = await courseFor(me, courseId, "enroll");
   if (!course) notFound();
   const rows = await courseEnrollments(courseId);
+  const assign = can.assignCoach(actorOf(me));
+  const coaches = await coachOptions();
+  const coachName = (id: unknown) => {
+    const c = coaches.find((x) => String(x._id) === String(id));
+    return c ? `${c.name} ${c.surname}` : "";
+  };
+  const withoutCoach = rows.filter((e) => !e.userId.coachId).length;
 
   return (
     <div className="grid max-w-5xl gap-5">
@@ -51,6 +60,34 @@ async function Enrollments({ params }: { params: Promise<{ courseId: string }> }
         </AdminForm>
       </Card>
 
+      {assign && rows.length > 0 && (
+        <Card
+          title="Main coach"
+          description={`Each learner's main coach reviews their speaking challenges and gets the daily email. ${withoutCoach ? `${withoutCoach} learner(s) here have none: the course team covers them.` : "Every learner here has one."} Change one learner from their user page.`}
+        >
+          <AdminForm action={assignCourseCoachAction}>
+            <input type="hidden" name="courseId" value={courseId} />
+            <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
+              <label className="grid gap-1 text-sm">
+                <span className="font-medium">Coach</span>
+                <select name="coachId" required className={inputCls} defaultValue="">
+                  <option value="" disabled>
+                    Choose a coach
+                  </option>
+                  {coaches.map((c) => (
+                    <option key={String(c._id)} value={String(c._id)}>
+                      {c.name} {c.surname}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <Submit variant="secondary">Assign</Submit>
+            </div>
+            <Checkbox name="all" label="Also replace existing coaches" hint="Unticked: only learners without a main coach get this one." />
+          </AdminForm>
+        </Card>
+      )}
+
       <Card title="Enrolled learners">
         {rows.length === 0 ? (
           <EmptyState>Nobody is enrolled yet.</EmptyState>
@@ -70,6 +107,7 @@ async function Enrollments({ params }: { params: Promise<{ courseId: string }> }
                       {u.phoneE164 ? ` · ${displayPhone(u.phoneE164)}` : ""}
                     </span>
                     <Pill tone={st.tone}>{st.label}</Pill>
+                    {u.coachId ? <Pill tone="blue">Coach: {coachName(u.coachId) || "—"}</Pill> : <Pill tone="grey">No main coach</Pill>}
                     {u.isActive === false && <Pill tone="red">Account deactivated</Pill>}
                     <span className="ml-auto">
                       <ActionButton action={removeEnrollmentAction} fields={{ enrollmentId: String(e._id) }} label="Remove enrolment" confirm={`Remove ${u.name} from this course? Their progress is kept.`}>

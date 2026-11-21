@@ -51,7 +51,7 @@ export async function removeEnrollment(enrollmentId: string) {
 
 export async function courseEnrollments(courseId: string) {
   const rows = await Enrollment.find({ courseId })
-    .populate<{ userId: Pick<UserDoc, "_id" | "name" | "surname" | "username" | "email" | "phoneE164" | "isActive"> }>("userId", "name surname username email phoneE164 isActive")
+    .populate<{ userId: Pick<UserDoc, "_id" | "name" | "surname" | "username" | "email" | "phoneE164" | "isActive" | "coachId"> }>("userId", "name surname username email phoneE164 isActive coachId")
     .sort({ createdAt: -1 })
     .lean();
   return rows.filter((r) => r.userId);
