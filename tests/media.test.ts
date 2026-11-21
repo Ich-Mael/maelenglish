@@ -31,8 +31,12 @@ describe("upload rules", () => {
 
   it("builds safe keys and signs local URLs that expire", () => {
     const key = storageKey("recording", "0123456789abcdef01234567", "webm", new Date("2026-11-20T00:00:00Z"));
-    expect(key).toBe("recording/2026-11/0123456789abcdef01234567.webm");
+    expect(key).toBe("students_audio/recording/2026-11/0123456789abcdef01234567.webm");
+    expect(storageKey("clip", "0123456789abcdef01234567", "mp3", new Date("2026-11-20T00:00:00Z"))).toBe("courses_audios/clip/2026-11/0123456789abcdef01234567.mp3");
     expect(isSafeKey(key)).toBe(true);
+    expect(isSafeKey("recording/2026-11/0123456789abcdef01234567.webm")).toBe(true); // older keys
+    expect(isSafeKey("other/recording/2026-11/0123456789abcdef01234567.webm")).toBe(false);
+    expect(mimeForKey("courses_audios/instruction/2026-11/0123456789abcdef01234567.webm")).toBe("video/webm");
     expect(isSafeKey("../etc/passwd")).toBe(false);
     expect(isSafeKey("recording/2026-11/../../x.webm")).toBe(false);
     expect(mimeForKey(key)).toBe("audio/webm");
@@ -65,7 +69,7 @@ describe("media service (local driver)", () => {
     const me = { id: String(learner._id), isStaff: false };
 
     const { mediaId, uploadUrl } = await startUpload(me, "recording", "audio/webm;codecs=opus", 1234, 3.2);
-    expect(uploadUrl).toMatch(/^\/api\/media\/local\?op=put&key=recording%2F/);
+    expect(uploadUrl).toMatch(/^\/api\/media\/local\?op=put&key=students_audio%2Frecording%2F/);
     await expect(confirmUpload(me, mediaId)).rejects.toBeInstanceOf(MediaError); // nothing uploaded yet
 
     const m = await Media.findById(mediaId).lean();

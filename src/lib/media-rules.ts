@@ -42,8 +42,21 @@ export function canUpload(kind: MediaKind, viewer: { isStaff: boolean }): boolea
 /** Course content is playable by any signed-in learner; recordings and voice notes are private. */
 export const visibilityFor = (kind: MediaKind): "private" | "public" => (kind === "recording" || kind === "voice-note" ? "private" : "public");
 
+/**
+ * Top-level bucket folder (owner's R2 layout): learners' audio (their recordings, coach voice
+ * notes to them — private) vs course audio uploaded by staff (clips, model answers, instructions).
+ */
+export const MEDIA_FOLDER: Record<MediaKind, "students_audio" | "courses_audios"> = {
+  recording: "students_audio",
+  "voice-note": "students_audio",
+  clip: "courses_audios",
+  "model-audio": "courses_audios",
+  instruction: "courses_audios",
+};
+
+/** `<folder>/<kind>/<yyyy-mm>/<id>.<ext>`, e.g. `students_audio/recording/2026-11/…webm`. Older files keep their stored key. */
 export function storageKey(kind: MediaKind, id: string, ext: string, now = new Date()): string {
-  return `${kind}/${now.toISOString().slice(0, 7)}/${id}.${ext}`;
+  return `${MEDIA_FOLDER[kind]}/${kind}/${now.toISOString().slice(0, 7)}/${id}.${ext}`;
 }
 
 /** Problem with an upload request, or null when it's fine. */
@@ -60,6 +73,6 @@ export function mimeForKey(key: string): string {
   const ext = key.split(".").pop() ?? "";
   const all = { ...AUDIO, ...VIDEO };
   const hit = Object.entries(all).find(([, e]) => e === ext);
-  if (ext === "webm" && key.startsWith("instruction/")) return "video/webm";
+  if (ext === "webm" && /(^|\/)instruction\//.test(key)) return "video/webm";
   return hit?.[0] ?? "application/octet-stream";
 }
