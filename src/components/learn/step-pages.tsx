@@ -204,6 +204,8 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
   const used = sendsUsed(submission);
   const allowed = sendsAllowed(submission);
   const left = sendsLeft(submission);
+  // Validated once (kept while a redo is reviewed; older rows: status « graded »).
+  const validated = !!submission && (submission.status === "graded" || !!submission.validatedAt);
 
   return (
     <div className="mx-auto grid max-w-3xl gap-6">
@@ -295,22 +297,28 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
         </details>
       )}
 
-      {submission?.status === "graded" ? (
+      {validated && (
         <Link href={nextHref} className="inline-flex h-12 w-fit items-center rounded-2xl bg-primary px-6 font-semibold text-white">
           Activité suivante
         </Link>
-      ) : access.readOnly ? (
+      )}
+
+      {submission?.status === "graded" && left <= 0 ? null : access.readOnly ? (
         <p className="text-muted-foreground">Cours terminé : les envois sont fermés.</p>
       ) : (
         <section className="grid gap-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-xl font-extrabold text-brand-deep">{submission ? (left > 0 ? "Vous pouvez vous réenregistrer" : "Envois terminés") : "À vous de parler"}</h2>
+            <h2 className="text-xl font-extrabold text-brand-deep">{!submission ? "À vous de parler" : left <= 0 ? "Envois terminés" : submission.status === "graded" ? "Refaire le défi" : "Vous pouvez vous réenregistrer"}</h2>
             <SendsLeft used={used} allowed={allowed} />
           </div>
           {left > 0 ? (
             <>
               <p className="text-sm text-muted-foreground">
-                {submission?.status === "pending" ? "Tant que votre coach n’a pas validé, un nouvel envoi remplace le précédent. " : ""}
+                {submission?.status === "graded"
+                  ? "Appliquez les conseils de votre coach et réenregistrez-vous : il écoutera votre nouvelle version. Votre validation reste acquise. "
+                  : submission?.status === "pending"
+                    ? `Tant que votre coach n’a pas répondu, un nouvel envoi remplace le précédent.${validated ? " Votre validation reste acquise." : ""} `
+                    : ""}
                 {left === 1 ? "C'est votre dernier envoi : prenez le temps de vous réécouter avant d'envoyer." : `Il vous reste ${left} envois pour ce défi.`}
               </p>
               <ChallengeRecorder courseId={courseId} stepId={stepId} maxSeconds={c.maxSeconds ?? 60} prepSeconds={c.prepSeconds ?? 0} preview={access.preview} resend={!!submission} courseHref={course} />

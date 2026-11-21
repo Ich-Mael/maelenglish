@@ -274,6 +274,26 @@ describe("grading", () => {
     expect([s?.feedbackAudioMediaId, await Media.findById(second._id)]).toEqual([null, null]);
   });
 
+  it("keeps the first validation date when a redo is reviewed again", async () => {
+    const coach = await mk("coach5", "english-coach");
+    const learner = await mk("fanta");
+    const c = await Course.create({ title: "R", instructors: [coach._id] });
+    const m = await Module.create({ courseId: c._id, order: 1, title: "M" });
+    const u = await Unit.create({ courseId: c._id, moduleId: m._id, title: "U" });
+    const sub = await ChallengeSubmission.create({ userId: learner._id, courseId: c._id, moduleId: m._id, unitId: u._id, stepId: new Types.ObjectId(), mediaId: new Types.ObjectId() });
+    await gradeSubmission(String(coach._id), String(sub._id), { decision: "graded", grade: 80 });
+    const first = (await ChallengeSubmission.findById(sub._id).lean())?.validatedAt;
+    expect(first).toBeInstanceOf(Date);
+    // The learner redoes it (back to pending), the coach returns it, then validates it again.
+    await ChallengeSubmission.updateOne({ _id: sub._id }, { status: "pending", grade: null });
+    await gradeSubmission(String(coach._id), String(sub._id), { decision: "returned", feedback: "Plus de détails" });
+    expect((await ChallengeSubmission.findById(sub._id).lean())?.validatedAt?.getTime()).toBe(first?.getTime());
+    await gradeSubmission(String(coach._id), String(sub._id), { decision: "graded", grade: 90 });
+    const after = await ChallengeSubmission.findById(sub._id).lean();
+    expect([after?.grade, after?.validatedAt?.getTime()]).toEqual([90, first?.getTime()]);
+    expect((await UserStats.findOne({ userId: learner._id }))?.xp).toBe(20); // validation XP once
+  });
+
   it("validates with XP once, returns with mandatory feedback, and unlocks the next challenge day", async () => {
     const coach = await mk("coach", "english-coach");
     const learner = await mk("awa");

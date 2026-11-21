@@ -6,7 +6,7 @@ import { ArrowRight, BookOpen, CircleCheck, Clock, History, Layers, Mic, RotateC
 import { requireUser } from "@/lib/auth/dal";
 import { connectDB } from "@/lib/db";
 import { feedbackAudioUrl, mediaUrlFor } from "@/lib/media";
-import { sendsAllowed, sendsUsed } from "@/lib/learn/challenge";
+import { sendsAllowed, sendsLeft, sendsUsed } from "@/lib/learn/challenge";
 import { coursePath, stepPath } from "@/lib/learn/paths";
 import { Activity, ChallengeSubmission, Course, Module, Unit, User, type ChallengeSubmissionDoc } from "@/models";
 import { AwaitingCoach, CoachFeedback, hasCoachFeedback } from "@/components/learn/coach-feedback";
@@ -25,6 +25,8 @@ const STATUS = {
 } as const;
 
 type Sub = ChallengeSubmissionDoc;
+/** Validated once (kept while a redo is reviewed; older rows: status « graded »). */
+const isValidated = (s: Sub) => s.status === "graded" || !!s.validatedAt;
 
 /**
  * « My Speaking Challenge »: the learner's speaking challenges, grouped by course then module (in
@@ -61,7 +63,7 @@ async function MyChallenges() {
     return {
       courseId,
       title: find(courses, courseId)?.title ?? "Cours",
-      validated: list.filter((s) => s.status === "graded").length,
+      validated: list.filter(isValidated).length,
       total: list.length,
       modules: [...byModule.entries()]
         .sort(([a], [b]) => order(a, modules) - order(b, modules))
@@ -79,7 +81,7 @@ async function MyChallenges() {
   const average = graded.length ? Math.round(graded.reduce((n, s) => n + ((s.grade ?? 0) / (s.maxScore || 100)) * 100, 0) / graded.length) : null;
   const totals = [
     { label: "Envoyés", value: subs.length },
-    { label: "Validés", value: count("graded") },
+    { label: "Validés", value: subs.filter(isValidated).length },
     { label: "En attente", value: count("pending") },
     average !== null ? { label: "Note moyenne", value: `${average} %` } : { label: "À reprendre", value: count("returned") },
   ];
@@ -180,7 +182,7 @@ function ChallengeCard({ s, unit, title, coach, mainCoach, urls, voiceNote }: { 
           <h4 className="font-heading text-lg font-extrabold text-brand-deep">{title}</h4>
         </div>
         <span className={cn("inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold", st.pill)}>
-          <st.icon className="size-3.5" aria-hidden /> {st.label}
+          <st.icon className="size-3.5" aria-hidden /> {s.status === "pending" && s.validatedAt ? "Validé · nouvelle version envoyée" : st.label}
         </span>
       </div>
 
@@ -212,7 +214,7 @@ function ChallengeCard({ s, unit, title, coach, mainCoach, urls, voiceNote }: { 
       )}
 
       <Link href={stepPath(String(s.courseId), String(s.stepId))} className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-coral-dark hover:underline">
-        {s.status === "returned" ? "Reprendre le défi" : "Ouvrir le défi"} <ArrowRight className="size-4" aria-hidden />
+        {s.status === "returned" ? "Reprendre le défi" : s.status === "graded" && sendsLeft(s) > 0 ? "Refaire le défi" : "Ouvrir le défi"} <ArrowRight className="size-4" aria-hidden />
       </Link>
     </li>
   );

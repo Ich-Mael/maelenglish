@@ -136,7 +136,8 @@ export type ChallengeState = { error?: string; success?: string; reward?: Reward
  * Unit speaking challenge: the recording was uploaded first (`uploadMedia`, kind « recording »);
  * this records it as the learner's answer. Sending it completes the unit and opens the next one;
  * a coach then listens and gives feedback in « Corrections ». Re-sending replaces the answer
- * until the coach validates it.
+ * until the coach answers; a validated challenge can be redone (within the sends left) and keeps
+ * its validation.
  */
 export async function submitUnitChallenge(input: { courseId: string; stepId: string; mediaId: string | null }): Promise<ChallengeState> {
   const { courseId, stepId, mediaId } = input;
@@ -145,26 +146,28 @@ export async function submitUnitChallenge(input: { courseId: string; stepId: str
     const { step, outline } = stepOf(ctx, stepId);
     if (step.kind !== "challenge") return { error: "Défi introuvable." };
     if (outline.state === "locked" && !outline.status) return { error: "Terminez d'abord les activités de l'unité." };
-    if (outline.status === "graded") return { error: "Ce défi est déjà validé par votre coach." };
     if (!ctx.save) return { success: "Aperçu : l'enregistrement n'est pas envoyé." };
 
     if (!mediaId || !Types.ObjectId.isValid(mediaId)) return { error: "Enregistrement introuvable : réessayez." };
     const media = await Media.findById(mediaId).lean();
     if (!media || String(media.ownerId) !== ctx.me.id || media.kind !== "recording" || media.status !== "ready") return { error: "Enregistrement introuvable : réessayez." };
-    const existing = await ChallengeSubmission.findOne({ userId: ctx.me.id, unitId: step.unitId }).select("attempts extraAttempts mediaId").lean();
+    const existing = await ChallengeSubmission.findOne({ userId: ctx.me.id, unitId: step.unitId }).select("attempts extraAttempts mediaId status gradedAt validatedAt").lean();
     if (sendsLeft(existing) <= 0) return { error: `Vous avez utilisé vos ${sendsAllowed(existing)} envois pour ce défi : votre coach va écouter le dernier.` };
 
     await ChallengeSubmission.updateOne(
       { userId: ctx.me.id, unitId: step.unitId },
       {
-        $set: { courseId: step.courseId, moduleId: step.moduleId, stepId: step._id, activityId: step.activityId, mediaId: media._id, durationS: media.durationS ?? 0, status: "pending", grade: null, gradedAt: null, gradedBy: null, attempts: sendsUsed(existing) + 1, submittedAt: new Date() },
+        $set: { courseId: step.courseId, moduleId: step.moduleId, stepId: step._id, activityId: step.activityId, mediaId: media._id, durationS: media.durationS ?? 0, status: "pending", grade: null, gradedAt: null, gradedBy: null, attempts: sendsUsed(existing) + 1, submittedAt: new Date(),
+          // Redoing a validated challenge keeps the validation (older rows: status « graded »).
+          validatedAt: existing?.validatedAt ?? (existing?.status === "graded" ? (existing.gradedAt ?? new Date()) : null) },
         $push: { history: { mediaId: media._id, durationS: media.durationS ?? 0, sentAt: new Date() } },
       },
       { upsert: true },
     );
     const r = await reward(ctx, [{ key: `challenge:${String(step.unitId)}`, source: "challenge", amount: XP.challenge, counters: { assignmentsSubmitted: 1 } }]);
     refresh();
-    return { reward: r, success: "Défi envoyé ! La suite du parcours est ouverte. Votre coach va vous écouter et vous faire un retour." };
+    const redo = !!existing?.validatedAt || existing?.status === "graded";
+    return { reward: r, success: redo ? "Nouvelle version envoyée ! Votre coach va l'écouter et vous faire un retour. Votre validation reste acquise." : "Défi envoyé ! La suite du parcours est ouverte. Votre coach va vous écouter et vous faire un retour." };
   } catch (e) {
     return { error: (e as Error).message };
   }

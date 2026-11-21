@@ -97,6 +97,7 @@ async function Queue({ searchParams }: { searchParams: Promise<Record<string, st
                   </span>
                 </span>
                 {s.course?.isChallenge ? <Pill tone="red">Day checkpoint</Pill> : <Pill tone="green">Speaking challenge</Pill>}
+                {s.status === "pending" && s.validatedAt && <Pill tone="blue">Redo · already validated</Pill>}
                 {status === "pending" ? (
                   <span className={cn("inline-flex items-center gap-1 text-xs font-semibold", s.late ? "text-coral-dark" : "text-muted-foreground")}>
                     {s.late ? <AlertTriangle className="size-3.5" aria-hidden /> : <Clock className="size-3.5" aria-hidden />}

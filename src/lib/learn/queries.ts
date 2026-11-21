@@ -83,7 +83,7 @@ export async function courseTree(me: CurrentUser, access: Extract<CourseAccess, 
       { $match: { userId: new Types.ObjectId(me.id), courseId, quizType: "final_exam" } },
       { $group: { _id: null, best: { $max: "$score" }, passed: { $max: "$passed" } } },
     ]),
-    ChallengeSubmission.find({ userId: me.id, courseId }).select("unitId status").lean(),
+    ChallengeSubmission.find({ userId: me.id, courseId }).select("unitId status validatedAt").lean(),
   ]);
 
   const outline = computeOutline({
@@ -116,7 +116,8 @@ export async function courseTree(me: CurrentUser, access: Extract<CourseAccess, 
     })),
     completedStepIds: new Set(progress.map((p) => String(p.stepId))),
     scores: new Map(progress.filter((p) => p.score !== null && p.score !== undefined).map((p) => [String(p.stepId), p.score as number])),
-    challenges: new Map(submissions.map((s) => [String(s.unitId), s.status as SubmissionStatus])),
+    // A challenge validated once stays validated for the progression, even while a redo is reviewed.
+    challenges: new Map(submissions.map((s) => [String(s.unitId), (s.validatedAt ? "graded" : s.status) as SubmissionStatus])),
     finalExam: { exists: (access.course.finalExam?.questions?.length ?? 0) > 0, bestScore: attempts[0]?.best ?? null, passed: !!attempts[0]?.passed },
     isChallenge: !!access.course.isChallenge,
     start: access.enrollment?.startDate ?? new Date(),

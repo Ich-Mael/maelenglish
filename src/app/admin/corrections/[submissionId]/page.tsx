@@ -47,6 +47,7 @@ async function Grade({ params }: { params: Promise<{ submissionId: string }> }) 
             {course.title} · {mod?.title ?? "Module"}
             {unit && ` · ${unit.title} · Speaking challenge`}
             <Pill tone={sub.status === "graded" ? "green" : sub.status === "returned" ? "amber" : "blue"}>{sub.status === "graded" ? "Validated" : sub.status === "returned" ? "Returned" : "To grade"}</Pill>
+            {sub.status === "pending" && sub.validatedAt && <Pill tone="blue">Redo: validated on {fmtDate(sub.validatedAt)}, the learner keeps it</Pill>}
           </span>
         }
       />

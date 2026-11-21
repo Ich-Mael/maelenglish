@@ -94,6 +94,7 @@ export async function gradeSubmission(graderId: string, submissionId: string, in
   }
   sub.gradedBy = new Types.ObjectId(graderId);
   sub.gradedAt = new Date();
+  if (input.decision === "graded" && !sub.validatedAt) sub.validatedAt = sub.gradedAt;
   await sub.save();
 
   // The previous voice note is no longer used: remove it (best effort).

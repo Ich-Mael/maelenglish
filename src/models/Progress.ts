@@ -65,6 +65,11 @@ const challengeSubmissionSchema = new Schema(
     feedbackAudioDurationS: { type: Number, default: 0, min: 0 },
     gradedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
     gradedAt: { type: Date, default: null },
+    /**
+     * First validation, kept for good: a learner may redo a validated challenge (new send, back to
+     * the coach for feedback) without losing what it unlocked. Older rows: status « graded ».
+     */
+    validatedAt: { type: Date, default: null },
     /** When the current recording was sent (waiting time / coach response time; older rows: updatedAt). */
     submittedAt: { type: Date, default: null },
     /** Sends so far (limit: src/lib/learn/challenge.ts) and the extra sends granted by coach returns. */
