@@ -103,6 +103,7 @@ export async function updateUserAction(_: State, form: FormData): Promise<State>
       phoneNumber: str(form, "phoneNumber"),
       role: (str(form, "role") || undefined) as Role | undefined,
       englishLevel: str(form, "englishLevel"),
+      coachName: form.has("coachName") ? str(form, "coachName") : undefined,
       about: str(form, "about"),
       maxDevices: Number(str(form, "maxDevices")) || undefined,
       aiMonthlyMinutes: form.has("aiMonthlyMinutes") ? (str(form, "aiMonthlyMinutes") === "" ? null : Number(str(form, "aiMonthlyMinutes"))) : undefined,
@@ -555,7 +556,7 @@ export async function gradeAction(_: State, form: FormData): Promise<State> {
     if (!course || !can.gradeSubmission(actorOf(me), course, learner?.coachId)) return { error: "You can't grade this learner's work." };
     const decision = str(form, "decision") === "returned" ? "returned" : "graded";
     const gradeRaw = str(form, "grade");
-    await gradeSubmission(me.id, id, { decision, grade: gradeRaw === "" ? null : Number(gradeRaw), feedback: str(form, "feedback") });
+    await gradeSubmission(me.id, id, { decision, grade: gradeRaw === "" ? null : Number(gradeRaw), feedback: str(form, "feedback"), feedbackAudioMediaId: str(form, "feedbackAudio") });
     await notifyChallengeReviewed(id);
     next = "/admin/corrections";
   } catch (e) {

@@ -1,7 +1,8 @@
 import { sendsLeft } from "@/lib/learn/challenge";
 import { Types } from "mongoose";
 import { normalizeRich, plainText } from "@/lib/rich-text";
-import { ChallengeSubmission, Course, Module, Unit, User, type ChallengeSubmissionDoc } from "@/models";
+import { ChallengeSubmission, Course, Media, Module, Unit, User, type ChallengeSubmissionDoc } from "@/models";
+import { deleteObject } from "@/lib/storage";
 import { award } from "@/lib/gamification/service";
 import { XP } from "@/lib/gamification/rules";
 import { AdminError } from "./errors";
@@ -55,7 +56,8 @@ export async function gradingQueue({ courseIds, myLearnerIds = [], status = "pen
   }));
 }
 
-export type GradeInput = { decision: "graded" | "returned"; grade?: number | null; feedback?: string };
+/** `feedbackAudioMediaId`: the coach's voice note ("" / null = none, undefined = keep the current one). */
+export type GradeInput = { decision: "graded" | "returned"; grade?: number | null; feedback?: string; feedbackAudioMediaId?: string | null };
 
 /**
  * Validates (« graded ») or returns a speaking challenge. Validation awards the
@@ -66,7 +68,18 @@ export async function gradeSubmission(graderId: string, submissionId: string, in
   const sub = await ChallengeSubmission.findById(submissionId);
   if (!sub) throw new AdminError("Submission not found.");
   const feedback = normalizeRich(input.feedback);
-  if (input.decision === "returned" && !plainText(feedback)) throw new AdminError("Tell the learner what they need to redo.");
+
+  // Voice note: a new one must be the grader's own ready « voice-note » upload.
+  const current = sub.feedbackAudioMediaId ? String(sub.feedbackAudioMediaId) : "";
+  const wanted = input.feedbackAudioMediaId === undefined ? current : input.feedbackAudioMediaId || "";
+  let audio: { _id: Types.ObjectId; durationS?: number | null } | null = null;
+  if (wanted && wanted !== current) {
+    const m = Types.ObjectId.isValid(wanted) ? await Media.findById(wanted).select("kind status ownerId durationS").lean() : null;
+    if (!m || m.kind !== "voice-note" || m.status !== "ready" || String(m.ownerId) !== graderId) throw new AdminError("Voice note not found: record it again.");
+    audio = m;
+  }
+
+  if (input.decision === "returned" && !plainText(feedback) && !wanted) throw new AdminError("Tell the learner what they need to redo (comment or voice note).");
   const grade = input.grade === null || input.grade === undefined || Number.isNaN(input.grade) ? null : Math.round(input.grade);
   if (grade !== null && (grade < 0 || grade > sub.maxScore)) throw new AdminError(`The grade must be between 0 and ${sub.maxScore}.`);
 
@@ -75,9 +88,19 @@ export async function gradeSubmission(graderId: string, submissionId: string, in
   sub.status = input.decision;
   sub.grade = input.decision === "graded" ? grade : null;
   sub.feedback = feedback;
+  if (wanted !== current) {
+    sub.feedbackAudioMediaId = audio ? audio._id : null;
+    sub.feedbackAudioDurationS = audio ? Math.round(audio.durationS ?? 0) : 0;
+  }
   sub.gradedBy = new Types.ObjectId(graderId);
   sub.gradedAt = new Date();
   await sub.save();
+
+  // The previous voice note is no longer used: remove it (best effort).
+  if (current && wanted !== current) {
+    const old = await Media.findOneAndDelete({ _id: current, kind: "voice-note" }).lean();
+    if (old) await deleteObject(old.key).catch((e) => console.error("[grading] delete voice note", e));
+  }
 
   if (input.decision === "graded") {
     try {

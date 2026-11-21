@@ -100,6 +100,9 @@ async function UserView({ params }: { params: Promise<{ userId: string }> }) {
                   ...ENGLISH_LEVELS.map((l) => ({ value: l.value, label: `${l.value} · ${l.en}` })),
                 ]}
               />
+              {u.role !== "user" && (
+                <Input label="Coach name (shown to learners)" name="coachName" defaultValue={u.coachName ?? ""} maxLength={40} placeholder={`Coach ${u.name}`} hint="E.g. « Coach Ish ». Learners see it on feedback, voice notes and emails. Empty = « Coach » + first name." />
+              )}
               <Input label="Max devices" name="maxDevices" type="number" min={1} max={20} defaultValue={u.maxDevices ?? 3} hint="For information (not enforced)." />
               <Input label="AI minutes per month" name="aiMonthlyMinutes" type="number" min={0} max={10000} defaultValue={u.aiMonthlyMinutes ?? ""} placeholder="Default" hint="Empty = the default (AI usage page)." />
             </div>

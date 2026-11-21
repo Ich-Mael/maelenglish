@@ -8,14 +8,16 @@ import { requireUser } from "@/lib/auth/dal";
 import { courseAccess, courseTree } from "@/lib/learn/queries";
 import { coursePath, examPath, stepPath } from "@/lib/learn/paths";
 import { stepAfter, stepBefore } from "@/lib/learn/sequence";
-import { ChallengeSubmission, type ChallengeSubmissionDoc } from "@/models";
+import { ChallengeSubmission, User, type ChallengeSubmissionDoc } from "@/models";
 import type { GapsContent, ListeningContent, SpeakingChallengeContent } from "@/lib/lab/types";
 import { cleanLessonContent } from "@/lib/course/lesson-content";
-import { mediaUrlFor } from "@/lib/media";
+import { feedbackAudioUrl, mediaUrlFor } from "@/lib/media";
 import { AccessProblem, formatDate } from "./ui";
 import { RichText } from "./rich-text";
 import { QuizRunner, type PublicQuestion } from "./quiz-runner";
 import { ChallengeRecorder } from "./challenge-recorder";
+import { AwaitingCoach, CoachFeedback } from "./coach-feedback";
+import { coachLabel } from "@/lib/coach-name";
 import { CompleteButton } from "./complete-button";
 import { LessonView, lessonMediaIds } from "./lesson-view";
 import { PreviewBar, adminPaths } from "./preview-bar";
@@ -190,7 +192,13 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
   // ── Speaking challenge ──
   const c = activity.content as SpeakingChallengeContent;
   const submission = access.preview ? null : await ChallengeSubmission.findOne({ userId: me.id, unitId: unit.id }).lean<ChallengeSubmissionDoc>();
-  const mine = submission?.mediaId ? await mediaUrlFor({ id: me.id, isAdmin: false }, String(submission.mediaId)).catch(() => null) : null;
+  const [mine, voiceNote, coach] = submission
+    ? await Promise.all([
+        submission.mediaId ? mediaUrlFor({ id: me.id, isAdmin: false }, String(submission.mediaId)).catch(() => null) : null,
+        feedbackAudioUrl(me.id, submission),
+        submission.gradedBy ? User.findById(submission.gradedBy).select("name coachName avatarUrl").lean() : null,
+      ])
+    : [null, null, null];
   const model = c.modelAnswerAudioMediaId ? (await mediaUrls(me.id, [c.modelAnswerAudioMediaId]))[c.modelAnswerAudioMediaId] : undefined;
   const mustInclude = c.mustInclude ?? [];
   const used = sendsUsed(submission);
@@ -237,31 +245,32 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
       )}
 
       {submission && (
-        <section
-          className={
-            submission.status === "graded"
-              ? "rounded-3xl border-2 border-success/30 bg-success/10 p-5"
-              : submission.status === "returned"
-                ? "rounded-3xl border-2 border-coral/30 bg-coral-soft p-5"
-                : "rounded-3xl border-2 border-primary/20 bg-brand-soft p-5"
-          }
-        >
-          <p className="flex items-center gap-2 font-heading text-lg font-bold text-brand-deep">
+        <section aria-labelledby="coach-answer" className="grid gap-3">
+          <h2 id="coach-answer" className="flex items-center gap-2 text-xl font-extrabold text-brand-deep">
             {submission.status === "graded" ? <CircleCheck className="size-5 text-success" aria-hidden /> : submission.status === "returned" ? <RotateCcw className="size-5 text-coral-dark" aria-hidden /> : <Clock className="size-5 text-primary" aria-hidden />}
-            {submission.status === "graded" ? "Validé par votre coach" : submission.status === "returned" ? "À reprendre : votre coach vous a fait un retour" : "Envoyé · votre coach va vous écouter"}
-          </p>
-          {submission.feedback && (
-            <RichText legacy="text" className="mt-2 text-ink">
-              {submission.feedback}
-            </RichText>
+            {submission.status === "pending" ? "Défi envoyé" : "Le retour de votre coach"}
+          </h2>
+          {submission.status === "pending" ? (
+            <AwaitingCoach />
+          ) : (
+            <CoachFeedback
+              d={{
+                status: submission.status,
+                grade: submission.grade,
+                maxScore: submission.maxScore,
+                feedback: submission.feedback,
+                gradedAt: submission.gradedAt,
+                coach: coach ? { name: coachLabel(coach), avatarUrl: coach.avatarUrl } : null,
+                voiceNote: voiceNote ? { url: voiceNote, seed: String(submission.feedbackAudioMediaId), durationS: submission.feedbackAudioDurationS } : null,
+              }}
+            />
           )}
           {mine && (
-            <div className="mt-3">
-              <p className="mb-1 text-sm font-semibold text-brand-deep">Votre enregistrement</p>
+            <div className="rounded-2xl border-2 border-border bg-card p-4">
+              <p className="mb-1 text-sm font-semibold text-brand-deep">Votre enregistrement · envoyé le {formatDate(submission.submittedAt ?? submission.updatedAt)}</p>
               <audio src={mine} controls preload="none" className="w-full" />
             </div>
           )}
-          <p className="mt-2 text-xs text-muted-foreground">Envoyé le {formatDate(submission.updatedAt)}</p>
         </section>
       )}
 

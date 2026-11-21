@@ -1,7 +1,7 @@
 import mongoose, { Types } from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { Activity, ChallengeSubmission, Course, Enrollment, Module, Step, StepProgress, Unit, User, UserStats, type Role } from "@/models";
+import { Activity, ChallengeSubmission, Course, Enrollment, Media, Module, Step, StepProgress, Unit, User, UserStats, type MediaKind, type Role } from "@/models";
 import { updateAccount, listUsers, searchLearners } from "@/lib/admin/users";
 import * as content from "@/lib/admin/content";
 import * as steps from "@/lib/admin/steps";
@@ -235,6 +235,43 @@ describe("grading", () => {
     await gradeSubmission(String(coach._id), String(sub._id), { decision: "returned", feedback: "Once more" });
     const after = await ChallengeSubmission.findById(sub._id).lean();
     expect([after?.extraAttempts, sendsAllowed(after), sendsLeft(after)]).toEqual([1, 4, 1]);
+  });
+
+  it("attaches the coach's own voice note, accepts it instead of a written comment, replaces it", async () => {
+    const coach = await mk("coach3", "english-coach");
+    const other = await mk("coach4", "english-coach");
+    const learner = await mk("bintou");
+    const c = await Course.create({ title: "V", instructors: [coach._id] });
+    const m = await Module.create({ courseId: c._id, order: 1, title: "M" });
+    const u = await Unit.create({ courseId: c._id, moduleId: m._id, title: "U" });
+    const sub = await ChallengeSubmission.create({ userId: learner._id, courseId: c._id, moduleId: m._id, unitId: u._id, stepId: new Types.ObjectId(), mediaId: new Types.ObjectId() });
+    const note = async (ownerId: Types.ObjectId, kind: MediaKind = "voice-note", status: "pending" | "ready" = "ready") => {
+      const [m] = await Media.create([{ ownerId, kind, key: `t/${new Types.ObjectId()}.webm`, mime: "audio/webm", durationS: 42.4, status, visibility: "private" }]);
+      return m;
+    };
+
+    const theirs = await note(other._id);
+    const pending = await note(coach._id, "voice-note", "pending");
+    const clip = await note(coach._id, "clip");
+    for (const bad of [theirs, pending, clip]) {
+      await expect(gradeSubmission(String(coach._id), String(sub._id), { decision: "returned", feedbackAudioMediaId: String(bad._id) })).rejects.toThrow(/Voice note not found/);
+    }
+    // A voice note alone is enough to return the challenge.
+    const first = await note(coach._id);
+    await gradeSubmission(String(coach._id), String(sub._id), { decision: "returned", feedback: "", feedbackAudioMediaId: String(first._id) });
+    let s = await ChallengeSubmission.findById(sub._id).lean();
+    expect([String(s?.feedbackAudioMediaId), s?.feedbackAudioDurationS]).toEqual([String(first._id), 42]);
+    // Kept when not sent; a new one replaces it and the old file is removed.
+    await gradeSubmission(String(coach._id), String(sub._id), { decision: "returned" });
+    expect(String((await ChallengeSubmission.findById(sub._id).lean())?.feedbackAudioMediaId)).toBe(String(first._id));
+    const second = await note(coach._id);
+    await gradeSubmission(String(coach._id), String(sub._id), { decision: "graded", feedbackAudioMediaId: String(second._id) });
+    expect(String((await ChallengeSubmission.findById(sub._id).lean())?.feedbackAudioMediaId)).toBe(String(second._id));
+    expect(await Media.findById(first._id)).toBeNull();
+    // "" removes it.
+    await gradeSubmission(String(coach._id), String(sub._id), { decision: "graded", feedbackAudioMediaId: "" });
+    s = await ChallengeSubmission.findById(sub._id).lean();
+    expect([s?.feedbackAudioMediaId, await Media.findById(second._id)]).toEqual([null, null]);
   });
 
   it("validates with XP once, returns with mandatory feedback, and unlocks the next challenge day", async () => {

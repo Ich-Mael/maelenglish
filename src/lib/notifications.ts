@@ -1,4 +1,5 @@
 import { ADMIN_ROLES, Activity, ChallengeSubmission, Course, DigestLog, Unit, User, type ChallengeSubmissionDoc } from "@/models";
+import { coachLabel } from "@/lib/coach-name";
 import { dayKey } from "@/lib/gamification/rules";
 import { plainText } from "@/lib/rich-text";
 import { GRADING_DUE_HOURS, hoursWaiting, isLate, responsibleCoaches } from "@/lib/admin/coaching";
@@ -20,7 +21,7 @@ export async function notifyChallengeReviewed(submissionId: string) {
     if (!s || s.status === "pending") return;
     const [learner, coach, course, activity] = await Promise.all([
       User.findById(s.userId).select("name email isActive").lean(),
-      s.gradedBy ? User.findById(s.gradedBy).select("name").lean() : null,
+      s.gradedBy ? User.findById(s.gradedBy).select("name coachName").lean() : null,
       Course.findById(s.courseId).select("title").lean(),
       s.activityId ? Activity.findById(s.activityId).select("title").lean() : null,
     ]);
@@ -32,8 +33,9 @@ export async function notifyChallengeReviewed(submissionId: string) {
       decision: s.status as "graded" | "returned",
       grade: s.status === "graded" ? (s.grade ?? null) : null,
       maxScore: s.maxScore ?? 100,
-      coachName: coach?.name ?? "",
+      coachName: coach ? coachLabel(coach) : "",
       feedback: plainText(s.feedback ?? ""),
+      voiceNote: !!s.feedbackAudioMediaId,
       url: appUrl(s.status === "returned" ? `/apprendre/${s.courseId}/etapes/${s.stepId}` : "/mes-defis"),
     });
   } catch (e) {

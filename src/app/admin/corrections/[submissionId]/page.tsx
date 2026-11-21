@@ -26,13 +26,14 @@ async function Grade({ params }: { params: Promise<{ submissionId: string }> }) 
   // The course team, or the learner's main coach.
   const [course, owner] = await Promise.all([Course.findById(sub.courseId).lean<CourseDoc>(), User.findById(sub.userId).select("coachId").lean()]);
   if (!course || !can.gradeSubmission(actorOf(me), course, owner?.coachId)) notFound();
-  const [user, mod, unit, audio, challenge] = await Promise.all([
+  const [user, mod, unit, audio, challenge, voiceNote] = await Promise.all([
     User.findById(sub.userId).select("name surname username").lean(),
     Module.findById(sub.moduleId).select("title").lean(),
     Unit.findById(sub.unitId).select("title").lean(),
     sub.mediaId ? reviewMediaUrl(String(sub.mediaId)).catch(() => null) : null,
     // The challenge answered (kept on the submission even if the unit's challenge changed since).
     sub.activityId ? Activity.findById(sub.activityId).lean<ActivityDoc>() : null,
+    sub.feedbackAudioMediaId ? reviewMediaUrl(String(sub.feedbackAudioMediaId)).catch(() => null) : null,
   ]);
   const c = challenge?.content as SpeakingChallengeContent | undefined;
 
@@ -84,7 +85,7 @@ async function Grade({ params }: { params: Promise<{ submissionId: string }> }) 
           </Card>
         </div>
         <Card title="Feedback">
-          <GradeForm submissionId={submissionId} maxScore={sub.maxScore ?? 100} isCheckpoint={!!course.isChallenge} initial={{ grade: sub.grade ?? null, feedback: toEditorHtml(sub.feedback, "text") }} />
+          <GradeForm submissionId={submissionId} maxScore={sub.maxScore ?? 100} isCheckpoint={!!course.isChallenge} initial={{ grade: sub.grade ?? null, feedback: toEditorHtml(sub.feedback, "text"), audioId: sub.feedbackAudioMediaId ? String(sub.feedbackAudioMediaId) : "", audioUrl: voiceNote }} />
         </Card>
       </div>
     </div>

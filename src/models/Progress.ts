@@ -60,6 +60,9 @@ const challengeSubmissionSchema = new Schema(
     grade: { type: Number, default: null, min: 0 },
     maxScore: { type: Number, default: 100, min: 1 },
     feedback: { type: String, default: "" },
+    /** Coach voice note answering the recording (Media kind « voice-note », owned by the coach, shared with the learner). */
+    feedbackAudioMediaId: { type: Schema.Types.ObjectId, ref: "Media", default: null },
+    feedbackAudioDurationS: { type: Number, default: 0, min: 0 },
     gradedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
     gradedAt: { type: Date, default: null },
     /** When the current recording was sent (waiting time / coach response time; older rows: updatedAt). */

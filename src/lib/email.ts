@@ -192,10 +192,10 @@ export function sendNewRequestEmail(to: string[], r: { name: string; phone: stri
 /** Learner: their coach validated or returned a speaking challenge (French). */
 export function sendChallengeReviewedEmail(
   to: string,
-  p: { firstName: string; challengeTitle: string; courseTitle: string; decision: "graded" | "returned"; grade: number | null; maxScore: number; coachName: string; feedback: string; url: string },
+  p: { firstName: string; challengeTitle: string; courseTitle: string; decision: "graded" | "returned"; grade: number | null; maxScore: number; coachName: string; feedback: string; voiceNote?: boolean; url: string },
 ) {
   const ok = p.decision === "graded";
-  const coach = p.coachName ? `Votre coach ${p.coachName}` : "Votre coach";
+  const coach = p.coachName || "Votre coach"; // « Coach Ish » (coachLabel)
   const intro = ok
     ? `${esc(coach)} a validé votre défi oral <strong>« ${esc(p.challengeTitle)} »</strong> (${esc(p.courseTitle)})${p.grade !== null ? ` avec la note <strong>${p.grade} / ${p.maxScore}</strong>` : ""}. Bravo !`
     : `${esc(coach)} a écouté votre défi oral <strong>« ${esc(p.challengeTitle)} »</strong> (${esc(p.courseTitle)}) et vous demande de le reprendre.`;
@@ -203,18 +203,21 @@ export function sendChallengeReviewedEmail(
   const extra = feedback
     ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#eef1fb;border-radius:10px"><tr><td style="padding:12px 16px;font-size:15px;color:#141f4d"><strong>Son retour</strong><br>${esc(feedback.slice(0, 600))}${feedback.length > 600 ? "…" : ""}</td></tr></table>`
     : "";
+  const voice = p.voiceNote
+    ? `<p style="margin:0 0 20px;font-size:15px;color:#141f4d">🎙️ <strong>${esc(coach)} vous a laissé un message vocal</strong> : écoutez-le dans l'application.</p>`
+    : "";
   return send({
     to,
     subject: ok ? `Défi validé : ${p.challengeTitle}` : `Votre coach vous a fait un retour : ${p.challengeTitle}`,
     html: layout({
       firstName: p.firstName,
       intro,
-      extra,
+      extra: voice + extra,
       button: ok ? "Voir mes défis" : "Reprendre le défi",
       url: p.url,
       outro: ok ? "Continuez sur votre lancée : chaque défi vous rapproche d'un anglais fluide au travail." : "Réécoutez votre enregistrement, appliquez le conseil de votre coach et renvoyez votre défi.",
     }),
-    text: `Bonjour ${p.firstName},\n\n${intro.replace(/<[^>]+>/g, "")}\n${feedback ? `\nSon retour : ${feedback}\n` : ""}\n${p.url}`,
+    text: `Bonjour ${p.firstName},\n\n${intro.replace(/<[^>]+>/g, "")}\n${p.voiceNote ? `\n${coach} vous a laissé un message vocal : écoutez-le dans l'application.\n` : ""}${feedback ? `\nSon retour : ${feedback}\n` : ""}\n${p.url}`,
   });
 }
 

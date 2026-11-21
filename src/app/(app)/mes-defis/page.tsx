@@ -5,13 +5,15 @@ import { connection } from "next/server";
 import { ArrowRight, BookOpen, CircleCheck, Clock, History, Layers, Mic, RotateCcw } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
 import { connectDB } from "@/lib/db";
-import { mediaUrlFor } from "@/lib/media";
+import { feedbackAudioUrl, mediaUrlFor } from "@/lib/media";
 import { sendsAllowed, sendsUsed } from "@/lib/learn/challenge";
 import { coursePath, stepPath } from "@/lib/learn/paths";
 import { Activity, ChallengeSubmission, Course, Module, Unit, User, type ChallengeSubmissionDoc } from "@/models";
-import { RichText } from "@/components/learn/rich-text";
+import { AwaitingCoach, CoachFeedback, hasCoachFeedback } from "@/components/learn/coach-feedback";
 import { PageSkeleton, formatDate } from "@/components/learn/ui";
 import { Photo } from "@/components/site/photo";
+import { Avatar } from "@/components/account/avatar";
+import { coachInitialName, coachLabel } from "@/lib/coach-name";
 import { cn } from "cn";
 
 export const metadata: Metadata = { title: "My Speaking Challenge", robots: { index: false } };
@@ -34,18 +36,20 @@ async function MyChallenges() {
   const me = await requireUser("/mes-defis");
   await connectDB();
   const subs = await ChallengeSubmission.find({ userId: me.id }).sort({ updatedAt: -1 }).lean<Sub[]>();
-  const mainCoach = await User.findById(me.id).select("coachId").lean().then((u) => (u?.coachId ? User.findById(u.coachId).select("name surname").lean() : null));
+  const mainCoach = await User.findById(me.id).select("coachId").lean().then((u) => (u?.coachId ? User.findById(u.coachId).select("name coachName avatarUrl").lean() : null));
   const [courses, modules, units, activities, coaches] = await Promise.all([
     Course.find({ _id: { $in: subs.map((s) => s.courseId) } }).select("title").lean(),
     Module.find({ _id: { $in: subs.map((s) => s.moduleId) } }).select("title order").lean(),
     Unit.find({ _id: { $in: subs.map((s) => s.unitId) } }).select("title order").lean(),
     Activity.find({ _id: { $in: subs.flatMap((s) => (s.activityId ? [s.activityId] : [])) } }).select("title").lean(),
-    User.find({ _id: { $in: subs.flatMap((s) => (s.gradedBy ? [s.gradedBy] : [])) } }).select("name").lean(),
+    User.find({ _id: { $in: subs.flatMap((s) => (s.gradedBy ? [s.gradedBy] : [])) } }).select("name coachName avatarUrl").lean(),
   ]);
   const find = <T extends { _id: unknown }>(list: T[], id: unknown) => list.find((x) => String(x._id) === String(id));
   // Every recording: the latest and the history (the learner owns them).
   const ids = [...new Set(subs.flatMap((s) => [String(s.mediaId), ...(s.history ?? []).map((h) => String(h.mediaId))]))];
   const urls: Record<string, string | null> = Object.fromEntries(await Promise.all(ids.map(async (id) => [id, await mediaUrlFor({ id: me.id, isAdmin: false }, id).catch(() => null)] as const)));
+  // Coach voice notes (shared with this learner by their submission).
+  const notes: Record<string, string | null> = Object.fromEntries(await Promise.all(subs.filter((s) => s.feedbackAudioMediaId).map(async (s) => [String(s._id), await feedbackAudioUrl(me.id, s)] as const)));
 
   // Course (most recent activity first) → module (course order) → challenges (unit order).
   const byCourse = new Map<string, Sub[]>();
@@ -99,11 +103,9 @@ async function MyChallenges() {
             <strong className="text-white">Lancez-vous, chaque défi compte !</strong> C&apos;est en parlant qu&apos;on progresse : enregistrez-vous sans avoir peur de l&apos;erreur, votre coach est là pour vous guider. Réécoutez vos premiers essais : vous entendrez le chemin parcouru.
           </p>
           {mainCoach && (
-            <p className="inline-flex w-fit items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-sm font-semibold">
-              <span aria-hidden className="flex size-6 items-center justify-center rounded-full bg-white font-heading text-xs font-extrabold text-primary">
-                {mainCoach.name?.slice(0, 1)}
-              </span>
-              Votre coach : {mainCoach.name} {mainCoach.surname}
+            <p className="inline-flex w-fit items-center gap-2 rounded-full bg-white/15 py-1 pr-3.5 pl-1 text-sm font-semibold">
+              <Avatar src={mainCoach.avatarUrl} name={coachInitialName(coachLabel(mainCoach))} className="size-7 bg-white text-xs text-primary" />
+              Suivi par {coachLabel(mainCoach)}
             </p>
           )}
           {subs.length > 0 && (
@@ -143,7 +145,7 @@ async function MyChallenges() {
                 </h3>
                 <ol className="grid gap-3">
                   {m.subs.map((s) => (
-                    <ChallengeCard key={String(s._id)} s={s} unit={find(units, s.unitId)?.title ?? ""} title={find(activities, s.activityId)?.title ?? "Défi oral"} coach={find(coaches, s.gradedBy)?.name ?? ""} urls={urls} />
+                    <ChallengeCard key={String(s._id)} s={s} unit={find(units, s.unitId)?.title ?? ""} title={find(activities, s.activityId)?.title ?? "Défi oral"} coach={find(coaches, s.gradedBy) ?? null} mainCoach={mainCoach ? coachLabel(mainCoach) : ""} urls={urls} voiceNote={notes[String(s._id)] ?? null} />
                   ))}
                 </ol>
               </div>
@@ -155,7 +157,18 @@ async function MyChallenges() {
   );
 }
 
-function ChallengeCard({ s, unit, title, coach, urls }: { s: Sub; unit: string; title: string; coach: string; urls: Record<string, string | null> }) {
+type Coach = { name?: string | null; coachName?: string | null; avatarUrl?: string | null };
+
+function ChallengeCard({ s, unit, title, coach, mainCoach, urls, voiceNote }: { s: Sub; unit: string; title: string; coach: Coach | null; mainCoach: string; urls: Record<string, string | null>; voiceNote: string | null }) {
+  const feedback = {
+    status: s.status,
+    grade: s.grade,
+    maxScore: s.maxScore,
+    feedback: s.feedback,
+    gradedAt: s.gradedAt,
+    coach: coach ? { name: coachLabel(coach), avatarUrl: coach.avatarUrl } : null,
+    voiceNote: voiceNote ? { url: voiceNote, seed: String(s.feedbackAudioMediaId), durationS: s.feedbackAudioDurationS } : null,
+  };
   const st = STATUS[s.status as keyof typeof STATUS] ?? STATUS.pending;
   const earlier = (s.history ?? []).slice(0, -1).reverse();
   const latest = urls[String(s.mediaId)];
@@ -171,26 +184,7 @@ function ChallengeCard({ s, unit, title, coach, urls }: { s: Sub; unit: string; 
         </span>
       </div>
 
-      {s.status !== "pending" && (s.feedback || s.grade !== null) && (
-        <div className="mt-3 rounded-2xl bg-muted/50 p-4">
-          <p className="text-xs font-bold tracking-wide text-primary uppercase">
-            Retour de {coach ? `votre coach ${coach}` : "votre coach"}
-            {s.status === "graded" && s.grade !== null && s.grade !== undefined && (
-              <span className="ml-2 rounded-full bg-success/12 px-2 py-0.5 text-success normal-case">
-                {s.grade} / {s.maxScore}
-              </span>
-            )}
-          </p>
-          {s.feedback ? (
-            <RichText legacy="text" className="mt-1 text-ink">
-              {s.feedback}
-            </RichText>
-          ) : (
-            <p className="mt-1 text-sm text-muted-foreground">Pas de commentaire écrit.</p>
-          )}
-          {s.gradedAt && <p className="mt-1 text-xs text-muted-foreground">Le {formatDate(s.gradedAt)}</p>}
-        </div>
-      )}
+      {s.status === "pending" ? <AwaitingCoach coachName={mainCoach || undefined} className="mt-3" /> : hasCoachFeedback(feedback) && <CoachFeedback d={feedback} className="mt-3" />}
 
       <div className="mt-3">
         <p className="mb-1 text-sm font-semibold text-brand-deep">

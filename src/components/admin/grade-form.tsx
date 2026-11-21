@@ -4,10 +4,11 @@ import { useState } from "react";
 import { AdminForm, Submit } from "./forms";
 import { inputCls } from "./ui";
 import { RichTextEditor } from "./rich-text-editor";
+import { VoiceNoteField } from "./voice-note-field";
 import { gradeAction } from "@/app/admin/actions";
 import { cn } from "cn";
 
-export function GradeForm({ submissionId, maxScore, isCheckpoint, initial }: { submissionId: string; maxScore: number; isCheckpoint: boolean; initial: { grade: number | null; feedback: string } }) {
+export function GradeForm({ submissionId, maxScore, isCheckpoint, initial }: { submissionId: string; maxScore: number; isCheckpoint: boolean; initial: { grade: number | null; feedback: string; audioId: string; audioUrl: string | null } }) {
   const [decision, setDecision] = useState<"graded" | "returned">("graded");
   return (
     <AdminForm action={gradeAction}>
@@ -36,8 +37,9 @@ export function GradeForm({ submissionId, maxScore, isCheckpoint, initial }: { s
           <input name="grade" type="number" min={0} max={maxScore} defaultValue={initial.grade ?? ""} className={cn(inputCls, "w-32")} />
         </label>
       )}
+      <VoiceNoteField name="feedbackAudio" initialId={initial.audioId} initialUrl={initial.audioUrl} />
       <RichTextEditor
-        label={`Comment for the learner${decision === "returned" ? " (required)" : ""}`}
+        label={`Written comment${decision === "returned" ? " (a comment or a voice note is required)" : ""}`}
         name="feedback"
         defaultValue={initial.feedback}
         minHeight={180}

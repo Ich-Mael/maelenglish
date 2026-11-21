@@ -77,6 +77,8 @@ const userSchema = new Schema(
     about: { type: String, trim: true, default: "" },
     /** CEFR level A1…C2 (`ENGLISH_LEVELS`, src/lib/levels.ts); checked by `updateAccount`. */
     englishLevel: { type: String, trim: true },
+    /** Staff: the name learners see (« Coach Ish »); empty = « Coach <first name> » (`coachLabel`, src/lib/coach-name.ts). */
+    coachName: { type: String, trim: true, default: "", maxlength: 40 },
 
     devices: { type: [deviceSchema], default: [] },
     maxDevices: { type: Number, default: 3, min: 1 },

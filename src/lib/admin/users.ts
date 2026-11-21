@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+import { COACH_NAME_MAX } from "@/lib/coach-name";
 import { Enrollment, Session, User, ADMIN_ROLES, ROLES, hasRole, type Role, type UserDoc } from "@/models";
 import { assignableRoles } from "@/lib/auth/accounts";
 import { AdminError } from "./errors";
@@ -15,6 +16,8 @@ export type UserEdit = {
   phoneNumber?: string;
   role?: Role;
   englishLevel?: string;
+  /** Name learners see for a coach (« Coach Ish »); undefined = unchanged. */
+  coachName?: string;
   about?: string;
   maxDevices?: number;
   /** Monthly AI minutes override; null = the default (AppSettings). Undefined = unchanged. */
@@ -50,6 +53,11 @@ export async function updateAccount(actor: Actor, userId: string, data: UserEdit
   const level = data.englishLevel?.trim() || undefined;
   if (level && level !== user.englishLevel && !isEnglishLevel(level)) throw new AdminError("English level: choose one of the CEFR levels (A1 to C2).");
   user.englishLevel = level;
+  if (data.coachName !== undefined) {
+    const coachName = data.coachName.trim().replace(/\s+/g, " ");
+    if (coachName.length > COACH_NAME_MAX) throw new AdminError(`Coach name: ${COACH_NAME_MAX} characters at most.`);
+    user.coachName = coachName;
+  }
   user.about = normalizeRich(data.about);
   if (data.maxDevices) user.maxDevices = Math.max(1, Math.min(20, Math.round(data.maxDevices)));
   if (data.aiMonthlyMinutes !== undefined) {

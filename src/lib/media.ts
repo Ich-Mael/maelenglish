@@ -60,3 +60,12 @@ export async function reviewMediaUrl(mediaId: string): Promise<string | null> {
   const m = await Media.findById(mediaId).select("key status").lean();
   return m?.status === "ready" ? signedReadUrl(m.key) : null;
 }
+
+/**
+ * A coach's voice note on a learner's speaking challenge, for that learner: the note belongs to the
+ * coach and is shared with the learner the submission belongs to (and only them).
+ */
+export async function feedbackAudioUrl(viewerId: string, sub: { userId: unknown; feedbackAudioMediaId?: unknown }): Promise<string | null> {
+  if (!sub.feedbackAudioMediaId || String(sub.userId) !== viewerId) return null;
+  return mediaUrlFor({ id: viewerId, isAdmin: false }, String(sub.feedbackAudioMediaId), { sharedWith: [String(sub.userId)] }).catch(() => null);
+}
