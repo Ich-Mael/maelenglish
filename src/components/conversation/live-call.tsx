@@ -52,8 +52,10 @@ function Call({ sessionId, signedUrl, limitS, aiName, avatarSrc, onEnded }: Prop
       void attachRolePlayAction(sessionId, conversationId).then((r) => !r.ok && setNotice(r.error ?? ""));
     },
     onMessage: ({ message, role }) => {
-      if (!message?.trim()) return;
-      const next = [...linesRef.current, { role, text: message.trim() }];
+      // Audio tags (« [friendly] ») are for the voice, not for reading.
+      const text = (role === "agent" ? message?.replace(/\[[a-z][a-z ,'-]{0,30}\]\s*/gi, "") : message)?.replace(/\s{2,}/g, " ").trim();
+      if (!text) return;
+      const next = [...linesRef.current, { role, text }];
       linesRef.current = next;
       setLines(next);
       if (role === "agent") setHelp(null);

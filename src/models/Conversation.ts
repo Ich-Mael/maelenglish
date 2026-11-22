@@ -33,6 +33,8 @@ const conversationSessionSchema = new Schema(
     score: { type: Number, default: null },
     /** Why there is no debrief (too short, provider error…), for the learner and staff. */
     note: { type: String, default: "" },
+    /** Staff only: why the last debrief attempt failed (shown on the admin conversation page). */
+    debriefError: { type: String, default: "" },
     helpCount: { type: Number, default: 0 },
     startedAt: { type: Date, default: Date.now },
     endedAt: { type: Date, default: null },

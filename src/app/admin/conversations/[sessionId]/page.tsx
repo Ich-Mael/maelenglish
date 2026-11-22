@@ -31,6 +31,7 @@ async function Conversation({ params }: { params: Promise<{ sessionId: string }>
       ) : (
         <div className="grid gap-3 rounded-3xl border border-border bg-card p-4">
           <p className="font-semibold text-brand-deep">{f.note || "No debrief."}</p>
+          {s.debriefError && <p className="rounded-xl bg-muted px-3 py-2 font-mono text-xs text-muted-foreground">Last error: {s.debriefError}</p>}
           <TranscriptOnly transcript={f.transcript} />
         </div>
       )}

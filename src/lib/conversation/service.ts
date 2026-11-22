@@ -153,7 +153,7 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
  * is; an ended one without a debrief (Claude failed) tries the debrief again.
  * `waitMs`: how long to wait for the provider to finish the transcript.
  */
-export async function finishRolePlay(userId: string, sessionId: string, opts: { waitMs?: number; pollMs?: number; activity?: Pick<ActivityDoc, "title" | "level" | "content"> | null } = {}, now = new Date()): Promise<ConversationSessionDoc> {
+export async function finishRolePlay(userId: string, sessionId: string, opts: { waitMs?: number; pollMs?: number; retryDelayMs?: number; activity?: Pick<ActivityDoc, "title" | "level" | "content"> | null } = {}, now = new Date()): Promise<ConversationSessionDoc> {
   const s = await ownSession(userId, sessionId);
   if (s.status === "debriefed" || s.status === "failed") return s.toObject() as ConversationSessionDoc;
 
@@ -206,23 +206,29 @@ export async function finishRolePlay(userId: string, sessionId: string, opts: { 
   if (!activity) throw new ConversationError("Conversation not found.");
   const input = { brief: briefOf(activity, s.difficulty ?? 2), transcript, persona: await loadPersona() };
   let debrief: Debrief | null = null;
-  for (let attempt = 0; attempt < 2 && !debrief; attempt++) {
+  let lastError = "";
+  for (let attempt = 0; attempt < 3 && !debrief; attempt++) {
+    // Overloaded / rate-limited: wait a little before trying again (the SDK already retried quickly).
+    if (attempt) await sleep(opts.retryDelayMs ?? attempt * 4000);
     try {
       const r = await aiServices().feedback.rolePlayDebrief(input);
       debrief = cleanDebrief(r.debrief, transcript, input.brief.goals);
       await recordUsage(userId, { kind: "llm", feature: "roleplay_debrief", provider: r.usage.provider, tokens: r.usage.inputTokens + r.usage.outputTokens, costMicros: r.usage.costMicros }, now).catch(() => {});
     } catch (e) {
-      console.error("[roleplay] debrief", e);
+      lastError = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+      console.error(`[roleplay] debrief attempt ${attempt + 1} failed for session ${s._id}:`, e);
     }
   }
   if (!debrief) {
     s.note = "The debrief couldn't be prepared: your conversation is saved, try again in a moment.";
+    s.debriefError = lastError.slice(0, 500);
     await s.save();
     return s.toObject() as ConversationSessionDoc;
   }
   s.debrief = debrief;
   s.score = debriefScore(debrief);
   s.note = "";
+  s.debriefError = "";
   s.status = "debriefed";
   await s.save();
   return s.toObject() as ConversationSessionDoc;

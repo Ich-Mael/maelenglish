@@ -77,6 +77,8 @@ describe("role-play scenario content and prompt", () => {
     const c = parseConversation({ agent_id: "a1", status: "done", transcript: [{ role: "agent", message: "Hi", time_in_call_secs: 0 }, { role: "user", message: null }, { role: "user", message: " Hello ", time_in_call_secs: 3 }], metadata: { call_duration_secs: 42.4, cost_fiat: 0.07 } });
     expect(c).toEqual({ status: "done", agentId: "a1", transcript: [{ role: "agent", text: "Hi", t: 0 }, { role: "user", text: "Hello", t: 3 }], durationS: 42, costMicros: 70000 });
     expect(parseConversation({ status: "in-progress" }).status).toBe("processing");
+    // Audio tags are for the voice only.
+    expect(parseConversation({ status: "done", transcript: [{ role: "agent", message: "[friendly] Hello, [laughs] yes!" }, { role: "agent", message: "[sighs]" }] }).transcript).toEqual([{ role: "agent", text: "Hello, yes!", t: 0 }]);
   });
 });
 
@@ -154,8 +156,9 @@ describe("role-play sessions", () => {
     let calls = 0;
     const flaky: FeedbackService = Object.assign(Object.create(fake), { rolePlayDebrief: async () => (calls++, Promise.reject(new Error("down"))) });
     setAiServicesForTests({ feedback: flaky, conversation: engine });
-    const first = await finishRolePlay(u, s.sessionId, { activity: a, waitMs: 0 });
-    expect([first.status, calls, first.transcript.length]).toEqual(["ended", 2, 4]);
+    const first = await finishRolePlay(u, s.sessionId, { activity: a, waitMs: 0, retryDelayMs: 0 });
+    expect([first.status, calls, first.transcript.length]).toEqual(["ended", 3, 4]);
+    expect(first.debriefError).toMatch(/down/);
     setAiServicesForTests({ feedback: fake, conversation: engine });
     expect((await finishRolePlay(u, s.sessionId, { activity: a })).status).toBe("debriefed");
   });

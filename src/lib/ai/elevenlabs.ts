@@ -57,12 +57,19 @@ type RawConversation = {
   metadata?: { call_duration_secs?: number; cost_fiat?: number | null };
 };
 
+/**
+ * ElevenLabs' expressive voices read audio tags written by the LLM (« [friendly] », « [laughs] »):
+ * heard in the voice, removed from the text the learner reads.
+ */
+export const stripAudioTags = (text: string) => text.replace(/\[[a-z][a-z ,'-]{0,30}\]\s*/gi, "").replace(/\s{2,}/g, " ").trim();
+
 /** ElevenLabs' conversation → our shape (exported for tests). */
 export function parseConversation(raw: RawConversation): FinishedConversation {
   const status = raw.status === "done" ? "done" : raw.status === "failed" ? "failed" : "processing";
   const transcript: ConversationTurn[] = (raw.transcript ?? [])
     .filter((t) => (t.role === "agent" || t.role === "user") && typeof t.message === "string" && t.message.trim())
-    .map((t) => ({ role: t.role as "agent" | "user", text: t.message!.trim().slice(0, 2000), t: Math.max(0, Number(t.time_in_call_secs) || 0) }));
+    .map((t) => ({ role: t.role as "agent" | "user", text: (t.role === "agent" ? stripAudioTags(t.message!) : t.message!.trim()).slice(0, 2000), t: Math.max(0, Number(t.time_in_call_secs) || 0) }))
+    .filter((t) => t.text);
   const cost = raw.metadata?.cost_fiat;
   return {
     status,
