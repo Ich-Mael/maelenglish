@@ -47,6 +47,12 @@ export const TYPE_LOOK: Record<ActivityType, { band: string; tile: string; examp
     example: "E.g. Vocabulaire de l'aéroport",
     perks: ["Tap to match", "Mistakes & time", "Word audio"],
   },
+  listen_match: {
+    band: "bg-gradient-to-br from-primary via-brand-dark to-brand-deep text-white",
+    tile: "bg-gradient-to-br from-primary to-brand-deep text-white",
+    example: "E.g. Écoutez les définitions",
+    perks: ["Meanings in audio", "Listen as often as needed", "Transcripts in the results"],
+  },
   speaking_challenge: {
     band: "bg-gradient-to-br from-brand-deep via-brand-deep to-brand-dark text-white",
     tile: "bg-gradient-to-br from-brand-deep to-brand-dark text-white ring-2 ring-coral",
@@ -149,6 +155,21 @@ export function TypeArt({ type, className }: { type: ActivityType; className?: s
             <div key={i} className="contents">
               <span className={cn("rounded-md border px-1.5 py-0.5 text-[10px] font-bold", done ? "border-primary bg-primary text-white" : i === 1 ? "border-primary bg-white text-primary ring-2 ring-primary/25" : "border-border bg-white text-brand-deep")}>{l as string}</span>
               <span className={cn("rounded-md border px-1.5 py-0.5 text-[10px] font-bold", done ? "border-primary bg-primary text-white" : "border-border bg-white text-brand-deep")}>{r as string}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      {type === "listen_match" && (
+        <div className="grid grid-cols-2 gap-x-5 gap-y-1.5">
+          {["gate", "delay", "luggage"].map((w, i) => (
+            <div key={w} className="contents">
+              <span className={cn("rounded-md px-1.5 py-0.5 text-[10px] font-bold", i === 0 ? "bg-white text-primary" : "bg-white/20 text-white")}>{w}</span>
+              <span className={cn("flex items-center gap-1 rounded-md px-1.5 py-0.5", i === 0 ? "bg-white" : "bg-white/20")}>
+                <span className={cn("size-0 border-y-[4px] border-l-[6px] border-y-transparent", i === 0 ? "border-l-primary" : "border-l-white")} />
+                {[50, 90, 60, 100, 70].map((h, k) => (
+                  <span key={k} className={cn("w-0.5 rounded-full", i === 0 ? "bg-primary/60" : "bg-white/60")} style={{ height: `${h / 10}px` }} />
+                ))}
+              </span>
             </div>
           ))}
         </div>

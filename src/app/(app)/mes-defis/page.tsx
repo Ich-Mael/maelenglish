@@ -100,7 +100,7 @@ async function MyChallenges() {
   ];
 
   return (
-    <div className="mx-auto grid max-w-3xl gap-8">
+    <div className="mx-auto grid max-w-5xl gap-8">
       {/* Header: someone speaking (photo), encouragement, totals. */}
       <section className="relative isolate overflow-clip rounded-3xl bg-brand-deep text-white">
         <div className="absolute inset-0 -z-20 sm:left-1/3">

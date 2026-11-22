@@ -67,7 +67,7 @@ async function Courses({ searchParams }: { searchParams: Promise<Record<string, 
           </div>
         </div>
       ) : (
-        <ul className="grid gap-5 md:grid-cols-2">
+        <ul className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {courses.map((c) => (
             <li key={c.id}>
               <CourseCard course={c} />

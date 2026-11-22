@@ -68,7 +68,7 @@ describe("award", () => {
 
   it("counts skill badges from the XP history (past work too), and flags skills without exercises as coming soon", async () => {
     const u = await learner("awa");
-    expect(metricsFromSources({ listen_choose: 2, listen_fill_gaps: 1, fill_gaps: 3, challenge_validated: 1, daily_goal: 4, practice_replay: 2, speaking_challenge: 9 })).toEqual({ listening: 3, language: 3, reading: 0, writing: 0, pronunciation: 0, challengesValidated: 1, dailyGoals: 4, replays: 2 });
+    expect(metricsFromSources({ listen_choose: 1, listen_match: 1, listen_fill_gaps: 1, fill_gaps: 2, match_pairs: 1, challenge_validated: 1, daily_goal: 4, practice_replay: 2, speaking_challenge: 9 })).toEqual({ listening: 3, language: 3, reading: 0, writing: 0, pronunciation: 0, challengesValidated: 1, dailyGoals: 4, replays: 2 });
     // Activity steps done before these badges existed: granted when the page is opened.
     await XpEvent.create([
       { userId: u._id, key: "step:1", source: "listen_choose", amount: 10, day: "2026-11-16" },

@@ -91,13 +91,13 @@ async function Preview({ params }: { params: Promise<{ activityId: string }> }) 
         <SentencePlayer preview title={a.title} level={a.level ?? ""} skills={a.skills ?? []} instructions={a.instructions ?? ""} maelTip={a.maelTip ?? ""} content={c} audioUrls={audioUrls} courseHref={back} nextHref={back} />
       </div>
     );
-  } else if (type === "match_pairs") {
+  } else if (type === "match_pairs" || type === "listen_match") {
     const c = a.content as MatchContent;
-    const ids = [...new Set(c.pairs.map((p) => p.audioMediaId).filter(Boolean))];
+    const ids = [...new Set(c.pairs.flatMap((p) => [p.audioMediaId, p.rightAudioMediaId ?? ""]).filter(Boolean))];
     const audioUrls = Object.fromEntries((await Promise.all(ids.map(async (id) => [id, await reviewMediaUrl(id).catch(() => null)] as const))).filter((e): e is [string, string] => !!e[1]));
     body = (
       <div lang="fr" className="[--checkbar-bottom:0px]">
-        <MatchPlayer preview title={a.title} level={a.level ?? ""} skills={a.skills ?? []} instructions={a.instructions ?? ""} maelTip={a.maelTip ?? ""} content={c} audioUrls={audioUrls} courseHref={back} nextHref={back} />
+        <MatchPlayer preview title={a.title} level={a.level ?? ""} skills={a.skills ?? []} instructions={a.instructions ?? ""} maelTip={a.maelTip ?? ""} content={c} audioUrls={audioUrls} courseHref={back} nextHref={back} listen={type === "listen_match"} />
       </div>
     );
   } else body = <EmptyState>The {ACTIVITY_INFO[type].label} is previewed from a unit (learner preview link in « Used in »).</EmptyState>;

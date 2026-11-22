@@ -162,9 +162,9 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
       </div>
     );
   }
-  if (so.kind === "activity" && activity.type === "match_pairs") {
+  if (so.kind === "activity" && (activity.type === "match_pairs" || activity.type === "listen_match")) {
     const c = activity.content as MatchContent;
-    const audioUrls = await mediaUrls(me.id, [...new Set(c.pairs.map((p) => p.audioMediaId).filter(Boolean))]);
+    const audioUrls = await mediaUrls(me.id, [...new Set(c.pairs.flatMap((p) => [p.audioMediaId, p.rightAudioMediaId ?? ""]).filter(Boolean))]);
     return (
       <div className="mx-auto grid max-w-2xl gap-4">
         {header}
@@ -184,6 +184,7 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
             courseHref={course}
             nextHref={nextHref}
             readOnly={access.readOnly}
+            listen={activity.type === "listen_match"}
           />
         </div>
       </div>

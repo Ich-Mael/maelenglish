@@ -26,7 +26,7 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
       </a>
       {/* Turns navy once the page is scrolled (same as the public site header). */}
       <ScrollHeader>
-        <div className="mx-auto flex h-14 max-w-5xl items-center gap-2 px-3 sm:gap-4 sm:px-4">
+        <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-3 sm:gap-4 sm:px-4">
           <Link href="/" aria-label="MaelEnglish — accueil" className="relative shrink-0">
             <Image src="/images/maelenglish-logo.webp" alt="MaelEnglish" width={800} height={175} className="h-auto w-24 transition-opacity duration-300 group-data-[scrolled=true]/hdr:opacity-0 sm:w-32" />
             {/* Light wordmark on the navy (scrolled) bar. */}
@@ -53,7 +53,7 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
         </div>
       </ScrollHeader>
       <OfflineSync />
-      <main id="contenu-app" className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:py-8">{children}</main>
+      <main id="contenu-app" className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:py-8">{children}</main>
       <nav aria-label="Navigation" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] md:hidden">
         {NAV.map((n) => (
           <Link key={n.href} href={n.href} className="flex flex-col items-center gap-0.5 py-2 text-xs font-semibold text-ink/75">

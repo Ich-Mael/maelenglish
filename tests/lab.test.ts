@@ -10,6 +10,7 @@ import { can } from "@/lib/admin/permissions";
 import { cleanContent, contentProblem } from "@/lib/lab/content";
 import { parseTime, formatTime, parseGaps, lineOfGap, matchScreens, sentenceText, sentenceTiles } from "@/lib/lab/types";
 import { gradeActivity } from "@/lib/lab/grade";
+import { partnerColumn } from "@/components/lab/shell/shuffle";
 
 let mongo: MongoMemoryServer;
 beforeAll(async () => {
@@ -208,6 +209,14 @@ describe("Labo", () => {
     expect(matchScreens([1, 2, 3, 4, 5, 6, 7], 5).map((x) => x.length)).toEqual([4, 3]);
     expect(matchScreens([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 5).map((x) => x.length)).toEqual([4, 4, 3]);
     expect(matchScreens([1, 2], 6).map((x) => x.length)).toEqual([2]);
+    // The right column never puts a card on its partner's row (whatever the seed and the size).
+    for (let n = 1; n <= 6; n++)
+      for (let k = 0; k < 40; k++) {
+        const left = Array.from({ length: n }, (_, i) => i);
+        const right = partnerColumn(left, `s${k}`);
+        expect([...right].sort()).toEqual(left);
+        if (n > 1) expect(right.some((x, row) => x === left[row])).toBe(false);
+      }
     const mp = cleanContent("match_pairs", { json: JSON.stringify({ perScreen: 9, pairs: [{ id: "a", left: " gate ", right: "porte" }, { id: "a", left: "delay", right: "retard", explanation: "Faux ami : pas « délai »." }, { left: "luggage", right: "bagages" }] }) });
     expect([mp.perScreen, mp.pairs.map((p) => p.id), mp.pairs[0].left]).toEqual([5, ["a", "p2-1", "p3"], "gate"]);
     expect(contentProblem("match_pairs", mp)).toBeNull();
@@ -216,6 +225,14 @@ describe("Labo", () => {
     expect(contentProblem("match_pairs", { ...mp, pairs: [{ ...mp.pairs[0], right: "" }, mp.pairs[1]] })).toMatch(/both sides/);
     const gm = gradeActivity("match_pairs", mp, { a: "a", "p2-1": "p3", p3: "p3" });
     expect([gm.items.map((i) => i.correct), gm.score]).toEqual([[true, false, true], 67]);
+
+    // Listen and match: same rules and grading, plus an audio for every meaning (its text = transcript).
+    const audio = String(new Types.ObjectId());
+    const lm = cleanContent("listen_match", { json: JSON.stringify({ pairs: [{ id: "a", left: "gate", right: "Where you get on the plane.", rightAudioMediaId: audio }, { id: "b", left: "delay", right: "When the flight leaves late.", rightAudioMediaId: "bad" }] }) });
+    expect([lm.pairs[0].rightAudioMediaId, lm.pairs[1].rightAudioMediaId]).toEqual([audio, ""]);
+    expect(contentProblem("listen_match", lm)).toMatch(/Pair 2: add the audio/);
+    expect(contentProblem("listen_match", { ...lm, pairs: lm.pairs.map((p) => ({ ...p, rightAudioMediaId: audio })) })).toBeNull();
+    expect(gradeActivity("listen_match", lm, { a: "a", b: "a" }).score).toBe(50);
 
     // Speaking challenge prompts: picture / video / audio, questions one per line; only what the type uses is kept.
     const id = String(new Types.ObjectId());

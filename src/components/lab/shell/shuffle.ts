@@ -33,3 +33,14 @@ export function seededOrder(n: number, seed: string): number[] {
   }
   return out;
 }
+
+/** Matching pairs: the right column, shuffled so that no card sits on the same row as its partner in `left`. */
+export function partnerColumn<T>(left: readonly T[], seed: string): T[] {
+  const n = left.length;
+  if (n < 2) return [...left];
+  for (let k = 0; k < 50; k++) {
+    const order = seededOrder(n, `${seed}:${k}`);
+    if (order.every((j, row) => j !== row)) return order.map((j) => left[j]);
+  }
+  return left.map((_, row) => left[(row + 1) % n]); // rotation: never aligned
+}

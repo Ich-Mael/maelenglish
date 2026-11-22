@@ -9,15 +9,16 @@ import { MATCH_PER_SCREEN, matchScreens, type MatchContent, type MatchPair } fro
 import { cn } from "cn";
 
 /*
- * V1 matching pairs editor (Labo, English): pairs (English side ↔ translation / definition /
+ * V1 matching pairs editor (Labo, English; also « Listen and match » with `listen`: each meaning
+ * recorded, its text being the transcript): pairs (English side ↔ translation / definition /
  * reply), optional French explanation and audio of the English side, how many pairs per screen,
  * and « Paste a list » (one pair per line, « = » between the sides) to add many at once.
  * Sent as JSON in « c_json » (cleaned on the server).
  */
 
-type Pair = MatchPair & { audioUrl: string | null };
+type Pair = MatchPair & { audioUrl: string | null; rightAudioUrl: string | null };
 
-const blank = (id = newItemId()): Pair => ({ id, left: "", right: "", explanation: "", audioMediaId: "", audioUrl: null });
+const blank = (id = newItemId()): Pair => ({ id, left: "", right: "", explanation: "", audioMediaId: "", audioUrl: null, rightAudioMediaId: "", rightAudioUrl: null });
 
 /** « boarding pass = carte d'embarquement » lines → pairs (tab or « = » between the sides). */
 function parseList(text: string): Pair[] {
@@ -28,15 +29,16 @@ function parseList(text: string): Pair[] {
     .map((parts) => ({ ...blank(), left: parts[0].trim(), right: parts.slice(1).join("=").trim() }));
 }
 
-export function MatchEditor({ initial, audioUrls }: { initial: Partial<MatchContent>; audioUrls: Record<string, string | null> }) {
+/** `listen`: « Listen and match » — each meaning is also recorded (its text becomes the transcript). */
+export function MatchEditor({ initial, audioUrls, listen }: { initial: Partial<MatchContent>; audioUrls: Record<string, string | null>; listen?: boolean }) {
   const [perScreen, setPerScreen] = useState<MatchContent["perScreen"]>(initial.perScreen ?? 5);
   const [pairs, setPairs] = useState<Pair[]>(() =>
-    initial.pairs?.length ? initial.pairs.map((p) => ({ ...p, audioUrl: p.audioMediaId ? (audioUrls[p.audioMediaId] ?? null) : null })) : [blank("p1"), blank("p2")], // fixed ids: random ones differ between the server render and hydration
+    initial.pairs?.length ? initial.pairs.map((p) => ({ ...p, audioUrl: p.audioMediaId ? (audioUrls[p.audioMediaId] ?? null) : null, rightAudioMediaId: p.rightAudioMediaId ?? "", rightAudioUrl: p.rightAudioMediaId ? (audioUrls[p.rightAudioMediaId] ?? null) : null })) : [blank("p1"), blank("p2")], // fixed ids: random ones differ between the server render and hydration
   );
   const [paste, setPaste] = useState("");
   const [pasteOpen, setPasteOpen] = useState(false);
 
-  const json = JSON.stringify({ perScreen, pairs: pairs.map((p) => ({ id: p.id, left: p.left, right: p.right, explanation: p.explanation, audioMediaId: p.audioMediaId })) });
+  const json = JSON.stringify({ perScreen, pairs: pairs.map((p) => ({ id: p.id, left: p.left, right: p.right, explanation: p.explanation, audioMediaId: p.audioMediaId, rightAudioMediaId: p.rightAudioMediaId })) });
   const filled = pairs.filter((p) => p.left.trim() && p.right.trim());
   const screens = matchScreens(filled, perScreen);
   const parsed = parseList(paste);
@@ -106,14 +108,17 @@ export function MatchEditor({ initial, audioUrls }: { initial: Partial<MatchCont
                 <input lang="en" className={inputCls} value={p.left} maxLength={160} onChange={(e) => update({ left: e.target.value })} placeholder="boarding pass" />
               </label>
               <label className="grid gap-1 text-sm">
-                <span className="font-medium">Match (right card)</span>
-                <input className={inputCls} value={p.right} maxLength={160} onChange={(e) => update({ right: e.target.value })} placeholder="carte d'embarquement" />
+                <span className="font-medium">{listen ? "Meaning, as said in the audio (transcript)" : "Match (right card)"}</span>
+                <input className={inputCls} value={p.right} maxLength={listen ? 300 : 160} onChange={(e) => update({ right: e.target.value })} placeholder={listen ? "The document you show to get on the plane." : "carte d'embarquement"} />
               </label>
             </div>
             <label className="grid gap-1 text-sm">
               <span className="font-medium">Explanation (optional, French)</span>
               <input className={inputCls} value={p.explanation} maxLength={300} onChange={(e) => update({ explanation: e.target.value })} placeholder="Shown in the results when the pair was missed." />
             </label>
+            {listen && (
+              <AudioField label="Audio of the meaning (required: the learner hears it on the right card)" value={p.rightAudioMediaId ?? ""} url={p.rightAudioUrl} onChange={(id, url) => update({ rightAudioMediaId: id, rightAudioUrl: url })} compact />
+            )}
             <AudioField label="Audio of the English side (optional, played when the card is tapped)" value={p.audioMediaId} url={p.audioUrl} onChange={(id, url) => update({ audioMediaId: id, audioUrl: url })} compact />
           </div>
         )}

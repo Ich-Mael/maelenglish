@@ -4,7 +4,7 @@
  * rules in `content.ts`, its editor in components/lab/editors and its player in components/lab/players.
  */
 
-export const ACTIVITY_TYPES = ["listen_choose", "fill_gaps", "listen_fill_gaps", "sentence_builder", "match_pairs", "speaking_challenge"] as const;
+export const ACTIVITY_TYPES = ["listen_choose", "fill_gaps", "listen_fill_gaps", "sentence_builder", "match_pairs", "listen_match", "speaking_challenge"] as const;
 export type ActivityType = (typeof ACTIVITY_TYPES)[number];
 
 /** `challenge`: closes a unit (its last step, kind challenge); `practice`: an activity step practising a lesson. */
@@ -48,6 +48,12 @@ export const ACTIVITY_INFO: Record<ActivityType, { label: string; description: s
     description: "Two columns to match: English words or phrases and their translation, definition or reply. A few pairs per screen; mistakes and time are shown at the end.",
     role: "practice",
     skill: "language",
+  },
+  "listen_match": {
+    label: "Listen and match",
+    description: "Matching pairs where the meanings are heard, not read: written English words on the left, audio cards on the right. The results show each audio's transcript.",
+    role: "practice",
+    skill: "listening",
   },
   "speaking_challenge": {
     label: "Speaking challenge",
@@ -200,7 +206,7 @@ export const sentenceText = (sentence: string) => sentenceTiles(sentence).join("
  * definition or the reply), optional French `explanation` (shown for missed pairs) and audio of the
  * English side (model-audio, played when the card is tapped). `perScreen` pairs per screen.
  */
-export type MatchPair = { id: string; left: string; right: string; explanation: string; audioMediaId: string };
+export type MatchPair = { id: string; left: string; right: string; explanation: string; audioMediaId: string; /** listen_match: the right side as audio (`right` = its transcript). */ rightAudioMediaId?: string };
 export const MATCH_PER_SCREEN = [4, 5, 6] as const;
 export type MatchContent = { pairs: MatchPair[]; perScreen: (typeof MATCH_PER_SCREEN)[number] };
 
@@ -219,7 +225,7 @@ export function matchScreens<T>(pairs: readonly T[], perScreen: number): T[][] {
   return out;
 }
 
-export type ActivityContent = { "listen_choose": ListeningContent; "fill_gaps": GapsContent; "listen_fill_gaps": ListenGapsContent; "sentence_builder": SentenceContent; "match_pairs": MatchContent; "speaking_challenge": SpeakingChallengeContent };
+export type ActivityContent = { "listen_choose": ListeningContent; "fill_gaps": GapsContent; "listen_fill_gaps": ListenGapsContent; "sentence_builder": SentenceContent; "match_pairs": MatchContent; "listen_match": MatchContent; "speaking_challenge": SpeakingChallengeContent };
 
 export const MAX_PLAYS = [0, 2, 3] as const;
 

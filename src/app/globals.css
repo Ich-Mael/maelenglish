@@ -176,6 +176,23 @@
   .animate-pop, .animate-shake, .animate-float { animation: none; }
 }
 
+/* Matching pairs arrows (components/lab/players/match-player.tsx): paths use pathLength="1". A right
+   pair draws its arrow, then the head pops; a wrong one goes part way and fades (never connects). */
+@keyframes match-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes match-miss {
+  0% { stroke-dashoffset: 1; opacity: 1; }
+  55% { stroke-dashoffset: 0.45; opacity: 1; }
+  100% { stroke-dashoffset: 0.45; opacity: 0; }
+}
+@keyframes match-head { from { opacity: 0; transform: scale(0.3); } to { opacity: 1; transform: scale(1); } }
+.match-draw { stroke-dasharray: 1; animation: match-draw 0.45s ease-out both; }
+.match-miss { stroke-dasharray: 1; animation: match-miss 0.65s ease-out both; }
+.match-head { transform-box: fill-box; transform-origin: center; animation: match-head 0.2s ease-out 0.38s both; }
+@media (prefers-reduced-motion: reduce) {
+  .match-draw, .match-head { animation: none; }
+  .match-miss { display: none; }
+}
+
 /* TV player (components/learn/tv-player.tsx): screen switching on, and the progress bar. */
 @keyframes tv-on {
   0% { transform: scale(1, 0.006); filter: brightness(3); }

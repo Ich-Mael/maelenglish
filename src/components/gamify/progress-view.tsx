@@ -24,7 +24,7 @@ export function ProgressView({ s, groups, week }: { s: StatsSummary; groups: Awa
   const goalPct = Math.min(100, Math.round((s.todayXp / s.dailyGoal) * 100));
 
   return (
-    <div className="mx-auto grid max-w-3xl gap-6">
+    <div className="mx-auto grid max-w-5xl gap-6">
       <h1 className="text-3xl font-extrabold text-brand-deep">Ma progression</h1>
 
       <section className="grid gap-4 sm:grid-cols-3">
@@ -166,7 +166,7 @@ export function ProgressView({ s, groups, week }: { s: StatsSummary; groups: Awa
                   {got} / {g.badges.length}
                 </span>
               </div>
-              <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                 {g.badges.map((b) => (
                   <BadgeTile key={b.id} b={b} />
                 ))}

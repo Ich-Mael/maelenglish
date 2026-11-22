@@ -28,7 +28,7 @@ async function CourseHome({ params }: { params: Promise<{ courseId: string }> })
   const next = nextPath(courseId, outline.next);
 
   return (
-    <div className="mx-auto grid max-w-2xl gap-6">
+    <div className="grid gap-6">
       {access.preview && <PreviewBar text="Staff preview: everything is open and nothing is saved." editHref={adminPaths.course(courseId)} />}
       {access.readOnly && (
         <p className="rounded-2xl bg-brand-soft px-4 py-2.5 text-sm font-semibold text-primary">Cours terminé : vous pouvez tout revoir.</p>

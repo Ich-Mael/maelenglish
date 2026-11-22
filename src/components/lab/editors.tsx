@@ -45,11 +45,12 @@ export async function ActivityFields({ type, content }: { type: ActivityType; co
       const audioUrls = Object.fromEntries(await Promise.all(ids.map(async (id) => [id, await reviewMediaUrl(id).catch(() => null)] as const)));
       return <SentenceEditor initial={c} audioUrls={audioUrls} />;
     }
-    case "match_pairs": {
+    case "match_pairs":
+    case "listen_match": {
       const c = content as Partial<MatchContent>;
-      const ids = [...new Set((c.pairs ?? []).map((p) => p.audioMediaId).filter(Boolean))];
+      const ids = [...new Set((c.pairs ?? []).flatMap((p) => [p.audioMediaId, p.rightAudioMediaId ?? ""]).filter(Boolean))];
       const audioUrls = Object.fromEntries(await Promise.all(ids.map(async (id) => [id, await reviewMediaUrl(id).catch(() => null)] as const)));
-      return <MatchEditor initial={c} audioUrls={audioUrls} />;
+      return <MatchEditor initial={c} audioUrls={audioUrls} listen={type === "listen_match"} />;
     }
     case "listen_fill_gaps": {
       const c = content as Partial<ListenGapsContent>;

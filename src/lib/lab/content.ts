@@ -138,7 +138,8 @@ function cleanPairs(r: Record<string, unknown>): MatchContent {
     let id = str(p.id, 40).replace(/[^\w-]/g, "") || `p${i + 1}`;
     if (seen.has(id)) id = `p${i + 1}-${seen.size}`;
     seen.add(id);
-    return { id, left: str(p.left, 160), right: str(p.right, 160), explanation: str(p.explanation, 300), audioMediaId: typeof p.audioMediaId === "string" && Types.ObjectId.isValid(p.audioMediaId) ? p.audioMediaId : "" };
+    const media = (v: unknown) => (typeof v === "string" && Types.ObjectId.isValid(v) ? v : "");
+    return { id, left: str(p.left, 160), right: str(p.right, 300), explanation: str(p.explanation, 300), audioMediaId: media(p.audioMediaId), rightAudioMediaId: media(p.rightAudioMediaId) };
   });
   return { pairs, perScreen: pick(MATCH_PER_SCREEN, j.perScreen, 5) };
 }
@@ -181,6 +182,7 @@ export function cleanContent<T extends ActivityType>(type: T, raw: unknown): Act
     case "sentence_builder":
       return cleanSentences(r) as ActivityContent[T];
     case "match_pairs":
+    case "listen_match":
       return cleanPairs(r) as ActivityContent[T];
     case "speaking_challenge": {
       const promptType: PromptType = PROMPT_TYPES.includes(r.promptType as PromptType) ? (r.promptType as PromptType) : "text";
@@ -236,6 +238,12 @@ export function contentProblem(type: ActivityType, content: unknown): string | n
       return sentencesProblem(content as Partial<SentenceContent>);
     case "match_pairs":
       return pairsProblem(content as Partial<MatchContent>);
+    case "listen_match": {
+      const c = content as Partial<MatchContent>;
+      const missing = (c.pairs ?? []).findIndex((p) => !p.rightAudioMediaId);
+      if (missing >= 0) return `Pair ${missing + 1}: add the audio of the meaning.`;
+      return pairsProblem(c);
+    }
     case "speaking_challenge": {
       const c = content as Partial<SpeakingChallengeContent>;
       if (!plainText(c.instructions ?? "")) return "Write the challenge instructions.";
