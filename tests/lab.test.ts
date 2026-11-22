@@ -8,7 +8,7 @@ import * as content from "@/lib/admin/content";
 import * as lab from "@/lib/lab/service";
 import { can } from "@/lib/admin/permissions";
 import { cleanContent, contentProblem } from "@/lib/lab/content";
-import { parseTime, formatTime, parseGaps, lineOfGap, matchScreens, sentenceText, sentenceTiles } from "@/lib/lab/types";
+import { parseTime, formatTime, parseGaps, lineOfGap, autoBlank, docSentences, matchScreens, sentenceText, sentenceTiles } from "@/lib/lab/types";
 import { gradeActivity } from "@/lib/lab/grade";
 import { partnerColumn } from "@/components/lab/shell/shuffle";
 
@@ -233,6 +233,36 @@ describe("Labo", () => {
     expect(contentProblem("listen_match", lm)).toMatch(/Pair 2: add the audio/);
     expect(contentProblem("listen_match", { ...lm, pairs: lm.pairs.map((p) => ({ ...p, rightAudioMediaId: audio })) })).toBeNull();
     expect(gradeActivity("listen_match", lm, { a: "a", b: "a" }).score).toBe(50);
+
+    // R1 true / false / not given: sentences = lines, proof required for true / false, dropped for « not given ».
+    const tf = cleanContent("true_false_ng", {
+      json: JSON.stringify({
+        docTitle: "E-mail de la DRH",
+        text: "Dear team,\n\nThe Monday meeting is moved to Tuesday at 10 a.m.\nPlease bring your sales figures.",
+        statements: [
+          { id: "a", text: "The meeting is on Monday.", answer: "false", evidence: 1 },
+          { id: "b", text: "Lunch is served.", answer: "not_given", evidence: 2 },
+          { id: "c", text: "Bring your figures.", answer: "true", evidence: 9 },
+          { id: "d", text: "Odd", answer: "maybe", evidence: "2" },
+        ],
+      }),
+    });
+    expect(docSentences(tf.text)).toHaveLength(3);
+    expect(tf.statements.map((x) => [x.answer, x.evidence])).toEqual([["false", 1], ["not_given", null], ["true", null], ["true", 2]]);
+    expect(contentProblem("true_false_ng", tf)).toMatch(/Statement 3: pick the sentence/);
+    expect(contentProblem("true_false_ng", { ...tf, statements: [tf.statements[0], tf.statements[1]] })).toBeNull();
+    expect(contentProblem("true_false_ng", { ...tf, text: "One line." })).toMatch(/at least 2 sentences/);
+    expect(gradeActivity("true_false_ng", tf, { a: "false", b: "true", c: "true", d: "true" }).score).toBe(75);
+
+    // Complete the words: brackets after the stem, exact letters (capitals ignored), automatic C-test blanking.
+    const cw = cleanContent("complete_words", { text: "Traveling to new destin[ations] has long been one of the most reward[ing] experiences." });
+    expect(contentProblem("complete_words", cw)).toBeNull();
+    expect([cw.audioMediaId, cleanContent("complete_words", { text: "x", audioMediaId: String(audio) }).audioMediaId, cleanContent("complete_words", { text: "x", audioMediaId: "nope" }).audioMediaId]).toEqual(["", String(audio), ""]);
+    expect(contentProblem("complete_words", { text: "Only destin[ations] here." })).toMatch(/at least 2 words/);
+    expect(contentProblem("complete_words", { text: "a[b c] and d[e]" })).toMatch(/no spaces/);
+    expect(gradeActivity("complete_words", cw, { g1: "ATIONS", g2: "in" }).items.map((i) => i.correct)).toEqual([true, false]);
+    expect(autoBlank("Budget travel is popular. Hostels make it affordable to visit places once reserved for the wealthy.")).toBe("Budget travel is popular. Hostels ma[ke] it affordable to vi[sit] places on[ce] reserved f[or] the wea[lthy].");
+    expect(autoBlank("Already cut[ting].")).toBe("Already cut[ting].");
 
     // Speaking challenge prompts: picture / video / audio, questions one per line; only what the type uses is kept.
     const id = String(new Types.ObjectId());

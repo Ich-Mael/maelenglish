@@ -1,12 +1,14 @@
 import { Select, TextArea } from "@/components/admin/ui";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
-import { MAX_SECONDS, PREP_SECONDS, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type GapsContent, type ListenGapsContent, type MatchContent, type SentenceContent } from "@/lib/lab/types";
+import { MAX_SECONDS, PREP_SECONDS, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type GapsContent, type ListenGapsContent, type MatchContent, type SentenceContent, type TfngContent, type CompleteWordsContent } from "@/lib/lab/types";
 import { reviewMediaUrl } from "@/lib/media";
 import { ListeningEditor } from "./listening-editor";
 import { GapsEditor } from "./gaps-editor";
 import { ListenGapsEditor } from "./listen-gaps-editor";
 import { SentenceEditor } from "./sentence-editor";
 import { MatchEditor } from "./match-editor";
+import { TfngEditor } from "./tfng-editor";
+import { CompleteWordsEditor } from "./complete-words-editor";
 import { PromptField } from "./prompt-field";
 import { AudioInput } from "./audio-input";
 
@@ -39,6 +41,18 @@ export async function ActivityFields({ type, content }: { type: ActivityType; co
     }
     case "fill_gaps":
       return <GapsEditor initial={content as Partial<GapsContent>} />;
+    case "true_false_ng":
+      return <TfngEditor initial={content as Partial<TfngContent>} />;
+    case "complete_words": {
+      const c = content as Partial<CompleteWordsContent>;
+      const audioUrl = c.audioMediaId ? await reviewMediaUrl(c.audioMediaId).catch(() => null) : null;
+      return (
+        <>
+          <CompleteWordsEditor initial={c} />
+          <AudioInput name="c_audioMediaId" label="Audio of the whole text (optional: learners can play it on the results page)" initialId={c.audioMediaId ?? ""} initialUrl={audioUrl} />
+        </>
+      );
+    }
     case "sentence_builder": {
       const c = content as Partial<SentenceContent>;
       const ids = [...new Set((c.items ?? []).map((i) => i.audioMediaId).filter(Boolean))];

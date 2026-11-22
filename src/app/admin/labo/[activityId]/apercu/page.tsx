@@ -7,12 +7,14 @@ import { actorOf, requireStaff } from "@/lib/admin/context";
 import { can } from "@/lib/admin/permissions";
 import { reviewMediaUrl } from "@/lib/media";
 import { contentProblem } from "@/lib/lab/content";
-import { ACTIVITY_INFO, type ActivityType, type ListeningContent, type GapsContent, type ListenGapsContent, type SentenceContent, type MatchContent, isActivityType } from "@/lib/lab/types";
+import { ACTIVITY_INFO, type ActivityType, type ListeningContent, type GapsContent, type ListenGapsContent, type SentenceContent, type MatchContent, type TfngContent, type CompleteWordsContent, isActivityType } from "@/lib/lab/types";
 import { Activity, type ActivityDoc } from "@/models";
 import { ListeningPlayer } from "@/components/lab/players/listening-player";
 import { GapsPlayer } from "@/components/lab/players/gaps-player";
 import { SentencePlayer } from "@/components/lab/players/sentence-player";
 import { MatchPlayer } from "@/components/lab/players/match-player";
+import { TfngPlayer } from "@/components/lab/players/tfng-player";
+import { CompleteWordsPlayer } from "@/components/lab/players/complete-words-player";
 import { RichText } from "@/components/learn/rich-text";
 import { PreviewBar } from "@/components/learn/preview-bar";
 import { EmptyState, PageHeader } from "@/components/admin/ui";
@@ -89,6 +91,20 @@ async function Preview({ params }: { params: Promise<{ activityId: string }> }) 
     body = (
       <div lang="fr" className="[--checkbar-bottom:0px]">
         <SentencePlayer preview title={a.title} level={a.level ?? ""} skills={a.skills ?? []} instructions={a.instructions ?? ""} maelTip={a.maelTip ?? ""} content={c} audioUrls={audioUrls} courseHref={back} nextHref={back} />
+      </div>
+    );
+  } else if (type === "complete_words") {
+    const cw = a.content as CompleteWordsContent;
+    const audioUrl = cw.audioMediaId ? await reviewMediaUrl(cw.audioMediaId).catch(() => null) : null;
+    body = (
+      <div lang="fr" className="[--checkbar-bottom:0px]">
+        <CompleteWordsPlayer preview title={a.title} level={a.level ?? ""} skills={a.skills ?? []} instructions={a.instructions ?? ""} maelTip={a.maelTip ?? ""} content={cw} audioUrl={audioUrl} courseHref={back} nextHref={back} />
+      </div>
+    );
+  } else if (type === "true_false_ng") {
+    body = (
+      <div lang="fr" className="[--checkbar-bottom:0px]">
+        <TfngPlayer preview title={a.title} level={a.level ?? ""} skills={a.skills ?? []} instructions={a.instructions ?? ""} maelTip={a.maelTip ?? ""} content={a.content as TfngContent} courseHref={back} nextHref={back} />
       </div>
     );
   } else if (type === "match_pairs" || type === "listen_match") {

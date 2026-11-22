@@ -1,4 +1,4 @@
-import { parseGaps, sentenceText, type ActivityType, type GapsContent, type ListeningContent, type MatchContent, type SentenceContent } from "./types";
+import { parseGaps, sentenceText, type ActivityType, type GapsContent, type ListeningContent, type MatchContent, type SentenceContent, type TfngContent, type CompleteWordsContent } from "./types";
 import { normalizeEnglish } from "@/lib/ai/text";
 import { matchAnswer } from "./match";
 
@@ -35,6 +35,14 @@ export function checkItem(type: ActivityType, content: unknown, itemId: string, 
     case "listen_match":
       // Item = a left card; answer = the first right card it was matched with (its pair id).
       return (content as MatchContent).pairs.some((p) => p.id === itemId) && answer === itemId;
+    case "true_false_ng":
+      return (content as TfngContent).statements.some((s) => s.id === itemId && s.answer === answer);
+    case "complete_words": {
+      // The exact letters (capitals ignored): spelling is the point.
+      const gap = parseGaps({ text: (content as CompleteWordsContent).text, explanations: [] }).gaps.find((g) => g.id === itemId);
+      const got = typeof answer === "string" ? answer.replace(/\s+/g, "").toLowerCase() : "";
+      return !!gap && !!got && gap.answers.some((a) => a.toLowerCase() === got);
+    }
     default:
       return false;
   }
@@ -52,6 +60,10 @@ export function itemIds(type: ActivityType, content: unknown): string[] {
     case "match_pairs":
     case "listen_match":
       return (content as MatchContent).pairs.map((p) => p.id);
+    case "true_false_ng":
+      return (content as TfngContent).statements.map((s) => s.id);
+    case "complete_words":
+      return parseGaps({ text: (content as CompleteWordsContent).text, explanations: [] }).gaps.map((g) => g.id);
     default:
       return [];
   }

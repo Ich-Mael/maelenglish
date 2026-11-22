@@ -53,6 +53,18 @@ export const TYPE_LOOK: Record<ActivityType, { band: string; tile: string; examp
     example: "E.g. Écoutez les définitions",
     perks: ["Meanings in audio", "Listen as often as needed", "Transcripts in the results"],
   },
+  true_false_ng: {
+    band: "bg-gradient-to-br from-brand-dark to-brand-deep text-white",
+    tile: "bg-gradient-to-br from-brand-dark to-brand-deep text-white",
+    example: "E.g. Lire un e-mail de la DRH",
+    perks: ["Real work documents", "True / false / not given", "Proof highlighted"],
+  },
+  complete_words: {
+    band: "bg-gradient-to-br from-white via-white to-brand-soft text-primary",
+    tile: "bg-brand-soft text-primary",
+    example: "E.g. Voyager pas cher",
+    perks: ["One box per letter", "Automatic blanking", "Spelling counts"],
+  },
   speaking_challenge: {
     band: "bg-gradient-to-br from-brand-deep via-brand-deep to-brand-dark text-white",
     tile: "bg-gradient-to-br from-brand-deep to-brand-dark text-white ring-2 ring-coral",
@@ -62,12 +74,12 @@ export const TYPE_LOOK: Record<ActivityType, { band: string; tile: string; examp
 };
 
 /** Types drawn on a light band (blue on white) rather than a dark one. */
-export const isLightType = (t: ActivityType) => t === "fill_gaps" || t === "sentence_builder" || t === "match_pairs";
+export const isLightType = (t: ActivityType) => t === "fill_gaps" || t === "sentence_builder" || t === "match_pairs" || t === "complete_words";
 
 /** Exercises planned in the catalogue (shown as « coming next »). */
 export const COMING_NEXT = [
   { name: "Error hunt", skill: "language" as SkillFamily },
-  { name: "True / false / not given", skill: "reading" as SkillFamily },
+  { name: "Reorder paragraphs", skill: "reading" as SkillFamily },
   { name: "Repeat after Mael", skill: "pronunciation" as SkillFamily },
   { name: "Email builder", skill: "writing" as SkillFamily },
 ];
@@ -170,6 +182,44 @@ export function TypeArt({ type, className }: { type: ActivityType; className?: s
                   <span key={k} className={cn("w-0.5 rounded-full", i === 0 ? "bg-primary/60" : "bg-white/60")} style={{ height: `${h / 10}px` }} />
                 ))}
               </span>
+            </div>
+          ))}
+        </div>
+      )}
+      {type === "true_false_ng" && (
+        <div className="grid gap-2">
+          <div className="grid gap-1 rounded-lg bg-white/95 p-2">
+            <span className="h-1.5 w-16 rounded-full bg-brand-deep/25" />
+            <span className="h-1.5 w-full rounded-full bg-brand-deep/15" />
+            <span className="h-2 w-[85%] rounded-sm bg-primary/35" />
+            <span className="h-1.5 w-[70%] rounded-full bg-brand-deep/15" />
+          </div>
+          <div className="flex gap-1">
+            {["Vrai", "Faux", "N.M."].map((x, i) => (
+              <span key={x} className={cn("flex-1 rounded-md py-0.5 text-center text-[10px] font-bold", i === 0 ? "bg-white text-primary" : "bg-white/20 text-white")}>
+                {x}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+      {type === "complete_words" && (
+        <div className="grid gap-2 text-[11px] font-semibold text-brand-deep" lang="en">
+          {[
+            ["destin", 3, "has"],
+            ["reward", 2, "trips"],
+            ["ru", 3, "in"],
+          ].map(([stem, n, after], i) => (
+            <div key={i} className="flex items-center gap-1">
+              <span>{stem as string}</span>
+              <span className="flex gap-0.5">
+                {Array.from({ length: n as number }, (_, k) => (
+                  <span key={k} className={cn("flex h-4 w-3 items-center justify-center rounded-sm border text-[9px]", i === 0 ? "border-primary bg-white text-primary" : "border-primary/40 bg-white/80")}>
+                    {i === 0 ? "ati"[k] : ""}
+                  </span>
+                ))}
+              </span>
+              <span className="text-brand-deep/50">{after as string}</span>
             </div>
           ))}
         </div>

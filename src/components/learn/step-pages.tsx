@@ -8,7 +8,7 @@ import { courseAccess, courseTree } from "@/lib/learn/queries";
 import { coursePath, examPath, stepPath } from "@/lib/learn/paths";
 import { stepAfter, stepBefore } from "@/lib/learn/sequence";
 import { ChallengeSubmission, User, type ChallengeSubmissionDoc } from "@/models";
-import type { GapsContent, ListenGapsContent, ListeningContent, MatchContent, SentenceContent, SpeakingChallengeContent } from "@/lib/lab/types";
+import type { GapsContent, ListenGapsContent, ListeningContent, MatchContent, SentenceContent, SpeakingChallengeContent, TfngContent, CompleteWordsContent } from "@/lib/lab/types";
 import { cleanLessonContent } from "@/lib/course/lesson-content";
 import { feedbackAudioUrl, mediaUrlFor } from "@/lib/media";
 import { AccessProblem, formatDate } from "./ui";
@@ -27,6 +27,8 @@ import { ListeningPlayer } from "@/components/lab/players/listening-player";
 import { GapsPlayer } from "@/components/lab/players/gaps-player";
 import { SentencePlayer } from "@/components/lab/players/sentence-player";
 import { MatchPlayer } from "@/components/lab/players/match-player";
+import { TfngPlayer } from "@/components/lab/players/tfng-player";
+import { CompleteWordsPlayer } from "@/components/lab/players/complete-words-player";
 
 function Locked({ courseId, text }: { courseId: string; text: string }) {
   return (
@@ -154,6 +156,57 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
             maelTip={activity.maelTip ?? ""}
             content={activity.content as GapsContent}
             listen={lc ? { audioUrl: clip ?? null, maxPlays: lc.maxPlays, context: lc.context ? <RichText>{lc.context}</RichText> : null } : undefined}
+            courseHref={course}
+            nextHref={nextHref}
+            readOnly={access.readOnly}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (so.kind === "activity" && activity.type === "complete_words") {
+    const cw = activity.content as CompleteWordsContent;
+    const cwAudio = cw.audioMediaId ? (await mediaUrls(me.id, [cw.audioMediaId]))[cw.audioMediaId] : undefined;
+    return (
+      <div className="mx-auto grid max-w-3xl gap-4">
+        {header}
+        <div>
+          <CompleteWordsPlayer
+            courseId={courseId}
+            stepId={stepId}
+            passScore={so.passScore}
+            lessonHref={so.lessonId ? stepPath(courseId, so.lessonId) : null}
+            title={activity.title}
+            level={activity.level ?? ""}
+            skills={activity.skills ?? []}
+            instructions={activity.instructions ?? ""}
+            maelTip={activity.maelTip ?? ""}
+            content={cw}
+            audioUrl={cwAudio ?? null}
+            courseHref={course}
+            nextHref={nextHref}
+            readOnly={access.readOnly}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (so.kind === "activity" && activity.type === "true_false_ng") {
+    return (
+      <div className="mx-auto grid max-w-2xl gap-4">
+        {header}
+        <div>
+          <TfngPlayer
+            courseId={courseId}
+            stepId={stepId}
+            passScore={so.passScore}
+            lessonHref={so.lessonId ? stepPath(courseId, so.lessonId) : null}
+            title={activity.title}
+            level={activity.level ?? ""}
+            skills={activity.skills ?? []}
+            instructions={activity.instructions ?? ""}
+            maelTip={activity.maelTip ?? ""}
+            content={activity.content as TfngContent}
             courseHref={course}
             nextHref={nextHref}
             readOnly={access.readOnly}

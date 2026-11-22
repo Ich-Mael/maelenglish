@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AudioLines, Blocks, BookOpen, Ear, Link2, Check, ChevronDown, Clock, EyeOff, Headphones, Lock, Mic, Sparkles, Target, TextCursorInput, Trophy } from "lucide-react";
+import { AudioLines, Blocks, BookOpen, Ear, FileSearch, SpellCheck, Link2, Check, ChevronDown, Clock, EyeOff, Headphones, Lock, Mic, Sparkles, Target, TextCursorInput, Trophy } from "lucide-react";
 import type { ModuleOutline, Outline, StepOutline, StepState, UnitOutline } from "@/lib/learn/progress";
 import { examPath, stepPath } from "@/lib/learn/paths";
 import { formatDate } from "./ui";
@@ -17,6 +17,8 @@ const STEP_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
   sentence_builder: Blocks,
   match_pairs: Link2,
   listen_match: Ear,
+  true_false_ng: FileSearch,
+  complete_words: SpellCheck,
   challenge: Mic,
 };
 
@@ -36,18 +38,28 @@ const CHALLENGE_SUB: Record<string, string | undefined> = {
   graded: "Validé par votre coach",
 };
 
-type Node = { key: string; href: string; label: string; sub?: string; state: StepState; icon: React.ComponentType<{ className?: string }>; big?: boolean };
+type NodeKind = "lesson" | "activity" | "challenge" | "exam";
+type Node = { key: string; href: string; label: string; sub?: string; state: StepState; icon: React.ComponentType<{ className?: string }>; big?: boolean; kind: NodeKind };
+
+/** Kind tag above each step's title. */
+const KIND_TAG: Record<NodeKind, { label: string; cls: string }> = {
+  lesson: { label: "Leçon", cls: "bg-brand-deep text-white" },
+  activity: { label: "Activité", cls: "bg-brand-soft text-primary" },
+  challenge: { label: "Défi oral", cls: "border border-coral bg-white text-coral-dark" },
+  exam: { label: "Examen", cls: "bg-brand-soft text-primary" },
+};
 
 function stepNode(courseId: string, s: StepOutline): Node {
   const below = s.kind === "activity" && s.score !== null && s.passScore !== null && s.score < s.passScore;
   return {
     key: s.id,
     href: stepPath(courseId, s.id),
-    label: s.kind === "challenge" ? "Défi oral" : s.title,
+    label: s.kind === "challenge" ? s.title || "Défi oral" : s.title,
     sub: s.kind === "challenge" ? CHALLENGE_SUB[s.status ?? "none"] : below ? `À revoir · ${s.score} %` : s.kind === "activity" && s.score !== null ? `${s.score} %` : undefined,
     state: s.state,
     icon: STEP_ICON[s.type] ?? STEP_ICON[s.kind] ?? Sparkles,
     big: s.kind === "challenge",
+    kind: s.kind,
   };
 }
 
@@ -77,7 +89,7 @@ export function CourseMap({ courseId, outline, currentHref }: { courseId: string
             <Path
               label="Activité finale"
               currentHref={currentHref}
-              nodes={[{ key: "exam", href: examPath(courseId), label: "Examen final", sub: outline.finalExam.bestScore !== null ? `Meilleur score : ${outline.finalExam.bestScore} %` : undefined, state: outline.finalExam.state, icon: Trophy, big: true }]}
+              nodes={[{ key: "exam", href: examPath(courseId), label: "Examen final", sub: outline.finalExam.bestScore !== null ? `Meilleur score : ${outline.finalExam.bestScore} %` : undefined, state: outline.finalExam.state, icon: Trophy, big: true, kind: "exam" }]}
             />
           </div>
         </li>
@@ -244,25 +256,63 @@ function ModuleAbout({ html }: { html: string }) {
 }
 
 function PathNode({ node, current }: { node: Node; current: boolean }) {
-  const Icon = node.state === "completed" ? Check : node.state === "locked" ? Lock : node.icon;
+  const challenge = node.kind === "challenge";
+  // A locked challenge keeps its microphone (red identity); other locked steps show a lock.
+  const Icon = node.state === "completed" ? Check : node.state === "locked" && !challenge ? Lock : node.icon;
+  // Shapes and colours by kind: lesson = navy rounded square, activity = blue circle,
+  // speaking challenge = big red-outlined circle (white inside: no solid red backgrounds).
+  const shape = node.kind === "lesson" ? "rounded-2xl" : "rounded-full";
+  const look: Record<NodeKind, Partial<Record<StepState, string>>> = {
+    lesson: {
+      completed: "border-2 border-b-[6px] border-[#0d143a] bg-brand-deep text-white",
+      available: "border-[#0d143a] bg-brand-deep text-white group-hover:brightness-125 group-active:translate-y-1 group-active:border-b-2",
+    },
+    activity: {
+      completed: "border-2 border-b-[6px] border-brand-deep bg-gradient-to-br from-primary to-brand-deep text-white",
+      available: "border-brand-dark bg-primary text-white group-hover:brightness-110 group-active:translate-y-1 group-active:border-b-2",
+    },
+    challenge: {
+      completed: "border-[3px] border-b-[7px] border-coral bg-white text-coral",
+      available: "border-[3px] border-b-[7px] border-coral bg-white text-coral group-hover:bg-coral-soft group-active:translate-y-1 group-active:border-b-[3px]",
+      locked: "border-[3px] border-dashed border-coral/45 bg-white text-coral/55",
+    },
+    exam: {
+      completed: "border-2 border-b-[6px] border-brand-deep bg-gradient-to-br from-primary to-brand-deep text-white",
+      available: "border-brand-dark bg-primary text-white group-hover:brightness-110 group-active:translate-y-1 group-active:border-b-2",
+    },
+  };
   const circle = cn(
-    "relative flex items-center justify-center rounded-full border-b-[6px] transition group-focus-visible:ring-4 group-focus-visible:ring-ring/50",
+    "relative flex items-center justify-center border-b-[6px] transition group-focus-visible:ring-4 group-focus-visible:ring-ring/50",
+    shape,
     node.big ? "size-20" : "size-16",
-    node.state === "completed" && "border-2 border-b-[6px] border-brand-deep bg-gradient-to-br from-primary to-brand-deep text-white",
-    node.state === "available" && "border-brand-dark bg-primary text-white group-hover:brightness-110 group-active:translate-y-1 group-active:border-b-2",
-    node.state === "locked" && "border-border bg-muted text-muted-foreground",
+    look[node.kind][node.state] ?? "border-border bg-muted text-muted-foreground",
   );
+  const KindIcon = node.icon;
+  const badge =
+    node.state === "completed" ? (
+      // Done: the tick, plus what the step was.
+      <span className={cn("absolute -right-1.5 -bottom-1.5 flex size-6 items-center justify-center rounded-full border-2 bg-white", challenge ? "border-coral text-coral" : "border-primary/30 text-primary")} aria-hidden>
+        <KindIcon className="size-3.5" />
+      </span>
+    ) : node.state === "locked" && challenge ? (
+      <span className="absolute -right-1 -bottom-1 flex size-6 items-center justify-center rounded-full border-2 border-white bg-muted text-muted-foreground" aria-hidden>
+        <Lock className="size-3" />
+      </span>
+    ) : null;
+  const tag = KIND_TAG[node.kind];
   const content = (
     <>
       {/* Fixed-height slot: every circle's centre sits on the PathRow connector line. */}
       <span className="relative z-[1] flex h-20 items-center">
         <span className={circle}>
-          {current && <span className="absolute -inset-2 animate-ping rounded-full border-4 border-coral/50 motion-reduce:animate-none" aria-hidden />}
+          {current && <span className={cn("absolute -inset-2 animate-ping border-4 border-coral/50 motion-reduce:animate-none", shape)} aria-hidden />}
           <Icon className={node.big ? "size-9" : "size-7"} aria-hidden />
+          {badge}
         </span>
       </span>
       <span className="max-w-30 px-1 text-center">
-        <span className={cn("block text-sm font-bold", node.state === "locked" ? "text-muted-foreground" : "text-brand-deep")}>{node.label}</span>
+        <span className={cn("mb-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase", tag.cls, node.state === "locked" && "opacity-60")}>{tag.label}</span>
+        <span className={cn("block text-sm font-bold", node.state === "locked" ? "text-muted-foreground" : challenge ? "text-coral-dark" : "text-brand-deep")}>{node.label}</span>
         {node.sub && <span className="block text-xs text-muted-foreground">{node.sub}</span>}
         {current && <span className="mt-1 inline-block rounded-full border-2 border-coral bg-white px-2 py-0.5 text-xs font-bold text-coral-dark">À vous !</span>}
       </span>

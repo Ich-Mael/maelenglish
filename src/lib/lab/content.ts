@@ -1,7 +1,7 @@
 import { normalizeRich, plainText } from "@/lib/rich-text";
 import { Types } from "mongoose";
 import { videoSource } from "@/lib/learn/media";
-import { MAX_PLAYS, MAX_SECONDS, PREP_SECONDS, PROMPT_TYPES, SENTENCE_AUDIO_WHEN, MATCH_PER_SCREEN, sentenceTiles, type MatchContent, type MatchPair, type PromptType, type SentenceContent, type SentenceItem, type ActivityContent, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type ListeningQuestion, type GapsContent, type ListenGapsContent, GAP_HINTS, parseGaps } from "./types";
+import { MAX_PLAYS, MAX_SECONDS, PREP_SECONDS, PROMPT_TYPES, SENTENCE_AUDIO_WHEN, MATCH_PER_SCREEN, TFNG_ANSWERS, docSentences, type CompleteWordsContent, type TfngAnswer, type TfngContent, type TfngStatement, sentenceTiles, type MatchContent, type MatchPair, type PromptType, type SentenceContent, type SentenceItem, type ActivityContent, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type ListeningQuestion, type GapsContent, type ListenGapsContent, GAP_HINTS, parseGaps } from "./types";
 
 /*
  * Content rules per activity type (server: rich text is sanitised here). `cleanContent` turns what
@@ -157,6 +157,43 @@ function pairsProblem(c: Partial<MatchContent>): string | null {
   return null;
 }
 
+/** True / false / not given: the editor sends `json` ({ docTitle, text, statements }). */
+function cleanTfng(r: Record<string, unknown>): TfngContent {
+  let j: Record<string, unknown> = r;
+  if (typeof r.json === "string") {
+    try {
+      j = JSON.parse(r.json) as Record<string, unknown>;
+    } catch {
+      j = {};
+    }
+  }
+  const text = (typeof j.text === "string" ? j.text : "").replace(/\r/g, "").slice(0, 6000);
+  const lines = docSentences(text).length;
+  const seen = new Set<string>();
+  const statements: TfngStatement[] = (Array.isArray(j.statements) ? j.statements : []).slice(0, 15).map((raw, i) => {
+    const st = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+    let id = str(st.id, 40).replace(/[^\w-]/g, "") || `t${i + 1}`;
+    if (seen.has(id)) id = `t${i + 1}-${seen.size}`;
+    seen.add(id);
+    const answer: TfngAnswer = TFNG_ANSWERS.includes(st.answer as TfngAnswer) ? (st.answer as TfngAnswer) : "true";
+    const ev = Number(st.evidence);
+    // « Not given » has no proof in the text; an index outside the text is dropped.
+    const evidence = answer !== "not_given" && st.evidence !== null && st.evidence !== "" && Number.isInteger(ev) && ev >= 0 && ev < lines ? ev : null;
+    return { id, text: str(st.text, 300), answer, evidence, explanation: str(st.explanation, 300) };
+  });
+  return { docTitle: str(j.docTitle, 120), text, statements };
+}
+
+function tfngProblem(c: Partial<TfngContent>): string | null {
+  if (docSentences(c.text ?? "").length < 2) return "Write the document: at least 2 sentences, one per line.";
+  if (!c.statements?.length) return "Add at least one statement.";
+  for (const [i, st] of c.statements.entries()) {
+    if (!st.text) return `Statement ${i + 1}: write it.`;
+    if (st.answer !== "not_given" && st.evidence === null) return `Statement ${i + 1}: pick the sentence of the text that proves it.`;
+  }
+  return null;
+}
+
 function sentencesProblem(c: Partial<SentenceContent>): string | null {
   if (!c.items?.length) return "Add at least one sentence.";
   for (const [i, it] of c.items.entries()) {
@@ -184,6 +221,13 @@ export function cleanContent<T extends ActivityType>(type: T, raw: unknown): Act
     case "match_pairs":
     case "listen_match":
       return cleanPairs(r) as ActivityContent[T];
+    case "true_false_ng":
+      return cleanTfng(r) as ActivityContent[T];
+    case "complete_words":
+      return {
+        text: (typeof r.text === "string" ? r.text : "").replace(/\r/g, "").slice(0, 6000),
+        audioMediaId: typeof r.audioMediaId === "string" && Types.ObjectId.isValid(r.audioMediaId) ? r.audioMediaId : "",
+      } satisfies CompleteWordsContent as ActivityContent[T];
     case "speaking_challenge": {
       const promptType: PromptType = PROMPT_TYPES.includes(r.promptType as PromptType) ? (r.promptType as PromptType) : "text";
       const lines = (v: unknown, n: number) =>
@@ -238,6 +282,15 @@ export function contentProblem(type: ActivityType, content: unknown): string | n
       return sentencesProblem(content as Partial<SentenceContent>);
     case "match_pairs":
       return pairsProblem(content as Partial<MatchContent>);
+    case "true_false_ng":
+      return tfngProblem(content as Partial<TfngContent>);
+    case "complete_words": {
+      const { gaps } = parseGaps({ text: (content as Partial<CompleteWordsContent>).text ?? "", explanations: [] });
+      if (gaps.length < 2) return "Cut at least 2 words: write the missing letters in brackets, e.g. destin[ations] — or use « Blank automatically ».";
+      const bad = gaps.find((g) => g.answers.some((a) => /\s/.test(a) || a.length > 20));
+      if (bad) return `Word ${bad.index + 1}: the brackets hold the missing letters of one word (no spaces, 20 letters max).`;
+      return null;
+    }
     case "listen_match": {
       const c = content as Partial<MatchContent>;
       const missing = (c.pairs ?? []).findIndex((p) => !p.rightAudioMediaId);

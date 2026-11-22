@@ -4,7 +4,7 @@
  * rules in `content.ts`, its editor in components/lab/editors and its player in components/lab/players.
  */
 
-export const ACTIVITY_TYPES = ["listen_choose", "fill_gaps", "listen_fill_gaps", "sentence_builder", "match_pairs", "listen_match", "speaking_challenge"] as const;
+export const ACTIVITY_TYPES = ["listen_choose", "fill_gaps", "listen_fill_gaps", "sentence_builder", "match_pairs", "listen_match", "true_false_ng", "complete_words", "speaking_challenge"] as const;
 export type ActivityType = (typeof ACTIVITY_TYPES)[number];
 
 /** `challenge`: closes a unit (its last step, kind challenge); `practice`: an activity step practising a lesson. */
@@ -54,6 +54,18 @@ export const ACTIVITY_INFO: Record<ActivityType, { label: string; description: s
     description: "Matching pairs where the meanings are heard, not read: written English words on the left, audio cards on the right. The results show each audio's transcript.",
     role: "practice",
     skill: "listening",
+  },
+  "true_false_ng": {
+    label: "True / false / not given",
+    description: "A short work document (email, notice, memo…) and statements to judge: true, false or not given. At correction, the sentence that proves the answer is highlighted.",
+    role: "practice",
+    skill: "reading",
+  },
+  "complete_words": {
+    label: "Complete the words",
+    description: "A paragraph where some words keep only their beginning: the learner types the missing letters, one box per letter (« C-test »). Automatic blanking available.",
+    role: "practice",
+    skill: "language",
   },
   "speaking_challenge": {
     label: "Speaking challenge",
@@ -225,7 +237,47 @@ export function matchScreens<T>(pairs: readonly T[], perScreen: number): T[][] {
   return out;
 }
 
-export type ActivityContent = { "listen_choose": ListeningContent; "fill_gaps": GapsContent; "listen_fill_gaps": ListenGapsContent; "sentence_builder": SentenceContent; "match_pairs": MatchContent; "listen_match": MatchContent; "speaking_challenge": SpeakingChallengeContent };
+/**
+ * R1 — True / false / not given: `text` = the document in English, one sentence per line
+ * (`docSentences`); `docTitle` optional (« E-mail de la DRH »). Each statement has its answer and,
+ * for true / false, `evidence` = index of the sentence that proves it (highlighted at correction).
+ */
+export const TFNG_ANSWERS = ["true", "false", "not_given"] as const;
+export type TfngAnswer = (typeof TFNG_ANSWERS)[number];
+export type TfngStatement = { id: string; text: string; answer: TfngAnswer; evidence: number | null; explanation: string };
+export type TfngContent = { docTitle: string; text: string; statements: TfngStatement[] };
+export const TFNG_LABEL: Record<TfngAnswer, string> = { true: "Vrai", false: "Faux", not_given: "Non mentionné" };
+
+/** The document's sentences (non-empty lines), as numbered by `evidence`. */
+export const docSentences = (text: string) => text.split("\n").map((l) => l.trim()).filter(Boolean);
+
+/**
+ * Complete the words (« C-test »): `text` with each cut word written `destin[ations]` — the
+ * beginning shown, the letters in brackets typed by the learner (one box per letter); one paragraph
+ * per line. Parsed with `parseGaps` (same bracket syntax as fill the gaps).
+ */
+/** `audioMediaId`: optional recording of the whole text (model-audio), played on the results page. */
+export type CompleteWordsContent = { text: string; audioMediaId: string };
+
+/**
+ * Automatic C-test blanking of a plain text: the first sentence stays whole, then every second word
+ * of 3+ letters loses its second half (« destinations » → « destin[ations] »). Text already holding
+ * brackets is returned unchanged.
+ */
+export function autoBlank(text: string): string {
+  if (/\[[^\]]*\]/.test(text)) return text;
+  const firstEnd = text.search(/[.!?](\s|$)/);
+  const head = firstEnd >= 0 ? text.slice(0, firstEnd + 1) : "";
+  let n = 0;
+  const tail = text.slice(head.length).replace(/[A-Za-z][A-Za-z']*/g, (w) => {
+    if (w.length < 3 || n++ % 2 === 0) return w;
+    const keep = Math.max(1, Math.floor(w.length / 2));
+    return `${w.slice(0, keep)}[${w.slice(keep)}]`;
+  });
+  return head + tail;
+}
+
+export type ActivityContent = { "listen_choose": ListeningContent; "fill_gaps": GapsContent; "listen_fill_gaps": ListenGapsContent; "sentence_builder": SentenceContent; "match_pairs": MatchContent; "listen_match": MatchContent; "true_false_ng": TfngContent; "complete_words": CompleteWordsContent; "speaking_challenge": SpeakingChallengeContent };
 
 export const MAX_PLAYS = [0, 2, 3] as const;
 
