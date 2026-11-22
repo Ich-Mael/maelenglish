@@ -11,6 +11,7 @@ import { cleanContent, contentProblem } from "@/lib/lab/content";
 import { parseTime, formatTime, parseGaps, lineOfGap, autoBlank, docSentences, matchScreens, sentenceText, sentenceTiles } from "@/lib/lab/types";
 import { gradeActivity } from "@/lib/lab/grade";
 import { partnerColumn } from "@/components/lab/shell/shuffle";
+import { SELF_OK, SELF_REDO, phraseAccuracy } from "@/lib/lab/speech";
 
 let mongo: MongoMemoryServer;
 beforeAll(async () => {
@@ -271,6 +272,18 @@ describe("Labo", () => {
     expect(gradeActivity("complete_words", cw, { g1: "ATIONS", g2: "in" }).items.map((i) => i.correct)).toEqual([true, false]);
     expect(autoBlank("Budget travel is popular. Hostels make it affordable to visit places once reserved for the wealthy.")).toBe("Budget travel is popular. Hostels ma[ke] it affordable to vi[sit] places on[ce] reserved f[or] the wea[lthy].");
     expect(autoBlank("Already cut[ting].")).toBe("Already cut[ting].");
+
+    // S1 repeat after Mael: words heard in order (contractions / punctuation ignored), 70 % to pass, self-assessment fallback.
+    const acc = phraseAccuracy("Good morning, how can I help you?", "good morning how can help you");
+    expect([acc.percent, acc.words.filter((w) => !w.heard).map((w) => w.word)]).toEqual([86, ["I"]]);
+    expect(phraseAccuracy("I'm fine, thanks.", "I am fine thanks").percent).toBe(100);
+    expect(phraseAccuracy("Could you spell it?", "you spell").percent).toBe(50);
+    const voice = String(new Types.ObjectId());
+    const rp = cleanContent("repeat_after", { json: JSON.stringify({ phrases: [{ id: "a", text: "Good morning, how can I help you?", audioMediaId: voice }, { id: "b", text: "Could you spell it?", audioMediaId: "bad" }] }) });
+    expect(contentProblem("repeat_after", rp)).toMatch(/Phrase 2: add your audio/);
+    expect(contentProblem("repeat_after", { phrases: [rp.phrases[0]] })).toBeNull();
+    expect(gradeActivity("repeat_after", rp, { a: "good morning how can help you", b: SELF_OK }).score).toBe(100);
+    expect(gradeActivity("repeat_after", rp, { a: "good night", b: SELF_REDO }).score).toBe(0);
 
     // Speaking challenge prompts: picture / video / audio, questions one per line; only what the type uses is kept.
     const id = String(new Types.ObjectId());

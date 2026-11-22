@@ -8,7 +8,7 @@ import { courseAccess, courseTree } from "@/lib/learn/queries";
 import { coursePath, examPath, stepPath } from "@/lib/learn/paths";
 import { stepAfter, stepBefore } from "@/lib/learn/sequence";
 import { ChallengeSubmission, User, type ChallengeSubmissionDoc } from "@/models";
-import type { GapsContent, ListenGapsContent, ListeningContent, MatchContent, SentenceContent, SpeakingChallengeContent, TfngContent, CompleteWordsContent } from "@/lib/lab/types";
+import type { GapsContent, ListenGapsContent, ListeningContent, MatchContent, SentenceContent, SpeakingChallengeContent, TfngContent, CompleteWordsContent, RepeatContent } from "@/lib/lab/types";
 import { cleanLessonContent } from "@/lib/course/lesson-content";
 import { feedbackAudioUrl, mediaUrlFor } from "@/lib/media";
 import { AccessProblem, formatDate } from "./ui";
@@ -29,6 +29,7 @@ import { SentencePlayer } from "@/components/lab/players/sentence-player";
 import { MatchPlayer } from "@/components/lab/players/match-player";
 import { TfngPlayer } from "@/components/lab/players/tfng-player";
 import { CompleteWordsPlayer } from "@/components/lab/players/complete-words-player";
+import { RepeatPlayer } from "@/components/lab/players/repeat-player";
 
 function Locked({ courseId, text }: { courseId: string; text: string }) {
   return (
@@ -156,6 +157,33 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
             maelTip={activity.maelTip ?? ""}
             content={activity.content as GapsContent}
             listen={lc ? { audioUrl: clip ?? null, maxPlays: lc.maxPlays, context: lc.context ? <RichText>{lc.context}</RichText> : null } : undefined}
+            courseHref={course}
+            nextHref={nextHref}
+            readOnly={access.readOnly}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (so.kind === "activity" && activity.type === "repeat_after") {
+    const rc = activity.content as RepeatContent;
+    const rcAudio = await mediaUrls(me.id, [...new Set(rc.phrases.map((p) => p.audioMediaId).filter(Boolean))]);
+    return (
+      <div className="mx-auto grid max-w-2xl gap-4">
+        {header}
+        <div>
+          <RepeatPlayer
+            courseId={courseId}
+            stepId={stepId}
+            passScore={so.passScore}
+            lessonHref={so.lessonId ? stepPath(courseId, so.lessonId) : null}
+            title={activity.title}
+            level={activity.level ?? ""}
+            skills={activity.skills ?? []}
+            instructions={activity.instructions ?? ""}
+            maelTip={activity.maelTip ?? ""}
+            content={rc}
+            audioUrls={rcAudio}
             courseHref={course}
             nextHref={nextHref}
             readOnly={access.readOnly}

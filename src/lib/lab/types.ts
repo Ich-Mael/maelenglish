@@ -4,7 +4,7 @@
  * rules in `content.ts`, its editor in components/lab/editors and its player in components/lab/players.
  */
 
-export const ACTIVITY_TYPES = ["listen_choose", "fill_gaps", "listen_fill_gaps", "sentence_builder", "match_pairs", "listen_match", "true_false_ng", "complete_words", "speaking_challenge"] as const;
+export const ACTIVITY_TYPES = ["listen_choose", "fill_gaps", "listen_fill_gaps", "sentence_builder", "match_pairs", "listen_match", "true_false_ng", "complete_words", "repeat_after", "speaking_challenge"] as const;
 export type ActivityType = (typeof ACTIVITY_TYPES)[number];
 
 /** `challenge`: closes a unit (its last step, kind challenge); `practice`: an activity step practising a lesson. */
@@ -66,6 +66,12 @@ export const ACTIVITY_INFO: Record<ActivityType, { label: string; description: s
     description: "A paragraph where some words keep only their beginning: the learner types the missing letters, one box per letter (« C-test »). Automatic blanking available.",
     role: "practice",
     skill: "language",
+  },
+  "repeat_after": {
+    label: "Repeat after Mael",
+    description: "Short phrases to hear and repeat: the browser's speech recognition shows which words were understood (self-assessment where it isn't available).",
+    role: "practice",
+    skill: "pronunciation",
   },
   "speaking_challenge": {
     label: "Speaking challenge",
@@ -281,7 +287,11 @@ export function autoBlank(text: string): string {
   return head + tail;
 }
 
-export type ActivityContent = { "listen_choose": ListeningContent; "fill_gaps": GapsContent; "listen_fill_gaps": ListenGapsContent; "sentence_builder": SentenceContent; "match_pairs": MatchContent; "listen_match": MatchContent; "true_false_ng": TfngContent; "complete_words": CompleteWordsContent; "speaking_challenge": SpeakingChallengeContent };
+/** S1 — Répétez après Mael: phrases (English), each with its model audio (required) and an optional French translation. */
+export type RepeatPhrase = { id: string; text: string; translation: string; audioMediaId: string };
+export type RepeatContent = { phrases: RepeatPhrase[] };
+
+export type ActivityContent = { "listen_choose": ListeningContent; "fill_gaps": GapsContent; "listen_fill_gaps": ListenGapsContent; "sentence_builder": SentenceContent; "match_pairs": MatchContent; "listen_match": MatchContent; "true_false_ng": TfngContent; "complete_words": CompleteWordsContent; "repeat_after": RepeatContent; "speaking_challenge": SpeakingChallengeContent };
 
 export const MAX_PLAYS = [0, 2, 3] as const;
 

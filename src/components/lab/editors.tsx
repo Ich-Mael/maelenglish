@@ -1,6 +1,6 @@
 import { Select, TextArea } from "@/components/admin/ui";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
-import { MAX_SECONDS, PREP_SECONDS, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type GapsContent, type ListenGapsContent, type MatchContent, type SentenceContent, type TfngContent, type CompleteWordsContent } from "@/lib/lab/types";
+import { MAX_SECONDS, PREP_SECONDS, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type GapsContent, type ListenGapsContent, type MatchContent, type SentenceContent, type TfngContent, type CompleteWordsContent, type RepeatContent } from "@/lib/lab/types";
 import { reviewMediaUrl } from "@/lib/media";
 import { ListeningEditor } from "./listening-editor";
 import { GapsEditor } from "./gaps-editor";
@@ -9,6 +9,7 @@ import { SentenceEditor } from "./sentence-editor";
 import { MatchEditor } from "./match-editor";
 import { TfngEditor } from "./tfng-editor";
 import { CompleteWordsEditor } from "./complete-words-editor";
+import { RepeatEditor } from "./repeat-editor";
 import { PromptField } from "./prompt-field";
 import { AudioInput } from "./audio-input";
 
@@ -47,6 +48,12 @@ export async function ActivityFields({ type, content }: { type: ActivityType; co
       const ids = [...new Set((c.statements ?? []).map((s) => s.audioMediaId ?? "").filter(Boolean))];
       const audioUrls = Object.fromEntries(await Promise.all(ids.map(async (id) => [id, await reviewMediaUrl(id).catch(() => null)] as const)));
       return <TfngEditor initial={c} imageUrl={imageUrl} audioUrls={audioUrls} />;
+    }
+    case "repeat_after": {
+      const c = content as Partial<RepeatContent>;
+      const ids = [...new Set((c.phrases ?? []).map((p) => p.audioMediaId).filter(Boolean))];
+      const audioUrls = Object.fromEntries(await Promise.all(ids.map(async (id) => [id, await reviewMediaUrl(id).catch(() => null)] as const)));
+      return <RepeatEditor initial={c} audioUrls={audioUrls} />;
     }
     case "complete_words": {
       const c = content as Partial<CompleteWordsContent>;

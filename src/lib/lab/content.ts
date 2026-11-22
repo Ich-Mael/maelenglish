@@ -1,7 +1,7 @@
 import { normalizeRich, plainText } from "@/lib/rich-text";
 import { Types } from "mongoose";
 import { videoSource } from "@/lib/learn/media";
-import { MAX_PLAYS, MAX_SECONDS, PREP_SECONDS, PROMPT_TYPES, SENTENCE_AUDIO_WHEN, MATCH_PER_SCREEN, TFNG_ANSWERS, docSentences, type CompleteWordsContent, type TfngAnswer, type TfngContent, type TfngStatement, sentenceTiles, type MatchContent, type MatchPair, type PromptType, type SentenceContent, type SentenceItem, type ActivityContent, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type ListeningQuestion, type GapsContent, type ListenGapsContent, GAP_HINTS, parseGaps } from "./types";
+import { MAX_PLAYS, MAX_SECONDS, PREP_SECONDS, PROMPT_TYPES, SENTENCE_AUDIO_WHEN, MATCH_PER_SCREEN, TFNG_ANSWERS, docSentences, type CompleteWordsContent, type RepeatContent, type TfngAnswer, type TfngContent, type TfngStatement, sentenceTiles, type MatchContent, type MatchPair, type PromptType, type SentenceContent, type SentenceItem, type ActivityContent, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type ListeningQuestion, type GapsContent, type ListenGapsContent, GAP_HINTS, parseGaps } from "./types";
 
 /*
  * Content rules per activity type (server: rich text is sanitised here). `cleanContent` turns what
@@ -226,6 +226,25 @@ export function cleanContent<T extends ActivityType>(type: T, raw: unknown): Act
       return cleanPairs(r) as ActivityContent[T];
     case "true_false_ng":
       return cleanTfng(r) as ActivityContent[T];
+    case "repeat_after": {
+      let j: Record<string, unknown> = r;
+      if (typeof r.json === "string") {
+        try {
+          j = JSON.parse(r.json) as Record<string, unknown>;
+        } catch {
+          j = {};
+        }
+      }
+      const seen = new Set<string>();
+      const phrases = (Array.isArray(j.phrases) ? j.phrases : []).slice(0, 20).map((raw, i) => {
+        const p = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+        let id = str(p.id, 40).replace(/[^\w-]/g, "") || `r${i + 1}`;
+        if (seen.has(id)) id = `r${i + 1}-${seen.size}`;
+        seen.add(id);
+        return { id, text: str(p.text, 200), translation: str(p.translation, 200), audioMediaId: typeof p.audioMediaId === "string" && Types.ObjectId.isValid(p.audioMediaId) ? p.audioMediaId : "" };
+      });
+      return { phrases } satisfies RepeatContent as ActivityContent[T];
+    }
     case "complete_words":
       return {
         text: (typeof r.text === "string" ? r.text : "").replace(/\r/g, "").slice(0, 6000),
@@ -287,6 +306,15 @@ export function contentProblem(type: ActivityType, content: unknown): string | n
       return pairsProblem(content as Partial<MatchContent>);
     case "true_false_ng":
       return tfngProblem(content as Partial<TfngContent>);
+    case "repeat_after": {
+      const phrases = (content as Partial<RepeatContent>).phrases ?? [];
+      if (!phrases.length) return "Add at least one phrase.";
+      for (const [i, p] of phrases.entries()) {
+        if (!p.text) return `Phrase ${i + 1}: write it.`;
+        if (!p.audioMediaId) return `Phrase ${i + 1}: add your audio (learners repeat after it).`;
+      }
+      return null;
+    }
     case "complete_words": {
       const { gaps } = parseGaps({ text: (content as Partial<CompleteWordsContent>).text ?? "", explanations: [] });
       if (gaps.length < 2) return "Cut at least 2 words: write the missing letters in brackets, e.g. destin[ations] — or use « Blank automatically ».";

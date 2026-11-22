@@ -65,6 +65,12 @@ export const TYPE_LOOK: Record<ActivityType, { band: string; tile: string; examp
     example: "E.g. Voyager pas cher",
     perks: ["One box per letter", "Automatic blanking", "Spelling counts"],
   },
+  repeat_after: {
+    band: "bg-gradient-to-br from-primary to-brand-deep text-white",
+    tile: "bg-gradient-to-br from-primary to-brand-deep text-white",
+    example: "E.g. Accueillir un client",
+    perks: ["Hear Mael, then repeat", "Words understood shown", "Self-check fallback"],
+  },
   speaking_challenge: {
     band: "bg-gradient-to-br from-brand-deep via-brand-deep to-brand-dark text-white",
     tile: "bg-gradient-to-br from-brand-deep to-brand-dark text-white ring-2 ring-coral",
@@ -80,7 +86,7 @@ export const isLightType = (t: ActivityType) => t === "fill_gaps" || t === "sent
 export const COMING_NEXT = [
   { name: "Error hunt", skill: "language" as SkillFamily },
   { name: "Reorder paragraphs", skill: "reading" as SkillFamily },
-  { name: "Repeat after Mael", skill: "pronunciation" as SkillFamily },
+  { name: "Minimal pairs", skill: "pronunciation" as SkillFamily },
   { name: "Email builder", skill: "writing" as SkillFamily },
 ];
 
@@ -222,6 +228,28 @@ export function TypeArt({ type, className }: { type: ActivityType; className?: s
               <span className="text-brand-deep/50">{after as string}</span>
             </div>
           ))}
+        </div>
+      )}
+      {type === "repeat_after" && (
+        <div className="grid gap-2">
+          <div className="flex items-center gap-2">
+            <span className="flex size-7 items-center justify-center rounded-full bg-white text-primary">
+              <span className="ml-0.5 size-0 border-y-[5px] border-l-[8px] border-y-transparent border-l-current" />
+            </span>
+            <span className="text-[11px] font-bold text-white">Good morning, how can I help?</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="flex size-7 items-center justify-center rounded-full border-2 border-coral bg-white">
+              <span className="h-3 w-2 rounded-full bg-coral" />
+            </span>
+            <span className="flex flex-wrap gap-1 text-[10px] font-bold">
+              {["Good", "morning,", "how", "can", "I", "help?"].map((w, i) => (
+                <span key={i} className={cn("rounded px-1", i === 3 ? "bg-coral-soft text-coral-dark" : "bg-white text-primary")}>
+                  {w}
+                </span>
+              ))}
+            </span>
+          </div>
         </div>
       )}
       {type === "speaking_challenge" && (
