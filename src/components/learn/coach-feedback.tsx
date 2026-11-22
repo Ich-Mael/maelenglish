@@ -33,18 +33,18 @@ export function CoachFeedback({ d, className }: { d: CoachFeedbackData; classNam
   const pct = ok && d.grade != null ? Math.round((d.grade / max) * 100) : null;
 
   return (
-    <div className={cn("grid min-w-0 gap-3 rounded-2xl p-4 sm:p-5", ok ? "bg-success/8" : "bg-coral-soft/70", className)}>
+    <div className={cn("grid min-w-0 gap-3 rounded-2xl p-4 sm:p-5", ok ? "bg-gradient-to-br from-brand-soft via-brand-soft/60 to-white" : "bg-coral-soft/70", className)}>
       <div className="flex items-center gap-3">
         <Avatar src={d.coach?.avatarUrl} name={coachInitialName(name)} className="size-11 text-base ring-2 ring-white" />
         <div className="min-w-0 flex-1">
-          <p className={cn("text-[11px] font-bold tracking-wide uppercase", ok ? "text-success" : "text-coral-dark")}>{ok ? "Validé par votre coach" : "Votre coach vous demande de reprendre"}</p>
+          <p className={cn("text-[11px] font-bold tracking-wide uppercase", ok ? "text-primary" : "text-coral-dark")}>{ok ? "Validé par votre coach" : "Votre coach vous demande de reprendre"}</p>
           <p className="font-heading leading-tight font-extrabold break-words text-brand-deep">{name}</p>
           {d.gradedAt && <p className="text-xs text-muted-foreground">Le {formatDate(d.gradedAt)}</p>}
         </div>
         {pct !== null && (
-          <div className="relative flex size-14 shrink-0 items-center justify-center rounded-full" style={{ background: `conic-gradient(var(--color-success) ${pct}%, color-mix(in oklab, var(--color-success) 15%, white) 0)` }} role="img" aria-label={`Note : ${d.grade} sur ${max}`}>
+          <div className="relative flex size-14 shrink-0 items-center justify-center rounded-full" style={{ background: `conic-gradient(var(--color-primary), var(--color-brand-deep) ${pct}%, color-mix(in oklab, var(--color-primary) 15%, white) 0)` }} role="img" aria-label={`Note : ${d.grade} sur ${max}`}>
             <span className="flex size-11 flex-col items-center justify-center rounded-full bg-white leading-none">
-              <span className="font-heading text-base font-extrabold text-success tabular-nums">{d.grade}</span>
+              <span className="font-heading text-base font-extrabold text-primary tabular-nums">{d.grade}</span>
               <span className="text-[10px] font-semibold text-muted-foreground">/ {max}</span>
             </span>
           </div>
@@ -68,7 +68,7 @@ export function CoachFeedback({ d, className }: { d: CoachFeedbackData; classNam
         !d.voiceNote && <p className="text-sm text-muted-foreground">{ok ? "Votre coach a validé votre défi sans commentaire." : "Pas de commentaire écrit."}</p>
       )}
 
-      <p className={cn("flex items-start gap-2 text-sm font-semibold", ok ? "text-success" : "text-coral-dark")}>
+      <p className={cn("flex items-start gap-2 text-sm font-semibold", ok ? "text-primary" : "text-coral-dark")}>
         {ok ? (
           <>
             <Sparkles className="mt-0.5 size-4 shrink-0" aria-hidden /> Bravo ! +{XP.challengeValidated} XP pour ce défi validé.

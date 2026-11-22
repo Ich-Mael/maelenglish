@@ -15,7 +15,7 @@ export const metadata: Metadata = { title: "Mes cours", robots: { index: false }
 
 const STATE_LABEL: Record<MyCourse["state"], { label: string; cls: string } | null> = {
   active: null,
-  completed: { label: "Terminé", cls: "bg-success/15 text-success" },
+  completed: { label: "Terminé", cls: "bg-gradient-to-br from-primary to-brand-deep text-white" },
   "not-started": { label: "Bientôt", cls: "bg-xp/20 text-[#9a6200]" },
   expired: { label: "Accès terminé", cls: "bg-muted text-muted-foreground" },
   suspended: { label: "Suspendu", cls: "bg-destructive/10 text-destructive" },
@@ -114,7 +114,7 @@ function CourseCard({ course: c }: { course: MyCourse }) {
               <span className="text-ink/75">
                 {c.stepsDone} / {c.stepsTotal} activités
               </span>
-              <span className="text-success">{percent} %</span>
+              <span className="text-primary">{percent} %</span>
             </div>
             <ProgressBar value={percent} className="mt-1.5" />
             <span className="mt-4 inline-flex items-center gap-1.5 font-bold text-coral-dark">

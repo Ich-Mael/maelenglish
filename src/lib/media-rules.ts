@@ -26,6 +26,7 @@ export const MAX_BYTES: Record<MediaKind, number> = {
   clip: 30 * MB,
   instruction: 60 * MB, // short instruction video recorded by Mael
   avatar: 2 * MB, // resized to 320 px in the browser (≈ 20 KB)
+  image: 3 * MB, // challenge prompt pictures, resized to 1600 px in the browser (≈ 150 KB)
 };
 
 /** Base type without parameters: "audio/webm;codecs=opus" → "audio/webm". */
@@ -33,7 +34,7 @@ export const baseMime = (mime: string) => mime.split(";")[0].trim().toLowerCase(
 
 export function extensionFor(kind: MediaKind, mime: string): string | null {
   const m = baseMime(mime);
-  if (kind === "avatar") return IMAGE[m] ?? null;
+  if (kind === "avatar" || kind === "image") return IMAGE[m] ?? null;
   return AUDIO[m] ?? (kind === "instruction" ? VIDEO[m] : undefined) ?? null;
 }
 
@@ -50,13 +51,14 @@ export const visibilityFor = (kind: MediaKind): "private" | "public" => (kind ==
  * notes to them — private) vs course audio uploaded by staff (clips, model answers, instructions),
  * plus profile photos.
  */
-export const MEDIA_FOLDER: Record<MediaKind, "students_audio" | "courses_audios" | "profile_photos"> = {
+export const MEDIA_FOLDER: Record<MediaKind, "students_audio" | "courses_audios" | "courses_images" | "profile_photos"> = {
   recording: "students_audio",
   "voice-note": "students_audio",
   clip: "courses_audios",
   "model-audio": "courses_audios",
   instruction: "courses_audios",
   avatar: "profile_photos",
+  image: "courses_images",
 };
 
 /** `<folder>/<kind>/<yyyy-mm>/<id>.<ext>`, e.g. `students_audio/recording/2026-11/…webm`. Older files keep their stored key. */

@@ -8,7 +8,7 @@ import { defineModel } from "./define";
  * Browsers upload straight to storage with a presigned URL, then the upload is confirmed
  * (`status` pending → ready). Learner recordings and voice notes are private.
  */
-export const MEDIA_KINDS = ["recording", "voice-note", "clip", "model-audio", "instruction", "avatar"] as const;
+export const MEDIA_KINDS = ["recording", "voice-note", "clip", "model-audio", "instruction", "avatar", "image"] as const;
 export type MediaKind = (typeof MEDIA_KINDS)[number];
 
 const mediaSchema = new Schema(

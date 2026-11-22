@@ -5,8 +5,7 @@ import { connection } from "next/server";
 import { ArrowRight, Clock, Flame, Layers, ListChecks, PartyPopper } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
 import { courseAccess, courseTree } from "@/lib/learn/queries";
-import { coursePath, nextPath, stepPath } from "@/lib/learn/paths";
-import { DownloadCourse } from "@/components/pwa/download-course";
+import { nextPath } from "@/lib/learn/paths";
 import { findProgram, programPhoto, sameName } from "@/lib/catalog";
 import type { Outline } from "@/lib/learn/progress";
 import { CourseMap } from "@/components/learn/course-map";
@@ -42,18 +41,6 @@ async function CourseHome({ params }: { params: Promise<{ courseId: string }> })
         outline={outline}
         next={next}
       />
-
-      {outline.stepsTotal > 0 && (
-        <DownloadCourse
-          courseId={courseId}
-          urls={[
-            coursePath(courseId),
-            "/mes-cours",
-            // Every lesson step of the open modules: offline, the next lesson can be read without asking the server.
-            ...outline.modules.filter((m) => m.state !== "locked").flatMap((m) => m.units.flatMap((u) => u.steps.filter((s) => s.kind === "lesson").map((s) => stepPath(courseId, s.id)))),
-          ]}
-        />
-      )}
 
       {outline.modules.length === 0 ? (
         <p className="rounded-3xl border-2 border-dashed border-border p-8 text-center text-muted-foreground">Le contenu de ce cours arrive bientôt.</p>

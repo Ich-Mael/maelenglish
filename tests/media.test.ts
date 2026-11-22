@@ -14,6 +14,11 @@ describe("upload rules", () => {
     expect(extensionFor("recording", "audio/mp4")).toBe("m4a");
     expect(extensionFor("recording", "video/mp4")).toBeNull();
     expect(extensionFor("instruction", "video/mp4")).toBe("mp4");
+    // Challenge prompt pictures: images only, staff only, public, own folder.
+    expect([extensionFor("image", "image/webp"), extensionFor("image", "audio/mpeg")]).toEqual(["webp", null]);
+    expect(uploadProblem("image", "image/jpeg", 1000, { isStaff: false })).toMatch(/autorisé/);
+    expect(uploadProblem("image", "image/jpeg", 1000, { isStaff: true })).toBeNull();
+    expect([visibilityFor("image"), storageKey("image", "x", "webp", new Date("2026-11-22")).split("/")[0]]).toEqual(["public", "courses_images"]);
     expect(extensionFor("recording", "application/pdf")).toBeNull();
   });
 

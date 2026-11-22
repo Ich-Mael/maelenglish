@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { User, UserBadge, UserStats, XpEvent, type UserStatsDoc } from "@/models";
-import { BADGES, DEFAULT_DAILY_GOAL, XP, dayKey, displayStreak, levelFor, newlyEarned, nextStreak, publicName, weekStart, type StatCounters } from "./rules";
+import { BADGES, BADGE_GROUPS, DEFAULT_DAILY_GOAL, XP, badgeAvailable, dayKey, displayStreak, levelFor, metricValue, metricsFromSources, newlyEarned, nextStreak, publicName, weekStart, type StatCounters } from "./rules";
 
 /*
  * Awards XP and keeps streaks, daily goal and badges up to date.
@@ -43,6 +43,12 @@ function counters(s: Partial<UserStatsDoc> | null): StatCounters {
     examsPassed: s?.examsPassed ?? 0,
     assignmentsSubmitted: s?.assignmentsSubmitted ?? 0,
   };
+}
+
+/** Counters plus the counts from the XP history (skills, validations, goals, replays). */
+async function badgeMetrics(userId: Id, s: Partial<UserStatsDoc> | null): Promise<StatCounters> {
+  const rows = await XpEvent.aggregate<{ _id: string; n: number }>([{ $match: { userId: new Types.ObjectId(String(userId)) } }, { $group: { _id: "$source", n: { $sum: 1 } } }]);
+  return { ...counters(s), ...metricsFromSources(Object.fromEntries(rows.map((r) => [r._id, r.n]))) };
 }
 
 /** Awards a batch of items (each idempotent by key). Returns null when nothing new was earned. */
@@ -93,7 +99,7 @@ export async function award(userId: Id, items: AwardInput[], now: Date = new Dat
   ).lean<UserStatsDoc>();
 
   const owned = new Set((await UserBadge.find({ userId }).select("badgeId").lean()).map((b) => b.badgeId));
-  const earned = newlyEarned(counters(after), owned);
+  const earned = newlyEarned(await badgeMetrics(userId, after), owned);
   const badges: Reward["badges"] = [];
   for (const b of earned) {
     try {
@@ -152,10 +158,37 @@ export async function setDailyGoal(userId: Id, goal: number) {
   await UserStats.updateOne({ userId }, { $set: { dailyGoal: goal } }, { upsert: true });
 }
 
+/**
+ * Every badge with the learner's progress, grouped as on « Ma progression ». Badges whose
+ * condition is already met (e.g. new badges counting past work) are granted here, silently.
+ */
 export async function badgesFor(userId: Id) {
-  const owned = new Map((await UserBadge.find({ userId }).lean()).map((b) => [b.badgeId, b.earnedAt]));
-  return BADGES.map((b) => ({ id: b.id, name: b.name, description: b.description, icon: b.icon, earnedAt: owned.get(b.id) ?? null }));
+  const [stats, rows] = await Promise.all([UserStats.findOne({ userId }).lean<UserStatsDoc>(), UserBadge.find({ userId }).lean()]);
+  const m = await badgeMetrics(userId, stats);
+  const owned = new Map(rows.map((r) => [r.badgeId, r.earnedAt]));
+  for (const x of newlyEarned(m, new Set(owned.keys()))) {
+    try {
+      const row = await UserBadge.create({ userId, badgeId: x.id });
+      owned.set(x.id, row.earnedAt);
+    } catch (e) {
+      if ((e as { code?: number }).code !== 11000) throw e;
+    }
+  }
+  const badges = BADGES.map((x) => ({
+    id: x.id,
+    name: x.name,
+    description: x.description,
+    icon: x.icon,
+    group: x.group,
+    tier: x.tier,
+    goal: x.goal,
+    value: Math.min(x.goal, metricValue(m, x.metric)),
+    available: badgeAvailable(x),
+    earnedAt: owned.get(x.id) ?? null,
+  }));
+  return BADGE_GROUPS.map((g) => ({ ...g, badges: badges.filter((x) => x.group === g.id) }));
 }
+export type BadgeView = Awaited<ReturnType<typeof badgesFor>>[number]["badges"][number];
 
 /** XP per day for the last `days` days (oldest first). */
 export async function xpByDay(userId: Id, days = 7, now: Date = new Date()) {

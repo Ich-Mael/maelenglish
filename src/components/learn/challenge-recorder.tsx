@@ -54,9 +54,9 @@ export function ChallengeRecorder({
 
   if (phase === "sent") {
     return (
-      <div className="grid gap-4 rounded-3xl border-2 border-success/30 bg-success/10 p-5 sm:p-6" role="status">
+      <div className="grid gap-4 rounded-3xl border-2 border-primary/25 bg-gradient-to-br from-brand-soft to-white p-5 sm:p-6" role="status">
         <p className="flex items-center gap-2 font-heading text-lg font-bold text-brand-deep">
-          <CircleCheck className="size-6 text-success" aria-hidden /> {note}
+          <CircleCheck className="size-6 text-primary" aria-hidden /> {note}
         </p>
         <Link href={courseHref} className="inline-flex h-12 w-fit items-center rounded-2xl bg-primary px-6 font-semibold text-white">
           Continuer le parcours

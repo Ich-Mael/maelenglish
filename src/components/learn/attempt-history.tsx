@@ -20,7 +20,7 @@ const TEXT = {
 } as const;
 
 const TONE = {
-  graded: { row: "border-l-success", icon: "bg-success text-white", pill: "bg-success/12 text-success", Icon: CircleCheck },
+  graded: { row: "border-l-brand-deep", icon: "bg-gradient-to-br from-primary to-brand-deep text-white", pill: "bg-gradient-to-br from-primary to-brand-deep text-white", Icon: CircleCheck },
   returned: { row: "border-l-coral", icon: "bg-coral-soft text-coral-dark", pill: "border border-coral bg-white text-coral-dark", Icon: RotateCcw },
   feedback: { row: "border-l-primary", icon: "bg-brand-soft text-primary", pill: "bg-brand-soft text-primary", Icon: MessageSquare },
   none: { row: "border-l-border", icon: "bg-muted text-muted-foreground", pill: "bg-muted text-muted-foreground", Icon: Clock },
@@ -110,7 +110,7 @@ export function AttemptHistory({ items, locale = "fr", open = false, className }
           {t.title} ({items.length})
         </span>
         {counts.graded > 0 && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-success/12 px-2 py-0.5 font-sans text-xs font-bold text-success" title={t.graded}>
+          <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-br from-primary to-brand-deep px-2 py-0.5 font-sans text-xs font-bold text-white" title={t.graded}>
             <CircleCheck className="size-3.5" aria-hidden /> {counts.graded}
             <span className="sr-only">{t.graded}</span>
           </span>

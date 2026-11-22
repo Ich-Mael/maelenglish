@@ -5,6 +5,7 @@ import { reviewMediaUrl } from "@/lib/media";
 import { ListeningEditor } from "./listening-editor";
 import { GapsEditor } from "./gaps-editor";
 import { ListenGapsEditor } from "./listen-gaps-editor";
+import { PromptField } from "./prompt-field";
 import { AudioInput } from "./audio-input";
 
 /*
@@ -54,13 +55,16 @@ export async function ActivityFields({ type, content }: { type: ActivityType; co
     }
     case "speaking_challenge": {
       const c = content as Partial<SpeakingChallengeContent>;
-      const modelUrl = c.modelAnswerAudioMediaId ? await reviewMediaUrl(c.modelAnswerAudioMediaId).catch(() => null) : null;
-      return <SpeakingChallengeFields c={c} modelUrl={modelUrl} />;
+      const [modelUrl, promptUrl] = await Promise.all([
+        c.modelAnswerAudioMediaId ? reviewMediaUrl(c.modelAnswerAudioMediaId).catch(() => null) : null,
+        c.promptMediaId ? reviewMediaUrl(c.promptMediaId).catch(() => null) : null,
+      ]);
+      return <SpeakingChallengeFields c={c} modelUrl={modelUrl} promptUrl={promptUrl} />;
     }
   }
 }
 
-function SpeakingChallengeFields({ c, modelUrl }: { c: Partial<SpeakingChallengeContent>; modelUrl: string | null }) {
+function SpeakingChallengeFields({ c, modelUrl, promptUrl }: { c: Partial<SpeakingChallengeContent>; modelUrl: string | null; promptUrl: string | null }) {
   return (
     <>
       <RichTextEditor
@@ -68,7 +72,16 @@ function SpeakingChallengeFields({ c, modelUrl }: { c: Partial<SpeakingChallenge
         name="c_instructions"
         minHeight={200}
         defaultValue={c.instructions ?? ""}
-        hint="What the learner must say, reusing the unit's vocabulary (in French, for learners). E.g. « Vous êtes chef de cabine : accueillez les passagers, annoncez la destination et la durée du vol. »"
+        hint="What the learner must say, reusing the unit's vocabulary (in French, for learners). E.g. « Vous êtes chef de cabine : accueillez les passagers, annoncez la destination et la durée du vol. » or « Décrivez cette photo : le lieu, les personnes, ce qu'elles font. »"
+      />
+      <PromptField initial={{ type: c.promptType ?? "text", mediaId: c.promptMediaId ?? "", videoUrl: c.promptVideoUrl ?? "", alt: c.promptAlt ?? "" }} mediaUrl={promptUrl} />
+      <TextArea
+        label="Questions to answer (optional)"
+        name="c_questions"
+        rows={3}
+        defaultValue={(c.questions ?? []).join("\n")}
+        placeholder={"What is the woman doing?\nWhat would you do in her place? Why?"}
+        hint="One question per line, up to 10. The learner answers them in the recording; shown numbered under the prompt and to the coach while grading."
       />
       <div className="grid gap-3 sm:grid-cols-2">
         <Select label="Maximum length" name="c_maxSeconds" defaultValue={String(c.maxSeconds ?? 60)} options={MAX_SECONDS.map((n) => ({ value: String(n), label: seconds(n) }))} />

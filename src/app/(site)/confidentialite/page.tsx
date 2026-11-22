@@ -96,7 +96,7 @@ export default function PrivacyPage() {
         <Section title="Cookies et stockage sur votre appareil">
           <p>
             Nous utilisons uniquement des cookies nécessaires : un cookie de session (pour rester connecté) et un identifiant d&apos;appareil.
-            L&apos;application enregistre aussi sur votre appareil vos préférences (sons) et, si vous le demandez, les leçons téléchargées pour
+            L&apos;application enregistre aussi sur votre appareil vos préférences (sons) et une copie des leçons déjà ouvertes, pour
             un usage hors ligne. Ces données sont effacées à la déconnexion. Aucun cookie publicitaire ni de mesure d&apos;audience tierce.
           </p>
         </Section>

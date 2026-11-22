@@ -16,6 +16,7 @@ import { PageSkeleton } from "@/components/learn/ui";
 import { challengeAttempts } from "@/lib/learn/challenge";
 import { previousAttempts } from "@/lib/learn/attempt-history";
 import { AttemptHistory } from "@/components/learn/attempt-history";
+import { ChallengePrompt } from "@/components/learn/challenge-prompt";
 
 export const metadata: Metadata = { title: "Grading" };
 
@@ -39,6 +40,7 @@ async function Grade({ params }: { params: Promise<{ submissionId: string }> }) 
     sub.feedbackAudioMediaId ? reviewMediaUrl(String(sub.feedbackAudioMediaId)).catch(() => null) : null,
   ]);
   const c = challenge?.content as SpeakingChallengeContent | undefined;
+  const promptUrl = c?.promptMediaId ? await reviewMediaUrl(c.promptMediaId).catch(() => null) : null;
 
   // Earlier recordings and the feedback given on each (newest first): what the learner must improve.
   const attempts = challengeAttempts(sub);
@@ -76,6 +78,7 @@ async function Grade({ params }: { params: Promise<{ submissionId: string }> }) 
           <AttemptHistory items={earlier} locale="en" open />
           <Card title={challenge?.title || "Speaking challenge"}>
             <RichText>{c?.instructions ?? ""}</RichText>
+            {c && <ChallengePrompt c={c} mediaUrl={promptUrl} title={challenge?.title || "Speaking challenge"} locale="en" className="mt-3" />}
             {(c?.mustInclude ?? []).length > 0 && (
               <div className="mt-3">
                 <p className="text-sm font-semibold text-brand-deep">The learner should include</p>

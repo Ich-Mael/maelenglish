@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { Course, User, UserStats, XpEvent } from "@/models";
+import { Course, User, UserBadge, UserStats, XpEvent } from "@/models";
 import { award, badgesFor, statsFor, weeklyLeaderboard, xpByDay } from "@/lib/gamification/service";
-import { dayKey, displayStreak, levelFor, levelThreshold, nextStreak, practiceXp, previousDay, publicName, weekStart } from "@/lib/gamification/rules";
+import { BADGES, BADGE_GROUPS, dayKey, displayStreak, levelFor, levelThreshold, metricsFromSources, nextStreak, practiceXp, previousDay, publicName, weekStart } from "@/lib/gamification/rules";
 
 describe("rules", () => {
   it("levels", () => {
@@ -66,6 +66,24 @@ describe("award", () => {
     expect(await XpEvent.countDocuments({ userId: u._id })).toBe(1);
   });
 
+  it("counts skill badges from the XP history (past work too), and flags skills without exercises as coming soon", async () => {
+    const u = await learner("awa");
+    expect(metricsFromSources({ listen_choose: 2, listen_fill_gaps: 1, fill_gaps: 3, challenge_validated: 1, daily_goal: 4, practice_replay: 2, speaking_challenge: 9 })).toEqual({ listening: 3, language: 3, reading: 0, writing: 0, pronunciation: 0, challengesValidated: 1, dailyGoals: 4, replays: 2 });
+    // Activity steps done before these badges existed: granted when the page is opened.
+    await XpEvent.create([
+      { userId: u._id, key: "step:1", source: "listen_choose", amount: 10, day: "2026-11-16" },
+      { userId: u._id, key: "graded:1", source: "challenge_validated", amount: 20, day: "2026-11-16" },
+    ]);
+    const all = (await badgesFor(u._id)).flatMap((g) => g.badges);
+    const get = (id: string) => all.find((b) => b.id === id)!;
+    expect([!!get("listen-1").earnedAt, !!get("validated-1").earnedAt, get("listen-10").value, !!get("lang-1").earnedAt]).toEqual([true, true, 1, false]);
+    expect([get("listen-1").available, get("read-1").available, get("write-1").available, get("pron-1").available]).toEqual([true, false, false, false]);
+    expect(await UserBadge.countDocuments({ userId: u._id })).toBe(2);
+    // Every badge belongs to a group, ids are unique.
+    expect(new Set(BADGES.map((b) => b.id)).size).toBe(BADGES.length);
+    expect(BADGES.every((b) => BADGE_GROUPS.some((g) => g.id === b.group))).toBe(true);
+  });
+
   it("adds the daily goal bonus once, and levels up", async () => {
     const u = await learner("awa");
     const r1 = await award(u._id, [{ key: "a", source: "lesson", amount: 25 }], day("2026-11-16"));
@@ -84,7 +102,7 @@ describe("award", () => {
     }
     const s = await UserStats.findOne({ userId: u._id }).lean();
     expect(s?.longestStreak).toBe(3);
-    expect((await badgesFor(u._id)).find((b) => b.id === "streak-3")?.earnedAt).toBeInstanceOf(Date);
+    expect((await badgesFor(u._id)).flatMap((g) => g.badges).find((b) => b.id === "streak-3")?.earnedAt).toBeInstanceOf(Date);
 
     const r = await award(u._id, [{ key: "late", source: "lesson", amount: 5 }], day("2026-11-21"));
     expect(r?.streak).toBe(1);

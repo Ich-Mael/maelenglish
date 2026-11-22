@@ -10,26 +10,38 @@ export type ActivityType = (typeof ACTIVITY_TYPES)[number];
 /** `challenge`: closes a unit (its last step, kind challenge); `practice`: an activity step practising a lesson. */
 export type ActivityRole = "practice" | "challenge";
 
-export const ACTIVITY_INFO: Record<ActivityType, { label: string; description: string; role: ActivityRole }> = {
+/**
+ * Skill family of a type, for the learner's skill badges (src/lib/gamification/rules.ts): listening
+ * (L…), language = grammar & vocabulary (V…), reading (R…), writing (W…), pronunciation (S1 repeat
+ * after Mael), speaking (the unit challenge, counted separately).
+ */
+export const SKILL_FAMILIES = ["listening", "language", "reading", "writing", "pronunciation", "speaking"] as const;
+export type SkillFamily = (typeof SKILL_FAMILIES)[number];
+
+export const ACTIVITY_INFO: Record<ActivityType, { label: string; description: string; role: ActivityRole; skill: SkillFamily }> = {
   "listen_choose": {
     label: "Listening comprehension",
     description: "An audio clip and multiple-choice questions. At correction, the learner replays the exact passage of each answer.",
     role: "practice",
+    skill: "listening",
   },
   "fill_gaps": {
     label: "Fill the gaps",
     description: "A text with blanks to complete. Each blank shows the shape of its answer (words and letters); optional word bank.",
     role: "practice",
+    skill: "language",
   },
   "listen_fill_gaps": {
     label: "Listen and fill the gaps",
     description: "An audio clip and its transcript with blanks: the learner completes what they hear. At correction, each blank replays its sentence.",
     role: "practice",
+    skill: "listening",
   },
   "speaking_challenge": {
     label: "Speaking challenge",
     description: "The learner records an answer to instructions; a coach gives feedback. Closes a unit.",
     role: "challenge",
+    skill: "speaking",
   },
 };
 
@@ -39,8 +51,21 @@ export const isActivityType = (t: unknown): t is ActivityType => ACTIVITY_TYPES.
  * Unit speaking challenge (owner spec: prompt, prep and record timers, « must include » checklist,
  * model answer). The model answer (text + optional audio) is shown once the recording is sent.
  */
+/** What the learner reacts to: the instructions alone, or a picture to describe, a video or an audio to give an opinion on / answer questions about. */
+export const PROMPT_TYPES = ["text", "image", "video", "audio"] as const;
+export type PromptType = (typeof PROMPT_TYPES)[number];
+
 export type SpeakingChallengeContent = {
   instructions: string;
+  promptType: PromptType;
+  /** Image (Media kind « image ») or audio (« model-audio ») of the prompt. */
+  promptMediaId: string;
+  /** Video link (YouTube, Vimeo or an .mp4 file). */
+  promptVideoUrl: string;
+  /** Picture description (screen readers, and a caption if the image doesn't load). */
+  promptAlt: string;
+  /** Optional questions the learner answers in the recording (French or English), one per line in the editor. */
+  questions: string[];
   maxSeconds: number;
   prepSeconds: number;
   mustInclude: string[];

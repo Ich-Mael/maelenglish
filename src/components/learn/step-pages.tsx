@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Photo } from "@/components/site/photo";
 import { sendsAllowed, sendsLeft, sendsUsed } from "@/lib/learn/challenge";
-import { headers } from "next/headers";
 import { connection } from "next/server";
 import { ChevronDown, ChevronLeft, ChevronRight, CircleCheck, Clock, Headphones, ListChecks, Lock, Mic, RotateCcw, Timer } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
@@ -18,6 +17,7 @@ import { QuizRunner, type PublicQuestion } from "./quiz-runner";
 import { ChallengeRecorder } from "./challenge-recorder";
 import { AwaitingCoach, CoachFeedback } from "./coach-feedback";
 import { AttemptHistory } from "./attempt-history";
+import { ChallengePrompt } from "./challenge-prompt";
 import { previousAttempts } from "@/lib/learn/attempt-history";
 import { coachLabel } from "@/lib/coach-name";
 import { CompleteButton } from "./complete-button";
@@ -69,10 +69,7 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
   const step = steps.find((s) => String(s._id) === stepId);
   if (!mod || !unit || !so || !step) return <AccessProblem reason="not-found" />;
 
-  let state = so.state;
-  // Offline download (service worker): steps of an open module are fetched ahead of order so they
-  // can be done offline; completions are replayed in order and re-checked by the server.
-  if (state === "locked" && mod.state !== "locked" && (await headers()).get("x-me-offline") === "1") state = "available";
+  const state = so.state;
   if (state === "locked" && !(so.kind === "challenge" && so.status)) return <Locked courseId={courseId} text="Terminez les activités précédentes pour ouvrir celle-ci." />;
 
   const prevHref = stepBefore(courseId, outline, here);
@@ -206,7 +203,8 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
     : [null, null, null];
   // Earlier sends with the coach's review of each (ids come from the learner's own submission).
   const earlier = submission ? await previousAttempts(submission, (id) => mediaUrlFor({ id: me.id, isAdmin: false }, id, { sharedWith: [me.id] })) : [];
-  const model = c.modelAnswerAudioMediaId ? (await mediaUrls(me.id, [c.modelAnswerAudioMediaId]))[c.modelAnswerAudioMediaId] : undefined;
+  const staffMedia = await mediaUrls(me.id, [c.modelAnswerAudioMediaId, c.promptMediaId].filter(Boolean));
+  const model = c.modelAnswerAudioMediaId ? staffMedia[c.modelAnswerAudioMediaId] : undefined;
   const mustInclude = c.mustInclude ?? [];
   const used = sendsUsed(submission);
   const allowed = sendsAllowed(submission);
@@ -234,8 +232,9 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
         </div>
       </div>
 
-      <section className="rounded-3xl border-2 border-border bg-card p-5 sm:p-8">
+      <section className="grid gap-5 rounded-3xl border-2 border-border bg-card p-5 sm:p-8">
         <RichText>{c.instructions}</RichText>
+        <ChallengePrompt c={c} mediaUrl={c.promptMediaId ? (staffMedia[c.promptMediaId] ?? null) : null} title={activity.title || "Défi oral"} />
       </section>
 
       {mustInclude.length > 0 && (
@@ -256,7 +255,7 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
       {submission && (
         <section aria-labelledby="coach-answer" className="grid gap-3">
           <h2 id="coach-answer" className="flex items-center gap-2 text-xl font-extrabold text-brand-deep">
-            {submission.status === "graded" ? <CircleCheck className="size-5 text-success" aria-hidden /> : submission.status === "returned" ? <RotateCcw className="size-5 text-coral-dark" aria-hidden /> : <Clock className="size-5 text-primary" aria-hidden />}
+            {submission.status === "graded" ? <CircleCheck className="size-5 text-primary" aria-hidden /> : submission.status === "returned" ? <RotateCcw className="size-5 text-coral-dark" aria-hidden /> : <Clock className="size-5 text-primary" aria-hidden />}
             {submission.status === "pending" ? "Défi envoyé" : "Le retour de votre coach"}
           </h2>
           {submission.status === "pending" ? (

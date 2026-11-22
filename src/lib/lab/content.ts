@@ -1,6 +1,7 @@
 import { normalizeRich, plainText } from "@/lib/rich-text";
 import { Types } from "mongoose";
-import { MAX_PLAYS, MAX_SECONDS, PREP_SECONDS, type ActivityContent, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type ListeningQuestion, type GapsContent, type ListenGapsContent, GAP_HINTS, parseGaps } from "./types";
+import { videoSource } from "@/lib/learn/media";
+import { MAX_PLAYS, MAX_SECONDS, PREP_SECONDS, PROMPT_TYPES, type PromptType, type ActivityContent, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type ListeningQuestion, type GapsContent, type ListenGapsContent, GAP_HINTS, parseGaps } from "./types";
 
 /*
  * Content rules per activity type (server: rich text is sanitised here). `cleanContent` turns what
@@ -96,9 +97,21 @@ export function cleanContent<T extends ActivityType>(type: T, raw: unknown): Act
       return cleanGaps(r) as ActivityContent[T];
     case "listen_fill_gaps":
       return cleanListenGaps(r) as ActivityContent[T];
-    case "speaking_challenge":
+    case "speaking_challenge": {
+      const promptType: PromptType = PROMPT_TYPES.includes(r.promptType as PromptType) ? (r.promptType as PromptType) : "text";
+      const lines = (v: unknown, n: number) =>
+        (Array.isArray(v) ? v : str(v, 4000).split("\n"))
+          .map((x) => str(x, 300))
+          .filter(Boolean)
+          .slice(0, n);
       return {
         instructions: normalizeRich(typeof r.instructions === "string" ? r.instructions : ""),
+        promptType,
+        // Only what the chosen prompt uses is kept.
+        promptMediaId: (promptType === "image" || promptType === "audio") && typeof r.promptMediaId === "string" && Types.ObjectId.isValid(r.promptMediaId) ? r.promptMediaId : "",
+        promptVideoUrl: promptType === "video" ? str(r.promptVideoUrl, 500) : "",
+        promptAlt: promptType === "image" ? str(r.promptAlt, 300) : "",
+        questions: lines(r.questions, 10),
         maxSeconds: pick(MAX_SECONDS, r.maxSeconds, 60),
         prepSeconds: pick(PREP_SECONDS, r.prepSeconds, 0),
         // The editor sends the checklist one item per line.
@@ -109,6 +122,7 @@ export function cleanContent<T extends ActivityType>(type: T, raw: unknown): Act
         modelAnswerText: str(r.modelAnswerText, 4000),
         modelAnswerAudioMediaId: typeof r.modelAnswerAudioMediaId === "string" && Types.ObjectId.isValid(r.modelAnswerAudioMediaId) ? r.modelAnswerAudioMediaId : "",
       } satisfies SpeakingChallengeContent as ActivityContent[T];
+    }
   }
   throw new Error("Unknown activity type.");
 }
@@ -135,7 +149,11 @@ export function contentProblem(type: ActivityType, content: unknown): string | n
     }
     case "speaking_challenge": {
       const c = content as Partial<SpeakingChallengeContent>;
-      return plainText(c.instructions ?? "") ? null : "Write the challenge instructions.";
+      if (!plainText(c.instructions ?? "")) return "Write the challenge instructions.";
+      if (c.promptType === "image" && !c.promptMediaId) return "Add the picture the learner describes.";
+      if (c.promptType === "audio" && !c.promptMediaId) return "Add the audio the learner listens to.";
+      if (c.promptType === "video" && !videoSource(c.promptVideoUrl)) return "Add a valid video link (YouTube, Vimeo or an .mp4 file).";
+      return null;
     }
   }
   return "Unknown activity type.";

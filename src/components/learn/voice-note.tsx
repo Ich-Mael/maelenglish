@@ -75,7 +75,7 @@ export function VoiceNote({ src, seed, durationS = 0, coachName, coachAvatar }: 
       />
       <span className="relative shrink-0">
         <Avatar src={coachAvatar} name={coachInitialName(coachName)} className="size-11 text-base" />
-        <span aria-hidden className="absolute -right-1 -bottom-1 flex size-5 items-center justify-center rounded-full border-2 border-white bg-success text-white">
+        <span aria-hidden className="absolute -right-1 -bottom-1 flex size-5 items-center justify-center rounded-full border-2 border-white bg-brand-deep text-white">
           <Mic className="size-2.5" />
         </span>
       </span>

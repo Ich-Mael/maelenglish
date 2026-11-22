@@ -67,7 +67,7 @@ export function RewardCenter() {
                 </span>
               )}
               {toast.dailyGoalReached && (
-                <span className="flex items-center gap-1 text-sm font-bold text-success">
+                <span className="flex items-center gap-1 text-sm font-bold text-primary">
                   <Target className="size-4" aria-hidden /> Objectif du jour !
                 </span>
               )}

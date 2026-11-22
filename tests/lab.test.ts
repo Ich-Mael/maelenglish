@@ -182,6 +182,19 @@ describe("Labo", () => {
     expect(contentProblem("fill_gaps", c)).toBeNull();
     expect(contentProblem("fill_gaps", cleanContent("fill_gaps", { json: JSON.stringify({ text: "No blank here." }) }))).toMatch(/square brackets/);
 
+    // Speaking challenge prompts: picture / video / audio, questions one per line; only what the type uses is kept.
+    const id = String(new Types.ObjectId());
+    const base = { instructions: "<p>Décrivez la photo.</p>" };
+    const img = cleanContent("speaking_challenge", { ...base, promptType: "image", promptMediaId: id, promptAlt: " Un hall ", promptVideoUrl: "https://youtu.be/abcdefgh", questions: "Where is it?\n\n What do you see? " });
+    expect([img.promptType, img.promptMediaId, img.promptAlt, img.promptVideoUrl, img.questions]).toEqual(["image", id, "Un hall", "", ["Where is it?", "What do you see?"]]);
+    expect(contentProblem("speaking_challenge", img)).toBeNull();
+    expect(contentProblem("speaking_challenge", cleanContent("speaking_challenge", { ...base, promptType: "image" }))).toMatch(/picture/);
+    expect(contentProblem("speaking_challenge", cleanContent("speaking_challenge", { ...base, promptType: "audio", promptMediaId: "nope" }))).toMatch(/audio/);
+    const vid = cleanContent("speaking_challenge", { ...base, promptType: "video", promptMediaId: id, promptVideoUrl: "https://youtu.be/abcdefgh" });
+    expect([vid.promptMediaId, contentProblem("speaking_challenge", vid)]).toEqual(["", null]);
+    expect(contentProblem("speaking_challenge", { ...vid, promptVideoUrl: "https://example.com/page" })).toMatch(/video link/);
+    expect(cleanContent("speaking_challenge", { ...base, promptType: "gif" }).promptType).toBe("text");
+
     // Alternatives, capitals / punctuation / contractions ignored; typos only when allowed.
     expect(gradeActivity("fill_gaps", c, { g1: "'M", g2: "Sales  manager!", g3: "is" }).score).toBe(100);
     expect(gradeActivity("fill_gaps", c, { g1: "am", g2: "sales manger", g3: "are" }).items.map((i) => i.correct)).toEqual([true, false, false]);

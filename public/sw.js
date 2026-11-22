@@ -2,7 +2,7 @@
  * MaelEnglish service worker.
  * - static assets (/_next/static, /images, /icons): cache-first (file names are hashed / stable);
  * - page navigations: network-first, the last good copy of learner and public pages is kept,
- *   so lessons already opened (or downloaded with « Disponible hors ligne ») work offline;
+ *   so lessons already opened work offline;
  * - offline fallback page /offline.html (plain HTML);
  * - never caches POST (server actions), admin, auth or account pages.
  * Bump VERSION to invalidate the caches.
@@ -82,38 +82,7 @@ self.addEventListener("fetch", (event) => {
   if (request.mode === "navigate") event.respondWith(networkFirstPage(request));
 });
 
-/** Download pages (and the scripts / styles they need) for offline use. */
-async function downloadPages(urls, port) {
-  const pages = await caches.open(PAGES);
-  const assets = await caches.open(STATIC);
-  let done = 0;
-  for (const path of urls) {
-    try {
-      const res = await fetch(path, { credentials: "same-origin", headers: { "X-ME-Offline": "1" } });
-      if (res.ok && !res.redirected) {
-        const html = await res.clone().text();
-        await pages.put(pageKey(new URL(path, self.location.origin).toString()), res);
-        const found = new Set();
-        for (const m of html.matchAll(/(?:src|href)="(\/_next\/static\/[^"]+)"/g)) found.add(m[1]);
-        await Promise.all(
-          [...found].map(async (a) => {
-            if (await assets.match(a)) return;
-            const r = await fetch(a);
-            if (r.ok) await assets.put(a, r);
-          }),
-        );
-      }
-    } catch {
-      /* keep going: one failed page shouldn't stop the download */
-    }
-    done++;
-    port?.postMessage({ type: "progress", done, total: urls.length });
-  }
-  port?.postMessage({ type: "done", done, total: urls.length });
-}
-
 self.addEventListener("message", (event) => {
   const data = event.data || {};
-  if (data.type === "download" && Array.isArray(data.urls)) event.waitUntil(downloadPages(data.urls, event.ports[0]));
   if (data.type === "clear") event.waitUntil(caches.delete(PAGES));
 });
