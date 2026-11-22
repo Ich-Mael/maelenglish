@@ -3,7 +3,7 @@ import { CalendarClock, CircleSlash, Hourglass, Lock, SearchX } from "lucide-rea
 import { whatsappLink } from "@/lib/catalog";
 import { cn } from "cn";
 
-const dateFmt = new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" });
+const dateFmt = new Intl.DateTimeFormat("en-GB", { dateStyle: "long" });
 export const formatDate = (d: Date | string) => dateFmt.format(new Date(d));
 
 export function ProgressBar({ value, className, label }: { value: number; className?: string; label?: string }) {
@@ -22,11 +22,11 @@ export function ProgressBar({ value, className, label }: { value: number; classN
 }
 
 const PROBLEMS = {
-  "not-found": { icon: SearchX, title: "Cours introuvable", text: "Ce lien ne correspond à aucun cours." },
-  "not-enrolled": { icon: Lock, title: "Vous n'êtes pas inscrit(e) à ce cours", text: "Contactez l'équipe MaelEnglish pour vous inscrire." },
-  "not-started": { icon: CalendarClock, title: "Ce cours n'a pas encore commencé", text: "Il s'ouvrira à la date de début de votre inscription." },
-  expired: { icon: Hourglass, title: "Votre accès à ce cours est terminé", text: "Contactez l'équipe MaelEnglish pour le prolonger." },
-  suspended: { icon: CircleSlash, title: "Votre accès est suspendu", text: "Contactez l'équipe MaelEnglish pour en savoir plus." },
+  "not-found": { icon: SearchX, title: "Course not found", text: "This link doesn't match any course." },
+  "not-enrolled": { icon: Lock, title: "You're not enrolled in this course", text: "Contact the MaelEnglish team to enrol." },
+  "not-started": { icon: CalendarClock, title: "This course hasn't started yet", text: "It opens on your enrolment's start date." },
+  expired: { icon: Hourglass, title: "Your access to this course has ended", text: "Contact the MaelEnglish team to extend it." },
+  suspended: { icon: CircleSlash, title: "Your access is suspended", text: "Contact the MaelEnglish team to find out more." },
 } as const;
 
 export function AccessProblem({ reason, startDate }: { reason: keyof typeof PROBLEMS; startDate?: Date | null }) {
@@ -36,15 +36,15 @@ export function AccessProblem({ reason, startDate }: { reason: keyof typeof PROB
       <p.icon className="mx-auto size-12 text-coral" aria-hidden />
       <h1 className="mt-4 text-2xl font-extrabold text-brand-deep">{p.title}</h1>
       <p className="mt-2 text-muted-foreground">
-        {reason === "not-started" && startDate ? `Il s'ouvrira le ${formatDate(startDate)}.` : p.text}
+        {reason === "not-started" && startDate ? `It opens on ${formatDate(startDate)}.` : p.text}
       </p>
       <div className="mt-6 flex flex-col gap-2">
         <Link href="/mes-cours" className="inline-flex h-11 items-center justify-center rounded-2xl bg-primary px-5 font-semibold text-white">
-          Mes cours
+          My Courses
         </Link>
         {reason !== "not-found" && reason !== "not-started" && (
           <a href={whatsappLink()} target="_blank" rel="noopener" className="text-sm font-semibold text-coral-dark hover:underline">
-            Écrire à l&apos;équipe sur WhatsApp
+            Message the team on WhatsApp
           </a>
         )}
       </div>
@@ -54,7 +54,7 @@ export function AccessProblem({ reason, startDate }: { reason: keyof typeof PROB
 
 export function PageSkeleton() {
   return (
-    <div className="grid animate-pulse gap-4" aria-busy aria-label="Chargement">
+    <div className="grid animate-pulse gap-4" aria-busy aria-label="Loading">
       <div className="h-8 w-1/2 rounded-xl bg-muted" />
       <div className="h-4 w-1/3 rounded bg-muted" />
       <div className="h-40 rounded-3xl bg-muted" />

@@ -27,7 +27,7 @@ export async function uploadMedia(blob: Blob, opts: { kind: MediaKind; durationS
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       break;
     } catch (e) {
-      if (attempt >= 5) throw new Error("L’envoi a échoué. Vérifiez votre connexion et réessayez.", { cause: e });
+      if (attempt >= 5) throw new Error("The upload failed. Check your connection and try again.", { cause: e });
       await sleep(Math.min(15000, 1000 * 2 ** attempt));
     }
   }

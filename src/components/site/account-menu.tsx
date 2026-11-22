@@ -61,7 +61,7 @@ export function AccountMenu({ username, name, isStaff }: { username: string; nam
           </Link>
         )}
         <div className="mt-1 border-t border-border pt-1">
-          <LogoutButton variant="menu" />
+          <LogoutButton variant="menu" label="Déconnexion" />
         </div>
       </div>
     </details>

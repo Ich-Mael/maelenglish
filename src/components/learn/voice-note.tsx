@@ -82,7 +82,7 @@ export function VoiceNote({ src, seed, durationS = 0, coachName, coachAvatar }: 
       <button
         type="button"
         onClick={toggle}
-        aria-label={playing ? "Mettre en pause le message vocal" : `Écouter le message vocal de ${coachName}`}
+        aria-label={playing ? "Pause the voice note" : `Play the voice note from ${coachName}`}
         className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-white transition hover:bg-brand-dark active:scale-95"
       >
         {playing ? <Pause className="size-5" aria-hidden /> : <Play className="size-5 translate-x-px" aria-hidden />}
@@ -101,8 +101,8 @@ export function VoiceNote({ src, seed, durationS = 0, coachName, coachAvatar }: 
             step={0.1}
             value={Math.min(time, total || 1)}
             disabled={!total}
-            aria-label="Position dans le message vocal"
-            aria-valuetext={`${formatTime(time)} sur ${formatTime(total)}`}
+            aria-label="Position in the voice note"
+            aria-valuetext={`${formatTime(time)} of ${formatTime(total)}`}
             onChange={(e) => {
               const t = Number(e.target.value);
               setTime(t);
@@ -113,7 +113,7 @@ export function VoiceNote({ src, seed, durationS = 0, coachName, coachAvatar }: 
         </div>
         <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground tabular-nums">
           <span>{started || time ? formatTime(time) : total ? formatTime(total) : "Message vocal"}</span>
-          <button type="button" onClick={nextSpeed} aria-label={`Vitesse de lecture : ${speed}×`} className="rounded-full bg-brand-soft px-2 py-0.5 text-[11px] font-bold text-primary">
+          <button type="button" onClick={nextSpeed} aria-label={`Playback speed: ${speed}×`} className="rounded-full bg-brand-soft px-2 py-0.5 text-[11px] font-bold text-primary">
             {String(speed).replace(".", ",")}×
           </button>
         </div>

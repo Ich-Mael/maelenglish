@@ -92,10 +92,21 @@ export type WritingCorrection = {
 /** What a correction cost (tokens), for metering. */
 export type LlmUsage = { inputTokens: number; outputTokens: number; costMicros: number; provider: string };
 
+/** Dictionary enrichment: French translation of an English word in its (first) meaning. */
+/**
+ * Dictionary enrichment. `senses`: the dictionary's meanings, numbered from 1 in this order
+ * (empty when the dictionary doesn't know the word). Without `sentence`: the word's most common
+ * everyday meaning; with it: the meaning in that sentence.
+ */
+export type WordTranslationInput = { word: string; senses: { partOfSpeech: string; definition: string }[]; sentence?: string };
+/** `sense`: number of the meaning used (1-based in `senses`), 0 when none fits. `businessExample` only without a sentence. */
+export type WordTranslation = { translation: string; frNote: string; businessExample: string; sense: number };
+
 export interface FeedbackService {
   readonly name: string;
   gradeDrill(input: DrillGradeInput): Promise<DrillGrade>;
   correctWriting(input: WritingCorrectionInput): Promise<{ correction: WritingCorrection; usage: LlmUsage }>;
+  translateWord(input: WordTranslationInput): Promise<{ result: WordTranslation; usage: LlmUsage }>;
 }
 
 /** Thrown when a provider isn't configured (production without keys). */

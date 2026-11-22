@@ -52,7 +52,7 @@ export function ChallengeDialog({ id, title, subtitle, trigger, children }: { id
               {title}
             </h2>
           </div>
-          <button type="button" onClick={() => dialog.current?.close()} className="-mr-1 flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-muted" aria-label="Fermer">
+          <button type="button" onClick={() => dialog.current?.close()} className="-mr-1 flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-muted" aria-label="Close">
             <X className="size-5" aria-hidden />
           </button>
         </div>

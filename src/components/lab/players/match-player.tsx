@@ -116,8 +116,8 @@ export function MatchPlayer({
   }, [screen, round, result]);
 
   const meta: ExerciseMeta = listen
-    ? { title, typeLabel: "Écouter et associer", icon: Ear, level, skills, instructions: instructions || "Écoutez chaque audio, puis associez-le au bon mot." }
-    : { title, typeLabel: "Associer les paires", icon: Link2, level, skills, instructions: instructions || "Associez chaque mot à sa traduction." };
+    ? { title, typeLabel: "Listen and match", icon: Ear, level, skills, instructions: instructions || "Listen to each audio, then match it with the right word." }
+    : { title, typeLabel: "Matching pairs", icon: Link2, level, skills, instructions: instructions || "Match each word with its translation." };
 
   const play = (p: MatchPair, side: Side = "left") => {
     const id = side === "left" ? p.audioMediaId : p.rightAudioMediaId;
@@ -213,11 +213,11 @@ export function MatchPlayer({
         >
           <section className="grid gap-3 rounded-3xl border-2 border-border bg-card p-5">
             <h2 className="font-heading text-lg font-extrabold text-brand-deep">
-              {mistakes === 0 ? "Aucune erreur, bravo !" : `${mistakes} erreur${mistakes > 1 ? "s" : ""} · ${missed.length} paire${missed.length > 1 ? "s" : ""} à revoir`}
+              {mistakes === 0 ? "No mistakes, well done!" : `${mistakes} mistake${mistakes > 1 ? "s" : ""} · ${missed.length} pair${missed.length > 1 ? "s" : ""} to review`}
             </h2>
             {listen && (
               <div className="grid gap-2">
-                <p className="text-sm font-semibold text-brand-deep">Transcription des audios</p>
+                <p className="text-sm font-semibold text-brand-deep">Audio transcripts</p>
                 <ul className="grid gap-2">
                   {pairs.map((p) => {
                     const ok = result.items.find((i) => i.id === p.id)?.correct;
@@ -234,7 +234,7 @@ export function MatchPlayer({
                           {!ok && p.explanation && <span className="text-sm text-muted-foreground">{p.explanation}</span>}
                         </span>
                         {p.rightAudioMediaId && audioUrls[p.rightAudioMediaId] && (
-                          <button type="button" onClick={() => play(p, "right")} className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-primary" aria-label={`Réécouter l'audio de « ${p.left} »`}>
+                          <button type="button" onClick={() => play(p, "right")} className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-primary" aria-label={`Replay the audio for "${p.left}"`}>
                             <Volume2 className="size-4" aria-hidden />
                           </button>
                         )}
@@ -255,7 +255,7 @@ export function MatchPlayer({
                       {p.explanation && <span className="text-sm text-muted-foreground">{p.explanation}</span>}
                     </span>
                     {p.audioMediaId && audioUrls[p.audioMediaId] && (
-                      <button type="button" onClick={() => play(p)} className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-primary" aria-label={`Écouter « ${p.left} »`}>
+                      <button type="button" onClick={() => play(p)} className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-primary" aria-label={`Listen to "${p.left}"`}>
                         <Volume2 className="size-4" aria-hidden />
                       </button>
                     )}
@@ -298,7 +298,7 @@ export function MatchPlayer({
             type="button"
             onClick={() => (isPlaying ? audio.current?.pause() : play(p, "right"))}
             className={cn("m-1.5 flex size-9 shrink-0 items-center justify-center rounded-full transition sm:size-10", st === "matched" ? "bg-white text-primary" : "bg-primary text-white shadow-[0_3px_0_0_var(--color-brand-dark)] active:translate-y-0.5 active:shadow-none")}
-            aria-label={isPlaying ? `Arrêter l'audio ${n}` : `Écouter l'audio ${n}`}
+            aria-label={isPlaying ? `Stop audio ${n}` : `Play audio ${n}`}
           >
             {isPlaying ? <Pause className="size-4" aria-hidden /> : <Play className="size-4 translate-x-px" aria-hidden />}
           </button>
@@ -334,7 +334,7 @@ export function MatchPlayer({
       <section className="grid gap-3 rounded-3xl border-2 border-border bg-card p-3 sm:p-5">
         <div className="flex items-center justify-between gap-2 px-1">
           <p className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
-            {screens.length > 1 ? `Série ${screen + 1} sur ${screens.length} · ` : ""}
+            {screens.length > 1 ? `Set ${screen + 1} of ${screens.length} · ` : ""}
             {current.filter((p) => matched.includes(p.id)).length} / {current.length} paires
           </p>
           {mistakes > 0 && (
@@ -343,7 +343,7 @@ export function MatchPlayer({
             </p>
           )}
         </div>
-        <div ref={board} className="relative grid grid-cols-[minmax(0,1fr)_clamp(2.75rem,16%,7rem)_minmax(0,1fr)]" role="group" aria-label={listen ? "Écoutez un audio à droite, puis associez-le à un mot à gauche" : "Touchez un mot à gauche puis sa traduction à droite"}>
+        <div ref={board} className="relative grid grid-cols-[minmax(0,1fr)_clamp(2.75rem,16%,7rem)_minmax(0,1fr)]" role="group" aria-label={listen ? "Listen to an audio on the right, then match it with a word on the left" : "Tap a word on the left, then its translation on the right"}>
           <div className="grid content-start gap-2.5 sm:gap-3">{left.map((p) => renderCard("left", p))}</div>
           <div aria-hidden />
           <div className="grid content-start gap-2.5 sm:gap-3">{right.map((p) => renderCard("right", p))}</div>
@@ -366,7 +366,7 @@ export function MatchPlayer({
         </p>
       )}
       {readOnly ? (
-        <p className="text-sm text-muted-foreground">Cours terminé : l&apos;activité reste consultable, mais plus rien n&apos;est enregistré.</p>
+        <p className="text-sm text-muted-foreground">Course completed: you can still view the activity, but nothing is saved any more.</p>
       ) : (
         screenDone && (
           <div className="sticky bottom-[var(--checkbar-bottom,4rem)] z-10 -mx-4 border-t border-border bg-background/95 px-4 py-3 md:bottom-0">
@@ -378,7 +378,7 @@ export function MatchPlayer({
                 className="inline-flex h-13 flex-1 items-center justify-center gap-2 rounded-2xl bg-primary px-6 text-lg font-bold text-white shadow-[0_5px_0_0_var(--color-brand-dark)] transition active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-brand-dark)] disabled:opacity-50"
               >
                 {pending && <Loader2 className="size-5 animate-spin" aria-hidden />}
-                {isLast ? "Voir mon résultat" : "Série suivante"} {!pending && <ArrowRight className="size-5" aria-hidden />}
+                {isLast ? "See my result" : "Next set"} {!pending && <ArrowRight className="size-5" aria-hidden />}
               </button>
             </div>
           </div>

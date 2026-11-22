@@ -63,7 +63,7 @@ export function Recorder({
   prepSeconds = 0,
   onUse,
   useLabel,
-  locale = "fr",
+  locale = "en",
   disabled,
   className,
 }: {

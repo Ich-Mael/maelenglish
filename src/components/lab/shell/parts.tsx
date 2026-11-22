@@ -18,10 +18,10 @@ export function ExerciseHeader({ meta, courseHref, index, total, done }: { meta:
   return (
     <header className="grid gap-3">
       <div className="flex items-center gap-3">
-        <Link href={courseHref} className="flex size-10 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted" aria-label="Quitter l'exercice">
+        <Link href={courseHref} className="flex size-10 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted" aria-label="Leave the exercise">
           <X className="size-6" aria-hidden />
         </Link>
-        <div className="flex flex-1 gap-1.5" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={done ? total : index} aria-label={`Question ${Math.min(index + 1, total)} sur ${total}`}>
+        <div className="flex flex-1 gap-1.5" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={done ? total : index} aria-label={`Question ${Math.min(index + 1, total)} of ${total}`}>
           {Array.from({ length: total }, (_, i) => (
             <span key={i} className={cn("h-2.5 flex-1 rounded-full transition", done || i < index ? "bg-primary" : i === index ? "bg-primary/45" : "bg-muted")} />
           ))}
@@ -33,12 +33,12 @@ export function ExerciseHeader({ meta, courseHref, index, total, done }: { meta:
           {meta.level && <span className="rounded-full bg-brand-soft px-2 py-0.5 normal-case">{meta.level}</span>}
           {meta.skills?.map((s) => (
             <span key={s} className="rounded-full bg-muted px-2 py-0.5 font-semibold text-muted-foreground normal-case">
-              {skillLabel(s, "fr")}
+              {skillLabel(s, "en")}
             </span>
           ))}
         </p>
         <h1 className="mt-1 text-2xl font-extrabold text-brand-deep sm:text-3xl">{meta.title}</h1>
-        {meta.instructions && <p className="mt-1 text-muted-foreground">{meta.instructions}</p>}
+        {meta.instructions && <p lang="fr" className="mt-1 text-muted-foreground">{meta.instructions}</p>}
       </div>
     </header>
   );
@@ -50,14 +50,14 @@ export function FeedbackPanel({ correct, answer, explanation, children }: { corr
     <div role="status" className={cn("grid gap-2 rounded-2xl border-2 p-4 animate-pop motion-reduce:animate-none", correct ? "border-primary/30 bg-brand-soft" : "border-coral/40 bg-coral-soft")}>
       <p className={cn("flex items-center gap-2 font-heading text-lg font-extrabold", correct ? "text-primary" : "text-coral-dark")}>
         {correct ? <Check className="size-5" aria-hidden /> : <X className="size-5" aria-hidden />}
-        {correct ? "Bonne réponse !" : "Pas tout à fait."}
+        {correct ? "Correct!" : "Not quite."}
       </p>
       {!correct && answer && (
         <p className="text-sm text-ink">
-          Bonne réponse : <strong>{answer}</strong>
+          Right answer: <strong>{answer}</strong>
         </p>
       )}
-      {explanation && <p className="text-sm text-ink">{explanation}</p>}
+      {explanation && <p lang="fr" className="text-sm text-ink">{explanation}</p>}
       {children}
     </div>
   );
@@ -91,18 +91,18 @@ export function CheckBar({
       <div className="mx-auto flex max-w-2xl gap-3">
         {phase === "answer" ? (
           <button type="button" className={primary} disabled={!canCheck} onClick={onCheck}>
-            Vérifier
+            Check
           </button>
         ) : (
           <>
             {correct === false && (
               <button type="button" onClick={onRetry} className="inline-flex h-13 items-center justify-center gap-2 rounded-2xl border-2 border-coral bg-white px-5 text-[19px] font-bold text-coral hover:bg-coral-soft">
-                <RotateCcw className="size-4" aria-hidden /> Réessayer
+                <RotateCcw className="size-4" aria-hidden /> Try again
               </button>
             )}
             <button type="button" className={primary} onClick={onNext} disabled={pending}>
               {pending && <Loader2 className="size-5 animate-spin" aria-hidden />}
-              {isLast ? "Voir mon résultat" : "Suivant"} {!pending && <ArrowRight className="size-5" aria-hidden />}
+              {isLast ? "See my result" : "Next"} {!pending && <ArrowRight className="size-5" aria-hidden />}
             </button>
           </>
         )}
@@ -115,7 +115,7 @@ const fmtTime = (s: number) => (s >= 60 ? `${Math.floor(s / 60)} min ${String(s 
 
 export function Stars({ n, className }: { n: number; className?: string }) {
   return (
-    <span className={cn("inline-flex gap-1", className)} role="img" aria-label={`${n} étoile${n > 1 ? "s" : ""} sur 3`}>
+    <span className={cn("inline-flex gap-1", className)} role="img" aria-label={`${n} star${n > 1 ? "s" : ""} out of 3`}>
       {[1, 2, 3].map((i) => (
         <Star key={i} className={cn("size-9", i <= n ? "fill-white text-white drop-shadow-[0_2px_0_rgb(0_0_0/0.2)]" : "text-white/30")} aria-hidden />
       ))}
@@ -168,39 +168,39 @@ export function ResultsScreen({
           </span>
           {!!bonus && (
             <span className="inline-flex items-center gap-1">
-              <Sparkles className="size-4" aria-hidden /> {bonus} réponse{bonus > 1 ? "s" : ""} du premier coup
+              <Sparkles className="size-4" aria-hidden /> {bonus} answer{bonus > 1 ? "s" : ""} right first time
             </span>
           )}
-          {bestScore !== undefined && bestScore > score && <span>Meilleur score : {bestScore} %</span>}
+          {bestScore !== undefined && bestScore > score && <span>Best score: {bestScore} %</span>}
         </p>
         {!!xp && <p className="mx-auto mt-2 w-fit rounded-full border-2 border-coral bg-white px-3 py-0.5 font-heading text-xl font-extrabold text-coral">+{xp} XP</p>}
-        {preview && <p className="mt-2 text-sm text-white/80">Aperçu : rien n&apos;est enregistré.</p>}
+        {preview && <p className="mt-2 text-sm text-white/80">Preview: nothing is saved.</p>}
         {below ? (
           <>
             <p className="mx-auto mt-4 max-w-md text-sm text-white/90">
-              Il faut {passScore} % pour réussir cette activité. Revoyez la leçon, puis réessayez : votre score est enregistré, vous pouvez aussi continuer.
+              You need {passScore} % to pass this activity. Review the lesson, then try again: your score is saved, and you can also continue.
             </p>
             <div className="mt-4 flex flex-col justify-center gap-3 sm:flex-row">
               {lessonHref && (
                 <Link href={lessonHref} className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-6 font-bold text-brand-deep">
-                  <BookOpen className="size-4" aria-hidden /> Revoir la leçon
+                  <BookOpen className="size-4" aria-hidden /> Review the lesson
                 </Link>
               )}
               <button type="button" onClick={onRetry} className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border-2 border-white/50 px-6 font-semibold">
-                <RotateCcw className="size-4" aria-hidden /> Réessayer
+                <RotateCcw className="size-4" aria-hidden /> Try again
               </button>
             </div>
             <button type="button" onClick={onContinue} className="mt-3 text-sm font-semibold text-white/90 underline underline-offset-4">
-              Continuer quand même
+              Continue anyway
             </button>
           </>
         ) : (
           <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
             <button type="button" onClick={onContinue} className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-6 font-bold text-brand-deep">
-              Continuer <ArrowRight className="size-4" aria-hidden />
+              Continue <ArrowRight className="size-4" aria-hidden />
             </button>
             <button type="button" onClick={onRetry} className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border-2 border-white/50 px-6 font-semibold">
-              <RotateCcw className="size-4" aria-hidden /> Recommencer
+              <RotateCcw className="size-4" aria-hidden /> Start again
             </button>
           </div>
         )}
@@ -208,13 +208,13 @@ export function ResultsScreen({
 
       {review.length > 0 && (
         <section className="rounded-3xl border-2 border-border bg-card p-5">
-          <h2 className="font-heading text-lg font-extrabold text-brand-deep">À revoir</h2>
+          <h2 className="font-heading text-lg font-extrabold text-brand-deep">To review</h2>
           <ul className="mt-2 grid gap-2">
             {review.slice(0, 3).map((r, i) => (
               <li key={i} className="rounded-2xl bg-muted/60 px-3 py-2 text-sm">
                 <span className="block font-semibold text-brand-deep">{r.title}</span>
                 <span className="text-ink">
-                  Bonne réponse : <strong>{r.answer}</strong>
+                  Right answer: <strong>{r.answer}</strong>
                 </span>
               </li>
             ))}
@@ -228,8 +228,8 @@ export function ResultsScreen({
             M
           </span>
           <div>
-            <h2 className="font-heading font-extrabold text-brand-deep">Le conseil de Mael</h2>
-            <p className="mt-1 text-ink">{maelTip}</p>
+            <h2 className="font-heading font-extrabold text-brand-deep">Mael’s tip</h2>
+            <p lang="fr" className="mt-1 text-ink">{maelTip}</p>
           </div>
         </section>
       )}

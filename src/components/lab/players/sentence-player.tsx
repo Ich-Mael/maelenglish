@@ -71,7 +71,7 @@ export function SentencePlayer({
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
 
-  const meta: ExerciseMeta = { title, typeLabel: "Phrases en ordre", icon: Blocks, level, skills, instructions: instructions || "Remettez les mots dans le bon ordre." };
+  const meta: ExerciseMeta = { title, typeLabel: "Sentence builder", icon: Blocks, level, skills, instructions: instructions || "Put the words in the right order." };
   const item = items[ex.index] as SentenceItem | undefined;
   const right = item ? sentenceTiles(item.sentence) : [];
   const tiles = item ? [...right, ...item.distractors] : [];
@@ -149,7 +149,7 @@ export function SentencePlayer({
     const review = result.items
       .filter((i) => !i.correct)
       .map((i) => items.find((x) => x.id === i.id)!)
-      .map((it) => ({ title: it.translation || "Phrase à remettre en ordre", answer: sentenceText(it.sentence) }));
+      .map((it) => ({ title: it.translation || "Sentence to put in order", answer: sentenceText(it.sentence) }));
     return (
       <div className="mx-auto grid max-w-2xl gap-5">
         <audio ref={audio} preload="none" />
@@ -169,7 +169,7 @@ export function SentencePlayer({
           onContinue={() => router.push(nextHref)}
         >
           <details className="rounded-3xl border-2 border-border bg-card p-5" open={result.score < 100}>
-            <summary className="cursor-pointer font-heading font-extrabold text-brand-deep">Toutes les phrases</summary>
+            <summary className="cursor-pointer font-heading font-extrabold text-brand-deep">All the sentences</summary>
             <ol className="mt-3 grid gap-2">
               {items.map((it) => {
                 const u = it.audioMediaId ? audioUrls[it.audioMediaId] : undefined;
@@ -184,7 +184,7 @@ export function SentencePlayer({
                       {it.translation && <span className="text-sm text-muted-foreground">{it.translation}</span>}
                     </span>
                     {u && (
-                      <button type="button" onClick={() => play(u)} className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-primary" aria-label="Écouter la phrase">
+                      <button type="button" onClick={() => play(u)} className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-primary" aria-label="Listen to the sentence">
                         <Volume2 className="size-4" aria-hidden />
                       </button>
                     )}
@@ -208,7 +208,7 @@ export function SentencePlayer({
 
       <section className="grid gap-4 rounded-3xl border-2 border-border bg-card p-4 sm:p-5">
         <p className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
-          Phrase {ex.index + 1} sur {items.length}
+          Sentence {ex.index + 1} of {items.length}
         </p>
 
         {before ? (
@@ -217,8 +217,8 @@ export function SentencePlayer({
               <Volume2 className="size-6" aria-hidden />
             </span>
             <span>
-              <span className="block font-heading font-extrabold text-brand-deep">Écoutez la phrase</span>
-              <span className="text-sm text-muted-foreground">Puis remettez les mots dans l&apos;ordre entendu. Réécoutez autant que vous voulez.</span>
+              <span className="block font-heading font-extrabold text-brand-deep">Listen to the sentence</span>
+              <span className="text-sm text-muted-foreground">Then put the words in the order you heard. Listen as often as you like.</span>
             </span>
           </button>
         ) : (
@@ -230,17 +230,17 @@ export function SentencePlayer({
             </p>
           )
         )}
-        {before && item.translation && <p className="text-sm text-muted-foreground">Indice : {item.translation}</p>}
+        {before && item.translation && <p className="text-sm text-muted-foreground">Hint: {item.translation}</p>}
 
         {/* The sentence being built: tap a tile to send it back. */}
         <div
-          aria-label="Votre phrase"
+          aria-label="Your sentence"
           className={cn(
             "flex min-h-28 flex-wrap content-start gap-2 rounded-2xl border-2 border-dashed p-3 transition",
             !revealed ? "border-border bg-background" : correct ? "border-primary bg-brand-soft/60" : "border-coral bg-coral-soft/50",
           )}
         >
-          {picked.length === 0 && <span className="self-center text-sm text-muted-foreground">Touchez les mots dans l&apos;ordre…</span>}
+          {picked.length === 0 && <span className="self-center text-sm text-muted-foreground">Tap the words in order…</span>}
           {picked.map((ti, k) => (
             <button
               key={`${ti}-${k}`}
@@ -248,7 +248,7 @@ export function SentencePlayer({
               lang="en"
               onClick={() => remove(k)}
               disabled={revealed || readOnly}
-              aria-label={`${tiles[ti]} (retirer)`}
+              aria-label={`${tiles[ti]} (remove)`}
               className={cn(tileCls, "bg-white shadow-[0_3px_0_0_var(--color-border)] disabled:cursor-default", revealed ? (correct ? "border-primary text-primary" : "border-coral text-ink") : "border-border text-ink hover:border-primary/40 active:translate-y-0.5 active:shadow-none")}
             >
               {tiles[ti]}
@@ -257,7 +257,7 @@ export function SentencePlayer({
         </div>
 
         {/* The bank: a used tile leaves its place empty, so the others don't move. */}
-        <div aria-label="Mots disponibles" className="flex flex-wrap justify-center gap-2">
+        <div aria-label="Available words" className="flex flex-wrap justify-center gap-2">
           {order.map((ti) =>
             picked.includes(ti) ? (
               <span key={ti} aria-hidden lang="en" className={cn(tileCls, "border-transparent bg-muted text-transparent")}>
@@ -282,7 +282,7 @@ export function SentencePlayer({
           <FeedbackPanel correct={correct} answer={<span lang="en">{sentenceText(item.sentence)}</span>} explanation={item.explanation}>
             {url && (
               <button type="button" onClick={() => play(url)} className="inline-flex w-fit items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-bold text-white">
-                <Volume2 className="size-3.5" aria-hidden /> Écouter la phrase
+                <Volume2 className="size-3.5" aria-hidden /> Listen to the sentence
               </button>
             )}
           </FeedbackPanel>
@@ -295,7 +295,7 @@ export function SentencePlayer({
         </p>
       )}
       {readOnly ? (
-        <p className="text-sm text-muted-foreground">Cours terminé : l&apos;activité reste consultable, mais plus rien n&apos;est enregistré.</p>
+        <p className="text-sm text-muted-foreground">Course completed: you can still view the activity, but nothing is saved any more.</p>
       ) : (
         <CheckBar phase={revealed ? "feedback" : "answer"} canCheck={picked.length > 0} correct={correct} isLast={ex.isLast} pending={pending} onCheck={onCheck} onRetry={retry} onNext={ex.isLast ? finish : next} />
       )}

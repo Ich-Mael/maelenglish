@@ -50,13 +50,13 @@ export function InstallPrompt() {
         <Smartphone className="size-6" aria-hidden />
       </span>
       <div className="flex-1 text-sm">
-        <p className="font-heading text-base font-bold">Installez l&apos;application MaelEnglish</p>
+        <p className="font-heading text-base font-bold">Install the MaelEnglish app</p>
         {ios ? (
           <p className="text-white/85">
-            Touchez <Share className="inline size-4 align-text-bottom" aria-label="Partager" /> puis « Sur l&apos;écran d&apos;accueil ».
+            Tap <Share className="inline size-4 align-text-bottom" aria-label="Share" /> then « Add to Home Screen ».
           </p>
         ) : (
-          <p className="text-white/85">Accès direct depuis votre écran d&apos;accueil, même hors ligne.</p>
+          <p className="text-white/85">Open it straight from your home screen, even offline.</p>
         )}
       </div>
       {event && (
@@ -70,10 +70,10 @@ export function InstallPrompt() {
           }}
           className="rounded-xl bg-white px-3 py-2 text-sm font-bold text-primary"
         >
-          Installer
+          Install
         </button>
       )}
-      <button type="button" onClick={dismiss} className="absolute top-2 right-2 flex size-8 items-center justify-center rounded-full text-white/80 hover:bg-white/10" aria-label="Ne plus afficher">
+      <button type="button" onClick={dismiss} className="absolute top-2 right-2 flex size-8 items-center justify-center rounded-full text-white/80 hover:bg-white/10" aria-label="Don't show again">
         <X className="size-4" aria-hidden />
       </button>
     </div>

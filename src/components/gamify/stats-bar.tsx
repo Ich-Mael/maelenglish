@@ -27,7 +27,7 @@ export async function StatsBar() {
       <Link href="/progression" className="flex items-center gap-2 rounded-2xl px-1 py-1 hover:bg-muted sm:gap-3 sm:px-2 group-data-[scrolled=true]/hdr:hover:bg-white/10">
         <span className={cn("flex items-center gap-1 font-heading font-extrabold", s.activeToday ? "text-coral-dark group-data-[scrolled=true]/hdr:text-coral" : "text-muted-foreground group-data-[scrolled=true]/hdr:text-white/60")}>
           <Flame className={cn("size-5", s.activeToday && "fill-coral/30")} aria-hidden /> {s.streak}
-          <span className="sr-only"> jour{s.streak > 1 ? "s" : ""} de série,</span>
+          <span className="sr-only"> day{s.streak > 1 ? "s" : ""} streak,</span>
         </span>
         <span className="relative flex size-9 items-center justify-center">
           <svg viewBox="0 0 36 36" className="absolute inset-0 -rotate-90" aria-hidden>
@@ -36,11 +36,11 @@ export async function StatsBar() {
           </svg>
           <Sparkles className={cn("size-4", goal >= 100 ? "text-primary group-data-[scrolled=true]/hdr:text-white" : "text-coral-dark group-data-[scrolled=true]/hdr:text-coral")} aria-hidden />
           <span className="sr-only">
-            {s.todayXp} XP sur {s.dailyGoal} aujourd&apos;hui,
+            {s.todayXp} of {s.dailyGoal} XP today,
           </span>
         </span>
         <span className="hidden rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold whitespace-nowrap text-white sm:inline group-data-[scrolled=true]/hdr:bg-white group-data-[scrolled=true]/hdr:text-primary">
-          Niv. {s.level.level}
+          Lvl {s.level.level}
         </span>
       </Link>
     </>

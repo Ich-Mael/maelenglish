@@ -23,11 +23,11 @@ export function CompleteButton({ courseId, stepId, done, nextHref }: { courseId:
             if (!done) {
               try {
                 const res = await completeStep(courseId, stepId);
-                if (!res.ok) return setError(res.error ?? "Une erreur est survenue.");
+                if (!res.ok) return setError(res.error ?? "Something went wrong.");
                 if (res.reward) playSound("correct");
                 pushReward(res.reward);
               } catch (e) {
-                if (!isOfflineError(e)) return setError("Une erreur est survenue. Réessayez.");
+                if (!isOfflineError(e)) return setError("Something went wrong. Try again.");
                 // Offline: keep the completion on the device, sent when the connection returns.
                 enqueue({ kind: "complete", courseId, stepId });
                 playSound("correct");
@@ -39,7 +39,7 @@ export function CompleteButton({ courseId, stepId, done, nextHref }: { courseId:
         className="inline-flex h-13 w-full items-center justify-center gap-2 rounded-2xl border-2 border-coral bg-white text-[19px] font-bold text-coral hover:bg-coral-soft shadow-[0_5px_0_0_var(--color-coral)] transition active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-coral)] sm:w-auto sm:px-10"
       >
         {pending ? <Loader2 className="size-5 animate-spin" aria-hidden /> : <ArrowRight className="size-5" aria-hidden />}
-        {done ? "Activité suivante" : "Continuer"}
+        {done ? "Next activity" : "Continue"}
       </button>
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
     </div>

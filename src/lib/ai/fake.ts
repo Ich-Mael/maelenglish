@@ -1,4 +1,4 @@
-import type { AudioInput, DrillGrade, DrillGradeInput, FeedbackService, LlmUsage, WritingCorrection, WritingCorrectionInput, PronunciationResult, PronunciationService, SpeechService, SynthesizedAudio, Transcript, TtsService } from "./types";
+import type { AudioInput, DrillGrade, DrillGradeInput, FeedbackService, LlmUsage, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput, PronunciationResult, PronunciationService, SpeechService, SynthesizedAudio, Transcript, TtsService } from "./types";
 import { normalizeEnglish, words } from "./text";
 
 /*
@@ -96,6 +96,17 @@ export class FakeFeedbackService implements FeedbackService {
         checklist,
         corrected: input.answer.replace(/(^|\s)i(?=\s|')/g, "$1I"),
       },
+      usage: { inputTokens: 0, outputTokens: 0, costMicros: 0, provider: "fake" },
+    };
+  }
+
+  /** Deterministic: « [FR] word » (tests and development without a key). */
+  async translateWord(input: WordTranslationInput): Promise<{ result: WordTranslation; usage: LlmUsage }> {
+    return {
+      // Deterministic: the first meaning; a sentence gives « [FR ctx] word ».
+      result: input.sentence
+        ? { translation: `[FR ctx] ${input.word}`, frNote: "Ici, dans cette phrase.", businessExample: "", sense: input.senses.length ? 1 : 0 }
+        : { translation: `[FR] ${input.word}`, frNote: input.senses[0] ? `Sens : ${input.senses[0].definition.slice(0, 80)}` : "Mot courant au travail.", businessExample: `We use "${input.word}" at work every day.`, sense: input.senses.length ? 1 : 0 },
       usage: { inputTokens: 0, outputTokens: 0, costMicros: 0, provider: "fake" },
     };
   }

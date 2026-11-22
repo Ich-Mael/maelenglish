@@ -49,3 +49,8 @@ All providers sit behind internal interfaces in `src/lib/ai/` (`SpeechService`, 
 - `@aws-sdk/client-s3` 3.1163.0, `@aws-sdk/s3-request-presigner` 3.1163.0 (2026-11-05)
 - `@anthropic-ai/sdk` ^1.12.0, installed 2026-11-22 with the Lab « writing task » (first feature calling Claude: correction by **Claude Haiku 5.5**, owner choice — fast, cheapest; structured output with Zod, `src/lib/ai/claude.ts`)
 - `zod` 4.6.7, already installed
+
+### Dictionary: Free Dictionary API + Claude (2026-11-22)
+- English definitions, phonetics and native audio from the **Free Dictionary API** (dictionaryapi.dev): free, no key, no service guarantee and patchy on business jargon. Mitigated by caching every word (`DictionaryEntry`, one call per word ever) and by an AI-only entry when the word is missing.
+- French translation, French usage note and a business example from **Claude Haiku 5.5** (cheapest model, cached per word).
+- Alternatives considered: Merriam-Webster (commercial licence needed, English only), Oxford / Collins (paid).

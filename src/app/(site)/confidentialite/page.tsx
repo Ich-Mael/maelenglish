@@ -67,6 +67,11 @@ export default function PrivacyPage() {
               dernière connexion, pour protéger votre compte et vous montrer vos appareils connectés.
             </li>
             <li>
+              <strong>Dictionnaire et carnet</strong> : les mots que vous cherchez sont envoyés à un service de dictionnaire
+              (dictionaryapi.dev) et, pour la traduction, à un outil d&apos;IA (Anthropic) — sans votre nom. Les mots que vous ajoutez à
+              votre carnet (avec la phrase où vous les avez trouvés) sont enregistrés sur votre compte.
+            </li>
+            <li>
               <strong>Expression écrite</strong> : les textes que vous écrivez dans les activités d&apos;expression écrite sont transmis à un
               outil de correction par intelligence artificielle (Anthropic), qui prépare une correction pour votre coach ; c&apos;est votre
               coach qui vérifie et vous envoie le retour. Ces textes ne sont pas utilisés pour entraîner les modèles de ce prestataire.

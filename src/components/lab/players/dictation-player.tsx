@@ -86,7 +86,7 @@ export function DictationPlayer({
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
 
-  const meta: ExerciseMeta = { title, typeLabel: "Dictée", icon: Keyboard, level, skills, instructions: instructions || "Écoutez chaque phrase et écrivez-la en anglais." };
+  const meta: ExerciseMeta = { title, typeLabel: "Dictation", icon: Keyboard, level, skills, instructions: instructions || "Listen to each sentence and write it in English." };
   const it = items[ex.index] as DictationItem | undefined;
   const revealed = ex.phase === "feedback";
   const limit = content.maxPlays;
@@ -172,7 +172,7 @@ export function DictationPlayer({
         <ExerciseHeader meta={meta} courseHref={courseHref} index={items.length} total={items.length} done />
         <ResultsScreen score={result.score} stars={result.stars} timeS={timeS} xp={result.xp} bestScore={result.bestScore} review={[]} maelTip={maelTip} preview={preview} passScore={passScore} lessonHref={lessonHref} onRetry={restart} onContinue={() => router.push(nextHref)}>
           <section className="grid gap-3 rounded-3xl border-2 border-border bg-card p-5">
-            <h2 className="font-heading text-lg font-extrabold text-brand-deep">Vos phrases</h2>
+            <h2 className="font-heading text-lg font-extrabold text-brand-deep">Your sentences</h2>
             <ul className="grid gap-2">
               {items.map((x) => {
                 const t = firstTry[x.id] ?? "";
@@ -184,13 +184,13 @@ export function DictationPlayer({
                         <Marked text={x.text} typed={t} />
                       </div>
                       {urlOf(x) && (
-                        <button type="button" onClick={() => play(x, "normal", false)} className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-primary" aria-label="Réécouter la phrase">
+                        <button type="button" onClick={() => play(x, "normal", false)} className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-primary" aria-label="Replay the sentence">
                           <Volume2 className="size-4" aria-hidden />
                         </button>
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {pct} % des mots justes{t ? ` · vous avez écrit : « ${t} »` : ""}
+                      {pct} % of the words right{t ? ` · you wrote: "${t}"` : ""}
                       {x.translation && ` · ${x.translation}`}
                     </p>
                   </li>
@@ -213,9 +213,9 @@ export function DictationPlayer({
       <section className="grid gap-4 rounded-3xl border-2 border-border bg-card p-4 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
-            Phrase {ex.index + 1} sur {items.length}
+            Sentence {ex.index + 1} of {items.length}
           </p>
-          {limit > 0 && !revealed && <p className={cn("text-xs font-bold", left ? "text-primary" : "text-coral-dark")}>{left ? `${left} écoute${left > 1 ? "s" : ""} restante${left > 1 ? "s" : ""}` : "Plus d'écoute"}</p>}
+          {limit > 0 && !revealed && <p className={cn("text-xs font-bold", left ? "text-primary" : "text-coral-dark")}>{left ? `${left} listen${left > 1 ? "s" : ""} left` : "No listens left"}</p>}
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -224,7 +224,7 @@ export function DictationPlayer({
             onClick={() => play(it, "normal")}
             disabled={!urlOf(it) || (!revealed && limit > 0 && left <= 0 && playing !== "normal")}
             className="flex size-16 items-center justify-center rounded-full bg-primary text-white shadow-[0_5px_0_0_var(--color-brand-dark)] transition active:translate-y-1 active:shadow-none disabled:opacity-40"
-            aria-label={playing === "normal" ? "Pause" : "Écouter la phrase"}
+            aria-label={playing === "normal" ? "Pause" : "Listen to the sentence"}
           >
             {playing === "normal" ? <Pause className="size-7" aria-hidden /> : <Play className="size-7 translate-x-0.5" aria-hidden />}
           </button>
@@ -234,22 +234,22 @@ export function DictationPlayer({
             disabled={!urlOf(it) || (!revealed && limit > 0 && left <= 0 && playing !== "slow")}
             className="inline-flex h-11 items-center gap-2 rounded-full border-2 border-primary/30 bg-brand-soft px-4 text-sm font-bold text-primary disabled:opacity-40"
           >
-            {playing === "slow" ? <Pause className="size-4" aria-hidden /> : <Snail className="size-4" aria-hidden />} Lentement
+            {playing === "slow" ? <Pause className="size-4" aria-hidden /> : <Snail className="size-4" aria-hidden />} Slowly
           </button>
           {!revealed && !hint && (
             <button type="button" onClick={() => setHint(true)} className="ml-auto inline-flex items-center gap-1.5 text-sm font-semibold text-primary underline underline-offset-4">
-              <Lightbulb className="size-4" aria-hidden /> Indice
+              <Lightbulb className="size-4" aria-hidden /> Hint
             </button>
           )}
         </div>
         {hint && !revealed && (
-          <p lang="en" className="rounded-xl bg-brand-soft/60 px-3 py-2 font-mono text-sm tracking-wider text-brand-deep" aria-label="Indice : la première lettre de chaque mot">
+          <p lang="en" className="rounded-xl bg-brand-soft/60 px-3 py-2 font-mono text-sm tracking-wider text-brand-deep" aria-label="Hint: the first letter of each word">
             {firstLetters(it.text)}
           </p>
         )}
 
         <label className="grid gap-1">
-          <span className="sr-only">Ce que vous entendez</span>
+          <span className="sr-only">What you hear</span>
           <textarea
             lang="en"
             value={typed}
@@ -260,13 +260,13 @@ export function DictationPlayer({
             autoCorrect="off"
             autoCapitalize="off"
             autoComplete="off"
-            placeholder="Écrivez la phrase en anglais…"
+            placeholder="Write the sentence in English…"
             className="w-full rounded-2xl border-2 border-border bg-background p-3 text-lg leading-relaxed text-ink outline-none focus:border-primary focus:ring-3 focus:ring-primary/20 disabled:opacity-80"
           />
         </label>
 
         {revealed && ex.correct !== null && acc && (
-          <FeedbackPanel correct={ex.correct} explanation={`${acc.percent} % des mots justes${ex.correct ? "" : ` (il en faut ${DICTATION_PASS} %)`}.`}>
+          <FeedbackPanel correct={ex.correct} explanation={`${acc.percent} % of the words right${ex.correct ? "" : ` (you need ${DICTATION_PASS} %)`}.`}>
             <Marked text={it.text} typed={ex.answer ?? ""} />
             {it.translation && <p className="text-sm text-muted-foreground">{it.translation}</p>}
           </FeedbackPanel>
@@ -279,7 +279,7 @@ export function DictationPlayer({
         </p>
       )}
       {readOnly ? (
-        <p className="text-sm text-muted-foreground">Cours terminé : l&apos;activité reste consultable, mais plus rien n&apos;est enregistré.</p>
+        <p className="text-sm text-muted-foreground">Course completed: you can still view the activity, but nothing is saved any more.</p>
       ) : (
         <CheckBar phase={revealed ? "feedback" : "answer"} canCheck={!!typed.trim()} correct={ex.correct} isLast={ex.isLast} pending={pending} onCheck={onCheck} onRetry={retry} onNext={ex.isLast ? finish : next} />
       )}

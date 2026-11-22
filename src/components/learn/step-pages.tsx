@@ -39,17 +39,17 @@ function Locked({ courseId, text }: { courseId: string; text: string }) {
   return (
     <div className="mx-auto max-w-md rounded-3xl border-2 border-border bg-card p-8 text-center">
       <Lock className="mx-auto size-12 text-muted-foreground" aria-hidden />
-      <h1 className="mt-4 text-2xl font-extrabold text-brand-deep">Pas encore ouvert</h1>
+      <h1 className="mt-4 text-2xl font-extrabold text-brand-deep">Not open yet</h1>
       <p className="mt-2 text-muted-foreground">{text}</p>
       <Link href={coursePath(courseId)} className="mt-6 inline-flex h-11 items-center rounded-2xl bg-primary px-5 font-semibold text-white">
-        Retour au parcours
+        Back to the course
       </Link>
     </div>
   );
 }
 
 const secs = (s: number) => (s >= 60 ? `${Math.floor(s / 60)} min${s % 60 ? ` ${s % 60} s` : ""}` : `${s} s`);
-const KIND_LABEL = { lesson: "Leçon", activity: "Activité", challenge: "Défi oral" } as const;
+const KIND_LABEL = { lesson: "Lesson", activity: "Activity", challenge: "Speaking challenge" } as const;
 
 /** Media id → URL (public staff media: lesson audio, listening clips, model answers). */
 async function mediaUrls(viewerId: string, ids: string[]): Promise<Record<string, string>> {
@@ -79,7 +79,7 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
   if (!mod || !unit || !so || !step) return <AccessProblem reason="not-found" />;
 
   const state = so.state;
-  if (state === "locked" && !(so.kind === "challenge" && so.status)) return <Locked courseId={courseId} text="Terminez les activités précédentes pour ouvrir celle-ci." />;
+  if (state === "locked" && !(so.kind === "challenge" && so.status)) return <Locked courseId={courseId} text="Finish the previous activities to open this one." />;
 
   const prevHref = stepBefore(courseId, outline, here);
   const nextHref = stepAfter(courseId, outline, here);
@@ -90,21 +90,21 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
   const header = (
     <header className="grid gap-3">
       {access.preview && <PreviewBar text={unit.hidden ? "Staff preview: this unit breaks the unit rules, learners don't see it. Nothing is saved." : "Staff preview: nothing is saved."} editHref={editHref} />}
-      <nav aria-label="Activités" className="flex items-center justify-between gap-2 text-sm font-semibold">
+      <nav aria-label="Activities" className="flex items-center justify-between gap-2 text-sm font-semibold">
         <Link href={prevHref} className="inline-flex items-center gap-1 text-muted-foreground hover:text-primary">
-          <ChevronLeft className="size-4" aria-hidden /> {prevHref === course ? mod.title : "Précédent"}
+          <ChevronLeft className="size-4" aria-hidden /> {prevHref === course ? mod.title : "Previous"}
         </Link>
         {(so.state === "completed" || (so.kind === "challenge" && so.status)) && nextHref !== course && (
           <Link href={nextHref} className="inline-flex items-center gap-1 text-primary">
-            Suivant <ChevronRight className="size-4" aria-hidden />
+            Next <ChevronRight className="size-4" aria-hidden />
           </Link>
         )}
       </nav>
       <div>
         <p className="text-xs font-bold tracking-wide text-primary uppercase">
-          Unité {unit.index + 1} · {unit.title}
+          Unit {unit.index + 1} · {unit.title}
         </p>
-        <div className="mt-2 flex gap-1" aria-label={`Activité ${at + 1} sur ${unit.steps.length}`} role="img">
+        <div className="mt-2 flex gap-1" aria-label={`Activity ${at + 1} of ${unit.steps.length}`} role="img">
           {unit.steps.map((s, i) => (
             <span key={s.id} className={`h-1.5 flex-1 rounded-full ${i === at ? "bg-coral" : s.state === "completed" || (s.kind === "challenge" && s.status) ? "bg-primary" : "bg-border"}`} />
           ))}
@@ -129,7 +129,7 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
         <div className="flex justify-end">
           {access.readOnly ? (
             <Link href={nextHref} className="inline-flex h-12 items-center rounded-2xl bg-primary px-6 font-semibold text-white">
-              Activité suivante
+              Next activity
             </Link>
           ) : (
             <CompleteButton courseId={courseId} stepId={stepId} done={so.state === "completed"} nextHref={nextHref} />
@@ -160,7 +160,7 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
             instructions={activity.instructions ?? ""}
             maelTip={activity.maelTip ?? ""}
             content={activity.content as GapsContent}
-            listen={lc ? { audioUrl: clip ?? null, maxPlays: lc.maxPlays, context: lc.context ? <RichText>{lc.context}</RichText> : null } : undefined}
+            listen={lc ? { audioUrl: clip ?? null, maxPlays: lc.maxPlays, context: lc.context ? <RichText lang="fr">{lc.context}</RichText> : null } : undefined}
             courseHref={course}
             nextHref={nextHref}
             readOnly={access.readOnly}
@@ -215,7 +215,7 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
             sendsLeft: writingSendsLeft(ws),
             sendsAllowed: writingSendsAllowed(ws),
             feedback: ws.coachStatus === "reviewed" ? ((ws.feedback as WritingCorrection | null) ?? null) : null,
-            comment: ws.coachStatus === "reviewed" && ws.coachComment ? <RichText legacy="text">{ws.coachComment}</RichText> : null,
+            comment: ws.coachStatus === "reviewed" && ws.coachComment ? <RichText legacy="text" lang="fr">{ws.coachComment}</RichText> : null,
             coach: coachUser ? { name: coachLabel(coachUser), avatarUrl: coachUser.avatarUrl ?? null } : null,
             redoAsked: !!ws.redoAsked,
           }
@@ -232,7 +232,7 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
             skills={activity.skills ?? []}
             instructions={activity.instructions ?? ""}
             maelTip={activity.maelTip ?? ""}
-            prompt={<RichText>{wc.prompt}</RichText>}
+            prompt={<RichText lang="fr">{wc.prompt}</RichText>}
             imageUrl={wImg}
             content={wc}
             initial={initial}
@@ -401,7 +401,7 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
           skills={activity.skills ?? []}
           instructions={activity.instructions ?? ""}
           maelTip={activity.maelTip ?? ""}
-          context={c.context ? <RichText>{c.context}</RichText> : null}
+          context={c.context ? <RichText lang="fr">{c.context}</RichText> : null}
           audioUrl={audio[c.audioMediaId] ?? null}
           content={c}
           courseHref={course}
@@ -445,24 +445,24 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
         <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-t from-brand-deep via-brand-deep/85 to-brand-deep/25 sm:bg-gradient-to-r sm:from-brand-deep sm:via-brand-deep/90 sm:to-brand-deep/10" />
         <div className="grid gap-2 p-5 pt-32 sm:max-w-[65%] sm:p-7">
           <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-bold tracking-wide uppercase">
-            <Mic className="size-3.5" aria-hidden /> Défi oral · à vous de parler
+            <Mic className="size-3.5" aria-hidden /> Speaking challenge · your turn to speak
           </p>
-          <h1 className="text-2xl leading-tight font-extrabold text-white sm:text-3xl">{activity.title || "Défi oral"}</h1>
+          <h1 className="text-2xl leading-tight font-extrabold text-white sm:text-3xl">{activity.title || "Speaking challenge"}</h1>
           <p className="inline-flex items-center gap-1.5 text-sm text-white/85">
-            <Timer className="size-4 shrink-0" aria-hidden /> {secs(c.maxSeconds ?? 60)} maximum{c.prepSeconds ? ` · ${secs(c.prepSeconds)} pour vous préparer` : ""} · votre coach vous fait un retour
+            <Timer className="size-4 shrink-0" aria-hidden /> {secs(c.maxSeconds ?? 60)} maximum{c.prepSeconds ? ` · ${secs(c.prepSeconds)} to prepare` : ""} · your coach gives you feedback
           </p>
         </div>
       </div>
 
       <section className="grid gap-5 rounded-3xl border-2 border-border bg-card p-5 sm:p-8">
-        <RichText>{c.instructions}</RichText>
-        <ChallengePrompt c={c} mediaUrl={c.promptMediaId ? (staffMedia[c.promptMediaId] ?? null) : null} title={activity.title || "Défi oral"} />
+        <RichText lang="fr">{c.instructions}</RichText>
+        <ChallengePrompt c={c} mediaUrl={c.promptMediaId ? (staffMedia[c.promptMediaId] ?? null) : null} title={activity.title || "Speaking challenge"} />
       </section>
 
       {mustInclude.length > 0 && (
         <section className="rounded-3xl border-2 border-primary/20 bg-brand-soft p-5">
           <h2 className="flex items-center gap-2 font-heading font-extrabold text-brand-deep">
-            <ListChecks className="size-5 text-primary" aria-hidden /> Dans votre réponse, pensez à…
+            <ListChecks className="size-5 text-primary" aria-hidden /> In your answer, remember to…
           </h2>
           <ul className="mt-2 grid gap-1.5">
             {mustInclude.map((m, i) => (
@@ -478,7 +478,7 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
         <section aria-labelledby="coach-answer" className="grid gap-3">
           <h2 id="coach-answer" className="flex items-center gap-2 text-xl font-extrabold text-brand-deep">
             {submission.status === "graded" ? <CircleCheck className="size-5 text-primary" aria-hidden /> : submission.status === "returned" ? <RotateCcw className="size-5 text-coral-dark" aria-hidden /> : <Clock className="size-5 text-primary" aria-hidden />}
-            {submission.status === "pending" ? "Défi envoyé" : "Le retour de votre coach"}
+            {submission.status === "pending" ? "Challenge sent" : "Your coach's feedback"}
           </h2>
           {submission.status === "pending" ? (
             <AwaitingCoach />
@@ -497,7 +497,7 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
           )}
           {mine && (
             <div className="rounded-2xl border-2 border-border bg-card p-4">
-              <p className="mb-1 text-sm font-semibold text-brand-deep">Votre enregistrement · envoyé le {formatDate(submission.submittedAt ?? submission.updatedAt)}</p>
+              <p className="mb-1 text-sm font-semibold text-brand-deep">Your recording · sent on {formatDate(submission.submittedAt ?? submission.updatedAt)}</p>
               <audio src={mine} controls preload="none" className="w-full" />
             </div>
           )}
@@ -510,12 +510,12 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
         <details open={!!submission} className="group rounded-3xl border-2 border-border bg-card">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-5 font-heading font-extrabold text-brand-deep [&::-webkit-details-marker]:hidden">
             <span className="flex items-center gap-2">
-              <Headphones className="size-5 text-primary" aria-hidden /> Écouter un exemple de réponse
+              <Headphones className="size-5 text-primary" aria-hidden /> Listen to a model answer
             </span>
             <ChevronDown className="size-5 transition group-open:rotate-180 motion-reduce:transition-none" aria-hidden />
           </summary>
           <div className="border-t border-border px-5 pt-3 pb-5">
-            {!submission && <p className="mb-2 text-sm text-muted-foreground">Conseil : essayez d&apos;abord seul(e), puis comparez.</p>}
+            {!submission && <p className="mb-2 text-sm text-muted-foreground">Tip: try on your own first, then compare.</p>}
             {model && <audio src={model} controls preload="none" className="w-full" />}
             {c.modelAnswerText && (
               <p lang="en" className="mt-2 whitespace-pre-line text-ink">
@@ -528,37 +528,37 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
 
       {validated && (
         <Link href={nextHref} className="inline-flex h-12 w-fit items-center rounded-2xl bg-primary px-6 font-semibold text-white">
-          Activité suivante
+          Next activity
         </Link>
       )}
 
       {submission?.status === "graded" && left <= 0 ? null : access.readOnly ? (
-        <p className="text-muted-foreground">Cours terminé : les envois sont fermés.</p>
+        <p className="text-muted-foreground">Course completed: sending is closed.</p>
       ) : (
         <section className="grid gap-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-xl font-extrabold text-brand-deep">{!submission ? "À vous de parler" : left <= 0 ? "Envois terminés" : submission.status === "graded" ? "Refaire le défi" : "Vous pouvez vous réenregistrer"}</h2>
+            <h2 className="text-xl font-extrabold text-brand-deep">{!submission ? "Your turn to speak" : left <= 0 ? "No sends left" : submission.status === "graded" ? "Redo the challenge" : "You can record yourself again"}</h2>
             <SendsLeft used={used} allowed={allowed} />
           </div>
           {left > 0 ? (
             <>
               <p className="text-sm text-muted-foreground">
                 {submission?.status === "graded"
-                  ? "Appliquez les conseils de votre coach et réenregistrez-vous : il écoutera votre nouvelle version. Votre validation reste acquise. "
+                  ? "Apply your coach's advice and record yourself again: they'll listen to your new version. Your validation still counts. "
                   : submission?.status === "pending"
-                    ? `Tant que votre coach n’a pas répondu, un nouvel envoi remplace le précédent.${validated ? " Votre validation reste acquise." : ""} `
+                    ? `Until your coach replies, a new send replaces the previous one.${validated ? " Your validation still counts." : ""} `
                     : ""}
-                {left === 1 ? "C'est votre dernier envoi : prenez le temps de vous réécouter avant d'envoyer." : `Il vous reste ${left} envois pour ce défi.`}
+                {left === 1 ? "This is your last send: take the time to listen to yourself before sending." : `You have ${left} sends left for this challenge.`}
               </p>
               <ChallengeRecorder courseId={courseId} stepId={stepId} maxSeconds={c.maxSeconds ?? 60} prepSeconds={c.prepSeconds ?? 0} preview={access.preview} resend={!!submission} courseHref={course} />
             </>
           ) : (
             <p className="rounded-2xl border-2 border-border bg-card p-4 text-ink">
-              Vous avez utilisé vos {allowed} envois. Votre coach va écouter le dernier et vous faire un retour ; s&apos;il vous demande de le reprendre, un nouvel envoi s&apos;ouvrira.
+              You’ve used your {allowed} sends. Your coach will listen to the last one and give you feedback; if they ask you to redo it, a new send will open.
             </p>
           )}
           <Link href="/mes-defis" className="w-fit text-sm font-semibold text-primary hover:underline">
-            Voir « My Speaking Challenge » : tous mes défis et les retours de mon coach
+            See « My Speaking Challenge »: all my challenges and my coach’s feedback
           </Link>
         </section>
       )}
@@ -569,13 +569,13 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
 /** « Envoi 2 / 3 » as dots. */
 function SendsLeft({ used, allowed }: { used: number; allowed: number }) {
   return (
-    <p className="flex items-center gap-2 text-sm font-semibold text-muted-foreground" aria-label={`${used} envoi(s) utilisé(s) sur ${allowed}`}>
+    <p className="flex items-center gap-2 text-sm font-semibold text-muted-foreground" aria-label={`${used} of ${allowed} sends used`}>
       <span className="flex gap-1" aria-hidden>
         {Array.from({ length: allowed }, (_, i) => (
           <span key={i} className={i < used ? "size-2.5 rounded-full bg-primary" : "size-2.5 rounded-full border-2 border-primary/40"} />
         ))}
       </span>
-      {used} / {allowed} envois
+      {used} / {allowed} sends
     </p>
   );
 }
@@ -591,7 +591,7 @@ export async function ExamStep({ courseId }: { courseId: string }) {
   const quiz = access.course.finalExam;
   const step = outline.finalExam;
   if (!quiz?.questions?.length || !step) return <AccessProblem reason="not-found" />;
-  if (step.state === "locked") return <Locked courseId={courseId} text="L'examen final s'ouvre quand tous les modules sont terminés." />;
+  if (step.state === "locked") return <Locked courseId={courseId} text="The final exam opens when every module is completed." />;
 
   // Never send the answers to the browser.
   const questions: PublicQuestion[] = quiz.questions.map((q) => ({
@@ -604,7 +604,7 @@ export async function ExamStep({ courseId }: { courseId: string }) {
       {access.preview && <PreviewBar text="Staff preview: the result isn't saved." editHref={adminPaths.finals(courseId)} className="mx-auto mb-6 max-w-2xl" />}
       <QuizRunner
         courseId={courseId}
-        title={quiz.title || "Examen final"}
+        title={quiz.title || "Final exam"}
         questions={questions}
         passingScore={quiz.passingScore ?? 70}
         timeLimit={quiz.timeLimit ?? 0}

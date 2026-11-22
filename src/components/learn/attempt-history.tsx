@@ -10,13 +10,13 @@ import { cn } from "cn";
 /*
  * Earlier speaking-challenge submissions, each a folded row (« Envoi 2 » / « Submission 2 ») with a
  * colour and icon for the coach's decision — green validated, red to redo, grey no feedback — and,
- * opened: the recording and the coach's feedback (voice note, comment). Learner pages (French) and
- * the coach's grading page (English).
+ * opened: the recording and the coach's feedback (voice note, comment). English on learner pages and
+ * the coach's grading page (the « fr » wording is no longer used).
  */
 
 const TEXT = {
   fr: { title: "Mes essais précédents", sub: "Envoi", graded: "Validé", returned: "À reprendre", feedback: "Retour du coach", none: "Pas de retour", noneLong: "Pas de retour du coach : vous avez envoyé une nouvelle version avant.", recording: "Votre enregistrement", missing: "Enregistrement indisponible.", noComment: "Pas de commentaire écrit.", on: "le", voice: "Message vocal" },
-  en: { title: "Previous submissions", sub: "Submission", graded: "Validated", returned: "Returned", feedback: "Feedback given", none: "No feedback", noneLong: "Not reviewed: the learner sent a new version before any feedback.", recording: "Recording", missing: "Recording unavailable.", noComment: "No written comment.", on: "on", voice: "Voice note" },
+  en: { title: "Previous submissions", sub: "Submission", graded: "Validated", returned: "Returned", feedback: "Feedback given", none: "No feedback", noneLong: "Not reviewed: a new version was sent before any feedback.", recording: "Recording", missing: "Recording unavailable.", noComment: "No written comment.", on: "on", voice: "Voice note" },
 } as const;
 
 const TONE = {
@@ -26,7 +26,7 @@ const TONE = {
   none: { row: "border-l-border", icon: "bg-muted text-muted-foreground", pill: "bg-muted text-muted-foreground", Icon: Clock },
 } as const;
 
-export function AttemptHistory({ items, locale = "fr", open = false, className }: { items: AttemptItem[]; locale?: "fr" | "en"; open?: boolean; className?: string }) {
+export function AttemptHistory({ items, locale = "en", open = false, className }: { items: AttemptItem[]; locale?: "fr" | "en"; open?: boolean; className?: string }) {
   if (!items.length) return null;
   const t = TEXT[locale];
   const date = (d: Date) => (locale === "fr" ? formatDate(d) : new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }));
@@ -77,7 +77,7 @@ export function AttemptHistory({ items, locale = "fr", open = false, className }
                     </div>
                     {r.note &&
                       (locale === "fr" ? (
-                        <VoiceNote src={r.note.url} seed={r.note.seed} durationS={r.note.durationS} coachName={r.coach?.label ?? "Votre coach"} coachAvatar={r.coach?.avatarUrl} />
+                        <VoiceNote src={r.note.url} seed={r.note.seed} durationS={r.note.durationS} coachName={r.coach?.label ?? (locale === "fr" ? "Votre coach" : "Your coach")} coachAvatar={r.coach?.avatarUrl} />
                       ) : (
                         <audio src={r.note.url} controls preload="none" className="w-full" />
                       ))}

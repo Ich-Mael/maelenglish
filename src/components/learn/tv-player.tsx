@@ -40,7 +40,7 @@ export function TvPlayer({ source, title }: { source: NonNullable<VideoSource>; 
   // Runs when the page is hidden by <Activity> (navigation) or unmounted: stop the video.
   useLayoutEffect(() => () => setOn(false), []);
   return (
-    <figure className="mx-auto w-full" aria-label={`Vidéo : ${title}`}>
+    <figure className="mx-auto w-full" aria-label={`Video: ${title}`}>
       <div className="relative rounded-[1.4rem] bg-gradient-to-b from-[#1d2650] to-[#0b1030] px-2 pt-9 pb-2.5 shadow-[0_30px_60px_-25px_rgb(20_31_77/0.75)] ring-1 ring-white/10 sm:rounded-[2rem] sm:px-3.5 sm:pt-12 sm:pb-4">
         {/* top bezel: logo + camera */}
         <div className="absolute inset-x-0 top-0 flex h-9 items-center justify-center sm:h-12">
@@ -75,7 +75,7 @@ export function TvPlayer({ source, title }: { source: NonNullable<VideoSource>; 
                 <Play className="ml-1 size-8 fill-current sm:size-9" aria-hidden />
               </span>
               <span className="max-w-md text-center font-heading text-base font-extrabold text-balance sm:text-xl">{title}</span>
-              <span className="text-xs font-semibold text-muted-foreground sm:text-sm">Appuyez sur lecture, c&apos;est parti !</span>
+              <span className="text-xs font-semibold text-muted-foreground sm:text-sm">Press play and off you go!</span>
             </button>
           )}
         </div>
@@ -167,7 +167,7 @@ function FileVideo({ src, title }: { src: string; title: string }) {
       onMouseMove={poke}
       onTouchStart={poke}
       className={cn("group/v relative size-full bg-black outline-none", !uiVisible && "cursor-none")}
-      aria-label={`Lecteur vidéo : ${title}`}
+      aria-label={`Video player: ${title}`}
     >
       <video
         ref={video}
@@ -186,7 +186,7 @@ function FileVideo({ src, title }: { src: string; title: string }) {
         onDurationChange={(e) => setDuration(e.currentTarget.duration)}
       />
       {!playing && (
-        <button type="button" onClick={toggle} aria-label="Lecture" className="absolute inset-0 m-auto mb-[45%] flex size-12 items-center justify-center rounded-full bg-white/90 text-primary shadow-lg sm:mb-auto sm:size-16">
+        <button type="button" onClick={toggle} aria-label="Play" className="absolute inset-0 m-auto mb-[45%] flex size-12 items-center justify-center rounded-full bg-white/90 text-primary shadow-lg sm:mb-auto sm:size-16">
           <Play className="ml-0.5 size-6 fill-current sm:ml-1 sm:size-8" aria-hidden />
         </button>
       )}
@@ -203,27 +203,27 @@ function FileVideo({ src, title }: { src: string; title: string }) {
           step={0.1}
           value={time}
           onChange={(e) => seek(Number(e.target.value))}
-          aria-label="Position dans la vidéo"
+          aria-label="Position in the video"
           className="tv-range block w-full"
           style={{ ["--p" as string]: `${duration ? (time / duration) * 100 : 0}%` }}
         />
         <div className="mt-1 flex items-center gap-1 text-sm text-white">
-          <button type="button" onClick={toggle} className={btn} aria-label={playing ? "Pause" : "Lecture"}>
+          <button type="button" onClick={toggle} className={btn} aria-label={playing ? "Pause" : "Play"}>
             {playing ? <Pause className="size-5 fill-current" aria-hidden /> : <Play className="size-5 fill-current" aria-hidden />}
           </button>
-          <button type="button" onClick={() => seek(v().currentTime - 10)} className={btn} aria-label="Revenir de 10 secondes" title="Revoir 10 s">
+          <button type="button" onClick={() => seek(v().currentTime - 10)} className={btn} aria-label="Back 10 seconds" title="Back 10 s">
             <RotateCcw className="size-5" aria-hidden />
           </button>
-          <button type="button" onClick={toggleMute} className={btn} aria-label={muted ? "Activer le son" : "Couper le son"}>
+          <button type="button" onClick={toggleMute} className={btn} aria-label={muted ? "Unmute" : "Mute"}>
             {muted ? <VolumeX className="size-5" aria-hidden /> : <Volume2 className="size-5" aria-hidden />}
           </button>
           <span className="ml-1 font-mono text-xs tabular-nums sm:text-sm">
             {fmt(time)} / {fmt(duration)}
           </span>
-          <button type="button" onClick={cycleSpeed} className="ml-auto rounded-full px-2.5 py-1 text-xs font-bold text-white ring-1 ring-white/40 hover:bg-white/15" aria-label={`Vitesse de lecture : ${speed}×`} title="Vitesse (pour mieux comprendre)">
+          <button type="button" onClick={cycleSpeed} className="ml-auto rounded-full px-2.5 py-1 text-xs font-bold text-white ring-1 ring-white/40 hover:bg-white/15" aria-label={`Playback speed: ${speed}×`} title="Speed (to understand better)">
             {speed}×
           </button>
-          <button type="button" onClick={toggleFull} className={btn} aria-label={full ? "Quitter le plein écran" : "Plein écran"}>
+          <button type="button" onClick={toggleFull} className={btn} aria-label={full ? "Exit full screen" : "Full screen"}>
             {full ? <Minimize className="size-5" aria-hidden /> : <Maximize className="size-5" aria-hidden />}
           </button>
         </div>

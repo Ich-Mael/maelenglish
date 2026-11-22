@@ -34,7 +34,7 @@ async function squareImage(file: File): Promise<Blob> {
   return blob;
 }
 
-export function AvatarPicker({ userId, src, name, locale = "fr" }: { userId: string; src: string | null; name: string; locale?: "fr" | "en" }) {
+export function AvatarPicker({ userId, src, name, locale = "en" }: { userId: string; src: string | null; name: string; locale?: "fr" | "en" }) {
   const t = T[locale];
   const input = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);

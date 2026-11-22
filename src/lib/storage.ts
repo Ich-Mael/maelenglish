@@ -25,7 +25,7 @@ export function storageDriver(): Driver {
   const e = process.env;
   if (e.STORAGE_ENDPOINT && e.STORAGE_BUCKET && e.STORAGE_ACCESS_KEY_ID && e.STORAGE_SECRET_ACCESS_KEY) return "s3";
   // STORAGE_DRIVER=local: explicit opt-in to test a production build locally (never on Render).
-  if (process.env.NODE_ENV === "production" && process.env.STORAGE_DRIVER !== "local") throw new Error("Stockage non configuré : définissez STORAGE_ENDPOINT, STORAGE_BUCKET, STORAGE_ACCESS_KEY_ID et STORAGE_SECRET_ACCESS_KEY.");
+  if (process.env.NODE_ENV === "production" && process.env.STORAGE_DRIVER !== "local") throw new Error("Storage not configured: set STORAGE_ENDPOINT, STORAGE_BUCKET, STORAGE_ACCESS_KEY_ID and STORAGE_SECRET_ACCESS_KEY.");
   return "local";
 }
 
@@ -56,7 +56,7 @@ export function isSafeKey(key: string): boolean {
   return /^(?:(?:students_audio|courses_audios|profile_photos)\/)?[a-z-]+\/\d{4}-\d{2}\/[a-f0-9]{24}\.[a-z0-9]{2,5}$/.test(key);
 }
 function localPath(key: string) {
-  if (!isSafeKey(key)) throw new Error("Clé de fichier invalide.");
+  if (!isSafeKey(key)) throw new Error("Invalid file key.");
   return path.join(LOCAL_ROOT, key);
 }
 function sign(op: "put" | "get", key: string, exp: number) {

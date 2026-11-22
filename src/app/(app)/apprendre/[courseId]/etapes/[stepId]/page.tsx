@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { StepPage } from "@/components/learn/step-pages";
 import { PageSkeleton } from "@/components/learn/ui";
 
-export const metadata: Metadata = { title: "Activité", robots: { index: false } };
+export const metadata: Metadata = { title: "Activity", robots: { index: false } };
 
 async function Step({ params }: { params: Promise<{ courseId: string; stepId: string }> }) {
   const { courseId, stepId } = await params;

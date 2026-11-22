@@ -11,11 +11,11 @@ export async function Leaderboard({ courseId, meId }: { courseId: string; meId: 
   return (
     <section className="rounded-3xl border-2 border-border bg-card p-5 sm:p-6" aria-labelledby="leaderboard-title">
       <h2 id="leaderboard-title" className="flex items-center gap-2 text-xl font-extrabold text-brand-deep">
-        <Trophy className="size-5 text-coral" aria-hidden /> Classement de la semaine
+        <Trophy className="size-5 text-coral" aria-hidden /> This week’s leaderboard
       </h2>
-      <p className="mb-4 text-sm text-muted-foreground">XP gagnés depuis lundi dans ce cours.</p>
+      <p className="mb-4 text-sm text-muted-foreground">XP earned since Monday in this course.</p>
       {rows.length === 0 ? (
-        <p className="rounded-2xl bg-muted/50 p-4 text-center text-sm text-muted-foreground">Personne n&apos;a encore gagné d&apos;XP cette semaine. Prenez la tête !</p>
+        <p className="rounded-2xl bg-muted/50 p-4 text-center text-sm text-muted-foreground">Nobody has earned XP this week yet. Take the lead!</p>
       ) : (
         <ol className="grid gap-1.5">
           {rows.map((r, i) => (
@@ -32,7 +32,7 @@ export async function Leaderboard({ courseId, meId }: { courseId: string; meId: 
               </span>
               <span className={cn("flex-1 truncate font-semibold", r.me ? "text-primary" : "text-ink")}>
                 {r.name}
-                {r.me && " (vous)"}
+                {r.me && " (you)"}
               </span>
               <span className="font-heading font-bold text-primary">{r.xp} XP</span>
             </li>

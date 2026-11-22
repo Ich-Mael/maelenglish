@@ -7,7 +7,7 @@ import { badgesFor, statsFor, xpByDay } from "@/lib/gamification/service";
 import { ProgressView } from "@/components/gamify/progress-view";
 import { PageSkeleton } from "@/components/learn/ui";
 
-export const metadata: Metadata = { title: "Ma progression", robots: { index: false } };
+export const metadata: Metadata = { title: "My Progress", robots: { index: false } };
 
 async function Progress() {
   await connection();

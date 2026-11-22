@@ -74,7 +74,7 @@ export function CompleteWordsPlayer({
   // Box order across the text, for moving from one word to the next.
   const order = gaps.flatMap((g) => Array.from({ length: size(g) }, (_, k) => `${g.id}:${k}`));
 
-  const meta: ExerciseMeta = { title, typeLabel: "Compléter les mots", icon: SpellCheck, level, skills, instructions: instructions || "Complétez les mots : une case = une lettre." };
+  const meta: ExerciseMeta = { title, typeLabel: "Complete the words", icon: SpellCheck, level, skills, instructions: instructions || "Complete the words: one box = one letter." };
   const word = (id: string) => (values[id] ?? []).join("");
   const locked = (id: string) => marks?.[id] === true;
   const focusAt = (i: number) => {
@@ -201,7 +201,7 @@ export function CompleteWordsPlayer({
           return (
             <span key={si} className="whitespace-nowrap">
               {stem}
-              <span className="ml-0.5 inline-flex gap-0.5 align-middle" role="group" aria-label={`Mot ${g.index + 1} : ${stem}… ${size(g)} lettre${size(g) > 1 ? "s" : ""} manquante${size(g) > 1 ? "s" : ""}`}>
+              <span className="ml-0.5 inline-flex gap-0.5 align-middle" role="group" aria-label={`Word ${g.index + 1}: ${stem}… ${size(g)} missing letter${size(g) > 1 ? "s" : ""}`}>
               {values[g.id].map((ch, k) => (
                 <input
                   key={k}
@@ -221,7 +221,7 @@ export function CompleteWordsPlayer({
                   autoCorrect="off"
                   autoComplete="off"
                   spellCheck={false}
-                  aria-label={`Lettre ${k + 1}`}
+                  aria-label={`Letter ${k + 1}`}
                   className={cn(
                     "h-9 w-6 rounded-md border-2 border-b-[3px] bg-white p-0 text-center font-semibold text-brand-deep outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/25 sm:h-10 sm:w-8 sm:text-lg",
                     mark === true ? "border-primary bg-brand-soft text-primary" : mark === false ? "border-coral bg-coral-soft/60 text-coral-dark" : ch ? "border-primary/40" : "border-border",
@@ -251,11 +251,11 @@ export function CompleteWordsPlayer({
         <ExerciseHeader meta={meta} courseHref={courseHref} index={1} total={1} done />
         <ResultsScreen score={result.score} stars={result.stars} timeS={timeS} xp={result.xp} bestScore={result.bestScore} review={review} maelTip={maelTip} preview={preview} passScore={passScore} lessonHref={lessonHref} onRetry={restart} onContinue={() => router.push(nextHref)}>
           <section className="grid gap-2 rounded-3xl border-2 border-border bg-card p-5">
-            <h2 className="font-heading text-lg font-extrabold text-brand-deep">Le texte corrigé</h2>
+            <h2 className="font-heading text-lg font-extrabold text-brand-deep">The corrected text</h2>
             {audioUrl && (
               <div className="grid gap-1">
                 <p className="flex items-center gap-1.5 text-sm font-semibold text-primary">
-                  <Headphones className="size-4" aria-hidden /> Écoutez le texte en entier
+                  <Headphones className="size-4" aria-hidden /> Listen to the whole text
                 </p>
                 <AudioPlayer src={audioUrl} />
               </div>
@@ -278,11 +278,11 @@ export function CompleteWordsPlayer({
       <section className="grid gap-3 rounded-3xl border-2 border-border bg-card p-4 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
-            {gaps.length} mots à compléter · une case = une lettre
+            {gaps.length} words to complete · one box = one letter
           </p>
           {marks && (
             <p className={cn("text-xs font-bold", allRight ? "text-primary" : "text-coral-dark")}>
-              {right} / {gaps.length} mots justes
+              {right} / {gaps.length} words correct
             </p>
           )}
         </div>
@@ -294,7 +294,7 @@ export function CompleteWordsPlayer({
         </p>
       )}
       {readOnly ? (
-        <p className="text-sm text-muted-foreground">Cours terminé : l&apos;activité reste consultable, mais plus rien n&apos;est enregistré.</p>
+        <p className="text-sm text-muted-foreground">Course completed: you can still view the activity, but nothing is saved any more.</p>
       ) : (
         <CheckBar phase={checked ? "feedback" : "answer"} canCheck={filled} correct={checked ? allRight : null} isLast pending={pending} onCheck={onCheck} onRetry={retry} onNext={finish} />
       )}

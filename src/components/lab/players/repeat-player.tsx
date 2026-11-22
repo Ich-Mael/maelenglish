@@ -117,7 +117,7 @@ export function RepeatPlayer({
 
   const ph: RepeatPhrase | undefined = phrases[index];
   const isLast = index === phrases.length - 1;
-  const meta: ExerciseMeta = { title, typeLabel: "Répétez après Mael", icon: Speech, level, skills, instructions: instructions || "Écoutez Mael, puis répétez la phrase à voix haute." };
+  const meta: ExerciseMeta = { title, typeLabel: "Repeat after Mael", icon: Speech, level, skills, instructions: instructions || "Listen to Mael, then repeat the sentence out loud." };
   const modelUrl = ph?.audioMediaId ? audioUrls[ph.audioMediaId] : undefined;
 
   const playModel = (p?: RepeatPhrase) => {
@@ -167,7 +167,7 @@ export function RepeatPlayer({
       setInterim(text);
     };
     r.onerror = (e) => {
-      setMicError(e.error === "not-allowed" || e.error === "service-not-allowed" ? "Autorisez le micro dans votre navigateur pour vous enregistrer." : e.error === "no-speech" ? "Nous n'avons rien entendu : parlez un peu plus fort, près du téléphone." : e.error === "network" ? "La reconnaissance vocale a besoin d'internet : vérifiez votre connexion." : "");
+      setMicError(e.error === "not-allowed" || e.error === "service-not-allowed" ? "Allow the microphone in your browser to record yourself." : e.error === "no-speech" ? "We didn't hear anything: speak a little louder, close to the phone." : e.error === "network" ? "Speech recognition needs the internet: check your connection." : "");
     };
     r.onend = () => {
       setListening(false);
@@ -235,7 +235,7 @@ export function RepeatPlayer({
         <ExerciseHeader meta={meta} courseHref={courseHref} index={phrases.length} total={phrases.length} done />
         <ResultsScreen score={result.score} stars={result.stars} timeS={timeS} xp={result.xp} bestScore={result.bestScore} review={[]} maelTip={maelTip} preview={preview} passScore={passScore} lessonHref={lessonHref} onRetry={restart} onContinue={() => router.push(nextHref)}>
           <section className="grid gap-3 rounded-3xl border-2 border-border bg-card p-5">
-            <h2 className="font-heading text-lg font-extrabold text-brand-deep">Vos phrases</h2>
+            <h2 className="font-heading text-lg font-extrabold text-brand-deep">Your sentences</h2>
             <ul className="grid gap-2">
               {phrases.map((p) => {
                 const a = best[p.id];
@@ -244,12 +244,12 @@ export function RepeatPlayer({
                   <li key={p.id} className="grid gap-1 rounded-2xl bg-muted/50 px-3 py-2.5">
                     <div className="flex items-start gap-2">
                       <div className="min-w-0 flex-1">{a && "heard" in a ? <Words text={p.text} heard={a.heard} /> : <Words text={p.text} />}</div>
-                      <button type="button" onClick={() => playModel(p)} className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-primary" aria-label="Réécouter Mael">
+                      <button type="button" onClick={() => playModel(p)} className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-primary" aria-label="Listen to Mael again">
                         <Volume2 className="size-4" aria-hidden />
                       </button>
                     </div>
                     <p className="text-xs font-semibold text-muted-foreground">
-                      {pct !== null ? `${pct} % des mots compris` : a && "self" in a ? (a.self === "ok" ? "Auto-évaluation : bien dit" : "Auto-évaluation : à retravailler") : "Pas d'essai"}
+                      {pct !== null ? `${pct} % of the words understood` : a && "self" in a ? (a.self === "ok" ? "Self-assessed: said well" : "Self-assessed: needs work") : "No try"}
                       {p.translation && ` · ${p.translation}`}
                     </p>
                   </li>
@@ -273,7 +273,7 @@ export function RepeatPlayer({
 
       <section className="grid gap-4 rounded-3xl border-2 border-border bg-card p-4 sm:p-6">
         <p className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
-          Phrase {index + 1} sur {phrases.length}
+          Sentence {index + 1} of {phrases.length}
         </p>
         {/* 1. Hear Mael. */}
         <button type="button" onClick={() => playModel()} disabled={!modelUrl} className="flex items-center gap-3 rounded-2xl border-2 border-primary/25 bg-brand-soft p-3 text-left transition hover:border-primary/50">
@@ -281,8 +281,8 @@ export function RepeatPlayer({
             {playing ? <Pause className="size-5" aria-hidden /> : <Play className="size-5 translate-x-px" aria-hidden />}
           </span>
           <span className="grid">
-            <span className="font-heading font-extrabold text-brand-deep">Écoutez Mael</span>
-            <span className="text-sm text-muted-foreground">Autant de fois que vous voulez.</span>
+            <span className="font-heading font-extrabold text-brand-deep">Listen to Mael</span>
+            <span className="text-sm text-muted-foreground">As often as you like.</span>
           </span>
         </button>
 
@@ -302,17 +302,17 @@ export function RepeatPlayer({
                 "relative flex size-20 items-center justify-center rounded-full border-[3px] border-b-[7px] bg-white transition active:translate-y-1 active:border-b-[3px]",
                 listening ? "border-destructive bg-destructive text-white" : "border-coral text-coral hover:bg-coral-soft",
               )}
-              aria-label={listening ? "Arrêter" : "Répéter la phrase"}
+              aria-label={listening ? "Stop" : "Repeat the sentence"}
             >
               {listening && <span className="absolute -inset-2 animate-ping rounded-full border-4 border-coral/40 motion-reduce:animate-none" aria-hidden />}
               <Mic className="size-9" aria-hidden />
             </button>
             <p className="text-sm font-semibold text-brand-deep" aria-live="polite">
-              {listening ? (interim ? `« ${interim} »` : "Je vous écoute… parlez maintenant") : tried ? "Réessayez pour améliorer votre score" : "Appuyez, puis répétez la phrase"}
+              {listening ? (interim ? `« ${interim} »` : "Listening… speak now") : tried ? "Try again to improve your score" : "Tap, then repeat the sentence"}
             </p>
             {lastPct !== null && (
               <p role="status" className={cn("rounded-full px-3 py-1 text-sm font-bold", lastPct >= REPEAT_PASS ? "bg-gradient-to-r from-primary to-brand-deep text-white" : "border-2 border-coral bg-white text-coral-dark")}>
-                {lastPct >= REPEAT_PASS ? `Bien dit ! ${lastPct} % des mots compris` : `${lastPct} % des mots compris : réécoutez Mael et réessayez`}
+                {lastPct >= REPEAT_PASS ? `Well said! ${lastPct} % of the words understood` : `${lastPct} % of the words understood: listen to Mael again and try again`}
               </p>
             )}
             {micError && <p className="text-center text-sm font-semibold text-coral-dark">{micError}</p>}
@@ -321,23 +321,23 @@ export function RepeatPlayer({
         {canRecognise === false && (
           // No speech recognition here: record, compare with Mael, self-assess.
           <div className="grid gap-3">
-            <p className="text-sm text-muted-foreground">Votre navigateur ne sait pas reconnaître la voix : enregistrez-vous, comparez avec Mael, puis évaluez-vous honnêtement.</p>
+            <p className="text-sm text-muted-foreground">Your browser can’t recognise speech: record yourself, compare with Mael, then rate yourself honestly.</p>
             {!own ? (
-              <Recorder key={`${ph.id}:${index}`} maxSeconds={15} onUse={(r) => setOwn(URL.createObjectURL(r.blob))} useLabel="Comparer avec Mael" />
+              <Recorder key={`${ph.id}:${index}`} maxSeconds={15} onUse={(r) => setOwn(URL.createObjectURL(r.blob))} useLabel="Compare with Mael" />
             ) : (
               <div className="grid gap-2">
-                <p className="text-xs font-semibold text-muted-foreground">Vous</p>
+                <p className="text-xs font-semibold text-muted-foreground">You</p>
                 <audio src={own} controls className="w-full" />
                 <div className="grid grid-cols-2 gap-2">
                   <button type="button" onClick={() => keep({ self: "ok" })} className={cn("h-12 rounded-2xl border-2 font-bold", last && "self" in last && last.self === "ok" ? "border-primary bg-primary text-white" : "border-primary/40 bg-white text-primary")}>
-                    Je l&apos;ai bien dit
+                    I said it well
                   </button>
                   <button type="button" onClick={() => keep({ self: "redo" })} className={cn("h-12 rounded-2xl border-2 font-bold", last && "self" in last && last.self === "redo" ? "border-coral bg-coral-soft text-coral-dark" : "border-coral bg-white text-coral-dark")}>
-                    À retravailler
+                    Needs work
                   </button>
                 </div>
                 <button type="button" onClick={() => (setOwn(null), setLast(null))} className="w-fit text-sm font-semibold text-primary underline underline-offset-4">
-                  Me réenregistrer
+                  Record again
                 </button>
               </div>
             )}
@@ -351,7 +351,7 @@ export function RepeatPlayer({
         </p>
       )}
       {readOnly ? (
-        <p className="text-sm text-muted-foreground">Cours terminé : l&apos;activité reste consultable, mais plus rien n&apos;est enregistré.</p>
+        <p className="text-sm text-muted-foreground">Course completed: you can still view the activity, but nothing is saved any more.</p>
       ) : (
         <div className="sticky bottom-[var(--checkbar-bottom,4rem)] z-10 -mx-4 border-t border-border bg-background/95 px-4 py-3 md:bottom-0">
           <div className="mx-auto flex max-w-2xl gap-3">
@@ -362,7 +362,7 @@ export function RepeatPlayer({
               className="inline-flex h-13 flex-1 items-center justify-center gap-2 rounded-2xl bg-primary px-6 text-lg font-bold text-white shadow-[0_5px_0_0_var(--color-brand-dark)] transition active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-brand-dark)] disabled:opacity-50 disabled:shadow-none"
             >
               {pending && <Loader2 className="size-5 animate-spin" aria-hidden />}
-              {isLast ? "Voir mon résultat" : "Phrase suivante"} {!pending && <ArrowRight className="size-5" aria-hidden />}
+              {isLast ? "See my result" : "Next sentence"} {!pending && <ArrowRight className="size-5" aria-hidden />}
             </button>
           </div>
         </div>

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { clearQueue } from "./offline-queue";
 
 /** Logout that also forgets this learner's offline pages and pending results (shared devices). */
-export function LogoutButton({ variant = "default", className, label = "Déconnexion" }: { variant?: "default" | "compact" | "nav" | "menu"; className?: string; /** « Sign out » in the (English) admin. */ label?: string }) {
+export function LogoutButton({ variant = "default", className, label = "Sign out" }: { variant?: "default" | "compact" | "nav" | "menu"; className?: string; /** « Sign out » in the (English) admin. */ label?: string }) {
   return (
     <form
       action={logout}
@@ -21,7 +21,7 @@ export function LogoutButton({ variant = "default", className, label = "Déconne
     >
       {variant === "default" ? (
         <Button type="submit" variant="outline" className="rounded-xl">
-          <LogOut className="size-4" aria-hidden /> Me déconnecter
+          <LogOut className="size-4" aria-hidden /> Sign out
         </Button>
       ) : variant === "compact" ? (
         // top bar: icon, plus the label on wide screens (the username chip needs the room)

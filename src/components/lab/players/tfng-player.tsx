@@ -49,11 +49,11 @@ function Doc({ title, sentences, highlight, tone = "right" }: { title: string; s
 /** The document picture: full width, tap to open it full size (small text in screenshots). */
 function DocImage({ url, alt }: { url: string; alt: string }) {
   return (
-    <a href={url} target="_blank" rel="noopener" className="group relative block overflow-clip rounded-2xl border border-border bg-muted" aria-label="Ouvrir le document en grand">
+    <a href={url} target="_blank" rel="noopener" className="group relative block overflow-clip rounded-2xl border border-border bg-muted" aria-label="Open the document full size">
       {/* eslint-disable-next-line @next/next/no-img-element -- signed storage URL, no image optimiser */}
       <img src={url} alt={alt} className="w-full object-contain" />
       <span aria-hidden className="absolute right-2 bottom-2 flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-xs font-bold text-brand-deep shadow">
-        <Expand className="size-3.5" /> Agrandir
+        <Expand className="size-3.5" /> Enlarge
       </span>
     </a>
   );
@@ -124,7 +124,7 @@ export function TfngPlayer({
   const hasText = sentences.length > 0;
   /** The proof of a statement: its sentence of the text, else the quote typed by staff (picture only). */
   const proofOf = (s: TfngContent["statements"][number]) => (s.evidence !== null && sentences[s.evidence]) || s.quote || "";
-  const meta: ExerciseMeta = { title, typeLabel: "True / False / Not given", icon: FileSearch, level, skills, instructions: instructions || "Lisez le document, puis dites si chaque affirmation est vraie (True), fausse (False) ou non mentionnée (Not given)." };
+  const meta: ExerciseMeta = { title, typeLabel: "True / False / Not given", icon: FileSearch, level, skills, instructions: instructions || "Read the document, then say whether each statement is True, False or Not given." };
   const st = statements[ex.index];
   const revealed = ex.phase === "feedback";
 
@@ -190,7 +190,7 @@ export function TfngPlayer({
           onContinue={() => router.push(nextHref)}
         >
           <details className="rounded-3xl border-2 border-border bg-card p-5" open={result.score < 100}>
-            <summary className="cursor-pointer font-heading font-extrabold text-brand-deep">Le document et les preuves</summary>
+            <summary className="cursor-pointer font-heading font-extrabold text-brand-deep">The document and the proofs</summary>
             <div className="mt-3 grid gap-3">
               {imageUrl && <DocImage url={imageUrl} alt={content.imageAlt || content.docTitle || "Document"} />}
               {hasText && <Doc title={imageUrl ? "" : content.docTitle} sentences={sentences} highlight={statements.flatMap((s) => (s.evidence === null ? [] : [s.evidence]))} />}
@@ -199,7 +199,7 @@ export function TfngPlayer({
               {statements.map((s) => (
                 <li key={s.id} className="rounded-2xl bg-muted/50 px-3 py-2 text-sm">
                   {urlOf(s) && (
-                    <button type="button" onClick={() => play(s)} className="float-right ml-2 flex size-8 items-center justify-center rounded-full bg-brand-soft text-primary" aria-label="Réécouter l'affirmation">
+                    <button type="button" onClick={() => play(s)} className="float-right ml-2 flex size-8 items-center justify-center rounded-full bg-brand-soft text-primary" aria-label="Replay the statement">
                       <Volume2 className="size-4" aria-hidden />
                     </button>
                   )}
@@ -235,8 +235,8 @@ export function TfngPlayer({
           <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-dark to-brand-deep text-white">
             <FileText className="size-4.5" aria-hidden />
           </span>
-          <span className="flex-1 font-heading font-extrabold text-brand-deep">{content.docTitle || "Le document"}</span>
-          <span className="text-xs font-semibold text-muted-foreground">{docOpen ? "Replier" : "Relire le texte"}</span>
+          <span className="flex-1 font-heading font-extrabold text-brand-deep">{content.docTitle || "The document"}</span>
+          <span className="text-xs font-semibold text-muted-foreground">{docOpen ? "Fold" : "Read the text again"}</span>
           <ChevronDown className={cn("size-5 shrink-0 text-muted-foreground transition", docOpen && "rotate-180")} aria-hidden />
         </button>
         {docOpen && (
@@ -246,7 +246,7 @@ export function TfngPlayer({
               (imageUrl ? (
                 // With a picture, the text is its transcript: folded, opened to show the proof.
                 <details open={proof.length > 0} className="rounded-2xl bg-muted/40 px-3 py-2">
-                  <summary className="cursor-pointer text-sm font-semibold text-brand-deep">Le texte du document</summary>
+                  <summary className="cursor-pointer text-sm font-semibold text-brand-deep">The document’s text</summary>
                   <div className="mt-2">
                     <Doc title="" sentences={sentences} highlight={proof} tone={ex.correct === false ? "wrong" : "right"} />
                   </div>
@@ -260,7 +260,7 @@ export function TfngPlayer({
 
       <section ref={statementBox} className="grid scroll-mb-28 gap-3 rounded-3xl border-2 border-border bg-card p-4 sm:p-5">
         <p className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
-          Affirmation {ex.index + 1} sur {statements.length}
+          Statement {ex.index + 1} of {statements.length}
         </p>
         {urlOf(st) ? (
           <>
@@ -270,13 +270,13 @@ export function TfngPlayer({
                 {playing === st.id ? <Pause className="size-5" aria-hidden /> : <Play className="size-5 translate-x-px" aria-hidden />}
               </span>
               <span className="grid">
-                <span className="font-heading font-extrabold text-brand-deep">{playing === st.id ? "Écoute en cours…" : "Écoutez l'affirmation"}</span>
-                <span className="text-sm text-muted-foreground">Réécoutez autant que vous voulez.</span>
+                <span className="font-heading font-extrabold text-brand-deep">{playing === st.id ? "Playing…" : "Listen to the statement"}</span>
+                <span className="text-sm text-muted-foreground">Listen as often as you like.</span>
               </span>
             </button>
             <details key={`${st.id}:${revealed}`} open={revealed} className="group/txt rounded-2xl bg-muted/40 px-3 py-2">
               <summary className="flex cursor-pointer list-none items-center gap-1.5 text-sm font-semibold text-primary [&::-webkit-details-marker]:hidden">
-                <ChevronDown className="size-4 transition group-open/txt:rotate-180" aria-hidden /> Afficher le texte
+                <ChevronDown className="size-4 transition group-open/txt:rotate-180" aria-hidden /> Show the text
               </summary>
               <h2 id={`s-${st.id}`} lang="en" className="mt-2 font-heading text-lg font-extrabold text-brand-deep">
                 {st.text}
@@ -293,13 +293,13 @@ export function TfngPlayer({
           <FeedbackPanel correct={ex.correct} answer={TFNG_LABEL[st.answer]} explanation={st.explanation}>
             {proofOf(st) ? (
               <p lang="en" className="rounded-xl bg-white/70 px-3 py-2 text-sm text-ink">
-                <span lang="fr" className="mr-1 text-muted-foreground">
-                  Dans le document :
+                <span className="mr-1 text-muted-foreground">
+                  In the document:
                 </span>
                 « {proofOf(st)} »
               </p>
             ) : (
-              st.answer === "not_given" && <p className="text-sm text-ink">Le texte ne dit rien à ce sujet : ni vrai, ni faux.</p>
+              st.answer === "not_given" && <p className="text-sm text-ink">The text says nothing about this: neither true nor false.</p>
             )}
           </FeedbackPanel>
         )}
@@ -311,7 +311,7 @@ export function TfngPlayer({
         </p>
       )}
       {readOnly ? (
-        <p className="text-sm text-muted-foreground">Cours terminé : l&apos;activité reste consultable, mais plus rien n&apos;est enregistré.</p>
+        <p className="text-sm text-muted-foreground">Course completed: you can still view the activity, but nothing is saved any more.</p>
       ) : (
         <CheckBar phase={revealed ? "feedback" : "answer"} canCheck={ex.answer !== undefined} correct={ex.correct} isLast={ex.isLast} pending={pending} onCheck={onCheck} onRetry={ex.retry} onNext={ex.isLast ? finish : () => (audio.current?.pause(), ex.next())} />
       )}

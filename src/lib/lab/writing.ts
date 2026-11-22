@@ -30,8 +30,8 @@ function checkText(rawText: string, c: WritingTaskContent) {
   const text = rawText.replace(/\r/g, "").trim().slice(0, 4000);
   const n = wordCount(text);
   const atLeast = Math.max(5, Math.floor(c.minWords / 3));
-  if (n < atLeast) throw new WritingError(`Écrivez au moins ${atLeast} mots avant d'envoyer votre texte (vous en avez ${n}).`);
-  if (n > c.maxWords * 2) throw new WritingError(`Votre texte est trop long (${n} mots) : ${c.maxWords} mots au maximum.`);
+  if (n < atLeast) throw new WritingError(`Write at least ${atLeast} words before sending your text (you have ${n}).`);
+  if (n > c.maxWords * 2) throw new WritingError(`Your text is too long (${n} words): ${c.maxWords} words maximum.`);
   return { text, n };
 }
 
@@ -60,7 +60,7 @@ export async function previewCorrection(userId: string, target: WritingTarget, r
 export async function sendWriting(userId: string, target: WritingTarget, rawText: string, now = new Date()): Promise<WritingSubmissionDoc> {
   const { text, n } = checkText(rawText, target.content);
   const existing = await WritingSubmission.findOne({ userId, stepId: target.stepId }).lean<WritingSubmissionDoc>();
-  if (writingSendsLeft(existing) <= 0) throw new WritingError(`Vous avez envoyé vos ${writingSendsAllowed(existing)} versions pour cette activité : votre coach va lire la dernière.`);
+  if (writingSendsLeft(existing) <= 0) throw new WritingError(`You've sent your ${writingSendsAllowed(existing)} versions for this activity: your coach will read the last one.`);
   const correction = await draftCorrection(userId, target, text, now);
   const entry = { text, wordCount: n, score: correction?.score ?? 0, correction, at: now };
   const submission = await WritingSubmission.findOneAndUpdate(

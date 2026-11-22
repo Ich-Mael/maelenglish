@@ -15,3 +15,5 @@ export * from "./Media";
 export * from "./AiUsage";
 export * from "./Notification";
 export * from "./WritingSubmission";
+export * from "./DictionaryEntry";
+export * from "./VocabWord";

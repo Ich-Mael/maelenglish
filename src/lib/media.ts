@@ -26,10 +26,10 @@ export async function startUpload(viewer: Uploader, kind: MediaKind, mime: strin
 /** Marks an upload ready once the file is really in storage (size checked). */
 export async function confirmUpload(viewer: Uploader, mediaId: string): Promise<MediaDoc> {
   const m = await Media.findById(mediaId);
-  if (!m || String(m.ownerId) !== viewer.id) throw new MediaError("Fichier introuvable.");
+  if (!m || String(m.ownerId) !== viewer.id) throw new MediaError("File not found.");
   if (m.status === "ready") return m.toObject();
   const size = await objectSize(m.key);
-  if (size == null) throw new MediaError("Le fichier n’est pas encore arrivé. Réessayez.");
+  if (size == null) throw new MediaError("The file hasn't arrived yet. Try again.");
   m.size = size;
   m.status = "ready";
   await m.save();

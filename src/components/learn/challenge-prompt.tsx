@@ -13,14 +13,14 @@ import { cn } from "cn";
 
 const TEXT = {
   fr: { image: "Regardez l'image", video: "Regardez la vidéo", audio: "Écoutez l'audio", zoom: "Agrandir l'image", missing: "Support indisponible pour le moment.", questions: "Répondez à ces questions dans votre enregistrement" },
-  en: { image: "Picture", video: "Video", audio: "Audio", zoom: "Open full size", missing: "Prompt unavailable (file missing or storage not configured).", questions: "Questions to answer" },
+  en: { image: "Picture", video: "Video", audio: "Audio", zoom: "Open full size", missing: "Prompt unavailable for now.", questions: "Questions to answer" },
 } as const;
 
 export function hasChallengePrompt(c: Partial<SpeakingChallengeContent>) {
   return (!!c.promptType && c.promptType !== "text") || !!c.questions?.length;
 }
 
-export function ChallengePrompt({ c, mediaUrl, title, locale = "fr", className }: { c: Partial<SpeakingChallengeContent>; mediaUrl: string | null; title: string; locale?: "fr" | "en"; className?: string }) {
+export function ChallengePrompt({ c, mediaUrl, title, locale = "en", className }: { c: Partial<SpeakingChallengeContent>; mediaUrl: string | null; title: string; locale?: "fr" | "en"; className?: string }) {
   const t = TEXT[locale];
   const type = c.promptType ?? "text";
   const video = type === "video" ? videoSource(c.promptVideoUrl) : null;

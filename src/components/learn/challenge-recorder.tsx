@@ -39,7 +39,7 @@ export function ChallengeRecorder({
     setError("");
     setPhase("sending");
     try {
-      const mediaId = preview ? null : await uploadMedia(rec.blob, { kind: "recording", durationS: rec.durationS, onProgress: (s) => setNote(s === "retrying" ? "Connexion instable : nouvel essai…" : "Envoi de votre enregistrement…") });
+      const mediaId = preview ? null : await uploadMedia(rec.blob, { kind: "recording", durationS: rec.durationS, onProgress: (s) => setNote(s === "retrying" ? "Unstable connection: trying again…" : "Uploading your recording…") });
       const r = await submitUnitChallenge({ courseId, stepId, mediaId });
       if (r?.error) throw new Error(r.error);
       playSound("correct");
@@ -47,7 +47,7 @@ export function ChallengeRecorder({
       setNote(r?.success ?? "");
       setPhase("sent");
     } catch (e) {
-      setError((e as Error).message || "L'envoi a échoué. Réessayez.");
+      setError((e as Error).message || "The upload failed. Try again.");
       setPhase("record");
     }
   };
@@ -59,7 +59,7 @@ export function ChallengeRecorder({
           <CircleCheck className="size-6 text-primary" aria-hidden /> {note}
         </p>
         <Link href={courseHref} className="inline-flex h-12 w-fit items-center rounded-2xl bg-primary px-6 font-semibold text-white">
-          Continuer le parcours
+          Continue the course
         </Link>
       </div>
     );
@@ -77,7 +77,7 @@ export function ChallengeRecorder({
           <Loader2 className="size-5 animate-spin text-primary motion-reduce:animate-none" aria-hidden /> {note || "Envoi…"}
         </p>
       ) : (
-        <Recorder maxSeconds={maxSeconds} prepSeconds={prepSeconds} onUse={(rec) => void send(rec)} useLabel={resend ? "Renvoyer à mon coach" : "Envoyer à mon coach"} />
+        <Recorder maxSeconds={maxSeconds} prepSeconds={prepSeconds} onUse={(rec) => void send(rec)} useLabel={resend ? "Send again to my coach" : "Send to my coach"} />
       )}
     </div>
   );

@@ -2,7 +2,7 @@ import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import * as z from "zod/v4";
-import type { DrillGrade, DrillGradeInput, FeedbackService, LlmUsage, WritingCorrection, WritingCorrectionInput } from "./types";
+import type { DrillGrade, DrillGradeInput, FeedbackService, LlmUsage, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput } from "./types";
 
 /*
  * Claude feedback (DECISIONS.md: Claude for feedback): writing correction for the Lab « writing
@@ -22,6 +22,24 @@ const WritingSchema = z.object({
   checklist: z.array(z.object({ item: z.string(), met: z.boolean(), comment: z.string() })),
   corrected: z.string(),
 });
+
+const WordSchema = z.object({ sense: z.number().int(), translation: z.string(), frNote: z.string(), businessExample: z.string() });
+
+// Frozen (cache-friendly).
+const WORD_SYSTEM = `You help French-speaking professionals in West Africa (A2-B2 English) understand English words they meet in a business English course.
+
+You get a word, the dictionary's numbered meanings (may be empty, may be in an unusual order: rare meanings can come first) and sometimes the sentence where the learner met the word.
+
+First choose the meaning:
+- With a sentence: the meaning the word has IN THAT SENTENCE (read the whole sentence: part of speech, what it refers to).
+- Without a sentence: the word's most common, everyday meaning (what a learner most probably needs), not a rare or slang one.
+- sense: the number of that meaning in the list, or 0 if none fits or the list is empty.
+
+Then, for that meaning:
+- translation: the usual French translation, 1 to 4 words (several separated by " / " only when really needed). With a sentence, the French word that fits that sentence. Proper French spelling and accents.
+- frNote: one short sentence in simple French. With a sentence: what the word means here (e.g. « Ici, adverbe : les personnes font la chose en même temps. »). Without: how or when it is used at work (register, false friend, typical collocation), not starting with « Ici ». No English except the word itself.
+- businessExample: without a sentence, one short, natural, grammatically correct English sentence using the word in that meaning in a professional context (office, aviation, banking, hospitality, health), 6 to 14 words. With a sentence: "".
+If the word is not English or is not a real word, translation is "" and frNote says so in French.`;
 
 const DrillSchema = z.object({ verdict: z.enum(["correct", "almost", "incorrect"]), explanation: z.string(), modelAnswer: z.string() });
 
@@ -63,6 +81,23 @@ export class ClaudeFeedbackService implements FeedbackService {
     if (response.stop_reason === "max_tokens" || !response.parsed_output) throw new Error("La correction automatique a échoué : réessayez dans un instant.");
     const usage = { inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens, costMicros: costMicros(response.usage.input_tokens, response.usage.output_tokens), provider: `anthropic:${CLAUDE_FEEDBACK_MODEL}` };
     return { correction: response.parsed_output, usage };
+  }
+
+  async translateWord(input: WordTranslationInput): Promise<{ result: WordTranslation; usage: LlmUsage }> {
+    const response = await this.client.messages.parse({
+      model: CLAUDE_FEEDBACK_MODEL,
+      max_tokens: 1000,
+      output_config: { effort: "low", format: zodOutputFormat(WordSchema) },
+      system: WORD_SYSTEM,
+      messages: [
+        {
+          role: "user",
+          content: `Word: ${input.word}\nMeanings:\n${input.senses.map((s, i) => `${i + 1}. (${s.partOfSpeech}) ${s.definition}`).join("\n") || "(none)"}${input.sentence ? `\nSentence: ${input.sentence}` : "\nNo sentence."}`,
+        },
+      ],
+    });
+    if (response.stop_reason === "refusal" || !response.parsed_output) throw new Error("Traduction indisponible.");
+    return { result: response.parsed_output, usage: { inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens, costMicros: costMicros(response.usage.input_tokens, response.usage.output_tokens), provider: `anthropic:${CLAUDE_FEEDBACK_MODEL}` } };
   }
 
   async gradeDrill(input: DrillGradeInput): Promise<DrillGrade> {

@@ -13,7 +13,7 @@ import { AccessProblem, PageSkeleton } from "@/components/learn/ui";
 import { Leaderboard } from "@/components/gamify/leaderboard";
 import { PreviewBar, adminPaths } from "@/components/learn/preview-bar";
 
-export const metadata: Metadata = { title: "Mon cours", robots: { index: false } };
+export const metadata: Metadata = { title: "My Course", robots: { index: false } };
 
 async function CourseHome({ params }: { params: Promise<{ courseId: string }> }) {
   const { courseId } = await params;
@@ -31,7 +31,7 @@ async function CourseHome({ params }: { params: Promise<{ courseId: string }> })
     <div className="grid gap-6">
       {access.preview && <PreviewBar text="Staff preview: everything is open and nothing is saved." editHref={adminPaths.course(courseId)} />}
       {access.readOnly && (
-        <p className="rounded-2xl bg-brand-soft px-4 py-2.5 text-sm font-semibold text-primary">Cours terminé : vous pouvez tout revoir.</p>
+        <p className="rounded-2xl bg-brand-soft px-4 py-2.5 text-sm font-semibold text-primary">Course completed: you can review everything.</p>
       )}
 
       <CourseHero
@@ -43,7 +43,7 @@ async function CourseHome({ params }: { params: Promise<{ courseId: string }> })
       />
 
       {outline.modules.length === 0 ? (
-        <p className="rounded-3xl border-2 border-dashed border-border p-8 text-center text-muted-foreground">Le contenu de ce cours arrive bientôt.</p>
+        <p className="rounded-3xl border-2 border-dashed border-border p-8 text-center text-muted-foreground">This course’s content is coming soon.</p>
       ) : (
         <CourseMap courseId={courseId} outline={outline} currentHref={next} />
       )}
@@ -81,7 +81,7 @@ function CourseHero({ title, programName, image, outline, next }: { title: strin
           <h1 className="text-2xl leading-tight font-extrabold text-white sm:text-3xl">{title}</h1>
           {outline.challenge && (
             <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border-2 border-coral bg-white px-3 py-1 text-sm font-bold text-coral-dark">
-              <Flame className="size-4" aria-hidden /> Jour {outline.challenge.unlockedDay} / {outline.challenge.totalDays} · {outline.challenge.streak} validé(s)
+              <Flame className="size-4" aria-hidden /> Day {outline.challenge.unlockedDay} / {outline.challenge.totalDays} · {outline.challenge.streak} validated
             </p>
           )}
           <ul className="mt-3 flex flex-wrap gap-2 text-xs font-semibold">
@@ -89,7 +89,7 @@ function CourseHero({ title, programName, image, outline, next }: { title: strin
               <Layers className="size-3.5" aria-hidden /> {outline.modules.length} {outline.modules.length > 1 ? "modules" : "module"}
             </li>
             <li className="inline-flex items-center gap-1.5 rounded-full bg-white/12 px-2.5 py-1">
-              <ListChecks className="size-3.5" aria-hidden /> {units.length} {units.length > 1 ? "unités" : "unité"}
+              <ListChecks className="size-3.5" aria-hidden /> {units.length} {units.length > 1 ? "units" : "unit"}
             </li>
             {minutes > 0 && (
               <li className="inline-flex items-center gap-1.5 rounded-full bg-white/12 px-2.5 py-1">
@@ -103,7 +103,7 @@ function CourseHero({ title, programName, image, outline, next }: { title: strin
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={outline.percent}
-          aria-label="Progression dans le cours"
+          aria-label="Course progress"
           className="relative grid size-20 shrink-0 place-items-center"
         >
           <svg viewBox="0 0 80 80" className="absolute inset-0 -rotate-90" aria-hidden>
@@ -125,12 +125,12 @@ function CourseHero({ title, programName, image, outline, next }: { title: strin
             href={next}
             className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border-2 border-coral bg-white text-[19px] font-bold text-coral shadow-[0_5px_0_0_var(--color-coral)] transition hover:bg-coral-soft active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-coral)] sm:w-auto sm:px-8"
           >
-            {outline.stepsDone ? "Continuer" : "Commencer"} <ArrowRight className="size-4" aria-hidden />
+            {outline.stepsDone ? "Continue" : "Start"} <ArrowRight className="size-4" aria-hidden />
           </Link>
         </div>
       ) : outline.stepsTotal > 0 && outline.percent === 100 ? (
         <p className="flex items-center gap-2 border-t border-white/10 bg-black/10 px-5 py-4 font-heading text-lg font-bold sm:px-7">
-          <PartyPopper className="size-6" aria-hidden /> Bravo, tout est fait pour l&apos;instant !
+          <PartyPopper className="size-6" aria-hidden /> Well done, everything is done for now!
         </p>
       ) : null}
     </section>

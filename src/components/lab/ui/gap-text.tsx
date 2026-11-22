@@ -87,7 +87,7 @@ function Blank({
 }) {
   const shape = gap.answers[0].split(" ");
   const letters = shape.reduce((n, w) => n + w.length, 0);
-  const label = `Trou ${gap.index + 1} : ${shape.length > 1 ? `${shape.length} mots, ` : ""}${letters} lettre${letters > 1 ? "s" : ""}`;
+  const label = `Blank ${gap.index + 1}: ${shape.length > 1 ? `${shape.length} words, ` : ""}${letters} letter${letters > 1 ? "s" : ""}`;
   const set = (i: number, v: string) => {
     const next = shape.map((_, k) => (k === i ? v : (words[k] ?? "")));
     onChange(next);
@@ -103,7 +103,7 @@ function Blank({
             data-gap={gap.id}
             value={words[i] ?? ""}
             disabled={disabled}
-            aria-label={shape.length > 1 ? `${label} — mot ${i + 1}` : label}
+            aria-label={shape.length > 1 ? `${label} — word ${i + 1}` : label}
             aria-invalid={state === "wrong" || undefined}
             placeholder={hint === "first" ? w[0] : undefined}
             autoCapitalize="off"

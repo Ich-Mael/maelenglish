@@ -15,7 +15,7 @@ describe("profile photo rules and English levels", () => {
     expect(extensionFor("avatar", "audio/webm")).toBeNull();
     expect(extensionFor("recording", "image/png")).toBeNull();
     expect(uploadProblem("avatar", "image/webp", 20_000, { isStaff: false })).toBeNull();
-    expect(uploadProblem("avatar", "image/webp", 5 * 1024 * 1024, { isStaff: false })).toMatch(/trop lourd/);
+    expect(uploadProblem("avatar", "image/webp", 5 * 1024 * 1024, { isStaff: false })).toMatch(/too large/);
     expect(visibilityFor("avatar")).toBe("public");
     const key = storageKey("avatar", "0123456789abcdef01234567", "webp", new Date("2026-11-21T00:00:00Z"));
     expect(key).toBe("profile_photos/avatar/2026-11/0123456789abcdef01234567.webp");
@@ -25,7 +25,8 @@ describe("profile photo rules and English levels", () => {
   it("knows the six CEFR levels", () => {
     expect(["A1", "A2", "B1", "B2", "C1", "C2"].every(isEnglishLevel)).toBe(true);
     expect(isEnglishLevel("intermediate")).toBe(false);
-    expect(levelLabel("B1")).toBe("B1 · Intermédiaire");
+    expect(levelLabel("B1")).toBe("B1 · Intermediate");
+    expect(levelLabel("B1", "fr")).toBe("B1 · Intermédiaire");
     expect(levelLabel("C2", "en")).toBe("C2 · Proficient");
     expect(levelLabel("")).toBe("");
   });

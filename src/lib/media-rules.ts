@@ -68,10 +68,10 @@ export function storageKey(kind: MediaKind, id: string, ext: string, now = new D
 
 /** Problem with an upload request, or null when it's fine. */
 export function uploadProblem(kind: MediaKind, mime: string, size: number, viewer: { isStaff: boolean }): string | null {
-  if (!canUpload(kind, viewer)) return "Envoi non autorisé.";
-  if (!extensionFor(kind, mime)) return "Format de fichier non pris en charge.";
-  if (!Number.isFinite(size) || size <= 0) return "Fichier vide.";
-  if (size > MAX_BYTES[kind]) return `Fichier trop lourd (maximum ${Math.round(MAX_BYTES[kind] / MB)} Mo).`;
+  if (!canUpload(kind, viewer)) return "Upload not allowed.";
+  if (!extensionFor(kind, mime)) return "File format not supported.";
+  if (!Number.isFinite(size) || size <= 0) return "Empty file.";
+  if (size > MAX_BYTES[kind]) return `File too large (maximum ${Math.round(MAX_BYTES[kind] / MB)} MB).`;
   return null;
 }
 

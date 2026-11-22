@@ -52,11 +52,11 @@ export function OfflineSync() {
     <div role="status" className="sticky top-14 z-20 flex items-center justify-center gap-2 bg-ink px-4 py-2 text-center text-sm font-semibold text-white">
       {online ? (
         <>
-          <RefreshCw className="size-4 animate-spin" aria-hidden /> Envoi de vos résultats enregistrés hors ligne…
+          <RefreshCw className="size-4 animate-spin" aria-hidden /> Sending the results saved offline…
         </>
       ) : (
         <>
-          <CloudOff className="size-4" aria-hidden /> Hors ligne — les activités téléchargées restent disponibles{pending ? ` · ${pending} résultat(s) en attente` : ""}.
+          <CloudOff className="size-4" aria-hidden /> Offline — pages you already opened stay available{pending ? ` · ${pending} result${pending > 1 ? "s" : ""} waiting` : ""}.
         </>
       )}
     </div>

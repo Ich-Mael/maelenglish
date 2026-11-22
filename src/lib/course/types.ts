@@ -29,8 +29,8 @@ export type LessonSection =
 export type LessonContent = { intro: string; videoUrl: string; audioMediaId: string; sections: LessonSection[] };
 
 export const SECTION_LABEL: Record<SectionType, { admin: string; learner: string }> = {
-  vocabulary: { admin: "Vocabulary", learner: "Vocabulaire" },
-  grammar_rule: { admin: "Grammar rule", learner: "La règle" },
+  vocabulary: { admin: "Vocabulary", learner: "Vocabulary" },
+  grammar_rule: { admin: "Grammar rule", learner: "The rule" },
   dialogue: { admin: "Dialogue", learner: "Dialogue" },
-  tip: { admin: "Mael's tip", learner: "Le conseil de Mael" },
+  tip: { admin: "Mael's tip", learner: "Mael's tip" },
 };

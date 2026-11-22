@@ -26,19 +26,19 @@ const STEP_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 const DAY_LABEL: Record<NonNullable<ModuleOutline["day"]>["state"], string> = {
-  done: "Terminé",
-  current: "Aujourd'hui",
-  pending_review: "En attente de validation",
-  redo: "À refaire",
-  locked_checkpoint: "Validez le jour précédent",
-  locked_time: "Pas encore ouvert",
+  done: "Done",
+  current: "Today",
+  pending_review: "Waiting for validation",
+  redo: "To redo",
+  locked_checkpoint: "Get the previous day validated",
+  locked_time: "Not open yet",
 };
 
 const CHALLENGE_SUB: Record<string, string | undefined> = {
-  none: "Enregistrez-vous pour finir l'unité",
-  pending: "Envoyé · en attente du coach",
-  returned: "À reprendre",
-  graded: "Validé par votre coach",
+  none: "Record yourself to finish the unit",
+  pending: "Sent · waiting for the coach",
+  returned: "To redo",
+  graded: "Validated by your coach",
 };
 
 type NodeKind = "lesson" | "activity" | "challenge" | "exam";
@@ -46,9 +46,9 @@ type Node = { key: string; href: string; label: string; sub?: string; state: Ste
 
 /** Kind tag above each step's title. */
 const KIND_TAG: Record<NodeKind, { label: string; cls: string }> = {
-  lesson: { label: "Leçon", cls: "bg-brand-deep text-white" },
-  activity: { label: "Activité", cls: "bg-brand-soft text-primary" },
-  challenge: { label: "Défi oral", cls: "border border-coral bg-white text-coral-dark" },
+  lesson: { label: "Lesson", cls: "bg-brand-deep text-white" },
+  activity: { label: "Activity", cls: "bg-brand-soft text-primary" },
+  challenge: { label: "Speaking challenge", cls: "border border-coral bg-white text-coral-dark" },
   exam: { label: "Examen", cls: "bg-brand-soft text-primary" },
 };
 
@@ -57,8 +57,8 @@ function stepNode(courseId: string, s: StepOutline): Node {
   return {
     key: s.id,
     href: stepPath(courseId, s.id),
-    label: s.kind === "challenge" ? s.title || "Défi oral" : s.title,
-    sub: s.kind === "challenge" ? CHALLENGE_SUB[s.status ?? "none"] : below ? `À revoir · ${s.score} %` : s.kind === "activity" && s.score !== null ? `${s.score} %` : undefined,
+    label: s.kind === "challenge" ? s.title || "Speaking challenge" : s.title,
+    sub: s.kind === "challenge" ? CHALLENGE_SUB[s.status ?? "none"] : below ? `To review · ${s.score} %` : s.kind === "activity" && s.score !== null ? `${s.score} %` : undefined,
     state: s.state,
     icon: STEP_ICON[s.type] ?? STEP_ICON[s.kind] ?? Sparkles,
     big: s.kind === "challenge",
@@ -77,7 +77,7 @@ export function CourseMap({ courseId, outline, currentHref }: { courseId: string
           <div className="mt-4 grid grid-cols-[minmax(0,1fr)] gap-3">
             {m.units.map((u) => {
               const nodes = u.steps.map((s) => stepNode(courseId, s));
-              return <UnitCard key={u.id} unit={u} open={nodes.some((n) => n.href === currentHref)} path={<Path label={`Activités de l'unité ${u.index + 1}`} nodes={nodes} currentHref={currentHref} />} />;
+              return <UnitCard key={u.id} unit={u} open={nodes.some((n) => n.href === currentHref)} path={<Path label={`Unit ${u.index + 1} activities`} nodes={nodes} currentHref={currentHref} />} />;
             })}
           </div>
         </li>
@@ -85,12 +85,12 @@ export function CourseMap({ courseId, outline, currentHref }: { courseId: string
       {outline.finalExam && (
         <li>
           <div className="rounded-3xl border-2 border-coral bg-white p-5 text-brand-deep">
-            <p className="text-xs font-bold tracking-wide uppercase">Activité finale</p>
-            <h2 className="text-xl font-extrabold">L&apos;examen final</h2>
+            <p className="text-xs font-bold tracking-wide uppercase">Final activity</p>
+            <h2 className="text-xl font-extrabold">The final exam</h2>
           </div>
           <div className="mt-6">
             <Path
-              label="Activité finale"
+              label="Final activity"
               currentHref={currentHref}
               nodes={[{ key: "exam", href: examPath(courseId), label: "Examen final", sub: outline.finalExam.bestScore !== null ? `Meilleur score : ${outline.finalExam.bestScore} %` : undefined, state: outline.finalExam.state, icon: Trophy, big: true, kind: "exam" }]}
             />
@@ -132,17 +132,17 @@ function ModuleBanner({ module: m }: { module: ModuleOutline }) {
       <div className="flex items-center gap-4">
         <div className="min-w-0 flex-1">
           <p className="flex flex-wrap items-center gap-2 text-xs font-bold tracking-wide uppercase">
-            {m.day ? `Jour ${m.day.number}` : `Module ${m.index + 1}`}
+            {m.day ? `Day ${m.day.number}` : `Module ${m.index + 1}`}
             {m.day && ` · ${DAY_LABEL[m.day.state]}`}
             {complete && (
               <span className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[11px] text-primary normal-case">
-                <Check className="size-3" strokeWidth={3} aria-hidden /> Module terminé
+                <Check className="size-3" strokeWidth={3} aria-hidden /> Module completed
               </span>
             )}
           </p>
           <h2 className="text-xl font-extrabold">{m.title}</h2>
-          {m.summary && <p className="mt-0.5 text-sm opacity-90">{m.summary}</p>}
-          {m.day?.state === "locked_time" && <p className="mt-0.5 text-sm">S&apos;ouvre le {formatDate(m.day.opensOn)}</p>}
+          {m.summary && <p lang="fr" className="mt-0.5 text-sm opacity-90">{m.summary}</p>}
+          {m.day?.state === "locked_time" && <p className="mt-0.5 text-sm">Opens on {formatDate(m.day.opensOn)}</p>}
         </div>
         {locked ? (
           <Lock className="size-7 shrink-0" aria-hidden />
@@ -154,11 +154,11 @@ function ModuleBanner({ module: m }: { module: ModuleOutline }) {
       </div>
       {!locked && units > 0 && (
         <div className="mt-3 flex items-center gap-3 text-xs font-semibold">
-          <span className="h-2 flex-1 overflow-hidden rounded-full bg-white/20" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} aria-label={`Progression du module : ${percent} %`}>
+          <span className="h-2 flex-1 overflow-hidden rounded-full bg-white/20" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} aria-label={`Module progress: ${percent} %`}>
             <span className="block h-full rounded-full bg-white" style={{ width: `${Math.max(percent, percent ? 3 : 0)}%` }} />
           </span>
           <span className="shrink-0">
-            {doneUnits} / {units} unité{units > 1 ? "s" : ""}
+            {doneUnits} / {units} unit{units > 1 ? "s" : ""}
           </span>
         </div>
       )}
@@ -191,11 +191,11 @@ function UnitCard({ unit: u, open, path }: { unit: UnitOutline; open: boolean; p
         </span>
         <span className="min-w-0 flex-1">
           <span className={cn("flex flex-wrap items-center gap-2 text-xs font-bold tracking-wide uppercase", locked ? "text-muted-foreground" : complete ? "text-brand-dark" : "text-primary")}>
-            Unité {u.index + 1}
-            {locked && " · Verrouillée"}
+            Unit {u.index + 1}
+            {locked && " · Locked"}
             {complete && (
               <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-br from-primary to-brand-deep px-2 py-0.5 text-[11px] text-white normal-case">
-                <Check className="size-3" strokeWidth={3} aria-hidden /> Terminée
+                <Check className="size-3" strokeWidth={3} aria-hidden /> Completed
               </span>
             )}
           </span>
@@ -205,7 +205,7 @@ function UnitCard({ unit: u, open, path }: { unit: UnitOutline; open: boolean; p
               <span className={cn("block h-full rounded-full", complete ? "bg-gradient-to-r from-primary to-brand-deep" : "bg-primary")} style={{ width: `${percent}%` }} />
             </span>
             <span>
-              {u.done}/{u.total} <span className="sr-only">activité(s) terminée(s)</span>
+              {u.done}/{u.total} <span className="sr-only">activities done</span>
             </span>
             {u.estimatedMinutes > 0 && (
               <span className="inline-flex items-center gap-1">
@@ -226,8 +226,8 @@ function UnitCard({ unit: u, open, path }: { unit: UnitOutline; open: boolean; p
         )}
         {u.objectives.length > 0 && (
           <div className="rounded-2xl bg-brand-soft/60 px-4 py-3">
-            <p className="text-xs font-bold tracking-wide text-primary uppercase">Objectifs</p>
-            <ul className="mt-1 grid gap-1 text-sm text-ink/80">
+            <p className="text-xs font-bold tracking-wide text-primary uppercase">Objectives</p>
+            <ul lang="fr" className="mt-1 grid gap-1 text-sm text-ink/80">
               {u.objectives.map((o, i) => (
                 <li key={i} className="flex gap-2">
                   <Target className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden />
@@ -248,10 +248,10 @@ function ModuleAbout({ html }: { html: string }) {
   return (
     <details className="group mt-3 rounded-2xl border border-border bg-card">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-3 text-sm font-bold text-brand-deep [&::-webkit-details-marker]:hidden">
-        À propos de ce module
+        About this module
         <ChevronDown className="size-4 transition group-open:rotate-180" aria-hidden />
       </summary>
-      <RichText legacy="text" className="border-t border-border px-5 py-4 text-base">
+      <RichText legacy="text" lang="fr" className="border-t border-border px-5 py-4 text-base">
         {html}
       </RichText>
     </details>
@@ -317,13 +317,13 @@ function PathNode({ node, current }: { node: Node; current: boolean }) {
         <span className={cn("mb-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase", tag.cls, node.state === "locked" && "opacity-60")}>{tag.label}</span>
         <span className={cn("block text-sm font-bold", node.state === "locked" ? "text-muted-foreground" : challenge ? "text-coral-dark" : "text-brand-deep")}>{node.label}</span>
         {node.sub && <span className="block text-xs text-muted-foreground">{node.sub}</span>}
-        {current && <span className="mt-1 inline-block rounded-full border-2 border-coral bg-white px-2 py-0.5 text-xs font-bold text-coral-dark">À vous !</span>}
+        {current && <span className="mt-1 inline-block rounded-full border-2 border-coral bg-white px-2 py-0.5 text-xs font-bold text-coral-dark">Your turn!</span>}
       </span>
     </>
   );
   if (node.state === "locked") {
     return (
-      <span className="flex flex-col items-center gap-2" aria-label={`${node.label} (verrouillé)`}>
+      <span className="flex flex-col items-center gap-2" aria-label={`${node.label} (locked)`}>
         {content}
       </span>
     );

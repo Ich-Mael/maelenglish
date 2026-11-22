@@ -13,17 +13,17 @@ export function PasswordForm() {
   return (
     <form ref={ref} action={action} className="grid gap-4">
       <FormMessage error={state?.error} success={state?.success} />
-      <PasswordField label="Mot de passe actuel" name="current" autoComplete="current-password" required />
+      <PasswordField label="Current password" name="current" autoComplete="current-password" required />
       <PasswordField
-        label="Nouveau mot de passe"
+        label="New password"
         name="password"
         autoComplete="new-password"
         required
         minLength={8}
-        hint="8 caractères minimum, avec au moins une lettre et un chiffre."
+        hint="At least 8 characters, with at least one letter and one number."
       />
-      <PasswordField label="Confirmer le nouveau mot de passe" name="confirm" autoComplete="new-password" required />
-      <SubmitButton className="sm:w-fit sm:px-6">Changer le mot de passe</SubmitButton>
+      <PasswordField label="Confirm the new password" name="confirm" autoComplete="new-password" required />
+      <SubmitButton className="sm:w-fit sm:px-6">Change password</SubmitButton>
     </form>
   );
 }

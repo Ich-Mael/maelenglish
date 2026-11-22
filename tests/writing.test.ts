@@ -40,19 +40,19 @@ describe("writing task (sent to the coach, AI draft for the coach)", () => {
   it("sends versions with an AI draft (cost recorded), 3 sends, and still sends when the AI fails", async () => {
     const u = await learner();
     const t = target();
-    await expect(sendWriting(String(u._id), t, "Too short.")).rejects.toThrow(/au moins 6 mots/);
+    await expect(sendWriting(String(u._id), t, "Too short.")).rejects.toThrow(/at least 6 words/);
     const first = await sendWriting(String(u._id), t, answer);
     expect([first.coachStatus, first.attempts, (first.correction as { checklist: { met: boolean }[] }).checklist.map((c) => c.met), writingSendsLeft(first)]).toEqual(["pending", 1, [true, true], 2]);
     expect(await AiUsage.countDocuments({ userId: u._id, kind: "llm", feature: "writing_task" })).toBe(1);
 
     // The AI fails: the version still reaches the coach, without a draft.
-    const broken: FeedbackService = { name: "broken", gradeDrill: async () => ({ verdict: "incorrect", explanation: "", modelAnswer: "" }), correctWriting: async () => Promise.reject(new Error("down")) };
+    const broken: FeedbackService = { name: "broken", gradeDrill: async () => ({ verdict: "incorrect", explanation: "", modelAnswer: "" }), correctWriting: async () => Promise.reject(new Error("down")), translateWord: async () => Promise.reject(new Error("down")) };
     setAiServicesForTests({ feedback: broken });
     const second = await sendWriting(String(u._id), t, answer + " Again.");
     expect([second.attempts, second.correction, second.history.length]).toEqual([2, null, 2]);
     setAiServicesForTests({ feedback: new FakeFeedbackService() });
     await sendWriting(String(u._id), t, answer);
-    await expect(sendWriting(String(u._id), t, answer)).rejects.toThrow(new RegExp(`vos ${MAX_WRITING_SENDS} versions`));
+    await expect(sendWriting(String(u._id), t, answer)).rejects.toThrow(new RegExp(`your ${MAX_WRITING_SENDS} versions`));
     // Staff preview: the draft, nothing saved.
     const draft = await previewCorrection(String(u._id), target(), answer);
     expect([draft.score > 0, await WritingSubmission.countDocuments()]).toEqual([true, 1]);

@@ -89,7 +89,7 @@ export function GapsPlayer({
   const [pending, start] = useTransition();
   const startedAt = useRef<number | null>(null);
 
-  const meta: ExerciseMeta = listen ? { title, typeLabel: "Écoute et texte à trous", icon: AudioLines, level, skills, instructions } : { title, typeLabel: "Texte à trous", icon: TextCursorInput, level, skills, instructions };
+  const meta: ExerciseMeta = listen ? { title, typeLabel: "Listen and fill the gaps", icon: AudioLines, level, skills, instructions } : { title, typeLabel: "Fill the gaps", icon: TextCursorInput, level, skills, instructions };
   const open = gaps.filter((g) => states[g.id] !== "right");
   const filled = gaps.filter((g) => joined(values[g.id])).length;
   const allRight = gaps.length > 0 && gaps.every((g) => states[g.id] === "right");
@@ -188,12 +188,12 @@ export function GapsPlayer({
         >
           {listen && (
             <details className="rounded-3xl border-2 border-border bg-card p-5" open={result.score < 100}>
-              <summary className="cursor-pointer font-heading font-extrabold text-brand-deep">Transcription complète</summary>
+              <summary className="cursor-pointer font-heading font-extrabold text-brand-deep">Full transcript</summary>
               <div lang="en" className="mt-3 grid gap-1.5 leading-relaxed text-ink">
                 {lines.map((l, i) => (
                   <p key={i} className="flex gap-2">
                     {times[i] != null && listen.audioUrl ? (
-                      <button type="button" onClick={() => replay(times[i]!)} className="h-fit shrink-0 rounded-md bg-brand-soft px-1.5 font-mono text-xs font-semibold text-primary" aria-label={`Écouter à partir de ${formatTime(times[i]!)}`}>
+                      <button type="button" onClick={() => replay(times[i]!)} className="h-fit shrink-0 rounded-md bg-brand-soft px-1.5 font-mono text-xs font-semibold text-primary" aria-label={`Listen from ${formatTime(times[i]!)}`}>
                         {formatTime(times[i]!)}
                       </button>
                     ) : null}
@@ -242,14 +242,14 @@ export function GapsPlayer({
 
       <section className="grid gap-4 rounded-3xl border-2 border-border bg-card p-4 sm:p-6">
         <p className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
-          {listen ? "Écoutez et complétez · " : ""}
-          {gaps.length} trou{gaps.length > 1 ? "s" : ""} à compléter
+          {listen ? "Listen and complete · " : ""}
+          {gaps.length} blank{gaps.length > 1 ? "s" : ""} to fill
         </p>
         <GapText lines={lines} hint={content.hint} values={values} states={phase === "feedback" ? states : Object.fromEntries(Object.entries(states).filter(([, s]) => s === "right"))} disabled={readOnly || phase === "feedback"} onChange={change} onFocusGap={setFocused} />
 
         {chips.length > 0 && (
           <div className="border-t border-border pt-4">
-            <p className="mb-2 text-xs font-bold tracking-wide text-muted-foreground uppercase">Banque de mots</p>
+            <p className="mb-2 text-xs font-bold tracking-wide text-muted-foreground uppercase">Word bank</p>
             <div lang="en" className="flex flex-wrap gap-2">
               {chips.map((c, i) => (
                 <button
@@ -274,27 +274,27 @@ export function GapsPlayer({
         <div role="status" className={cn("grid gap-3 rounded-2xl border-2 p-4 animate-pop motion-reduce:animate-none", allRight ? "border-primary/30 bg-brand-soft" : "border-coral/40 bg-coral-soft")}>
           <p className={cn("flex items-center gap-2 font-heading text-lg font-extrabold", allRight ? "text-primary" : "text-coral-dark")}>
             {allRight ? <Check className="size-5" aria-hidden /> : <X className="size-5" aria-hidden />}
-            {allRight ? "Tout est juste !" : `${gaps.length - wrong.length} / ${gaps.length} juste${gaps.length - wrong.length > 1 ? "s" : ""}`}
+            {allRight ? "All correct!" : `${gaps.length - wrong.length} / ${gaps.length} correct`}
           </p>
           {wrong.length > 0 && (
             <ul className="grid gap-2 text-sm text-ink">
               {wrong.map((g) => (
                 <li key={g.id} className="rounded-xl bg-white/70 px-3 py-2">
-                  <span className="font-semibold text-muted-foreground">Trou {g.index + 1} · </span>
+                  <span className="font-semibold text-muted-foreground">Blank {g.index + 1} · </span>
                   <span lang="en">
                     <s className="text-coral-dark">{joined(values[g.id]) || "—"}</s> → <strong className="text-primary">{g.answers[0]}</strong>
                   </span>
                   {g.explanation && <span className="mt-0.5 block">{g.explanation}</span>}
                   {listen?.audioUrl && timeOf(g.id) !== null && (
                     <button type="button" onClick={() => replay(timeOf(g.id)!)} className="mt-1.5 inline-flex w-fit items-center gap-1.5 rounded-full bg-primary px-3 py-1 text-xs font-bold text-white">
-                      <Headphones className="size-3.5" aria-hidden /> Réécouter ce passage ({formatTime(timeOf(g.id)!)})
+                      <Headphones className="size-3.5" aria-hidden /> Replay this part ({formatTime(timeOf(g.id)!)})
                     </button>
                   )}
                 </li>
               ))}
             </ul>
           )}
-          {firstCheck && !allRight && <p className="text-xs text-muted-foreground">Réessayez les trous en rouge pour vous entraîner : le score retient votre première vérification.</p>}
+          {firstCheck && !allRight && <p className="text-xs text-muted-foreground">Try the red blanks again to practise: your score is from your first check.</p>}
         </div>
       )}
 
@@ -304,7 +304,7 @@ export function GapsPlayer({
         </p>
       )}
       {readOnly ? (
-        <p className="text-sm text-muted-foreground">Cours terminé : l&apos;activité reste consultable, mais plus rien n&apos;est enregistré.</p>
+        <p className="text-sm text-muted-foreground">Course completed: you can still view the activity, but nothing is saved any more.</p>
       ) : (
         <CheckBar
           phase={phase === "feedback" ? "feedback" : "answer"}

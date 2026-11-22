@@ -25,10 +25,10 @@ type Ctx = Awaited<ReturnType<typeof context>>;
 
 async function context(courseId: string) {
   const me = await readCurrentUser();
-  if (!me) throw new Error("Session expirée : reconnectez-vous.");
+  if (!me) throw new Error("Your session has expired: sign in again.");
   const access = await courseAccess(me, courseId);
-  if (!access.ok) throw new Error("Vous n'avez pas accès à ce cours.");
-  if (access.readOnly) throw new Error("Ce cours est terminé : il reste consultable, mais plus rien n'est enregistré.");
+  if (!access.ok) throw new Error("You don't have access to this course.");
+  if (access.readOnly) throw new Error("This course has ended: you can still view it, but nothing is saved any more.");
   const tree = await courseTree(me, access);
   return { me, access, tree, save: !access.preview };
 }
@@ -37,7 +37,7 @@ async function context(courseId: string) {
 function stepOf(ctx: Ctx, stepId: string): { step: StepDoc; outline: StepOutline } {
   const outline = allSteps(ctx.tree.outline).find((s) => s.id === stepId);
   const step = ctx.tree.steps.find((s) => String(s._id) === stepId);
-  if (!outline || !step) throw new Error("Activité introuvable.");
+  if (!outline || !step) throw new Error("Activity not found.");
   return { step, outline };
 }
 
@@ -57,8 +57,8 @@ export async function completeStep(courseId: string, stepId: string): Promise<{ 
   try {
     const ctx = await context(courseId);
     const { step, outline } = stepOf(ctx, stepId);
-    if (step.kind !== "lesson") return { ok: false, error: "Cette activité se termine autrement." };
-    if (outline.state === "locked") return { ok: false, error: "Terminez d'abord l'activité précédente." };
+    if (step.kind !== "lesson") return { ok: false, error: "This activity is completed another way." };
+    if (outline.state === "locked") return { ok: false, error: "Finish the previous activity first." };
     if (ctx.save) {
       await StepProgress.updateOne({ userId: ctx.me.id, stepId: step._id }, { $setOnInsert: { courseId: step.courseId, completedAt: new Date() } }, { upsert: true });
     }
@@ -86,9 +86,9 @@ export async function submitLabAttempt(
   try {
     const ctx = await context(courseId);
     const { step, outline } = stepOf(ctx, stepId);
-    if (outline.state === "locked") return { ok: false, error: "Terminez d'abord l'activité précédente." };
+    if (outline.state === "locked") return { ok: false, error: "Finish the previous activity first." };
     const activity = ctx.tree.activities.find((a) => String(a._id) === String(step.activityId));
-    if (step.kind !== "activity" || !activity || !isActivityType(activity.type)) return { ok: false, error: "Activité introuvable." };
+    if (step.kind !== "activity" || !activity || !isActivityType(activity.type)) return { ok: false, error: "Activity not found." };
     const answers = input.answers && typeof input.answers === "object" ? input.answers : {};
     const graded = gradeActivity(activity.type, activity.content, answers);
     const correctIds = new Set(graded.items.filter((i) => i.correct).map((i) => i.id));
@@ -143,10 +143,10 @@ export async function submitWriting(courseId: string, stepId: string, text: stri
   try {
     const ctx = await context(courseId);
     const { step, outline } = stepOf(ctx, stepId);
-    if (outline.state === "locked") return { ok: false, error: "Terminez d'abord l'activité précédente." };
+    if (outline.state === "locked") return { ok: false, error: "Finish the previous activity first." };
     const activity = ctx.tree.activities.find((a) => String(a._id) === String(step.activityId));
-    if (step.kind !== "activity" || !activity || activity.type !== "writing_task") return { ok: false, error: "Activité introuvable." };
-    if (!ctx.save) return { ok: false, error: "Aperçu : rien n'est envoyé. Testez la correction depuis l'aperçu du Labo." };
+    if (step.kind !== "activity" || !activity || activity.type !== "writing_task") return { ok: false, error: "Activity not found." };
+    if (!ctx.save) return { ok: false, error: "Preview: nothing is sent. Test the correction from the Lab preview." };
     const submission = await sendWriting(ctx.me.id, { courseId: step.courseId, moduleId: step.moduleId, unitId: step.unitId, stepId: step._id, activityId: activity._id, level: activity.level ?? "", content: activity.content as WritingTaskContent }, text);
     await StepProgress.updateOne(
       { userId: ctx.me.id, stepId: step._id },
@@ -175,15 +175,15 @@ export async function submitUnitChallenge(input: { courseId: string; stepId: str
   try {
     const ctx = await context(courseId);
     const { step, outline } = stepOf(ctx, stepId);
-    if (step.kind !== "challenge") return { error: "Défi introuvable." };
-    if (outline.state === "locked" && !outline.status) return { error: "Terminez d'abord les activités de l'unité." };
-    if (!ctx.save) return { success: "Aperçu : l'enregistrement n'est pas envoyé." };
+    if (step.kind !== "challenge") return { error: "Challenge not found." };
+    if (outline.state === "locked" && !outline.status) return { error: "Finish the unit's activities first." };
+    if (!ctx.save) return { success: "Preview: the recording isn't sent." };
 
-    if (!mediaId || !Types.ObjectId.isValid(mediaId)) return { error: "Enregistrement introuvable : réessayez." };
+    if (!mediaId || !Types.ObjectId.isValid(mediaId)) return { error: "Recording not found: try again." };
     const media = await Media.findById(mediaId).lean();
-    if (!media || String(media.ownerId) !== ctx.me.id || media.kind !== "recording" || media.status !== "ready") return { error: "Enregistrement introuvable : réessayez." };
+    if (!media || String(media.ownerId) !== ctx.me.id || media.kind !== "recording" || media.status !== "ready") return { error: "Recording not found: try again." };
     const existing = await ChallengeSubmission.findOne({ userId: ctx.me.id, unitId: step.unitId }).select("attempts extraAttempts mediaId durationS submittedAt updatedAt status grade feedback feedbackAudioMediaId feedbackAudioDurationS gradedBy gradedAt validatedAt history").lean();
-    if (sendsLeft(existing) <= 0) return { error: `Vous avez utilisé vos ${sendsAllowed(existing)} envois pour ce défi : votre coach va écouter le dernier.` };
+    if (sendsLeft(existing) <= 0) return { error: `You've used your ${sendsAllowed(existing)} sends for this challenge: your coach will listen to the last one.` };
 
     await ChallengeSubmission.updateOne(
       { userId: ctx.me.id, unitId: step.unitId },
@@ -199,7 +199,7 @@ export async function submitUnitChallenge(input: { courseId: string; stepId: str
     const r = await reward(ctx, [{ key: `challenge:${String(step.unitId)}`, source: "challenge", amount: XP.challenge, counters: { assignmentsSubmitted: 1 } }]);
     refresh();
     const redo = !!existing?.validatedAt || existing?.status === "graded";
-    return { reward: r, success: redo ? "Nouvelle version envoyée ! Votre coach va l'écouter et vous faire un retour. Votre validation reste acquise." : "Défi envoyé ! La suite du parcours est ouverte. Votre coach va vous écouter et vous faire un retour." };
+    return { reward: r, success: redo ? "New version sent! Your coach will listen and give you feedback. Your validation still counts." : "Challenge sent! The rest of the course is open. Your coach will listen and give you feedback." };
   } catch (e) {
     return { error: (e as Error).message };
   }
@@ -219,7 +219,7 @@ export type QuizResult = {
 export async function submitFinalExam(courseId: string, answers: Record<string, string>): Promise<{ ok: true; result: QuizResult } | { ok: false; error: string }> {
   try {
     const ctx = await context(courseId);
-    if (!ctx.tree.outline.finalExam || ctx.tree.outline.finalExam.state === "locked") return { ok: false, error: "L'examen final s'ouvre quand tous les modules sont terminés." };
+    if (!ctx.tree.outline.finalExam || ctx.tree.outline.finalExam.state === "locked") return { ok: false, error: "The final exam opens when every module is completed." };
     const quiz = ctx.access.course.finalExam;
     const questions = (quiz?.questions ?? []) as unknown as { _id: Types.ObjectId; correctOptionId: string; explanation?: string }[];
     if (!questions.length) return { ok: false, error: "Examen introuvable." };

@@ -41,7 +41,7 @@ function Section({ s, audio }: { s: LessonSection; audio: Record<string, string>
                     </p>
                   )}
                 </div>
-                {i.audioMediaId && audio[i.audioMediaId] && <AudioButton src={audio[i.audioMediaId]} label={`Écouter « ${i.term} »`} />}
+                {i.audioMediaId && audio[i.audioMediaId] && <AudioButton src={audio[i.audioMediaId]} label={`Listen to "${i.term}"`} />}
               </li>
             ))}
           </ul>
@@ -103,7 +103,7 @@ function Section({ s, audio }: { s: LessonSection; audio: Record<string, string>
       return (
         <section className="grid gap-3 rounded-3xl border-2 border-border bg-card p-5 sm:p-6">
           <SectionTitle icon={MessagesSquare}>{SECTION_LABEL.dialogue.learner}</SectionTitle>
-          {s.audioMediaId && audio[s.audioMediaId] && <audio src={audio[s.audioMediaId]} controls preload="none" className="w-full" aria-label="Écouter le dialogue" />}
+          {s.audioMediaId && audio[s.audioMediaId] && <audio src={audio[s.audioMediaId]} controls preload="none" className="w-full" aria-label="Listen to the dialogue" />}
           <ol lang="en" className="grid gap-2">
             {s.lines.map((l) => {
               const right = speakers.indexOf(l.speaker) % 2 === 1;
@@ -146,7 +146,7 @@ export function LessonView({ title, content, audio }: { title: string; content: 
       {content.audioMediaId && audio[content.audioMediaId] && (
         <div className="grid gap-2 rounded-3xl border-2 border-border bg-card p-4">
           <p className="flex items-center gap-2 text-sm font-bold text-brand-deep">
-            <Volume2 className="size-4 text-primary" aria-hidden /> Écoutez
+            <Volume2 className="size-4 text-primary" aria-hidden /> Listen
           </p>
           <audio src={audio[content.audioMediaId]} controls preload="none" className="w-full" />
         </div>

@@ -10,7 +10,7 @@ import { cn } from "cn";
 
 const T = {
   fr: { auto: "Correction automatique", good: "Ce qui est réussi", fix: "À corriger", task: "La consigne", corrected: "Votre texte corrigé", score: "Score" },
-  en: { auto: "Claude's correction", good: "Strengths", fix: "Errors", task: "Checklist", corrected: "Corrected text", score: "Score" },
+  en: { auto: "Correction draft", good: "Strengths", fix: "Errors", task: "Checklist", corrected: "Corrected text", score: "Score" },
 } as const;
 
 export function ScoreRing({ score, label = "Score" }: { score: number; label?: string }) {
@@ -24,7 +24,7 @@ export function ScoreRing({ score, label = "Score" }: { score: number; label?: s
   );
 }
 
-export function CorrectionView({ correction, locale = "fr", openCorrected = false, title, note }: { correction: WritingCorrection; locale?: "fr" | "en"; openCorrected?: boolean; title?: string; note?: string }) {
+export function CorrectionView({ correction, locale = "en", openCorrected = false, title, note }: { correction: WritingCorrection; locale?: "fr" | "en"; openCorrected?: boolean; title?: string; note?: string }) {
   const t = T[locale];
   return (
     <div className="grid gap-4">

@@ -53,14 +53,14 @@ export function PathRow({ label, children }: { label: string; children: React.Re
   return (
     <div className="relative">
       {!edge.start && (
-        <button type="button" className={cn(arrow, "left-0")} onClick={() => go(-1)} aria-label="Activités précédentes">
+        <button type="button" className={cn(arrow, "left-0")} onClick={() => go(-1)} aria-label="Previous activities">
           <ChevronLeft className="size-5" aria-hidden />
         </button>
       )}
       <div
         ref={track}
         tabIndex={0}
-        aria-label={`${label} — faites défiler`}
+        aria-label={`${label} — scroll`}
         className={cn(
           "relative -mx-4 snap-x snap-proximity overflow-x-auto overscroll-x-contain px-4 py-3 outline-none [scrollbar-width:none] focus-visible:ring-4 focus-visible:ring-ring/40 sm:mx-0 [&::-webkit-scrollbar]:hidden",
           !edge.start && !edge.end && "[mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]",
@@ -71,7 +71,7 @@ export function PathRow({ label, children }: { label: string; children: React.Re
         <ol className="mx-auto flex w-max">{children}</ol>
       </div>
       {!edge.end && (
-        <button type="button" className={cn(arrow, "right-0")} onClick={() => go(1)} aria-label="Activités suivantes">
+        <button type="button" className={cn(arrow, "right-0")} onClick={() => go(1)} aria-label="Next activities">
           <ChevronRight className="size-5" aria-hidden />
         </button>
       )}

@@ -6,7 +6,7 @@ import { AvatarError, setAvatar } from "@/lib/avatar";
 import { can } from "@/lib/admin/permissions";
 
 /** Sets or removes a profile photo (components/account/avatar-picker.tsx). Messages follow `locale`: staff pages in English, learners in French. */
-export async function setAvatarAction(userId: string, mediaId: string | null, locale: "fr" | "en" = "fr"): Promise<{ ok: true } | { ok: false; error: string }> {
+export async function setAvatarAction(userId: string, mediaId: string | null, locale: "fr" | "en" = "en"): Promise<{ ok: true } | { ok: false; error: string }> {
   const en = locale === "en";
   try {
     const me = await readCurrentUser();

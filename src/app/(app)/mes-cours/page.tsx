@@ -12,14 +12,14 @@ import { cn } from "cn";
 import { BrandTitle } from "@/components/learn/brand-title";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 
-export const metadata: Metadata = { title: "Mes cours", robots: { index: false } };
+export const metadata: Metadata = { title: "My Courses", robots: { index: false } };
 
 const STATE_LABEL: Record<MyCourse["state"], { label: string; cls: string } | null> = {
   active: null,
-  completed: { label: "Terminé", cls: "bg-gradient-to-br from-primary to-brand-deep text-white" },
-  "not-started": { label: "Bientôt", cls: "bg-xp/20 text-[#9a6200]" },
-  expired: { label: "Accès terminé", cls: "bg-muted text-muted-foreground" },
-  suspended: { label: "Suspendu", cls: "bg-destructive/10 text-destructive" },
+  completed: { label: "Completed", cls: "bg-gradient-to-br from-primary to-brand-deep text-white" },
+  "not-started": { label: "Coming soon", cls: "bg-xp/20 text-[#9a6200]" },
+  expired: { label: "Access ended", cls: "bg-muted text-muted-foreground" },
+  suspended: { label: "Suspended", cls: "bg-destructive/10 text-destructive" },
 };
 
 async function Courses({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
@@ -34,21 +34,21 @@ async function Courses({ searchParams }: { searchParams: Promise<Record<string, 
         <div role="status" className="flex animate-pop items-center gap-3 rounded-3xl bg-brand-deep p-5 text-white">
           <PartyPopper className="size-8 shrink-0 text-xp" aria-hidden />
           <p>
-            <strong className="font-heading text-lg">C&apos;est parti, {me.name} !</strong>
+            <strong className="font-heading text-lg">Let’s go, {me.name}!</strong>
             <br />
-            Votre compte est activé. Voici vos cours.
+            Your account is active. Here are your courses.
           </p>
         </div>
       )}
 
       {me.isStaff && (
         <Link href="/admin" className="flex items-center justify-between rounded-2xl border-2 border-dashed border-primary/30 px-4 py-3 text-sm font-semibold text-primary hover:bg-brand-soft">
-          Vous faites partie de l&apos;équipe : ouvrir l&apos;administration <ArrowRight className="size-4" aria-hidden />
+          You’re on the team: open the admin <ArrowRight className="size-4" aria-hidden />
         </Link>
       )}
       <div>
-        <h1 className="text-3xl font-extrabold text-brand-deep">Bonjour {me.name} 👋</h1>
-        <p className="text-muted-foreground">{current ? "Prêt(e) pour l'activité du jour ?" : "Retrouvez ici tous vos cours MaelEnglish."}</p>
+        <h1 className="text-3xl font-extrabold text-brand-deep">Hello {me.name} 👋</h1>
+        <p className="text-muted-foreground">{current ? "Ready for today's activity?" : "All your MaelEnglish courses are here."}</p>
       </div>
 
       <InstallPrompt />
@@ -56,14 +56,14 @@ async function Courses({ searchParams }: { searchParams: Promise<Record<string, 
       {courses.length === 0 ? (
         <div className="rounded-3xl border-2 border-dashed border-border bg-card p-8 text-center">
           <BookOpen className="mx-auto size-12 text-primary" aria-hidden />
-          <h2 className="mt-3 text-xl font-extrabold text-brand-deep">Aucun cours pour l&apos;instant</h2>
-          <p className="mt-1 text-muted-foreground">Dès que votre inscription est validée, votre cours apparaît ici.</p>
+          <h2 className="mt-3 text-xl font-extrabold text-brand-deep">No courses yet</h2>
+          <p className="mt-1 text-muted-foreground">As soon as your enrolment is confirmed, your course appears here.</p>
           <div className="mt-5 flex flex-wrap justify-center gap-3">
             <Link href="/#programmes" className="inline-flex h-11 items-center rounded-2xl bg-primary px-5 font-semibold text-white">
-              Voir les programmes
+              See the programmes
             </Link>
             <a href={whatsappLink()} target="_blank" rel="noopener" className="inline-flex h-11 items-center rounded-2xl border-2 border-border px-5 font-semibold text-brand-deep">
-              Contacter l&apos;équipe
+              Contact the team
             </a>
           </div>
         </div>
@@ -107,21 +107,21 @@ function CourseCard({ course: c }: { course: MyCourse }) {
           <BrandTitle title={c.title} />
         </h2>
         {c.state === "not-started" && c.startDate ? (
-          <p className="mt-1 text-sm text-muted-foreground">Commence le {formatDate(c.startDate)}</p>
+          <p className="mt-1 text-sm text-muted-foreground">Starts on {formatDate(c.startDate)}</p>
         ) : c.endDate && c.state === "active" ? (
-          <p className="mt-1 text-sm text-muted-foreground">Accès jusqu&apos;au {formatDate(c.endDate)}</p>
+          <p className="mt-1 text-sm text-muted-foreground">Access until {formatDate(c.endDate)}</p>
         ) : null}
         {usable && (
           <>
             <div className="mt-4 flex items-center justify-between text-sm font-semibold">
               <span className="text-ink/75">
-                {c.stepsDone} / {c.stepsTotal} activités
+                {c.stepsDone} / {c.stepsTotal} activities
               </span>
               <span className="text-primary">{percent} %</span>
             </div>
             <ProgressBar value={percent} className="mt-1.5" />
             <span className="mt-4 inline-flex items-center gap-1.5 font-bold text-coral-dark">
-              {c.state === "completed" ? "Revoir le cours" : c.stepsDone ? "Continuer" : "Commencer"}{" "}
+              {c.state === "completed" ? "Review the course" : c.stepsDone ? "Continue" : "Start"}{" "}
               <ArrowRight className="size-4 transition group-hover:translate-x-1" aria-hidden />
             </span>
           </>

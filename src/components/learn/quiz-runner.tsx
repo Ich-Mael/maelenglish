@@ -98,19 +98,19 @@ export function QuizRunner({
         <div>
           <h1 className="text-2xl font-extrabold text-brand-deep">{title}</h1>
           <p className="mt-2 text-muted-foreground">
-            {questions.length} questions · {passingScore} % pour réussir{timeLimit ? ` · ${timeLimit} min` : ""}
+            {questions.length} questions · {passingScore} % to pass{timeLimit ? ` · ${timeLimit} min` : ""}
           </p>
-          {bestScore !== null && <p className="mt-1 text-sm font-semibold text-primary">Votre meilleur score : {bestScore} %</p>}
+          {bestScore !== null && <p className="mt-1 text-sm font-semibold text-primary">Your best score: {bestScore} %</p>}
         </div>
         {readOnly ? (
-          <p className="text-sm text-muted-foreground">Cours terminé : le quiz n&apos;est plus disponible.</p>
+          <p className="text-sm text-muted-foreground">Course completed: the quiz is no longer available.</p>
         ) : (
           <button type="button" onClick={() => setStarted(true)} className="inline-flex h-13 items-center justify-center gap-2 rounded-2xl bg-primary text-lg font-bold text-white shadow-[0_5px_0_0_var(--color-brand-dark)] transition active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-brand-dark)]">
-            Commencer
+            Start
           </button>
         )}
         <Link href={courseHref} className="text-sm font-semibold text-muted-foreground hover:text-primary">
-          Retour au parcours
+          Back to the course
         </Link>
       </div>
     );
@@ -124,19 +124,19 @@ export function QuizRunner({
           <motion.p initial={reduce ? false : { scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 220, damping: 14 }} className="font-heading text-6xl font-extrabold">
             {result.score} %
           </motion.p>
-          <h1 className="mt-2 text-2xl font-extrabold">{result.passed ? "Quiz réussi, bravo !" : "Pas encore…"}</h1>
+          <h1 className="mt-2 text-2xl font-extrabold">{result.passed ? "Quiz passed, well done!" : "Not yet…"}</h1>
           <p className="mt-1 text-white/85">
-            {result.correct} bonne(s) réponse(s) sur {result.total} · {result.passingScore} % requis
+            {result.correct} correct answer{result.correct > 1 ? "s" : ""} out of {result.total} · {result.passingScore} % required
           </p>
           {result.reward && result.reward.xpGained > 0 && <p className="mx-auto mt-2 w-fit rounded-full border-2 border-coral bg-white px-3 py-0.5 font-heading text-xl font-extrabold text-coral">+{result.reward.xpGained} XP</p>}
           <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
             {result.passed ? (
               <button type="button" onClick={() => router.push(nextHref)} className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-6 font-bold text-brand-deep">
-                Continuer <ArrowRight className="size-4" aria-hidden />
+                Continue <ArrowRight className="size-4" aria-hidden />
               </button>
             ) : (
               <button type="button" onClick={retry} className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border-2 border-coral bg-white px-6 text-[19px] font-bold text-coral hover:bg-coral-soft">
-                <RotateCcw className="size-4" aria-hidden /> Réessayer
+                <RotateCcw className="size-4" aria-hidden /> Try again
               </button>
             )}
             <Link href={courseHref} className="inline-flex h-12 items-center justify-center rounded-2xl border-2 border-white/40 px-6 font-semibold">
@@ -185,17 +185,17 @@ export function QuizRunner({
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-10rem)] max-w-2xl flex-col">
       <div className="flex items-center gap-3">
-        <Link href={courseHref} className="flex size-10 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted" aria-label="Quitter le quiz">
+        <Link href={courseHref} className="flex size-10 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted" aria-label="Leave the quiz">
           <X className="size-6" aria-hidden />
         </Link>
-        <div className="flex flex-1 gap-1.5" aria-label={`Question ${index + 1} sur ${questions.length}`}>
+        <div className="flex flex-1 gap-1.5" aria-label={`Question ${index + 1} of ${questions.length}`}>
           {questions.map((x, i) => (
             <button
               key={x.id}
               type="button"
               onClick={() => setIndex(i)}
               className={cn("h-3 flex-1 rounded-full transition", i === index ? "bg-primary" : answers[x.id] ? "bg-primary/40" : "bg-muted")}
-              aria-label={`Aller à la question ${i + 1}`}
+              aria-label={`Go to question ${i + 1}`}
             />
           ))}
         </div>
@@ -243,7 +243,7 @@ export function QuizRunner({
       <div className="sticky bottom-16 -mx-4 border-t-2 border-border bg-background px-4 py-4 md:bottom-0">
         {error && <p role="alert" className="mb-2 text-sm text-destructive">{error}</p>}
         <div className="flex gap-3">
-          <button type="button" onClick={() => setIndex((i) => Math.max(0, i - 1))} disabled={index === 0} className="inline-flex h-13 items-center justify-center rounded-2xl border-2 border-border px-4 font-semibold text-brand-deep disabled:opacity-40" aria-label="Question précédente">
+          <button type="button" onClick={() => setIndex((i) => Math.max(0, i - 1))} disabled={index === 0} className="inline-flex h-13 items-center justify-center rounded-2xl border-2 border-border px-4 font-semibold text-brand-deep disabled:opacity-40" aria-label="Previous question">
             <ArrowLeft className="size-5" aria-hidden />
           </button>
           {index < questions.length - 1 ? (
@@ -253,7 +253,7 @@ export function QuizRunner({
           ) : (
             <button type="button" onClick={submit} disabled={pending} className="inline-flex h-13 flex-1 items-center justify-center gap-2 rounded-2xl border-2 border-coral bg-white text-[19px] font-bold text-coral hover:bg-coral-soft shadow-[0_5px_0_0_var(--color-coral)] transition active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-coral)]">
               {pending && <Loader2 className="size-5 animate-spin" aria-hidden />}
-              Envoyer ({answeredCount}/{questions.length})
+              Submit ({answeredCount}/{questions.length})
             </button>
           )}
         </div>

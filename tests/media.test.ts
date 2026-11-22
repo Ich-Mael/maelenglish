@@ -16,7 +16,7 @@ describe("upload rules", () => {
     expect(extensionFor("instruction", "video/mp4")).toBe("mp4");
     // Challenge prompt pictures: images only, staff only, public, own folder.
     expect([extensionFor("image", "image/webp"), extensionFor("image", "audio/mpeg")]).toEqual(["webp", null]);
-    expect(uploadProblem("image", "image/jpeg", 1000, { isStaff: false })).toMatch(/autorisé/);
+    expect(uploadProblem("image", "image/jpeg", 1000, { isStaff: false })).toMatch(/not allowed/);
     expect(uploadProblem("image", "image/jpeg", 1000, { isStaff: true })).toBeNull();
     expect([visibilityFor("image"), storageKey("image", "x", "webp", new Date("2026-11-22")).split("/")[0]]).toEqual(["public", "courses_images"]);
     expect(extensionFor("recording", "application/pdf")).toBeNull();
@@ -25,11 +25,11 @@ describe("upload rules", () => {
   it("lets learners upload only their recordings, within size limits", () => {
     const learner = { isStaff: false };
     expect(uploadProblem("recording", "audio/webm", 200_000, learner)).toBeNull();
-    expect(uploadProblem("voice-note", "audio/webm", 200_000, learner)).toMatch(/non autorisé/);
-    expect(uploadProblem("clip", "audio/mpeg", 1_000, learner)).toMatch(/non autorisé/);
+    expect(uploadProblem("voice-note", "audio/webm", 200_000, learner)).toMatch(/not allowed/);
+    expect(uploadProblem("clip", "audio/mpeg", 1_000, learner)).toMatch(/not allowed/);
     expect(uploadProblem("voice-note", "audio/webm", 200_000, { isStaff: true })).toBeNull();
-    expect(uploadProblem("recording", "audio/webm", 50 * 1024 * 1024, learner)).toMatch(/trop lourd/);
-    expect(uploadProblem("recording", "audio/webm", 0, learner)).toMatch(/vide/);
+    expect(uploadProblem("recording", "audio/webm", 50 * 1024 * 1024, learner)).toMatch(/too large/);
+    expect(uploadProblem("recording", "audio/webm", 0, learner)).toMatch(/Empty/);
     expect(visibilityFor("recording")).toBe("private");
     expect(visibilityFor("clip")).toBe("public");
   });
@@ -94,7 +94,7 @@ describe("media service (local driver)", () => {
 
   it("refuses uploads that break the rules", async () => {
     const learner = await mk("kofi");
-    await expect(startUpload({ id: String(learner._id), isStaff: false }, "voice-note", "audio/webm", 100)).rejects.toThrow(/non autorisé/);
-    await expect(startUpload({ id: String(learner._id), isStaff: false }, "recording", "text/html", 100)).rejects.toThrow(/Format/);
+    await expect(startUpload({ id: String(learner._id), isStaff: false }, "voice-note", "audio/webm", 100)).rejects.toThrow(/not allowed/);
+    await expect(startUpload({ id: String(learner._id), isStaff: false }, "recording", "text/html", 100)).rejects.toThrow(/format not supported/);
   });
 });

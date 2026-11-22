@@ -68,7 +68,7 @@ export function RewardCenter() {
               )}
               {toast.dailyGoalReached && (
                 <span className="flex items-center gap-1 text-sm font-bold text-primary">
-                  <Target className="size-4" aria-hidden /> Objectif du jour !
+                  <Target className="size-4" aria-hidden /> Daily goal reached!
                 </span>
               )}
             </motion.div>
@@ -96,7 +96,7 @@ export function RewardCenter() {
               className="relative w-full max-w-sm rounded-[2rem] bg-card p-8 text-center shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <button type="button" onClick={() => setModals((m) => m.slice(1))} className="absolute top-3 right-3 flex size-9 items-center justify-center rounded-full text-muted-foreground hover:bg-muted" aria-label="Fermer">
+              <button type="button" onClick={() => setModals((m) => m.slice(1))} className="absolute top-3 right-3 flex size-9 items-center justify-center rounded-full text-muted-foreground hover:bg-muted" aria-label="Close">
                 <X className="size-5" aria-hidden />
               </button>
               {modal.kind === "level" ? (
@@ -104,8 +104,8 @@ export function RewardCenter() {
                   <div className="mx-auto flex size-28 items-center justify-center rounded-full border-4 border-coral bg-white font-heading text-5xl font-extrabold text-coral shadow-[0_8px_0_0_var(--color-coral)]">
                     {modal.level}
                   </div>
-                  <h2 id="reward-title" className="mt-6 text-3xl font-extrabold text-brand-deep">Niveau {modal.level} !</h2>
-                  <p className="mt-2 text-muted-foreground">Votre anglais progresse. Continuez sur cette lancée !</p>
+                  <h2 id="reward-title" className="mt-6 text-3xl font-extrabold text-brand-deep">Level {modal.level}!</h2>
+                  <p className="mt-2 text-muted-foreground">Your English is improving. Keep it up!</p>
                 </>
               ) : (
                 <>

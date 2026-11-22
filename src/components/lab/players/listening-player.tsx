@@ -75,7 +75,7 @@ export function ListeningPlayer({
   const [pending, start] = useTransition();
   const lines = parseTranscript(content.transcript);
 
-  const meta: ExerciseMeta = { title, typeLabel: "Compréhension orale", icon: Headphones, level, skills, instructions };
+  const meta: ExerciseMeta = { title, typeLabel: "Listening comprehension", icon: Headphones, level, skills, instructions };
   const q = questions[ex.index];
 
   const onCheck = () => {
@@ -149,7 +149,7 @@ export function ListeningPlayer({
                 {lines.map((l, i) => (
                   <p key={i} className="flex gap-2">
                     {l.startS !== null && audioUrl ? (
-                      <button type="button" onClick={() => replay(l.startS!)} className="h-fit shrink-0 rounded-md bg-brand-soft px-1.5 font-mono text-xs font-semibold text-primary" aria-label={`Écouter à partir de ${formatTime(l.startS)}`}>
+                      <button type="button" onClick={() => replay(l.startS!)} className="h-fit shrink-0 rounded-md bg-brand-soft px-1.5 font-mono text-xs font-semibold text-primary" aria-label={`Listen from ${formatTime(l.startS)}`}>
                         {formatTime(l.startS)}
                       </button>
                     ) : null}
@@ -184,7 +184,7 @@ export function ListeningPlayer({
 
       <section className="grid gap-3 rounded-3xl border-2 border-border bg-card p-4 sm:p-5">
         <p className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
-          Question {ex.index + 1} sur {questions.length}
+          Question {ex.index + 1} of {questions.length}
         </p>
         <h2 id={`q-${q.id}`} className="font-heading text-xl font-extrabold text-brand-deep">
           {q.text}
@@ -194,15 +194,15 @@ export function ListeningPlayer({
           <FeedbackPanel correct={ex.correct} answer={answerText(q)} explanation={q.explanation}>
             {line >= 0 && (
               <p lang="en" className="rounded-xl bg-white/70 px-3 py-2 text-sm text-ink">
-                <span lang="fr" className="mr-1 text-muted-foreground">
-                  Dans l&apos;audio :
+                <span className="mr-1 text-muted-foreground">
+                  In the audio:
                 </span>
                 « {lines[line].text} »
               </p>
             )}
             {q.startS !== null && audioUrl && (
               <button type="button" onClick={() => replay(q.startS!)} className="inline-flex w-fit items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-bold text-white">
-                <Headphones className="size-3.5" aria-hidden /> Réécouter ce passage ({formatTime(q.startS)})
+                <Headphones className="size-3.5" aria-hidden /> Replay this part ({formatTime(q.startS)})
               </button>
             )}
           </FeedbackPanel>
@@ -215,7 +215,7 @@ export function ListeningPlayer({
         </p>
       )}
       {readOnly ? (
-        <p className="text-sm text-muted-foreground">Cours terminé : l&apos;activité reste consultable, mais plus rien n&apos;est enregistré.</p>
+        <p className="text-sm text-muted-foreground">Course completed: you can still view the activity, but nothing is saved any more.</p>
       ) : (
         <CheckBar
           phase={ex.phase === "feedback" ? "feedback" : "answer"}

@@ -28,7 +28,7 @@ export const hasCoachFeedback = (d: Pick<CoachFeedbackData, "status" | "grade" |
  */
 export function CoachFeedback({ d, className }: { d: CoachFeedbackData; className?: string }) {
   const ok = d.status === "graded";
-  const name = d.coach?.name || "Votre coach";
+  const name = d.coach?.name || "Your coach";
   const max = d.maxScore || 100;
   const pct = ok && d.grade != null ? Math.round((d.grade / max) * 100) : null;
 
@@ -37,12 +37,12 @@ export function CoachFeedback({ d, className }: { d: CoachFeedbackData; classNam
       <div className="flex items-center gap-3">
         <Avatar src={d.coach?.avatarUrl} name={coachInitialName(name)} className="size-11 text-base ring-2 ring-white" />
         <div className="min-w-0 flex-1">
-          <p className={cn("text-[11px] font-bold tracking-wide uppercase", ok ? "text-primary" : "text-coral-dark")}>{ok ? "Validé par votre coach" : "Votre coach vous demande de reprendre"}</p>
+          <p className={cn("text-[11px] font-bold tracking-wide uppercase", ok ? "text-primary" : "text-coral-dark")}>{ok ? "Validated by your coach" : "Your coach asks you to redo it"}</p>
           <p className="font-heading leading-tight font-extrabold break-words text-brand-deep">{name}</p>
           {d.gradedAt && <p className="text-xs text-muted-foreground">Le {formatDate(d.gradedAt)}</p>}
         </div>
         {pct !== null && (
-          <div className="relative flex size-14 shrink-0 items-center justify-center rounded-full" style={{ background: `conic-gradient(var(--color-primary), var(--color-brand-deep) ${pct}%, color-mix(in oklab, var(--color-primary) 15%, white) 0)` }} role="img" aria-label={`Note : ${d.grade} sur ${max}`}>
+          <div className="relative flex size-14 shrink-0 items-center justify-center rounded-full" style={{ background: `conic-gradient(var(--color-primary), var(--color-brand-deep) ${pct}%, color-mix(in oklab, var(--color-primary) 15%, white) 0)` }} role="img" aria-label={`Grade: ${d.grade} out of ${max}`}>
             <span className="flex size-11 flex-col items-center justify-center rounded-full bg-white leading-none">
               <span className="font-heading text-base font-extrabold text-primary tabular-nums">{d.grade}</span>
               <span className="text-[10px] font-semibold text-muted-foreground">/ {max}</span>
@@ -65,17 +65,17 @@ export function CoachFeedback({ d, className }: { d: CoachFeedbackData; classNam
           </RichText>
         </div>
       ) : (
-        !d.voiceNote && <p className="text-sm text-muted-foreground">{ok ? "Votre coach a validé votre défi sans commentaire." : "Pas de commentaire écrit."}</p>
+        !d.voiceNote && <p className="text-sm text-muted-foreground">{ok ? "Your coach validated your challenge without a comment." : "No written comment."}</p>
       )}
 
       <p className={cn("flex items-start gap-2 text-sm font-semibold", ok ? "text-primary" : "text-coral-dark")}>
         {ok ? (
           <>
-            <Sparkles className="mt-0.5 size-4 shrink-0" aria-hidden /> Bravo ! +{XP.challengeValidated} XP pour ce défi validé.
+            <Sparkles className="mt-0.5 size-4 shrink-0" aria-hidden /> Well done! +{XP.challengeValidated} XP for this validated challenge.
           </>
         ) : (
           <>
-            <RotateCcw className="mt-0.5 size-4 shrink-0" aria-hidden /> {d.voiceNote ? "Écoutez" : "Lisez"} ce retour, réécoutez votre enregistrement, puis réenregistrez-vous.
+            <RotateCcw className="mt-0.5 size-4 shrink-0" aria-hidden /> {d.voiceNote ? "Listen to" : "Read"} this feedback, listen to your recording again, then record yourself again.
           </>
         )}
       </p>
@@ -87,7 +87,7 @@ export function CoachFeedback({ d, className }: { d: CoachFeedbackData; classNam
 export function AwaitingCoach({ coachName, className }: { coachName?: string; className?: string }) {
   return (
     <p className={cn("flex items-center gap-2 rounded-2xl bg-brand-soft px-4 py-3 text-sm font-semibold text-primary", className)}>
-      <Clock className="size-4 shrink-0" aria-hidden /> {coachName ? `${coachName} va` : "Votre coach va"} écouter votre enregistrement et vous répondre.
+      <Clock className="size-4 shrink-0" aria-hidden /> {coachName ? `${coachName} will` : "Your coach will"} listen to your recording and get back to you.
     </p>
   );
 }

@@ -14,18 +14,18 @@ import { revokeSession } from "@/app/(auth)/actions";
 import { LogoutButton } from "@/components/pwa/logout-button";
 import { PasswordForm } from "./password-form";
 
-export const metadata: Metadata = { title: "Mon compte", robots: { index: false } };
+export const metadata: Metadata = { title: "My Account", robots: { index: false } };
 
 const ROLE_LABELS: Record<string, string> = {
-  user: "Apprenant·e",
-  "english-coach": "Coach d'anglais",
-  instructor: "Formateur·rice",
-  "account-manager": "Gestionnaire de comptes",
-  admin: "Administrateur·rice",
-  "super-admin": "Super administrateur·rice",
+  user: "Learner",
+  "english-coach": "English coach",
+  instructor: "Instructor",
+  "account-manager": "Account manager",
+  admin: "Administrator",
+  "super-admin": "Super administrator",
 };
 
-const dateFmt = new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeStyle: "short" });
+const dateFmt = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short" });
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -48,7 +48,7 @@ async function Account() {
     <div className="grid gap-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-extrabold text-brand-deep">Mon compte</h1>
+          <h1 className="text-3xl font-extrabold text-brand-deep">My Account</h1>
           <p className="text-muted-foreground">
             {me.name} {me.surname} · {ROLE_LABELS[me.role] ?? me.role}
           </p>
@@ -62,14 +62,14 @@ async function Account() {
         </Link>
       )}
 
-      <Section title="Profil">
+      <Section title="Profile">
         <div className="mb-5">
           <AvatarPicker userId={me.id} src={me.avatarUrl} name={me.name || me.username} />
         </div>
         <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            ["Identifiant", me.username],
-            ["Niveau d’anglais", levelLabel(level?.englishLevel) || "Pas encore évalué"],
+            ["Username", me.username],
+            ["English level", levelLabel(level?.englishLevel) || "Not assessed yet"],
             ["Email", me.email ?? "—"],
             ["WhatsApp", me.phoneE164 ? displayPhone(me.phoneE164) : "—"],
           ].map(([k, v]) => (
@@ -81,11 +81,11 @@ async function Account() {
         </dl>
       </Section>
 
-      <Section title="Mot de passe">
+      <Section title="Password">
         <PasswordForm />
       </Section>
 
-      <Section title="Appareils connectés">
+      <Section title="Signed-in devices">
         <ul className="grid gap-2">
           {sessions.map((s) => {
             const d = describeUserAgent(s.userAgent ?? "");
@@ -99,17 +99,17 @@ async function Account() {
                     {d.browser} · {d.os}
                     {current && (
                       <span className="ml-2 rounded-full bg-success/15 px-2 py-0.5 text-xs font-semibold text-success">
-                        Cet appareil
+                        This device
                       </span>
                     )}
                   </p>
-                  <p className="text-xs text-muted-foreground">Dernière activité : {dateFmt.format(s.lastSeenAt)}</p>
+                  <p className="text-xs text-muted-foreground">Last active: {dateFmt.format(s.lastSeenAt)}</p>
                 </div>
                 {!current && (
                   <form action={revokeSession}>
                     <input type="hidden" name="sessionId" value={String(s._id)} />
                     <Button type="submit" variant="ghost" size="sm" className="text-destructive">
-                      Déconnecter
+                      Sign out
                     </Button>
                   </form>
                 )}
@@ -121,7 +121,7 @@ async function Account() {
           <form action={revokeSession} className="mt-4">
             <input type="hidden" name="sessionId" value="others" />
             <Button type="submit" variant="outline" className="rounded-xl">
-              Déconnecter tous les autres appareils
+              Sign out of all other devices
             </Button>
           </form>
         )}

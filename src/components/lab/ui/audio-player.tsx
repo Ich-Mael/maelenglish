@@ -75,7 +75,7 @@ export function AudioPlayer({
     setSpeed(next);
   };
 
-  if (!src) return <p className="rounded-3xl border-2 border-border bg-card p-4 text-sm text-muted-foreground">L&apos;audio n&apos;est pas disponible pour le moment.</p>;
+  if (!src) return <p className="rounded-3xl border-2 border-border bg-card p-4 text-sm text-muted-foreground">The audio isn’t available right now.</p>;
 
   return (
     <div className="sticky top-16 z-20 rounded-3xl border-2 border-primary/20 bg-white p-3 shadow-[0_10px_25px_-15px_rgb(20_31_77/0.5)] sm:p-4">
@@ -107,7 +107,7 @@ export function AudioPlayer({
           onClick={toggle}
           disabled={exhausted}
           className="flex size-14 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-[0_4px_0_0_var(--color-brand-dark)] active:translate-y-1 active:shadow-[0_1px_0_0_var(--color-brand-dark)] disabled:bg-muted disabled:text-muted-foreground disabled:shadow-none"
-          aria-label={playing ? "Pause" : "Écouter"}
+          aria-label={playing ? "Pause" : "Play"}
         >
           {playing ? <Pause className="size-6 fill-current" aria-hidden /> : <Play className="ml-0.5 size-6 fill-current" aria-hidden />}
         </button>
@@ -120,7 +120,7 @@ export function AudioPlayer({
             value={time}
             disabled={capped}
             onChange={(e) => seekTo(Number(e.target.value))}
-            aria-label="Position dans l'audio"
+            aria-label="Position in the audio"
             className="tv-range on-light block w-full"
             style={{ ["--p" as string]: `${duration ? (time / duration) * 100 : 0}%` }}
           />
@@ -130,20 +130,20 @@ export function AudioPlayer({
             </span>
             {capped ? (
               <span className={cn("ml-2 font-semibold", plays >= maxPlays ? "text-coral-dark" : "text-brand-deep")}>
-                Écoute {Math.min(plays, maxPlays)}/{maxPlays}
+                Listen {Math.min(plays, maxPlays)}/{maxPlays}
               </span>
             ) : (
-              <button type="button" onClick={() => seekTo(time - 5)} className="ml-auto flex items-center gap-1 rounded-full px-2 py-1 font-semibold text-brand-deep hover:bg-brand-soft" aria-label="Revenir de 5 secondes">
+              <button type="button" onClick={() => seekTo(time - 5)} className="ml-auto flex items-center gap-1 rounded-full px-2 py-1 font-semibold text-brand-deep hover:bg-brand-soft" aria-label="Back 5 seconds">
                 <Undo2 className="size-3.5" aria-hidden /> 5 s
               </button>
             )}
-            <button type="button" onClick={cycleSpeed} className={cn("rounded-full px-2 py-1 font-bold text-brand-deep ring-1 ring-border hover:bg-brand-soft", capped && "ml-auto")} aria-label={`Vitesse : ${speed}×`}>
+            <button type="button" onClick={cycleSpeed} className={cn("rounded-full px-2 py-1 font-bold text-brand-deep ring-1 ring-border hover:bg-brand-soft", capped && "ml-auto")} aria-label={`Speed: ${speed}×`}>
               {speed}×
             </button>
           </div>
         </div>
       </div>
-      {exhausted && <p className="mt-2 text-sm font-semibold text-coral-dark">Vous avez utilisé vos {maxPlays} écoutes : répondez maintenant.</p>}
+      {exhausted && <p className="mt-2 text-sm font-semibold text-coral-dark">You’ve used your {maxPlays} listens: answer now.</p>}
     </div>
   );
 }

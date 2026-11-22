@@ -129,15 +129,15 @@ export type BadgeIcon =
   | "Star" | "Sparkles" | "Rocket";
 
 export const BADGE_GROUPS = [
-  { id: "parcours", name: "Parcours", description: "Avancer dans vos cours, activité après activité.", icon: "Footprints" },
-  { id: "regularite", name: "Régularité", description: "Revenir chaque jour : c'est le secret des progrès.", icon: "Flame" },
-  { id: "oral", name: "Prise de parole", description: "Parler, se réenregistrer, convaincre votre coach.", icon: "Mic" },
-  { id: "ecoute", name: "Écoute", description: "Comprendre l'anglais du travail à vitesse réelle.", icon: "Headphones" },
-  { id: "langue", name: "Grammaire & vocabulaire", description: "Le mot juste et des phrases bien construites.", icon: "Puzzle" },
-  { id: "lecture", name: "Lecture", description: "E-mails, rapports, consignes : lire vite et bien.", icon: "BookOpen" },
-  { id: "ecrit", name: "Écrit professionnel", description: "Écrire des textes professionnels clairs et polis.", icon: "PenLine" },
-  { id: "precision", name: "Précision", description: "Viser le sans-faute et revenir sur ses erreurs.", icon: "Target" },
-  { id: "niveaux", name: "Niveaux & XP", description: "Chaque activité vous rapporte des points.", icon: "Sparkles" },
+  { id: "parcours", name: "Journey", description: "Move forward in your courses, one activity at a time.", icon: "Footprints" },
+  { id: "regularite", name: "Consistency", description: "Come back every day: that's the secret of progress.", icon: "Flame" },
+  { id: "oral", name: "Speaking", description: "Speak, record yourself again, win your coach over.", icon: "Mic" },
+  { id: "ecoute", name: "Listening", description: "Understand workplace English at real speed.", icon: "Headphones" },
+  { id: "langue", name: "Grammar & vocabulary", description: "The right word and well-built sentences.", icon: "Puzzle" },
+  { id: "lecture", name: "Reading", description: "Emails, reports, instructions: read fast and well.", icon: "BookOpen" },
+  { id: "ecrit", name: "Professional writing", description: "Write clear, polite professional texts.", icon: "PenLine" },
+  { id: "precision", name: "Accuracy", description: "Aim for zero mistakes and go back over your errors.", icon: "Target" },
+  { id: "niveaux", name: "Levels & XP", description: "Every activity earns you points.", icon: "Sparkles" },
 ] as const satisfies readonly { id: string; name: string; description: string; icon: BadgeIcon }[];
 export type BadgeGroup = (typeof BADGE_GROUPS)[number]["id"];
 
@@ -148,50 +148,50 @@ const b = (group: BadgeGroup, id: string, name: string, description: string, ico
 
 /** Badge catalogue (ids are stored in UserBadge: never rename one). Skills without a Lab type yet show as « bientôt ». */
 export const BADGES: readonly Badge[] = [
-  b("parcours", "first-lesson", "Premier pas", "Terminer votre première activité", "Footprints", "lessonsCompleted", 1, 1),
-  b("parcours", "lessons-10", "Lancé(e)", "Terminer 10 activités", "Route", "lessonsCompleted", 10, 1),
-  b("parcours", "lessons-50", "Infatigable", "Terminer 50 activités", "Library", "lessonsCompleted", 50, 2),
-  b("parcours", "lessons-100", "Marathonien(ne)", "Terminer 100 activités", "Mountain", "lessonsCompleted", 100, 3),
-  b("parcours", "graduate", "Diplômé(e)", "Réussir un examen final", "GraduationCap", "examsPassed", 1, 3),
+  b("parcours", "first-lesson", "First step", "Finish your first activity", "Footprints", "lessonsCompleted", 1, 1),
+  b("parcours", "lessons-10", "On a roll", "Finish 10 activities", "Route", "lessonsCompleted", 10, 1),
+  b("parcours", "lessons-50", "Tireless", "Finish 50 activities", "Library", "lessonsCompleted", 50, 2),
+  b("parcours", "lessons-100", "Marathoner", "Finish 100 activities", "Mountain", "lessonsCompleted", 100, 3),
+  b("parcours", "graduate", "Graduate", "Pass a final exam", "GraduationCap", "examsPassed", 1, 3),
 
-  b("regularite", "streak-3", "En rythme", "3 jours d'affilée", "Flame", "longestStreak", 3, 1),
-  b("regularite", "streak-7", "Une semaine pleine", "7 jours d'affilée", "Zap", "longestStreak", 7, 2),
-  b("regularite", "streak-14", "Deux semaines d'élan", "14 jours d'affilée", "CalendarCheck", "longestStreak", 14, 2),
-  b("regularite", "streak-30", "Habitude en or", "30 jours d'affilée", "Crown", "longestStreak", 30, 3),
-  b("regularite", "goal-5", "Objectif tenu", "Atteindre 5 fois votre objectif du jour", "Goal", "dailyGoals", 5, 1),
-  b("regularite", "goal-25", "Discipline de pro", "Atteindre 25 fois votre objectif du jour", "Medal", "dailyGoals", 25, 3),
+  b("regularite", "streak-3", "In the groove", "3 days in a row", "Flame", "longestStreak", 3, 1),
+  b("regularite", "streak-7", "A full week", "7 days in a row", "Zap", "longestStreak", 7, 2),
+  b("regularite", "streak-14", "Two-week run", "14 days in a row", "CalendarCheck", "longestStreak", 14, 2),
+  b("regularite", "streak-30", "Golden habit", "30 days in a row", "Crown", "longestStreak", 30, 3),
+  b("regularite", "goal-5", "Goal keeper", "Reach your daily goal 5 times", "Goal", "dailyGoals", 5, 1),
+  b("regularite", "goal-25", "Pro discipline", "Reach your daily goal 25 times", "Medal", "dailyGoals", 25, 3),
 
-  b("oral", "challenge-1", "Première prise de parole", "Envoyer votre premier défi oral", "Mic", "assignmentsSubmitted", 1, 1),
-  b("oral", "challenge-5", "Orateur", "Envoyer 5 défis oraux", "Trophy", "assignmentsSubmitted", 5, 2),
-  b("oral", "challenge-15", "Voix de leader", "Envoyer 15 défis oraux", "Megaphone", "assignmentsSubmitted", 15, 3),
-  b("oral", "validated-1", "Validé par le coach", "Faire valider un défi oral par votre coach", "BadgeCheck", "challengesValidated", 1, 1),
-  b("oral", "validated-10", "Coach conquis", "Faire valider 10 défis oraux", "Award", "challengesValidated", 10, 3),
-  b("oral", "pron-1", "Bonne prononciation", "Terminer un exercice « Répétez après Mael »", "Speech", "pronunciation", 1, 1),
-  b("oral", "pron-20", "Accent maîtrisé", "Terminer 20 exercices de prononciation", "AudioLines", "pronunciation", 20, 2),
+  b("oral", "challenge-1", "First words", "Send your first speaking challenge", "Mic", "assignmentsSubmitted", 1, 1),
+  b("oral", "challenge-5", "Speaker", "Send 5 speaking challenges", "Trophy", "assignmentsSubmitted", 5, 2),
+  b("oral", "challenge-15", "Leader's voice", "Send 15 speaking challenges", "Megaphone", "assignmentsSubmitted", 15, 3),
+  b("oral", "validated-1", "Coach approved", "Get a speaking challenge validated by your coach", "BadgeCheck", "challengesValidated", 1, 1),
+  b("oral", "validated-10", "Coach won over", "Get 10 speaking challenges validated", "Award", "challengesValidated", 10, 3),
+  b("oral", "pron-1", "Good pronunciation", "Finish a « Repeat after Mael » exercise", "Speech", "pronunciation", 1, 1),
+  b("oral", "pron-20", "Accent mastered", "Finish 20 pronunciation exercises", "AudioLines", "pronunciation", 20, 2),
 
-  b("ecoute", "listen-1", "Oreille tendue", "Terminer votre première activité d'écoute", "Headphones", "listening", 1, 1),
-  b("ecoute", "listen-10", "Oreille fine", "Terminer 10 activités d'écoute", "Ear", "listening", 10, 2),
-  b("ecoute", "listen-30", "Oreille d'or", "Terminer 30 activités d'écoute", "AudioLines", "listening", 30, 3),
+  b("ecoute", "listen-1", "All ears", "Finish your first listening activity", "Headphones", "listening", 1, 1),
+  b("ecoute", "listen-10", "Sharp ear", "Finish 10 listening activities", "Ear", "listening", 10, 2),
+  b("ecoute", "listen-30", "Golden ear", "Finish 30 listening activities", "AudioLines", "listening", 30, 3),
 
-  b("langue", "lang-1", "Le mot juste", "Terminer votre première activité de grammaire ou de vocabulaire", "Puzzle", "language", 1, 1),
-  b("langue", "lang-10", "Bâtisseur de phrases", "Terminer 10 activités de grammaire ou de vocabulaire", "Blocks", "language", 10, 2),
-  b("langue", "lang-30", "Maître des mots", "Terminer 30 activités de grammaire ou de vocabulaire", "PenLine", "language", 30, 3),
+  b("langue", "lang-1", "The right word", "Finish your first grammar or vocabulary activity", "Puzzle", "language", 1, 1),
+  b("langue", "lang-10", "Sentence builder", "Finish 10 grammar or vocabulary activities", "Blocks", "language", 10, 2),
+  b("langue", "lang-30", "Word master", "Finish 30 grammar or vocabulary activities", "PenLine", "language", 30, 3),
 
-  b("lecture", "read-1", "Lecteur attentif", "Terminer votre première activité de lecture", "BookOpen", "reading", 1, 1),
-  b("lecture", "read-10", "Œil de lynx", "Terminer 10 activités de lecture", "Eye", "reading", 10, 2),
+  b("lecture", "read-1", "Careful reader", "Finish your first reading activity", "BookOpen", "reading", 1, 1),
+  b("lecture", "read-10", "Eagle eye", "Finish 10 reading activities", "Eye", "reading", 10, 2),
 
-  b("ecrit", "write-1", "Première plume", "Terminer votre première activité d'expression écrite", "PenLine", "writing", 1, 1),
-  b("ecrit", "write-10", "Plume d'affaires", "Terminer 10 activités d'expression écrite", "Feather", "writing", 10, 2),
+  b("ecrit", "write-1", "First draft", "Finish your first writing activity", "PenLine", "writing", 1, 1),
+  b("ecrit", "write-10", "Business writer", "Finish 10 writing activities", "Feather", "writing", 10, 2),
 
-  b("precision", "perfect-1", "Sans faute", "Réussir une activité à 100 %", "Target", "perfectPractices", 1, 1),
-  b("precision", "perfect-10", "Précision chirurgicale", "10 activités à 100 %", "Gem", "perfectPractices", 10, 2),
-  b("precision", "perfect-25", "Zéro défaut", "25 activités à 100 %", "Diamond", "perfectPractices", 25, 3),
-  b("precision", "replays-10", "Perfectionniste", "Refaire 10 fois une activité déjà terminée", "RefreshCw", "replays", 10, 2),
+  b("precision", "perfect-1", "Flawless", "Score 100 % on an activity", "Target", "perfectPractices", 1, 1),
+  b("precision", "perfect-10", "Surgical precision", "10 activities at 100 %", "Gem", "perfectPractices", 10, 2),
+  b("precision", "perfect-25", "Zero defects", "25 activities at 100 %", "Diamond", "perfectPractices", 25, 3),
+  b("precision", "replays-10", "Perfectionist", "Redo a finished activity 10 times", "RefreshCw", "replays", 10, 2),
 
-  b("niveaux", "level-5", "Niveau 5", "Atteindre le niveau 5", "Star", "level", 5, 1),
-  b("niveaux", "xp-1000", "Mille points", "Gagner 1 000 XP", "Sparkles", "xp", 1000, 2),
-  b("niveaux", "level-10", "Niveau 10", "Atteindre le niveau 10", "Award", "level", 10, 2),
-  b("niveaux", "xp-5000", "Cinq mille points", "Gagner 5 000 XP", "Rocket", "xp", 5000, 3),
+  b("niveaux", "level-5", "Level 5", "Reach level 5", "Star", "level", 5, 1),
+  b("niveaux", "xp-1000", "A thousand points", "Earn 1,000 XP", "Sparkles", "xp", 1000, 2),
+  b("niveaux", "level-10", "Level 10", "Reach level 10", "Award", "level", 10, 2),
+  b("niveaux", "xp-5000", "Five thousand points", "Earn 5,000 XP", "Rocket", "xp", 5000, 3),
 ];
 
 /** Skill families with at least one Lab type: badges of the others are « bientôt » (exercise not built yet). */
