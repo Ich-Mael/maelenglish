@@ -10,6 +10,7 @@ import { sendsAllowed, sendsLeft, sendsUsed } from "@/lib/learn/challenge";
 import { previousAttempts, type AttemptItem } from "@/lib/learn/attempt-history";
 import { AttemptHistory } from "@/components/learn/attempt-history";
 import { ChallengeDialog } from "@/components/learn/challenge-dialog";
+import { BrandTitle } from "@/components/learn/brand-title";
 import { coursePath, stepPath } from "@/lib/learn/paths";
 import { findProgram, programPhoto } from "@/lib/catalog";
 import { Activity, ChallengeSubmission, Course, Module, Unit, User, type ChallengeSubmissionDoc } from "@/models";
@@ -159,7 +160,7 @@ async function MyChallenges() {
               <div className="grid gap-2">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <h2 id={`c-${g.courseId}`} className="flex min-w-0 items-center gap-2 text-xl font-extrabold text-brand-deep sm:text-2xl">
-                    <BookOpen className="size-6 shrink-0 text-primary" aria-hidden /> {g.title}
+                    <BookOpen className="size-6 shrink-0 text-primary" aria-hidden /> <BrandTitle title={g.title} />
                   </h2>
                   <Link href={coursePath(g.courseId)} className="text-sm font-semibold text-primary hover:underline">
                     Voir le cours

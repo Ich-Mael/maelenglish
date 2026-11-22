@@ -9,6 +9,7 @@ import { sameName, whatsappLink } from "@/lib/catalog";
 import { Photo } from "@/components/site/photo";
 import { PageSkeleton, ProgressBar, formatDate } from "@/components/learn/ui";
 import { cn } from "cn";
+import { BrandTitle } from "@/components/learn/brand-title";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 
 export const metadata: Metadata = { title: "Mes cours", robots: { index: false } };
@@ -102,7 +103,9 @@ function CourseCard({ course: c }: { course: MyCourse }) {
         {c.programName && !sameName(c.programName, c.title) && <span className="absolute bottom-3 left-4 text-sm font-semibold text-white">{c.programName}</span>}
       </div>
       <div className="p-5">
-        <h2 className="text-xl font-extrabold text-brand-deep">{c.title}</h2>
+        <h2 className="text-xl font-extrabold">
+          <BrandTitle title={c.title} />
+        </h2>
         {c.state === "not-started" && c.startDate ? (
           <p className="mt-1 text-sm text-muted-foreground">Commence le {formatDate(c.startDate)}</p>
         ) : c.endDate && c.state === "active" ? (

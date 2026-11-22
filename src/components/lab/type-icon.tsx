@@ -1,4 +1,4 @@
-import { AudioLines, Blocks, Ear, FileSearch, Headphones, Speech, SpellCheck, Link2, Mic, TextCursorInput, type LucideIcon } from "lucide-react";
+import { AudioLines, Blocks, Ear, FileSearch, Headphones, Keyboard, PenLine, Speech, SpellCheck, Link2, Mic, TextCursorInput, type LucideIcon } from "lucide-react";
 import type { ActivityType } from "@/lib/lab/types";
 
 /** Icon per Labo activity type. */
@@ -12,5 +12,7 @@ export const ACTIVITY_ICON: Record<ActivityType, LucideIcon> = {
   "true_false_ng": FileSearch,
   "complete_words": SpellCheck,
   "repeat_after": Speech,
+  "writing_task": PenLine,
+  "dictation": Keyboard,
   "speaking_challenge": Mic,
 };

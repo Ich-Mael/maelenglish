@@ -64,9 +64,38 @@ export type DrillGradeInput = {
 };
 export type DrillGrade = { verdict: DrillVerdict; explanation: string; modelAnswer: string };
 
+/** A learner's written answer to a writing task, to correct (feedback in French). */
+export type WritingCorrectionInput = {
+  /** The task, as plain text (French instructions). */
+  prompt: string;
+  /** Points the answer should cover (French or English). */
+  checklist: readonly string[];
+  minWords: number;
+  maxWords: number;
+  /** CEFR level of the activity ("" = not set). */
+  level: string;
+  /** What the learner wrote (English). */
+  answer: string;
+};
+export type WritingError = { quote: string; correction: string; explanation: string };
+export type WritingCorrection = {
+  /** 0–100 */
+  score: number;
+  /** One or two encouraging sentences in French. */
+  summary: string;
+  strengths: string[];
+  errors: WritingError[];
+  checklist: { item: string; met: boolean; comment: string }[];
+  /** The learner's text, corrected (English), keeping their ideas. */
+  corrected: string;
+};
+/** What a correction cost (tokens), for metering. */
+export type LlmUsage = { inputTokens: number; outputTokens: number; costMicros: number; provider: string };
+
 export interface FeedbackService {
   readonly name: string;
   gradeDrill(input: DrillGradeInput): Promise<DrillGrade>;
+  correctWriting(input: WritingCorrectionInput): Promise<{ correction: WritingCorrection; usage: LlmUsage }>;
 }
 
 /** Thrown when a provider isn't configured (production without keys). */

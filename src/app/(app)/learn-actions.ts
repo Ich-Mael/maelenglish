@@ -13,6 +13,8 @@ import { isActivityType } from "@/lib/lab/types";
 import { gradeActivity } from "@/lib/lab/grade";
 import { starsFor } from "@/lib/lab/meta";
 import { recordAttempt } from "@/lib/lab/attempts";
+import { sendWriting, writingSendsLeft, WritingError } from "@/lib/lab/writing";
+import type { WritingTaskContent } from "@/lib/lab/types";
 
 /*
  * Learner mutations. Each action re-checks the session, the enrolment and that
@@ -127,6 +129,35 @@ export async function submitLabAttempt(
     return { ok: true, result: { score: graded.score, stars, bonus, items: graded.items, bestScore: best, reward: r } };
   } catch (e) {
     return { ok: false, error: (e as Error).message };
+  }
+}
+
+export type WritingSent = { sentAt: string; sendsLeft: number; reward?: Reward | null };
+
+/**
+ * Lab « writing task »: the learner sends a version to their coach (an AI correction draft is made
+ * for the coach). Sending completes the step (the coach's score comes later) and awards XP once,
+ * like the speaking challenge. 3 versions per activity. Staff preview: nothing sent.
+ */
+export async function submitWriting(courseId: string, stepId: string, text: string): Promise<{ ok: true; result: WritingSent } | { ok: false; error: string }> {
+  try {
+    const ctx = await context(courseId);
+    const { step, outline } = stepOf(ctx, stepId);
+    if (outline.state === "locked") return { ok: false, error: "Terminez d'abord l'activité précédente." };
+    const activity = ctx.tree.activities.find((a) => String(a._id) === String(step.activityId));
+    if (step.kind !== "activity" || !activity || activity.type !== "writing_task") return { ok: false, error: "Activité introuvable." };
+    if (!ctx.save) return { ok: false, error: "Aperçu : rien n'est envoyé. Testez la correction depuis l'aperçu du Labo." };
+    const submission = await sendWriting(ctx.me.id, { courseId: step.courseId, moduleId: step.moduleId, unitId: step.unitId, stepId: step._id, activityId: activity._id, level: activity.level ?? "", content: activity.content as WritingTaskContent }, text);
+    await StepProgress.updateOne(
+      { userId: ctx.me.id, stepId: step._id },
+      { $inc: { attempts: 1 }, $setOnInsert: { courseId: step.courseId, completedAt: new Date(), score: null } },
+      { upsert: true },
+    );
+    const r = await reward(ctx, [{ key: `step:${stepId}`, source: activity.type, amount: XP.practiceBase, counters: { lessonsCompleted: 1 } }]);
+    refresh();
+    return { ok: true, result: { sentAt: new Date().toISOString(), sendsLeft: writingSendsLeft(submission), reward: r } };
+  } catch (e) {
+    return { ok: false, error: e instanceof WritingError ? e.message : (e as Error).message };
   }
 }
 

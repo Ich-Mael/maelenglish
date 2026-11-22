@@ -1,7 +1,7 @@
 import { normalizeRich, plainText } from "@/lib/rich-text";
 import { Types } from "mongoose";
 import { videoSource } from "@/lib/learn/media";
-import { MAX_PLAYS, MAX_SECONDS, PREP_SECONDS, PROMPT_TYPES, SENTENCE_AUDIO_WHEN, MATCH_PER_SCREEN, TFNG_ANSWERS, docSentences, type CompleteWordsContent, type RepeatContent, type TfngAnswer, type TfngContent, type TfngStatement, sentenceTiles, type MatchContent, type MatchPair, type PromptType, type SentenceContent, type SentenceItem, type ActivityContent, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type ListeningQuestion, type GapsContent, type ListenGapsContent, GAP_HINTS, parseGaps } from "./types";
+import { MAX_PLAYS, MAX_SECONDS, PREP_SECONDS, PROMPT_TYPES, SENTENCE_AUDIO_WHEN, MATCH_PER_SCREEN, TFNG_ANSWERS, docSentences, type CompleteWordsContent, type RepeatContent, type WritingTaskContent, WRITING_MIN_WORDS, WRITING_MAX_WORDS, type DictationContent, DICTATION_PLAYS, type TfngAnswer, type TfngContent, type TfngStatement, sentenceTiles, type MatchContent, type MatchPair, type PromptType, type SentenceContent, type SentenceItem, type ActivityContent, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type ListeningQuestion, type GapsContent, type ListenGapsContent, GAP_HINTS, parseGaps } from "./types";
 
 /*
  * Content rules per activity type (server: rich text is sanitised here). `cleanContent` turns what
@@ -226,6 +226,40 @@ export function cleanContent<T extends ActivityType>(type: T, raw: unknown): Act
       return cleanPairs(r) as ActivityContent[T];
     case "true_false_ng":
       return cleanTfng(r) as ActivityContent[T];
+    case "dictation": {
+      let j: Record<string, unknown> = r;
+      if (typeof r.json === "string") {
+        try {
+          j = JSON.parse(r.json) as Record<string, unknown>;
+        } catch {
+          j = {};
+        }
+      }
+      const seen = new Set<string>();
+      const items = (Array.isArray(j.items) ? j.items : []).slice(0, 20).map((raw, i) => {
+        const it = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+        let id = str(it.id, 40).replace(/[^\w-]/g, "") || `d${i + 1}`;
+        if (seen.has(id)) id = `d${i + 1}-${seen.size}`;
+        seen.add(id);
+        return { id, text: str(it.text, 300), translation: str(it.translation, 300), audioMediaId: typeof it.audioMediaId === "string" && Types.ObjectId.isValid(it.audioMediaId) ? it.audioMediaId : "" };
+      });
+      return { items, maxPlays: pick(DICTATION_PLAYS, j.maxPlays, 0) } satisfies DictationContent as ActivityContent[T];
+    }
+    case "writing_task": {
+      const minWords = pick(WRITING_MIN_WORDS, r.minWords, 60);
+      const maxWords = Math.max(pick(WRITING_MAX_WORDS, r.maxWords, 120), minWords + 20);
+      return {
+        prompt: normalizeRich(typeof r.prompt === "string" ? r.prompt : ""),
+        imageMediaId: typeof r.imageMediaId === "string" && Types.ObjectId.isValid(r.imageMediaId) ? r.imageMediaId : "",
+        checklist: (Array.isArray(r.checklist) ? r.checklist : str(r.checklist, 3000).split("\n"))
+          .map((x) => str(x, 200))
+          .filter(Boolean)
+          .slice(0, 8),
+        minWords,
+        maxWords,
+        modelAnswer: str(r.modelAnswer, 4000),
+      } satisfies WritingTaskContent as ActivityContent[T];
+    }
     case "repeat_after": {
       let j: Record<string, unknown> = r;
       if (typeof r.json === "string") {
@@ -306,6 +340,17 @@ export function contentProblem(type: ActivityType, content: unknown): string | n
       return pairsProblem(content as Partial<MatchContent>);
     case "true_false_ng":
       return tfngProblem(content as Partial<TfngContent>);
+    case "dictation": {
+      const items = (content as Partial<DictationContent>).items ?? [];
+      if (!items.length) return "Add at least one sentence.";
+      for (const [i, it] of items.entries()) {
+        if (!it.text) return `Sentence ${i + 1}: write it (what learners must type).`;
+        if (!it.audioMediaId) return `Sentence ${i + 1}: add its audio.`;
+      }
+      return null;
+    }
+    case "writing_task":
+      return plainText((content as Partial<WritingTaskContent>).prompt ?? "") ? null : "Write the prompt: what the learner must write.";
     case "repeat_after": {
       const phrases = (content as Partial<RepeatContent>).phrases ?? [];
       if (!phrases.length) return "Add at least one phrase.";

@@ -10,6 +10,9 @@ import { normalizeEnglish } from "@/lib/ai/text";
 /** A phrase counts as said right from this share of its words. */
 export const REPEAT_PASS = 70;
 
+/** Dictation: a typed sentence is right from this share of its words (spelling counts). */
+export const DICTATION_PASS = 80;
+
 /** Self-assessment answers, used where the browser has no speech recognition. */
 export const SELF_OK = "self:ok";
 export const SELF_REDO = "self:redo";

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AudioLines, Blocks, BookOpen, Ear, FileSearch, Speech, SpellCheck, Link2, Check, ChevronDown, Clock, EyeOff, Headphones, Lock, Mic, Sparkles, Target, TextCursorInput, Trophy } from "lucide-react";
+import { AudioLines, Blocks, BookOpen, Ear, FileSearch, Keyboard, PenLine, Speech, SpellCheck, Link2, Check, ChevronDown, Clock, EyeOff, Headphones, Lock, Mic, Sparkles, Target, TextCursorInput, Trophy } from "lucide-react";
 import type { ModuleOutline, Outline, StepOutline, StepState, UnitOutline } from "@/lib/learn/progress";
 import { examPath, stepPath } from "@/lib/learn/paths";
 import { formatDate } from "./ui";
@@ -20,6 +20,8 @@ const STEP_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
   true_false_ng: FileSearch,
   complete_words: SpellCheck,
   repeat_after: Speech,
+  writing_task: PenLine,
+  dictation: Keyboard,
   challenge: Mic,
 };
 

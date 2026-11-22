@@ -33,7 +33,8 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
             <Image src="/images/maelenglish-mark-light.webp" alt="" width={800} height={175} className="absolute inset-0 h-auto w-24 opacity-0 transition-opacity duration-300 group-data-[scrolled=true]/hdr:opacity-100 sm:w-32" />
           </Link>
           <nav aria-label="Navigation" className="hidden gap-1 md:flex">
-            {NAV.map((n) => (
+            {/* « Compte » is the username chip on the right (same link): not repeated here. */}
+            {NAV.filter((n) => n.href !== "/compte").map((n) => (
               <Link key={n.href} href={n.href} className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold whitespace-nowrap text-ink/80 transition-colors hover:bg-brand-soft hover:text-brand-deep group-data-[scrolled=true]/hdr:text-white/85 group-data-[scrolled=true]/hdr:hover:bg-white/10 group-data-[scrolled=true]/hdr:hover:text-white">
                 <n.icon className="size-4.5" aria-hidden /> {n.label}
               </Link>

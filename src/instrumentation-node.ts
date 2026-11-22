@@ -32,4 +32,7 @@ export function checkConfig() {
   if (!process.env.WHATSAPP_TOKEN || !process.env.WHATSAPP_PHONE_NUMBER_ID) {
     warn("WHATSAPP_* non configuré : les notifications d'inscription WhatsApp sont en simulation (email utilisé à la place).");
   }
+  if (!process.env.ANTHROPIC_API_KEY) {
+    warn("ANTHROPIC_API_KEY non configuré : les activités d'expression écrite ne peuvent pas être corrigées par Claude.");
+  }
 }

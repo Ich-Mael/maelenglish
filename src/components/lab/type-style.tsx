@@ -71,6 +71,18 @@ export const TYPE_LOOK: Record<ActivityType, { band: string; tile: string; examp
     example: "E.g. Accueillir un client",
     perks: ["Hear Mael, then repeat", "Words understood shown", "Self-check fallback"],
   },
+  writing_task: {
+    band: "bg-gradient-to-br from-white via-brand-soft to-brand-soft text-primary",
+    tile: "bg-brand-soft text-primary",
+    example: "E.g. Demander un jour de congé",
+    perks: ["Sent to the coach", "AI draft for the coach", "3 versions"],
+  },
+  dictation: {
+    band: "bg-gradient-to-br from-primary via-primary to-brand-dark text-white",
+    tile: "bg-gradient-to-br from-primary to-brand-dark text-white",
+    example: "E.g. Dictée : annonces à l'aéroport",
+    perks: ["Word-by-word check", "Slow replay", "First-letters hint"],
+  },
   speaking_challenge: {
     band: "bg-gradient-to-br from-brand-deep via-brand-deep to-brand-dark text-white",
     tile: "bg-gradient-to-br from-brand-deep to-brand-dark text-white ring-2 ring-coral",
@@ -80,14 +92,14 @@ export const TYPE_LOOK: Record<ActivityType, { band: string; tile: string; examp
 };
 
 /** Types drawn on a light band (blue on white) rather than a dark one. */
-export const isLightType = (t: ActivityType) => t === "fill_gaps" || t === "sentence_builder" || t === "match_pairs" || t === "complete_words";
+export const isLightType = (t: ActivityType) => t === "fill_gaps" || t === "sentence_builder" || t === "match_pairs" || t === "complete_words" || t === "writing_task";
 
 /** Exercises planned in the catalogue (shown as « coming next »). */
 export const COMING_NEXT = [
   { name: "Error hunt", skill: "language" as SkillFamily },
   { name: "Reorder paragraphs", skill: "reading" as SkillFamily },
   { name: "Minimal pairs", skill: "pronunciation" as SkillFamily },
-  { name: "Email builder", skill: "writing" as SkillFamily },
+  { name: "Tone switcher", skill: "writing" as SkillFamily },
 ];
 
 const WAVE = [40, 70, 55, 90, 60, 100, 75, 45, 85, 60, 95, 50, 70, 40, 80, 55, 65, 35];
@@ -249,6 +261,32 @@ export function TypeArt({ type, className }: { type: ActivityType; className?: s
                 </span>
               ))}
             </span>
+          </div>
+        </div>
+      )}
+      {type === "writing_task" && (
+        <div className="grid gap-1.5 rounded-lg border border-primary/20 bg-white p-2 text-[10px] text-brand-deep" lang="en">
+          <span className="font-bold">Dear Mr Traoré,</span>
+          <span>
+            I would like to <span className="rounded bg-coral-soft px-0.5 text-coral-dark line-through">asking</span> <span className="rounded bg-brand-soft px-0.5 font-bold text-primary">ask</span> for a day off on Friday…
+          </span>
+          <span className="w-fit rounded-full bg-primary px-1.5 font-bold text-white">82 / 100</span>
+        </div>
+      )}
+      {type === "dictation" && (
+        <div className="grid gap-2">
+          <div className="flex items-center gap-2">
+            <span className="flex size-7 items-center justify-center rounded-full bg-white text-primary">
+              <span className="ml-0.5 size-0 border-y-[5px] border-l-[8px] border-y-transparent border-l-current" />
+            </span>
+            <span className="rounded-full bg-white/20 px-1.5 text-[10px] font-bold text-white">0.75×</span>
+          </div>
+          <div className="flex flex-wrap gap-1 rounded-lg bg-white p-1.5 text-[10px] font-bold" lang="en">
+            {["The", "flight", "is", "delayed"].map((w, i) => (
+              <span key={w} className={cn("rounded px-1", i === 3 ? "bg-coral-soft text-coral-dark" : "bg-brand-soft text-primary")}>
+                {i === 3 ? "delayd" : w}
+              </span>
+            ))}
           </div>
         </div>
       )}

@@ -67,6 +67,11 @@ export default function PrivacyPage() {
               dernière connexion, pour protéger votre compte et vous montrer vos appareils connectés.
             </li>
             <li>
+              <strong>Expression écrite</strong> : les textes que vous écrivez dans les activités d&apos;expression écrite sont transmis à un
+              outil de correction par intelligence artificielle (Anthropic), qui prépare une correction pour votre coach ; c&apos;est votre
+              coach qui vérifie et vous envoie le retour. Ces textes ne sont pas utilisés pour entraîner les modèles de ce prestataire.
+            </li>
+            <li>
               <strong>Exercices de prononciation (« Répétez après Mael »)</strong> : nous n&apos;enregistrons pas votre voix sur nos serveurs.
               Pour vérifier ce que vous avez dit, l&apos;exercice utilise la reconnaissance vocale de votre navigateur : votre voix est alors
               envoyée au service de l&apos;éditeur du navigateur (par exemple Google pour Chrome, Apple pour Safari), qui la transcrit en
@@ -94,7 +99,7 @@ export default function PrivacyPage() {
             <li>l&apos;équipe MaelEnglish : administrateurs, et les coachs et formateurs des cours auxquels vous êtes inscrit(e) ;</li>
             <li>
               nos prestataires techniques, uniquement pour faire fonctionner le service : hébergement de l&apos;application et de la base de
-              données, stockage des fichiers audio et des photos (Cloudflare R2), envoi d&apos;emails (Brevo), messages WhatsApp (Meta) ;
+              données, stockage des fichiers audio et des photos (Cloudflare R2), correction des textes par IA (Anthropic), envoi d&apos;emails (Brevo), messages WhatsApp (Meta) ;
             </li>
             <li>les autres apprenants d&apos;un cours voient seulement votre prénom, l&apos;initiale de votre nom et vos XP de la semaine dans le classement.</li>
           </ul>

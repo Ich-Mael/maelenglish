@@ -1,6 +1,6 @@
 import { Select, TextArea } from "@/components/admin/ui";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
-import { MAX_SECONDS, PREP_SECONDS, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type GapsContent, type ListenGapsContent, type MatchContent, type SentenceContent, type TfngContent, type CompleteWordsContent, type RepeatContent } from "@/lib/lab/types";
+import { MAX_SECONDS, PREP_SECONDS, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type GapsContent, type ListenGapsContent, type MatchContent, type SentenceContent, type TfngContent, type CompleteWordsContent, type RepeatContent, type WritingTaskContent, type DictationContent, WRITING_MIN_WORDS, WRITING_MAX_WORDS } from "@/lib/lab/types";
 import { reviewMediaUrl } from "@/lib/media";
 import { ListeningEditor } from "./listening-editor";
 import { GapsEditor } from "./gaps-editor";
@@ -10,6 +10,8 @@ import { MatchEditor } from "./match-editor";
 import { TfngEditor } from "./tfng-editor";
 import { CompleteWordsEditor } from "./complete-words-editor";
 import { RepeatEditor } from "./repeat-editor";
+import { ImageInput } from "./image-input";
+import { DictationEditor } from "./dictation-editor";
 import { PromptField } from "./prompt-field";
 import { AudioInput } from "./audio-input";
 
@@ -48,6 +50,51 @@ export async function ActivityFields({ type, content }: { type: ActivityType; co
       const ids = [...new Set((c.statements ?? []).map((s) => s.audioMediaId ?? "").filter(Boolean))];
       const audioUrls = Object.fromEntries(await Promise.all(ids.map(async (id) => [id, await reviewMediaUrl(id).catch(() => null)] as const)));
       return <TfngEditor initial={c} imageUrl={imageUrl} audioUrls={audioUrls} />;
+    }
+    case "dictation": {
+      const c = content as Partial<DictationContent>;
+      const ids = [...new Set((c.items ?? []).map((i) => i.audioMediaId).filter(Boolean))];
+      const audioUrls = Object.fromEntries(await Promise.all(ids.map(async (id) => [id, await reviewMediaUrl(id).catch(() => null)] as const)));
+      return <DictationEditor initial={c} audioUrls={audioUrls} />;
+    }
+    case "writing_task": {
+      const c = content as Partial<WritingTaskContent>;
+      const imageUrl = c.imageMediaId ? await reviewMediaUrl(c.imageMediaId).catch(() => null) : null;
+      return (
+        <>
+          <RichTextEditor
+            label="Prompt (what the learner must write)"
+            name="c_prompt"
+            minHeight={180}
+            defaultValue={c.prompt ?? ""}
+            hint="In French, for learners. E.g. « Vous devez vous absenter vendredi. Écrivez un e-mail à votre chef pour demander un jour de congé : donnez la raison et proposez une solution pour votre travail. »"
+          />
+          <ImageInput name="c_imageMediaId" label="Picture (optional): something to describe or react to" initialId={c.imageMediaId ?? ""} initialUrl={imageUrl} />
+          <TextArea
+            label="Points to cover (optional checklist)"
+            name="c_checklist"
+            rows={4}
+            defaultValue={(c.checklist ?? []).join("\n")}
+            placeholder={"une formule de salutation\nla raison de l'absence\nune solution pour le travail\nune formule de politesse pour finir"}
+            hint="One per line, 8 max. Shown to the learner, and Claude checks each point."
+          />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Select label="Minimum length" name="c_minWords" defaultValue={String(c.minWords ?? 60)} options={WRITING_MIN_WORDS.map((n) => ({ value: String(n), label: `${n} words` }))} />
+            <Select label="Maximum length" name="c_maxWords" defaultValue={String(c.maxWords ?? 120)} options={WRITING_MAX_WORDS.map((n) => ({ value: String(n), label: `${n} words` }))} />
+          </div>
+          <TextArea
+            label="Model answer (optional)"
+            name="c_modelAnswer"
+            rows={6}
+            defaultValue={c.modelAnswer ?? ""}
+            placeholder={"Dear Mr Traoré,\n\nI am writing to ask for a day off on Friday…"}
+            hint="In English. Shown to the learner after their first correction."
+          />
+          <p className="rounded-xl bg-brand-soft px-3 py-2 text-xs text-brand-deep">
+            Learners send their text to their coach (3 versions per activity). Each version gets an AI correction draft (Claude Haiku 5.5: score, errors with their rule, checklist, corrected text) that only the coach sees: the coach edits it, adds a comment and sends it from Grading → Writing review. Learners see it as their coach&apos;s feedback.
+          </p>
+        </>
+      );
     }
     case "repeat_after": {
       const c = content as Partial<RepeatContent>;

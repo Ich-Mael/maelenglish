@@ -3,10 +3,11 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
-import { AlertTriangle, Clock } from "lucide-react";
+import { AlertTriangle, Clock, PenLine } from "lucide-react";
 import { actorOf, requireStaff, visibleCourseIds } from "@/lib/admin/context";
 import { can } from "@/lib/admin/permissions";
 import { gradingQueue } from "@/lib/admin/grading";
+import { pendingWritingCount } from "@/lib/admin/writing-review";
 import { GRADING_DUE_HOURS, coachOptions } from "@/lib/admin/coaching";
 import { User } from "@/models";
 import { EmptyState, PageHeader, Pill, fmtDate, inputCls } from "@/components/admin/ui";
@@ -39,7 +40,7 @@ async function Queue({ searchParams }: { searchParams: Promise<Record<string, st
   // Coaches see their courses plus the learners they coach (even in other courses).
   const courseIds = await visibleCourseIds(me);
   const myLearnerIds = courseIds ? (await User.find({ coachId: me.id }).select("_id").lean()).map((u) => u._id) : [];
-  const [items, coaches] = await Promise.all([gradingQueue({ courseIds, myLearnerIds, status, coachId: coachId || null, lateOnly: lateOnly && status === "pending" }), admin ? coachOptions() : Promise.resolve([])]);
+  const [items, coaches, writing] = await Promise.all([gradingQueue({ courseIds, myLearnerIds, status, coachId: coachId || null, lateOnly: lateOnly && status === "pending" }), admin ? coachOptions() : Promise.resolve([]), pendingWritingCount(courseIds, myLearnerIds)]);
 
   const href = (p: Record<string, string>) => {
     const q = new URLSearchParams({ statut: status, ...(coachParam ? { coach: coachParam } : {}), ...(lateOnly ? { late: "1" } : {}), ...p });
@@ -49,7 +50,16 @@ async function Queue({ searchParams }: { searchParams: Promise<Record<string, st
 
   return (
     <div className="max-w-4xl">
-      <PageHeader title="Grading" subtitle={`Speaking challenges to review. Target: within ${GRADING_DUE_HOURS} hours of being sent — older ones are flagged as late.`} />
+      <PageHeader
+        title="Grading"
+        subtitle={`Speaking challenges to review. Target: within ${GRADING_DUE_HOURS} hours of being sent — older ones are flagged as late.`}
+        actions={
+          <Link href="/admin/corrections/ecrits" className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-sm font-semibold text-brand-deep hover:bg-brand-soft">
+            <PenLine className="size-4 text-primary" aria-hidden /> Writing review
+            {writing > 0 && <span className="rounded-full bg-primary px-2 py-0.5 text-xs text-white">{writing}</span>}
+          </Link>
+        }
+      />
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <nav className="flex gap-1" aria-label="Status">
           {TABS.map((t) => (

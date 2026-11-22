@@ -1,5 +1,5 @@
-import { parseGaps, sentenceText, type ActivityType, type GapsContent, type ListeningContent, type MatchContent, type SentenceContent, type TfngContent, type CompleteWordsContent, type RepeatContent } from "./types";
-import { repeatPassed } from "./speech";
+import { parseGaps, sentenceText, type ActivityType, type GapsContent, type ListeningContent, type MatchContent, type SentenceContent, type TfngContent, type CompleteWordsContent, type RepeatContent, type DictationContent } from "./types";
+import { DICTATION_PASS, phraseAccuracy, repeatPassed } from "./speech";
 import { normalizeEnglish } from "@/lib/ai/text";
 import { matchAnswer } from "./match";
 
@@ -38,6 +38,11 @@ export function checkItem(type: ActivityType, content: unknown, itemId: string, 
       return (content as MatchContent).pairs.some((p) => p.id === itemId) && answer === itemId;
     case "true_false_ng":
       return (content as TfngContent).statements.some((s) => s.id === itemId && s.answer === answer);
+    case "dictation": {
+      // What the learner typed, word by word (case and punctuation ignored, spelling counts).
+      const it = (content as DictationContent).items.find((x) => x.id === itemId);
+      return !!it && typeof answer === "string" && phraseAccuracy(it.text, answer).percent >= DICTATION_PASS;
+    }
     case "repeat_after": {
       // Answer = the best transcript heard (or a self-assessment where recognition is missing).
       const ph = (content as RepeatContent).phrases.find((p) => p.id === itemId);
@@ -70,6 +75,8 @@ export function itemIds(type: ActivityType, content: unknown): string[] {
       return (content as TfngContent).statements.map((s) => s.id);
     case "repeat_after":
       return (content as RepeatContent).phrases.map((p) => p.id);
+    case "dictation":
+      return (content as DictationContent).items.map((i) => i.id);
     case "complete_words":
       return parseGaps({ text: (content as CompleteWordsContent).text, explanations: [] }).gaps.map((g) => g.id);
     default:

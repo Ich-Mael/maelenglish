@@ -20,7 +20,8 @@ import { appUrl, sendActivationEmail, sendEnrollmentEmail, sendPasswordResetEmai
 import { findProgram, programPhoto } from "@/lib/catalog";
 import { plainText } from "@/lib/rich-text";
 import { isWhatsAppConfigured, sendEnrollment } from "@/lib/whatsapp";
-import { ChallengeSubmission, Course, Enrollment, Module, Step, TeachingResource, Unit, User, type CourseDoc, type Role } from "@/models";
+import { ChallengeSubmission, Course, Enrollment, Module, Step, TeachingResource, Unit, User, WritingSubmission, type CourseDoc, type Role } from "@/models";
+import { reviewWriting, WritingError } from "@/lib/lab/writing";
 import type { CurrentUser } from "@/lib/auth/dal";
 
 type State = { error?: string; success?: string; data?: Record<string, string> } | undefined;
@@ -561,6 +562,30 @@ export async function gradeAction(_: State, form: FormData): Promise<State> {
     next = "/admin/corrections";
   } catch (e) {
     return fail(e);
+  }
+  redirect(next);
+}
+
+/** Coach review of a writing task version: the edited correction, a comment and a score, sent to the learner. */
+export async function reviewWritingAction(_: State, form: FormData): Promise<State> {
+  let next: string;
+  try {
+    const me = await staffOrThrow();
+    const id = str(form, "submissionId");
+    const sub = Types.ObjectId.isValid(id) ? await WritingSubmission.findById(id).select("courseId userId").lean() : null;
+    if (!sub) return { error: "Answer not found." };
+    const [course, learner] = await Promise.all([Course.findById(sub.courseId).select("instructors").lean(), User.findById(sub.userId).select("coachId").lean()]);
+    if (!course || !can.gradeSubmission(actorOf(me), course, learner?.coachId)) return { error: "You can't review this learner's work." };
+    let feedback: unknown = null;
+    try {
+      feedback = JSON.parse(str(form, "feedback") || "null");
+    } catch {
+      return { error: "The correction couldn't be read: reload the page." };
+    }
+    await reviewWriting(me.id, id, { feedback, comment: str(form, "comment"), askNewVersion: form.get("askNewVersion") === "on" });
+    next = "/admin/corrections/ecrits";
+  } catch (e) {
+    return e instanceof WritingError ? { error: e.message } : fail(e);
   }
   redirect(next);
 }

@@ -7,7 +7,10 @@ import { actorOf, allowed, staffOrThrow } from "@/lib/admin/context";
 import { can } from "@/lib/admin/permissions";
 import { AdminError, errorMessage } from "@/lib/admin/errors";
 import * as lab from "@/lib/lab/service";
-import { Course, Step, Unit, type CourseDoc } from "@/models";
+import { Activity, Course, Step, Unit, type ActivityDoc, type CourseDoc } from "@/models";
+import { previewCorrection, WritingError } from "@/lib/lab/writing";
+import type { WritingTaskContent } from "@/lib/lab/types";
+import type { WritingCorrection } from "@/lib/ai";
 import type { CurrentUser } from "@/lib/auth/dal";
 
 type State = { error?: string; success?: string } | undefined;
@@ -118,4 +121,17 @@ export async function removeStepAction(form: FormData) {
   await editableUnit(me, String(s.unitId));
   await lab.deleteStep(str(form, "stepId"));
   refresh();
+}
+
+/** Lab preview of a writing task: the AI draft the coach would get for this text (cost recorded on the staff member), nothing saved. */
+export async function previewWritingAction(activityId: string, text: string): Promise<{ ok: true; correction: WritingCorrection } | { ok: false; error: string }> {
+  try {
+    const me = await labUser();
+    const a = Types.ObjectId.isValid(activityId) ? await Activity.findById(activityId).lean<ActivityDoc>() : null;
+    if (!a || a.type !== "writing_task") throw new AdminError("Activity not found.");
+    const correction = await previewCorrection(me.id, { courseId: new Types.ObjectId(), stepId: new Types.ObjectId(), activityId: a._id, level: a.level ?? "", content: a.content as WritingTaskContent }, text);
+    return { ok: true, correction };
+  } catch (e) {
+    return { ok: false, error: e instanceof WritingError ? e.message : errorMessage(e) };
+  }
 }

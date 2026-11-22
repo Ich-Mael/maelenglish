@@ -135,7 +135,7 @@ export const BADGE_GROUPS = [
   { id: "ecoute", name: "Écoute", description: "Comprendre l'anglais du travail à vitesse réelle.", icon: "Headphones" },
   { id: "langue", name: "Grammaire & vocabulaire", description: "Le mot juste et des phrases bien construites.", icon: "Puzzle" },
   { id: "lecture", name: "Lecture", description: "E-mails, rapports, consignes : lire vite et bien.", icon: "BookOpen" },
-  { id: "ecrit", name: "Écrit professionnel", description: "Rédiger des e-mails clairs et polis.", icon: "Mail" },
+  { id: "ecrit", name: "Écrit professionnel", description: "Écrire des textes professionnels clairs et polis.", icon: "PenLine" },
   { id: "precision", name: "Précision", description: "Viser le sans-faute et revenir sur ses erreurs.", icon: "Target" },
   { id: "niveaux", name: "Niveaux & XP", description: "Chaque activité vous rapporte des points.", icon: "Sparkles" },
 ] as const satisfies readonly { id: string; name: string; description: string; icon: BadgeIcon }[];
@@ -180,8 +180,8 @@ export const BADGES: readonly Badge[] = [
   b("lecture", "read-1", "Lecteur attentif", "Terminer votre première activité de lecture", "BookOpen", "reading", 1, 1),
   b("lecture", "read-10", "Œil de lynx", "Terminer 10 activités de lecture", "Eye", "reading", 10, 2),
 
-  b("ecrit", "write-1", "Premier e-mail pro", "Rédiger votre premier e-mail dans le Labo", "Mail", "writing", 1, 1),
-  b("ecrit", "write-10", "Plume d'affaires", "Rédiger 10 e-mails professionnels", "Feather", "writing", 10, 2),
+  b("ecrit", "write-1", "Première plume", "Terminer votre première activité d'expression écrite", "PenLine", "writing", 1, 1),
+  b("ecrit", "write-10", "Plume d'affaires", "Terminer 10 activités d'expression écrite", "Feather", "writing", 10, 2),
 
   b("precision", "perfect-1", "Sans faute", "Réussir une activité à 100 %", "Target", "perfectPractices", 1, 1),
   b("precision", "perfect-10", "Précision chirurgicale", "10 activités à 100 %", "Gem", "perfectPractices", 10, 2),

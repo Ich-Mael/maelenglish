@@ -8,7 +8,7 @@ import * as content from "@/lib/admin/content";
 import * as lab from "@/lib/lab/service";
 import { can } from "@/lib/admin/permissions";
 import { cleanContent, contentProblem } from "@/lib/lab/content";
-import { parseTime, formatTime, parseGaps, lineOfGap, autoBlank, docSentences, matchScreens, sentenceText, sentenceTiles } from "@/lib/lab/types";
+import { parseTime, formatTime, parseGaps, lineOfGap, autoBlank, docSentences, firstLetters, matchScreens, sentenceText, sentenceTiles } from "@/lib/lab/types";
 import { gradeActivity } from "@/lib/lab/grade";
 import { partnerColumn } from "@/components/lab/shell/shuffle";
 import { SELF_OK, SELF_REDO, phraseAccuracy } from "@/lib/lab/speech";
@@ -284,6 +284,15 @@ describe("Labo", () => {
     expect(contentProblem("repeat_after", { phrases: [rp.phrases[0]] })).toBeNull();
     expect(gradeActivity("repeat_after", rp, { a: "good morning how can help you", b: SELF_OK }).score).toBe(100);
     expect(gradeActivity("repeat_after", rp, { a: "good night", b: SELF_REDO }).score).toBe(0);
+
+    // L2 dictation: word by word, spelling counts (80 % to pass), first-letters hint, audio required.
+    const dict = cleanContent("dictation", { json: JSON.stringify({ maxPlays: 3, items: [{ id: "a", text: "Flight AF 512 to Paris is delayed.", audioMediaId: voice }, { id: "b", text: "Please go to gate 14.", audioMediaId: "" }] }) });
+    expect([dict.maxPlays, contentProblem("dictation", dict)]).toEqual([3, "Sentence 2: add its audio."]);
+    expect(contentProblem("dictation", { ...dict, items: [dict.items[0]] })).toBeNull();
+    expect(firstLetters("Please go to gate 14.")).toBe("P_____ g_ t_ g___ 14.");
+    const gd = gradeActivity("dictation", dict, { a: "flight af 512 to paris is delayd", b: "please go gate" });
+    expect(gd.items.map((i) => i.correct)).toEqual([true, false]);
+    expect(phraseAccuracy("Please go to gate 14.", "please go to the gate").percent).toBe(80);
 
     // Speaking challenge prompts: picture / video / audio, questions one per line; only what the type uses is kept.
     const id = String(new Types.ObjectId());

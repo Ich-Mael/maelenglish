@@ -1,5 +1,6 @@
 import { AiNotConfiguredError, type FeedbackService, type PronunciationService, type SpeechService, type TtsService } from "./types";
 import { FakeFeedbackService, FakePronunciationService, FakeSpeechService, FakeTtsService } from "./fake";
+import { ClaudeFeedbackService } from "./claude";
 
 /*
  * Provider registry. Real implementations are plugged in here by the feature that first needs
@@ -26,7 +27,8 @@ export function aiServices(): AiServices {
     speech: override?.speech ?? fallback("reconnaissance vocale", () => new FakeSpeechService()),
     pronunciation: override?.pronunciation ?? fallback("évaluation de la prononciation", () => new FakePronunciationService()),
     tts: override?.tts ?? fallback("synthèse vocale", () => new FakeTtsService()),
-    feedback: override?.feedback ?? fallback("correction IA", () => new FakeFeedbackService()),
+    // Claude when ANTHROPIC_API_KEY is set (also in development), else the fake (never in production).
+    feedback: override?.feedback ?? (process.env.ANTHROPIC_API_KEY ? new ClaudeFeedbackService() : fallback("correction IA", () => new FakeFeedbackService())),
   };
 }
 

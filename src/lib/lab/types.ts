@@ -4,7 +4,7 @@
  * rules in `content.ts`, its editor in components/lab/editors and its player in components/lab/players.
  */
 
-export const ACTIVITY_TYPES = ["listen_choose", "fill_gaps", "listen_fill_gaps", "sentence_builder", "match_pairs", "listen_match", "true_false_ng", "complete_words", "repeat_after", "speaking_challenge"] as const;
+export const ACTIVITY_TYPES = ["listen_choose", "fill_gaps", "listen_fill_gaps", "sentence_builder", "match_pairs", "listen_match", "true_false_ng", "complete_words", "repeat_after", "writing_task", "dictation", "speaking_challenge"] as const;
 export type ActivityType = (typeof ACTIVITY_TYPES)[number];
 
 /** `challenge`: closes a unit (its last step, kind challenge); `practice`: an activity step practising a lesson. */
@@ -72,6 +72,18 @@ export const ACTIVITY_INFO: Record<ActivityType, { label: string; description: s
     description: "Short phrases to hear and repeat: the browser's speech recognition shows which words were understood (self-assessment where it isn't available).",
     role: "practice",
     skill: "pronunciation",
+  },
+  "writing_task": {
+    label: "Writing task",
+    description: "A prompt, the learner writes their answer (an email, a message…) and sends it to their coach, who corrects it starting from an AI draft.",
+    role: "practice",
+    skill: "writing",
+  },
+  "dictation": {
+    label: "Dictation",
+    description: "Sentences to hear and type: each word is checked (right, wrong, missing). Slow replay and a first-letters hint.",
+    role: "practice",
+    skill: "listening",
   },
   "speaking_challenge": {
     label: "Speaking challenge",
@@ -291,7 +303,27 @@ export function autoBlank(text: string): string {
 export type RepeatPhrase = { id: string; text: string; translation: string; audioMediaId: string };
 export type RepeatContent = { phrases: RepeatPhrase[] };
 
-export type ActivityContent = { "listen_choose": ListeningContent; "fill_gaps": GapsContent; "listen_fill_gaps": ListenGapsContent; "sentence_builder": SentenceContent; "match_pairs": MatchContent; "listen_match": MatchContent; "true_false_ng": TfngContent; "complete_words": CompleteWordsContent; "repeat_after": RepeatContent; "speaking_challenge": SpeakingChallengeContent };
+/**
+ * Writing task: `prompt` (rich, French) and optional picture, checklist of points to cover, word
+ * range, optional model answer (English, shown with the coach's feedback). Each version sent gets an
+ * AI draft for the coach, who edits and sends it (src/lib/lab/writing.ts, Grading → Writing review).
+ */
+export const WRITING_MIN_WORDS = [20, 40, 60, 80, 100, 150] as const;
+export const WRITING_MAX_WORDS = [60, 80, 100, 120, 150, 200, 300] as const;
+export type WritingTaskContent = { prompt: string; imageMediaId: string; checklist: string[]; minWords: number; maxWords: number; modelAnswer: string };
+
+/**
+ * L2 — Dictation: sentences (English), each with its audio (required) and an optional French
+ * translation shown after checking. `maxPlays` per sentence (0 = unlimited). Checked word by word
+ * (`phraseAccuracy`, src/lib/lab/speech.ts): a sentence is right from DICTATION_PASS % of its words.
+ */
+export const DICTATION_PLAYS = [0, 3, 5] as const;
+export type DictationItem = { id: string; text: string; translation: string; audioMediaId: string };
+export type DictationContent = { items: DictationItem[]; maxPlays: number };
+/** « Good morning, how can I help? » → « G___ m______, h__ c__ I h___? » (first letter, one dash per letter left). */
+export const firstLetters = (text: string) => text.replace(/[A-Za-z]+/g, (w) => w[0] + (w.length > 1 ? "_".repeat(w.length - 1) : ""));
+
+export type ActivityContent = { "listen_choose": ListeningContent; "fill_gaps": GapsContent; "listen_fill_gaps": ListenGapsContent; "sentence_builder": SentenceContent; "match_pairs": MatchContent; "listen_match": MatchContent; "true_false_ng": TfngContent; "complete_words": CompleteWordsContent; "repeat_after": RepeatContent; "writing_task": WritingTaskContent; "dictation": DictationContent; "speaking_challenge": SpeakingChallengeContent };
 
 export const MAX_PLAYS = [0, 2, 3] as const;
 

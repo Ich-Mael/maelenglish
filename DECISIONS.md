@@ -47,5 +47,5 @@ All providers sit behind internal interfaces in `src/lib/ai/` (`SpeechService`, 
 
 ## Packages (exact versions, published at least 2 weeks before installation)
 - `@aws-sdk/client-s3` 3.1163.0, `@aws-sdk/s3-request-presigner` 3.1163.0 (2026-11-05)
-- `@anthropic-ai/sdk` 1.6.0 (2026-11-05), installed in the first sub-phase that calls Claude
+- `@anthropic-ai/sdk` ^1.12.0, installed 2026-11-22 with the Lab « writing task » (first feature calling Claude: correction by **Claude Haiku 5.5**, owner choice — fast, cheapest; structured output with Zod, `src/lib/ai/claude.ts`)
 - `zod` 4.6.7, already installed

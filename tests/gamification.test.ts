@@ -77,7 +77,7 @@ describe("award", () => {
     const all = (await badgesFor(u._id)).flatMap((g) => g.badges);
     const get = (id: string) => all.find((b) => b.id === id)!;
     expect([!!get("listen-1").earnedAt, !!get("validated-1").earnedAt, get("listen-10").value, !!get("lang-1").earnedAt]).toEqual([true, true, 1, false]);
-    expect([get("listen-1").available, get("read-1").available, get("write-1").available, get("pron-1").available]).toEqual([true, true, false, true]);
+    expect([get("listen-1").available, get("read-1").available, get("write-1").available, get("pron-1").available]).toEqual([true, true, true, true]);
     expect(await UserBadge.countDocuments({ userId: u._id })).toBe(2);
     // Every badge belongs to a group, ids are unique.
     expect(new Set(BADGES.map((b) => b.id)).size).toBe(BADGES.length);

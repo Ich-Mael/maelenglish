@@ -14,3 +14,4 @@ export * from "./EnrollmentRequest";
 export * from "./Media";
 export * from "./AiUsage";
 export * from "./Notification";
+export * from "./WritingSubmission";

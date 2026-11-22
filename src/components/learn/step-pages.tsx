@@ -7,8 +7,8 @@ import { requireUser } from "@/lib/auth/dal";
 import { courseAccess, courseTree } from "@/lib/learn/queries";
 import { coursePath, examPath, stepPath } from "@/lib/learn/paths";
 import { stepAfter, stepBefore } from "@/lib/learn/sequence";
-import { ChallengeSubmission, User, type ChallengeSubmissionDoc } from "@/models";
-import type { GapsContent, ListenGapsContent, ListeningContent, MatchContent, SentenceContent, SpeakingChallengeContent, TfngContent, CompleteWordsContent, RepeatContent } from "@/lib/lab/types";
+import { ChallengeSubmission, User, WritingSubmission, type ChallengeSubmissionDoc, type WritingSubmissionDoc } from "@/models";
+import type { GapsContent, ListenGapsContent, ListeningContent, MatchContent, SentenceContent, SpeakingChallengeContent, TfngContent, CompleteWordsContent, RepeatContent, WritingTaskContent, DictationContent } from "@/lib/lab/types";
 import { cleanLessonContent } from "@/lib/course/lesson-content";
 import { feedbackAudioUrl, mediaUrlFor } from "@/lib/media";
 import { AccessProblem, formatDate } from "./ui";
@@ -30,6 +30,10 @@ import { MatchPlayer } from "@/components/lab/players/match-player";
 import { TfngPlayer } from "@/components/lab/players/tfng-player";
 import { CompleteWordsPlayer } from "@/components/lab/players/complete-words-player";
 import { RepeatPlayer } from "@/components/lab/players/repeat-player";
+import { DictationPlayer } from "@/components/lab/players/dictation-player";
+import { WritingPlayer, type WritingInitial } from "@/components/lab/players/writing-player";
+import { writingSendsAllowed, writingSendsLeft } from "@/lib/lab/writing";
+import type { WritingCorrection } from "@/lib/ai/types";
 
 function Locked({ courseId, text }: { courseId: string; text: string }) {
   return (
@@ -157,6 +161,81 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
             maelTip={activity.maelTip ?? ""}
             content={activity.content as GapsContent}
             listen={lc ? { audioUrl: clip ?? null, maxPlays: lc.maxPlays, context: lc.context ? <RichText>{lc.context}</RichText> : null } : undefined}
+            courseHref={course}
+            nextHref={nextHref}
+            readOnly={access.readOnly}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (so.kind === "activity" && activity.type === "dictation") {
+    const dc = activity.content as DictationContent;
+    const dcAudio = await mediaUrls(me.id, [...new Set(dc.items.map((i) => i.audioMediaId).filter(Boolean))]);
+    return (
+      <div className="mx-auto grid max-w-2xl gap-4">
+        {header}
+        <div>
+          <DictationPlayer
+            courseId={courseId}
+            stepId={stepId}
+            passScore={so.passScore}
+            lessonHref={so.lessonId ? stepPath(courseId, so.lessonId) : null}
+            title={activity.title}
+            level={activity.level ?? ""}
+            skills={activity.skills ?? []}
+            instructions={activity.instructions ?? ""}
+            maelTip={activity.maelTip ?? ""}
+            content={dc}
+            audioUrls={dcAudio}
+            courseHref={course}
+            nextHref={nextHref}
+            readOnly={access.readOnly}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (so.kind === "activity" && activity.type === "writing_task") {
+    const wc = activity.content as WritingTaskContent;
+    const [wImg, ws] = await Promise.all([
+      wc.imageMediaId ? mediaUrls(me.id, [wc.imageMediaId]).then((m) => m[wc.imageMediaId] ?? null) : null,
+      access.preview ? null : WritingSubmission.findOne({ userId: me.id, stepId }).lean<WritingSubmissionDoc>(),
+    ]);
+    // Who answers: the reviewer once reviewed, else the learner's main coach (for « … va lire votre texte »).
+    const coachUser = ws?.reviewedBy
+      ? await User.findById(ws.reviewedBy).select("name coachName avatarUrl").lean()
+      : await User.findById(me.id).select("coachId").lean().then((u) => (u?.coachId ? User.findById(u.coachId).select("name coachName avatarUrl").lean() : null));
+    const initial: WritingInitial | null =
+      ws && ws.submittedAt
+        ? {
+            text: ws.text,
+            status: ws.coachStatus as "pending" | "reviewed",
+            sentAt: ws.submittedAt.toISOString(),
+            sendsLeft: writingSendsLeft(ws),
+            sendsAllowed: writingSendsAllowed(ws),
+            feedback: ws.coachStatus === "reviewed" ? ((ws.feedback as WritingCorrection | null) ?? null) : null,
+            comment: ws.coachStatus === "reviewed" && ws.coachComment ? <RichText legacy="text">{ws.coachComment}</RichText> : null,
+            coach: coachUser ? { name: coachLabel(coachUser), avatarUrl: coachUser.avatarUrl ?? null } : null,
+            redoAsked: !!ws.redoAsked,
+          }
+        : null;
+    return (
+      <div className="mx-auto grid max-w-3xl gap-4">
+        {header}
+        <div>
+          <WritingPlayer
+            courseId={courseId}
+            stepId={stepId}
+            title={activity.title}
+            level={activity.level ?? ""}
+            skills={activity.skills ?? []}
+            instructions={activity.instructions ?? ""}
+            maelTip={activity.maelTip ?? ""}
+            prompt={<RichText>{wc.prompt}</RichText>}
+            imageUrl={wImg}
+            content={wc}
+            initial={initial}
             courseHref={course}
             nextHref={nextHref}
             readOnly={access.readOnly}

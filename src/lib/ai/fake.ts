@@ -1,4 +1,4 @@
-import type { AudioInput, DrillGrade, DrillGradeInput, FeedbackService, PronunciationResult, PronunciationService, SpeechService, SynthesizedAudio, Transcript, TtsService } from "./types";
+import type { AudioInput, DrillGrade, DrillGradeInput, FeedbackService, LlmUsage, WritingCorrection, WritingCorrectionInput, PronunciationResult, PronunciationService, SpeechService, SynthesizedAudio, Transcript, TtsService } from "./types";
 import { normalizeEnglish, words } from "./text";
 
 /*
@@ -73,5 +73,30 @@ export class FakeFeedbackService implements FeedbackService {
     return close
       ? { verdict: "almost", explanation: "Presque : vérifiez la structure demandée.", modelAnswer: model }
       : { verdict: "incorrect", explanation: "Ce n’est pas la structure demandée.", modelAnswer: model };
+  }
+
+  /** Deterministic: length in range + checklist words found; a lowercase « i » is the one « error ». */
+  async correctWriting(input: WritingCorrectionInput): Promise<{ correction: WritingCorrection; usage: LlmUsage }> {
+    const n = words(input.answer).length;
+    const said = new Set(words(input.answer));
+    const checklist = input.checklist.map((item) => {
+      const met = words(item).some((w) => w.length > 3 && said.has(w));
+      return { item, met, comment: met ? "Point traité." : "Point absent de votre texte." };
+    });
+    const inRange = n >= input.minWords && (!input.maxWords || n <= input.maxWords);
+    const errors = /(^|\s)i(\s|')/.test(input.answer) ? [{ quote: "i", correction: "I", explanation: "« I » (je) s'écrit toujours en majuscule." }] : [];
+    const met = checklist.filter((c) => c.met).length;
+    const score = Math.max(0, Math.min(100, (inRange ? 50 : 25) + (checklist.length ? Math.round((met / checklist.length) * 40) : 40) + (errors.length ? 0 : 10)));
+    return {
+      correction: {
+        score,
+        summary: inRange ? "Bon travail : votre texte répond à la consigne." : `Votre texte fait ${n} mots : visez entre ${input.minWords} et ${input.maxWords}.`,
+        strengths: n ? ["Votre message est clair."] : [],
+        errors,
+        checklist,
+        corrected: input.answer.replace(/(^|\s)i(?=\s|')/g, "$1I"),
+      },
+      usage: { inputTokens: 0, outputTokens: 0, costMicros: 0, provider: "fake" },
+    };
   }
 }
