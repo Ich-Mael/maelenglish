@@ -42,7 +42,7 @@ export function GradeForm({ submissionId, maxScore, isCheckpoint, initial }: { s
         label={`Written comment${decision === "returned" ? " (a comment or a voice note is required)" : ""}`}
         name="feedback"
         defaultValue={initial.feedback}
-        minHeight={180}
+        minHeight={380}
         placeholder="Strengths, what to redo, an example, a tip for next time… (the learner reads it in French)"
       />
       <p className="text-xs text-muted-foreground">Validating gives the learner 20 XP (once).</p>

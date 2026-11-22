@@ -2,16 +2,17 @@
 
 import { useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Check, TextCursorInput, X } from "lucide-react";
+import { AudioLines, Check, Headphones, TextCursorInput, X } from "lucide-react";
 import { submitLabAttempt } from "@/app/(app)/learn-actions";
 import { pushReward } from "@/components/gamify/reward-store";
 import { playSound } from "@/components/gamify/sound";
 import { checkItem, gradeActivity } from "@/lib/lab/grade";
 import { normalizeEnglish } from "@/lib/ai/text";
 import { starsFor } from "@/lib/lab/meta";
-import { parseGaps, type GapsContent, type GapSegment } from "@/lib/lab/types";
+import { formatTime, lineOfGap, parseGaps, type GapsContent, type GapSegment } from "@/lib/lab/types";
 import { CheckBar, ExerciseHeader, ResultsScreen, type ExerciseMeta } from "../shell/parts";
 import { GapText, type GapState } from "../ui/gap-text";
+import { AudioPlayer, type AudioPlayerHandle } from "../ui/audio-player";
 import { cn } from "cn";
 
 /*
@@ -20,7 +21,12 @@ import { cn } from "cn";
  * ones); « Réessayer » empties only the wrong blanks to practise — the score counts the first
  * check. Optional word bank: tap a word to put it in the selected (or first empty) blank.
  * Checked here; the server recomputes the score (`submitLabAttempt`). `preview`: nothing sent.
+ * `listen` (L3 listen and fill the gaps): the text is the transcript of an audio clip — the
+ * situation and the player pinned on top (play limit until the first check), « Réécouter » on each
+ * wrong blank whose line has a time (« @m:ss »), the whole transcript on the results screen.
  */
+
+export type ListenMode = { audioUrl: string | null; maxPlays: number; context?: React.ReactNode };
 
 type Result = { score: number; stars: number; bestScore?: number; xp?: number; items: { id: string; correct: boolean }[] };
 
@@ -47,6 +53,7 @@ export function GapsPlayer({
   nextHref,
   readOnly,
   preview,
+  listen,
 }: {
   courseId?: string;
   stepId?: string;
@@ -62,9 +69,15 @@ export function GapsPlayer({
   nextHref: string;
   readOnly?: boolean;
   preview?: boolean;
+  listen?: ListenMode;
 }) {
   const router = useRouter();
-  const { lines, gaps } = useMemo(() => parseGaps(content), [content]);
+  const timed = !!listen;
+  const { lines, gaps, times } = useMemo(() => parseGaps(content, { timed }), [content, timed]);
+  const player = useRef<AudioPlayerHandle>(null);
+  const [plays, setPlays] = useState(0);
+  const timeOf = (gapId: string) => times[lineOfGap(lines, gapId)] ?? null;
+  const replay = (t: number) => player.current?.playFrom(t);
   const [values, setValues] = useState<Record<string, string[]>>({});
   const [states, setStates] = useState<Record<string, GapState>>({});
   const [firstTry, setFirstTry] = useState<Record<string, string> | null>(null);
@@ -76,7 +89,7 @@ export function GapsPlayer({
   const [pending, start] = useTransition();
   const startedAt = useRef<number | null>(null);
 
-  const meta: ExerciseMeta = { title, typeLabel: "Texte à trous", icon: TextCursorInput, level, skills, instructions };
+  const meta: ExerciseMeta = listen ? { title, typeLabel: "Écoute et texte à trous", icon: AudioLines, level, skills, instructions } : { title, typeLabel: "Texte à trous", icon: TextCursorInput, level, skills, instructions };
   const open = gaps.filter((g) => states[g.id] !== "right");
   const filled = gaps.filter((g) => joined(values[g.id])).length;
   const allRight = gaps.length > 0 && gaps.every((g) => states[g.id] === "right");
@@ -107,7 +120,7 @@ export function GapsPlayer({
   const onCheck = () => {
     const answers = Object.fromEntries(gaps.map((g) => [g.id, joined(values[g.id])]));
     const next: Record<string, GapState> = {};
-    for (const g of gaps) next[g.id] = checkItem("fill_gaps", content, g.id, answers[g.id]) ? "right" : "wrong";
+    for (const g of gaps) next[g.id] = checkItem(listen ? "listen_fill_gaps" : "fill_gaps", content, g.id, answers[g.id]) ? "right" : "wrong";
     setStates(next);
     if (!firstTry) setFirstTry(answers);
     playSound(gaps.every((g) => next[g.id] === "right") ? "correct" : "wrong");
@@ -125,15 +138,16 @@ export function GapsPlayer({
     const timeSpentS = startedAt.current ? Math.round((Date.now() - startedAt.current) / 1000) : 0;
     setTimeS(timeSpentS);
     if (preview || !courseId || !stepId) {
-      const g = gradeActivity("fill_gaps", content, answers);
+      const g = gradeActivity(listen ? "listen_fill_gaps" : "fill_gaps", content, answers);
       setResult({ score: g.score, stars: starsFor(g.score), items: g.items });
       setPhase("done");
       return;
     }
     setError("");
     start(async () => {
-      const r = await submitLabAttempt(courseId, stepId, { answers, timeSpentS });
+      const r = await submitLabAttempt(courseId, stepId, { answers, timeSpentS, plays });
       if (!r.ok) return setError(r.error);
+      player.current?.pause();
       pushReward(r.result.reward);
       setResult({ ...r.result, xp: r.result.reward?.xpGained });
       setPhase("done");
@@ -156,6 +170,7 @@ export function GapsPlayer({
     return (
       <div className="mx-auto grid max-w-2xl gap-5">
         <ExerciseHeader meta={meta} courseHref={courseHref} index={gaps.length} total={gaps.length} done />
+        {listen && <AudioPlayer ref={player} src={listen.audioUrl} />}
         <ResultsScreen
           score={result.score}
           stars={result.stars}
@@ -170,7 +185,35 @@ export function GapsPlayer({
           lessonHref={lessonHref}
           onRetry={restart}
           onContinue={() => router.push(nextHref)}
-        />
+        >
+          {listen && (
+            <details className="rounded-3xl border-2 border-border bg-card p-5" open={result.score < 100}>
+              <summary className="cursor-pointer font-heading font-extrabold text-brand-deep">Transcription complète</summary>
+              <div lang="en" className="mt-3 grid gap-1.5 leading-relaxed text-ink">
+                {lines.map((l, i) => (
+                  <p key={i} className="flex gap-2">
+                    {times[i] != null && listen.audioUrl ? (
+                      <button type="button" onClick={() => replay(times[i]!)} className="h-fit shrink-0 rounded-md bg-brand-soft px-1.5 font-mono text-xs font-semibold text-primary" aria-label={`Écouter à partir de ${formatTime(times[i]!)}`}>
+                        {formatTime(times[i]!)}
+                      </button>
+                    ) : null}
+                    <span>
+                      {l.map((seg, k) =>
+                        seg.kind === "text" ? (
+                          <span key={k}>{seg.text}</span>
+                        ) : (
+                          <strong key={k} className="rounded bg-success/12 px-1 text-success">
+                            {seg.gap.answers[0]}
+                          </strong>
+                        ),
+                      )}
+                    </span>
+                  </p>
+                ))}
+              </div>
+            </details>
+          )}
+        </ResultsScreen>
       </div>
     );
   }
@@ -181,10 +224,26 @@ export function GapsPlayer({
   return (
     <div className="mx-auto grid max-w-2xl gap-4">
       <ExerciseHeader meta={meta} courseHref={courseHref} index={filled} total={gaps.length} />
+      {listen && (
+        <>
+          {!firstTry && listen.context && <div className="rounded-3xl border-2 border-border bg-card p-4 text-sm sm:p-5">{listen.context}</div>}
+          <AudioPlayer
+            ref={player}
+            src={listen.audioUrl}
+            maxPlays={listen.maxPlays}
+            limited={!firstTry}
+            onPlaysChange={(n) => {
+              startedAt.current ??= Date.now();
+              setPlays(n);
+            }}
+          />
+        </>
+      )}
 
       <section className="grid gap-4 rounded-3xl border-2 border-border bg-card p-4 sm:p-6">
         <p className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
-          {gaps.length} trou{gaps.length > 1 ? "s" : ""} à compléter · un tiret par lettre
+          {listen ? "Écoutez et complétez · " : ""}
+          {gaps.length} trou{gaps.length > 1 ? "s" : ""} à compléter
         </p>
         <GapText lines={lines} hint={content.hint} values={values} states={phase === "feedback" ? states : Object.fromEntries(Object.entries(states).filter(([, s]) => s === "right"))} disabled={readOnly || phase === "feedback"} onChange={change} onFocusGap={setFocused} />
 
@@ -226,6 +285,11 @@ export function GapsPlayer({
                     <s className="text-coral-dark">{joined(values[g.id]) || "—"}</s> → <strong className="text-success">{g.answers[0]}</strong>
                   </span>
                   {g.explanation && <span className="mt-0.5 block">{g.explanation}</span>}
+                  {listen?.audioUrl && timeOf(g.id) !== null && (
+                    <button type="button" onClick={() => replay(timeOf(g.id)!)} className="mt-1.5 inline-flex w-fit items-center gap-1.5 rounded-full bg-primary px-3 py-1 text-xs font-bold text-white">
+                      <Headphones className="size-3.5" aria-hidden /> Réécouter ce passage ({formatTime(timeOf(g.id)!)})
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>

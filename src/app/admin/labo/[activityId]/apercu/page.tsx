@@ -7,7 +7,7 @@ import { actorOf, requireStaff } from "@/lib/admin/context";
 import { can } from "@/lib/admin/permissions";
 import { reviewMediaUrl } from "@/lib/media";
 import { contentProblem } from "@/lib/lab/content";
-import { ACTIVITY_INFO, type ActivityType, type ListeningContent, type GapsContent, isActivityType } from "@/lib/lab/types";
+import { ACTIVITY_INFO, type ActivityType, type ListeningContent, type GapsContent, type ListenGapsContent, isActivityType } from "@/lib/lab/types";
 import { Activity, type ActivityDoc } from "@/models";
 import { ListeningPlayer } from "@/components/lab/players/listening-player";
 import { GapsPlayer } from "@/components/lab/players/gaps-player";
@@ -50,6 +50,25 @@ async function Preview({ params }: { params: Promise<{ activityId: string }> }) 
           context={c.context ? <RichText>{c.context}</RichText> : null}
           audioUrl={audioUrl}
           content={c}
+          courseHref={back}
+          nextHref={back}
+        />
+      </div>
+    );
+  } else if (type === "listen_fill_gaps") {
+    const c = a.content as ListenGapsContent;
+    const audioUrl = await reviewMediaUrl(c.audioMediaId).catch(() => null);
+    body = (
+      <div lang="fr" className="[--checkbar-bottom:0px]">
+        <GapsPlayer
+          preview
+          title={a.title}
+          level={a.level ?? ""}
+          skills={a.skills ?? []}
+          instructions={a.instructions ?? ""}
+          maelTip={a.maelTip ?? ""}
+          content={c}
+          listen={{ audioUrl, maxPlays: c.maxPlays, context: c.context ? <RichText>{c.context}</RichText> : null }}
           courseHref={back}
           nextHref={back}
         />

@@ -54,9 +54,9 @@ type Seed = {
 const letter = (k: number) => String.fromCharCode(97 + k);
 const nearest = <T extends number>(allowed: readonly T[], v: number) => allowed.reduce((a, b) => (Math.abs(b - v) < Math.abs(a - v) ? b : a));
 
-/** Lab content for a seeded activity of a type that exists (`listen_choose`, `fill_gaps` so far). */
+/** Lab content for a seeded activity of a type that exists (`listen_choose`, `fill_gaps`, `listen_fill_gaps` so far). */
 function labContent(s: SeedStep): Record<string, unknown> | null {
-  if (s.activityType === "fill_gaps") {
+  if (s.activityType === "fill_gaps" || s.activityType === "listen_fill_gaps") {
     // One line per item, its « ___ » replaced by [answer|alternatives]; the options not used as answers become distractors.
     const items = s.items ?? [];
     const answers = new Set(items.flatMap((it) => it.answers));
@@ -66,7 +66,9 @@ function labContent(s: SeedStep): Record<string, unknown> | null {
       hint: "letters",
       wordBank: (s.settings as { wordBank?: boolean } | undefined)?.wordBank === true,
       distractors: [...new Set(items.flatMap((it) => it.options ?? []))].filter((o) => !answers.has(o)),
-      typos: true,
+      typos: s.activityType === "fill_gaps", // listening: exact words (« manages », not « manage »)
+      // Listen and fill the gaps: the audio is uploaded in the Lab (the activity stays a draft until then).
+      ...(s.activityType === "listen_fill_gaps" ? { audioMediaId: "", audioDurationS: 0, context: "", maxPlays: [0, 2, 3].includes(s.settings?.maxPlays ?? 0) ? (s.settings?.maxPlays ?? 0) : 0 } : {}),
     };
   }
   if (s.activityType !== "listen_choose") return null;
@@ -127,7 +129,7 @@ async function main() {
           console.log(`  · ignoré : « ${s.title} » (type ${s.activityType} pas encore dans le Labo)`);
           continue;
         }
-        const gaps = s.activityType === "fill_gaps";
+        const gaps = s.activityType === "fill_gaps"; // ready at once; the listening types wait for their audio
         const a = await Activity.create({ type: s.activityType as "listen_choose", title: s.title, level: seed.module.level ?? "", skills: gaps ? ["grammar"] : ["listening"], durationMin: s.estimatedMinutes ?? 0, instructions: s.instructions ?? "", tags: ["démo"], status: gaps ? "ready" : "draft", content });
         if (!gaps) console.log(`  · « ${s.title} » créée en brouillon : ajoutez l'audio dans le Labo, puis cochez « Ready ».`);
         await Step.create({ ...base, position: ++position, kind: "activity", activityId: a._id, lessonId: lessonByRef.get(s.lessonRef ?? -1) ?? null, passScore: s.passScore ?? 60 });

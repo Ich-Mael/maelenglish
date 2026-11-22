@@ -1,12 +1,11 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Crosshair, Loader2, Mic, Play, Upload, X } from "lucide-react";
+import { Crosshair, Play, X } from "lucide-react";
 import { ItemListEditor, newItemId } from "./item-list-editor";
-import { Recorder } from "@/components/audio/recorder";
-import { uploadMedia } from "@/components/audio/upload";
+import { ClipField, type Clip } from "./clip-field";
 import { btn, inputCls } from "@/components/admin/ui";
-import { MAX_PLAYS, formatTime, parseTime, type ListeningContent, type ListeningQuestion } from "@/lib/lab/types";
+import { formatTime, parseTime, type ListeningContent, type ListeningQuestion } from "@/lib/lab/types";
 import { cn } from "cn";
 
 /*
@@ -40,12 +39,8 @@ function Field({ label, hint, children, className }: { label: string; hint?: str
 
 export function ListeningEditor({ initial, audioUrl: initialUrl }: { initial: Partial<ListeningContent>; audioUrl: string | null }) {
   const audio = useRef<HTMLAudioElement>(null);
-  const [audioMediaId, setAudioMediaId] = useState(initial.audioMediaId ?? "");
-  const [duration, setDuration] = useState(initial.audioDurationS ?? 0);
-  const [audioUrl, setAudioUrl] = useState(initialUrl);
-  const [busy, setBusy] = useState("");
-  const [error, setError] = useState("");
-  const [recording, setRecording] = useState(false);
+  const [clip, setClip] = useState<Clip>({ id: initial.audioMediaId ?? "", durationS: initial.audioDurationS ?? 0, url: initialUrl });
+  const audioUrl = clip.url;
   const [maxPlays, setMaxPlays] = useState(initial.maxPlays ?? 0);
   const [transcript, setTranscript] = useState(initial.transcript ?? "");
   const [questions, setQuestions] = useState<Q[]>(() =>
@@ -53,28 +48,12 @@ export function ListeningEditor({ initial, audioUrl: initialUrl }: { initial: Pa
   );
 
   const json = JSON.stringify({
-    audioMediaId,
-    audioDurationS: duration,
+    audioMediaId: clip.id,
+    audioDurationS: clip.durationS,
     maxPlays,
     transcript,
     questions: questions.map(({ start, ...q }) => ({ ...q, startS: parseTime(start) })),
   });
-
-  const upload = async (blob: Blob, durationS?: number) => {
-    setError("");
-    setBusy("Uploading the audio…");
-    try {
-      const id = await uploadMedia(blob, { kind: "clip", durationS, onProgress: (s) => setBusy(s === "retrying" ? "Unstable connection: retrying…" : "Uploading the audio…") });
-      setAudioMediaId(id);
-      setAudioUrl(URL.createObjectURL(blob));
-      if (durationS) setDuration(Math.round(durationS));
-      setRecording(false);
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setBusy("");
-    }
-  };
 
   const playFrom = (t: number | null) => {
     const a = audio.current;
@@ -87,45 +66,7 @@ export function ListeningEditor({ initial, audioUrl: initialUrl }: { initial: Pa
     <div className="grid gap-5">
       <input type="hidden" name="c_json" value={json} />
 
-      <section className="grid gap-3 rounded-2xl border border-border p-4">
-        <h3 className="font-heading font-extrabold text-brand-deep">Audio</h3>
-        {audioUrl && !recording && (
-          <audio ref={audio} src={audioUrl} controls preload="metadata" className="w-full" onLoadedMetadata={(e) => Number.isFinite(e.currentTarget.duration) && setDuration(Math.round(e.currentTarget.duration))} />
-        )}
-        {busy ? (
-          <p className="flex items-center gap-2 text-sm font-semibold text-brand-deep" aria-live="polite">
-            <Loader2 className="size-4 animate-spin" aria-hidden /> {busy}
-          </p>
-        ) : recording ? (
-          <div className="grid gap-2">
-            <Recorder maxSeconds={300} onUse={(rec) => void upload(rec.blob, rec.durationS)} useLabel="Use this recording" locale="en" />
-            <button type="button" className={cn(btn.secondary, "w-fit")} onClick={() => setRecording(false)}>
-              <X className="size-4" aria-hidden /> Cancel
-            </button>
-          </div>
-        ) : (
-          <div className="flex flex-wrap gap-2">
-            <label className={cn(btn.secondary, "cursor-pointer")}>
-              <Upload className="size-4" aria-hidden /> {audioMediaId ? "Replace with a file" : "Upload an audio file"}
-              <input type="file" accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/aac,audio/wav,audio/x-wav,audio/ogg,audio/webm" className="sr-only" onChange={(e) => e.target.files?.[0] && void upload(e.target.files[0])} />
-            </label>
-            <button type="button" className={btn.secondary} onClick={() => setRecording(true)}>
-              <Mic className="size-4" aria-hidden /> {audioMediaId ? "Record again" : "Record my voice"}
-            </button>
-          </div>
-        )}
-        {error && <p className="text-sm font-semibold text-coral-dark">{error}</p>}
-        <p className="text-xs text-muted-foreground">MP3, M4A, WAV… 30 MB max. A native voice at natural speed: that&apos;s the point of the exercise.</p>
-        <Field label="Number of plays" hint="Unlimited for practice; 2 or 3 for an exam-style test. The limit is lifted at correction." className="sm:max-w-xs">
-          <select className={inputCls} value={maxPlays} onChange={(e) => setMaxPlays(Number(e.target.value))}>
-            {MAX_PLAYS.map((n) => (
-              <option key={n} value={n}>
-                {n === 0 ? "Unlimited" : `${n} plays max`}
-              </option>
-            ))}
-          </select>
-        </Field>
-      </section>
+      <ClipField clip={clip} onChange={setClip} maxPlays={maxPlays} onMaxPlays={setMaxPlays} audioRef={audio} />
 
       <section className="grid gap-3">
         <h3 className="font-heading font-extrabold text-brand-deep">Questions ({questions.length})</h3>

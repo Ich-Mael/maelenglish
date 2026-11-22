@@ -1,4 +1,4 @@
-import { sendsLeft } from "@/lib/learn/challenge";
+import { historyWithReviews, sendsLeft } from "@/lib/learn/challenge";
 import { Types } from "mongoose";
 import { normalizeRich, plainText } from "@/lib/rich-text";
 import { ChallengeSubmission, Course, Media, Module, Unit, User, type ChallengeSubmissionDoc } from "@/models";
@@ -69,6 +69,16 @@ export async function gradeSubmission(graderId: string, submissionId: string, in
   if (!sub) throw new AdminError("Submission not found.");
   const feedback = normalizeRich(input.feedback);
 
+  // A review still on top of a pending recording answers the previous one (older rows): keep it
+  // on that recording's history entry and start this review blank.
+  const rows = historyWithReviews(sub.toObject());
+  if (sub.status === "pending" && rows.length > 1 && (sub.feedback || sub.feedbackAudioMediaId)) {
+    sub.set("history", rows);
+    sub.feedback = "";
+    sub.feedbackAudioMediaId = null;
+    sub.feedbackAudioDurationS = 0;
+  }
+
   // Voice note: a new one must be the grader's own ready « voice-note » upload.
   const current = sub.feedbackAudioMediaId ? String(sub.feedbackAudioMediaId) : "";
   const wanted = input.feedbackAudioMediaId === undefined ? current : input.feedbackAudioMediaId || "";
@@ -95,6 +105,8 @@ export async function gradeSubmission(graderId: string, submissionId: string, in
   sub.gradedBy = new Types.ObjectId(graderId);
   sub.gradedAt = new Date();
   if (input.decision === "graded" && !sub.validatedAt) sub.validatedAt = sub.gradedAt;
+  // This recording's history entry keeps the review (the coach's « Submission N »).
+  sub.set("history", historyWithReviews(sub.toObject()));
   await sub.save();
 
   // The previous voice note is no longer used: remove it (best effort).

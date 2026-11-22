@@ -4,7 +4,7 @@
  * rules in `content.ts`, its editor in components/lab/editors and its player in components/lab/players.
  */
 
-export const ACTIVITY_TYPES = ["listen_choose", "fill_gaps", "speaking_challenge"] as const;
+export const ACTIVITY_TYPES = ["listen_choose", "fill_gaps", "listen_fill_gaps", "speaking_challenge"] as const;
 export type ActivityType = (typeof ACTIVITY_TYPES)[number];
 
 /** `challenge`: closes a unit (its last step, kind challenge); `practice`: an activity step practising a lesson. */
@@ -19,6 +19,11 @@ export const ACTIVITY_INFO: Record<ActivityType, { label: string; description: s
   "fill_gaps": {
     label: "Fill the gaps",
     description: "A text with blanks to complete. Each blank shows the shape of its answer (words and letters); optional word bank.",
+    role: "practice",
+  },
+  "listen_fill_gaps": {
+    label: "Listen and fill the gaps",
+    description: "An audio clip and its transcript with blanks: the learner completes what they hear. At correction, each blank replays its sentence.",
     role: "practice",
   },
   "speaking_challenge": {
@@ -80,16 +85,40 @@ export type GapsContent = {
   /** Accept one typo in answers of 4+ letters. */
   typos: boolean;
 };
+/**
+ * Listen and fill the gaps (catalogue L3): the fill-the-gaps text is the transcript of an audio
+ * clip. A line may start with the moment it is heard — « @0:12 I [work] for a telecom company. » —
+ * to replay that sentence at correction. Same blanks, hints, word bank and scoring as `fill_gaps`.
+ */
+export type ListenGapsContent = GapsContent & {
+  audioMediaId: string;
+  audioDurationS: number;
+  /** Rich text shown above the player (situation, in French). */
+  context: string;
+  /** 0 = unlimited; 2 or 3 = exam style (no seeking until the first check). */
+  maxPlays: number;
+};
 export type Gap = { id: string; index: number; answers: string[]; explanation: string };
 export type GapSegment = { kind: "text"; text: string } | { kind: "gap"; gap: Gap };
 
-/** The text as lines of segments, and its blanks (ids g1, g2… in reading order). */
-export function parseGaps(c: Pick<GapsContent, "text" | "explanations">): { lines: GapSegment[][]; gaps: Gap[] } {
+/** « @0:12 » at the start of a line (listen and fill the gaps). */
+export const LINE_TIME = /^\s*@\s*(\d+:\d{1,2}(?:[.,]\d)?)\s*/;
+
+/**
+ * The text as lines of segments, and its blanks (ids g1, g2… in reading order). `timed`: lines may
+ * start with « @m:ss » (listen and fill the gaps), returned in `times` (null = no time) and removed
+ * from the text; blank ids are the same either way.
+ */
+export function parseGaps(c: Pick<GapsContent, "text" | "explanations">, opts: { timed?: boolean } = {}): { lines: GapSegment[][]; gaps: Gap[]; times: (number | null)[] } {
   const gaps: Gap[] = [];
+  const times: (number | null)[] = [];
   const lines = c.text
     .split(/\r?\n/)
     .filter((l) => l.trim())
-    .map((line) => {
+    .map((raw) => {
+      const t = opts.timed ? raw.match(LINE_TIME) : null;
+      times.push(t ? parseTime(t[1]) : null);
+      const line = t ? raw.slice(t[0].length) : raw;
       const out: GapSegment[] = [];
       let last = 0;
       for (const m of line.matchAll(/\[([^\[\]]*)\]/g)) {
@@ -104,10 +133,13 @@ export function parseGaps(c: Pick<GapsContent, "text" | "explanations">): { line
       if (last < line.length) out.push({ kind: "text", text: line.slice(last) });
       return out;
     });
-  return { lines, gaps };
+  return { lines, gaps, times };
 }
 
-export type ActivityContent = { "listen_choose": ListeningContent; "fill_gaps": GapsContent; "speaking_challenge": SpeakingChallengeContent };
+/** Index of the line holding a blank, or -1. */
+export const lineOfGap = (lines: GapSegment[][], gapId: string) => lines.findIndex((l) => l.some((s) => s.kind === "gap" && s.gap.id === gapId));
+
+export type ActivityContent = { "listen_choose": ListeningContent; "fill_gaps": GapsContent; "listen_fill_gaps": ListenGapsContent; "speaking_challenge": SpeakingChallengeContent };
 
 export const MAX_PLAYS = [0, 2, 3] as const;
 

@@ -13,6 +13,9 @@ import { GradeForm } from "@/components/admin/grade-form";
 import { RichText } from "@/components/learn/rich-text";
 import { toEditorHtml } from "@/lib/rich-text";
 import { PageSkeleton } from "@/components/learn/ui";
+import { challengeAttempts } from "@/lib/learn/challenge";
+import { previousAttempts } from "@/lib/learn/attempt-history";
+import { AttemptHistory } from "@/components/learn/attempt-history";
 
 export const metadata: Metadata = { title: "Grading" };
 
@@ -37,8 +40,15 @@ async function Grade({ params }: { params: Promise<{ submissionId: string }> }) 
   ]);
   const c = challenge?.content as SpeakingChallengeContent | undefined;
 
+  // Earlier recordings and the feedback given on each (newest first): what the learner must improve.
+  const attempts = challengeAttempts(sub);
+  const current = attempts[attempts.length - 1];
+  // Older rows: a review still on top of a pending recording answers the previous one.
+  const stale = sub.status === "pending" && attempts.length > 1;
+  const earlier = await previousAttempts(sub, reviewMediaUrl);
+
   return (
-    <div className="grid max-w-5xl gap-5">
+    <div className="grid max-w-6xl gap-5">
       <PageHeader
         title={user ? `${user.name} ${user.surname}` : "Learner"}
         back={{ href: "/admin/corrections", label: "Grading" }}
@@ -51,9 +61,9 @@ async function Grade({ params }: { params: Promise<{ submissionId: string }> }) 
           </span>
         }
       />
-      <div className="grid gap-5 lg:grid-cols-[1.3fr_1fr]">
+      <div className="grid gap-5 lg:grid-cols-[1fr_1fr]">
         <div className="grid content-start gap-5">
-          <Card title="Learner's answer" description={`Sent on ${fmtDate(sub.submittedAt ?? sub.updatedAt)}`}>
+          <Card title={attempts.length > 1 ? `Learner's answer · Submission ${current.n}` : "Learner's answer"} description={`Sent on ${fmtDate(sub.submittedAt ?? sub.updatedAt)}`}>
             {audio ? (
               <div className="grid gap-1">
                 <audio src={audio} controls preload="metadata" className="w-full" />
@@ -63,6 +73,7 @@ async function Grade({ params }: { params: Promise<{ submissionId: string }> }) 
               <p className="text-sm text-coral-dark">Recording unavailable (storage not configured or file missing).</p>
             )}
           </Card>
+          <AttemptHistory items={earlier} locale="en" open />
           <Card title={challenge?.title || "Speaking challenge"}>
             <RichText>{c?.instructions ?? ""}</RichText>
             {(c?.mustInclude ?? []).length > 0 && (
@@ -86,7 +97,7 @@ async function Grade({ params }: { params: Promise<{ submissionId: string }> }) 
           </Card>
         </div>
         <Card title="Feedback">
-          <GradeForm submissionId={submissionId} maxScore={sub.maxScore ?? 100} isCheckpoint={!!course.isChallenge} initial={{ grade: sub.grade ?? null, feedback: toEditorHtml(sub.feedback, "text"), audioId: sub.feedbackAudioMediaId ? String(sub.feedbackAudioMediaId) : "", audioUrl: voiceNote }} />
+          <GradeForm submissionId={submissionId} maxScore={sub.maxScore ?? 100} isCheckpoint={!!course.isChallenge} initial={stale ? { grade: null, feedback: "", audioId: "", audioUrl: null } : { grade: sub.grade ?? null, feedback: toEditorHtml(sub.feedback, "text"), audioId: sub.feedbackAudioMediaId ? String(sub.feedbackAudioMediaId) : "", audioUrl: voiceNote }} />
         </Card>
       </div>
     </div>

@@ -1,6 +1,6 @@
 "use server";
 
-import { sendsAllowed, sendsLeft, sendsUsed } from "@/lib/learn/challenge";
+import { historyWithReviews, sendsAllowed, sendsLeft, sendsUsed } from "@/lib/learn/challenge";
 import { Types } from "mongoose";
 import { refresh } from "next/cache";
 import { readCurrentUser } from "@/lib/auth/dal";
@@ -151,16 +151,17 @@ export async function submitUnitChallenge(input: { courseId: string; stepId: str
     if (!mediaId || !Types.ObjectId.isValid(mediaId)) return { error: "Enregistrement introuvable : réessayez." };
     const media = await Media.findById(mediaId).lean();
     if (!media || String(media.ownerId) !== ctx.me.id || media.kind !== "recording" || media.status !== "ready") return { error: "Enregistrement introuvable : réessayez." };
-    const existing = await ChallengeSubmission.findOne({ userId: ctx.me.id, unitId: step.unitId }).select("attempts extraAttempts mediaId status gradedAt validatedAt").lean();
+    const existing = await ChallengeSubmission.findOne({ userId: ctx.me.id, unitId: step.unitId }).select("attempts extraAttempts mediaId durationS submittedAt updatedAt status grade feedback feedbackAudioMediaId feedbackAudioDurationS gradedBy gradedAt validatedAt history").lean();
     if (sendsLeft(existing) <= 0) return { error: `Vous avez utilisé vos ${sendsAllowed(existing)} envois pour ce défi : votre coach va écouter le dernier.` };
 
     await ChallengeSubmission.updateOne(
       { userId: ctx.me.id, unitId: step.unitId },
       {
-        $set: { courseId: step.courseId, moduleId: step.moduleId, stepId: step._id, activityId: step.activityId, mediaId: media._id, durationS: media.durationS ?? 0, status: "pending", grade: null, gradedAt: null, gradedBy: null, attempts: sendsUsed(existing) + 1, submittedAt: new Date(),
+        $set: { courseId: step.courseId, moduleId: step.moduleId, stepId: step._id, activityId: step.activityId, mediaId: media._id, durationS: media.durationS ?? 0, status: "pending", grade: null, gradedAt: null, gradedBy: null, feedback: "", feedbackAudioMediaId: null, feedbackAudioDurationS: 0, attempts: sendsUsed(existing) + 1, submittedAt: new Date(),
           // Redoing a validated challenge keeps the validation (older rows: status « graded »).
-          validatedAt: existing?.validatedAt ?? (existing?.status === "graded" ? (existing.gradedAt ?? new Date()) : null) },
-        $push: { history: { mediaId: media._id, durationS: media.durationS ?? 0, sentAt: new Date() } },
+          validatedAt: existing?.validatedAt ?? (existing?.status === "graded" ? (existing.gradedAt ?? new Date()) : null),
+          // Each earlier recording keeps its review (the top-level one is cleared for the new send).
+          history: [...(existing ? historyWithReviews(existing) : []), { mediaId: media._id, durationS: media.durationS ?? 0, sentAt: new Date() }] },
       },
       { upsert: true },
     );

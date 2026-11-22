@@ -9,7 +9,7 @@ import { courseAccess, courseTree } from "@/lib/learn/queries";
 import { coursePath, examPath, stepPath } from "@/lib/learn/paths";
 import { stepAfter, stepBefore } from "@/lib/learn/sequence";
 import { ChallengeSubmission, User, type ChallengeSubmissionDoc } from "@/models";
-import type { GapsContent, ListeningContent, SpeakingChallengeContent } from "@/lib/lab/types";
+import type { GapsContent, ListenGapsContent, ListeningContent, SpeakingChallengeContent } from "@/lib/lab/types";
 import { cleanLessonContent } from "@/lib/course/lesson-content";
 import { feedbackAudioUrl, mediaUrlFor } from "@/lib/media";
 import { AccessProblem, formatDate } from "./ui";
@@ -17,6 +17,8 @@ import { RichText } from "./rich-text";
 import { QuizRunner, type PublicQuestion } from "./quiz-runner";
 import { ChallengeRecorder } from "./challenge-recorder";
 import { AwaitingCoach, CoachFeedback } from "./coach-feedback";
+import { AttemptHistory } from "./attempt-history";
+import { previousAttempts } from "@/lib/learn/attempt-history";
 import { coachLabel } from "@/lib/coach-name";
 import { CompleteButton } from "./complete-button";
 import { LessonView, lessonMediaIds } from "./lesson-view";
@@ -134,7 +136,9 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
   if (!activity) return <AccessProblem reason="not-found" />;
 
   // ── Activity: its Lab player ──
-  if (so.kind === "activity" && activity.type === "fill_gaps") {
+  if (so.kind === "activity" && (activity.type === "fill_gaps" || activity.type === "listen_fill_gaps")) {
+    const lc = activity.type === "listen_fill_gaps" ? (activity.content as ListenGapsContent) : null;
+    const clip = lc?.audioMediaId ? (await mediaUrls(me.id, [lc.audioMediaId]))[lc.audioMediaId] : undefined;
     return (
       <div className="mx-auto grid max-w-2xl gap-4">
         {header}
@@ -150,6 +154,7 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
             instructions={activity.instructions ?? ""}
             maelTip={activity.maelTip ?? ""}
             content={activity.content as GapsContent}
+            listen={lc ? { audioUrl: clip ?? null, maxPlays: lc.maxPlays, context: lc.context ? <RichText>{lc.context}</RichText> : null } : undefined}
             courseHref={course}
             nextHref={nextHref}
             readOnly={access.readOnly}
@@ -199,6 +204,8 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
         submission.gradedBy ? User.findById(submission.gradedBy).select("name coachName avatarUrl").lean() : null,
       ])
     : [null, null, null];
+  // Earlier sends with the coach's review of each (ids come from the learner's own submission).
+  const earlier = submission ? await previousAttempts(submission, (id) => mediaUrlFor({ id: me.id, isAdmin: false }, id, { sharedWith: [me.id] })) : [];
   const model = c.modelAnswerAudioMediaId ? (await mediaUrls(me.id, [c.modelAnswerAudioMediaId]))[c.modelAnswerAudioMediaId] : undefined;
   const mustInclude = c.mustInclude ?? [];
   const used = sendsUsed(submission);
@@ -273,6 +280,7 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
               <audio src={mine} controls preload="none" className="w-full" />
             </div>
           )}
+          <AttemptHistory items={earlier} />
         </section>
       )}
 

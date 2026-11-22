@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { Activity, LabAttempt, LabMistake, Step, StepProgress, Unit, User } from "@/models";
@@ -8,7 +8,7 @@ import * as content from "@/lib/admin/content";
 import * as lab from "@/lib/lab/service";
 import { can } from "@/lib/admin/permissions";
 import { cleanContent, contentProblem } from "@/lib/lab/content";
-import { parseTime, formatTime, parseGaps } from "@/lib/lab/types";
+import { parseTime, formatTime, parseGaps, lineOfGap } from "@/lib/lab/types";
 import { gradeActivity } from "@/lib/lab/grade";
 
 let mongo: MongoMemoryServer;
@@ -140,6 +140,28 @@ describe("Labo", () => {
     const placed = await Step.findOne({ unitId: u1._id, activityId: a._id }).lean();
     expect(placed).toMatchObject({ kind: "activity", title: "À la porte", position: 2, passScore: 60 });
     expect(String(placed?.lessonId)).toBe(String(lesson._id));
+  });
+
+  it("listen and fill the gaps: audio + timed transcript lines, same blanks and scoring as fill the gaps", () => {
+    const audioMediaId = String(new Types.ObjectId());
+    const c = cleanContent("listen_fill_gaps", {
+      context: "<p>Fatou présente son travail.</p><script>x</script>",
+      json: JSON.stringify({ audioMediaId, audioDurationS: 21.6, maxPlays: 7, text: "@0:03 I [work] for a telecom company.\n@ 1:05.5   My team [manages] accounts.\nThe meeting is at [3:30].", hint: "first" }),
+    });
+    expect([c.audioMediaId, c.audioDurationS, c.maxPlays, c.hint, c.typos]).toEqual([audioMediaId, 22, 0, "first", false]); // typos off unless ticked
+    expect(c.context).not.toContain("script");
+    const timed = parseGaps(c, { timed: true });
+    expect(timed.times).toEqual([3, 65.5, null]);
+    expect(timed.lines[0][0]).toEqual({ kind: "text", text: "I " }); // the « @0:03 » is removed
+    expect(timed.gaps.map((g) => g.answers[0])).toEqual(["work", "manages", "3:30"]); // a time as an answer stays a blank
+    expect(lineOfGap(timed.lines, "g3")).toBe(2);
+    // Same blank ids with or without times (the server grades without them).
+    expect(parseGaps(c).gaps.map((g) => g.id)).toEqual(timed.gaps.map((g) => g.id));
+    expect(gradeActivity("listen_fill_gaps", c, { g1: "work", g2: "manage", g3: "3:30" }).items.map((i) => i.correct)).toEqual([true, false, true]);
+
+    expect(contentProblem("listen_fill_gaps", c)).toBeNull();
+    expect(contentProblem("listen_fill_gaps", { ...c, audioMediaId: "" })).toMatch(/audio/);
+    expect(contentProblem("listen_fill_gaps", { ...c, text: "No blank." })).toMatch(/square brackets/);
   });
 
   it("fill the gaps: parses the [bracketed] answers, cleans the editor's JSON, checks and grades", async () => {

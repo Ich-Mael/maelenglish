@@ -1,6 +1,6 @@
 import { normalizeRich, plainText } from "@/lib/rich-text";
 import { Types } from "mongoose";
-import { MAX_PLAYS, MAX_SECONDS, PREP_SECONDS, type ActivityContent, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type ListeningQuestion, type GapsContent, GAP_HINTS, parseGaps } from "./types";
+import { MAX_PLAYS, MAX_SECONDS, PREP_SECONDS, type ActivityContent, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type ListeningQuestion, type GapsContent, type ListenGapsContent, GAP_HINTS, parseGaps } from "./types";
 
 /*
  * Content rules per activity type (server: rich text is sanitised here). `cleanContent` turns what
@@ -66,6 +66,27 @@ function cleanGaps(r: Record<string, unknown>): GapsContent {
   };
 }
 
+function cleanListenGaps(r: Record<string, unknown>): ListenGapsContent {
+  const j = typeof r.json === "string" ? parseJson(r.json) : r;
+  const audio = typeof j.audioMediaId === "string" && Types.ObjectId.isValid(j.audioMediaId) ? j.audioMediaId : "";
+  return {
+    ...cleanGaps(r),
+    // Listening is about hearing exact words (« manage » vs « manages »): no typo unless staff tick it.
+    typos: j.typos === true || j.typos === "on",
+    audioMediaId: audio,
+    audioDurationS: audio ? Math.max(0, Math.round(Number(j.audioDurationS) || 0)) : 0,
+    context: normalizeRich(typeof r.context === "string" ? r.context : typeof j.context === "string" ? j.context : ""),
+    maxPlays: pick(MAX_PLAYS, j.maxPlays, 0),
+  };
+}
+
+function gapsProblem(c: Partial<GapsContent>): string | null {
+  const { gaps } = parseGaps({ text: c.text ?? "", explanations: c.explanations ?? [] });
+  if (!gaps.length) return "Write the text with at least one answer in [square brackets].";
+  if (gaps.length > 40) return "Keep it to 40 blanks at most.";
+  return null;
+}
+
 export function cleanContent<T extends ActivityType>(type: T, raw: unknown): ActivityContent[T] {
   const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
   switch (type) {
@@ -73,6 +94,8 @@ export function cleanContent<T extends ActivityType>(type: T, raw: unknown): Act
       return cleanListening(r) as ActivityContent[T];
     case "fill_gaps":
       return cleanGaps(r) as ActivityContent[T];
+    case "listen_fill_gaps":
+      return cleanListenGaps(r) as ActivityContent[T];
     case "speaking_challenge":
       return {
         instructions: normalizeRich(typeof r.instructions === "string" ? r.instructions : ""),
@@ -103,12 +126,12 @@ export function contentProblem(type: ActivityType, content: unknown): string | n
       }
       return null;
     }
-    case "fill_gaps": {
-      const c = content as Partial<GapsContent>;
-      const { gaps } = parseGaps({ text: c.text ?? "", explanations: c.explanations ?? [] });
-      if (!gaps.length) return "Write the text with at least one answer in [square brackets].";
-      if (gaps.length > 40) return "Keep it to 40 blanks at most.";
-      return null;
+    case "fill_gaps":
+      return gapsProblem(content as Partial<GapsContent>);
+    case "listen_fill_gaps": {
+      const c = content as Partial<ListenGapsContent>;
+      if (!c.audioMediaId) return "Add the audio.";
+      return gapsProblem(c);
     }
     case "speaking_challenge": {
       const c = content as Partial<SpeakingChallengeContent>;

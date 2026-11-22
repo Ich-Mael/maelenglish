@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, Check, ChevronDown, Clock, EyeOff, Headphones, Lock, Mic, Sparkles, Target, TextCursorInput, Trophy } from "lucide-react";
+import { AudioLines, BookOpen, Check, ChevronDown, Clock, EyeOff, Headphones, Lock, Mic, Sparkles, Target, TextCursorInput, Trophy } from "lucide-react";
 import type { ModuleOutline, Outline, StepOutline, StepState, UnitOutline } from "@/lib/learn/progress";
 import { examPath, stepPath } from "@/lib/learn/paths";
 import { formatDate } from "./ui";
@@ -13,6 +13,7 @@ const STEP_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
   activity: Sparkles,
   listen_choose: Headphones,
   fill_gaps: TextCursorInput,
+  listen_fill_gaps: AudioLines,
   challenge: Mic,
 };
 

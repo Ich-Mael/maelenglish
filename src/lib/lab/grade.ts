@@ -17,7 +17,8 @@ export function checkItem(type: ActivityType, content: unknown, itemId: string, 
       const q = (content as ListeningContent).questions.find((x) => x.id === itemId);
       return !!q && answer === q.correctOptionId;
     }
-    case "fill_gaps": {
+    case "fill_gaps":
+    case "listen_fill_gaps": {
       const c = content as GapsContent;
       const gap = parseGaps(c).gaps.find((g) => g.id === itemId);
       return !!gap && typeof answer === "string" && matchAnswer(answer, gap.answers, { typo: c.typos }).ok;
@@ -32,6 +33,7 @@ export function itemIds(type: ActivityType, content: unknown): string[] {
     case "listen_choose":
       return (content as ListeningContent).questions.map((q) => q.id);
     case "fill_gaps":
+    case "listen_fill_gaps":
       return parseGaps(content as GapsContent).gaps.map((g) => g.id);
     default:
       return [];

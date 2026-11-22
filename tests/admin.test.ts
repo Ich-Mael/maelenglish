@@ -7,7 +7,7 @@ import * as content from "@/lib/admin/content";
 import * as steps from "@/lib/admin/steps";
 import { enroll, updateEnrollment } from "@/lib/admin/enrollments";
 import { gradeSubmission, gradingQueue } from "@/lib/admin/grading";
-import { sendsAllowed, sendsLeft, sendsUsed } from "@/lib/learn/challenge";
+import { challengeAttempts, historyWithReviews, sendsAllowed, sendsLeft, sendsUsed } from "@/lib/learn/challenge";
 import { computeOutline } from "@/lib/learn/progress";
 
 let mongo: MongoMemoryServer;
@@ -272,6 +272,38 @@ describe("grading", () => {
     await gradeSubmission(String(coach._id), String(sub._id), { decision: "graded", feedbackAudioMediaId: "" });
     s = await ChallengeSubmission.findById(sub._id).lean();
     expect([s?.feedbackAudioMediaId, await Media.findById(second._id)]).toEqual([null, null]);
+  });
+
+  it("keeps each submission's review in the history, also for rows reviewed before (feedback left on top)", async () => {
+    const coach = await mk("coach6", "english-coach");
+    const learner = await mk("salif");
+    const c = await Course.create({ title: "H", instructors: [coach._id] });
+    const m = await Module.create({ courseId: c._id, order: 1, title: "M" });
+    const u = await Unit.create({ courseId: c._id, moduleId: m._id, title: "U" });
+    const [rec1, rec2, rec3] = [new Types.ObjectId(), new Types.ObjectId(), new Types.ObjectId()];
+    const [n1] = await Media.create([{ ownerId: coach._id, kind: "voice-note" as MediaKind, key: `t/${rec1}.webm`, mime: "audio/webm", durationS: 30, status: "ready", visibility: "private" }]);
+    // Older row: submission 1 was returned with a voice note, submission 2 is pending, the review still on top.
+    const sub = await ChallengeSubmission.create({
+      userId: learner._id, courseId: c._id, moduleId: m._id, unitId: u._id, stepId: new Types.ObjectId(), mediaId: rec2, status: "pending",
+      feedback: "<p>Plus lentement</p>", feedbackAudioMediaId: n1._id, feedbackAudioDurationS: 30,
+      history: [{ mediaId: rec1, sentAt: new Date("2026-11-01") }, { mediaId: rec2, sentAt: new Date("2026-11-02") }],
+    });
+    expect(challengeAttempts(sub.toObject()).map((a) => [a.n, a.current, a.review?.feedback ?? null])).toEqual([[1, false, "<p>Plus lentement</p>"], [2, true, null]]);
+
+    await gradeSubmission(String(coach._id), String(sub._id), { decision: "returned", feedback: "Bien mieux, encore le th" });
+    let s = (await ChallengeSubmission.findById(sub._id).lean())!;
+    expect(s.history.map((h) => [h.feedback, h.status, h.feedbackAudioMediaId ? String(h.feedbackAudioMediaId) : null])).toEqual([
+      ["<p>Plus lentement</p>", null, String(n1._id)],
+      ["Bien mieux, encore le th", "returned", null],
+    ]);
+    expect([s.feedbackAudioMediaId, await Media.exists({ _id: n1._id }).then(Boolean)]).toEqual([null, true]); // submission 1's note kept
+
+    // A new send (as submitUnitChallenge does): the top-level review is cleared, the history keeps it.
+    await ChallengeSubmission.updateOne({ _id: sub._id }, { $set: { mediaId: rec3, status: "pending", feedback: "", grade: null, gradedAt: null, history: [...historyWithReviews(s), { mediaId: rec3, sentAt: new Date() }] } });
+    await gradeSubmission(String(coach._id), String(sub._id), { decision: "graded", grade: 85 });
+    s = (await ChallengeSubmission.findById(sub._id).lean())!;
+    const a = challengeAttempts(s);
+    expect(a.map((x) => [x.n, x.review?.status ?? null, x.review?.grade ?? null])).toEqual([[1, null, null], [2, "returned", null], [3, "graded", 85]]);
   });
 
   it("keeps the first validation date when a redo is reviewed again", async () => {

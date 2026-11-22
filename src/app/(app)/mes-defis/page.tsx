@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { connection } from "next/server";
-import { ArrowRight, BookOpen, CircleCheck, Clock, History, Layers, Mic, RotateCcw } from "lucide-react";
+import { ArrowRight, BookOpen, CircleCheck, Clock, Layers, Mic, RotateCcw } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
 import { connectDB } from "@/lib/db";
 import { feedbackAudioUrl, mediaUrlFor } from "@/lib/media";
 import { sendsAllowed, sendsLeft, sendsUsed } from "@/lib/learn/challenge";
+import { previousAttempts, type AttemptItem } from "@/lib/learn/attempt-history";
+import { AttemptHistory } from "@/components/learn/attempt-history";
 import { coursePath, stepPath } from "@/lib/learn/paths";
 import { Activity, ChallengeSubmission, Course, Module, Unit, User, type ChallengeSubmissionDoc } from "@/models";
 import { AwaitingCoach, CoachFeedback, hasCoachFeedback } from "@/components/learn/coach-feedback";
@@ -47,11 +49,14 @@ async function MyChallenges() {
     User.find({ _id: { $in: subs.flatMap((s) => (s.gradedBy ? [s.gradedBy] : [])) } }).select("name coachName avatarUrl").lean(),
   ]);
   const find = <T extends { _id: unknown }>(list: T[], id: unknown) => list.find((x) => String(x._id) === String(id));
-  // Every recording: the latest and the history (the learner owns them).
-  const ids = [...new Set(subs.flatMap((s) => [String(s.mediaId), ...(s.history ?? []).map((h) => String(h.mediaId))]))];
+  // The latest recordings (the learner owns them; earlier ones come with `previousAttempts`).
+  const ids = [...new Set(subs.map((s) => String(s.mediaId)))];
   const urls: Record<string, string | null> = Object.fromEntries(await Promise.all(ids.map(async (id) => [id, await mediaUrlFor({ id: me.id, isAdmin: false }, id).catch(() => null)] as const)));
   // Coach voice notes (shared with this learner by their submission).
   const notes: Record<string, string | null> = Object.fromEntries(await Promise.all(subs.filter((s) => s.feedbackAudioMediaId).map(async (s) => [String(s._id), await feedbackAudioUrl(me.id, s)] as const)));
+  // Earlier sends with the coach's review of each (ids come from the learner's own submissions).
+  const ownUrl = (id: string) => mediaUrlFor({ id: me.id, isAdmin: false }, id, { sharedWith: [me.id] });
+  const earlierBySub: Record<string, AttemptItem[]> = Object.fromEntries(await Promise.all(subs.map(async (s) => [String(s._id), await previousAttempts(s, ownUrl)] as const)));
 
   // Course (most recent activity first) → module (course order) → challenges (unit order).
   const byCourse = new Map<string, Sub[]>();
@@ -147,7 +152,7 @@ async function MyChallenges() {
                 </h3>
                 <ol className="grid gap-3">
                   {m.subs.map((s) => (
-                    <ChallengeCard key={String(s._id)} s={s} unit={find(units, s.unitId)?.title ?? ""} title={find(activities, s.activityId)?.title ?? "Défi oral"} coach={find(coaches, s.gradedBy) ?? null} mainCoach={mainCoach ? coachLabel(mainCoach) : ""} urls={urls} voiceNote={notes[String(s._id)] ?? null} />
+                    <ChallengeCard key={String(s._id)} s={s} unit={find(units, s.unitId)?.title ?? ""} title={find(activities, s.activityId)?.title ?? "Défi oral"} coach={find(coaches, s.gradedBy) ?? null} mainCoach={mainCoach ? coachLabel(mainCoach) : ""} urls={urls} voiceNote={notes[String(s._id)] ?? null} earlier={earlierBySub[String(s._id)] ?? []} />
                   ))}
                 </ol>
               </div>
@@ -161,7 +166,7 @@ async function MyChallenges() {
 
 type Coach = { name?: string | null; coachName?: string | null; avatarUrl?: string | null };
 
-function ChallengeCard({ s, unit, title, coach, mainCoach, urls, voiceNote }: { s: Sub; unit: string; title: string; coach: Coach | null; mainCoach: string; urls: Record<string, string | null>; voiceNote: string | null }) {
+function ChallengeCard({ s, unit, title, coach, mainCoach, urls, voiceNote, earlier }: { s: Sub; unit: string; title: string; coach: Coach | null; mainCoach: string; urls: Record<string, string | null>; voiceNote: string | null; earlier: AttemptItem[] }) {
   const feedback = {
     status: s.status,
     grade: s.grade,
@@ -172,7 +177,6 @@ function ChallengeCard({ s, unit, title, coach, mainCoach, urls, voiceNote }: { 
     voiceNote: voiceNote ? { url: voiceNote, seed: String(s.feedbackAudioMediaId), durationS: s.feedbackAudioDurationS } : null,
   };
   const st = STATUS[s.status as keyof typeof STATUS] ?? STATUS.pending;
-  const earlier = (s.history ?? []).slice(0, -1).reverse();
   const latest = urls[String(s.mediaId)];
   return (
     <li className={cn("rounded-3xl border-2 bg-card p-5", st.card)}>
@@ -195,23 +199,7 @@ function ChallengeCard({ s, unit, title, coach, mainCoach, urls, voiceNote }: { 
         {latest ? <audio src={latest} controls preload="none" className="w-full" /> : <p className="text-sm text-muted-foreground">Enregistrement indisponible.</p>}
       </div>
 
-      {earlier.length > 0 && (
-        <details className="mt-3">
-          <summary className="flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-primary">
-            <History className="size-4" aria-hidden /> Mes essais précédents ({earlier.length})
-          </summary>
-          <ul className="mt-2 grid gap-2">
-            {earlier.map((h, i) => (
-              <li key={i} className="grid gap-1">
-                <span className="text-xs text-muted-foreground">
-                  Envoi {earlier.length - i} · {formatDate(h.sentAt)}
-                </span>
-                {urls[String(h.mediaId)] ? <audio src={urls[String(h.mediaId)]!} controls preload="none" className="w-full" /> : <span className="text-sm text-muted-foreground">Indisponible.</span>}
-              </li>
-            ))}
-          </ul>
-        </details>
-      )}
+      <AttemptHistory items={earlier} className="mt-3" />
 
       <Link href={stepPath(String(s.courseId), String(s.stepId))} className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-coral-dark hover:underline">
         {s.status === "returned" ? "Reprendre le défi" : s.status === "graded" && sendsLeft(s) > 0 ? "Refaire le défi" : "Ouvrir le défi"} <ArrowRight className="size-4" aria-hidden />
