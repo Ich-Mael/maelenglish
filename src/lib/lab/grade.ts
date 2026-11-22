@@ -1,4 +1,5 @@
-import { parseGaps, type ActivityType, type GapsContent, type ListeningContent } from "./types";
+import { parseGaps, sentenceText, type ActivityType, type GapsContent, type ListeningContent, type SentenceContent } from "./types";
+import { normalizeEnglish } from "@/lib/ai/text";
 import { matchAnswer } from "./match";
 
 /*
@@ -23,6 +24,13 @@ export function checkItem(type: ActivityType, content: unknown, itemId: string, 
       const gap = parseGaps(c).gaps.find((g) => g.id === itemId);
       return !!gap && typeof answer === "string" && matchAnswer(answer, gap.answers, { typo: c.typos }).ok;
     }
+    case "sentence_builder": {
+      // The tiles placed, joined by spaces; punctuation, case and contractions don't matter.
+      const it = (content as SentenceContent).items.find((x) => x.id === itemId);
+      if (!it || typeof answer !== "string" || !answer.trim()) return false;
+      const given = normalizeEnglish(answer);
+      return [sentenceText(it.sentence), ...it.alternatives].some((s) => normalizeEnglish(s) === given);
+    }
     default:
       return false;
   }
@@ -35,6 +43,8 @@ export function itemIds(type: ActivityType, content: unknown): string[] {
     case "fill_gaps":
     case "listen_fill_gaps":
       return parseGaps(content as GapsContent).gaps.map((g) => g.id);
+    case "sentence_builder":
+      return (content as SentenceContent).items.map((i) => i.id);
     default:
       return [];
   }

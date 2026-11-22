@@ -4,7 +4,7 @@
  * rules in `content.ts`, its editor in components/lab/editors and its player in components/lab/players.
  */
 
-export const ACTIVITY_TYPES = ["listen_choose", "fill_gaps", "listen_fill_gaps", "speaking_challenge"] as const;
+export const ACTIVITY_TYPES = ["listen_choose", "fill_gaps", "listen_fill_gaps", "sentence_builder", "speaking_challenge"] as const;
 export type ActivityType = (typeof ACTIVITY_TYPES)[number];
 
 /** `challenge`: closes a unit (its last step, kind challenge); `practice`: an activity step practising a lesson. */
@@ -36,6 +36,12 @@ export const ACTIVITY_INFO: Record<ActivityType, { label: string; description: s
     description: "An audio clip and its transcript with blanks: the learner completes what they hear. At correction, each blank replays its sentence.",
     role: "practice",
     skill: "listening",
+  },
+  "sentence_builder": {
+    label: "Sentence builder",
+    description: "Word tiles to put back in order, one sentence per screen; optional French translation, distractor tiles and the sentence's audio.",
+    role: "practice",
+    skill: "language",
   },
   "speaking_challenge": {
     label: "Speaking challenge",
@@ -164,7 +170,26 @@ export function parseGaps(c: Pick<GapsContent, "text" | "explanations">, opts: {
 /** Index of the line holding a blank, or -1. */
 export const lineOfGap = (lines: GapSegment[][], gapId: string) => lines.findIndex((l) => l.some((s) => s.kind === "gap" && s.gap.id === gapId));
 
-export type ActivityContent = { "listen_choose": ListeningContent; "fill_gaps": GapsContent; "listen_fill_gaps": ListenGapsContent; "speaking_challenge": SpeakingChallengeContent };
+/**
+ * V4 — Sentence builder: the sentence is written with « / » between its tiles (« I / would like /
+ * to book / a meeting. » — a tile may hold several words; without « / » every word is a tile).
+ * `alternatives`: other accepted sentences (plain text); `distractors`: extra wrong tiles;
+ * `translation`: French hint; `audioMediaId`: the sentence read aloud (model-audio).
+ */
+export type SentenceItem = { id: string; sentence: string; translation: string; distractors: string[]; alternatives: string[]; explanation: string; audioMediaId: string };
+/** `audioWhen`: « after » = heard once answered (reward / model); « before » = heard first, the learner rebuilds what they heard. */
+export const SENTENCE_AUDIO_WHEN = ["after", "before"] as const;
+export type SentenceContent = { items: SentenceItem[]; audioWhen: (typeof SENTENCE_AUDIO_WHEN)[number] };
+
+/** Tiles of a sentence, in the right order. */
+export function sentenceTiles(sentence: string): string[] {
+  const s = sentence.trim();
+  return (s.includes("/") ? s.split("/") : s.split(/\s+/)).map((t) => t.trim().replace(/\s+/g, " ")).filter(Boolean);
+}
+/** The sentence as read: its tiles joined by spaces. */
+export const sentenceText = (sentence: string) => sentenceTiles(sentence).join(" ");
+
+export type ActivityContent = { "listen_choose": ListeningContent; "fill_gaps": GapsContent; "listen_fill_gaps": ListenGapsContent; "sentence_builder": SentenceContent; "speaking_challenge": SpeakingChallengeContent };
 
 export const MAX_PLAYS = [0, 2, 3] as const;
 

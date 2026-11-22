@@ -202,7 +202,7 @@ export function GapsPlayer({
                         seg.kind === "text" ? (
                           <span key={k}>{seg.text}</span>
                         ) : (
-                          <strong key={k} className="rounded bg-success/12 px-1 text-success">
+                          <strong key={k} className="rounded bg-brand-soft px-1 text-primary">
                             {seg.gap.answers[0]}
                           </strong>
                         ),
@@ -271,8 +271,8 @@ export function GapsPlayer({
       </section>
 
       {phase === "feedback" && (
-        <div role="status" className={cn("grid gap-3 rounded-2xl border-2 p-4 animate-pop motion-reduce:animate-none", allRight ? "border-success/40 bg-success/10" : "border-coral/40 bg-coral-soft")}>
-          <p className={cn("flex items-center gap-2 font-heading text-lg font-extrabold", allRight ? "text-success" : "text-coral-dark")}>
+        <div role="status" className={cn("grid gap-3 rounded-2xl border-2 p-4 animate-pop motion-reduce:animate-none", allRight ? "border-primary/30 bg-brand-soft" : "border-coral/40 bg-coral-soft")}>
+          <p className={cn("flex items-center gap-2 font-heading text-lg font-extrabold", allRight ? "text-primary" : "text-coral-dark")}>
             {allRight ? <Check className="size-5" aria-hidden /> : <X className="size-5" aria-hidden />}
             {allRight ? "Tout est juste !" : `${gaps.length - wrong.length} / ${gaps.length} juste${gaps.length - wrong.length > 1 ? "s" : ""}`}
           </p>
@@ -282,7 +282,7 @@ export function GapsPlayer({
                 <li key={g.id} className="rounded-xl bg-white/70 px-3 py-2">
                   <span className="font-semibold text-muted-foreground">Trou {g.index + 1} · </span>
                   <span lang="en">
-                    <s className="text-coral-dark">{joined(values[g.id]) || "—"}</s> → <strong className="text-success">{g.answers[0]}</strong>
+                    <s className="text-coral-dark">{joined(values[g.id]) || "—"}</s> → <strong className="text-primary">{g.answers[0]}</strong>
                   </span>
                   {g.explanation && <span className="mt-0.5 block">{g.explanation}</span>}
                   {listen?.audioUrl && timeOf(g.id) !== null && (

@@ -56,10 +56,10 @@ export function RewardCenter() {
               initial={reduce ? { opacity: 0 } : { opacity: 0, y: -20, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10 }}
-              className="pointer-events-auto flex items-center gap-3 rounded-2xl border-2 border-xp/40 bg-card px-4 py-2.5 shadow-xl"
+              className="pointer-events-auto flex items-center gap-3 rounded-2xl border-2 border-primary/30 bg-card px-4 py-2.5 shadow-xl"
             >
-              <span className="flex items-center gap-1 font-heading text-lg font-extrabold text-[#9a6200]">
-                <Sparkles className="size-5 text-xp" aria-hidden /> +{toast.xpGained} XP
+              <span className="flex items-center gap-1 font-heading text-lg font-extrabold text-primary">
+                <Sparkles className="size-5 text-coral" aria-hidden /> +{toast.xpGained} XP
               </span>
               {toast.streakExtended && toast.streak > 0 && (
                 <span className="flex items-center gap-1 text-sm font-bold text-coral-dark">

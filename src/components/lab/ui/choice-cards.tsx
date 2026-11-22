@@ -37,15 +37,15 @@ export function ChoiceCards({
             className={cn(
               "flex items-center gap-3 rounded-2xl border-2 border-b-4 px-4 py-3 text-left text-base transition",
               !reveal && (chosen ? "border-primary bg-brand-soft font-semibold text-brand-deep" : "border-border bg-card hover:border-primary/50"),
-              right && "border-success bg-success/10 font-semibold text-success",
-              wrong && "border-destructive/50 bg-destructive/5 text-destructive",
+              right && "border-primary bg-brand-soft font-semibold text-primary",
+              wrong && "border-coral bg-coral-soft/60 text-coral-dark",
               reveal && !right && !wrong && "border-border bg-card text-muted-foreground",
             )}
           >
             <span
               className={cn(
                 "flex size-7 shrink-0 items-center justify-center rounded-lg border-2 text-sm font-bold",
-                right ? "border-success bg-success text-white" : wrong ? "border-destructive bg-destructive text-white" : chosen ? "border-primary bg-primary text-white" : "border-border text-muted-foreground",
+                right ? "border-primary bg-gradient-to-br from-primary to-brand-deep text-white" : wrong ? "border-coral bg-white text-coral-dark" : chosen ? "border-primary bg-primary text-white" : "border-border text-muted-foreground",
               )}
               aria-hidden
             >

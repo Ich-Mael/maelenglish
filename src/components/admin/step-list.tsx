@@ -5,8 +5,8 @@ import Link from "next/link";
 import { DndContext, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { AlertTriangle, ArrowDown, ArrowUp, BookOpen, CircleCheck, GripVertical, Mic, Sparkles, Trash2 } from "lucide-react";
-import { validateUnit, type UnitStepInput } from "@/lib/course/validate-unit";
+import { AlertTriangle, ArrowDown, ArrowUp, BookOpen, CircleCheck, GripVertical, Mic, Sparkles, Trash2, EyeOff } from "lucide-react";
+import { draftNotices, validateUnit, type UnitStepInput } from "@/lib/course/validate-unit";
 import type { StepKind } from "@/lib/course/types";
 import { reorderStepsAction, deleteStepAction, saveActivityStepAction } from "@/app/admin/actions";
 import { ActionButton, AdminForm, Submit } from "./forms";
@@ -41,6 +41,7 @@ export function StepList({ unitId, steps, edit }: { unitId: string; steps: StepR
   const byId = new Map(steps.map((s) => [s.id, s]));
   const rows = order.map((id) => byId.get(id)!).filter(Boolean);
   const problems = validateUnit(rows);
+  const drafts = draftNotices(rows);
   const lessons = rows.filter((r) => r.kind === "lesson");
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
 
@@ -75,6 +76,18 @@ export function StepList({ unitId, steps, edit }: { unitId: string; steps: StepR
           </p>
           <ul className="mt-1 list-disc pl-6">
             {problems.map((p, i) => (
+              <li key={i}>{p.message}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {drafts.length > 0 && (
+        <div className="rounded-xl border border-primary/25 bg-brand-soft px-3 py-2.5 text-sm text-brand-deep" role="status">
+          <p className="flex items-center gap-2 font-semibold">
+            <EyeOff className="size-4 shrink-0" aria-hidden /> Skipped for learners until ready in the Lab:
+          </p>
+          <ul className="mt-1 list-disc pl-6">
+            {drafts.map((p, i) => (
               <li key={i}>{p.message}</li>
             ))}
           </ul>

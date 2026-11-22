@@ -47,8 +47,8 @@ export function ExerciseHeader({ meta, courseHref, index, total, done }: { meta:
 /** Right / wrong panel under an item: the right answer, a one-line explanation, extras (replay…). */
 export function FeedbackPanel({ correct, answer, explanation, children }: { correct: boolean; answer?: React.ReactNode; explanation?: string; children?: React.ReactNode }) {
   return (
-    <div role="status" className={cn("grid gap-2 rounded-2xl border-2 p-4 animate-pop motion-reduce:animate-none", correct ? "border-success/40 bg-success/10" : "border-coral/40 bg-coral-soft")}>
-      <p className={cn("flex items-center gap-2 font-heading text-lg font-extrabold", correct ? "text-success" : "text-coral-dark")}>
+    <div role="status" className={cn("grid gap-2 rounded-2xl border-2 p-4 animate-pop motion-reduce:animate-none", correct ? "border-primary/30 bg-brand-soft" : "border-coral/40 bg-coral-soft")}>
+      <p className={cn("flex items-center gap-2 font-heading text-lg font-extrabold", correct ? "text-primary" : "text-coral-dark")}>
         {correct ? <Check className="size-5" aria-hidden /> : <X className="size-5" aria-hidden />}
         {correct ? "Bonne réponse !" : "Pas tout à fait."}
       </p>
@@ -117,7 +117,7 @@ export function Stars({ n, className }: { n: number; className?: string }) {
   return (
     <span className={cn("inline-flex gap-1", className)} role="img" aria-label={`${n} étoile${n > 1 ? "s" : ""} sur 3`}>
       {[1, 2, 3].map((i) => (
-        <Star key={i} className={cn("size-9", i <= n ? "fill-xp text-xp" : "text-white/35")} aria-hidden />
+        <Star key={i} className={cn("size-9", i <= n ? "fill-white text-white drop-shadow-[0_2px_0_rgb(0_0_0/0.2)]" : "text-white/30")} aria-hidden />
       ))}
     </span>
   );
@@ -159,7 +159,7 @@ export function ResultsScreen({
   const below = passScore !== undefined && passScore !== null && score < passScore;
   return (
     <div className="grid gap-5">
-      <div className={cn("rounded-3xl p-6 text-center text-white", score >= 75 ? "bg-success" : "bg-brand-deep")} role="status">
+      <div className={cn("rounded-3xl p-6 text-center text-white", score >= 75 ? "bg-gradient-to-br from-primary via-brand-dark to-brand-deep" : "bg-brand-deep")} role="status">
         <Stars n={stars} className="justify-center" />
         <p className="mt-2 font-heading text-5xl font-extrabold">{score} %</p>
         <p className="mt-1 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm font-semibold text-white/90">
@@ -173,7 +173,7 @@ export function ResultsScreen({
           )}
           {bestScore !== undefined && bestScore > score && <span>Meilleur score : {bestScore} %</span>}
         </p>
-        {!!xp && <p className="mt-1 font-heading text-xl font-extrabold text-xp">+{xp} XP</p>}
+        {!!xp && <p className="mx-auto mt-2 w-fit rounded-full border-2 border-coral bg-white px-3 py-0.5 font-heading text-xl font-extrabold text-coral">+{xp} XP</p>}
         {preview && <p className="mt-2 text-sm text-white/80">Aperçu : rien n&apos;est enregistré.</p>}
         {below ? (
           <>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { computeOutline, gradeQuiz, type OutlineInput } from "@/lib/learn/progress";
-import { validateUnit, type UnitStepInput } from "@/lib/course/validate-unit";
+import { draftNotices, learnerSteps, validateUnit, type UnitStepInput } from "@/lib/course/validate-unit";
 import { cleanLessonContent, lessonHasContent } from "@/lib/course/lesson-content";
 import { stepAfter, stepBefore } from "@/lib/learn/sequence";
 
@@ -70,7 +70,13 @@ describe("validateUnit (spec §4)", () => {
   it("checks the practised lesson, readiness and lesson content", () => {
     // Activity pointing to a lesson below it (s4 is the second lesson).
     expect(validateUnit(steps("LAALAAC", (s) => (s.id === "s2" ? { lessonId: "s4" } : {})))[0].message).toMatch(/practise a lesson placed above/);
-    expect(validateUnit(steps("LAAC", (s) => (s.id === "s3" ? { ready: false } : {})))[0]).toEqual({ stepId: "s3", message: expect.stringMatching(/draft in the Lab/) });
+    // A draft practice activity is skipped for learners: the unit stays valid if what remains follows the rules…
+    const withDraft = steps("LAAAC", (s) => (s.id === "s4" ? { ready: false } : {}));
+    expect(validateUnit(withDraft)).toEqual([]);
+    expect(draftNotices(withDraft)).toEqual([{ stepId: "s4", message: expect.stringMatching(/draft in the Lab: learners don't see it/) }]);
+    expect(learnerSteps(withDraft).map((s) => s.id)).toEqual(["s1", "s2", "s3", "s5"]);
+    // …and invalid when the lesson is left with a single activity.
+    expect(validateUnit(steps("LAAC", (s) => (s.id === "s3" ? { ready: false } : {})))[0]).toEqual({ stepId: "s1", message: expect.stringMatching(/has only 1 activity/) });
     expect(validateUnit(steps("LAAC", (s) => (s.kind === "challenge" ? { ready: false } : {})))[0].message).toMatch(/Speaking challenge .* draft/);
     expect(validateUnit(steps("LAAC", (s) => (s.kind === "lesson" ? { hasContent: false } : {})))[0].message).toMatch(/is empty/);
   });

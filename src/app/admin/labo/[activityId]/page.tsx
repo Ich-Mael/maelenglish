@@ -10,11 +10,13 @@ import { can } from "@/lib/admin/permissions";
 import { usagesOf } from "@/lib/lab/service";
 import { ACTIVITY_INFO, type ActivityType, isActivityType } from "@/lib/lab/types";
 import { Activity, Course, Module, Step, Unit, type ActivityDoc, type CourseDoc } from "@/models";
-import { Card, Checkbox, EmptyState, Input, PageHeader, Pill, btn, inputCls } from "@/components/admin/ui";
+import { Card, Checkbox, EmptyState, Input, PageHeader, btn, inputCls } from "@/components/admin/ui";
 import { ActionButton, AdminForm, Submit } from "@/components/admin/forms";
 import { ActivityFields } from "@/components/lab/editors";
 import { MetaFields } from "@/components/lab/meta-fields";
 import { ACTIVITY_ICON } from "@/components/lab/type-icon";
+import { SKILL_NAME, TYPE_LOOK, TypeArt } from "@/components/lab/type-style";
+import { cn } from "cn";
 import { PageSkeleton } from "@/components/learn/ui";
 import { stepPath } from "@/lib/learn/paths";
 import { attachActivityAction, deleteActivityAction, duplicateActivityAction, removeStepAction, saveActivityAction } from "../actions";
@@ -35,6 +37,7 @@ async function ActivityAdmin({ params, searchParams }: { params: Promise<{ activ
   const type: ActivityType = activity.type;
   const info = ACTIVITY_INFO[type];
   const Icon = ACTIVITY_ICON[type];
+  const light = type === "fill_gaps" || type === "sentence_builder";
 
   // Units this staff member can add the activity to (courses whose content they edit).
   const scope = can.courseScope(a0);
@@ -74,13 +77,28 @@ async function ActivityAdmin({ params, searchParams }: { params: Promise<{ activ
       <PageHeader
         title={activity.title}
         back={{ href: "/admin/labo", label: "Lab" }}
-        subtitle={
-          <span className="flex flex-wrap items-center gap-2">
-            <Icon className="size-4 text-primary" aria-hidden /> {info.label}
-            {activity.status === "ready" ? <Pill tone="green">Ready</Pill> : <Pill tone="amber">Draft</Pill>}
-          </span>
-        }
       />
+
+      {/* Type banner: what this activity is, in the same look as the Lab library. */}
+      <div className={cn("relative flex items-center gap-4 overflow-clip rounded-3xl px-5 py-4", TYPE_LOOK[type].band, light ? "border-2 border-border" : "", type === "speaking_challenge" && "ring-2 ring-coral/60")}>
+        <span className={cn("flex size-12 shrink-0 items-center justify-center rounded-2xl", light ? "bg-white text-primary shadow-sm" : "bg-white/15 text-white")}>
+          <Icon className="size-6" aria-hidden />
+        </span>
+        <div className="grid min-w-0 flex-1 gap-1">
+          <p className="font-heading text-lg leading-tight font-extrabold">{info.label}</p>
+          <p className={cn("text-xs font-semibold", light ? "text-muted-foreground" : "text-white/80")}>
+            {info.role === "challenge" ? "Closes a unit · reviewed by a coach" : `Practice · ${SKILL_NAME[info.skill]}`}
+          </p>
+          <span className="flex flex-wrap gap-1.5">
+            {activity.status === "ready" ? (
+              <span className={cn("rounded-full px-2.5 py-0.5 text-xs font-bold", light ? "bg-gradient-to-r from-primary to-brand-deep text-white" : "bg-white text-primary")}>Ready</span>
+            ) : (
+              <span className="rounded-full border border-coral bg-white px-2.5 py-0.5 text-xs font-bold text-coral-dark">Draft</span>
+            )}
+          </span>
+        </div>
+        <TypeArt type={type} className={cn("hidden shrink-0 sm:block", type === "speaking_challenge" ? "-my-6 scale-75" : "w-44")} />
+      </div>
 
       {justAdded && (
         <p className="flex flex-wrap items-center gap-3 rounded-2xl border-2 border-primary/20 bg-brand-soft p-4 text-sm text-brand-deep">

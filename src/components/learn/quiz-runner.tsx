@@ -94,7 +94,7 @@ export function QuizRunner({
   if (!started) {
     return (
       <div className="mx-auto grid max-w-md gap-6 rounded-3xl border-2 border-border bg-card p-6 text-center sm:p-8">
-        <Trophy className="mx-auto size-14 text-xp" aria-hidden />
+        <Trophy className="mx-auto size-14 text-primary" aria-hidden />
         <div>
           <h1 className="text-2xl font-extrabold text-brand-deep">{title}</h1>
           <p className="mt-2 text-muted-foreground">
@@ -120,7 +120,7 @@ export function QuizRunner({
     const byId = new Map(result.review.map((r) => [r.questionId, r]));
     return (
       <div className="mx-auto grid max-w-2xl gap-6">
-        <div className={cn("rounded-3xl p-6 text-center text-white", result.passed ? "bg-success" : "bg-brand-deep")}>
+        <div className={cn("rounded-3xl p-6 text-center text-white", result.passed ? "bg-gradient-to-br from-primary via-brand-dark to-brand-deep" : "bg-brand-deep")}>
           <motion.p initial={reduce ? false : { scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 220, damping: 14 }} className="font-heading text-6xl font-extrabold">
             {result.score} %
           </motion.p>
@@ -128,10 +128,10 @@ export function QuizRunner({
           <p className="mt-1 text-white/85">
             {result.correct} bonne(s) réponse(s) sur {result.total} · {result.passingScore} % requis
           </p>
-          {result.reward && result.reward.xpGained > 0 && <p className="mt-2 font-heading text-xl font-extrabold text-xp">+{result.reward.xpGained} XP</p>}
+          {result.reward && result.reward.xpGained > 0 && <p className="mx-auto mt-2 w-fit rounded-full border-2 border-coral bg-white px-3 py-0.5 font-heading text-xl font-extrabold text-coral">+{result.reward.xpGained} XP</p>}
           <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
             {result.passed ? (
-              <button type="button" onClick={() => router.push(nextHref)} className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-6 font-bold text-success">
+              <button type="button" onClick={() => router.push(nextHref)} className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-6 font-bold text-brand-deep">
                 Continuer <ArrowRight className="size-4" aria-hidden />
               </button>
             ) : (
@@ -153,7 +153,7 @@ export function QuizRunner({
             return (
               <li key={question.id} className="rounded-3xl border-2 border-border bg-card p-5">
                 <p className="flex items-start gap-2 font-bold text-brand-deep">
-                  <span className={cn("flex size-6 shrink-0 items-center justify-center rounded-full text-white", ok ? "bg-success" : "bg-destructive")}>
+                  <span className={cn("flex size-6 shrink-0 items-center justify-center rounded-full text-white", ok ? "bg-gradient-to-br from-primary to-brand-deep" : "border-2 border-coral bg-white text-coral-dark")}>
                     {ok ? <Check className="size-4" aria-hidden /> : <X className="size-4" aria-hidden />}
                   </span>
                   {i + 1}. {question.text}
@@ -164,7 +164,7 @@ export function QuizRunner({
                       key={o.id}
                       className={cn(
                         "rounded-xl px-3 py-2 text-sm",
-                        o.id === r?.correctOptionId ? "bg-success/12 font-semibold text-success" : o.id === r?.chosen ? "bg-destructive/10 text-destructive line-through" : "text-muted-foreground",
+                        o.id === r?.correctOptionId ? "bg-brand-soft font-semibold text-primary" : o.id === r?.chosen ? "bg-coral-soft/60 text-coral-dark line-through" : "text-muted-foreground",
                       )}
                     >
                       {o.text}
@@ -200,7 +200,7 @@ export function QuizRunner({
           ))}
         </div>
         {timeLimit > 0 && (
-          <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-bold tabular-nums", secondsLeft < 60 ? "bg-destructive/10 text-destructive" : "bg-brand-soft text-primary")} role="timer" aria-label="Temps restant">
+          <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-bold tabular-nums", secondsLeft < 60 ? "border border-coral bg-white text-coral-dark" : "bg-brand-soft text-primary")} role="timer" aria-label="Temps restant">
             <Timer className="size-4" aria-hidden /> {mm}:{ss}
           </span>
         )}

@@ -138,7 +138,7 @@ function Blank({
             }}
             className={cn(
               "h-11 rounded-lg border-2 px-0 pl-[0.35ch] font-mono text-lg leading-none font-bold outline-none transition-colors placeholder:text-primary/40 focus:border-primary focus:bg-white disabled:cursor-default",
-              state === "right" ? "border-success/50 bg-success/10 text-success" : state === "wrong" ? "border-coral bg-coral-soft text-coral-dark" : "border-border bg-brand-soft/50 text-brand-deep",
+              state === "right" ? "border-primary/50 bg-brand-soft text-primary" : state === "wrong" ? "border-coral bg-coral-soft text-coral-dark" : "border-border bg-brand-soft/50 text-brand-deep",
               !slots && "px-2",
             )}
           />

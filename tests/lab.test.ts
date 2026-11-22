@@ -8,7 +8,7 @@ import * as content from "@/lib/admin/content";
 import * as lab from "@/lib/lab/service";
 import { can } from "@/lib/admin/permissions";
 import { cleanContent, contentProblem } from "@/lib/lab/content";
-import { parseTime, formatTime, parseGaps, lineOfGap } from "@/lib/lab/types";
+import { parseTime, formatTime, parseGaps, lineOfGap, sentenceText, sentenceTiles } from "@/lib/lab/types";
 import { gradeActivity } from "@/lib/lab/grade";
 
 let mongo: MongoMemoryServer;
@@ -181,6 +181,28 @@ describe("Labo", () => {
     expect(lines[1].at(-1)).toEqual({ kind: "text", text: " my colleague. [ ] stays text." });
     expect(contentProblem("fill_gaps", c)).toBeNull();
     expect(contentProblem("fill_gaps", cleanContent("fill_gaps", { json: JSON.stringify({ text: "No blank here." }) }))).toMatch(/square brackets/);
+
+    // V4 sentence builder: tiles with « / » (a tile may hold several words), distractors, other accepted orders.
+    expect([sentenceTiles(" I / would like /to book / a meeting. "), sentenceTiles("I work for a bank."), sentenceText("She / manages / the IT team.")]).toEqual([["I", "would like", "to book", "a meeting."], ["I", "work", "for", "a", "bank."], "She manages the IT team."]);
+    const sb = cleanContent("sentence_builder", {
+      json: JSON.stringify({
+        audioWhen: "nope",
+        items: [
+          { id: "a", sentence: "I / would like / to book / a meeting / on Monday.", distractors: "booking / at", alternatives: "On Monday, I would like to book a meeting.\n", explanation: "would like + to" },
+          { id: "a", sentence: "She manages the IT team." },
+        ],
+      }),
+    });
+    expect([sb.audioWhen, sb.items.map((i) => i.id), sb.items[0].distractors, sb.items[0].alternatives]).toEqual(["after", ["a", "s2-1"], ["booking", "at"], ["On Monday, I would like to book a meeting."]]);
+    expect(contentProblem("sentence_builder", sb)).toBeNull();
+    expect(contentProblem("sentence_builder", { ...sb, items: [] })).toMatch(/at least one sentence/);
+    expect(contentProblem("sentence_builder", { ...sb, items: [{ ...sb.items[0], sentence: "Hello" }] })).toMatch(/at least 2 tiles/);
+    expect(contentProblem("sentence_builder", { ...sb, items: [{ ...sb.items[0], distractors: ["to book"] }] })).toMatch(/distractor/);
+    expect(contentProblem("sentence_builder", { ...sb, audioWhen: "before" })).toMatch(/audio/);
+    // Tiles placed in order (joined by spaces): case, punctuation and contractions ignored; alternatives accepted; a distractor fails.
+    const g = gradeActivity("sentence_builder", sb, { a: "on monday , I would like to book a meeting", "s2-1": "She manages the team IT." });
+    expect([g.items.map((i) => i.correct), g.score]).toEqual([[true, false], 50]);
+    expect(gradeActivity("sentence_builder", sb, { a: "I would like booking a meeting on Monday.", "s2-1": "She manages the IT team" }).items.map((i) => i.correct)).toEqual([false, true]);
 
     // Speaking challenge prompts: picture / video / audio, questions one per line; only what the type uses is kept.
     const id = String(new Types.ObjectId());

@@ -76,6 +76,7 @@ export async function courseTree(me: CurrentUser, access: Extract<CourseAccess, 
   const structure = await courseStructure(courseId);
   const { modules, units, steps, activities, problems } = structure;
   const activityType = new Map(activities.map((a) => [String(a._id), a.type]));
+  const ready = new Set(activities.filter((a) => a.status === "ready").map((a) => String(a._id)));
 
   const [progress, attempts, submissions] = await Promise.all([
     StepProgress.find({ userId: me.id, courseId }).select("stepId score").lean(),
@@ -101,8 +102,9 @@ export async function courseTree(me: CurrentUser, access: Extract<CourseAccess, 
           objectives: u.objectives ?? [],
           estimatedMinutes: u.estimatedMinutes ?? 0,
           valid: (problems.get(String(u._id)) ?? []).length === 0,
+          // Draft practice activities are skipped for learners (the unit stays visible without them).
           steps: steps
-            .filter((s) => String(s.unitId) === String(u._id))
+            .filter((s) => String(s.unitId) === String(u._id) && !(s.kind === "activity" && !ready.has(String(s.activityId))))
             .map((s) => ({
               id: String(s._id),
               kind: s.kind as "lesson" | "activity" | "challenge",

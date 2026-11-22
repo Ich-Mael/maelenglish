@@ -55,6 +55,7 @@ async function ModuleAdmin({ params }: { params: Promise<{ courseId: string; mod
           {units.map((u, i) => {
             const own = steps.filter((x) => String(x.unitId) === String(u._id));
             const problems = checkUnit(own, ready);
+            const drafts = own.filter((x) => x.kind === "activity" && !ready.has(String(x.activityId))).length;
             const count = (k: string) => own.filter((x) => x.kind === k).length;
             return (
               <li key={String(u._id)} className="rounded-xl border border-border p-3">
@@ -72,6 +73,7 @@ async function ModuleAdmin({ params }: { params: Promise<{ courseId: string; mod
                           <EyeOff className="mr-1 size-3" aria-hidden /> Hidden: {problems.length} problem(s)
                         </Pill>
                       )}
+                      {drafts > 0 && <Pill tone="blue">{drafts} draft activit{drafts > 1 ? "ies" : "y"} skipped</Pill>}
                     </span>
                     <span className="block truncate text-xs text-muted-foreground">
                       {count("lesson")} lesson(s) · {count("activity")} activity(ies) · {count("challenge") ? "challenge" : "no challenge"}

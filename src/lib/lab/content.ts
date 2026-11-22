@@ -1,7 +1,7 @@
 import { normalizeRich, plainText } from "@/lib/rich-text";
 import { Types } from "mongoose";
 import { videoSource } from "@/lib/learn/media";
-import { MAX_PLAYS, MAX_SECONDS, PREP_SECONDS, PROMPT_TYPES, type PromptType, type ActivityContent, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type ListeningQuestion, type GapsContent, type ListenGapsContent, GAP_HINTS, parseGaps } from "./types";
+import { MAX_PLAYS, MAX_SECONDS, PREP_SECONDS, PROMPT_TYPES, SENTENCE_AUDIO_WHEN, sentenceTiles, type PromptType, type SentenceContent, type SentenceItem, type ActivityContent, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type ListeningQuestion, type GapsContent, type ListenGapsContent, GAP_HINTS, parseGaps } from "./types";
 
 /*
  * Content rules per activity type (server: rich text is sanitised here). `cleanContent` turns what
@@ -88,6 +88,53 @@ function gapsProblem(c: Partial<GapsContent>): string | null {
   return null;
 }
 
+/** Sentence builder: the editor sends `json` ({ audioWhen, items }); lists may come as « / »-separated text or arrays. */
+function cleanSentences(r: Record<string, unknown>): SentenceContent {
+  let j: Record<string, unknown> = r;
+  if (typeof r.json === "string") {
+    try {
+      j = JSON.parse(r.json) as Record<string, unknown>;
+    } catch {
+      j = {};
+    }
+  }
+  const list = (v: unknown, sep: RegExp, n: number, max: number) =>
+    (Array.isArray(v) ? v : str(v, 2000).split(sep))
+      .map((x) => str(x, max))
+      .filter(Boolean)
+      .slice(0, n);
+  const seen = new Set<string>();
+  const items: SentenceItem[] = (Array.isArray(j.items) ? j.items : []).slice(0, 20).map((raw, i) => {
+    const it = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+    let id = str(it.id, 40).replace(/[^\w-]/g, "") || `s${i + 1}`;
+    if (seen.has(id)) id = `s${i + 1}-${seen.size}`;
+    seen.add(id);
+    return {
+      id,
+      sentence: str(it.sentence, 300),
+      translation: str(it.translation, 300),
+      distractors: list(it.distractors, /\//, 4, 40),
+      alternatives: list(it.alternatives, /\n/, 5, 300),
+      explanation: str(it.explanation, 300),
+      audioMediaId: typeof it.audioMediaId === "string" && Types.ObjectId.isValid(it.audioMediaId) ? it.audioMediaId : "",
+    };
+  });
+  return { items, audioWhen: SENTENCE_AUDIO_WHEN.includes(j.audioWhen as "after") ? (j.audioWhen as SentenceContent["audioWhen"]) : "after" };
+}
+
+function sentencesProblem(c: Partial<SentenceContent>): string | null {
+  if (!c.items?.length) return "Add at least one sentence.";
+  for (const [i, it] of c.items.entries()) {
+    const tiles = sentenceTiles(it.sentence ?? "");
+    if (tiles.length < 2) return `Sentence ${i + 1}: write it with « / » between the tiles (at least 2 tiles).`;
+    if (tiles.length > 14) return `Sentence ${i + 1}: 14 tiles at most (group words into one tile with « / »).`;
+    const lower = new Set(tiles.map((t) => t.toLowerCase()));
+    if (it.distractors?.some((d) => lower.has(d.toLowerCase()))) return `Sentence ${i + 1}: a distractor is also a tile of the sentence.`;
+    if (c.audioWhen === "before" && !it.audioMediaId) return `Sentence ${i + 1}: add its audio (the learner hears it before building it).`;
+  }
+  return null;
+}
+
 export function cleanContent<T extends ActivityType>(type: T, raw: unknown): ActivityContent[T] {
   const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
   switch (type) {
@@ -97,6 +144,8 @@ export function cleanContent<T extends ActivityType>(type: T, raw: unknown): Act
       return cleanGaps(r) as ActivityContent[T];
     case "listen_fill_gaps":
       return cleanListenGaps(r) as ActivityContent[T];
+    case "sentence_builder":
+      return cleanSentences(r) as ActivityContent[T];
     case "speaking_challenge": {
       const promptType: PromptType = PROMPT_TYPES.includes(r.promptType as PromptType) ? (r.promptType as PromptType) : "text";
       const lines = (v: unknown, n: number) =>
@@ -147,6 +196,8 @@ export function contentProblem(type: ActivityType, content: unknown): string | n
       if (!c.audioMediaId) return "Add the audio.";
       return gapsProblem(c);
     }
+    case "sentence_builder":
+      return sentencesProblem(content as Partial<SentenceContent>);
     case "speaking_challenge": {
       const c = content as Partial<SpeakingChallengeContent>;
       if (!plainText(c.instructions ?? "")) return "Write the challenge instructions.";
