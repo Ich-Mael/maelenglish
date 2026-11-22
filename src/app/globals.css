@@ -287,3 +287,20 @@ html {
     }
   }
 }
+
+/*
+ * AI role-play partner (components/conversation/live-call.tsx): the avatar follows the real voice.
+ * `--out` / `--in` (0–1) are the partner's and the learner's audio levels, set every frame.
+ * Idle: slow breathing. With reduced motion only the rings' opacity changes.
+ */
+@keyframes partner-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.015); } }
+.partner-stage { --out: 0; --in: 0; }
+.partner-face { transform: scale(calc(1 + var(--out) * 0.05)) rotate(calc(var(--out) * 1.2deg)); transform-origin: 50% 70%; }
+.partner-idle .partner-face { animation: partner-breathe 4.5s ease-in-out infinite; }
+.partner-ring { transform: scale(calc(1 + var(--out) * 0.18)); opacity: calc(0.15 + var(--out) * 0.85); }
+.partner-ring-2 { transform: scale(calc(1.04 + var(--out) * 0.28)); opacity: calc(var(--out) * 0.6); }
+.partner-mic { transform: scale(calc(1 + var(--in) * 0.5)); opacity: calc(0.25 + var(--in) * 0.75); }
+@media (prefers-reduced-motion: reduce) {
+  .partner-face, .partner-idle .partner-face { transform: none; animation: none; }
+  .partner-ring, .partner-ring-2, .partner-mic { transform: none; }
+}

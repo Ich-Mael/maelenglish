@@ -1,7 +1,7 @@
 import { normalizeRich, plainText } from "@/lib/rich-text";
 import { Types } from "mongoose";
 import { videoSource } from "@/lib/learn/media";
-import { MAX_PLAYS, MAX_SECONDS, PREP_SECONDS, PROMPT_TYPES, SENTENCE_AUDIO_WHEN, MATCH_PER_SCREEN, TFNG_ANSWERS, docSentences, type CompleteWordsContent, type RepeatContent, type WritingTaskContent, WRITING_MIN_WORDS, WRITING_MAX_WORDS, type DictationContent, DICTATION_PLAYS, type TfngAnswer, type TfngContent, type TfngStatement, sentenceTiles, type MatchContent, type MatchPair, type PromptType, type SentenceContent, type SentenceItem, type ActivityContent, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type ListeningQuestion, type GapsContent, type ListenGapsContent, GAP_HINTS, parseGaps } from "./types";
+import { MAX_PLAYS, MAX_SECONDS, PREP_SECONDS, PROMPT_TYPES, SENTENCE_AUDIO_WHEN, MATCH_PER_SCREEN, TFNG_ANSWERS, docSentences, type CompleteWordsContent, type RepeatContent, type WritingTaskContent, WRITING_MIN_WORDS, WRITING_MAX_WORDS, type DictationContent, DICTATION_PLAYS, type RolePlayContent, ROLEPLAY_MINUTES, ROLEPLAY_DIFFICULTIES, type TfngAnswer, type TfngContent, type TfngStatement, sentenceTiles, type MatchContent, type MatchPair, type PromptType, type SentenceContent, type SentenceItem, type ActivityContent, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type ListeningQuestion, type GapsContent, type ListenGapsContent, GAP_HINTS, parseGaps } from "./types";
 
 /*
  * Content rules per activity type (server: rich text is sanitised here). `cleanContent` turns what
@@ -245,6 +245,27 @@ export function cleanContent<T extends ActivityType>(type: T, raw: unknown): Act
       });
       return { items, maxPlays: pick(DICTATION_PLAYS, j.maxPlays, 0) } satisfies DictationContent as ActivityContent[T];
     }
+    case "role_play": {
+      const lines = (v: unknown, n: number, max = 300) =>
+        (Array.isArray(v) ? v : str(v, 6000).split("\n"))
+          .map((x) => str(x, max))
+          .filter(Boolean)
+          .slice(0, n);
+      return {
+        situation: normalizeRich(typeof r.situation === "string" ? r.situation : ""),
+        aiRole: str(r.aiRole, 300),
+        learnerRole: str(r.learnerRole, 300),
+        setting: str(r.setting, 500),
+        goals: lines(r.goals, 8),
+        targetPhrases: lines(r.targetPhrases, 10, 200),
+        twists: lines(r.twists, 5),
+        openingLine: str(r.openingLine, 300),
+        difficulty: pick(ROLEPLAY_DIFFICULTIES, r.difficulty, 2),
+        maxMinutes: pick(ROLEPLAY_MINUTES, r.maxMinutes, 5),
+        voiceId: str(r.voiceId, 64).replace(/[^\w-]/g, ""),
+        voiceName: str(r.voiceName, 100),
+      } satisfies RolePlayContent as ActivityContent[T];
+    }
     case "writing_task": {
       const minWords = pick(WRITING_MIN_WORDS, r.minWords, 60);
       const maxWords = Math.max(pick(WRITING_MAX_WORDS, r.maxWords, 120), minWords + 20);
@@ -347,6 +368,15 @@ export function contentProblem(type: ActivityType, content: unknown): string | n
         if (!it.text) return `Sentence ${i + 1}: write it (what learners must type).`;
         if (!it.audioMediaId) return `Sentence ${i + 1}: add its audio.`;
       }
+      return null;
+    }
+    case "role_play": {
+      const c = content as Partial<RolePlayContent>;
+      if (!c.aiRole) return "Write the AI's role (who the AI plays).";
+      if (!c.learnerRole) return "Write the learner's role.";
+      if (!c.setting) return "Describe the setting.";
+      if (!c.goals?.length) return "Add at least one goal for the learner.";
+      if (!c.openingLine) return "Write the AI's opening line.";
       return null;
     }
     case "writing_task":

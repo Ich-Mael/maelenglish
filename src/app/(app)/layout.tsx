@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { BookOpen, CircleUserRound, Mic, NotebookPen, Trophy } from "lucide-react";
+import { BookOpen, LayoutGrid, MessagesSquare } from "lucide-react";
 import { StatsBar, StatsBarFallback } from "@/components/gamify/stats-bar";
 import { SoundToggle } from "@/components/gamify/sound-toggle";
 import { RewardCenter } from "@/components/gamify/reward-center";
@@ -11,12 +11,11 @@ import { UserChip } from "@/components/account/user-chip";
 import { ScrollHeader } from "@/components/site/scroll-header";
 import { WordLookup } from "@/components/learn/word-lookup";
 
+/* Three links only (owner decision 2026-11-22): the rest — challenges, progress, notebook, dictionary, account — is on « My Learning Space ». */
 const NAV = [
   { href: "/mes-cours", label: "My Courses", short: "Courses", icon: BookOpen },
-  { href: "/mes-defis", label: "My Challenges", short: "Challenges", icon: Mic },
-  { href: "/progression", label: "Progress", icon: Trophy },
-  { href: "/carnet", label: "Notebook", icon: NotebookPen },
-  { href: "/compte", label: "Account", icon: CircleUserRound },
+  { href: "/partenaire", label: "Speaking Partner", short: "Partner", icon: MessagesSquare },
+  { href: "/mon-espace", label: "My Learning Space", short: "My Space", icon: LayoutGrid },
 ];
 
 /** Signed-in shell: top bar (stats) + bottom tab bar on phones; celebrations live here so they survive navigation. */
@@ -36,10 +35,12 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
             <Image src="/images/maelenglish-mark-light.webp" alt="" width={800} height={175} className="absolute inset-0 h-auto w-24 opacity-0 transition-opacity duration-300 group-data-[scrolled=true]/hdr:opacity-100 sm:w-32" />
           </Link>
           <nav aria-label="Navigation" className="hidden gap-1 md:flex">
-            {/* « Account » is the username chip on the right (same link): not repeated here. */}
-            {NAV.filter((n) => n.href !== "/compte").map((n) => (
-              <Link key={n.href} href={n.href} className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold whitespace-nowrap text-ink/80 transition-colors hover:bg-brand-soft hover:text-brand-deep group-data-[scrolled=true]/hdr:text-white/85 group-data-[scrolled=true]/hdr:hover:bg-white/10 group-data-[scrolled=true]/hdr:hover:text-white">
-                <n.icon className="size-4.5" aria-hidden /> {n.label}
+            {NAV.map((n) => (
+              <Link key={n.href} href={n.href} title={n.label} className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-sm font-semibold whitespace-nowrap lg:px-3 text-ink/80 transition-colors hover:bg-brand-soft hover:text-brand-deep group-data-[scrolled=true]/hdr:text-white/85 group-data-[scrolled=true]/hdr:hover:bg-white/10 group-data-[scrolled=true]/hdr:hover:text-white">
+                <n.icon className="size-4.5" aria-hidden />
+                {/* Short labels on small desktops, full labels from lg. */}
+                <span className="lg:hidden">{n.short}</span>
+                <span className="hidden lg:inline">{n.label}</span>
               </Link>
             ))}
           </nav>
@@ -58,10 +59,10 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
       </ScrollHeader>
       <OfflineSync />
       <main id="contenu-app" className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:py-8">{children}</main>
-      <nav aria-label="Navigation" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] md:hidden">
+      <nav aria-label="Navigation" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-3 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] md:hidden">
         {NAV.map((n) => (
-          <Link key={n.href} href={n.href} className="flex flex-col items-center gap-0.5 py-2 text-xs font-semibold text-ink/75">
-            <n.icon className="size-5.5" aria-hidden /> {"short" in n ? n.short : n.label}
+          <Link key={n.href} href={n.href} className="flex min-w-0 flex-col items-center gap-0.5 py-2 text-xs font-semibold text-ink/75">
+            <n.icon className="size-5.5" aria-hidden /> {n.short}
           </Link>
         ))}
       </nav>

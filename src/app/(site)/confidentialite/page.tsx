@@ -78,6 +78,13 @@ export default function PrivacyPage() {
               coach qui vérifie et vous envoie le retour. Ces textes ne sont pas utilisés pour entraîner les modèles de ce prestataire.
             </li>
             <li>
+              <strong>Conversations avec le partenaire IA (« Speaking Partner »)</strong> : pendant une conversation, votre voix est
+              transmise en direct au service ElevenLabs, qui la transcrit et fait répondre l&apos;IA (modèle d&apos;Anthropic) ; ElevenLabs
+              conserve la conversation selon ses propres règles. Nous enregistrons sur votre compte la transcription écrite, sa
+              durée et le bilan (préparé par un outil d&apos;IA, Anthropic), que votre coach peut consulter. Nous ne gardons pas
+              l&apos;enregistrement audio sur nos serveurs.
+            </li>
+            <li>
               <strong>Exercices de prononciation (« Répétez après Mael »)</strong> : nous n&apos;enregistrons pas votre voix sur nos serveurs.
               Pour vérifier ce que vous avez dit, l&apos;exercice utilise la reconnaissance vocale de votre navigateur : votre voix est alors
               envoyée au service de l&apos;éditeur du navigateur (par exemple Google pour Chrome, Apple pour Safari), qui la transcrit en
@@ -105,7 +112,7 @@ export default function PrivacyPage() {
             <li>l&apos;équipe MaelEnglish : administrateurs, et les coachs et formateurs des cours auxquels vous êtes inscrit(e) ;</li>
             <li>
               nos prestataires techniques, uniquement pour faire fonctionner le service : hébergement de l&apos;application et de la base de
-              données, stockage des fichiers audio et des photos (Cloudflare R2), correction des textes par IA (Anthropic), envoi d&apos;emails (Brevo), messages WhatsApp (Meta) ;
+              données, stockage des fichiers audio et des photos (Cloudflare R2), correction des textes et bilans de conversation par IA (Anthropic), conversations vocales avec l&apos;IA (ElevenLabs), envoi d&apos;emails (Brevo), messages WhatsApp (Meta) ;
             </li>
             <li>les autres apprenants d&apos;un cours voient seulement votre prénom, l&apos;initiale de votre nom et vos XP de la semaine dans le classement.</li>
           </ul>

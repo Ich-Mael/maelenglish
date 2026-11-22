@@ -1,3 +1,4 @@
+import { dropAgents } from "@/lib/conversation/service";
 import { Types } from "mongoose";
 import { Activity, Course, Module, Step, Unit, type ActivityDoc } from "@/models";
 import { AdminError } from "@/lib/admin/errors";
@@ -80,6 +81,8 @@ export async function deleteActivity(activityId: string) {
     throw new AdminError("This activity is used in units: remove it from those units first.");
   }
   await Activity.deleteOne({ _id: id });
+  // AI role-play: its ElevenLabs agents aren't needed any more.
+  await dropAgents(activityId).catch((e) => console.error("[roleplay] drop agents", e));
 }
 
 export type Usage = { kind: "practice" | "challenge"; stepId: string; unitId: string; unitTitle: string; moduleTitle: string; courseId: string; courseTitle: string };

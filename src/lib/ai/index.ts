@@ -1,7 +1,8 @@
-import { AiNotConfiguredError, type FeedbackService, type PronunciationService, type SpeechService, type TtsService } from "./types";
+import { AiNotConfiguredError, type ConversationEngine, type FeedbackService, type PronunciationService, type SpeechService, type TtsService } from "./types";
 import { FakeFeedbackService, FakePronunciationService, FakeSpeechService, FakeTtsService } from "./fake";
 import { ClaudeFeedbackService } from "./claude";
 import { AzureTtsService, isAzureSpeechConfigured } from "./azure";
+import { ElevenLabsConversationEngine, isElevenLabsConfigured } from "./elevenlabs";
 
 /*
  * Provider registry. Real implementations are plugged in here by the feature that first needs
@@ -12,9 +13,9 @@ import { AzureTtsService, isAzureSpeechConfigured } from "./azure";
 
 export type AiServices = { speech: SpeechService; pronunciation: PronunciationService; tts: TtsService; feedback: FeedbackService };
 
-let override: Partial<AiServices> | null = null;
+let override: (Partial<AiServices> & { conversation?: ConversationEngine }) | null = null;
 /** Tests: replace providers. */
-export function setAiServicesForTests(s: Partial<AiServices> | null) {
+export function setAiServicesForTests(s: (Partial<AiServices> & { conversation?: ConversationEngine }) | null) {
   override = s;
 }
 
@@ -40,6 +41,14 @@ export function aiServices(): AiServices {
  */
 export function realTts(): TtsService | null {
   return override?.tts ?? (isAzureSpeechConfigured() ? new AzureTtsService() : null);
+}
+
+/**
+ * The AI speaking partner's provider (ElevenLabs when ELEVENLABS_API_KEY is set), or null: there is
+ * no fake for a live voice call, so pages say it isn't available. Tests can inject one.
+ */
+export function conversationEngine(): ConversationEngine | null {
+  return override?.conversation ?? (isElevenLabsConfigured() ? new ElevenLabsConversationEngine() : null);
 }
 
 export * from "./types";

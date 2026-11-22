@@ -35,6 +35,9 @@ export function checkConfig() {
   if (!process.env.ANTHROPIC_API_KEY) {
     warn("ANTHROPIC_API_KEY non configuré : les activités d'expression écrite ne peuvent pas être corrigées par Claude.");
   }
+  if (!process.env.ELEVENLABS_API_KEY) {
+    warn("ELEVENLABS_API_KEY non configuré : le partenaire de conversation IA (Speaking Partner) n'est pas disponible.");
+  }
   if (!process.env.AZURE_SPEECH_KEY || !process.env.AZURE_SPEECH_REGION) {
     warn("AZURE_SPEECH_KEY / AZURE_SPEECH_REGION non configurés : le dictionnaire utilise les enregistrements disponibles ou la voix du navigateur.");
   }

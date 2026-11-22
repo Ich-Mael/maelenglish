@@ -78,6 +78,7 @@ export async function usageReport(now = new Date(), days = 14) {
     ]),
     AppSettings.findOne({ key: "global" }).lean(),
   ]);
+  const persona = { tone: settings?.persona?.tone ?? "", catchphrases: settings?.persona?.catchphrases ?? [], tips: settings?.persona?.tips ?? [] };
   const users = await User.find({ _id: { $in: perUser.map((r) => r._id) } }).select("name surname username").lean();
   const byId = new Map(users.map((u) => [String(u._id), u]));
   const rows: UsageRow[] = perUser.map((r) => {
@@ -87,9 +88,18 @@ export async function usageReport(now = new Date(), days = 14) {
   return {
     month,
     defaultMinutes: settings?.aiMonthlyMinutes ?? 60,
+    persona,
     rows,
     days: perDay.map((d) => ({ day: d._id, seconds: d.seconds, costMicros: d.costMicros, calls: d.calls })),
   };
+}
+
+/** Mael persona (spec AIC-07), edited on the AI usage page. */
+export async function savePersona(raw: { tone?: string; catchphrases?: string; tips?: string }) {
+  const lines = (v: string | undefined, n: number) => (v ?? "").split("\n").map((x) => x.trim().slice(0, 300)).filter(Boolean).slice(0, n);
+  const persona = { tone: (raw.tone ?? "").trim().slice(0, 1000), catchphrases: lines(raw.catchphrases, 10), tips: lines(raw.tips, 15) };
+  await AppSettings.updateOne({ key: "global" }, { $set: { persona } }, { upsert: true });
+  return persona;
 }
 
 export async function setDefaultMonthlyMinutes(minutes: number) {

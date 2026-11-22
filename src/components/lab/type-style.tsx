@@ -83,6 +83,12 @@ export const TYPE_LOOK: Record<ActivityType, { band: string; tile: string; examp
     example: "E.g. Dictée : annonces à l'aéroport",
     perks: ["Word-by-word check", "Slow replay", "First-letters hint"],
   },
+  role_play: {
+    band: "bg-gradient-to-br from-brand-dark via-brand-deep to-brand-deep text-white",
+    tile: "bg-gradient-to-br from-brand-dark to-brand-deep text-white",
+    example: "E.g. HR screening interview",
+    perks: ["Real-time voice conversation", "Difficulty 1–5", "Debrief with corrections"],
+  },
   speaking_challenge: {
     band: "bg-gradient-to-br from-brand-deep via-brand-deep to-brand-dark text-white",
     tile: "bg-gradient-to-br from-brand-deep to-brand-dark text-white ring-2 ring-coral",
@@ -288,6 +294,15 @@ export function TypeArt({ type, className }: { type: ActivityType; className?: s
               </span>
             ))}
           </div>
+        </div>
+      )}
+      {type === "role_play" && (
+        <div className="grid gap-1.5 text-[10px] font-semibold" lang="en">
+          <span className="max-w-[85%] justify-self-start rounded-xl rounded-tl-sm bg-white/20 px-2 py-1 text-white">Why do you want this role?</span>
+          <span className="max-w-[85%] justify-self-end rounded-xl rounded-tr-sm bg-white px-2 py-1 text-primary">I want to help communities…</span>
+          <span className="flex items-center gap-1 justify-self-start text-white/80">
+            <span className="size-1.5 animate-pulse rounded-full bg-coral motion-reduce:animate-none" /> Your turn
+          </span>
         </div>
       )}
       {type === "speaking_challenge" && (

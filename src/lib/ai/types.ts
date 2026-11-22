@@ -102,11 +102,82 @@ export type WordTranslationInput = { word: string; senses: { partOfSpeech: strin
 /** `sense`: number of the meaning used (1-based in `senses`), 0 when none fits. `businessExample` only without a sentence. */
 export type WordTranslation = { translation: string; frNote: string; businessExample: string; sense: number };
 
+/** One turn of a role-play transcript. `t`: seconds since the start of the call. */
+export type ConversationTurn = { role: "agent" | "user"; text: string; t: number };
+
+/** Mael persona (AIC-07): used by the coach voice (help, debrief), never by in-character roles. */
+export type Persona = { tone: string; catchphrases: string[]; tips: string[] };
+
+export type RolePlayBrief = {
+  title: string;
+  aiRole: string;
+  learnerRole: string;
+  setting: string;
+  goals: string[];
+  targetPhrases: string[];
+  difficulty: number;
+  /** CEFR level of the activity ("" = not set). */
+  level: string;
+};
+
+/** Debrief of a role-play (spec §10.3). Scores 0–10; `pronunciation` null (not scored from a transcript). */
+export type DebriefScores = { grammar: number; vocabulary: number; fluency: number; pronunciation: number | null; tone: number; goalCompletion: number };
+export type Debrief = {
+  scores: DebriefScores;
+  goals: { goal: string; achieved: boolean; evidence: string }[];
+  /** `turn`: index in the transcript of the learner's turn concerned. */
+  corrections: { turn: number; original: string; corrected: string; explanation: string; category: "grammar" | "vocabulary" | "tone" }[];
+  betterWays: { original: string; improved: string; why: string }[];
+  phrasesToReuse: string[];
+  maelTip: string;
+  summary: string;
+};
+/** Help button (AIC-01): 2–3 things the learner could say now, English + French gloss. */
+export type HelpSuggestion = { en: string; fr: string };
+
 export interface FeedbackService {
   readonly name: string;
   gradeDrill(input: DrillGradeInput): Promise<DrillGrade>;
   correctWriting(input: WritingCorrectionInput): Promise<{ correction: WritingCorrection; usage: LlmUsage }>;
   translateWord(input: WordTranslationInput): Promise<{ result: WordTranslation; usage: LlmUsage }>;
+  rolePlayDebrief(input: { brief: RolePlayBrief; transcript: ConversationTurn[]; persona: Persona }): Promise<{ debrief: Debrief; usage: LlmUsage }>;
+  rolePlayHelp(input: { brief: RolePlayBrief; transcript: ConversationTurn[]; persona: Persona }): Promise<{ suggestions: HelpSuggestion[]; usage: LlmUsage }>;
+}
+
+/** What the conversation provider needs to run one agent (src/lib/conversation/prompt.ts AgentSpec). */
+export type ConversationAgentSpec = {
+  name: string;
+  prompt: string;
+  firstMessage: string;
+  voiceId: string;
+  speed: number;
+  maxDurationS: number;
+  turnTimeoutS: number;
+  eagerness: "patient" | "normal" | "eager";
+};
+export type FinishedConversation = {
+  /** "done" = transcript final; "processing" = the provider is still finishing it; "failed". */
+  status: "done" | "processing" | "failed";
+  /** The agent that ran it (checked: a learner can't attach someone else's call). */
+  agentId: string;
+  transcript: ConversationTurn[];
+  durationS: number;
+  /** Provider's cost in micro-USD when it reports it, else null (estimated by the caller). */
+  costMicros: number | null;
+};
+export type Voice = { id: string; name: string; accent: string; gender: string; previewUrl: string };
+
+/**
+ * Real-time voice conversation provider (DECISIONS.md: ElevenLabs Agents, Claude as the LLM).
+ * The browser connects with `signedUrl`; the server reads the transcript afterwards.
+ */
+export interface ConversationEngine {
+  readonly name: string;
+  createAgent(spec: ConversationAgentSpec): Promise<string>;
+  deleteAgent(agentId: string): Promise<void>;
+  signedUrl(agentId: string): Promise<string>;
+  fetchConversation(conversationId: string): Promise<FinishedConversation>;
+  listVoices(): Promise<Voice[]>;
 }
 
 /** Thrown when a provider isn't configured (production without keys). */

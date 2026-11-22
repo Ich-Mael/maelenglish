@@ -7,7 +7,7 @@ import { actorOf, requireStaff } from "@/lib/admin/context";
 import { can } from "@/lib/admin/permissions";
 import { reviewMediaUrl } from "@/lib/media";
 import { contentProblem } from "@/lib/lab/content";
-import { ACTIVITY_INFO, type ActivityType, type ListeningContent, type GapsContent, type ListenGapsContent, type SentenceContent, type MatchContent, type TfngContent, type CompleteWordsContent, type RepeatContent, type WritingTaskContent, type DictationContent, isActivityType } from "@/lib/lab/types";
+import { ACTIVITY_INFO, type ActivityType, type ListeningContent, type GapsContent, type ListenGapsContent, type SentenceContent, type MatchContent, type TfngContent, type CompleteWordsContent, type RepeatContent, type WritingTaskContent, type DictationContent, type RolePlayContent, isActivityType } from "@/lib/lab/types";
 import { Activity, type ActivityDoc } from "@/models";
 import { ListeningPlayer } from "@/components/lab/players/listening-player";
 import { GapsPlayer } from "@/components/lab/players/gaps-player";
@@ -18,6 +18,9 @@ import { CompleteWordsPlayer } from "@/components/lab/players/complete-words-pla
 import { RepeatPlayer } from "@/components/lab/players/repeat-player";
 import { WritingPlayer } from "@/components/lab/players/writing-player";
 import { DictationPlayer } from "@/components/lab/players/dictation-player";
+import { RolePlayPlayer } from "@/components/conversation/role-play-player";
+import { publicBrief } from "@/lib/conversation/queries";
+import { conversationEngine } from "@/lib/ai";
 import { RichText } from "@/components/learn/rich-text";
 import { PreviewBar } from "@/components/learn/preview-bar";
 import { EmptyState, PageHeader } from "@/components/admin/ui";
@@ -103,6 +106,13 @@ async function Preview({ params }: { params: Promise<{ activityId: string }> }) 
     body = (
       <div lang="fr" className="[--checkbar-bottom:0px]">
         <DictationPlayer preview title={a.title} level={a.level ?? ""} skills={a.skills ?? []} instructions={a.instructions ?? ""} maelTip={a.maelTip ?? ""} content={dc} audioUrls={audioUrls} courseHref={back} nextHref={back} />
+      </div>
+    );
+  } else if (type === "role_play") {
+    const rc = a.content as RolePlayContent;
+    body = (
+      <div className="mx-auto w-full max-w-5xl">
+        <RolePlayPlayer preview activityId={String(a._id)} title={a.title} level={a.level ?? ""} situation={rc.situation ? <RichText lang="fr">{rc.situation}</RichText> : null} brief={publicBrief(rc)} available={conversationEngine() !== null} minutesLeft={null} courseHref={back} />
       </div>
     );
   } else if (type === "writing_task") {

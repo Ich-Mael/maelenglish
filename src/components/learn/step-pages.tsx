@@ -8,7 +8,7 @@ import { courseAccess, courseTree } from "@/lib/learn/queries";
 import { coursePath, examPath, stepPath } from "@/lib/learn/paths";
 import { stepAfter, stepBefore } from "@/lib/learn/sequence";
 import { ChallengeSubmission, User, WritingSubmission, type ChallengeSubmissionDoc, type WritingSubmissionDoc } from "@/models";
-import type { GapsContent, ListenGapsContent, ListeningContent, MatchContent, SentenceContent, SpeakingChallengeContent, TfngContent, CompleteWordsContent, RepeatContent, WritingTaskContent, DictationContent } from "@/lib/lab/types";
+import type { GapsContent, ListenGapsContent, ListeningContent, MatchContent, SentenceContent, SpeakingChallengeContent, TfngContent, CompleteWordsContent, RepeatContent, WritingTaskContent, DictationContent, RolePlayContent } from "@/lib/lab/types";
 import { cleanLessonContent } from "@/lib/course/lesson-content";
 import { feedbackAudioUrl, mediaUrlFor } from "@/lib/media";
 import { AccessProblem, formatDate } from "./ui";
@@ -32,6 +32,8 @@ import { CompleteWordsPlayer } from "@/components/lab/players/complete-words-pla
 import { RepeatPlayer } from "@/components/lab/players/repeat-player";
 import { DictationPlayer } from "@/components/lab/players/dictation-player";
 import { WritingPlayer, type WritingInitial } from "@/components/lab/players/writing-player";
+import { RolePlayPlayer } from "@/components/conversation/role-play-player";
+import { partnerState, publicBrief } from "@/lib/conversation/queries";
 import { writingSendsAllowed, writingSendsLeft } from "@/lib/lab/writing";
 import type { WritingCorrection } from "@/lib/ai/types";
 
@@ -193,6 +195,29 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
             readOnly={access.readOnly}
           />
         </div>
+      </div>
+    );
+  }
+  if (so.kind === "activity" && activity.type === "role_play") {
+    const rc = activity.content as RolePlayContent;
+    const state = await partnerState(me);
+    return (
+      <div className="mx-auto grid max-w-5xl gap-4">
+        {header}
+        <RolePlayPlayer
+          activityId={String(activity._id)}
+          courseId={courseId}
+          stepId={stepId}
+          title={activity.title}
+          level={activity.level ?? ""}
+          situation={rc.situation ? <RichText lang="fr">{rc.situation}</RichText> : null}
+          brief={publicBrief(rc)}
+          available={state.available && !access.readOnly}
+          minutesLeft={state.minutesLeft}
+          courseHref={course}
+          nextHref={nextHref}
+          preview={access.preview}
+        />
       </div>
     );
   }

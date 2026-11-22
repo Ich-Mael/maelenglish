@@ -1,4 +1,4 @@
-import type { AudioInput, DrillGrade, DrillGradeInput, FeedbackService, LlmUsage, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput, PronunciationResult, PronunciationService, SpeechService, SynthesizedAudio, Transcript, TtsService } from "./types";
+import type { ConversationAgentSpec, ConversationEngine, ConversationTurn, Debrief, FinishedConversation, HelpSuggestion, Persona, RolePlayBrief, Voice, AudioInput, DrillGrade, DrillGradeInput, FeedbackService, LlmUsage, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput, PronunciationResult, PronunciationService, SpeechService, SynthesizedAudio, Transcript, TtsService } from "./types";
 import { normalizeEnglish, words } from "./text";
 
 /*
@@ -109,5 +109,67 @@ export class FakeFeedbackService implements FeedbackService {
         : { translation: `[FR] ${input.word}`, frNote: input.senses[0] ? `Sens : ${input.senses[0].definition.slice(0, 80)}` : "Mot courant au travail.", businessExample: `We use "${input.word}" at work every day.`, sense: input.senses.length ? 1 : 0 },
       usage: { inputTokens: 0, outputTokens: 0, costMicros: 0, provider: "fake" },
     };
+  }
+
+  /** Deterministic: scores from how much the learner said; a goal is « achieved » when one of its long words was said. */
+  async rolePlayDebrief(input: { brief: RolePlayBrief; transcript: ConversationTurn[]; persona: Persona }): Promise<{ debrief: Debrief; usage: LlmUsage }> {
+    const learner = input.transcript.map((t, i) => ({ ...t, i })).filter((t) => t.role === "user");
+    const said = new Set(learner.flatMap((t) => words(t.text)));
+    const goals = input.brief.goals.map((goal) => {
+      const hit = learner.find((t) => words(goal).some((w) => w.length > 4 && words(t.text).includes(w)));
+      return { goal, achieved: !!hit, evidence: hit ? `« ${hit.text} »` : "Objectif non abordé." };
+    });
+    const level = Math.min(10, Math.round(said.size / 3));
+    const done = goals.length ? Math.round((goals.filter((g) => g.achieved).length / goals.length) * 10) : 0;
+    const bad = learner.find((t) => /\bi am agree\b/i.test(t.text));
+    return {
+      debrief: {
+        summary: learner.length ? "Bonne conversation : vous avez tenu votre rôle." : "Vous avez très peu parlé.",
+        scores: { grammar: level, vocabulary: level, fluency: level, pronunciation: null, tone: level, goalCompletion: done },
+        goals,
+        corrections: bad ? [{ turn: bad.i, original: "I am agree", corrected: "I agree", explanation: "« Agree » est un verbe : pas de « am ».", category: "grammar" }] : [],
+        betterWays: learner.slice(0, 3).map((t) => ({ original: t.text, improved: t.text, why: "Déjà correct." })),
+        phrasesToReuse: input.brief.targetPhrases.slice(0, 3),
+        maelTip: "Préparez trois phrases clés avant chaque réunion.",
+      },
+      usage: { inputTokens: 0, outputTokens: 0, costMicros: 0, provider: "fake" },
+    };
+  }
+
+  async rolePlayHelp(input: { brief: RolePlayBrief }): Promise<{ suggestions: HelpSuggestion[]; usage: LlmUsage }> {
+    const phrases = input.brief.targetPhrases.length ? input.brief.targetPhrases : ["Could you repeat that, please?"];
+    return { suggestions: phrases.slice(0, 3).map((en) => ({ en, fr: `[FR] ${en}` })), usage: { inputTokens: 0, outputTokens: 0, costMicros: 0, provider: "fake" } };
+  }
+}
+
+/** Tests: agents and calls kept in memory; `script` sets what a call's transcript will be. */
+export class FakeConversationEngine implements ConversationEngine {
+  readonly name = "fake";
+  agents = new Map<string, ConversationAgentSpec>();
+  deleted: string[] = [];
+  calls = new Map<string, FinishedConversation>();
+  private n = 0;
+  async createAgent(spec: ConversationAgentSpec) {
+    const id = `agent_${++this.n}`;
+    this.agents.set(id, spec);
+    return id;
+  }
+  async deleteAgent(id: string) {
+    this.agents.delete(id);
+    this.deleted.push(id);
+  }
+  async signedUrl(id: string) {
+    return `wss://fake.example/convai?agent_id=${id}&token=t${++this.n}`;
+  }
+  script(conversationId: string, c: Partial<FinishedConversation> & { agentId: string }) {
+    this.calls.set(conversationId, { status: "done", transcript: [], durationS: 0, costMicros: null, ...c });
+  }
+  async fetchConversation(id: string): Promise<FinishedConversation> {
+    const c = this.calls.get(id);
+    if (!c) throw new Error("ElevenLabs 404: conversation not found");
+    return c;
+  }
+  async listVoices(): Promise<Voice[]> {
+    return [{ id: "voice_us", name: "Jessica", accent: "american", gender: "female", previewUrl: "" }];
   }
 }

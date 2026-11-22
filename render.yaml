@@ -62,3 +62,5 @@ services:
         sync: false
       - key: AZURE_SPEECH_REGION # e.g. westeurope
         sync: false
+      - key: ELEVENLABS_API_KEY
+        sync: false

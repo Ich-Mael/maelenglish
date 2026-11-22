@@ -9,7 +9,7 @@ import { errorMessage, AdminError } from "@/lib/admin/errors";
 import { revokeDevice, searchLearners, updateAccount, type LearnerMatch } from "@/lib/admin/users";
 import * as content from "@/lib/admin/content";
 import * as steps from "@/lib/admin/steps";
-import { setDefaultMonthlyMinutes } from "@/lib/ai/metering";
+import { savePersona, setDefaultMonthlyMinutes } from "@/lib/ai/metering";
 import { enroll, removeEnrollment, updateEnrollment } from "@/lib/admin/enrollments";
 import { gradeSubmission } from "@/lib/admin/grading";
 import { notifyChallengeReviewed, notifyWritingReviewed, runCoachDigest } from "@/lib/notifications";
@@ -616,6 +616,19 @@ export async function saveAiSettingsAction(_: State, form: FormData): Promise<St
     await setDefaultMonthlyMinutes(minutes);
     refresh();
     return { success: "Setting saved." };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+/** Mael persona (AIC-07): the coach's voice in role-play help and debriefs. Admins only. */
+export async function savePersonaAction(_: State, form: FormData): Promise<State> {
+  try {
+    const me = await staffOrThrow();
+    if (!me.isAdmin) throw new AdminError("Administrators only.");
+    await savePersona({ tone: str(form, "tone"), catchphrases: str(form, "catchphrases"), tips: str(form, "tips") });
+    refresh();
+    return { success: "Persona saved: the next debriefs use it." };
   } catch (e) {
     return fail(e);
   }

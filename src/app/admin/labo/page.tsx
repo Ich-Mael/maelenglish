@@ -9,7 +9,7 @@ import { can } from "@/lib/admin/permissions";
 import { listActivities } from "@/lib/lab/service";
 import { ACTIVITY_INFO, ACTIVITY_TYPES, SKILL_FAMILIES, type ActivityType, type SkillFamily } from "@/lib/lab/types";
 import { CEFR_LEVELS, SKILLS, THEMES, skillLabel, themeLabel } from "@/lib/lab/meta";
-import { Card, EmptyState, Input, PageHeader, fmtDate, inputCls } from "@/components/admin/ui";
+import { EmptyState, Input, PageHeader, fmtDate, inputCls } from "@/components/admin/ui";
 import { AdminForm, Submit } from "@/components/admin/forms";
 import { ACTIVITY_ICON } from "@/components/lab/type-icon";
 import { COMING_NEXT, SKILL_NAME, TYPE_LOOK, TypeArt, isLightType } from "@/components/lab/type-style";
@@ -162,87 +162,104 @@ async function Lab({ searchParams }: { searchParams: Promise<Record<string, stri
         </div>
       </section>
 
-      <Card title="Library">
-        <form className="mb-4 grid gap-2 sm:grid-cols-3 lg:grid-cols-[1fr_auto_auto_auto_auto_auto_auto] lg:items-end" role="search">
-          <label className="relative">
-            <span className="sr-only">Search</span>
-            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
-            <input name="q" defaultValue={filter.q} placeholder="Search a title" className={cn(inputCls, "pl-9")} />
-          </label>
-          <select name="type" defaultValue={filter.type} aria-label="Type" className={cn(inputCls, "w-auto")}>
-            <option value="">All types</option>
-            {ACTIVITY_TYPES.map((t) => (
-              <option key={t} value={t}>
-                {ACTIVITY_INFO[t].label}
-              </option>
-            ))}
-          </select>
-          <select name="statut" defaultValue={filter.status} aria-label="Status" className={cn(inputCls, "w-auto")}>
-            <option value="">All statuses</option>
-            <option value="ready">Ready</option>
-            <option value="draft">Drafts</option>
-          </select>
-          <select name="level" defaultValue={filter.level} aria-label="Level" className={cn(inputCls, "w-auto")}>
-            <option value="">All levels</option>
-            {CEFR_LEVELS.map((l) => (
-              <option key={l} value={l}>
-                {l}
-              </option>
-            ))}
-          </select>
-          <select name="skill" defaultValue={filter.skill} aria-label="Skill" className={cn(inputCls, "w-auto")}>
-            <option value="">All skills</option>
-            {SKILLS.map((x) => (
-              <option key={x.value} value={x.value}>
-                {x.en}
-              </option>
-            ))}
-          </select>
-          <select name="theme" defaultValue={filter.theme} aria-label="Theme" className={cn(inputCls, "w-auto")}>
-            <option value="">All themes</option>
-            {THEMES.map((x) => (
-              <option key={x.value} value={x.value}>
-                {x.en}
-              </option>
-            ))}
-          </select>
-          <button type="submit" className="h-10 rounded-xl bg-primary px-4 text-sm font-semibold text-white">
-            Filter
-          </button>
-        </form>
-        {items.length === 0 ? (
-          <EmptyState>
-            <FlaskConical className="mx-auto mb-2 size-8 text-muted-foreground" aria-hidden />
-            {filtered ? "No matching activities." : "The Lab is empty: create your first activity above."}
-          </EmptyState>
-        ) : (
-          <ul className="grid gap-2">
-            {items.map((a) => {
-              const t = a.type as ActivityType;
-              const Icon = ACTIVITY_ICON[t] ?? FlaskConical; // unknown type (old id left in the database)
-              return (
-                <li key={String(a._id)}>
-                  <Link href={`/admin/labo/${a._id}`} className={cn("flex flex-wrap items-center gap-3 rounded-2xl border px-3 py-2.5 transition hover:border-primary/40 hover:bg-brand-soft/40", t === "speaking_challenge" ? "border-coral/40 bg-coral-soft/25" : "border-border")}>
-                    <span className={cn("flex size-10 shrink-0 items-center justify-center rounded-xl", TYPE_LOOK[t]?.tile ?? "bg-muted text-muted-foreground")}>
-                      <Icon className="size-5" aria-hidden />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate font-semibold text-brand-deep">{a.title}</span>
-                      <span className="block text-xs text-muted-foreground">
-                        {ACTIVITY_INFO[t]?.label ?? `Unknown type « ${a.type} »`}
-                        {a.level && ` · ${a.level}`}
-                        {a.theme && ` · ${themeLabel(a.theme, "en")}`}
-                        {a.skills?.length ? ` · ${a.skills.map((x) => skillLabel(x, "en")).join(", ")}` : ""} · {a.uses ? `used in ${a.uses} unit(s)` : "not used yet"} · edited {fmtDate(a.updatedAt)}
+      {/* The library folds away (open by default; <details>, no JS). */}
+      <details id="library" open className="group/lib rounded-2xl border border-border bg-card">
+        <summary className="flex cursor-pointer list-none items-center gap-3 rounded-2xl p-5 hover:bg-brand-soft/40 [&::-webkit-details-marker]:hidden">
+          <span className="grid min-w-0 flex-1">
+            <span className="text-lg font-bold text-brand-deep">Library</span>
+            <span className="text-xs text-muted-foreground">
+              {items.length} activit{items.length === 1 ? "y" : "ies"}
+              {filtered ? " matching the filters" : ""}
+            </span>
+          </span>
+          <span className="text-xs font-semibold text-muted-foreground">
+            <span className="group-open/lib:hidden">Show</span>
+            <span className="hidden group-open/lib:inline">Hide</span>
+          </span>
+          <ChevronDown className="size-5 shrink-0 text-muted-foreground transition group-open/lib:rotate-180 motion-reduce:transition-none" aria-hidden />
+        </summary>
+        <div className="px-5 pb-5">
+          <form className="mb-4 grid gap-2 sm:grid-cols-3 lg:grid-cols-[1fr_auto_auto_auto_auto_auto_auto] lg:items-end" role="search">
+            <label className="relative">
+              <span className="sr-only">Search</span>
+              <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+              <input name="q" defaultValue={filter.q} placeholder="Search a title" className={cn(inputCls, "pl-9")} />
+            </label>
+            <select name="type" defaultValue={filter.type} aria-label="Type" className={cn(inputCls, "w-auto")}>
+              <option value="">All types</option>
+              {ACTIVITY_TYPES.map((t) => (
+                <option key={t} value={t}>
+                  {ACTIVITY_INFO[t].label}
+                </option>
+              ))}
+            </select>
+            <select name="statut" defaultValue={filter.status} aria-label="Status" className={cn(inputCls, "w-auto")}>
+              <option value="">All statuses</option>
+              <option value="ready">Ready</option>
+              <option value="draft">Drafts</option>
+            </select>
+            <select name="level" defaultValue={filter.level} aria-label="Level" className={cn(inputCls, "w-auto")}>
+              <option value="">All levels</option>
+              {CEFR_LEVELS.map((l) => (
+                <option key={l} value={l}>
+                  {l}
+                </option>
+              ))}
+            </select>
+            <select name="skill" defaultValue={filter.skill} aria-label="Skill" className={cn(inputCls, "w-auto")}>
+              <option value="">All skills</option>
+              {SKILLS.map((x) => (
+                <option key={x.value} value={x.value}>
+                  {x.en}
+                </option>
+              ))}
+            </select>
+            <select name="theme" defaultValue={filter.theme} aria-label="Theme" className={cn(inputCls, "w-auto")}>
+              <option value="">All themes</option>
+              {THEMES.map((x) => (
+                <option key={x.value} value={x.value}>
+                  {x.en}
+                </option>
+              ))}
+            </select>
+            <button type="submit" className="h-10 rounded-xl bg-primary px-4 text-sm font-semibold text-white">
+              Filter
+            </button>
+          </form>
+          {items.length === 0 ? (
+            <EmptyState>
+              <FlaskConical className="mx-auto mb-2 size-8 text-muted-foreground" aria-hidden />
+              {filtered ? "No matching activities." : "The Lab is empty: create your first activity above."}
+            </EmptyState>
+          ) : (
+            <ul className="grid gap-2">
+              {items.map((a) => {
+                const t = a.type as ActivityType;
+                const Icon = ACTIVITY_ICON[t] ?? FlaskConical; // unknown type (old id left in the database)
+                return (
+                  <li key={String(a._id)}>
+                    <Link href={`/admin/labo/${a._id}`} className={cn("flex flex-wrap items-center gap-3 rounded-2xl border px-3 py-2.5 transition hover:border-primary/40 hover:bg-brand-soft/40", t === "speaking_challenge" ? "border-coral/40 bg-coral-soft/25" : "border-border")}>
+                      <span className={cn("flex size-10 shrink-0 items-center justify-center rounded-xl", TYPE_LOOK[t]?.tile ?? "bg-muted text-muted-foreground")}>
+                        <Icon className="size-5" aria-hidden />
                       </span>
-                    </span>
-                    {a.status === "ready" ? <span className="rounded-full bg-gradient-to-r from-primary to-brand-deep px-2.5 py-0.5 text-xs font-bold text-white">Ready</span> : <span className="rounded-full border border-coral bg-white px-2.5 py-0.5 text-xs font-bold text-coral-dark">Draft</span>}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </Card>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-semibold text-brand-deep">{a.title}</span>
+                        <span className="block text-xs text-muted-foreground">
+                          {ACTIVITY_INFO[t]?.label ?? `Unknown type « ${a.type} »`}
+                          {a.level && ` · ${a.level}`}
+                          {a.theme && ` · ${themeLabel(a.theme, "en")}`}
+                          {a.skills?.length ? ` · ${a.skills.map((x) => skillLabel(x, "en")).join(", ")}` : ""} · {a.uses ? `used in ${a.uses} unit(s)` : "not used yet"} · edited {fmtDate(a.updatedAt)}
+                        </span>
+                      </span>
+                      {a.status === "ready" ? <span className="rounded-full bg-gradient-to-r from-primary to-brand-deep px-2.5 py-0.5 text-xs font-bold text-white">Ready</span> : <span className="rounded-full border border-coral bg-white px-2.5 py-0.5 text-xs font-bold text-coral-dark">Draft</span>}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+      </details>
     </div>
   );
 }

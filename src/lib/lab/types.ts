@@ -4,7 +4,7 @@
  * rules in `content.ts`, its editor in components/lab/editors and its player in components/lab/players.
  */
 
-export const ACTIVITY_TYPES = ["listen_choose", "fill_gaps", "listen_fill_gaps", "sentence_builder", "match_pairs", "listen_match", "true_false_ng", "complete_words", "repeat_after", "writing_task", "dictation", "speaking_challenge"] as const;
+export const ACTIVITY_TYPES = ["listen_choose", "fill_gaps", "listen_fill_gaps", "sentence_builder", "match_pairs", "listen_match", "true_false_ng", "complete_words", "repeat_after", "writing_task", "dictation", "role_play", "speaking_challenge"] as const;
 export type ActivityType = (typeof ACTIVITY_TYPES)[number];
 
 /** `challenge`: closes a unit (its last step, kind challenge); `practice`: an activity step practising a lesson. */
@@ -84,6 +84,12 @@ export const ACTIVITY_INFO: Record<ActivityType, { label: string; description: s
     description: "Sentences to hear and type: each word is checked (right, wrong, missing). Slow replay and a first-letters hint.",
     role: "practice",
     skill: "listening",
+  },
+  "role_play": {
+    label: "AI role-play",
+    description: "A spoken conversation with an AI that plays a professional counterpart (interviewer, client, manager…), followed by a debrief: scores, corrections, better ways to say it, Mael's tip.",
+    role: "practice",
+    skill: "speaking",
   },
   "speaking_challenge": {
     label: "Speaking challenge",
@@ -323,7 +329,36 @@ export type DictationContent = { items: DictationItem[]; maxPlays: number };
 /** « Good morning, how can I help? » → « G___ m______, h__ c__ I h___? » (first letter, one dash per letter left). */
 export const firstLetters = (text: string) => text.replace(/[A-Za-z]+/g, (w) => w[0] + (w.length > 1 ? "_".repeat(w.length - 1) : ""));
 
-export type ActivityContent = { "listen_choose": ListeningContent; "fill_gaps": GapsContent; "listen_fill_gaps": ListenGapsContent; "sentence_builder": SentenceContent; "match_pairs": MatchContent; "listen_match": MatchContent; "true_false_ng": TfngContent; "complete_words": CompleteWordsContent; "repeat_after": RepeatContent; "writing_task": WritingTaskContent; "dictation": DictationContent; "speaking_challenge": SpeakingChallengeContent };
+export type ActivityContent = { "listen_choose": ListeningContent; "fill_gaps": GapsContent; "listen_fill_gaps": ListenGapsContent; "sentence_builder": SentenceContent; "match_pairs": MatchContent; "listen_match": MatchContent; "true_false_ng": TfngContent; "complete_words": CompleteWordsContent; "repeat_after": RepeatContent; "writing_task": WritingTaskContent; "dictation": DictationContent; "role_play": RolePlayContent; "speaking_challenge": SpeakingChallengeContent };
+
+/**
+ * AI role-play (spec §5 AIC-01–04): the AI plays `aiRole` (in English, never shown as is to the
+ * learner), the learner plays `learnerRole`, in `setting`. `situation` (rich, French) is what the
+ * learner reads first. `goals` = what the learner must achieve (shown as their mission, judged in the
+ * debrief), `targetPhrases` (English, shown as « Useful phrases »), `twists` (hidden: the AI brings
+ * them up at a natural moment), `openingLine` (the AI's first words), `difficulty` 1–5 (default; the
+ * learner may change it), `maxMinutes`, `voiceId` (an ElevenLabs voice, "" = the default one).
+ * The prompt is built by src/lib/conversation/prompt.ts.
+ */
+export const ROLEPLAY_MINUTES = [3, 5, 8, 10] as const;
+export const ROLEPLAY_DIFFICULTIES = [1, 2, 3, 4, 5] as const;
+export type RolePlayContent = {
+  situation: string;
+  aiRole: string;
+  learnerRole: string;
+  setting: string;
+  goals: string[];
+  targetPhrases: string[];
+  twists: string[];
+  openingLine: string;
+  difficulty: number;
+  maxMinutes: number;
+  voiceId: string;
+  voiceName: string;
+};
+/** Learner-facing names of the difficulty levels (AIC-03). */
+export const DIFFICULTY_LABEL: Record<number, string> = { 1: "Very patient", 2: "Patient", 3: "Natural", 4: "Demanding", 5: "Tough" };
+export const DIFFICULTY_HINT: Record<number, string> = { 1: "Slow, simple words, repeats when asked", 2: "Clear and calm, rephrases if you're lost", 3: "Normal speed, asks follow-up questions", 4: "Fast, precise questions, challenges vague answers", 5: "Interrupts, pushes back, uses idioms" };
 
 export const MAX_PLAYS = [0, 2, 3] as const;
 

@@ -5,10 +5,10 @@ import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { requireStaff } from "@/lib/admin/context";
 import { usageReport } from "@/lib/ai/metering";
-import { Card, EmptyState, Input, PageHeader } from "@/components/admin/ui";
+import { Card, EmptyState, Input, PageHeader, TextArea } from "@/components/admin/ui";
 import { AdminForm, Submit } from "@/components/admin/forms";
 import { PageSkeleton } from "@/components/learn/ui";
-import { saveAiSettingsAction } from "../actions";
+import { saveAiSettingsAction, savePersonaAction } from "../actions";
 
 export const metadata: Metadata = { title: "AI usage" };
 
@@ -28,6 +28,17 @@ async function Usage() {
           <Input label="Minutes per month (default)" name="aiMonthlyMinutes" type="number" min={0} max={10000} defaultValue={r.defaultMinutes} hint="Can be changed for one learner on their profile." />
           <div>
             <Submit>Save</Submit>
+          </div>
+        </AdminForm>
+      </Card>
+
+      <Card title="Mael persona" description="Coach Mael's voice in the AI role-play debriefs (« Mael's tip ») and the « Help » suggestions. The roles the AI plays (interviewer, client…) don't use it.">
+        <AdminForm action={savePersonaAction} className="grid gap-3">
+          <TextArea label="Tone" name="tone" rows={2} defaultValue={r.persona.tone} placeholder="Warm, direct and encouraging. Celebrates progress, then gives one clear, practical next step." />
+          <TextArea label="Catchphrases (one per line)" name="catchphrases" rows={3} defaultValue={r.persona.catchphrases.join("\n")} placeholder={"Speak the language of your profession!\nOne step at a time."} />
+          <TextArea label="Signature tips (one per line)" name="tips" rows={4} defaultValue={r.persona.tips.join("\n")} placeholder={"Prepare three key sentences before every meeting.\nPause and breathe: a short silence sounds confident."} />
+          <div>
+            <Submit>Save the persona</Submit>
           </div>
         </AdminForm>
       </Card>

@@ -37,6 +37,12 @@ const appSettingsSchema = new Schema(
     key: { type: String, required: true, unique: true, default: "global" },
     /** Default monthly AI minutes per learner (speech + conversation); per-learner override on User. */
     aiMonthlyMinutes: { type: Number, default: 60, min: 0 },
+    /** Mael persona (spec AIC-07): the coach's voice in role-play help and debriefs. */
+    persona: {
+      tone: { type: String, default: "" },
+      catchphrases: { type: [String], default: [] },
+      tips: { type: [String], default: [] },
+    },
   },
   { timestamps: true },
 );

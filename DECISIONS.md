@@ -8,7 +8,7 @@ Technical choices for the learning-experience phase (spec `MaelEnglish_Platform_
 |---|---|---|
 | PostgreSQL (Supabase) with row-level security | **Keep MongoDB** (Mongoose, Atlas) | The app, models, tests and deploy already run on it. Isolation (learner and coach) is enforced server-side in every page and action, the same as for courses today (`courseAccess`, `src/lib/admin/permissions.ts`), and covered by automated tests that stand in for RLS (`tests/coach-isolation.test.ts` once coaches are built). |
 | Email + Google + phone OTP auth | **Keep the custom auth** | It already supports login by username, email or WhatsApp number, plus activation links (see CLAUDE.md). Google login can be added later. |
-| FR + EN interface | **French only for now** | Learners are francophone; an English UI is deferred. Explanations stay in French, as the spec asks for A2–B1 learners. |
+| FR + EN interface | **English app, French explanations** (owner decision 2026-11-22) | The signed-in learner app and the admin are in English; feedback and explanations stay in French, as the spec asks for A2–B1 learners. The public site, auth pages and emails are still French. |
 | Plans, payments, AI-minute metering per plan (BIL-01) | **Next phase** (user decision) | Until then, AI usage is metered with one default monthly cap per learner plus a per-learner override in admin. |
 | Coach auto-assignment, backup coach, oversight dashboards (TEAM-03/04) | **Next phase** (user decision) | For now an admin assigns each learner's main coach by hand (`User.coachId`). |
 
@@ -51,6 +51,14 @@ All providers sit behind internal interfaces in `src/lib/ai/` (`SpeechService`, 
   - recognition of French-accented English: run the 30+ learner-recording test set on ElevenLabs' speech-to-text and Azure's;
   - latency on a throttled 4G connection from West Africa (spec AIC-01: median response under 1.5 s), and a **degraded mode** for weak connections (record a turn → get the reply, no live streaming);
   - the voice clone's terms (consent, commercial use) before using Coach Ish's voice.
+- **As built (2026-11-22):**
+  - **The LLM is Claude Haiku 5.5 run by ElevenLabs** (`agent.prompt.llm: "claude-haiku-5-5"`, in their model list), not our own « custom LLM » endpoint: a custom LLM needs a public OpenAI-compatible streaming endpoint (not testable locally, one more service to keep fast). The prompt still comes from our scenario data (`src/lib/conversation/prompt.ts`), so the scenarios don't depend on ElevenLabs. Its cost is billed by ElevenLabs with the call.
+  - **One private agent per scenario version × difficulty**, created through the API on first use and reused (`ConversationAgent`, key = hash of the agent spec; older versions deleted). The browser only gets a 15-minute signed URL: the prompt can't be changed from the client (ElevenLabs' per-session « overrides » are sent by the browser, so they weren't used).
+  - The transcript, duration and cost are read **from ElevenLabs' server** after the call, never from the browser. Calls the browser never reported finished are metered when the learner starts the next one.
+  - **No push-to-talk**: ElevenLabs always detects turns by voice. The learner has « Mute » instead, and difficulty 1–2 make the agent wait longer (`turn_eagerness: patient`, longer `turn_timeout`). Deviation from spec AIC-01 (push-to-talk by default).
+  - **Debrief by Claude Sonnet 5.5** (Zod schema close to spec §10.3, retried once; the transcript is kept when it fails and the debrief can be retried). Pronunciation is « coming soon » in the debrief until Azure scores audio.
+  - Not built yet: degraded mode for weak connections (record a turn → reply), « Retry this moment » (AIC-04), phrases to reuse added to a review deck (needs spaced repetition), custom interview prep (AIC-05), a cloned « Coach Ish » voice (create it in ElevenLabs, then pick it in the scenario's voice list).
+  - SDK: `@elevenlabs/react` 1.20.3 (published 2026-11-02), loaded only on the call screen.
 - **Superseded:** the earlier default « Option A: Azure STT → Claude → Azure TTS pipeline » (more engineering, flatter voice). Fallbacks if ElevenLabs fails the checks: that Azure pipeline, or a real-time speech-to-speech API (e.g. OpenAI Realtime, billed per audio token).
 
 ## Metering

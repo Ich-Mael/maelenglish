@@ -2,7 +2,7 @@ import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import * as z from "zod/v4";
-import type { DrillGrade, DrillGradeInput, FeedbackService, LlmUsage, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput } from "./types";
+import type { ConversationTurn, Debrief, DrillGrade, DrillGradeInput, FeedbackService, HelpSuggestion, LlmUsage, Persona, RolePlayBrief, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput } from "./types";
 
 /*
  * Claude feedback (DECISIONS.md: Claude for feedback): writing correction for the Lab « writing
@@ -40,6 +40,60 @@ Then, for that meaning:
 - frNote: one short sentence in simple French. With a sentence: what the word means here (e.g. « Ici, adverbe : les personnes font la chose en même temps. »). Without: how or when it is used at work (register, false friend, typical collocation), not starting with « Ici ». No English except the word itself.
 - businessExample: without a sentence, one short, natural, grammatically correct English sentence using the word in that meaning in a professional context (office, aviation, banking, hospitality, health), 6 to 14 words. With a sentence: "".
 If the word is not English or is not a real word, translation is "" and frNote says so in French.`;
+
+/** Role-play debriefs: Claude Sonnet 5.5 (quality, DECISIONS.md), $2 in / $10 out per million tokens. */
+export const CLAUDE_DEBRIEF_MODEL = "claude-sonnet-5-5";
+const sonnetCost = (inTok: number, outTok: number) => Math.round(inTok * 2 + outTok * 10);
+
+const score = z.number().int().min(0).max(10);
+const DebriefSchema = z.object({
+  summary: z.string(),
+  scores: z.object({ grammar: score, vocabulary: score, fluency: score, tone: score, goalCompletion: score }),
+  goals: z.array(z.object({ goal: z.string(), achieved: z.boolean(), evidence: z.string() })),
+  corrections: z.array(z.object({ turn: z.number().int(), original: z.string(), corrected: z.string(), explanation: z.string(), category: z.enum(["grammar", "vocabulary", "tone"]) })),
+  betterWays: z.array(z.object({ original: z.string(), improved: z.string(), why: z.string() })),
+  phrasesToReuse: z.array(z.string()),
+  maelTip: z.string(),
+});
+const HelpSchema = z.object({ suggestions: z.array(z.object({ en: z.string(), fr: z.string() })) });
+
+const personaText = (p: Persona) =>
+  [
+    "You speak as Coach Mael (Ismaël Zerbo, founder of MaelEnglish, TEFL-certified, former aviation professional).",
+    p.tone ? `Tone: ${p.tone}` : "Tone: warm, direct, encouraging, practical; celebrates progress, then gives one clear next step.",
+    p.catchphrases.length ? `Catchphrases you may use (sparingly): ${p.catchphrases.join(" | ")}` : "",
+    p.tips.length ? `Signature tips you like to give:\n${p.tips.map((t) => `- ${t}`).join("\n")}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+const briefText = (b: RolePlayBrief) =>
+  [
+    `Scenario: ${b.title}`,
+    `The AI played: ${b.aiRole}. The learner played: ${b.learnerRole}. Setting: ${b.setting}.`,
+    `Difficulty: ${b.difficulty}/5.${b.level ? ` Target level: ${b.level}.` : ""}`,
+    `Learner's goals:\n${b.goals.map((g, i) => `${i + 1}. ${g}`).join("\n")}`,
+    b.targetPhrases.length ? `Target phrases:\n${b.targetPhrases.map((p) => `- ${p}`).join("\n")}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+const transcriptText = (t: ConversationTurn[]) => t.map((x, i) => `[${i}] ${x.role === "user" ? "LEARNER" : "AI"}: ${x.text}`).join("\n");
+
+// Frozen (cache-friendly).
+const DEBRIEF_SYSTEM = `You write the debrief of a spoken role-play between an English learner and an AI playing a professional counterpart. Learners are French-speaking professionals in West Africa (A2-B2). The transcript comes from speech recognition: ignore punctuation, capitals and obvious recognition glitches; never invent words the learner did not say.
+
+Write every explanation, the summary and the tip in simple, encouraging French. Keep English only for quotes, corrections, improved sentences and phrases.
+
+- summary: 2-3 sentences in French: overall impression, what went well, the main thing to work on.
+- scores (integers 0-10, at the learner's target level): grammar, vocabulary (range and precision), fluency (length and ease of turns, judged from the transcript), tone (professional, polite, appropriate), goalCompletion (share of goals achieved, and how well). A learner who barely spoke gets low scores.
+- goals: for each goal given, in the same order: achieved or not, and evidence: the learner's words that show it (quoted), or in French why it wasn't achieved.
+- corrections: the learner's real mistakes, most important first, at most 10. turn = the [index] of the LEARNER turn; original = the learner's exact words (a few words); corrected = the corrected wording; explanation = one short French sentence with the rule; category grammar | vocabulary | tone.
+- betterWays: 3 to 6 of the learner's own sentences rewritten as a confident professional would say them (original = learner's words, improved = English rewrite, why = short French reason). Prefer sentences that were correct but basic.
+- phrasesToReuse: exactly 3 short, useful English phrases for this situation (from the target phrases or the better ways).
+- maelTip: one practical tip in French, in Coach Mael's voice (starts naturally, no "Mael's tip:" prefix).`;
+
+const HELP_SYSTEM = `A French-speaking learner of English is in the middle of a spoken role-play and pressed « Help ». Suggest 3 different short things (5-15 words each) they could say NEXT, in natural, simple professional English at their level, that answer the last thing the AI said and move toward their goals. For each, give a short French translation (fr). No explanations.`;
 
 const DrillSchema = z.object({ verdict: z.enum(["correct", "almost", "incorrect"]), explanation: z.string(), modelAnswer: z.string() });
 
@@ -98,6 +152,37 @@ export class ClaudeFeedbackService implements FeedbackService {
     });
     if (response.stop_reason === "refusal" || !response.parsed_output) throw new Error("Traduction indisponible.");
     return { result: response.parsed_output, usage: { inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens, costMicros: costMicros(response.usage.input_tokens, response.usage.output_tokens), provider: `anthropic:${CLAUDE_FEEDBACK_MODEL}` } };
+  }
+
+  async rolePlayDebrief(input: { brief: RolePlayBrief; transcript: ConversationTurn[]; persona: Persona }): Promise<{ debrief: Debrief; usage: LlmUsage }> {
+    const response = await this.client.messages.parse({
+      model: CLAUDE_DEBRIEF_MODEL,
+      max_tokens: 8000,
+      output_config: { effort: "medium", format: zodOutputFormat(DebriefSchema) },
+      system: `${DEBRIEF_SYSTEM}\n\n${personaText(input.persona)}`,
+      messages: [{ role: "user", content: `${briefText(input.brief)}\n\nTranscript:\n<transcript>\n${transcriptText(input.transcript)}\n</transcript>` }],
+    });
+    if (response.stop_reason === "refusal" || !response.parsed_output) throw new Error("Debrief generation failed.");
+    const d = response.parsed_output;
+    return {
+      debrief: { ...d, scores: { ...d.scores, pronunciation: null } },
+      usage: { inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens, costMicros: sonnetCost(response.usage.input_tokens, response.usage.output_tokens), provider: `anthropic:${CLAUDE_DEBRIEF_MODEL}` },
+    };
+  }
+
+  async rolePlayHelp(input: { brief: RolePlayBrief; transcript: ConversationTurn[]; persona: Persona }): Promise<{ suggestions: HelpSuggestion[]; usage: LlmUsage }> {
+    const response = await this.client.messages.parse({
+      model: CLAUDE_FEEDBACK_MODEL,
+      max_tokens: 1000,
+      output_config: { effort: "low", format: zodOutputFormat(HelpSchema) },
+      system: HELP_SYSTEM,
+      messages: [{ role: "user", content: `${briefText(input.brief)}\n\nConversation so far:\n${transcriptText(input.transcript.slice(-12)) || "(the AI has just greeted the learner)"}` }],
+    });
+    if (!response.parsed_output) throw new Error("Help unavailable.");
+    return {
+      suggestions: response.parsed_output.suggestions.slice(0, 3),
+      usage: { inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens, costMicros: costMicros(response.usage.input_tokens, response.usage.output_tokens), provider: `anthropic:${CLAUDE_FEEDBACK_MODEL}` },
+    };
   }
 
   async gradeDrill(input: DrillGradeInput): Promise<DrillGrade> {
