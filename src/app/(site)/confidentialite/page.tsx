@@ -58,13 +58,21 @@ export default function PrivacyPage() {
               corrections de votre coach, points d&apos;expérience (XP), série de jours, badges.
             </li>
             <li>
+              <strong>Défis oraux et photo</strong> : les enregistrements de votre voix que vous envoyez pour les défis oraux, les messages
+              vocaux et commentaires de votre coach en réponse, et votre photo de profil si vous en ajoutez une. Vos enregistrements sont
+              privés : seuls vous, votre coach et les administrateurs peuvent les écouter.
+            </li>
+            <li>
               <strong>Sécurité et appareils</strong> : sessions de connexion, type d&apos;appareil, navigateur, système, adresse IP et date de
               dernière connexion, pour protéger votre compte et vous montrer vos appareils connectés.
             </li>
             <li>
-              <strong>Exercices de prononciation</strong> : l&apos;enregistrement de votre voix reste sur votre appareil, il n&apos;est pas envoyé
-              à nos serveurs. Lorsque votre navigateur propose la reconnaissance vocale (par exemple Chrome), c&apos;est le service de votre
-              navigateur qui transcrit votre voix ; seul le texte reconnu sert à vérifier l&apos;exercice.
+              <strong>Exercices de prononciation (« Répétez après Mael »)</strong> : nous n&apos;enregistrons pas votre voix sur nos serveurs.
+              Pour vérifier ce que vous avez dit, l&apos;exercice utilise la reconnaissance vocale de votre navigateur : votre voix est alors
+              envoyée au service de l&apos;éditeur du navigateur (par exemple Google pour Chrome, Apple pour Safari), qui la transcrit en
+              texte ; une connexion internet est nécessaire. Ce traitement relève de la politique de confidentialité de cet éditeur. Nous
+              recevons seulement le texte reconnu, qui sert à calculer votre score. Si votre navigateur n&apos;a pas la reconnaissance vocale,
+              l&apos;enregistrement reste sur votre appareil et vous vous évaluez vous-même.
             </li>
           </ul>
           <p>Nous ne collectons pas de données de paiement sur la plateforme et n&apos;utilisons pas d&apos;outil publicitaire.</p>
@@ -86,7 +94,7 @@ export default function PrivacyPage() {
             <li>l&apos;équipe MaelEnglish : administrateurs, et les coachs et formateurs des cours auxquels vous êtes inscrit(e) ;</li>
             <li>
               nos prestataires techniques, uniquement pour faire fonctionner le service : hébergement de l&apos;application et de la base de
-              données, envoi d&apos;emails (Brevo), messages WhatsApp (Meta) ;
+              données, stockage des fichiers audio et des photos (Cloudflare R2), envoi d&apos;emails (Brevo), messages WhatsApp (Meta) ;
             </li>
             <li>les autres apprenants d&apos;un cours voient seulement votre prénom, l&apos;initiale de votre nom et vos XP de la semaine dans le classement.</li>
           </ul>
