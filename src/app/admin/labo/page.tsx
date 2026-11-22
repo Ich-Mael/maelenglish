@@ -12,7 +12,7 @@ import { CEFR_LEVELS, SKILLS, THEMES, skillLabel, themeLabel } from "@/lib/lab/m
 import { Card, EmptyState, Input, PageHeader, fmtDate, inputCls } from "@/components/admin/ui";
 import { AdminForm, Submit } from "@/components/admin/forms";
 import { ACTIVITY_ICON } from "@/components/lab/type-icon";
-import { COMING_NEXT, SKILL_NAME, TYPE_LOOK, TypeArt } from "@/components/lab/type-style";
+import { COMING_NEXT, SKILL_NAME, TYPE_LOOK, TypeArt, isLightType } from "@/components/lab/type-style";
 import { PageSkeleton } from "@/components/learn/ui";
 import { createActivityAction } from "./actions";
 import { cn } from "cn";
@@ -104,8 +104,8 @@ async function Lab({ searchParams }: { searchParams: Promise<Record<string, stri
                 return (
                   <AdminForm key={t} action={createActivityAction} className="group grid overflow-clip rounded-3xl border-2 border-border bg-card transition hover:border-primary/40 hover:shadow-[0_10px_30px_-18px_rgb(20_31_77/0.5)]">
                     <input type="hidden" name="type" value={t} />
-                    <div className={cn("relative flex h-32 items-center justify-between gap-4 px-5", look.band, t === "fill_gaps" || t === "sentence_builder" ? "border-b border-border" : "")}>
-                      <span className={cn("flex size-12 shrink-0 items-center justify-center rounded-2xl", t === "fill_gaps" || t === "sentence_builder" ? "bg-white text-primary shadow-sm" : "bg-white/15 text-white")}>
+                    <div className={cn("relative flex h-32 items-center justify-between gap-4 px-5", look.band, isLightType(t) ? "border-b border-border" : "")}>
+                      <span className={cn("flex size-12 shrink-0 items-center justify-center rounded-2xl", isLightType(t) ? "bg-white text-primary shadow-sm" : "bg-white/15 text-white")}>
                         <Icon className="size-6" aria-hidden />
                       </span>
                       <TypeArt type={t} className="w-44 transition group-hover:-translate-y-0.5" />

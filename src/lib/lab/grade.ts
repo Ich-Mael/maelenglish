@@ -1,4 +1,4 @@
-import { parseGaps, sentenceText, type ActivityType, type GapsContent, type ListeningContent, type SentenceContent } from "./types";
+import { parseGaps, sentenceText, type ActivityType, type GapsContent, type ListeningContent, type MatchContent, type SentenceContent } from "./types";
 import { normalizeEnglish } from "@/lib/ai/text";
 import { matchAnswer } from "./match";
 
@@ -31,6 +31,9 @@ export function checkItem(type: ActivityType, content: unknown, itemId: string, 
       const given = normalizeEnglish(answer);
       return [sentenceText(it.sentence), ...it.alternatives].some((s) => normalizeEnglish(s) === given);
     }
+    case "match_pairs":
+      // Item = a left card; answer = the first right card it was matched with (its pair id).
+      return (content as MatchContent).pairs.some((p) => p.id === itemId) && answer === itemId;
     default:
       return false;
   }
@@ -45,6 +48,8 @@ export function itemIds(type: ActivityType, content: unknown): string[] {
       return parseGaps(content as GapsContent).gaps.map((g) => g.id);
     case "sentence_builder":
       return (content as SentenceContent).items.map((i) => i.id);
+    case "match_pairs":
+      return (content as MatchContent).pairs.map((p) => p.id);
     default:
       return [];
   }

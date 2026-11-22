@@ -7,11 +7,12 @@ import { actorOf, requireStaff } from "@/lib/admin/context";
 import { can } from "@/lib/admin/permissions";
 import { reviewMediaUrl } from "@/lib/media";
 import { contentProblem } from "@/lib/lab/content";
-import { ACTIVITY_INFO, type ActivityType, type ListeningContent, type GapsContent, type ListenGapsContent, type SentenceContent, isActivityType } from "@/lib/lab/types";
+import { ACTIVITY_INFO, type ActivityType, type ListeningContent, type GapsContent, type ListenGapsContent, type SentenceContent, type MatchContent, isActivityType } from "@/lib/lab/types";
 import { Activity, type ActivityDoc } from "@/models";
 import { ListeningPlayer } from "@/components/lab/players/listening-player";
 import { GapsPlayer } from "@/components/lab/players/gaps-player";
 import { SentencePlayer } from "@/components/lab/players/sentence-player";
+import { MatchPlayer } from "@/components/lab/players/match-player";
 import { RichText } from "@/components/learn/rich-text";
 import { PreviewBar } from "@/components/learn/preview-bar";
 import { EmptyState, PageHeader } from "@/components/admin/ui";
@@ -88,6 +89,15 @@ async function Preview({ params }: { params: Promise<{ activityId: string }> }) 
     body = (
       <div lang="fr" className="[--checkbar-bottom:0px]">
         <SentencePlayer preview title={a.title} level={a.level ?? ""} skills={a.skills ?? []} instructions={a.instructions ?? ""} maelTip={a.maelTip ?? ""} content={c} audioUrls={audioUrls} courseHref={back} nextHref={back} />
+      </div>
+    );
+  } else if (type === "match_pairs") {
+    const c = a.content as MatchContent;
+    const ids = [...new Set(c.pairs.map((p) => p.audioMediaId).filter(Boolean))];
+    const audioUrls = Object.fromEntries((await Promise.all(ids.map(async (id) => [id, await reviewMediaUrl(id).catch(() => null)] as const))).filter((e): e is [string, string] => !!e[1]));
+    body = (
+      <div lang="fr" className="[--checkbar-bottom:0px]">
+        <MatchPlayer preview title={a.title} level={a.level ?? ""} skills={a.skills ?? []} instructions={a.instructions ?? ""} maelTip={a.maelTip ?? ""} content={c} audioUrls={audioUrls} courseHref={back} nextHref={back} />
       </div>
     );
   } else body = <EmptyState>The {ACTIVITY_INFO[type].label} is previewed from a unit (learner preview link in « Used in »).</EmptyState>;

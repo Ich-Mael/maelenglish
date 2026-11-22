@@ -41,6 +41,12 @@ export const TYPE_LOOK: Record<ActivityType, { band: string; tile: string; examp
     example: "E.g. Construire sa présentation",
     perks: ["Tap the tiles in order", "Distractor tiles", "Sentence audio"],
   },
+  match_pairs: {
+    band: "bg-gradient-to-br from-brand-soft via-brand-soft to-white text-primary",
+    tile: "bg-brand-soft text-primary",
+    example: "E.g. Vocabulaire de l'aéroport",
+    perks: ["Tap to match", "Mistakes & time", "Word audio"],
+  },
   speaking_challenge: {
     band: "bg-gradient-to-br from-brand-deep via-brand-deep to-brand-dark text-white",
     tile: "bg-gradient-to-br from-brand-deep to-brand-dark text-white ring-2 ring-coral",
@@ -49,9 +55,12 @@ export const TYPE_LOOK: Record<ActivityType, { band: string; tile: string; examp
   },
 };
 
+/** Types drawn on a light band (blue on white) rather than a dark one. */
+export const isLightType = (t: ActivityType) => t === "fill_gaps" || t === "sentence_builder" || t === "match_pairs";
+
 /** Exercises planned in the catalogue (shown as « coming next »). */
 export const COMING_NEXT = [
-  { name: "Matching pairs", skill: "language" as SkillFamily },
+  { name: "Error hunt", skill: "language" as SkillFamily },
   { name: "True / false / not given", skill: "reading" as SkillFamily },
   { name: "Repeat after Mael", skill: "pronunciation" as SkillFamily },
   { name: "Email builder", skill: "writing" as SkillFamily },
@@ -61,7 +70,7 @@ const WAVE = [40, 70, 55, 90, 60, 100, 75, 45, 85, 60, 95, 50, 70, 40, 80, 55, 6
 
 /** Small sketch of the learner screen (decorative). */
 export function TypeArt({ type, className }: { type: ActivityType; className?: string }) {
-  const light = type === "fill_gaps" || type === "sentence_builder";
+  const light = isLightType(type);
   const line = light ? "bg-primary/20" : "bg-white/35";
   return (
     <div aria-hidden className={cn("pointer-events-none select-none", className)}>
@@ -128,6 +137,20 @@ export function TypeArt({ type, className }: { type: ActivityType; className?: s
               </span>
             ))}
           </div>
+        </div>
+      )}
+      {type === "match_pairs" && (
+        <div className="grid grid-cols-2 gap-x-5 gap-y-1.5">
+          {[
+            ["gate", "porte", true],
+            ["delay", "retard", false],
+            ["luggage", "bagages", false],
+          ].map(([l, r, done], i) => (
+            <div key={i} className="contents">
+              <span className={cn("rounded-md border px-1.5 py-0.5 text-[10px] font-bold", done ? "border-primary bg-primary text-white" : i === 1 ? "border-primary bg-white text-primary ring-2 ring-primary/25" : "border-border bg-white text-brand-deep")}>{l as string}</span>
+              <span className={cn("rounded-md border px-1.5 py-0.5 text-[10px] font-bold", done ? "border-primary bg-primary text-white" : "border-border bg-white text-brand-deep")}>{r as string}</span>
+            </div>
+          ))}
         </div>
       )}
       {type === "speaking_challenge" && (

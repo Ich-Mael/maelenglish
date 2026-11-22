@@ -1,7 +1,7 @@
 import { normalizeRich, plainText } from "@/lib/rich-text";
 import { Types } from "mongoose";
 import { videoSource } from "@/lib/learn/media";
-import { MAX_PLAYS, MAX_SECONDS, PREP_SECONDS, PROMPT_TYPES, SENTENCE_AUDIO_WHEN, sentenceTiles, type PromptType, type SentenceContent, type SentenceItem, type ActivityContent, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type ListeningQuestion, type GapsContent, type ListenGapsContent, GAP_HINTS, parseGaps } from "./types";
+import { MAX_PLAYS, MAX_SECONDS, PREP_SECONDS, PROMPT_TYPES, SENTENCE_AUDIO_WHEN, MATCH_PER_SCREEN, sentenceTiles, type MatchContent, type MatchPair, type PromptType, type SentenceContent, type SentenceItem, type ActivityContent, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type ListeningQuestion, type GapsContent, type ListenGapsContent, GAP_HINTS, parseGaps } from "./types";
 
 /*
  * Content rules per activity type (server: rich text is sanitised here). `cleanContent` turns what
@@ -122,6 +122,40 @@ function cleanSentences(r: Record<string, unknown>): SentenceContent {
   return { items, audioWhen: SENTENCE_AUDIO_WHEN.includes(j.audioWhen as "after") ? (j.audioWhen as SentenceContent["audioWhen"]) : "after" };
 }
 
+/** Matching pairs: the editor sends `json` ({ perScreen, pairs }). */
+function cleanPairs(r: Record<string, unknown>): MatchContent {
+  let j: Record<string, unknown> = r;
+  if (typeof r.json === "string") {
+    try {
+      j = JSON.parse(r.json) as Record<string, unknown>;
+    } catch {
+      j = {};
+    }
+  }
+  const seen = new Set<string>();
+  const pairs: MatchPair[] = (Array.isArray(j.pairs) ? j.pairs : []).slice(0, 30).map((raw, i) => {
+    const p = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+    let id = str(p.id, 40).replace(/[^\w-]/g, "") || `p${i + 1}`;
+    if (seen.has(id)) id = `p${i + 1}-${seen.size}`;
+    seen.add(id);
+    return { id, left: str(p.left, 160), right: str(p.right, 160), explanation: str(p.explanation, 300), audioMediaId: typeof p.audioMediaId === "string" && Types.ObjectId.isValid(p.audioMediaId) ? p.audioMediaId : "" };
+  });
+  return { pairs, perScreen: pick(MATCH_PER_SCREEN, j.perScreen, 5) };
+}
+
+function pairsProblem(c: Partial<MatchContent>): string | null {
+  const pairs = c.pairs ?? [];
+  if (pairs.length < 2) return "Add at least 2 pairs.";
+  for (const [i, p] of pairs.entries()) if (!p.left || !p.right) return `Pair ${i + 1}: fill in both sides.`;
+  // Two identical cards on one side would make two right answers.
+  for (const side of ["left", "right"] as const) {
+    const texts = pairs.map((p) => p[side].trim().toLowerCase());
+    const dup = texts.findIndex((t, i) => texts.indexOf(t) !== i);
+    if (dup >= 0) return `Pair ${dup + 1}: « ${pairs[dup][side]} » appears twice on the ${side} side.`;
+  }
+  return null;
+}
+
 function sentencesProblem(c: Partial<SentenceContent>): string | null {
   if (!c.items?.length) return "Add at least one sentence.";
   for (const [i, it] of c.items.entries()) {
@@ -146,6 +180,8 @@ export function cleanContent<T extends ActivityType>(type: T, raw: unknown): Act
       return cleanListenGaps(r) as ActivityContent[T];
     case "sentence_builder":
       return cleanSentences(r) as ActivityContent[T];
+    case "match_pairs":
+      return cleanPairs(r) as ActivityContent[T];
     case "speaking_challenge": {
       const promptType: PromptType = PROMPT_TYPES.includes(r.promptType as PromptType) ? (r.promptType as PromptType) : "text";
       const lines = (v: unknown, n: number) =>
@@ -198,6 +234,8 @@ export function contentProblem(type: ActivityType, content: unknown): string | n
     }
     case "sentence_builder":
       return sentencesProblem(content as Partial<SentenceContent>);
+    case "match_pairs":
+      return pairsProblem(content as Partial<MatchContent>);
     case "speaking_challenge": {
       const c = content as Partial<SpeakingChallengeContent>;
       if (!plainText(c.instructions ?? "")) return "Write the challenge instructions.";

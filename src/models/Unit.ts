@@ -3,7 +3,7 @@ import { defineModel } from "./define";
 
 /**
  * A unit inside a module (owner spec: one topic, done in one or a few sittings). It holds an
- * ordered sequence of Steps (`Step.unitId`): lesson + 2–3 activities, repeated, then one speaking
+ * ordered sequence of Steps (`Step.unitId`): lesson + 2–5 activities, repeated, then one speaking
  * challenge. Units are ordered by `order` within their module.
  */
 const unitSchema = new Schema(

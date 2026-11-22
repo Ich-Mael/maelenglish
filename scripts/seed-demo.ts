@@ -54,8 +54,12 @@ type Seed = {
 const letter = (k: number) => String.fromCharCode(97 + k);
 const nearest = <T extends number>(allowed: readonly T[], v: number) => allowed.reduce((a, b) => (Math.abs(b - v) < Math.abs(a - v) ? b : a));
 
-/** Lab content for a seeded activity of a type that exists (`listen_choose`, `fill_gaps`, `listen_fill_gaps`, `sentence_builder` so far). */
+/** Lab content for a seeded activity of a type that exists (`listen_choose`, `fill_gaps`, `listen_fill_gaps`, `sentence_builder`, `match_pairs` so far). */
 function labContent(s: SeedStep): Record<string, unknown> | null {
+  if (s.activityType === "match_pairs") {
+    // Seed « matching » = situation (prompt) ↔ the right reply (answer) → Lab « match_pairs ».
+    return { perScreen: 5, pairs: (s.items ?? []).map((it, i) => ({ id: `p${i + 1}`, left: it.prompt, right: it.answers[0] ?? "", explanation: it.feedback, audioMediaId: "" })) };
+  }
   if (s.activityType === "sentence_builder") {
     // The seed gives shuffled tiles and the answer: each word of the answer becomes a tile.
     return {
@@ -131,12 +135,14 @@ async function main() {
         const step = await Step.create({ ...base, position: ++position, kind: "lesson", content });
         lessonByRef.set(s.position, step._id);
       } else if (s.kind === "activity") {
+        // The seed's « matching » is the Lab's « match_pairs ».
+        if (s.activityType === "matching") s.activityType = "match_pairs";
         const content = isActivityType(s.activityType) ? labContent(s) : null;
         if (!content) {
           console.log(`  · ignoré : « ${s.title} » (type ${s.activityType} pas encore dans le Labo)`);
           continue;
         }
-        const gaps = s.activityType === "fill_gaps" || s.activityType === "sentence_builder"; // ready at once; the listening types wait for their audio
+        const gaps = s.activityType === "fill_gaps" || s.activityType === "sentence_builder" || s.activityType === "match_pairs"; // ready at once; the listening types wait for their audio
         const a = await Activity.create({ type: s.activityType as "listen_choose", title: s.title, level: seed.module.level ?? "", skills: gaps ? ["grammar"] : ["listening"], durationMin: s.estimatedMinutes ?? 0, instructions: s.instructions ?? "", tags: ["démo"], status: gaps ? "ready" : "draft", content });
         if (!gaps) console.log(`  · « ${s.title} » créée en brouillon : ajoutez l'audio dans le Labo, puis cochez « Ready ».`);
         await Step.create({ ...base, position: ++position, kind: "activity", activityId: a._id, lessonId: lessonByRef.get(s.lessonRef ?? -1) ?? null, passScore: s.passScore ?? 60 });

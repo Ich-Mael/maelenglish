@@ -51,13 +51,13 @@ describe("validateUnit (spec §4)", () => {
   };
 
   it("accepts the valid patterns", () => {
-    for (const p of ["LAAC", "LAAALAAC", "LAALAAALAAC"]) expect(validateUnit(steps(p)), p).toEqual([]);
+    for (const p of ["LAAC", "LAAALAAC", "LAALAAALAAC", "LAAAAC", "LAAAAAC"]) expect(validateUnit(steps(p)), p).toEqual([]);
   });
 
   it("rejects each invalid pattern with a message", () => {
     const msg = (p: string) => validateUnit(steps(p)).map((x) => x.message).join(" | ");
     expect(msg("LAC")).toMatch(/only 1 activity/);
-    expect(msg("LAAAAC")).toMatch(/4 activities: 3 at most/);
+    expect(msg("LAAAAAAC")).toMatch(/6 activities: 5 at most/);
     expect(msg("LLAAC")).toMatch(/followed directly by another lesson/);
     expect(msg("LAA")).toMatch(/Add the speaking challenge/);
     expect(msg("AAC")).toMatch(/must start with a lesson/);

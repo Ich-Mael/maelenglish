@@ -1,8 +1,8 @@
 import { MAX_ACTIVITIES_PER_LESSON, MIN_ACTIVITIES_PER_LESSON, type StepKind } from "./types";
 
 /*
- * Unit rules (owner spec §4), pure. Valid pattern over step kinds: ^(L A{2,3})+ C$.
- * - the first step is a lesson; every lesson is followed by 2 or 3 activities;
+ * Unit rules (owner spec §4), pure. Valid pattern over step kinds: ^(L A{2,5})+ C$ (spec: A{2,3}; up to 5 since 2026-11-22).
+ * - the first step is a lesson; every lesson is followed by 2 to 5 activities;
  * - each activity practises a lesson placed earlier in the same unit;
  * - exactly one speaking challenge, always last;
  * - lessons have content; the challenge uses a « ready » Lab activity.
@@ -42,7 +42,7 @@ export const draftNotices = (steps: readonly UnitStepInput[]): UnitProblem[] =>
 export function validateUnit(all: readonly UnitStepInput[]): UnitProblem[] {
   const steps = learnerSteps(all);
   const problems: UnitProblem[] = [];
-  if (!steps.length) return [{ message: all.length ? "Learners would see nothing: every step is a draft in the Lab." : "The unit is empty: start with a lesson, add 2 or 3 activities, then the speaking challenge." }];
+  if (!steps.length) return [{ message: all.length ? "Learners would see nothing: every step is a draft in the Lab." : "The unit is empty: start with a lesson, add 2 to 5 activities, then the speaking challenge." }];
 
   if (steps[0].kind !== "lesson") problems.push({ stepId: steps[0].id, message: "The unit must start with a lesson." });
 
@@ -54,7 +54,7 @@ export function validateUnit(all: readonly UnitStepInput[]): UnitProblem[] {
     if (n < MIN_ACTIVITIES_PER_LESSON) {
       const after = steps[i + 1 + n];
       const why = n === 1 ? "has only 1 activity" : after?.kind === "lesson" ? "is followed directly by another lesson" : after?.kind === "challenge" ? "is followed directly by the challenge" : "has no activity";
-      problems.push({ stepId: s.id, message: `Lesson ${name(s)} ${why}: every lesson needs ${MIN_ACTIVITIES_PER_LESSON} or ${MAX_ACTIVITIES_PER_LESSON} activities after it.` });
+      problems.push({ stepId: s.id, message: `Lesson ${name(s)} ${why}: every lesson needs ${MIN_ACTIVITIES_PER_LESSON} to ${MAX_ACTIVITIES_PER_LESSON} activities after it.` });
     } else if (n > MAX_ACTIVITIES_PER_LESSON) {
       problems.push({ stepId: s.id, message: `Lesson ${name(s)} has ${n} activities: ${MAX_ACTIVITIES_PER_LESSON} at most. Add another lesson between them.` });
     }

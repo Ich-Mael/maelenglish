@@ -1,11 +1,12 @@
 import { Select, TextArea } from "@/components/admin/ui";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
-import { MAX_SECONDS, PREP_SECONDS, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type GapsContent, type ListenGapsContent, type SentenceContent } from "@/lib/lab/types";
+import { MAX_SECONDS, PREP_SECONDS, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type GapsContent, type ListenGapsContent, type MatchContent, type SentenceContent } from "@/lib/lab/types";
 import { reviewMediaUrl } from "@/lib/media";
 import { ListeningEditor } from "./listening-editor";
 import { GapsEditor } from "./gaps-editor";
 import { ListenGapsEditor } from "./listen-gaps-editor";
 import { SentenceEditor } from "./sentence-editor";
+import { MatchEditor } from "./match-editor";
 import { PromptField } from "./prompt-field";
 import { AudioInput } from "./audio-input";
 
@@ -43,6 +44,12 @@ export async function ActivityFields({ type, content }: { type: ActivityType; co
       const ids = [...new Set((c.items ?? []).map((i) => i.audioMediaId).filter(Boolean))];
       const audioUrls = Object.fromEntries(await Promise.all(ids.map(async (id) => [id, await reviewMediaUrl(id).catch(() => null)] as const)));
       return <SentenceEditor initial={c} audioUrls={audioUrls} />;
+    }
+    case "match_pairs": {
+      const c = content as Partial<MatchContent>;
+      const ids = [...new Set((c.pairs ?? []).map((p) => p.audioMediaId).filter(Boolean))];
+      const audioUrls = Object.fromEntries(await Promise.all(ids.map(async (id) => [id, await reviewMediaUrl(id).catch(() => null)] as const)));
+      return <MatchEditor initial={c} audioUrls={audioUrls} />;
     }
     case "listen_fill_gaps": {
       const c = content as Partial<ListenGapsContent>;

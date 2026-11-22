@@ -15,7 +15,7 @@ import { ActionButton, AdminForm, Submit } from "@/components/admin/forms";
 import { ActivityFields } from "@/components/lab/editors";
 import { MetaFields } from "@/components/lab/meta-fields";
 import { ACTIVITY_ICON } from "@/components/lab/type-icon";
-import { SKILL_NAME, TYPE_LOOK, TypeArt } from "@/components/lab/type-style";
+import { SKILL_NAME, TYPE_LOOK, TypeArt, isLightType } from "@/components/lab/type-style";
 import { cn } from "cn";
 import { PageSkeleton } from "@/components/learn/ui";
 import { stepPath } from "@/lib/learn/paths";
@@ -37,7 +37,7 @@ async function ActivityAdmin({ params, searchParams }: { params: Promise<{ activ
   const type: ActivityType = activity.type;
   const info = ACTIVITY_INFO[type];
   const Icon = ACTIVITY_ICON[type];
-  const light = type === "fill_gaps" || type === "sentence_builder";
+  const light = isLightType(type);
 
   // Units this staff member can add the activity to (courses whose content they edit).
   const scope = can.courseScope(a0);

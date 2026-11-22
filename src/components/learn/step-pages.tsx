@@ -8,7 +8,7 @@ import { courseAccess, courseTree } from "@/lib/learn/queries";
 import { coursePath, examPath, stepPath } from "@/lib/learn/paths";
 import { stepAfter, stepBefore } from "@/lib/learn/sequence";
 import { ChallengeSubmission, User, type ChallengeSubmissionDoc } from "@/models";
-import type { GapsContent, ListenGapsContent, ListeningContent, SentenceContent, SpeakingChallengeContent } from "@/lib/lab/types";
+import type { GapsContent, ListenGapsContent, ListeningContent, MatchContent, SentenceContent, SpeakingChallengeContent } from "@/lib/lab/types";
 import { cleanLessonContent } from "@/lib/course/lesson-content";
 import { feedbackAudioUrl, mediaUrlFor } from "@/lib/media";
 import { AccessProblem, formatDate } from "./ui";
@@ -26,6 +26,7 @@ import { PreviewBar, adminPaths } from "./preview-bar";
 import { ListeningPlayer } from "@/components/lab/players/listening-player";
 import { GapsPlayer } from "@/components/lab/players/gaps-player";
 import { SentencePlayer } from "@/components/lab/players/sentence-player";
+import { MatchPlayer } from "@/components/lab/players/match-player";
 
 function Locked({ courseId, text }: { courseId: string; text: string }) {
   return (
@@ -153,6 +154,33 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
             maelTip={activity.maelTip ?? ""}
             content={activity.content as GapsContent}
             listen={lc ? { audioUrl: clip ?? null, maxPlays: lc.maxPlays, context: lc.context ? <RichText>{lc.context}</RichText> : null } : undefined}
+            courseHref={course}
+            nextHref={nextHref}
+            readOnly={access.readOnly}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (so.kind === "activity" && activity.type === "match_pairs") {
+    const c = activity.content as MatchContent;
+    const audioUrls = await mediaUrls(me.id, [...new Set(c.pairs.map((p) => p.audioMediaId).filter(Boolean))]);
+    return (
+      <div className="mx-auto grid max-w-2xl gap-4">
+        {header}
+        <div>
+          <MatchPlayer
+            courseId={courseId}
+            stepId={stepId}
+            passScore={so.passScore}
+            lessonHref={so.lessonId ? stepPath(courseId, so.lessonId) : null}
+            title={activity.title}
+            level={activity.level ?? ""}
+            skills={activity.skills ?? []}
+            instructions={activity.instructions ?? ""}
+            maelTip={activity.maelTip ?? ""}
+            content={c}
+            audioUrls={audioUrls}
             courseHref={course}
             nextHref={nextHref}
             readOnly={access.readOnly}

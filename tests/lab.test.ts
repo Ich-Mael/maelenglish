@@ -8,7 +8,7 @@ import * as content from "@/lib/admin/content";
 import * as lab from "@/lib/lab/service";
 import { can } from "@/lib/admin/permissions";
 import { cleanContent, contentProblem } from "@/lib/lab/content";
-import { parseTime, formatTime, parseGaps, lineOfGap, sentenceText, sentenceTiles } from "@/lib/lab/types";
+import { parseTime, formatTime, parseGaps, lineOfGap, matchScreens, sentenceText, sentenceTiles } from "@/lib/lab/types";
 import { gradeActivity } from "@/lib/lab/grade";
 
 let mongo: MongoMemoryServer;
@@ -203,6 +203,19 @@ describe("Labo", () => {
     const g = gradeActivity("sentence_builder", sb, { a: "on monday , I would like to book a meeting", "s2-1": "She manages the team IT." });
     expect([g.items.map((i) => i.correct), g.score]).toEqual([[true, false], 50]);
     expect(gradeActivity("sentence_builder", sb, { a: "I would like booking a meeting on Monday.", "s2-1": "She manages the IT team" }).items.map((i) => i.correct)).toEqual([false, true]);
+
+    // V1 matching pairs: balanced screens, unique cards per side, first match per left card counts.
+    expect(matchScreens([1, 2, 3, 4, 5, 6, 7], 5).map((x) => x.length)).toEqual([4, 3]);
+    expect(matchScreens([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 5).map((x) => x.length)).toEqual([4, 4, 3]);
+    expect(matchScreens([1, 2], 6).map((x) => x.length)).toEqual([2]);
+    const mp = cleanContent("match_pairs", { json: JSON.stringify({ perScreen: 9, pairs: [{ id: "a", left: " gate ", right: "porte" }, { id: "a", left: "delay", right: "retard", explanation: "Faux ami : pas « délai »." }, { left: "luggage", right: "bagages" }] }) });
+    expect([mp.perScreen, mp.pairs.map((p) => p.id), mp.pairs[0].left]).toEqual([5, ["a", "p2-1", "p3"], "gate"]);
+    expect(contentProblem("match_pairs", mp)).toBeNull();
+    expect(contentProblem("match_pairs", { ...mp, pairs: mp.pairs.slice(0, 1) })).toMatch(/at least 2/);
+    expect(contentProblem("match_pairs", { ...mp, pairs: [...mp.pairs, { ...mp.pairs[0], id: "z", left: "Gate" }] })).toMatch(/twice on the left/);
+    expect(contentProblem("match_pairs", { ...mp, pairs: [{ ...mp.pairs[0], right: "" }, mp.pairs[1]] })).toMatch(/both sides/);
+    const gm = gradeActivity("match_pairs", mp, { a: "a", "p2-1": "p3", p3: "p3" });
+    expect([gm.items.map((i) => i.correct), gm.score]).toEqual([[true, false, true], 67]);
 
     // Speaking challenge prompts: picture / video / audio, questions one per line; only what the type uses is kept.
     const id = String(new Types.ObjectId());

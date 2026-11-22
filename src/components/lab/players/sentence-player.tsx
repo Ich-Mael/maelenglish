@@ -11,7 +11,7 @@ import { starsFor } from "@/lib/lab/meta";
 import { sentenceText, sentenceTiles, type SentenceContent, type SentenceItem } from "@/lib/lab/types";
 import { useExercise } from "../shell/use-exercise";
 import { CheckBar, ExerciseHeader, FeedbackPanel, ResultsScreen, type ExerciseMeta } from "../shell/parts";
-import { reshuffle } from "../shell/shuffle";
+import { reshuffle, seededOrder } from "../shell/shuffle";
 import { cn } from "cn";
 
 /*
@@ -23,25 +23,6 @@ import { cn } from "cn";
  */
 
 type Result = { score: number; stars: number; bestScore?: number; xp?: number; items: { id: string; correct: boolean }[] };
-
-/** Stable pseudo-random order (same on the server and in the browser: no hydration mismatch), never the right order. */
-function tileOrder(n: number, seed: string): number[] {
-  let h = 2166136261;
-  for (const ch of seed) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
-  const rand = () => {
-    h = (Math.imul(h ^ (h >>> 15), 2246822507) + 0x9e3779b9) >>> 0;
-    return h / 4294967296;
-  };
-  const out = Array.from({ length: n }, (_, i) => i);
-  for (let attempt = 0; attempt < 8; attempt++) {
-    for (let i = n - 1; i > 0; i--) {
-      const j = Math.floor(rand() * (i + 1));
-      [out[i], out[j]] = [out[j], out[i]];
-    }
-    if (n < 2 || out.some((x, i) => x !== i)) break;
-  }
-  return out;
-}
 
 const tileCls = "rounded-xl border-2 px-3 py-2 text-base font-semibold leading-tight transition select-none";
 
@@ -94,7 +75,7 @@ export function SentencePlayer({
   const item = items[ex.index] as SentenceItem | undefined;
   const right = item ? sentenceTiles(item.sentence) : [];
   const tiles = item ? [...right, ...item.distractors] : [];
-  const order = item ? tileOrder(tiles.length, `${item.id}:${round}`) : [];
+  const order = item ? seededOrder(tiles.length, `${item.id}:${round}`) : [];
   const url = item?.audioMediaId ? audioUrls[item.audioMediaId] : undefined;
   const before = content.audioWhen === "before" && !!url;
   const revealed = ex.phase === "feedback";
