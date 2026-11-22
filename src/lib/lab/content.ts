@@ -179,17 +179,20 @@ function cleanTfng(r: Record<string, unknown>): TfngContent {
     const ev = Number(st.evidence);
     // « Not given » has no proof in the text; an index outside the text is dropped.
     const evidence = answer !== "not_given" && st.evidence !== null && st.evidence !== "" && Number.isInteger(ev) && ev >= 0 && ev < lines ? ev : null;
-    return { id, text: str(st.text, 300), answer, evidence, explanation: str(st.explanation, 300) };
+    return { id, text: str(st.text, 300), answer, evidence, explanation: str(st.explanation, 300), quote: answer === "not_given" ? "" : str(st.quote, 300) };
   });
-  return { docTitle: str(j.docTitle, 120), text, statements };
+  const imageMediaId = typeof j.imageMediaId === "string" && Types.ObjectId.isValid(j.imageMediaId) ? j.imageMediaId : "";
+  return { docTitle: str(j.docTitle, 120), text, statements, imageMediaId, imageAlt: imageMediaId ? str(j.imageAlt, 300) : "" };
 }
 
 function tfngProblem(c: Partial<TfngContent>): string | null {
-  if (docSentences(c.text ?? "").length < 2) return "Write the document: at least 2 sentences, one per line.";
+  // The document: a text (2+ sentences), a picture, or both (the text then serves as the transcript).
+  const hasText = docSentences(c.text ?? "").length >= 2;
+  if (!hasText && !c.imageMediaId) return "Add the document: a picture (e.g. a screenshot of an email) or its text, at least 2 sentences, one per line.";
   if (!c.statements?.length) return "Add at least one statement.";
   for (const [i, st] of c.statements.entries()) {
     if (!st.text) return `Statement ${i + 1}: write it.`;
-    if (st.answer !== "not_given" && st.evidence === null) return `Statement ${i + 1}: pick the sentence of the text that proves it.`;
+    if (hasText && st.answer !== "not_given" && st.evidence === null) return `Statement ${i + 1}: pick the sentence of the text that proves it.`;
   }
   return null;
 }

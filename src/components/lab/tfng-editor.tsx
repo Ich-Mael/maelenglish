@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { ItemListEditor, newItemId } from "./item-list-editor";
 import { inputCls } from "@/components/admin/ui";
+import { ImageField } from "@/components/admin/image-field";
 import { TFNG_ANSWERS, docSentences, type TfngAnswer, type TfngContent, type TfngStatement } from "@/lib/lab/types";
 import { cn } from "cn";
 
 /*
- * R1 true / false / not given editor (Labo, English): the document (English, one sentence per line,
- * numbered live), an optional title shown to learners (French), and the statements — each with its
+ * R1 true / false / not given editor (Labo, English): the document — a picture (e.g. a screenshot of
+ * an email) and / or its text (English, one sentence per line, numbered live) —, an optional title
+ * shown to learners (French), and the statements — each with its
  * answer, the sentence that proves it (true / false) and a French explanation.
  * Sent as JSON in « c_json » (cleaned on the server).
  */
@@ -16,12 +18,16 @@ import { cn } from "cn";
 const LABEL: Record<TfngAnswer, string> = { true: "True", false: "False", not_given: "Not given" };
 const blank = (id = newItemId()): TfngStatement => ({ id, text: "", answer: "true", evidence: null, explanation: "" });
 
-export function TfngEditor({ initial }: { initial: Partial<TfngContent> }) {
+export function TfngEditor({ initial, imageUrl }: { initial: Partial<TfngContent>; imageUrl: string | null }) {
   const [docTitle, setDocTitle] = useState(initial.docTitle ?? "");
   const [text, setText] = useState(initial.text ?? "");
+  const [image, setImage] = useState({ id: initial.imageMediaId ?? "", url: imageUrl });
+  const [imageAlt, setImageAlt] = useState(initial.imageAlt ?? "");
   const [statements, setStatements] = useState<TfngStatement[]>(() => (initial.statements?.length ? initial.statements : [blank("t1")])); // fixed id: a random one differs between the server render and hydration
   const sentences = docSentences(text);
-  const json = JSON.stringify({ docTitle, text, statements });
+  // With 2+ sentences of text, proofs are picked from it; a picture alone takes a typed quote.
+  const hasText = sentences.length >= 2;
+  const json = JSON.stringify({ docTitle, text, statements, imageMediaId: image.id, imageAlt });
 
   return (
     <section className="grid gap-4">
@@ -32,8 +38,19 @@ export function TfngEditor({ initial }: { initial: Partial<TfngContent> }) {
           <span className="font-medium">Title shown to learners (optional, French)</span>
           <input className={inputCls} value={docTitle} maxLength={120} onChange={(e) => setDocTitle(e.target.value)} placeholder="E-mail de la DRH" />
         </label>
+        <div className="grid gap-2">
+          <span className="text-sm font-medium">Picture of the document (optional): a screenshot of an email, a notice, a form…</span>
+          <ImageField value={image.id} url={image.url} alt={imageAlt} maxSide={2000} noun="document picture" onChange={(id, url) => setImage({ id, url })} />
+          {image.id && (
+            <label className="grid gap-1 text-sm sm:max-w-xl">
+              <span className="font-medium">Picture description (optional, French)</span>
+              <input className={inputCls} value={imageAlt} maxLength={300} onChange={(e) => setImageAlt(e.target.value)} placeholder="Capture d'un e-mail de demande de demi-journée de congé" />
+              <span className="text-xs text-muted-foreground">Read by screen readers. Kept sharp up to 2000 px so small text stays readable.</span>
+            </label>
+          )}
+        </div>
         <label className="grid gap-1 text-sm">
-          <span className="font-medium">Text (English), one sentence per line</span>
+          <span className="font-medium">{image.id ? "Text of the document (optional: the transcript — proofs are then highlighted in it)" : "Text (English), one sentence per line"}</span>
           <textarea
             lang="en"
             className={cn(inputCls, "h-auto py-2 leading-relaxed")}
@@ -88,6 +105,7 @@ export function TfngEditor({ initial }: { initial: Partial<TfngContent> }) {
                   ))}
                 </div>
               </div>
+              {hasText ? (
               <label className="grid gap-1 text-sm">
                 <span className="font-medium">Proof in the text</span>
                 <select
@@ -104,6 +122,12 @@ export function TfngEditor({ initial }: { initial: Partial<TfngContent> }) {
                   ))}
                 </select>
               </label>
+              ) : (
+                <label className="grid gap-1 text-sm">
+                  <span className="font-medium">Proof (optional): quote it from the picture</span>
+                  <input lang="en" className={inputCls} value={s.quote ?? ""} maxLength={300} disabled={s.answer === "not_given"} onChange={(e) => update({ quote: e.target.value })} placeholder={s.answer === "not_given" ? "None: the document doesn't say" : "I will be back at the office in the afternoon."} />
+                </label>
+              )}
             </div>
             <label className="grid gap-1 text-sm">
               <span className="font-medium">Explanation (optional, French)</span>

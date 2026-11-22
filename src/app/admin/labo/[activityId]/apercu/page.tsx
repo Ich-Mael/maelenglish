@@ -102,9 +102,11 @@ async function Preview({ params }: { params: Promise<{ activityId: string }> }) 
       </div>
     );
   } else if (type === "true_false_ng") {
+    const tf = a.content as TfngContent;
+    const imageUrl = tf.imageMediaId ? await reviewMediaUrl(tf.imageMediaId).catch(() => null) : null;
     body = (
       <div lang="fr" className="[--checkbar-bottom:0px]">
-        <TfngPlayer preview title={a.title} level={a.level ?? ""} skills={a.skills ?? []} instructions={a.instructions ?? ""} maelTip={a.maelTip ?? ""} content={a.content as TfngContent} courseHref={back} nextHref={back} />
+        <TfngPlayer preview title={a.title} level={a.level ?? ""} skills={a.skills ?? []} instructions={a.instructions ?? ""} maelTip={a.maelTip ?? ""} content={tf} imageUrl={imageUrl} courseHref={back} nextHref={back} />
       </div>
     );
   } else if (type === "match_pairs" || type === "listen_match") {

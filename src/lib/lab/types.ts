@@ -241,11 +241,13 @@ export function matchScreens<T>(pairs: readonly T[], perScreen: number): T[][] {
  * R1 — True / false / not given: `text` = the document in English, one sentence per line
  * (`docSentences`); `docTitle` optional (« E-mail de la DRH »). Each statement has its answer and,
  * for true / false, `evidence` = index of the sentence that proves it (highlighted at correction).
+ * The document may also (or only) be a picture — `imageMediaId`, e.g. a screenshot of an email —:
+ * without text, `quote` (typed by staff) is the proof shown in the feedback.
  */
 export const TFNG_ANSWERS = ["true", "false", "not_given"] as const;
 export type TfngAnswer = (typeof TFNG_ANSWERS)[number];
-export type TfngStatement = { id: string; text: string; answer: TfngAnswer; evidence: number | null; explanation: string };
-export type TfngContent = { docTitle: string; text: string; statements: TfngStatement[] };
+export type TfngStatement = { id: string; text: string; answer: TfngAnswer; evidence: number | null; explanation: string; quote?: string };
+export type TfngContent = { docTitle: string; text: string; statements: TfngStatement[]; imageMediaId?: string; imageAlt?: string };
 export const TFNG_LABEL: Record<TfngAnswer, string> = { true: "Vrai", false: "Faux", not_given: "Non mentionné" };
 
 /** The document's sentences (non-empty lines), as numbered by `evidence`. */

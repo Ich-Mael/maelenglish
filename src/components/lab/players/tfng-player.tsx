@@ -2,7 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, FileSearch, FileText } from "lucide-react";
+import { ChevronDown, Expand, FileSearch, FileText } from "lucide-react";
 import { submitLabAttempt } from "@/app/(app)/learn-actions";
 import { pushReward } from "@/components/gamify/reward-store";
 import { playSound } from "@/components/gamify/sound";
@@ -45,6 +45,19 @@ function Doc({ title, sentences, highlight, tone = "right" }: { title: string; s
   );
 }
 
+/** The document picture: full width, tap to open it full size (small text in screenshots). */
+function DocImage({ url, alt }: { url: string; alt: string }) {
+  return (
+    <a href={url} target="_blank" rel="noopener" className="group relative block overflow-clip rounded-2xl border border-border bg-muted" aria-label="Ouvrir le document en grand">
+      {/* eslint-disable-next-line @next/next/no-img-element -- signed storage URL, no image optimiser */}
+      <img src={url} alt={alt} className="w-full object-contain" />
+      <span aria-hidden className="absolute right-2 bottom-2 flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-xs font-bold text-brand-deep shadow">
+        <Expand className="size-3.5" /> Agrandir
+      </span>
+    </a>
+  );
+}
+
 export function TfngPlayer({
   courseId,
   stepId,
@@ -56,6 +69,7 @@ export function TfngPlayer({
   instructions,
   maelTip,
   content,
+  imageUrl,
   courseHref,
   nextHref,
   readOnly,
@@ -71,6 +85,8 @@ export function TfngPlayer({
   instructions?: string;
   maelTip?: string;
   content: TfngContent;
+  /** The document as a picture (optional; the text, if any, is then its transcript). */
+  imageUrl?: string | null;
   courseHref: string;
   nextHref: string;
   readOnly?: boolean;
@@ -87,6 +103,9 @@ export function TfngPlayer({
   const [pending, start] = useTransition();
 
   const sentences = docSentences(content.text);
+  const hasText = sentences.length > 0;
+  /** The proof of a statement: its sentence of the text, else the quote typed by staff (picture only). */
+  const proofOf = (s: TfngContent["statements"][number]) => (s.evidence !== null && sentences[s.evidence]) || s.quote || "";
   const meta: ExerciseMeta = { title, typeLabel: "Vrai, faux ou non mentionné", icon: FileSearch, level, skills, instructions: instructions || "Lisez le document, puis dites si chaque phrase est vraie, fausse ou non mentionnée." };
   const st = statements[ex.index];
   const revealed = ex.phase === "feedback";
@@ -153,8 +172,9 @@ export function TfngPlayer({
         >
           <details className="rounded-3xl border-2 border-border bg-card p-5" open={result.score < 100}>
             <summary className="cursor-pointer font-heading font-extrabold text-brand-deep">Le document et les preuves</summary>
-            <div className="mt-3">
-              <Doc title={content.docTitle} sentences={sentences} highlight={statements.flatMap((s) => (s.evidence === null ? [] : [s.evidence]))} />
+            <div className="mt-3 grid gap-3">
+              {imageUrl && <DocImage url={imageUrl} alt={content.imageAlt || content.docTitle || "Document"} />}
+              {hasText && <Doc title={imageUrl ? "" : content.docTitle} sentences={sentences} highlight={statements.flatMap((s) => (s.evidence === null ? [] : [s.evidence]))} />}
             </div>
             <ul className="mt-4 grid gap-2">
               {statements.map((s) => (
@@ -163,6 +183,11 @@ export function TfngPlayer({
                     {s.text}
                   </span>{" "}
                   → <strong className="text-primary">{TFNG_LABEL[s.answer]}</strong>
+                  {proofOf(s) && (
+                    <span lang="en" className="block text-ink/80">
+                      « {proofOf(s)} »
+                    </span>
+                  )}
                   {s.explanation && <span className="block text-muted-foreground">{s.explanation}</span>}
                 </li>
               ))}
@@ -190,8 +215,20 @@ export function TfngPlayer({
           <ChevronDown className={cn("size-5 shrink-0 text-muted-foreground transition", docOpen && "rotate-180")} aria-hidden />
         </button>
         {docOpen && (
-          <div className="max-h-[45vh] overflow-y-auto border-t border-border px-4 py-3 sm:max-h-none sm:px-5">
-            <Doc title="" sentences={sentences} highlight={proof} tone={ex.correct === false ? "wrong" : "right"} />
+          <div className="grid max-h-[55vh] gap-3 overflow-y-auto border-t border-border px-4 py-3 sm:max-h-none sm:px-5">
+            {imageUrl && <DocImage url={imageUrl} alt={content.imageAlt || content.docTitle || "Document"} />}
+            {hasText &&
+              (imageUrl ? (
+                // With a picture, the text is its transcript: folded, opened to show the proof.
+                <details open={proof.length > 0} className="rounded-2xl bg-muted/40 px-3 py-2">
+                  <summary className="cursor-pointer text-sm font-semibold text-brand-deep">Le texte du document</summary>
+                  <div className="mt-2">
+                    <Doc title="" sentences={sentences} highlight={proof} tone={ex.correct === false ? "wrong" : "right"} />
+                  </div>
+                </details>
+              ) : (
+                <Doc title="" sentences={sentences} highlight={proof} tone={ex.correct === false ? "wrong" : "right"} />
+              ))}
           </div>
         )}
       </section>
@@ -206,12 +243,12 @@ export function TfngPlayer({
         <ChoiceCards options={OPTIONS} value={ex.answer} onChange={(id) => !readOnly && ex.setAnswer(id)} reveal={revealed ? { correctId: st.answer } : null} labelledBy={`s-${st.id}`} />
         {revealed && ex.correct !== null && (
           <FeedbackPanel correct={ex.correct} answer={TFNG_LABEL[st.answer]} explanation={st.explanation}>
-            {st.evidence !== null && sentences[st.evidence] ? (
+            {proofOf(st) ? (
               <p lang="en" className="rounded-xl bg-white/70 px-3 py-2 text-sm text-ink">
                 <span lang="fr" className="mr-1 text-muted-foreground">
-                  Dans le texte :
+                  Dans le document :
                 </span>
-                « {sentences[st.evidence]} »
+                « {proofOf(st)} »
               </p>
             ) : (
               st.answer === "not_given" && <p className="text-sm text-ink">Le texte ne dit rien à ce sujet : ni vrai, ni faux.</p>

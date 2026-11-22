@@ -41,8 +41,11 @@ export async function ActivityFields({ type, content }: { type: ActivityType; co
     }
     case "fill_gaps":
       return <GapsEditor initial={content as Partial<GapsContent>} />;
-    case "true_false_ng":
-      return <TfngEditor initial={content as Partial<TfngContent>} />;
+    case "true_false_ng": {
+      const c = content as Partial<TfngContent>;
+      const imageUrl = c.imageMediaId ? await reviewMediaUrl(c.imageMediaId).catch(() => null) : null;
+      return <TfngEditor initial={c} imageUrl={imageUrl} />;
+    }
     case "complete_words": {
       const c = content as Partial<CompleteWordsContent>;
       const audioUrl = c.audioMediaId ? await reviewMediaUrl(c.audioMediaId).catch(() => null) : null;

@@ -253,6 +253,12 @@ describe("Labo", () => {
     expect(contentProblem("true_false_ng", { ...tf, statements: [tf.statements[0], tf.statements[1]] })).toBeNull();
     expect(contentProblem("true_false_ng", { ...tf, text: "One line." })).toMatch(/at least 2 sentences/);
     expect(gradeActivity("true_false_ng", tf, { a: "false", b: "true", c: "true", d: "true" }).score).toBe(75);
+    // A picture instead of the text: no sentence to pick, the proof is an optional typed quote.
+    const docImg = String(new Types.ObjectId());
+    const tfi = cleanContent("true_false_ng", { json: JSON.stringify({ imageMediaId: docImg, imageAlt: "Capture", text: "", statements: [{ id: "a", text: "He leaves at 1 p.m.", answer: "true", quote: "from 1:00 PM" }, { id: "b", text: "He is ill.", answer: "not_given", quote: "x" }] }) });
+    expect([tfi.imageMediaId, tfi.imageAlt, tfi.statements[0].quote, tfi.statements[1].quote]).toEqual([docImg, "Capture", "from 1:00 PM", ""]);
+    expect(contentProblem("true_false_ng", tfi)).toBeNull();
+    expect(contentProblem("true_false_ng", { ...tfi, imageMediaId: "" })).toMatch(/Add the document/);
 
     // Complete the words: brackets after the stem, exact letters (capitals ignored), automatic C-test blanking.
     const cw = cleanContent("complete_words", { text: "Traveling to new destin[ations] has long been one of the most reward[ing] experiences." });

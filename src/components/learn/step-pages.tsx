@@ -192,6 +192,8 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
     );
   }
   if (so.kind === "activity" && activity.type === "true_false_ng") {
+    const tf = activity.content as TfngContent;
+    const tfImage = tf.imageMediaId ? (await mediaUrls(me.id, [tf.imageMediaId]))[tf.imageMediaId] : undefined;
     return (
       <div className="mx-auto grid max-w-2xl gap-4">
         {header}
@@ -206,7 +208,8 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
             skills={activity.skills ?? []}
             instructions={activity.instructions ?? ""}
             maelTip={activity.maelTip ?? ""}
-            content={activity.content as TfngContent}
+            content={tf}
+            imageUrl={tfImage ?? null}
             courseHref={course}
             nextHref={nextHref}
             readOnly={access.readOnly}
