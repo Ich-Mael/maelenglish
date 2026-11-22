@@ -3,11 +3,11 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
-import { FlaskConical, Mic, Plus, Search } from "lucide-react";
+import { BookOpen, ChevronDown, FlaskConical, Headphones, Mail, Mic, Plus, Puzzle, Search, Speech, type LucideIcon } from "lucide-react";
 import { actorOf, requireStaff } from "@/lib/admin/context";
 import { can } from "@/lib/admin/permissions";
 import { listActivities } from "@/lib/lab/service";
-import { ACTIVITY_INFO, ACTIVITY_TYPES, SKILL_FAMILIES, type ActivityType } from "@/lib/lab/types";
+import { ACTIVITY_INFO, ACTIVITY_TYPES, SKILL_FAMILIES, type ActivityType, type SkillFamily } from "@/lib/lab/types";
 import { CEFR_LEVELS, SKILLS, THEMES, skillLabel, themeLabel } from "@/lib/lab/meta";
 import { Card, EmptyState, Input, PageHeader, fmtDate, inputCls } from "@/components/admin/ui";
 import { AdminForm, Submit } from "@/components/admin/forms";
@@ -18,6 +18,8 @@ import { createActivityAction } from "./actions";
 import { cn } from "cn";
 
 export const metadata: Metadata = { title: "Lab" };
+
+const SKILL_ICON: Record<SkillFamily, LucideIcon> = { listening: Headphones, language: Puzzle, reading: BookOpen, writing: Mail, pronunciation: Speech, speaking: Mic };
 
 async function Lab({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   await connection();
@@ -94,47 +96,62 @@ async function Lab({ searchParams }: { searchParams: Promise<Record<string, stri
           </h2>
           <p className="text-sm text-muted-foreground">Each one practises the lesson above it in a unit. Every type has its own editor and learner screen.</p>
         </div>
-        {practiceGroups.map((g) => (
-          <div key={g.skill} className="grid gap-3">
-            <h3 className="text-xs font-bold tracking-wide text-primary uppercase">{SKILL_NAME[g.skill]}</h3>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {g.types.map((t) => {
-                const Icon = ACTIVITY_ICON[t];
-                const look = TYPE_LOOK[t];
-                return (
-                  <AdminForm key={t} action={createActivityAction} className="group grid overflow-clip rounded-3xl border-2 border-border bg-card transition hover:border-primary/40 hover:shadow-[0_10px_30px_-18px_rgb(20_31_77/0.5)]">
-                    <input type="hidden" name="type" value={t} />
-                    <div className={cn("relative flex h-32 items-center justify-between gap-4 px-5", look.band, isLightType(t) ? "border-b border-border" : "")}>
-                      <span className={cn("flex size-12 shrink-0 items-center justify-center rounded-2xl", isLightType(t) ? "bg-white text-primary shadow-sm" : "bg-white/15 text-white")}>
-                        <Icon className="size-6" aria-hidden />
-                      </span>
-                      <TypeArt type={t} className="w-44 transition group-hover:-translate-y-0.5" />
-                    </div>
-                    <div className="grid gap-3 p-5">
-                      <div>
-                        <p className="font-heading text-lg font-extrabold text-brand-deep">{ACTIVITY_INFO[t].label}</p>
-                        <p className="text-sm text-muted-foreground">{ACTIVITY_INFO[t].description}</p>
+        {practiceGroups.map((g) => {
+          const SkillIcon = SKILL_ICON[g.skill];
+          return (
+            // One collapsible section per skill family.
+            <details key={g.skill} open className="group/skill rounded-3xl border-2 border-border bg-card/60">
+              <summary className="flex cursor-pointer list-none items-center gap-3 rounded-3xl px-4 py-3 hover:bg-brand-soft/50 [&::-webkit-details-marker]:hidden">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-brand-deep text-white">
+                  <SkillIcon className="size-5" aria-hidden />
+                </span>
+                <span className="grid min-w-0 flex-1">
+                  <span className="font-heading text-lg font-extrabold text-brand-deep">{SKILL_NAME[g.skill]}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {g.types.length} activity type{g.types.length > 1 ? "s" : ""} · {g.types.map((t) => ACTIVITY_INFO[t].label).join(", ")}
+                  </span>
+                </span>
+                <ChevronDown className="size-5 shrink-0 text-muted-foreground transition group-open/skill:rotate-180 motion-reduce:transition-none" aria-hidden />
+              </summary>
+              <div className="grid gap-4 border-t border-border p-4 sm:grid-cols-2">
+                {g.types.map((t) => {
+                  const Icon = ACTIVITY_ICON[t];
+                  const look = TYPE_LOOK[t];
+                  return (
+                    <AdminForm key={t} action={createActivityAction} className="group grid overflow-clip rounded-3xl border-2 border-border bg-card transition hover:border-primary/40 hover:shadow-[0_10px_30px_-18px_rgb(20_31_77/0.5)]">
+                      <input type="hidden" name="type" value={t} />
+                      <div className={cn("relative flex h-32 items-center justify-between gap-4 px-5", look.band, isLightType(t) ? "border-b border-border" : "")}>
+                        <span className={cn("flex size-12 shrink-0 items-center justify-center rounded-2xl", isLightType(t) ? "bg-white text-primary shadow-sm" : "bg-white/15 text-white")}>
+                          <Icon className="size-6" aria-hidden />
+                        </span>
+                        <TypeArt type={t} className="w-44 transition group-hover:-translate-y-0.5" />
                       </div>
-                      <ul className="flex flex-wrap gap-1.5">
-                        {look.perks.map((x) => (
-                          <li key={x} className="rounded-full bg-brand-soft px-2.5 py-0.5 text-xs font-semibold text-primary">
-                            {x}
-                          </li>
-                        ))}
-                      </ul>
-                      <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
-                        <Input label="Title" name="title" required placeholder={look.example} />
-                        <Submit>
-                          <Plus className="size-4" aria-hidden /> Create
-                        </Submit>
+                      <div className="grid gap-3 p-5">
+                        <div>
+                          <p className="font-heading text-lg font-extrabold text-brand-deep">{ACTIVITY_INFO[t].label}</p>
+                          <p className="text-sm text-muted-foreground">{ACTIVITY_INFO[t].description}</p>
+                        </div>
+                        <ul className="flex flex-wrap gap-1.5">
+                          {look.perks.map((x) => (
+                            <li key={x} className="rounded-full bg-brand-soft px-2.5 py-0.5 text-xs font-semibold text-primary">
+                              {x}
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
+                          <Input label="Title" name="title" required placeholder={look.example} />
+                          <Submit>
+                            <Plus className="size-4" aria-hidden /> Create
+                          </Submit>
+                        </div>
                       </div>
-                    </div>
-                  </AdminForm>
-                );
-              })}
-            </div>
-          </div>
-        ))}
+                    </AdminForm>
+                  );
+                })}
+              </div>
+            </details>
+          );
+        })}
         <div className="flex flex-wrap items-center gap-2 rounded-2xl border-2 border-dashed border-border px-4 py-3">
           <span className="mr-1 text-sm font-semibold text-muted-foreground">Coming next:</span>
           {COMING_NEXT.map((x) => (
@@ -218,11 +235,7 @@ async function Lab({ searchParams }: { searchParams: Promise<Record<string, stri
                         {a.skills?.length ? ` · ${a.skills.map((x) => skillLabel(x, "en")).join(", ")}` : ""} · {a.uses ? `used in ${a.uses} unit(s)` : "not used yet"} · edited {fmtDate(a.updatedAt)}
                       </span>
                     </span>
-                    {a.status === "ready" ? (
-                      <span className="rounded-full bg-gradient-to-r from-primary to-brand-deep px-2.5 py-0.5 text-xs font-bold text-white">Ready</span>
-                    ) : (
-                      <span className="rounded-full border border-coral bg-white px-2.5 py-0.5 text-xs font-bold text-coral-dark">Draft</span>
-                    )}
+                    {a.status === "ready" ? <span className="rounded-full bg-gradient-to-r from-primary to-brand-deep px-2.5 py-0.5 text-xs font-bold text-white">Ready</span> : <span className="rounded-full border border-coral bg-white px-2.5 py-0.5 text-xs font-bold text-coral-dark">Draft</span>}
                   </Link>
                 </li>
               );
