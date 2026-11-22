@@ -221,7 +221,37 @@ export function sendChallengeReviewedEmail(
   });
 }
 
-export type DigestItem = { learner: string; course: string; unit: string; hoursWaiting: number; late: boolean; url: string };
+/** Learner: their coach sent feedback on a writing task (French). */
+export function sendWritingReviewedEmail(to: string, p: { firstName: string; title: string; courseTitle: string; coachName: string; score: number | null; comment: string; redoAsked: boolean; url: string }) {
+  const coach = p.coachName || "Votre coach";
+  const intro = `${esc(coach)} a corrigé votre texte <strong>« ${esc(p.title)} »</strong> (${esc(p.courseTitle)})${p.score !== null ? ` : <strong>${p.score} / 100</strong>` : ""}.${p.redoAsked ? " Votre coach vous demande d'envoyer une nouvelle version." : ""}`;
+  const comment = p.comment.trim();
+  const extra = comment
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#eef1fb;border-radius:10px"><tr><td style="padding:12px 16px;font-size:15px;color:#141f4d"><strong>Son commentaire</strong><br>${esc(comment.slice(0, 600))}${comment.length > 600 ? "…" : ""}</td></tr></table>`
+    : "";
+  return send({
+    to,
+    subject: p.redoAsked ? `Votre coach vous demande une nouvelle version : ${p.title}` : `Votre texte est corrigé : ${p.title}`,
+    html: layout({
+      firstName: p.firstName,
+      intro,
+      extra,
+      button: p.redoAsked ? "Voir les corrections et réécrire" : "Voir mes corrections",
+      url: p.url,
+      outro: p.redoAsked ? "Lisez les corrections, puis envoyez votre nouvelle version : c'est en réécrivant qu'on progresse." : "Relisez les corrections : chaque texte vous rapproche d'un anglais professionnel sûr de lui.",
+    }),
+    text: `Bonjour ${p.firstName},
+
+${intro.replace(/<[^>]+>/g, "")}
+${comment ? `
+Son commentaire : ${comment}
+` : ""}
+${p.url}`,
+  });
+}
+
+/** A waiting item in the coach digest: a speaking challenge or a writing task. */
+export type DigestItem = { learner: string; course: string; unit: string; hoursWaiting: number; late: boolean; url: string; kind?: "speaking" | "writing" };
 
 const waited = (h: number) => (h >= 48 ? `${Math.floor(h / 24)} days` : `${Math.max(1, Math.round(h))} h`);
 function digestTable(items: DigestItem[], withCoach?: (i: DigestItem) => string) {
@@ -229,28 +259,31 @@ function digestTable(items: DigestItem[], withCoach?: (i: DigestItem) => string)
     .slice(0, 30)
     .map(
       (i) =>
-        `<tr><td style="padding:8px 0;border-bottom:1px solid #e3e7f3"><strong>${esc(i.learner)}</strong>${withCoach ? ` <span style="color:#5b6283">· ${esc(withCoach(i))}</span>` : ""}<br><span style="color:#5b6283">${esc(i.course)} · ${esc(i.unit)}</span></td><td align="right" style="padding:8px 0;border-bottom:1px solid #e3e7f3;white-space:nowrap;color:${i.late ? "#b02a2a" : "#5b6283"};font-weight:${i.late ? "bold" : "normal"}">${i.late ? "Late · " : ""}${waited(i.hoursWaiting)}</td></tr>`,
+        `<tr><td style="padding:8px 0;border-bottom:1px solid #e3e7f3"><strong>${esc(i.learner)}</strong>${withCoach ? ` <span style="color:#5b6283">· ${esc(withCoach(i))}</span>` : ""}<br><span style="color:#5b6283">${i.kind === "writing" ? "Writing · " : "Speaking · "}${esc(i.course)}${i.unit ? ` · ${esc(i.unit)}` : ""}</span></td><td align="right" style="padding:8px 0;border-bottom:1px solid #e3e7f3;white-space:nowrap;color:${i.late ? "#b02a2a" : "#5b6283"};font-weight:${i.late ? "bold" : "normal"}">${i.late ? "Late · " : ""}${waited(i.hoursWaiting)}</td></tr>`,
     )
     .join("")}</table>${items.length > 30 ? `<p style="margin:0 0 16px;font-size:13px;color:#5b6283">…and ${items.length - 30} more.</p>` : ""}`;
 }
 
-/** Coach: daily list of the speaking challenges waiting for them (English, like the admin). */
+/** Coach: daily list of the speaking challenges and writing tasks waiting for them (English, like the admin). */
 export function sendCoachDigestEmail(to: string, p: { firstName: string; items: DigestItem[]; dueHours: number }) {
   const late = p.items.filter((i) => i.late).length;
-  const url = appUrl("/admin/corrections?coach=me");
+  const writing = p.items.filter((i) => i.kind === "writing").length;
+  const speaking = p.items.length - writing;
+  const what = [speaking ? `${speaking} speaking challenge(s)` : "", writing ? `${writing} writing task(s)` : ""].filter(Boolean).join(" and ");
+  const url = appUrl(speaking ? "/admin/corrections?coach=me" : "/admin/corrections/ecrits?coach=me");
   return send({
     to,
-    subject: late ? `${late} late speaking challenge(s) · ${p.items.length} to grade` : `${p.items.length} speaking challenge(s) to grade`,
+    subject: late ? `${late} late · ${p.items.length} to review (${what})` : `${p.items.length} to review: ${what}`,
     html: layout({
       lang: "en",
       firstName: p.firstName,
-      intro: `${p.items.length} speaking challenge(s) are waiting for your feedback${late ? `, <strong style="color:#b02a2a">${late} of them waiting more than ${p.dueHours} hours</strong>` : ""}. Learners stay motivated when they hear back quickly.`,
+      intro: `${what} are waiting for your feedback${late ? `, <strong style="color:#b02a2a">${late} of them waiting more than ${p.dueHours} hours</strong>` : ""}. Learners stay motivated when they hear back quickly.${writing && speaking ? " Writing tasks are in Grading → Writing review." : ""}`,
       extra: digestTable(p.items),
       button: "Open my grading queue",
       url,
       outro: `Target: every challenge reviewed within ${p.dueHours} hours of being sent.`,
     }),
-    text: `Hello ${p.firstName},\n\n${p.items.length} speaking challenge(s) to grade (${late} late).\n\n${p.items.map((i) => `- ${i.learner} · ${i.course} · ${i.unit} · ${i.late ? "LATE · " : ""}${waited(i.hoursWaiting)}`).join("\n")}\n\n${url}`,
+    text: `Hello ${p.firstName},\n\n${what} to review (${late} late).\n\n${p.items.map((i) => `- ${i.kind === "writing" ? "Writing" : "Speaking"} · ${i.learner} · ${i.course} · ${i.unit} · ${i.late ? "LATE · " : ""}${waited(i.hoursWaiting)}`).join("\n")}\n\n${url}`,
   });
 }
 
@@ -259,16 +292,16 @@ export function sendAdminLateDigestEmail(to: string[], p: { items: (DigestItem &
   const url = appUrl("/admin/suivi");
   return send({
     to: to.join(", "),
-    subject: `${p.items.length} speaking challenge(s) waiting more than ${p.dueHours} h`,
+    subject: `${p.items.length} learner answer(s) waiting more than ${p.dueHours} h`,
     html: layout({
       lang: "en",
       firstName: "team",
-      intro: `These speaking challenges have been waiting for a coach for more than ${p.dueHours} hours:`,
+      intro: `These speaking challenges and writing tasks have been waiting for a coach for more than ${p.dueHours} hours:`,
       extra: digestTable(p.items, (i) => (i as DigestItem & { coach: string }).coach || "no coach"),
       button: "Open coach oversight",
       url,
       outro: "Check in with the coaches concerned, or reassign the learners from their user page.",
     }),
-    text: `Late speaking challenges (> ${p.dueHours} h):\n\n${p.items.map((i) => `- ${i.learner} · ${i.coach || "no coach"} · ${i.course} · ${waited(i.hoursWaiting)}`).join("\n")}\n\n${url}`,
+    text: `Late speaking challenges and writing tasks (> ${p.dueHours} h):\n\n${p.items.map((i) => `- ${i.learner} · ${i.coach || "no coach"} · ${i.course} · ${waited(i.hoursWaiting)}`).join("\n")}\n\n${url}`,
   });
 }

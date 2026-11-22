@@ -12,7 +12,7 @@ import * as steps from "@/lib/admin/steps";
 import { setDefaultMonthlyMinutes } from "@/lib/ai/metering";
 import { enroll, removeEnrollment, updateEnrollment } from "@/lib/admin/enrollments";
 import { gradeSubmission } from "@/lib/admin/grading";
-import { notifyChallengeReviewed, runCoachDigest } from "@/lib/notifications";
+import { notifyChallengeReviewed, notifyWritingReviewed, runCoachDigest } from "@/lib/notifications";
 import { assignCourseCoach, setMainCoach } from "@/lib/admin/coaching";
 import { RequestError, updateRequest } from "@/lib/requests";
 import { createAccount, deactivateUser, issueResetForUser, reissueActivation, restoreUser } from "@/lib/auth/accounts";
@@ -583,6 +583,7 @@ export async function reviewWritingAction(_: State, form: FormData): Promise<Sta
       return { error: "The correction couldn't be read: reload the page." };
     }
     await reviewWriting(me.id, id, { feedback, comment: str(form, "comment"), askNewVersion: form.get("askNewVersion") === "on" });
+    await notifyWritingReviewed(id);
     next = "/admin/corrections/ecrits";
   } catch (e) {
     return e instanceof WritingError ? { error: e.message } : fail(e);

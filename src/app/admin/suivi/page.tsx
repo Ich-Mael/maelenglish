@@ -3,11 +3,12 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
-import { AlertTriangle, ExternalLink, Mail } from "lucide-react";
+import { AlertTriangle, ExternalLink, Mail, PenLine } from "lucide-react";
 import { actorOf, requireStaff } from "@/lib/admin/context";
 import { can } from "@/lib/admin/permissions";
-import { GRADING_DUE_HOURS, coachStats } from "@/lib/admin/coaching";
+import { GRADING_DUE_HOURS, coachStats, isWritingLate, writingHoursWaiting } from "@/lib/admin/coaching";
 import { gradingQueue } from "@/lib/admin/grading";
+import { writingQueue } from "@/lib/admin/writing-review";
 import { lastDigest } from "@/lib/notifications";
 import { isEmailConfigured } from "@/lib/email";
 import { plainText } from "@/lib/rich-text";
@@ -33,18 +34,20 @@ async function Oversight() {
   const me = await requireStaff("/admin/suivi");
   if (!can.overseeCoaches(actorOf(me))) redirect("/admin");
   const now = new Date();
-  const [stats, late, recent, digest, unassigned] = await Promise.all([
+  const [stats, late, recent, digest, unassigned, writingPending] = await Promise.all([
     coachStats(now),
     gradingQueue({ courseIds: null, status: "pending", lateOnly: true }, now),
     gradingQueue({ courseIds: null, status: "graded" }, now).then(async (g) => [...g, ...(await gradingQueue({ courseIds: null, status: "returned" }, now))].sort((a, b) => new Date(b.gradedAt ?? 0).getTime() - new Date(a.gradedAt ?? 0).getTime()).slice(0, 12)),
     lastDigest(),
     User.countDocuments({ role: "user", isActive: { $ne: false }, coachId: null }),
+    writingQueue({ courseIds: null, status: "pending" }),
   ]);
+  const lateWriting = writingPending.filter((s) => isWritingLate(s, now));
   const totalPending = stats.reduce((n, s) => n + s.pending, 0);
 
   return (
     <div className="grid max-w-6xl gap-5">
-      <PageHeader title="Coach oversight" subtitle={`Speaking challenges should be reviewed within ${GRADING_DUE_HOURS} hours. Figures over the last 30 days.`} />
+      <PageHeader title="Coach oversight" subtitle={`Speaking challenges and writing tasks should be reviewed within ${GRADING_DUE_HOURS} hours. Figures over the last 30 days (both included).`} />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[
@@ -117,11 +120,25 @@ async function Oversight() {
       </Card>
 
       <div className="grid gap-5 lg:grid-cols-2">
-        <Card title={`Late challenges (${late.length})`} description="Oldest first.">
-          {late.length === 0 ? (
+        <Card title={`Late reviews (${late.length + lateWriting.length})`} description="Speaking challenges, then writing tasks, oldest first.">
+          {late.length + lateWriting.length === 0 ? (
             <EmptyState>Nothing late. 👏</EmptyState>
           ) : (
             <ul className="grid gap-2">
+              {lateWriting.slice(0, 10).map((s) => (
+                <li key={`w${String(s._id)}`}>
+                  <Link href={`/admin/corrections/ecrits/${s._id}`} className="flex items-center gap-3 rounded-xl border border-coral/40 px-3 py-2 text-sm hover:bg-coral-soft/50">
+                    <PenLine className="size-4 shrink-0 text-coral-dark" aria-hidden />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-semibold text-brand-deep">{s.user ? `${s.user.name} ${s.user.surname}` : "Learner"}</span>
+                      <span className="block truncate text-xs text-muted-foreground">
+                        Writing · {s.activity?.title ?? "Writing task"} · {s.course?.title}
+                      </span>
+                    </span>
+                    <span className="shrink-0 text-xs font-semibold text-coral-dark">{waited(writingHoursWaiting(s, now))}</span>
+                  </Link>
+                </li>
+              ))}
               {late.slice(0, 15).map((s) => (
                 <li key={String(s._id)}>
                   <Link href={`/admin/corrections/${s._id}`} className="flex items-center gap-3 rounded-xl border border-coral/40 px-3 py-2 text-sm hover:bg-coral-soft/50">
@@ -163,7 +180,7 @@ async function Oversight() {
         </Card>
       </div>
 
-      <Card title="Daily email digest" description={`Every day from 8:00 (${process.env.APP_TZ || "Africa/Ouagadougou"}), each coach with challenges waiting gets one email listing them, late ones first; admins get the list of late challenges. Learners get an email as soon as their challenge is reviewed.`}>
+      <Card title="Daily email digest" description={`Every day from 8:00 (${process.env.APP_TZ || "Africa/Ouagadougou"}), each coach with speaking challenges or writing tasks waiting gets one email listing them, late ones first; admins get the list of late ones. Learners get an email as soon as their challenge or their writing is reviewed.`}>
         <div className="grid gap-3 text-sm">
           {!isEmailConfigured() && <p className="rounded-xl bg-xp/20 px-3 py-2 font-semibold text-[#7a4d00]">Email isn&apos;t configured (EMAIL_* settings): emails are only logged, not sent.</p>}
           <p className="text-muted-foreground">

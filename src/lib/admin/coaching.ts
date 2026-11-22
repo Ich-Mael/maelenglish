@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { ChallengeSubmission, Course, Enrollment, User, type ChallengeSubmissionDoc } from "@/models";
+import { ChallengeSubmission, Course, Enrollment, User, WritingSubmission, type ChallengeSubmissionDoc, type WritingSubmissionDoc } from "@/models";
 import { AdminError } from "./errors";
 
 /*
@@ -51,9 +51,12 @@ export async function assignCourseCoach(courseId: string, coachId: string, opts:
 export const sentAt = (s: Pick<ChallengeSubmissionDoc, "submittedAt" | "updatedAt" | "history">) => new Date(s.submittedAt ?? s.history?.at(-1)?.sentAt ?? s.updatedAt);
 export const hoursWaiting = (s: Parameters<typeof sentAt>[0], now = new Date()) => Math.max(0, (now.getTime() - sentAt(s).getTime()) / HOUR);
 export const isLate = (s: Parameters<typeof sentAt>[0] & { status: string }, now = new Date()) => s.status === "pending" && hoursWaiting(s, now) > GRADING_DUE_HOURS;
+/** Writing tasks: waiting since the latest version was sent. */
+export const writingHoursWaiting = (s: { submittedAt?: Date | null; updatedAt?: Date | null }, now = new Date()) => Math.max(0, (now.getTime() - new Date(s.submittedAt ?? s.updatedAt ?? now).getTime()) / HOUR);
+export const isWritingLate = (s: { coachStatus?: string | null; submittedAt?: Date | null; updatedAt?: Date | null }, now = new Date()) => s.coachStatus === "pending" && writingHoursWaiting(s, now) > GRADING_DUE_HOURS;
 
 /** Responsible coach ids per submission: the learner's main coach, else the course team. */
-export async function responsibleCoaches(subs: Pick<ChallengeSubmissionDoc, "_id" | "userId" | "courseId">[]) {
+export async function responsibleCoaches(subs: { _id: unknown; userId: Types.ObjectId; courseId: Types.ObjectId }[]) {
   const [learners, courses] = await Promise.all([
     User.find({ _id: { $in: subs.map((s) => s.userId) } }).select("coachId").lean(),
     Course.find({ _id: { $in: subs.map((s) => s.courseId) } }).select("instructors").lean(),
@@ -78,39 +81,51 @@ export type CoachStats = {
 };
 
 /**
- * Per-coach figures: assigned learners, challenges waiting (late ones), and over the last `days`
- * days the reviews they made — average response time (sent → reviewed), average grade, share returned.
+ * Per-coach figures: assigned learners, speaking challenges and writing tasks waiting (late ones),
+ * and over the last `days` days the reviews they made — average response time (sent → reviewed),
+ * average grade, share returned (a writing task « asked for a new version » counts as returned).
  */
 export async function coachStats(now = new Date(), days = 30): Promise<CoachStats[]> {
   const since = new Date(now.getTime() - days * 24 * HOUR);
-  const [coaches, learnerCounts, pending, reviewed] = await Promise.all([
+  const [coaches, learnerCounts, pending, reviewed, wPending, wReviewed] = await Promise.all([
     coachOptions(),
     User.aggregate<{ _id: Types.ObjectId; n: number }>([{ $match: { coachId: { $ne: null }, isActive: { $ne: false } } }, { $group: { _id: "$coachId", n: { $sum: 1 } } }]),
     ChallengeSubmission.find({ status: "pending" }).select("userId courseId submittedAt updatedAt history status").lean<ChallengeSubmissionDoc[]>(),
     ChallengeSubmission.find({ gradedAt: { $gte: since }, gradedBy: { $ne: null } }).select("gradedBy gradedAt submittedAt updatedAt history status grade maxScore").lean<ChallengeSubmissionDoc[]>(),
+    // Writing tasks too (coach-reviewed, decision 2026-11-22).
+    WritingSubmission.find({ coachStatus: "pending", submittedAt: { $ne: null } }).select("userId courseId submittedAt updatedAt coachStatus").lean<WritingSubmissionDoc[]>(),
+    WritingSubmission.find({ reviewedAt: { $gte: since }, reviewedBy: { $ne: null } }).select("reviewedBy reviewedAt submittedAt coachScore redoAsked").lean<WritingSubmissionDoc[]>(),
   ]);
   const owners = await responsibleCoaches(pending);
+  const wOwners = await responsibleCoaches(wPending);
   return coaches
     .map((c) => {
       const id = String(c._id);
       const mine = pending.filter((s) => owners.get(String(s._id))?.includes(id));
       const done = reviewed.filter((s) => String(s.gradedBy) === id);
+      const wMine = wPending.filter((s) => wOwners.get(String(s._id))?.includes(id));
+      const wDone = wReviewed.filter((s) => String(s.reviewedBy) === id);
       // Response time: sent → reviewed (submittedAt / last history entry; never negative).
-      const times = done.map((s) => Math.max(0, (new Date(s.gradedAt!).getTime() - new Date(s.submittedAt ?? s.history?.at(-1)?.sentAt ?? s.gradedAt!).getTime()) / HOUR));
-      const grades = done.filter((s) => s.status === "graded" && s.grade !== null && s.grade !== undefined).map((s) => ((s.grade ?? 0) / (s.maxScore || 100)) * 100);
+      const times = [
+        ...done.map((s) => Math.max(0, (new Date(s.gradedAt!).getTime() - new Date(s.submittedAt ?? s.history?.at(-1)?.sentAt ?? s.gradedAt!).getTime()) / HOUR)),
+        ...wDone.map((s) => Math.max(0, (new Date(s.reviewedAt!).getTime() - new Date(s.submittedAt ?? s.reviewedAt!).getTime()) / HOUR)),
+      ];
+      const grades = [...done.filter((s) => s.status === "graded" && s.grade !== null && s.grade !== undefined).map((s) => ((s.grade ?? 0) / (s.maxScore || 100)) * 100), ...wDone.filter((s) => s.coachScore !== null && s.coachScore !== undefined).map((s) => s.coachScore as number)];
+      const allDone = done.length + wDone.length;
+      const returned = done.filter((s) => s.status === "returned").length + wDone.filter((s) => s.redoAsked).length;
       const avg = (xs: number[]) => (xs.length ? Math.round((xs.reduce((a, b) => a + b, 0) / xs.length) * 10) / 10 : null);
       return {
         coachId: id,
         name: `${c.name ?? ""} ${c.surname ?? ""}`.trim(),
         email: c.email ?? null,
         learners: learnerCounts.find((l) => String(l._id) === id)?.n ?? 0,
-        pending: mine.length,
-        late: mine.filter((s) => isLate(s, now)).length,
-        reviewed: done.length,
+        pending: mine.length + wMine.length,
+        late: mine.filter((s) => isLate(s, now)).length + wMine.filter((s) => isWritingLate(s, now)).length,
+        reviewed: allDone,
         avgResponseH: avg(times),
         avgGradePct: grades.length ? Math.round(avg(grades)!) : null,
-        returnRatePct: done.length ? Math.round((done.filter((s) => s.status === "returned").length / done.length) * 100) : null,
-        lastReviewAt: done.length ? new Date(Math.max(...done.map((s) => new Date(s.gradedAt!).getTime()))) : null,
+        returnRatePct: allDone ? Math.round((returned / allDone) * 100) : null,
+        lastReviewAt: allDone ? new Date(Math.max(...done.map((s) => new Date(s.gradedAt!).getTime()), ...wDone.map((s) => new Date(s.reviewedAt!).getTime()))) : null,
       };
     })
     .filter((s) => s.learners || s.pending || s.reviewed)

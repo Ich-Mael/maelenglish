@@ -1,12 +1,12 @@
-import { ADMIN_ROLES, Activity, ChallengeSubmission, Course, DigestLog, Unit, User, type ChallengeSubmissionDoc } from "@/models";
+import { ADMIN_ROLES, Activity, ChallengeSubmission, Course, DigestLog, Unit, User, WritingSubmission, type ChallengeSubmissionDoc, type WritingSubmissionDoc } from "@/models";
 import { coachLabel } from "@/lib/coach-name";
 import { dayKey } from "@/lib/gamification/rules";
 import { plainText } from "@/lib/rich-text";
-import { GRADING_DUE_HOURS, hoursWaiting, isLate, responsibleCoaches } from "@/lib/admin/coaching";
-import { appUrl, sendAdminLateDigestEmail, sendChallengeReviewedEmail, sendCoachDigestEmail, type DigestItem } from "@/lib/email";
+import { GRADING_DUE_HOURS, hoursWaiting, isLate, isWritingLate, responsibleCoaches, writingHoursWaiting } from "@/lib/admin/coaching";
+import { appUrl, sendAdminLateDigestEmail, sendChallengeReviewedEmail, sendCoachDigestEmail, sendWritingReviewedEmail, type DigestItem } from "@/lib/email";
 
 /*
- * Speaking-challenge emails (user decision 2026-11-21):
+ * Coach review emails — speaking challenges (user decision 2026-11-21) and writing tasks (2026-11-22):
  *  - learner: as soon as a coach validates or returns their challenge (needs an email address);
  *  - coaches: one daily digest (from 8:00, APP_TZ) of the challenges waiting for them — their own
  *    learners, or the course team's when the learner has no main coach — late ones (> 48 h) first;
@@ -43,6 +43,33 @@ export async function notifyChallengeReviewed(submissionId: string) {
   }
 }
 
+/** Learner email when their coach sends feedback on a writing task. */
+export async function notifyWritingReviewed(submissionId: string) {
+  try {
+    const s = await WritingSubmission.findById(submissionId).lean<WritingSubmissionDoc>();
+    if (!s || s.coachStatus !== "reviewed") return;
+    const [learner, coach, course, activity] = await Promise.all([
+      User.findById(s.userId).select("name email isActive").lean(),
+      s.reviewedBy ? User.findById(s.reviewedBy).select("name coachName").lean() : null,
+      Course.findById(s.courseId).select("title").lean(),
+      Activity.findById(s.activityId).select("title").lean(),
+    ]);
+    if (!learner?.email || learner.isActive === false) return;
+    await sendWritingReviewedEmail(learner.email, {
+      firstName: learner.name,
+      title: activity?.title || "Expression écrite",
+      courseTitle: course?.title ?? "",
+      coachName: coach ? coachLabel(coach) : "",
+      score: s.coachScore ?? null,
+      comment: plainText(s.coachComment ?? ""),
+      redoAsked: !!s.redoAsked,
+      url: appUrl(`/apprendre/${s.courseId}/etapes/${s.stepId}`),
+    });
+  } catch (e) {
+    console.error("[notify] writing reviewed", e);
+  }
+}
+
 export type DigestRun = { ran: boolean; emails: number; pending: number; late: number };
 
 /**
@@ -64,11 +91,14 @@ export async function runCoachDigest(now = new Date(), opts: { force?: boolean }
   }
 
   const pending = await ChallengeSubmission.find({ status: "pending" }).lean<ChallengeSubmissionDoc[]>();
+  const writing = await WritingSubmission.find({ coachStatus: "pending", submittedAt: { $ne: null } }).lean<WritingSubmissionDoc[]>();
   const owners = await responsibleCoaches(pending);
-  const [learners, courses, units] = await Promise.all([
-    User.find({ _id: { $in: pending.map((s) => s.userId) } }).select("name surname").lean(),
-    Course.find({ _id: { $in: pending.map((s) => s.courseId) } }).select("title").lean(),
+  const wOwners = await responsibleCoaches(writing);
+  const [learners, courses, units, activities] = await Promise.all([
+    User.find({ _id: { $in: [...pending, ...writing].map((s) => s.userId) } }).select("name surname").lean(),
+    Course.find({ _id: { $in: [...pending, ...writing].map((s) => s.courseId) } }).select("title").lean(),
     Unit.find({ _id: { $in: pending.map((s) => s.unitId) } }).select("title").lean(),
+    Activity.find({ _id: { $in: writing.map((s) => s.activityId) } }).select("title").lean(),
   ]);
   const find = <T extends { _id: unknown }>(l: T[], id: unknown) => l.find((x) => String(x._id) === String(id));
   const item = (s: ChallengeSubmissionDoc): DigestItem => {
@@ -80,17 +110,30 @@ export async function runCoachDigest(now = new Date(), opts: { force?: boolean }
       hoursWaiting: hoursWaiting(s, now),
       late: isLate(s, now),
       url: appUrl(`/admin/corrections/${s._id}`),
+      kind: "speaking",
+    };
+  };
+  const wItem = (s: WritingSubmissionDoc): DigestItem => {
+    const u = find(learners, s.userId);
+    return {
+      learner: u ? `${u.name} ${u.surname}`.trim() : "Learner",
+      course: find(courses, s.courseId)?.title ?? "",
+      unit: find(activities, s.activityId)?.title ?? "",
+      hoursWaiting: writingHoursWaiting(s, now),
+      late: isWritingLate(s, now),
+      url: appUrl(`/admin/corrections/ecrits/${s._id}`),
+      kind: "writing",
     };
   };
 
-  const coachIds = [...new Set([...owners.values()].flat())];
+  const coachIds = [...new Set([...owners.values(), ...wOwners.values()].flat())];
   const coaches = await User.find({ _id: { $in: coachIds }, isActive: { $ne: false }, email: { $exists: true, $ne: null } }).select("name surname email").lean();
   let emails = 0;
   for (const c of coaches) {
-    const items = pending
-      .filter((s) => owners.get(String(s._id))?.includes(String(c._id)))
-      .map(item)
-      .sort((a, b) => Number(b.late) - Number(a.late) || b.hoursWaiting - a.hoursWaiting);
+    const items = [
+      ...pending.filter((s) => owners.get(String(s._id))?.includes(String(c._id))).map(item),
+      ...writing.filter((s) => wOwners.get(String(s._id))?.includes(String(c._id))).map(wItem),
+    ].sort((a, b) => Number(b.late) - Number(a.late) || b.hoursWaiting - a.hoursWaiting);
     if (!items.length || !c.email) continue;
     try {
       await sendCoachDigestEmail(c.email, { firstName: c.name, items, dueHours: GRADING_DUE_HOURS });
@@ -101,7 +144,8 @@ export async function runCoachDigest(now = new Date(), opts: { force?: boolean }
   }
 
   const late = pending.filter((s) => isLate(s, now));
-  if (late.length) {
+  const wLate = writing.filter((s) => isWritingLate(s, now));
+  if (late.length || wLate.length) {
     const admins = await User.find({ role: { $in: ADMIN_ROLES }, isActive: { $ne: false }, email: { $exists: true, $ne: null } }).select("email").lean();
     const names = new Map((await User.find({ _id: { $in: coachIds } }).select("name surname").lean()).map((u) => [String(u._id), `${u.name} ${u.surname}`.trim()]));
     const to = admins.map((a) => a.email).filter((e): e is string => !!e);
@@ -109,7 +153,10 @@ export async function runCoachDigest(now = new Date(), opts: { force?: boolean }
       try {
         await sendAdminLateDigestEmail(to, {
           dueHours: GRADING_DUE_HOURS,
-          items: late.map((s) => ({ ...item(s), coach: (owners.get(String(s._id)) ?? []).map((id) => names.get(id) ?? "").filter(Boolean).join(", ") })).sort((a, b) => b.hoursWaiting - a.hoursWaiting),
+          items: [
+            ...late.map((s) => ({ ...item(s), coach: (owners.get(String(s._id)) ?? []).map((id) => names.get(id) ?? "").filter(Boolean).join(", ") })),
+            ...wLate.map((s) => ({ ...wItem(s), coach: (wOwners.get(String(s._id)) ?? []).map((id) => names.get(id) ?? "").filter(Boolean).join(", ") })),
+          ].sort((a, b) => b.hoursWaiting - a.hoursWaiting),
         });
         emails++;
       } catch (e) {
@@ -117,8 +164,8 @@ export async function runCoachDigest(now = new Date(), opts: { force?: boolean }
       }
     }
   }
-  await DigestLog.updateOne({ key }, { $set: { emails, pending: pending.length, late: late.length } });
-  return { ran: true, emails, pending: pending.length, late: late.length };
+  await DigestLog.updateOne({ key }, { $set: { emails, pending: pending.length + writing.length, late: late.length + wLate.length } });
+  return { ran: true, emails, pending: pending.length + writing.length, late: late.length + wLate.length };
 }
 
 /** Last automatic digest (oversight page). */

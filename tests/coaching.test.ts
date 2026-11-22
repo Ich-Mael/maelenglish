@@ -1,7 +1,7 @@
 import mongoose, { Types } from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { ChallengeSubmission, Course, DigestLog, Enrollment, Module, Unit, User, type Role } from "@/models";
+import { ChallengeSubmission, Course, DigestLog, Enrollment, Module, Unit, User, WritingSubmission, type Role } from "@/models";
 import { GRADING_DUE_HOURS, assignCourseCoach, coachStats, isLate, responsibleCoaches, setMainCoach } from "@/lib/admin/coaching";
 import { gradingQueue } from "@/lib/admin/grading";
 import { can } from "@/lib/admin/permissions";
@@ -19,9 +19,10 @@ vi.mock("@/lib/email", async (orig) => {
     sendCoachDigestEmail: (to: string, p: { items: unknown[] }) => capture(to, `coach:${p.items.length}`),
     sendAdminLateDigestEmail: (to: string[], p: { items: unknown[] }) => capture(to, `admin:${p.items.length}`),
     sendChallengeReviewedEmail: (to: string, p: { decision: string }) => capture(to, `learner:${p.decision}`),
+    sendWritingReviewedEmail: (to: string, p: { redoAsked: boolean }) => capture(to, `writing:${p.redoAsked ? "redo" : "ok"}`),
   };
 });
-const { notifyChallengeReviewed, runCoachDigest } = await import("@/lib/notifications");
+const { notifyChallengeReviewed, notifyWritingReviewed, runCoachDigest } = await import("@/lib/notifications");
 
 let mongo: MongoMemoryServer;
 beforeAll(async () => {
@@ -129,5 +130,28 @@ describe("coaching", () => {
     const s = await sub(paul._id, { status: "returned", gradedBy: grace._id, feedback: "<p>Again</p>", unitId: new Types.ObjectId() });
     await notifyChallengeReviewed(String(s._id));
     expect(sent).toEqual([{ to: "paul@example.com", subject: "learner:returned" }]);
+  });
+
+  it("counts writing tasks too: digest, admin late list, coach figures, learner email after the review", async () => {
+    const { grace, awa, ali, c } = await setup();
+    await setMainCoach(String(awa._id), String(grace._id));
+    await setMainCoach(String(ali._id), String(grace._id));
+    const nine = new Date("2026-11-21T09:00:00Z");
+    const w = (userId: Types.ObjectId, extra: object) => WritingSubmission.create({ userId, courseId: c._id, stepId: new Types.ObjectId(), activityId: new Types.ObjectId(), text: "Dear boss…", ...extra });
+    await w(awa._id, { submittedAt: new Date(nine.getTime() - 50 * HOUR), coachStatus: "pending" });
+    const done = await w(ali._id, { submittedAt: new Date(nine.getTime() - 30 * HOUR), coachStatus: "reviewed", reviewedBy: grace._id, reviewedAt: new Date(nine.getTime() - 6 * HOUR), coachScore: 70, redoAsked: true });
+
+    const r = await runCoachDigest(nine);
+    expect(r).toMatchObject({ ran: true, pending: 1, late: 1 });
+    expect(sent.map((m) => [m.to, m.subject]).sort()).toEqual([
+      ["boss@example.com", "admin:1"],
+      ["grace@example.com", "coach:1"],
+    ]);
+    const [g] = await coachStats(nine);
+    expect(g).toMatchObject({ pending: 1, late: 1, reviewed: 1, avgResponseH: 24, avgGradePct: 70, returnRatePct: 100 });
+
+    sent.length = 0;
+    await notifyWritingReviewed(String(done._id));
+    expect(sent).toEqual([{ to: "ali@example.com", subject: "writing:redo" }]);
   });
 });
