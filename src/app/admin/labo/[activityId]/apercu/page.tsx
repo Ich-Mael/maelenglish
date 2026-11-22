@@ -104,9 +104,11 @@ async function Preview({ params }: { params: Promise<{ activityId: string }> }) 
   } else if (type === "true_false_ng") {
     const tf = a.content as TfngContent;
     const imageUrl = tf.imageMediaId ? await reviewMediaUrl(tf.imageMediaId).catch(() => null) : null;
+    const tfIds = [...new Set(tf.statements.map((s) => s.audioMediaId ?? "").filter(Boolean))];
+    const tfAudio = Object.fromEntries((await Promise.all(tfIds.map(async (id) => [id, await reviewMediaUrl(id).catch(() => null)] as const))).filter((e): e is [string, string] => !!e[1]));
     body = (
       <div lang="fr" className="[--checkbar-bottom:0px]">
-        <TfngPlayer preview title={a.title} level={a.level ?? ""} skills={a.skills ?? []} instructions={a.instructions ?? ""} maelTip={a.maelTip ?? ""} content={tf} imageUrl={imageUrl} courseHref={back} nextHref={back} />
+        <TfngPlayer preview title={a.title} level={a.level ?? ""} skills={a.skills ?? []} instructions={a.instructions ?? ""} maelTip={a.maelTip ?? ""} content={tf} imageUrl={imageUrl} audioUrls={tfAudio} courseHref={back} nextHref={back} />
       </div>
     );
   } else if (type === "match_pairs" || type === "listen_match") {

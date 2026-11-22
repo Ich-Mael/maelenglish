@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ItemListEditor, newItemId } from "./item-list-editor";
 import { inputCls } from "@/components/admin/ui";
 import { ImageField } from "@/components/admin/image-field";
+import { AudioField } from "@/components/admin/audio-field";
 import { TFNG_ANSWERS, docSentences, type TfngAnswer, type TfngContent, type TfngStatement } from "@/lib/lab/types";
 import { cn } from "cn";
 
@@ -16,18 +17,19 @@ import { cn } from "cn";
  */
 
 const LABEL: Record<TfngAnswer, string> = { true: "True", false: "False", not_given: "Not given" };
-const blank = (id = newItemId()): TfngStatement => ({ id, text: "", answer: "true", evidence: null, explanation: "" });
+type Statement = TfngStatement & { audioUrl?: string | null };
+const blank = (id = newItemId()): Statement => ({ id, text: "", answer: "true", evidence: null, explanation: "", audioMediaId: "", audioUrl: null });
 
-export function TfngEditor({ initial, imageUrl }: { initial: Partial<TfngContent>; imageUrl: string | null }) {
+export function TfngEditor({ initial, imageUrl, audioUrls }: { initial: Partial<TfngContent>; imageUrl: string | null; audioUrls: Record<string, string | null> }) {
   const [docTitle, setDocTitle] = useState(initial.docTitle ?? "");
   const [text, setText] = useState(initial.text ?? "");
   const [image, setImage] = useState({ id: initial.imageMediaId ?? "", url: imageUrl });
   const [imageAlt, setImageAlt] = useState(initial.imageAlt ?? "");
-  const [statements, setStatements] = useState<TfngStatement[]>(() => (initial.statements?.length ? initial.statements : [blank("t1")])); // fixed id: a random one differs between the server render and hydration
+  const [statements, setStatements] = useState<Statement[]>(() => (initial.statements?.length ? initial.statements.map((s) => ({ ...s, audioUrl: s.audioMediaId ? (audioUrls[s.audioMediaId] ?? null) : null })) : [blank("t1")])); // fixed id: a random one differs between the server render and hydration
   const sentences = docSentences(text);
   // With 2+ sentences of text, proofs are picked from it; a picture alone takes a typed quote.
   const hasText = sentences.length >= 2;
-  const json = JSON.stringify({ docTitle, text, statements, imageMediaId: image.id, imageAlt });
+  const json = JSON.stringify({ docTitle, text, statements: statements.map(({ audioUrl, ...s }) => (void audioUrl, s)), imageMediaId: image.id, imageAlt });
 
   return (
     <section className="grid gap-4">
@@ -129,6 +131,7 @@ export function TfngEditor({ initial, imageUrl }: { initial: Partial<TfngContent
                 </label>
               )}
             </div>
+            <AudioField label="Audio of the statement (optional: learners hear it first, the text is folded under « Afficher le texte »)" value={s.audioMediaId ?? ""} url={s.audioUrl ?? null} onChange={(id, url) => update({ audioMediaId: id, audioUrl: url })} compact />
             <label className="grid gap-1 text-sm">
               <span className="font-medium">Explanation (optional, French)</span>
               <input className={inputCls} value={s.explanation} maxLength={300} onChange={(e) => update({ explanation: e.target.value })} placeholder="La réunion est déplacée au mardi." />

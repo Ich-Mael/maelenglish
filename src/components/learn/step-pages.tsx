@@ -193,7 +193,8 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
   }
   if (so.kind === "activity" && activity.type === "true_false_ng") {
     const tf = activity.content as TfngContent;
-    const tfImage = tf.imageMediaId ? (await mediaUrls(me.id, [tf.imageMediaId]))[tf.imageMediaId] : undefined;
+    const tfMedia = await mediaUrls(me.id, [tf.imageMediaId ?? "", ...tf.statements.map((s) => s.audioMediaId ?? "")].filter(Boolean));
+    const tfImage = tf.imageMediaId ? tfMedia[tf.imageMediaId] : undefined;
     return (
       <div className="mx-auto grid max-w-2xl gap-4">
         {header}
@@ -210,6 +211,7 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
             maelTip={activity.maelTip ?? ""}
             content={tf}
             imageUrl={tfImage ?? null}
+            audioUrls={tfMedia}
             courseHref={course}
             nextHref={nextHref}
             readOnly={access.readOnly}

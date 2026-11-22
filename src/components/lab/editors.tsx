@@ -44,7 +44,9 @@ export async function ActivityFields({ type, content }: { type: ActivityType; co
     case "true_false_ng": {
       const c = content as Partial<TfngContent>;
       const imageUrl = c.imageMediaId ? await reviewMediaUrl(c.imageMediaId).catch(() => null) : null;
-      return <TfngEditor initial={c} imageUrl={imageUrl} />;
+      const ids = [...new Set((c.statements ?? []).map((s) => s.audioMediaId ?? "").filter(Boolean))];
+      const audioUrls = Object.fromEntries(await Promise.all(ids.map(async (id) => [id, await reviewMediaUrl(id).catch(() => null)] as const)));
+      return <TfngEditor initial={c} imageUrl={imageUrl} audioUrls={audioUrls} />;
     }
     case "complete_words": {
       const c = content as Partial<CompleteWordsContent>;

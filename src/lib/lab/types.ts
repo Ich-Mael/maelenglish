@@ -246,9 +246,11 @@ export function matchScreens<T>(pairs: readonly T[], perScreen: number): T[][] {
  */
 export const TFNG_ANSWERS = ["true", "false", "not_given"] as const;
 export type TfngAnswer = (typeof TFNG_ANSWERS)[number];
-export type TfngStatement = { id: string; text: string; answer: TfngAnswer; evidence: number | null; explanation: string; quote?: string };
+/** `audioMediaId`: the statement read aloud (model-audio): heard first, its text folded under « Afficher le texte ». */
+export type TfngStatement = { id: string; text: string; answer: TfngAnswer; evidence: number | null; explanation: string; quote?: string; audioMediaId?: string };
 export type TfngContent = { docTitle: string; text: string; statements: TfngStatement[]; imageMediaId?: string; imageAlt?: string };
-export const TFNG_LABEL: Record<TfngAnswer, string> = { true: "Vrai", false: "Faux", not_given: "Non mentionné" };
+/** Answer labels: the English exam wording, even in the French learner UI (user decision 2026-11-22). */
+export const TFNG_LABEL: Record<TfngAnswer, string> = { true: "True", false: "False", not_given: "Not given" };
 
 /** The document's sentences (non-empty lines), as numbered by `evidence`. */
 export const docSentences = (text: string) => text.split("\n").map((l) => l.trim()).filter(Boolean);

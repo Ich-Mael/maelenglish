@@ -2,7 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, Expand, FileSearch, FileText } from "lucide-react";
+import { ChevronDown, Expand, FileSearch, FileText, Pause, Play, Volume2 } from "lucide-react";
 import { submitLabAttempt } from "@/app/(app)/learn-actions";
 import { pushReward } from "@/components/gamify/reward-store";
 import { playSound } from "@/components/gamify/sound";
@@ -17,7 +17,8 @@ import { cn } from "cn";
 
 /*
  * R1 — True / false / not given (catalogue): the work document stays at the top (foldable), one
- * statement per screen with Vrai / Faux / Non mentionné. At correction the sentence that proves
+ * statement per screen with True / False / Not given (English exam wording); a statement with audio
+ * is heard first, its text folded under « Afficher le texte ». At correction the sentence that proves
  * the answer is highlighted in the document and quoted in the feedback. The results show the
  * document with every proof. Checked here, the server recomputes the score (`submitLabAttempt`).
  * `preview` (Lab page): graded locally.
@@ -70,6 +71,7 @@ export function TfngPlayer({
   maelTip,
   content,
   imageUrl,
+  audioUrls = {},
   courseHref,
   nextHref,
   readOnly,
@@ -87,6 +89,8 @@ export function TfngPlayer({
   content: TfngContent;
   /** The document as a picture (optional; the text, if any, is then its transcript). */
   imageUrl?: string | null;
+  /** Media id → playable URL of the statements' audio. */
+  audioUrls?: Record<string, string>;
   courseHref: string;
   nextHref: string;
   readOnly?: boolean;
@@ -97,6 +101,20 @@ export function TfngPlayer({
   const ex = useExercise<string>(statements.map((s) => s.id));
   const [docOpen, setDocOpen] = useState(true);
   const statementBox = useRef<HTMLElement>(null);
+  const audio = useRef<HTMLAudioElement>(null);
+  const [playing, setPlaying] = useState<string | null>(null);
+  const urlOf = (s: TfngContent["statements"][number]) => (s.audioMediaId ? audioUrls[s.audioMediaId] : undefined);
+  const play = (s: TfngContent["statements"][number]) => {
+    const a = audio.current;
+    const src = urlOf(s);
+    if (!a || !src) return;
+    if (playing === s.id && !a.paused) return a.pause();
+    ex.touch();
+    if (a.getAttribute("src") !== src) a.src = src;
+    a.currentTime = 0;
+    setPlaying(s.id);
+    void a.play().catch(() => setPlaying(null));
+  };
   const [result, setResult] = useState<Result | null>(null);
   const [timeS, setTimeS] = useState(0);
   const [error, setError] = useState("");
@@ -106,7 +124,7 @@ export function TfngPlayer({
   const hasText = sentences.length > 0;
   /** The proof of a statement: its sentence of the text, else the quote typed by staff (picture only). */
   const proofOf = (s: TfngContent["statements"][number]) => (s.evidence !== null && sentences[s.evidence]) || s.quote || "";
-  const meta: ExerciseMeta = { title, typeLabel: "Vrai, faux ou non mentionné", icon: FileSearch, level, skills, instructions: instructions || "Lisez le document, puis dites si chaque phrase est vraie, fausse ou non mentionnée." };
+  const meta: ExerciseMeta = { title, typeLabel: "True / False / Not given", icon: FileSearch, level, skills, instructions: instructions || "Lisez le document, puis dites si chaque affirmation est vraie (True), fausse (False) ou non mentionnée (Not given)." };
   const st = statements[ex.index];
   const revealed = ex.phase === "feedback";
 
@@ -155,6 +173,7 @@ export function TfngPlayer({
       .map((s) => ({ title: s.text, answer: TFNG_LABEL[s.answer] }));
     return (
       <div className="mx-auto grid max-w-2xl gap-5">
+        <audio ref={audio} preload="none" onEnded={() => setPlaying(null)} onPause={() => setPlaying(null)} />
         <ExerciseHeader meta={meta} courseHref={courseHref} index={statements.length} total={statements.length} done />
         <ResultsScreen
           score={result.score}
@@ -179,6 +198,11 @@ export function TfngPlayer({
             <ul className="mt-4 grid gap-2">
               {statements.map((s) => (
                 <li key={s.id} className="rounded-2xl bg-muted/50 px-3 py-2 text-sm">
+                  {urlOf(s) && (
+                    <button type="button" onClick={() => play(s)} className="float-right ml-2 flex size-8 items-center justify-center rounded-full bg-brand-soft text-primary" aria-label="Réécouter l'affirmation">
+                      <Volume2 className="size-4" aria-hidden />
+                    </button>
+                  )}
                   <span lang="en" className="font-semibold text-ink">
                     {s.text}
                   </span>{" "}
@@ -202,6 +226,7 @@ export function TfngPlayer({
 
   return (
     <div className="mx-auto grid max-w-2xl gap-4">
+      <audio ref={audio} preload="none" onEnded={() => setPlaying(null)} onPause={() => setPlaying(null)} />
       <ExerciseHeader meta={meta} courseHref={courseHref} index={ex.index} total={statements.length} />
 
       {/* The document: open at first, foldable to keep the statement in view on phones. */}
@@ -237,9 +262,32 @@ export function TfngPlayer({
         <p className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
           Affirmation {ex.index + 1} sur {statements.length}
         </p>
-        <h2 id={`s-${st.id}`} lang="en" className="font-heading text-xl font-extrabold text-brand-deep">
-          {st.text}
-        </h2>
+        {urlOf(st) ? (
+          <>
+            {/* Audio statement: heard first; the text stays folded (opened at correction). */}
+            <button type="button" onClick={() => play(st)} className="flex items-center gap-3 rounded-2xl border-2 border-primary/25 bg-brand-soft p-3 text-left transition hover:border-primary/50">
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-[0_4px_0_0_var(--color-brand-dark)]">
+                {playing === st.id ? <Pause className="size-5" aria-hidden /> : <Play className="size-5 translate-x-px" aria-hidden />}
+              </span>
+              <span className="grid">
+                <span className="font-heading font-extrabold text-brand-deep">{playing === st.id ? "Écoute en cours…" : "Écoutez l'affirmation"}</span>
+                <span className="text-sm text-muted-foreground">Réécoutez autant que vous voulez.</span>
+              </span>
+            </button>
+            <details key={`${st.id}:${revealed}`} open={revealed} className="group/txt rounded-2xl bg-muted/40 px-3 py-2">
+              <summary className="flex cursor-pointer list-none items-center gap-1.5 text-sm font-semibold text-primary [&::-webkit-details-marker]:hidden">
+                <ChevronDown className="size-4 transition group-open/txt:rotate-180" aria-hidden /> Afficher le texte
+              </summary>
+              <h2 id={`s-${st.id}`} lang="en" className="mt-2 font-heading text-lg font-extrabold text-brand-deep">
+                {st.text}
+              </h2>
+            </details>
+          </>
+        ) : (
+          <h2 id={`s-${st.id}`} lang="en" className="font-heading text-xl font-extrabold text-brand-deep">
+            {st.text}
+          </h2>
+        )}
         <ChoiceCards options={OPTIONS} value={ex.answer} onChange={(id) => !readOnly && ex.setAnswer(id)} reveal={revealed ? { correctId: st.answer } : null} labelledBy={`s-${st.id}`} />
         {revealed && ex.correct !== null && (
           <FeedbackPanel correct={ex.correct} answer={TFNG_LABEL[st.answer]} explanation={st.explanation}>
@@ -265,7 +313,7 @@ export function TfngPlayer({
       {readOnly ? (
         <p className="text-sm text-muted-foreground">Cours terminé : l&apos;activité reste consultable, mais plus rien n&apos;est enregistré.</p>
       ) : (
-        <CheckBar phase={revealed ? "feedback" : "answer"} canCheck={ex.answer !== undefined} correct={ex.correct} isLast={ex.isLast} pending={pending} onCheck={onCheck} onRetry={ex.retry} onNext={ex.isLast ? finish : ex.next} />
+        <CheckBar phase={revealed ? "feedback" : "answer"} canCheck={ex.answer !== undefined} correct={ex.correct} isLast={ex.isLast} pending={pending} onCheck={onCheck} onRetry={ex.retry} onNext={ex.isLast ? finish : () => (audio.current?.pause(), ex.next())} />
       )}
     </div>
   );

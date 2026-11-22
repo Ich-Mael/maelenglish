@@ -258,6 +258,8 @@ describe("Labo", () => {
     const tfi = cleanContent("true_false_ng", { json: JSON.stringify({ imageMediaId: docImg, imageAlt: "Capture", text: "", statements: [{ id: "a", text: "He leaves at 1 p.m.", answer: "true", quote: "from 1:00 PM" }, { id: "b", text: "He is ill.", answer: "not_given", quote: "x" }] }) });
     expect([tfi.imageMediaId, tfi.imageAlt, tfi.statements[0].quote, tfi.statements[1].quote]).toEqual([docImg, "Capture", "from 1:00 PM", ""]);
     expect(contentProblem("true_false_ng", tfi)).toBeNull();
+    const tfa = cleanContent("true_false_ng", { json: JSON.stringify({ imageMediaId: docImg, statements: [{ id: "a", text: "x", answer: "true", audioMediaId: docImg }, { id: "b", text: "y", answer: "false", audioMediaId: "bad" }] }) });
+    expect(tfa.statements.map((x) => x.audioMediaId)).toEqual([docImg, ""]);
     expect(contentProblem("true_false_ng", { ...tfi, imageMediaId: "" })).toMatch(/Add the document/);
 
     // Complete the words: brackets after the stem, exact letters (capitals ignored), automatic C-test blanking.
