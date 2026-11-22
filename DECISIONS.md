@@ -23,6 +23,7 @@ All providers sit behind internal interfaces in `src/lib/ai/` (`SpeechService`, 
 - Browsers upload directly with short-lived presigned PUT URLs, so audio never goes through the Node server. Private files (learner recordings, voice notes) are read through short-lived signed GET URLs; public course media can use a public bucket or domain.
 
 ### Speech (STT, pronunciation assessment, neural voices): Azure AI Speech
+- Since 2026-11-22 the **conversation partner** goes to ElevenLabs (see « Conversation engine »); Azure keeps pronunciation assessment, speech-to-text outside conversations and short neural audio (dictionary).
 - One provider covers all three needs:
   - **pronunciation assessment** with accuracy, fluency, completeness and prosody scores at word and phoneme level;
   - **speech-to-text** with word timestamps;
@@ -35,10 +36,22 @@ All providers sit behind internal interfaces in `src/lib/ai/` (`SpeechService`, 
 - Official `@anthropic-ai/sdk`. Debriefs and challenge feedback use **Claude Sonnet 5.5** (`claude-sonnet-5-5`) for quality. Fast grading and in-conversation turns use **Claude Haiku 5.5** (`claude-haiku-5-5`) for latency and cost.
 - Every JSON output is validated with **Zod** (already in the project), retried once if invalid, then shown in a reduced form (spec AIC-04).
 
-### Conversation engine (AI role-play): decision deferred to sub-phase 4, after measurement
-- **Option A, the default to try first:** a streaming pipeline, Azure STT → Claude Haiku 5.5 (streamed) → Azure neural TTS (streamed). It reuses the same two vendors, keeps the scenario prompts and persona in Claude, and is cheap per minute.
-- **Option B:** a real-time speech-to-speech API (e.g. OpenAI Realtime). It is billed per audio token: roughly $0.02 per minute of learner speech and $0.08 per minute of AI speech on the flagship model, lower on the mini model.
-- **Rule:** keep A if the measured median response delay is under 1.5 s on a throttled 4G connection (spec AIC-01). Otherwise switch to B behind `ConversationEngine`.
+### Conversation engine (AI speaking partner): ElevenLabs for the conversation, Azure for scoring (owner decision 2026-11-22)
+- **Split by job:**
+
+  | Job | Provider | Why |
+  |---|---|---|
+  | AI speaking partner: voice, listening, turn-taking, interruptions | **ElevenLabs** (Agents platform, Claude as the LLM) | Most natural, expressive voices for a 10-minute conversation; the real-time turn-taking is handled by the platform instead of being built by hand; a **cloned « Coach Ish » voice** (from Ismaël's recordings, with his consent) fits the personal branding; voice library with African English accents. |
+  | Pronunciation assessment (word / phoneme scores) | **Azure AI Speech** | ElevenLabs doesn't score pronunciation against a reference text. |
+  | Single-word / short audio (dictionary, already built) | **Azure neural TTS** | A fraction of ElevenLabs' price per character; expressiveness barely matters for one word. |
+
+- **The brain stays Claude:** scenario prompts, persona and coaching style live in Claude (Haiku 5.5 for turns, Sonnet 5.5 for the debrief), plugged into ElevenLabs as a custom LLM, so the provider of the voice can change without rewriting the scenarios. Keep it behind `ConversationEngine`.
+- **Before building (sub-phase 4), verify:**
+  - current ElevenLabs Agents pricing per minute (last known: on the order of $0.10 / min, plus Claude) against the monthly AI-minutes cap (`aiMonthlyMinutes`);
+  - recognition of French-accented English: run the 30+ learner-recording test set on ElevenLabs' speech-to-text and Azure's;
+  - latency on a throttled 4G connection from West Africa (spec AIC-01: median response under 1.5 s), and a **degraded mode** for weak connections (record a turn → get the reply, no live streaming);
+  - the voice clone's terms (consent, commercial use) before using Coach Ish's voice.
+- **Superseded:** the earlier default « Option A: Azure STT → Claude → Azure TTS pipeline » (more engineering, flatter voice). Fallbacks if ElevenLabs fails the checks: that Azure pipeline, or a real-time speech-to-speech API (e.g. OpenAI Realtime, billed per audio token).
 
 ## Metering
 - `AiUsage` records every paid call: learner, kind, units (audio seconds or tokens), estimated cost, day.
@@ -54,3 +67,8 @@ All providers sit behind internal interfaces in `src/lib/ai/` (`SpeechService`, 
 - English definitions, phonetics and native audio from the **Free Dictionary API** (dictionaryapi.dev): free, no key, no service guarantee and patchy on business jargon. Mitigated by caching every word (`DictionaryEntry`, one call per word ever) and by an AI-only entry when the word is missing.
 - French translation, French usage note and a business example from **Claude Haiku 5.5** (cheapest model, cached per word).
 - Alternatives considered: Merriam-Webster (commercial licence needed, English only), Oxford / Collins (paid).
+
+### Dictionary pronunciation: Azure neural voices (2026-11-22)
+- The Free Dictionary API's recordings (Wiktionary uploads) are missing for many words and uneven in accent and quality; the browser's voice is robotic on low-end Android.
+- Words and their « At work » example are read by **Azure AI Speech neural voices** (US Jenny, UK Sonia), normal and 75 % speed — the provider already chosen for speech. Generated on first play, stored in R2 and shared, so each audio is paid once (~$15 per million characters; a word is under 10).
+- Considered: Google Cloud TTS / Amazon Polly (same quality, a second vendor), ElevenLabs / OpenAI voices (overkill for single words), Merriam-Webster / Oxford (human recordings, commercial licence, MW US-only), Forvo (uneven speakers).

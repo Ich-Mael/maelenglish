@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Check, Layers, RotateCcw, Search, Trash2, Volume2, X } from "lucide-react";
 import type { WordEntry } from "@/lib/dictionary";
 import { removeWordAction, reviewWordAction } from "@/app/(app)/dictionary-actions";
-import { speak } from "./word-card";
+import { playPronunciation, useVoice } from "./word-card";
 import { cn } from "cn";
 
 /*
@@ -20,6 +20,7 @@ export type NotebookWord = { word: string; context: string; translation: string;
 export function Notebook({ words }: { words: NotebookWord[] }) {
   const router = useRouter();
   const audio = useRef<HTMLAudioElement>(null);
+  const voice = useVoice();
   const [filter, setFilter] = useState<"all" | "learning" | "known">("all");
   const [list, setList] = useState(words);
   const [review, setReview] = useState<{ queue: NotebookWord[]; index: number; reveal: boolean; known: number } | null>(null);
@@ -100,7 +101,7 @@ export function Notebook({ words }: { words: NotebookWord[] }) {
                   {w.entry.phonetic}
                 </p>
               )}
-              <button type="button" onClick={() => speak(w.entry?.headword || w.word, w.entry?.audioUrl ?? "", audio.current)} className="flex size-11 items-center justify-center rounded-full bg-brand-soft text-primary" aria-label={`Listen to "${w.word}"`}>
+              <button type="button" onClick={() => playPronunciation(audio.current, { word: w.word, audioUrl: w.entry?.audioUrl ?? "", voices: !!w.entry?.voices }, { voice })} className="flex size-11 items-center justify-center rounded-full bg-brand-soft text-primary" aria-label={`Listen to "${w.word}"`}>
                 <Volume2 className="size-5" aria-hidden />
               </button>
               {w.context && (
@@ -175,7 +176,7 @@ export function Notebook({ words }: { words: NotebookWord[] }) {
                   </p>
                 )}
               </div>
-              <button type="button" onClick={() => speak(w.entry?.headword || w.word, w.entry?.audioUrl ?? "", audio.current)} className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-primary" aria-label={`Listen to "${w.word}"`}>
+              <button type="button" onClick={() => playPronunciation(audio.current, { word: w.word, audioUrl: w.entry?.audioUrl ?? "", voices: !!w.entry?.voices }, { voice })} className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-primary" aria-label={`Listen to "${w.word}"`}>
                 <Volume2 className="size-4" aria-hidden />
               </button>
               <button type="button" onClick={() => remove(w.word)} className="flex size-9 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-coral-soft hover:text-coral-dark" aria-label={`Remove "${w.word}" from the notebook`}>

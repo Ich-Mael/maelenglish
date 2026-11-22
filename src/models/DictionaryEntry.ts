@@ -29,6 +29,11 @@ const dictionaryEntrySchema = new Schema(
     businessExample: { type: String, default: "" },
     /** dictionary = Free Dictionary API (+ AI translation); ai = AI only (word not in the dictionary). */
     source: { type: String, enum: ["dictionary", "ai", "none"], default: "dictionary" },
+    /**
+     * Generated audio (Azure neural voices), storage keys by « <word|example>-<us|gb>[-slow] ».
+     * Made on first play, shared by every learner.
+     */
+    tts: { type: Map, of: String, default: {} },
     fetchedAt: { type: Date, default: Date.now },
   },
   { timestamps: true },

@@ -56,3 +56,9 @@ services:
         sync: false
       - key: WHATSAPP_DEFAULT_COUNTRY_CODE
         value: "226"
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: AZURE_SPEECH_KEY
+        sync: false
+      - key: AZURE_SPEECH_REGION # e.g. westeurope
+        sync: false

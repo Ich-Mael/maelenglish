@@ -1,6 +1,8 @@
 import { Types } from "mongoose";
 import { DictionaryContext, DictionaryEntry, VocabWord, type DictionaryContextDoc, type DictionaryEntryDoc, type VocabWordDoc } from "@/models";
-import { aiServices } from "@/lib/ai";
+import { aiServices, realTts } from "@/lib/ai";
+import { AZURE_TTS_MICROS_PER_CHAR } from "@/lib/ai/azure";
+import { putObject, signedReadUrl, storageDriver } from "@/lib/storage";
 import { recordUsage } from "@/lib/ai/metering";
 import { hitRateLimit } from "@/lib/auth/service";
 import { lemmaOf, normalizeWord } from "./dictionary-word";
@@ -91,11 +93,16 @@ const mentions = (sentence: string, word: string, headword: string) => {
   return [word, headword].filter(Boolean).some((w) => new RegExp(`(^|[^a-z])${w.replace(/[-']/g, "\\$&")}`).test(s));
 };
 
-/** `sense`: the main meaning (most common); `inContext`: the meaning in the sentence the word was tapped in. */
+/**
+ * `sense`: the main meaning (most common); `inContext`: the meaning in the sentence the word was
+ * tapped in; `voices`: generated neural audio is available (`/api/dictionary/audio`), else the
+ * card uses `audioUrl` (dictionary recording) or the browser's voice.
+ */
 export type WordEntry = Pick<DictionaryEntryDoc, "word" | "found" | "headword" | "phonetic" | "audioUrl" | "translation" | "frNote" | "businessExample" | "source"> & {
   meanings: Parsed["meanings"];
   sense: { m: number; d: number } | null;
   inContext: { sentence: string; translation: string; frNote: string; sense: { m: number; d: number } | null } | null;
+  voices: boolean;
 };
 
 const meaningsOf = (e: DictionaryEntryDoc): Parsed["meanings"] => (e.meanings ?? []).map((m) => ({ partOfSpeech: m.partOfSpeech, definitions: (m.definitions ?? []).map((d) => ({ definition: d.definition, example: d.example })) }));
@@ -113,6 +120,7 @@ const view = (e: DictionaryEntryDoc): WordEntry => ({
   meanings: meaningsOf(e),
   sense: senseAt(meaningsOf(e), e.sense ?? 0),
   inContext: null,
+  voices: voicesAvailable(),
 });
 
 /**
@@ -158,10 +166,12 @@ export async function lookup(userId: string, raw: string, context?: string): Pro
           businessExample: fr?.businessExample ?? "",
           sense: fr?.sense ?? 0,
           enrichVersion: fr ? ENRICH_VERSION : 0,
+          // A new business example needs new audio (keys removed below).
           // Not in the dictionary and no AI answer either: cached as unknown.
           source: found ? "dictionary" : fr?.translation ? "ai" : "none",
           fetchedAt: new Date(),
         },
+        $unset: { "tts.example-us": 1, "tts.example-gb": 1, "tts.example-us-slow": 1, "tts.example-gb-slow": 1 },
       },
       { upsert: true, returnDocument: "after" },
     ).lean<DictionaryEntryDoc>();
@@ -183,6 +193,54 @@ export async function lookup(userId: string, raw: string, context?: string): Pro
     if (ctx) entry.inContext = { sentence, translation: ctx.translation, frNote: ctx.frNote, sense: senseAt(entry.meanings, ctx.sense) };
   }
   return entry;
+}
+
+// ── Pronunciation audio (Azure neural voices) ────────────────────────────────
+
+export const AUDIO_VOICES = { us: "american", gb: "british" } as const;
+export type AudioVoice = keyof typeof AUDIO_VOICES;
+/** Slow version: 25 % slower. */
+export const SLOW_RATE = 0.75;
+/** Audio generations per learner and hour (stored audio doesn't count). */
+export const AUDIO_PER_HOUR = 120;
+
+/** A real voice and somewhere to keep its audio. */
+function voicesAvailable() {
+  if (!realTts()) return false;
+  try {
+    storageDriver();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Signed URL of the word (or its business example) read by a neural voice; generated on first
+ * play, stored (`courses_audios/dictionary/…`) and shared. null when no voice is configured or
+ * there is nothing to read: the browser then falls back on the recording / its own voice.
+ */
+export async function wordAudio(userId: string, raw: string, opts: { voice: AudioVoice; slow?: boolean; what?: "word" | "example" }): Promise<string | null> {
+  const word = normalizeWord(raw);
+  if (!word || !(opts.voice in AUDIO_VOICES)) return null;
+  const what = opts.what ?? "word";
+  const name = `${what}-${opts.voice}${opts.slow ? "-slow" : ""}`;
+  const doc = await DictionaryEntry.findOne({ word }).lean<DictionaryEntryDoc>();
+  if (!doc) return null;
+  const stored = (doc.tts as unknown as Record<string, string> | undefined)?.[name];
+  if (stored) return signedReadUrl(stored);
+  const text = what === "word" ? doc.word : doc.businessExample;
+  const tts = realTts();
+  if (!text || !tts || !voicesAvailable()) return null;
+  const limit = await hitRateLimit(`dictionary-audio:${userId}`, AUDIO_PER_HOUR, 60 * 60_000);
+  if (!limit.allowed) throw new DictionaryError("You've played a lot of new words: try again in a few minutes.");
+  const audio = await tts.synthesize(text, { accent: AUDIO_VOICES[opts.voice], rate: opts.slow ? SLOW_RATE : 1 });
+  const ext = audio.mime === "audio/mpeg" ? "mp3" : audio.mime === "audio/wav" ? "wav" : "bin";
+  const key = `courses_audios/dictionary/${new Date().toISOString().slice(0, 7)}/${new Types.ObjectId().toHexString()}.${ext}`;
+  await putObject(key, audio.data, audio.mime);
+  await DictionaryEntry.updateOne({ word }, { $set: { [`tts.${name}`]: key } });
+  await recordUsage(userId, { kind: "tts", feature: "dictionary", provider: tts.name, costMicros: text.length * AZURE_TTS_MICROS_PER_CHAR }).catch(() => {});
+  return signedReadUrl(key);
 }
 
 // ── Notebook ───────────────────────────────────────────────────────────────

@@ -2,13 +2,15 @@
 
 import { useRef, useState, useSyncExternalStore, useTransition } from "react";
 import Link from "next/link";
-import { BookmarkCheck, BookmarkPlus, Loader2, Volume2 } from "lucide-react";
+import { BookmarkCheck, BookmarkPlus, Loader2, Snail, Volume2 } from "lucide-react";
 import type { WordEntry } from "@/lib/dictionary";
 import { saveWordAction } from "@/app/(app)/dictionary-actions";
 import { cn } from "cn";
 
 /*
- * A dictionary word: phonetic and audio (the dictionary's recording, else the browser's voice),
+ * A dictionary word: phonetic and audio — Azure neural voices (US / UK switch remembered on the
+ * device, normal + slow, the « At work » sentence too), else the dictionary's recording, else the
+ * browser's voice —
  * the French translation, the English meanings with examples, a business example, and « Add to
  * my notebook » (English UI, owner decision 2026-11-22). Used by the « tap a word » sheet and the
  * Dictionary page.
@@ -19,17 +21,40 @@ const noSubscribe = () => () => {};
 const useSpeechSupport = () => useSyncExternalStore(noSubscribe, () => "speechSynthesis" in window, () => false);
 
 
-export function speak(word: string, audioUrl: string, el: HTMLAudioElement | null) {
-  if (audioUrl && el) {
-    el.src = audioUrl;
-    void el.play().catch(() => {});
-    return;
-  }
-  // No recording: the browser's English voice, where available.
+export type Voice = "us" | "gb";
+const VOICE_KEY = "me-dictionary-voice";
+const readVoice = (): Voice => {
   try {
-    const u = new SpeechSynthesisUtterance(word);
-    u.lang = "en-US";
-    u.rate = 0.9;
+    return localStorage.getItem(VOICE_KEY) === "gb" ? "gb" : "us";
+  } catch {
+    return "us";
+  }
+};
+const voiceListeners = new Set<() => void>();
+/** The learner's accent choice (US / UK), shared by every card on the page. */
+export const useVoice = () =>
+  useSyncExternalStore(
+    (cb) => (voiceListeners.add(cb), () => voiceListeners.delete(cb)),
+    readVoice,
+    () => "us" as Voice,
+  );
+export function setVoice(v: Voice) {
+  try {
+    localStorage.setItem(VOICE_KEY, v);
+  } catch {
+    /* storage unavailable */
+  }
+  voiceListeners.forEach((cb) => cb());
+}
+
+type Speakable = { word: string; audioUrl: string; voices: boolean; businessExample?: string };
+
+/** The browser's own voice (last resort). */
+function synth(text: string, voice: Voice, slow: boolean) {
+  try {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = voice === "gb" ? "en-GB" : "en-US";
+    u.rate = slow ? 0.7 : 0.9;
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(u);
   } catch {
@@ -37,13 +62,40 @@ export function speak(word: string, audioUrl: string, el: HTMLAudioElement | nul
   }
 }
 
+/**
+ * Plays a word (or its business example): the neural voice from /api/dictionary/audio when
+ * available, else the dictionary's recording (word, normal speed), else the browser's voice.
+ */
+export function playPronunciation(el: HTMLAudioElement | null, e: Speakable, opts: { voice: Voice; slow?: boolean; what?: "word" | "example" }) {
+  const what = opts.what ?? "word";
+  const text = what === "word" ? e.word : (e.businessExample ?? "");
+  if (!text) return;
+  const slow = !!opts.slow;
+  let fellBack = false;
+  const fallback = () => {
+    if (fellBack) return;
+    fellBack = true;
+    if (el) el.onerror = null;
+    if (el && what === "word" && !slow && e.audioUrl) {
+      el.src = e.audioUrl;
+      void el.play().catch(() => synth(text, opts.voice, slow));
+    } else synth(text, opts.voice, slow);
+  };
+  if (!el || !e.voices) return fallback();
+  el.onerror = fallback;
+  el.src = `/api/dictionary/audio?${new URLSearchParams({ word: e.word, voice: opts.voice, ...(slow ? { slow: "1" } : {}), ...(what === "example" ? { what } : {}) })}`;
+  void el.play().catch((err: Error) => err.name !== "AbortError" && fallback());
+}
+
 export function WordCard({ entry, saved: savedInitially, context = "", where = "", compact }: { entry: WordEntry; saved: boolean; context?: string; where?: string; compact?: boolean }) {
   const audio = useRef<HTMLAudioElement>(null);
   const [saved, setSaved] = useState(savedInitially);
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
-  const voice = useSpeechSupport();
-  const canSpeak = !!entry.audioUrl || voice;
+  const browserVoice = useSpeechSupport();
+  const canSpeak = entry.voices || !!entry.audioUrl || browserVoice;
+  const voice = useVoice();
+  const play = (slow = false, what: "word" | "example" = "word") => playPronunciation(audio.current, entry, { voice, slow, what });
   const ctx = entry.inContext;
   // The meaning that applies (in the sentence, else the most common) is highlighted and listed first.
   const pick = ctx?.sense ?? entry.sense;
@@ -72,11 +124,32 @@ export function WordCard({ entry, saved: savedInitially, context = "", where = "
           )}
         </div>
         {canSpeak && (
-          <button type="button" onClick={() => speak(entry.headword || entry.word, entry.audioUrl, audio.current)} className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-[0_4px_0_0_var(--color-brand-dark)] active:translate-y-0.5 active:shadow-none" aria-label={`Listen to "${entry.word}"`}>
-            <Volume2 className="size-5" aria-hidden />
-          </button>
+          <div className="flex shrink-0 items-center gap-1.5">
+            {(entry.voices || browserVoice) && (
+              <button type="button" onClick={() => play(true)} className="flex size-9 items-center justify-center rounded-full bg-brand-soft text-primary" aria-label={`Listen to "${entry.word}" slowly`} title="Slowly">
+                <Snail className="size-4.5" aria-hidden />
+              </button>
+            )}
+            <button type="button" onClick={() => play()} className="flex size-11 items-center justify-center rounded-full bg-primary text-white shadow-[0_4px_0_0_var(--color-brand-dark)] active:translate-y-0.5 active:shadow-none" aria-label={`Listen to "${entry.word}"`}>
+              <Volume2 className="size-5" aria-hidden />
+            </button>
+          </div>
         )}
       </div>
+      {(entry.voices || browserVoice) && (
+        <div className="-mt-1 flex items-center gap-1 text-xs font-bold" role="group" aria-label="Accent">
+          {(
+            [
+              ["us", "US"],
+              ["gb", "UK"],
+            ] as const
+          ).map(([v, label]) => (
+            <button key={v} type="button" onClick={() => setVoice(v)} aria-pressed={voice === v} className={cn("rounded-full px-2.5 py-1", voice === v ? "bg-brand-deep text-white" : "bg-muted text-muted-foreground hover:bg-brand-soft")}>
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {ctx ? (
         // Tapped in a sentence: its meaning there first, the usual translation after.
@@ -134,10 +207,17 @@ export function WordCard({ entry, saved: savedInitially, context = "", where = "
         </div>
       )}
       {entry.businessExample && (
-        <p className="rounded-xl bg-brand-soft/60 px-3 py-2 text-sm text-ink">
-          <span className="font-semibold text-brand-deep">At work: </span>
-          <span lang="en">{entry.businessExample}</span>
-        </p>
+        <div className="flex items-start gap-2 rounded-xl bg-brand-soft/60 px-3 py-2 text-sm text-ink">
+          <p className="flex-1">
+            <span className="font-semibold text-brand-deep">At work: </span>
+            <span lang="en">{entry.businessExample}</span>
+          </p>
+          {(entry.voices || browserVoice) && (
+            <button type="button" onClick={() => play(false, "example")} className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white text-primary" aria-label="Listen to the sentence">
+              <Volume2 className="size-4" aria-hidden />
+            </button>
+          )}
+        </div>
       )}
       {entry.headword && entry.headword !== entry.word && (
         <p className="text-xs text-muted-foreground">

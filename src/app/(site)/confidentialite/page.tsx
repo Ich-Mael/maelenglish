@@ -68,7 +68,8 @@ export default function PrivacyPage() {
             </li>
             <li>
               <strong>Dictionnaire et carnet</strong> : les mots que vous cherchez sont envoyés à un service de dictionnaire
-              (dictionaryapi.dev) et, pour la traduction, à un outil d&apos;IA (Anthropic) — sans votre nom. Les mots que vous ajoutez à
+              (dictionaryapi.dev), pour la traduction à un outil d&apos;IA (Anthropic) et, pour la prononciation, au service de voix
+              de Microsoft (Azure AI Speech) — sans votre nom. Les mots que vous ajoutez à
               votre carnet (avec la phrase où vous les avez trouvés) sont enregistrés sur votre compte.
             </li>
             <li>

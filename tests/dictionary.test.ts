@@ -2,9 +2,12 @@ import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { AiUsage, DictionaryContext, DictionaryEntry, User, VocabWord } from "@/models";
-import { DICTIONARY_URL, ENRICH_VERSION, LOOKUPS_PER_HOUR, lemmaOf, listWords, lookup, normalizeWord, removeWord, reviewWord, saveWord, hasWord } from "@/lib/dictionary";
+import { DICTIONARY_URL, ENRICH_VERSION, LOOKUPS_PER_HOUR, wordAudio, lemmaOf, listWords, lookup, normalizeWord, removeWord, reviewWord, saveWord, hasWord } from "@/lib/dictionary";
 import { setAiServicesForTests } from "@/lib/ai";
-import { FakeFeedbackService } from "@/lib/ai/fake";
+import { FakeFeedbackService, FakeTtsService } from "@/lib/ai/fake";
+import { ssml } from "@/lib/ai/azure";
+import { rm } from "node:fs/promises";
+import path from "node:path";
 
 let mongo: MongoMemoryServer;
 beforeAll(async () => {
@@ -15,6 +18,7 @@ beforeAll(async () => {
 afterAll(async () => {
   setAiServicesForTests(null);
   vi.unstubAllGlobals();
+  await rm(path.join(process.cwd(), ".uploads", "courses_audios", "dictionary"), { recursive: true, force: true });
   await mongoose.disconnect();
   await mongo?.stop();
 });
@@ -94,6 +98,38 @@ describe("dictionary", () => {
     calls.length = 0;
     const e = await lookup(String(u._id), "delay");
     expect([e.translation, calls, (await DictionaryEntry.findOne({ word: "delay" }).lean())?.enrichVersion]).toEqual(["[FR] delay", [], ENRICH_VERSION]);
+  });
+
+  it("builds Azure SSML (voice per accent, slower rate, escaped text)", () => {
+    expect(ssml("R&D <team>", { accent: "british", rate: 0.75 })).toBe('<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-GB"><voice name="en-GB-SoniaNeural"><prosody rate="-25%">R&amp;D &lt;team&gt;</prosody></voice></speak>');
+    expect(ssml("delay")).toContain('<voice name="en-US-JennyNeural">delay</voice>');
+  });
+
+  it("makes pronunciation audio once per word / voice / speed, stores it, and re-makes the example after a new enrichment", async () => {
+    const u = await learner();
+    const tts = new FakeTtsService();
+    const spy = vi.spyOn(tts, "synthesize");
+    setAiServicesForTests({ feedback: new FakeFeedbackService(), tts });
+    const e = await lookup(String(u._id), "delay");
+    expect(e.voices).toBe(true);
+    const url = await wordAudio(String(u._id), "Delay", { voice: "gb", slow: true });
+    expect(url).toMatch(/\/api\/media\/local\?/);
+    await wordAudio(String(u._id), "delay", { voice: "gb", slow: true });
+    await wordAudio(String(u._id), "delay", { voice: "us" });
+    await wordAudio(String(u._id), "delay", { voice: "us", what: "example" });
+    expect((spy.mock.calls as unknown as [string, { accent?: string; rate?: number }?][]).map(([t, o]) => [t, o?.accent, o?.rate])).toEqual([["delay", "british", 0.75], ["delay", "american", 1], ['We use "delay" at work every day.', "american", 1]]);
+    const tts1 = (await DictionaryEntry.findOne({ word: "delay" }).lean())?.tts as unknown as Record<string, string>;
+    expect(Object.keys(tts1).sort()).toEqual(["example-us", "word-gb-slow", "word-us"]);
+    expect(await AiUsage.countDocuments({ kind: "tts" })).toBe(3);
+    // A newer enrichment (new business example) drops the example audio, keeps the word audio.
+    await DictionaryEntry.updateOne({ word: "delay" }, { $set: { enrichVersion: 1 } });
+    await lookup(String(u._id), "delay");
+    const tts2 = (await DictionaryEntry.findOne({ word: "delay" }).lean())?.tts as unknown as Record<string, string>;
+    expect(Object.keys(tts2).sort()).toEqual(["word-gb-slow", "word-us"]);
+    // No voice configured: nothing generated (the browser falls back).
+    setAiServicesForTests({ feedback: new FakeFeedbackService() });
+    expect([await wordAudio(String(u._id), "delay", { voice: "gb" }), (await lookup(String(u._id), "delay")).voices]).toEqual([null, false]);
+    expect(await wordAudio(String(u._id), "unknownword", { voice: "us" })).toBeNull();
   });
 
   it("notebook: save once (with context), list with entries, review, remove", async () => {
