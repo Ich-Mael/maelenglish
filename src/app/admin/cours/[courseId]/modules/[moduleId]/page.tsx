@@ -50,7 +50,7 @@ async function ModuleAdmin({ params }: { params: Promise<{ courseId: string; mod
     <div className="grid max-w-5xl gap-5">
       <PageHeader title={mod.title} back={{ href: `/admin/cours/${courseId}`, label: course.title }} subtitle={checkpoint ? "Challenge day" : "Module"} />
 
-      <Card title="Units" description="A unit is one topic: a lesson, 2 to 5 activities practising it — repeated — and a speaking challenge last. A unit breaking these rules stays hidden from learners. Open a unit to build its steps.">
+      <Card title="Units" description="A unit is one topic: a lesson, at least 2 activities practising it — repeated — and a speaking challenge last. A unit breaking these rules stays hidden from learners. Open a unit to build its steps.">
         <ol className="grid gap-3">
           {units.map((u, i) => {
             const own = steps.filter((x) => String(x.unitId) === String(u._id));

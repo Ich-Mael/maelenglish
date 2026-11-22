@@ -48,7 +48,7 @@ async function StepAdmin({ params }: { params: Promise<{ courseId: string; stepI
           </a>
         }
       />
-      <Card title="Lesson" description="Teaches what the next activities (2 to 5) practise. Learners read it, then press « Continuer ».">
+      <Card title="Lesson" description="Teaches what the activities after it (at least 2) practise. Learners read it, then press « Continuer ».">
         {edit ? (
           <AdminForm action={saveLessonStepAction}>
             <input type="hidden" name="stepId" value={stepId} />

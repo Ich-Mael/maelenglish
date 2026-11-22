@@ -324,7 +324,7 @@ export async function deleteUnitAction(_: State, form: FormData): Promise<State>
   redirect(target);
 }
 
-// ── Steps (lesson + 2–5 activities, …, speaking challenge) ─────────────────
+// ── Steps (lesson + at least 2 activities, …, speaking challenge) ─────────────────
 
 export async function addLessonAction(_: State, form: FormData): Promise<State> {
   let target: string;

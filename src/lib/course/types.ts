@@ -2,7 +2,7 @@
  * Course structure (owner spec COURSE_STRUCTURE.md, 2026-11-21): Course (the spec's « Program ») →
  * Module → Unit → ordered Steps. A step is a lesson (teaches), an activity (practises the lesson it
  * points to, scored) or the unit's speaking challenge (always last, exactly one). Pattern of a valid
- * unit: lesson + 2–5 activities, repeated, then the challenge (see validate-unit.ts).
+ * unit: lesson + at least 2 activities (no maximum), repeated, then the challenge (see validate-unit.ts).
  * Shared by the browser and the server (no imports).
  */
 
@@ -11,7 +11,6 @@ export type StepKind = (typeof STEP_KINDS)[number];
 
 export const DEFAULT_PASS_SCORE = 60;
 export const MIN_ACTIVITIES_PER_LESSON = 2;
-export const MAX_ACTIVITIES_PER_LESSON = 5; // owner spec said 3; raised to 5 (user decision 2026-11-22)
 
 export const SECTION_TYPES = ["vocabulary", "grammar_rule", "dialogue", "tip"] as const;
 export type SectionType = (typeof SECTION_TYPES)[number];

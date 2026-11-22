@@ -77,7 +77,7 @@ async function UnitAdmin({ params }: { params: Promise<{ courseId: string; unitI
         subtitle={`Unit ${number}${unit.estimatedMinutes ? ` · ${unit.estimatedMinutes} min` : ""}`}
       />
 
-      <Card title="Steps" description="Rhythm of every unit: a lesson, then 2 to 5 activities practising it — repeated — and the speaking challenge last.">
+      <Card title="Steps" description="Rhythm of every unit: a lesson, then at least 2 activities practising it — repeated — and the speaking challenge last.">
         {/* Remount when the server data changes (after an add / delete / save). */}
         <StepList key={steps.map((s) => `${s._id}:${s.position}:${s.lessonId ?? ""}:${s.title}`).join("|")} unitId={unitId} steps={rows} edit={edit} />
 
