@@ -28,7 +28,7 @@ export function LogoutButton({ variant = "default", className, label = "Déconne
         <button
           type="submit"
           title={label}
-          className="flex h-9 items-center gap-1.5 rounded-xl px-2 text-sm font-semibold text-ink/75 hover:bg-coral-soft hover:text-coral-dark"
+          className="flex h-9 items-center gap-1.5 rounded-xl px-2 text-sm font-semibold text-ink/75 hover:bg-coral-soft hover:text-coral-dark group-data-[scrolled=true]/hdr:text-white/80 group-data-[scrolled=true]/hdr:hover:bg-white/10 group-data-[scrolled=true]/hdr:hover:text-white"
         >
           <LogOut className="size-4.5" aria-hidden />
           <span className="sr-only xl:not-sr-only">{label}</span>

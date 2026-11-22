@@ -12,7 +12,7 @@ export function SoundToggle() {
         setMuted(!muted);
         if (muted) playSound("tap");
       }}
-      className="flex size-9 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted"
+      className="flex size-9 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted group-data-[scrolled=true]/hdr:text-white/80 group-data-[scrolled=true]/hdr:hover:bg-white/10"
       aria-label={muted ? "Activer les sons" : "Couper les sons"}
       aria-pressed={!muted}
     >
