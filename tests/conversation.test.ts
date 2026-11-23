@@ -1,7 +1,8 @@
 import mongoose, { Types } from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { Activity, AiUsage, AppSettings, ConversationAgent, ConversationSession, User, type ActivityDoc } from "@/models";
+import { Activity, AiUsage, AppSettings, ConversationAgent, ConversationSession, DigestLog, User, type ActivityDoc } from "@/models";
+import { alertIfNeeded, budgetState, microsPerMinute, saveBudget } from "@/lib/conversation/budget";
 import { cleanContent, contentProblem } from "@/lib/lab/content";
 import { setAiServicesForTests, type Debrief, type FeedbackService } from "@/lib/ai";
 import { FakeConversationEngine, FakeFeedbackService } from "@/lib/ai/fake";
@@ -193,5 +194,49 @@ describe("role-play sessions", () => {
     expect(d.goals).toEqual([{ goal: "G1", achieved: true, evidence: "e" }, { goal: "G2", achieved: false, evidence: "" }]);
     expect(d.corrections[0].turn).toBe(-1);
     expect(d.phrasesToReuse).toHaveLength(3);
+  });
+});
+
+describe("Speaking Partner budget (shared ElevenLabs plan)", () => {
+  const month = (d: Date) => d.toISOString().slice(0, 7);
+  const use = (userId: string, seconds: number, now: Date) => AiUsage.create({ userId, kind: "conversation", seconds, day: now.toISOString().slice(0, 10), month: month(now) });
+
+  it("validates and computes the pool and the real cost of a minute", async () => {
+    await expect(saveBudget({ planCredits: "600000", warnPercent: 95, stopPercent: 80 })).rejects.toThrow(/before the stop/);
+    const b = await saveBudget({ planCredits: "600 000", creditsPerMinute: "455", planPriceUsd: "37.13", warnPercent: "80", stopPercent: "95" });
+    expect(b.planCredits).toBe(600000);
+    expect(microsPerMinute(b)).toBe(Math.round((37.13 * 1e6 * 455) / 600000)); // ≈ $0.028
+    expect((await budgetState()).poolMinutes).toBeCloseTo(600000 / 455);
+    await saveBudget({ planCredits: "0" });
+    expect((await budgetState()).level).toBe("off");
+  });
+
+  it("limits calls to the pool, warns admins once, then refuses new calls", async () => {
+    const now = new Date("2026-11-22T12:00:00Z");
+    const [u, a] = [await learner(), await scenario()];
+    await User.create({ name: "Admin", surname: "A", username: "boss", email: "boss@example.com", role: "admin" });
+    await AppSettings.create({ key: "global", aiMonthlyMinutes: 1000 });
+    await saveBudget({ planCredits: "4550", creditsPerMinute: "455", warnPercent: "50", stopPercent: "90" }); // 10-minute pool, stop at 9
+    expect((await startRolePlay(u, { activity: a, difficulty: 2 }, now)).limitS).toBe(300);
+    await use(u, 6 * 60, now); // 6 min: warn
+    expect((await budgetState(now)).level).toBe("warn");
+    expect((await startRolePlay(u, { activity: a, difficulty: 2 }, now)).limitS).toBe(180); // 3 min left before the stop
+    await alertIfNeeded(now);
+    await alertIfNeeded(now);
+    expect(await DigestLog.countDocuments({ key: "ai-budget-warn:2026-11" })).toBe(1);
+    await use(u, 3 * 60, now); // 9 min: stopped
+    await expect(startRolePlay(u, { activity: a, difficulty: 2 }, now)).rejects.toThrow(/limit for this month/);
+    await expect(startRolePlay(u, { activity: a, difficulty: 2, preview: true }, now)).rejects.toThrow(/limit for this month/);
+  });
+
+  it("costs a call at the plan's real price per minute", async () => {
+    await saveBudget({ planCredits: "600000", creditsPerMinute: "455", planPriceUsd: "37.13" });
+    const [u, a] = [await learner(), await scenario()];
+    const s = await startRolePlay(u, { activity: a, difficulty: 2 });
+    const agentId = (await ConversationSession.findById(s.sessionId))!.agentId;
+    await attachRolePlay(u, s.sessionId, "conv_cost");
+    engine.script("conv_cost", { agentId, transcript: talk, durationS: 120, costMicros: 999_999 });
+    const done = await finishRolePlay(u, s.sessionId, { activity: a, waitMs: 0 });
+    expect(done.costMicros).toBe(Math.round(2 * Math.round((37.13 * 1e6 * 455) / 600000)));
   });
 });

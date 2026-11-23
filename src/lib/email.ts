@@ -305,3 +305,18 @@ export function sendAdminLateDigestEmail(to: string[], p: { items: (DigestItem &
     text: `Late speaking challenges and writing tasks (> ${p.dueHours} h):\n\n${p.items.map((i) => `- ${i.learner} · ${i.coach || "no coach"} · ${i.course} · ${waited(i.hoursWaiting)}`).join("\n")}\n\n${url}`,
   });
 }
+
+/** Admins: the Speaking Partner's monthly ElevenLabs budget is nearly used / used up (English). */
+export function sendAiBudgetEmail(to: string[], p: { percent: number; usedMinutes: number; poolMinutes: number; stopped: boolean; stopPercent: number }) {
+  const url = appUrl("/admin/usage-ia");
+  const subject = p.stopped ? `Speaking Partner paused: ${p.percent} % of this month's AI minutes used` : `Speaking Partner: ${p.percent} % of this month's AI minutes used`;
+  const intro = p.stopped
+    ? `The Speaking Partner has used ${p.usedMinutes} of the ${p.poolMinutes} minutes in your ElevenLabs plan this month (${p.percent} %). New conversations are paused until the 1st, or until you raise the budget (upgrade the plan, then update the credits on the AI usage page).`
+    : `The Speaking Partner has used ${p.usedMinutes} of the ${p.poolMinutes} minutes in your ElevenLabs plan this month (${p.percent} %). New conversations stop at ${p.stopPercent} %. Consider upgrading the plan or lowering learners' monthly minutes.`;
+  return send({
+    to: to.join(", "),
+    subject,
+    html: layout({ lang: "en", firstName: "team", intro: esc(intro), button: "Open AI usage", url, outro: "This email is sent once a month per threshold." }),
+    text: `${intro}\n\n${url}`,
+  });
+}

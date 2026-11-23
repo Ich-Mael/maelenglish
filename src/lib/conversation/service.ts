@@ -7,6 +7,7 @@ import { hitRateLimit } from "@/lib/auth/service";
 import { contentProblem } from "@/lib/lab/content";
 import type { RolePlayContent } from "@/lib/lab/types";
 import { agentSpec, clampDifficulty } from "./prompt";
+import { alertIfNeeded, budgetState } from "./budget";
 
 /*
  * AI role-play sessions (spec §5, DECISIONS.md « Conversation engine »). Framework-free, tested in
@@ -104,7 +105,10 @@ export async function startRolePlay(
   await settleOpenSessions(userId, now);
   const left = input.preview ? Infinity : await remainingSeconds(userId, now);
   if (left < 60) throw new ConversationError("You've used your AI minutes for this month. They come back on the 1st of next month.");
-  const limitS = Math.floor(Math.min(c.maxMinutes * 60, left));
+  // The platform's monthly ElevenLabs budget, shared by everyone (staff previews included).
+  const pool = await budgetState(now);
+  if (pool.level === "stopped") throw new ConversationError("The Speaking Partner has reached its limit for this month: it comes back on the 1st.");
+  const limitS = Math.floor(Math.min(c.maxMinutes * 60, left, pool.secondsLeft));
 
   let agentId: string;
   let signedUrl: string;
@@ -186,12 +190,15 @@ export async function finishRolePlay(userId: string, sessionId: string, opts: { 
     }
     s.set("transcript", call.transcript);
     s.durationS = call.durationS || Math.round(call.transcript.at(-1)?.t ?? 0);
-    s.costMicros = call.costMicros ?? Math.round((s.durationS / 60) * ESTIMATE_MICROS_PER_MINUTE);
+    // Real cost from the plan (price ÷ minutes in the plan) when the budget is set, else what ElevenLabs reports, else an estimate.
+    const perMinute = (await budgetState(now)).microsPerMinute;
+    s.costMicros = perMinute !== null ? Math.round((s.durationS / 60) * perMinute) : (call.costMicros ?? Math.round((s.durationS / 60) * ESTIMATE_MICROS_PER_MINUTE));
     s.endedAt = now;
     s.status = "ended";
     await s.save();
     if (s.durationS > 0) {
       await recordUsage(userId, { kind: "conversation", feature: "roleplay", provider: engine.name, seconds: s.durationS, costMicros: s.costMicros }, now).catch((e) => console.error("[roleplay] usage", e));
+      await alertIfNeeded(now).catch((e) => console.error("[roleplay] budget alert", e));
     }
   }
 

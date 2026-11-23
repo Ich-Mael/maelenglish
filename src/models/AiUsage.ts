@@ -37,6 +37,18 @@ const appSettingsSchema = new Schema(
     key: { type: String, required: true, unique: true, default: "global" },
     /** Default monthly AI minutes per learner (speech + conversation); per-learner override on User. */
     aiMonthlyMinutes: { type: Number, default: 60, min: 0 },
+    /**
+     * Speaking Partner budget (ElevenLabs plan): `planCredits` per month (0 = no budget),
+     * `creditsPerMinute` measured on real calls, `planPriceUsd` per month (for the real cost of a
+     * minute); admins are warned at `warnPercent`, new calls stop at `stopPercent`.
+     */
+    conversationBudget: {
+      planCredits: { type: Number, default: 0, min: 0 },
+      creditsPerMinute: { type: Number, default: 455, min: 1 },
+      planPriceUsd: { type: Number, default: 0, min: 0 },
+      warnPercent: { type: Number, default: 80, min: 1, max: 100 },
+      stopPercent: { type: Number, default: 95, min: 1, max: 100 },
+    },
     /** Mael persona (spec AIC-07): the coach's voice in role-play help and debriefs. */
     persona: {
       tone: { type: String, default: "" },

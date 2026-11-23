@@ -7,6 +7,7 @@ import { requireStaff, actorOf, visibleCourseIds } from "@/lib/admin/context";
 import { can } from "@/lib/admin/permissions";
 import { ChallengeSubmission, Course, Enrollment, EnrollmentRequest, User } from "@/models";
 import { Card, PageHeader, btn } from "@/components/admin/ui";
+import { budgetState } from "@/lib/conversation/budget";
 import { PageSkeleton } from "@/components/learn/ui";
 
 export const metadata: Metadata = { title: "Dashboard" };
@@ -24,6 +25,7 @@ async function Dashboard() {
     Enrollment.countDocuments({ ...inCourses, status: "active" }),
     ChallengeSubmission.countDocuments({ ...inCourses, status: "pending" }),
   ]);
+  const pool = me.isAdmin ? await budgetState() : null;
   const tiles = [
     requests !== null && { label: "New sign-up requests", value: requests, icon: Inbox, href: "/admin/demandes", highlight: requests > 0 },
     learners !== null && { label: "Active learners", value: learners, icon: Users, href: "/admin/utilisateurs?role=user" },
@@ -35,6 +37,12 @@ async function Dashboard() {
   return (
     <>
       <PageHeader title={`Hello ${me.name}`} subtitle="MaelEnglish administration" />
+      {pool && (pool.level === "warn" || pool.level === "stopped") && (
+        <Link href="/admin/usage-ia" className="mb-4 block rounded-2xl border-2 border-coral bg-white px-4 py-3 text-sm font-semibold text-coral-dark hover:bg-coral-soft">
+          {pool.level === "stopped" ? "Speaking Partner paused: " : "Speaking Partner: "}
+          {Math.round(pool.percent)} % of this month&apos;s ElevenLabs minutes used ({Math.round(pool.usedMinutes)} / {Math.round(pool.poolMinutes)} min). Open AI usage →
+        </Link>
+      )}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {tiles.map((t) => (
           <Link key={t.label} href={t.href} className={`rounded-2xl border bg-card p-5 transition hover:-translate-y-0.5 hover:shadow-md ${t.highlight ? "border-coral/40" : "border-border"}`}>

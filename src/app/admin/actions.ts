@@ -10,6 +10,7 @@ import { revokeDevice, searchLearners, updateAccount, type LearnerMatch } from "
 import * as content from "@/lib/admin/content";
 import * as steps from "@/lib/admin/steps";
 import { savePersona, setDefaultMonthlyMinutes } from "@/lib/ai/metering";
+import { BudgetError, saveBudget } from "@/lib/conversation/budget";
 import { enroll, removeEnrollment, updateEnrollment } from "@/lib/admin/enrollments";
 import { gradeSubmission } from "@/lib/admin/grading";
 import { notifyChallengeReviewed, notifyWritingReviewed, runCoachDigest } from "@/lib/notifications";
@@ -618,6 +619,19 @@ export async function saveAiSettingsAction(_: State, form: FormData): Promise<St
     return { success: "Setting saved." };
   } catch (e) {
     return fail(e);
+  }
+}
+
+/** Speaking Partner budget (ElevenLabs plan credits, credits per minute, price, thresholds). Admins only. */
+export async function saveBudgetAction(_: State, form: FormData): Promise<State> {
+  try {
+    const me = await staffOrThrow();
+    if (!me.isAdmin) throw new AdminError("Administrators only.");
+    await saveBudget({ planCredits: str(form, "planCredits"), creditsPerMinute: str(form, "creditsPerMinute"), planPriceUsd: str(form, "planPriceUsd"), warnPercent: str(form, "warnPercent"), stopPercent: str(form, "stopPercent") });
+    refresh();
+    return { success: "Budget saved." };
+  } catch (e) {
+    return e instanceof BudgetError ? { error: e.message } : fail(e);
   }
 }
 
