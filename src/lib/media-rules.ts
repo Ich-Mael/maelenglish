@@ -27,6 +27,7 @@ export const MAX_BYTES: Record<MediaKind, number> = {
   instruction: 60 * MB, // short instruction video recorded by Mael
   avatar: 2 * MB, // resized to 320 px in the browser (≈ 20 KB)
   image: 3 * MB, // challenge prompt pictures, resized to 1600 px in the browser (≈ 150 KB)
+  conversation: 40 * MB, // AI role-play call audio (MP3 from ElevenLabs, ≈ 1 MB per minute), written by the server
 };
 
 /** Base type without parameters: "audio/webm;codecs=opus" → "audio/webm". */
@@ -40,11 +41,12 @@ export function extensionFor(kind: MediaKind, mime: string): string | null {
 
 /** Learners upload their own recordings and profile photo; everything else is staff work. */
 export function canUpload(kind: MediaKind, viewer: { isStaff: boolean }): boolean {
+  if (kind === "conversation") return false; // copied from ElevenLabs by the server only
   return kind === "recording" || kind === "avatar" || viewer.isStaff;
 }
 
 /** Course content and profile photos are readable by any signed-in user; recordings and voice notes are private. */
-export const visibilityFor = (kind: MediaKind): "private" | "public" => (kind === "recording" || kind === "voice-note" ? "private" : "public");
+export const visibilityFor = (kind: MediaKind): "private" | "public" => (kind === "recording" || kind === "voice-note" || kind === "conversation" ? "private" : "public");
 
 /**
  * Top-level bucket folder (owner's R2 layout): learners' audio (their recordings, coach voice
@@ -59,6 +61,7 @@ export const MEDIA_FOLDER: Record<MediaKind, "students_audio" | "courses_audios"
   instruction: "courses_audios",
   avatar: "profile_photos",
   image: "courses_images",
+  conversation: "students_audio",
 };
 
 /** `<folder>/<kind>/<yyyy-mm>/<id>.<ext>`, e.g. `students_audio/recording/2026-11/…webm`. Older files keep their stored key. */

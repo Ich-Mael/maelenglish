@@ -78,11 +78,12 @@ export default function PrivacyPage() {
               coach qui vérifie et vous envoie le retour. Ces textes ne sont pas utilisés pour entraîner les modèles de ce prestataire.
             </li>
             <li>
-              <strong>Conversations avec le partenaire IA (« Speaking Partner »)</strong> : pendant une conversation, votre voix est
+              <strong>Conversations avec le partenaire IA (« Talk with Coach Ish »)</strong> : pendant une conversation, votre voix est
               transmise en direct au service ElevenLabs, qui la transcrit et fait répondre l&apos;IA (modèle d&apos;Anthropic) ; ElevenLabs
-              conserve la conversation selon ses propres règles. Nous enregistrons sur votre compte la transcription écrite, sa
-              durée et le bilan (préparé par un outil d&apos;IA, Anthropic), que votre coach peut consulter. Nous ne gardons pas
-              l&apos;enregistrement audio sur nos serveurs.
+              conserve la conversation selon ses propres règles. Les appels sont enregistrés (vous en êtes informé(e) avant de
+              commencer) : nous gardons sur votre compte l&apos;enregistrement audio (stocké chez Cloudflare R2), la transcription
+              écrite, sa durée et le bilan (préparé par un outil d&apos;IA, Anthropic). Vous, votre coach et les administrateurs
+              pouvez les écouter et les consulter ; seul un administrateur peut supprimer un enregistrement.
             </li>
             <li>
               <strong>Exercices de prononciation (« Répétez après Mael »)</strong> : nous n&apos;enregistrons pas votre voix sur nos serveurs.

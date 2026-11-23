@@ -3,6 +3,11 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { Activity, AiUsage, AppSettings, ConversationAgent, ConversationSession, DigestLog, User, type ActivityDoc } from "@/models";
 import { alertIfNeeded, budgetState, microsPerMinute, saveBudget } from "@/lib/conversation/budget";
+import { deleteConversationAudio, storeConversationAudio } from "@/lib/conversation/recording";
+import { Media } from "@/models";
+import { existsSync as fileExists } from "node:fs";
+import path from "node:path";
+import { uploadProblem } from "@/lib/media-rules";
 import { cleanContent, contentProblem } from "@/lib/lab/content";
 import { setAiServicesForTests, type Debrief, type FeedbackService } from "@/lib/ai";
 import { FakeConversationEngine, FakeFeedbackService } from "@/lib/ai/fake";
@@ -197,7 +202,7 @@ describe("role-play sessions", () => {
   });
 });
 
-describe("Speaking Partner budget (shared ElevenLabs plan)", () => {
+describe("Talk with Coach Ish budget (shared ElevenLabs plan)", () => {
   const month = (d: Date) => d.toISOString().slice(0, 7);
   const use = (userId: string, seconds: number, now: Date) => AiUsage.create({ userId, kind: "conversation", seconds, day: now.toISOString().slice(0, 10), month: month(now) });
 
@@ -238,5 +243,33 @@ describe("Speaking Partner budget (shared ElevenLabs plan)", () => {
     engine.script("conv_cost", { agentId, transcript: talk, durationS: 120, costMicros: 999_999 });
     const done = await finishRolePlay(u, s.sessionId, { activity: a, waitMs: 0 });
     expect(done.costMicros).toBe(Math.round(2 * Math.round((37.13 * 1e6 * 455) / 600000)));
+  });
+});
+
+describe("call recordings (copied to our storage, deleted by admins only)", () => {
+  it("copies the audio once, privately, owned by the learner; admins can delete it", async () => {
+    const [u, a] = [await learner(), await scenario()];
+    const s = await startRolePlay(u, { activity: a, difficulty: 2 });
+    const agentId = (await ConversationSession.findById(s.sessionId))!.agentId;
+    await attachRolePlay(u, s.sessionId, "conv_rec");
+    engine.script("conv_rec", { agentId, transcript: talk, durationS: 60 });
+    await finishRolePlay(u, s.sessionId, { activity: a, waitMs: 0 });
+
+    // Not ready at ElevenLabs yet: nothing stored.
+    expect(await storeConversationAudio(s.sessionId, { attempts: 1 })).toBeNull();
+    engine.audio.set("conv_rec", new Uint8Array([1, 2, 3, 4]));
+    const id = await storeConversationAudio(s.sessionId, { attempts: 1 });
+    expect(id).toBeTruthy();
+    expect(await storeConversationAudio(s.sessionId, { attempts: 1 })).toBe(id); // only one copy
+    const m = (await Media.findById(id).lean())!;
+    expect([m.kind, m.visibility, String(m.ownerId), m.key.startsWith("students_audio/conversation/"), m.size]).toEqual(["conversation", "private", u, true, 4]);
+    const file = path.join(process.cwd(), ".uploads", m.key);
+    expect(fileExists(file)).toBe(true);
+    // Browsers can never upload this kind.
+    expect(uploadProblem("conversation", "audio/mpeg", 100, { isStaff: true })).toMatch(/not allowed/);
+
+    expect(await deleteConversationAudio(s.sessionId)).toBe(true);
+    expect([await Media.countDocuments({ _id: id }), fileExists(file), (await ConversationSession.findById(s.sessionId))!.audioMediaId]).toEqual([0, false, null]);
+    expect(await deleteConversationAudio(s.sessionId)).toBe(false);
   });
 });

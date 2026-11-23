@@ -103,6 +103,19 @@ export class ElevenLabsConversationEngine implements ConversationEngine {
     return parseConversation(await call<RawConversation>(`/v1/convai/conversations/${encodeURIComponent(conversationId)}`));
   }
 
+  async fetchAudio(conversationId: string): Promise<{ data: Uint8Array; mime: string } | null> {
+    const res = await fetch(`${API}/v1/convai/conversations/${encodeURIComponent(conversationId)}/audio`, {
+      headers: { "xi-api-key": process.env.ELEVENLABS_API_KEY! },
+      signal: AbortSignal.timeout(60_000),
+      cache: "no-store",
+    });
+    if (res.status === 404 || res.status === 422 || res.status === 425) return null; // not ready / no audio
+    if (!res.ok) throw new Error(`ElevenLabs ${res.status} on conversation audio: ${(await res.text().catch(() => "")).slice(0, 200)}`);
+    const data = new Uint8Array(await res.arrayBuffer());
+    if (!data.length) return null;
+    return { data, mime: (res.headers.get("content-type") ?? "audio/mpeg").split(";")[0].trim() || "audio/mpeg" };
+  }
+
   async listVoices(): Promise<Voice[]> {
     const r = await call<{ voices?: { voice_id: string; name: string; labels?: Record<string, string>; preview_url?: string }[] }>("/v1/voices");
     return (r?.voices ?? [])

@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { connection } from "next/server";
-import { ArrowRight, CircleUserRound, Flame, Mic, NotebookPen, Search, Trophy, type LucideIcon } from "lucide-react";
+import { ArrowRight, CircleUserRound, Flame, MessagesSquare, Mic, NotebookPen, Search, Trophy, type LucideIcon } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
 import { connectDB } from "@/lib/db";
-import { ChallengeSubmission, VocabWord } from "@/models";
+import { ChallengeSubmission, ConversationSession, VocabWord } from "@/models";
 import { statsFor } from "@/lib/gamification/service";
 import { PageSkeleton } from "@/components/learn/ui";
 import { cn } from "cn";
@@ -14,22 +14,24 @@ export const metadata: Metadata = { title: "My Learning Space", robots: { index:
 
 /*
  * « My Learning Space » (owner decision 2026-11-22): the navbar keeps My Courses and Speaking
- * Partner; everything else is reached from here — challenges, progress, notebook, dictionary,
+ * Partner; everything else is reached from here — challenges, conversations, progress, notebook, dictionary,
  * account — each card with a live figure.
  */
 
-type Tile = { href: string; title: string; text: string; icon: LucideIcon; stat?: string; alert?: string; hero?: boolean };
+type Tile = { href: string; title: string; text: string; icon: LucideIcon; stat?: string; alert?: string; hero?: boolean; wide?: boolean };
 
 async function Space() {
   await connection();
   const me = await requireUser("/mon-espace");
   await connectDB();
-  const [stats, toRedo, waiting, words, toReview] = await Promise.all([
+  const [stats, toRedo, waiting, words, toReview, talks, lastTalk] = await Promise.all([
     statsFor(me.id),
     ChallengeSubmission.countDocuments({ userId: me.id, status: "returned" }),
     ChallengeSubmission.countDocuments({ userId: me.id, status: "pending" }),
     VocabWord.countDocuments({ userId: me.id }),
     VocabWord.countDocuments({ userId: me.id, known: false }),
+    ConversationSession.countDocuments({ userId: me.id, status: { $in: ["ended", "debriefed"] } }),
+    ConversationSession.findOne({ userId: me.id, status: "debriefed" }).sort({ createdAt: -1 }).select("score title").lean(),
   ]);
   const sent = stats.counters.assignmentsSubmitted ?? 0;
   const tiles: Tile[] = [
@@ -42,10 +44,17 @@ async function Space() {
       alert: toRedo ? `${toRedo} to redo` : undefined,
       hero: true,
     },
+    {
+      href: "/partenaire#conversations",
+      title: "My Conversations",
+      text: "Your AI role-plays and their debriefs: scores, corrections, Coach Ish Tips.",
+      icon: MessagesSquare,
+      stat: talks ? `${talks} conversation${talks === 1 ? "" : "s"}${lastTalk?.score != null ? ` · last score ${lastTalk.score} / 100` : ""}` : "No conversation yet: try the Talk with Coach Ish",
+    },
     { href: "/progression", title: "My Progress", text: "Level, streak, daily goal and badges.", icon: Trophy, stat: `Level ${stats.level.level} · ${stats.xp} XP` },
     { href: "/carnet", title: "My Notebook", text: "The words you saved, and flashcards to review them.", icon: NotebookPen, stat: words ? `${words} words · ${toReview} to review` : "No word saved yet" },
     { href: "/dictionnaire", title: "Dictionary", text: "Look up any English word: meaning, French translation, pronunciation.", icon: Search },
-    { href: "/compte", title: "My Account", text: "Profile, photo, password and connected devices.", icon: CircleUserRound, stat: me.username },
+    { href: "/compte", title: "My Account", text: "Profile, photo, password and connected devices.", icon: CircleUserRound, stat: me.username, wide: true },
   ];
   return (
     <div className="mx-auto grid max-w-5xl gap-6">
@@ -62,7 +71,7 @@ async function Space() {
       </header>
       <ul className="grid gap-4 sm:grid-cols-2">
         {tiles.map((t) => (
-          <li key={t.href} className={cn(t.hero && "sm:col-span-2")}>
+          <li key={t.href} className={cn((t.hero || t.wide) && "sm:col-span-2")}>
             <Link
               href={t.href}
               className={cn(

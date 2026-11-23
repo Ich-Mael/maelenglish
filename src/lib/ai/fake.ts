@@ -169,6 +169,11 @@ export class FakeConversationEngine implements ConversationEngine {
     if (!c) throw new Error("ElevenLabs 404: conversation not found");
     return c;
   }
+  audio = new Map<string, Uint8Array>();
+  async fetchAudio(id: string) {
+    const a = this.audio.get(id);
+    return a ? { data: a, mime: "audio/mpeg" } : null;
+  }
   async listVoices(): Promise<Voice[]> {
     return [{ id: "voice_us", name: "Jessica", accent: "american", gender: "female", previewUrl: "" }];
   }

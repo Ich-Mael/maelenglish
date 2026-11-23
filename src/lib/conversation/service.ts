@@ -26,7 +26,7 @@ const ESTIMATE_MICROS_PER_MINUTE = 100_000;
 const MIN_LEARNER_TURNS = 2;
 const MIN_LEARNER_WORDS = 8;
 
-export const UNAVAILABLE = "The speaking partner isn't available yet: try again later.";
+export const UNAVAILABLE = "Talk with Coach Ish isn't available yet: try again later.";
 
 export async function loadPersona(): Promise<Persona> {
   const s = await AppSettings.findOne({ key: "global" }).select("persona").lean();
@@ -107,7 +107,7 @@ export async function startRolePlay(
   if (left < 60) throw new ConversationError("You've used your AI minutes for this month. They come back on the 1st of next month.");
   // The platform's monthly ElevenLabs budget, shared by everyone (staff previews included).
   const pool = await budgetState(now);
-  if (pool.level === "stopped") throw new ConversationError("The Speaking Partner has reached its limit for this month: it comes back on the 1st.");
+  if (pool.level === "stopped") throw new ConversationError("Talk with Coach Ish has reached its limit for this month: it comes back on the 1st.");
   const limitS = Math.floor(Math.min(c.maxMinutes * 60, left, pool.secondsLeft));
 
   let agentId: string;
@@ -270,6 +270,8 @@ async function settleOpenSessions(userId: string, now: Date) {
   for (const o of open) {
     const activity = await Activity.findById(o.activityId).select("title level content").lean<ActivityDoc>();
     await finishRolePlay(userId, String(o._id), { waitMs: 0, activity }, now).catch((e) => console.error("[roleplay] settle", e));
+    const { storeConversationAudio } = await import("./recording");
+    void storeConversationAudio(String(o._id), { attempts: 1 }).catch((e) => console.error("[roleplay] settle audio", e));
   }
 }
 

@@ -25,3 +25,6 @@ export const toFinished = (s: Pick<ConversationSessionDoc, "_id" | "status" | "n
   reward,
 });
 
+
+/** The call ended less than 15 minutes ago: its recording may still be on its way. */
+export const isRecentCall = (createdAt: Date | string) => Date.now() - new Date(createdAt).getTime() < 15 * 60_000;

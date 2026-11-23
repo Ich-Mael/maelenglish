@@ -177,6 +177,8 @@ export interface ConversationEngine {
   deleteAgent(agentId: string): Promise<void>;
   signedUrl(agentId: string): Promise<string>;
   fetchConversation(conversationId: string): Promise<FinishedConversation>;
+  /** The call's audio once the provider has it, else null (not ready yet / no audio). */
+  fetchAudio(conversationId: string): Promise<{ data: Uint8Array; mime: string } | null>;
   listVoices(): Promise<Voice[]>;
 }
 

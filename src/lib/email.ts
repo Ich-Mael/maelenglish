@@ -306,13 +306,13 @@ export function sendAdminLateDigestEmail(to: string[], p: { items: (DigestItem &
   });
 }
 
-/** Admins: the Speaking Partner's monthly ElevenLabs budget is nearly used / used up (English). */
+/** Admins: the Talk with Coach Ish monthly ElevenLabs budget is nearly used / used up (English). */
 export function sendAiBudgetEmail(to: string[], p: { percent: number; usedMinutes: number; poolMinutes: number; stopped: boolean; stopPercent: number }) {
   const url = appUrl("/admin/usage-ia");
-  const subject = p.stopped ? `Speaking Partner paused: ${p.percent} % of this month's AI minutes used` : `Speaking Partner: ${p.percent} % of this month's AI minutes used`;
+  const subject = p.stopped ? `Talk with Coach Ish paused: ${p.percent} % of this month's AI minutes used` : `Talk with Coach Ish: ${p.percent} % of this month's AI minutes used`;
   const intro = p.stopped
-    ? `The Speaking Partner has used ${p.usedMinutes} of the ${p.poolMinutes} minutes in your ElevenLabs plan this month (${p.percent} %). New conversations are paused until the 1st, or until you raise the budget (upgrade the plan, then update the credits on the AI usage page).`
-    : `The Speaking Partner has used ${p.usedMinutes} of the ${p.poolMinutes} minutes in your ElevenLabs plan this month (${p.percent} %). New conversations stop at ${p.stopPercent} %. Consider upgrading the plan or lowering learners' monthly minutes.`;
+    ? `Talk with Coach Ish has used ${p.usedMinutes} of the ${p.poolMinutes} minutes in your ElevenLabs plan this month (${p.percent} %). New conversations are paused until the 1st, or until you raise the budget (upgrade the plan, then update the credits on the AI usage page).`
+    : `Talk with Coach Ish has used ${p.usedMinutes} of the ${p.poolMinutes} minutes in your ElevenLabs plan this month (${p.percent} %). New conversations stop at ${p.stopPercent} %. Consider upgrading the plan or lowering learners' monthly minutes.`;
   return send({
     to: to.join(", "),
     subject,

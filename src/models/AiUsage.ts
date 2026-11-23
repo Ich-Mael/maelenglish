@@ -38,7 +38,7 @@ const appSettingsSchema = new Schema(
     /** Default monthly AI minutes per learner (speech + conversation); per-learner override on User. */
     aiMonthlyMinutes: { type: Number, default: 60, min: 0 },
     /**
-     * Speaking Partner budget (ElevenLabs plan): `planCredits` per month (0 = no budget),
+     * Talk with Coach Ish budget (ElevenLabs plan): `planCredits` per month (0 = no budget),
      * `creditsPerMinute` measured on real calls, `planPriceUsd` per month (for the real cost of a
      * minute); admins are warned at `warnPercent`, new calls stop at `stopPercent`.
      */

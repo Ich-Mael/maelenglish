@@ -15,7 +15,7 @@ async function Conversations() {
   const rows = await listConversations(me);
   return (
     <div className="grid max-w-5xl gap-5">
-      <PageHeader title="AI conversations" subtitle={me.isAdmin ? "Learners' AI role-plays (Speaking Partner and unit activities), latest first." : "Role-plays of the learners you coach, latest first."} />
+      <PageHeader title="AI conversations" subtitle={me.isAdmin ? "Learners' AI role-plays (Talk with Coach Ish and unit activities), latest first." : "Role-plays of the learners you coach, latest first."} />
       <Card>
         {rows.length === 0 ? (
           <EmptyState>No conversation yet.</EmptyState>

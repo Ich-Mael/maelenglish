@@ -2,18 +2,20 @@
 
 import { Types } from "mongoose";
 import { refresh } from "next/cache";
+import { after } from "next/server";
+import { storeConversationAudio } from "@/lib/conversation/recording";
 import { readCurrentUser, type CurrentUser } from "@/lib/auth/dal";
 import { courseAccess, courseTree } from "@/lib/learn/queries";
 import { allSteps } from "@/lib/learn/progress";
 import { Activity, ConversationSession, Enrollment, StepProgress, accessState, type ActivityDoc } from "@/models";
-import { award, type Reward } from "@/lib/gamification/service";
+import { award, type AwardInput, type Reward } from "@/lib/gamification/service";
 import { XP, dayKey, practiceXp } from "@/lib/gamification/rules";
 import { ConversationError, attachRolePlay, finishRolePlay, rolePlayHelp, startRolePlay } from "@/lib/conversation/service";
 import type { HelpSuggestion } from "@/lib/ai/types";
 import { toFinished, type FinishedRolePlay } from "@/lib/conversation/view";
 
 /*
- * AI role-play (Speaking Partner page, unit activity steps, Lab preview). Every action re-checks the
+ * AI role-play (Talk with Coach Ish page, unit activity steps, Lab preview). Every action re-checks the
  * session and the access: a step must be open in the learner's progression; from the Speaking
  * Partner page any « ready » role-play, for learners with an active enrolment and for staff.
  * Staff sessions are marked `preview` (not capped, never progress).
@@ -46,7 +48,7 @@ async function allowed(where: Where): Promise<Allowed> {
   if (!me.isStaff) {
     if (activity.status !== "ready") throw new ConversationError("Conversation not found.");
     const enrolments = await Enrollment.find({ userId: me.id }).select("status startDate endDate").lean();
-    if (!enrolments.some((e) => accessState(e) === "active")) throw new ConversationError("The Speaking Partner is for learners with an active course.");
+    if (!enrolments.some((e) => accessState(e) === "active")) throw new ConversationError("Talk with Coach Ish is for learners with an active course.");
   }
   return { me, activity, courseId: null, stepId: null, preview: me.isStaff };
 }
@@ -101,32 +103,64 @@ export async function finishRolePlayAction(sessionId: string): Promise<{ ok: tru
     const activity = await Activity.findById(own.activityId).select("title level content type").lean<ActivityDoc>();
     const wasDebriefed = own.status === "debriefed";
     const s = await finishRolePlay(me.id, sessionId, { activity });
+    // The call's recording is copied to our storage after the response (ElevenLabs may need a moment).
+    if (s.providerConversationId && !s.audioMediaId) after(() => storeConversationAudio(sessionId).then(() => undefined).catch((e) => console.error("[roleplay] store audio", e)));
 
     let reward: Reward | null = null;
-    if (!wasDebriefed && s.status === "debriefed" && s.stepId && s.courseId && !s.preview) {
-      const score = s.score ?? 0;
-      const previous = await StepProgress.findOne({ userId: me.id, stepId: s.stepId }).select("score completedAt").lean();
-      await StepProgress.updateOne(
-        { userId: me.id, stepId: s.stepId },
-        { $set: { score: Math.max(score, previous?.score ?? 0) }, $inc: { attempts: 1 }, $setOnInsert: { courseId: s.courseId, completedAt: new Date() } },
-        { upsert: true },
-      );
-      const sid = String(s.stepId);
-      try {
-        reward = await award(
-          me.id,
-          previous?.completedAt
-            ? [{ courseId: s.courseId, key: `replay:${sid}:${dayKey()}`, source: "practice_replay", amount: XP.practiceReplay }]
-            : [{ courseId: s.courseId, key: `step:${sid}`, source: "role_play", amount: practiceXp(score), counters: { lessonsCompleted: 1 } }],
-        );
-      } catch (e) {
-        console.error("award failed", e);
-      }
+    if (!wasDebriefed && s.status === "debriefed" && !s.preview) {
+      reward = await creditProgress(me, s.activityId, s.stepId ? { stepId: s.stepId, courseId: s.courseId! } : null, s.score ?? 0);
       refresh();
     }
     return { ok: true, result: toFinished(s, reward) };
   } catch (e) {
     if (!(e instanceof ConversationError)) console.error("[roleplay] finish action", e);
     return fail(e);
+  }
+}
+
+/**
+ * A debriefed conversation counts (owner decision 2026-11-23): it completes the unit step(s) using
+ * this scenario that are open in the learner's courses — the step it was played from, or, from the
+ * « Talk with Coach Ish » page, every open step with this scenario — keeping the best score and
+ * giving the step's XP once (replays: 5 XP a day). A scenario outside the learner's courses gives
+ * practice XP once, then 5 XP a day.
+ */
+async function creditProgress(me: CurrentUser, activityId: unknown, from: { stepId: unknown; courseId: unknown } | null, score: number): Promise<Reward | null> {
+  const { Step } = await import("@/models");
+  const targets: { stepId: string; courseId: string }[] = [];
+  if (from) targets.push({ stepId: String(from.stepId), courseId: String(from.courseId) });
+  else {
+    const enrolled = (await Enrollment.find({ userId: me.id }).select("courseId status startDate endDate").lean()).filter((e) => accessState(e) === "active").map((e) => e.courseId);
+    const steps = await Step.find({ courseId: { $in: enrolled }, kind: "activity", activityId: new Types.ObjectId(String(activityId)) }).select("courseId").lean();
+    for (const st of steps) {
+      const access = await courseAccess(me, String(st.courseId));
+      if (!access.ok || access.readOnly || access.preview) continue;
+      const outline = allSteps((await courseTree(me, access)).outline).find((o) => o.id === String(st._id));
+      if (outline && outline.state !== "locked") targets.push({ stepId: String(st._id), courseId: String(st.courseId) });
+    }
+  }
+  const items: (AwardInput & { courseId?: unknown })[] = [];
+  for (const t of targets) {
+    const previous = await StepProgress.findOne({ userId: me.id, stepId: t.stepId }).select("score completedAt").lean();
+    await StepProgress.updateOne(
+      { userId: me.id, stepId: t.stepId },
+      { $set: { score: Math.max(score, previous?.score ?? 0) }, $inc: { attempts: 1 }, $setOnInsert: { courseId: t.courseId, completedAt: new Date() } },
+      { upsert: true },
+    );
+    items.push(
+      previous?.completedAt
+        ? { courseId: t.courseId, key: `replay:${t.stepId}:${dayKey()}`, source: "practice_replay", amount: XP.practiceReplay }
+        : { courseId: t.courseId, key: `step:${t.stepId}`, source: "role_play", amount: practiceXp(score), counters: { lessonsCompleted: 1 } },
+    );
+  }
+  if (!targets.length) {
+    const id = String(activityId);
+    items.push({ key: `roleplay:${id}`, source: "role_play", amount: practiceXp(score) }, { key: `roleplay:${id}:${dayKey()}`, source: "practice_replay", amount: XP.practiceReplay });
+  }
+  try {
+    return await award(me.id, items as AwardInput[]);
+  } catch (e) {
+    console.error("award failed", e);
+    return null;
   }
 }

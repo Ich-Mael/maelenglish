@@ -4,7 +4,7 @@ import { dayKey } from "@/lib/gamification/rules";
 import { sendAiBudgetEmail } from "@/lib/email";
 
 /*
- * Platform-wide Speaking Partner budget (owner decision 2026-11-23): the ElevenLabs plan gives a
+ * Platform-wide Talk with Coach Ish budget (owner decision 2026-11-23): the ElevenLabs plan gives a
  * fixed number of credits a month, shared by every learner. From the plan's credits and the
  * credits a call minute uses, the app knows the minutes in the pool and the real cost of a minute;
  * admins are emailed once a month at `warnPercent`, and new calls stop at `stopPercent` (before

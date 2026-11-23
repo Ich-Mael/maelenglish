@@ -6,13 +6,13 @@ import { Types } from "mongoose";
 import { requireUser } from "@/lib/auth/dal";
 import { connectDB } from "@/lib/db";
 import { Activity, type ActivityDoc } from "@/models";
-import { canUsePartner, partnerState, publicBrief } from "@/lib/conversation/queries";
+import { attemptsOn, canUsePartner, partnerState, publicBrief } from "@/lib/conversation/queries";
 import type { RolePlayContent } from "@/lib/lab/types";
 import { RolePlayPlayer } from "@/components/conversation/role-play-player";
 import { RichText } from "@/components/learn/rich-text";
 import { PageSkeleton } from "@/components/learn/ui";
 
-export const metadata: Metadata = { title: "Speaking Partner", robots: { index: false } };
+export const metadata: Metadata = { title: "Talk with Coach Ish", robots: { index: false } };
 
 async function Scenario({ params }: { params: Promise<{ activityId: string }> }) {
   const { activityId } = await params;
@@ -23,7 +23,7 @@ async function Scenario({ params }: { params: Promise<{ activityId: string }> })
   const a = await Activity.findById(activityId).lean<ActivityDoc>();
   if (!a || a.type !== "role_play" || (a.status !== "ready" && !me.isStaff) || !(await canUsePartner(me))) notFound();
   const c = a.content as RolePlayContent;
-  const state = await partnerState(me);
+  const [state, attempts] = await Promise.all([partnerState(me), attemptsOn(me.id, activityId)]);
   return (
     <div className="mx-auto max-w-5xl">
       <RolePlayPlayer
@@ -35,6 +35,7 @@ async function Scenario({ params }: { params: Promise<{ activityId: string }> })
         available={state.available}
         minutesLeft={state.minutesLeft}
         courseHref="/partenaire"
+        attempts={attempts}
       />
     </div>
   );

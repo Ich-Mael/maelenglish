@@ -39,7 +39,7 @@ async function Dashboard() {
       <PageHeader title={`Hello ${me.name}`} subtitle="MaelEnglish administration" />
       {pool && (pool.level === "warn" || pool.level === "stopped") && (
         <Link href="/admin/usage-ia" className="mb-4 block rounded-2xl border-2 border-coral bg-white px-4 py-3 text-sm font-semibold text-coral-dark hover:bg-coral-soft">
-          {pool.level === "stopped" ? "Speaking Partner paused: " : "Speaking Partner: "}
+          {pool.level === "stopped" ? "Talk with Coach Ish paused: " : "Talk with Coach Ish: "}
           {Math.round(pool.percent)} % of this month&apos;s ElevenLabs minutes used ({Math.round(pool.usedMinutes)} / {Math.round(pool.poolMinutes)} min). Open AI usage →
         </Link>
       )}

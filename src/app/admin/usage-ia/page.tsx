@@ -26,7 +26,7 @@ async function Usage() {
   return (
     <div className="grid max-w-5xl gap-5">
       <PageHeader title="AI usage" subtitle={`AI services usage (speech, pronunciation, conversation, feedback) — month ${r.month}. Estimated costs.`} />
-      <Card title="Speaking Partner budget" description="Your ElevenLabs plan's credits are shared by every learner. From the credits a call minute uses, the app knows how many minutes the plan holds and what a minute really costs. Admins are emailed at the warning threshold; new conversations stop at the stop threshold, until the 1st or until you raise the credits.">
+      <Card title="Talk with Coach Ish budget" description="Your ElevenLabs plan's credits are shared by every learner. From the credits a call minute uses, the app knows how many minutes the plan holds and what a minute really costs. Admins are emailed at the warning threshold; new conversations stop at the stop threshold, until the 1st or until you raise the credits.">
         {pool.configured ? (
           <div className="mb-4 grid gap-2">
             <p className="flex flex-wrap items-baseline justify-between gap-2 text-sm">

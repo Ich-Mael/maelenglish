@@ -3,9 +3,10 @@
 import { useState, useTransition } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Clock, Headphones, Loader2, MessagesSquare, Mic, Quote, RotateCcw, Sparkles, Target, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, AudioLines, Circle, Clock, Headphones, Loader2, MessagesSquare, Mic, Quote, RotateCcw, Sparkles, Target, X } from "lucide-react";
 import { finishRolePlayAction, startRolePlayAction } from "@/app/(app)/conversation-actions";
 import type { FinishedRolePlay } from "@/lib/conversation/view";
+import type { PastAttempt } from "@/lib/conversation/queries";
 import { DIFFICULTY_HINT, DIFFICULTY_LABEL, ROLEPLAY_DIFFICULTIES } from "@/lib/lab/types";
 import { pushReward } from "@/components/gamify/reward-store";
 import { playSound } from "@/components/gamify/sound";
@@ -13,7 +14,7 @@ import { DebriefView, TranscriptOnly } from "./debrief-view";
 import { cn } from "cn";
 
 /*
- * AI role-play, learner side (Speaking Partner page, unit activity step, Lab preview):
+ * AI role-play, learner side (Talk with Coach Ish page, unit activity step, Lab preview):
  * brief (situation, roles, goals, useful phrases, difficulty) → live call → « Preparing your
  * debrief… » → debrief (or the transcript and a retry when there is none). The twists and the AI's
  * instructions never reach the browser.
@@ -44,8 +45,9 @@ export function RolePlayPlayer({
   minutesLeft,
   courseHref,
   nextHref,
-  historyHref = "/partenaire",
+  historyHref = "/partenaire#conversations",
   preview,
+  attempts = [],
 }: {
   activityId: string;
   courseId?: string;
@@ -62,6 +64,8 @@ export function RolePlayPlayer({
   nextHref?: string | null;
   historyHref?: string;
   preview?: boolean;
+  /** The learner's earlier conversations on this scenario (latest first). */
+  attempts?: PastAttempt[];
 }) {
   const [phase, setPhase] = useState<Phase>({ kind: "brief" });
   const [difficulty, setDifficulty] = useState(brief.difficulty);
@@ -179,6 +183,11 @@ export function RolePlayPlayer({
             </Link>
           )}
           {!preview && (
+            <Link href={`/partenaire/seances/${r.sessionId}`} className="inline-flex h-12 items-center gap-2 rounded-2xl px-4 font-semibold text-primary hover:bg-brand-soft">
+              <AudioLines className="size-4" aria-hidden /> Listen to your call
+            </Link>
+          )}
+          {!preview && (
             <Link href={historyHref} className="inline-flex h-12 items-center gap-2 rounded-2xl px-4 font-semibold text-primary hover:bg-brand-soft">
               <MessagesSquare className="size-4" aria-hidden /> All my conversations
             </Link>
@@ -229,6 +238,8 @@ export function RolePlayPlayer({
           </p>
         </div>
       </section>
+
+      {attempts.length > 0 && <LastResult attempts={attempts} />}
 
       <div className="grid items-start gap-5 lg:grid-cols-[1fr_22rem]">
         <div className="grid gap-5">
@@ -288,7 +299,7 @@ export function RolePlayPlayer({
             </p>
           )}
           {!available ? (
-            <p className="rounded-2xl bg-muted px-4 py-3 text-sm font-semibold text-muted-foreground">The speaking partner isn&apos;t available yet: come back soon.</p>
+            <p className="rounded-2xl bg-muted px-4 py-3 text-sm font-semibold text-muted-foreground">Talk with Coach Ish isn&apos;t available yet: come back soon.</p>
           ) : (
             <button
               type="button"
@@ -299,6 +310,9 @@ export function RolePlayPlayer({
               {pending ? <Loader2 className="size-5 animate-spin" aria-hidden /> : <Mic className="size-5" aria-hidden />} {noMinutes ? "No AI minutes left" : "Start the conversation"}
             </button>
           )}
+          <p className="flex items-start gap-2 text-sm text-muted-foreground">
+            <Circle className="mt-1 size-3 shrink-0 fill-coral text-coral" aria-hidden /> This call is recorded: you and your coach can listen to it again with your debrief.
+          </p>
           {minutesLeft !== null && (
             <p className="flex items-center gap-2 text-sm text-muted-foreground">
               <Clock className="size-4 text-primary" aria-hidden /> {Math.floor(minutesLeft)} AI minutes left this month
@@ -337,6 +351,44 @@ export function RolePlayPlayer({
       )}
       <div className="h-16 lg:hidden" aria-hidden />
     </div>
+  );
+}
+
+const fmtDay = (iso: string) => new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+
+/** « Your last result » + earlier attempts on this scenario, each opening its debrief. */
+function LastResult({ attempts }: { attempts: PastAttempt[] }) {
+  const [last, ...earlier] = attempts;
+  return (
+    <section className="grid gap-3 rounded-3xl border-2 border-primary/20 bg-brand-soft/50 p-4 sm:p-5">
+      <div className="flex flex-wrap items-center gap-4">
+        <span className={cn("flex size-14 shrink-0 flex-col items-center justify-center rounded-full font-heading leading-none font-extrabold", last.score !== null ? "bg-gradient-to-br from-primary to-brand-deep text-white" : "bg-muted text-muted-foreground")}>
+          <span className="text-lg">{last.score ?? "–"}</span>
+          {last.score !== null && <span className="text-[10px] font-semibold opacity-80">/ 100</span>}
+        </span>
+        <div className="min-w-0 flex-1 basis-40">
+          <p className="text-xs font-bold tracking-wide text-primary uppercase">Your last result</p>
+          <p className="text-sm text-ink">
+            {fmtDay(last.at)} · level {last.difficulty} · {Math.max(1, Math.round(last.durationS / 60))} min{!last.debriefed && " · no debrief"}
+          </p>
+        </div>
+        <Link href={`/partenaire/seances/${last.sessionId}`} className="inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-xl bg-primary px-4 text-sm font-bold text-white hover:brightness-110 sm:w-auto">
+          See the debrief <ArrowRight className="size-4" aria-hidden />
+        </Link>
+      </div>
+      {earlier.length > 0 && (
+        <ul className="flex flex-wrap gap-2 border-t border-primary/15 pt-3">
+          <li className="self-center text-xs font-semibold text-muted-foreground">Earlier:</li>
+          {earlier.map((a) => (
+            <li key={a.sessionId}>
+              <Link href={`/partenaire/seances/${a.sessionId}`} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-3 py-1 text-xs font-semibold text-brand-deep hover:border-primary/40">
+                <span className="font-bold text-primary">{a.score ?? "–"}</span> · {fmtDay(a.at)}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 

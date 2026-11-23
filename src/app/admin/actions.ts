@@ -11,6 +11,7 @@ import * as content from "@/lib/admin/content";
 import * as steps from "@/lib/admin/steps";
 import { savePersona, setDefaultMonthlyMinutes } from "@/lib/ai/metering";
 import { BudgetError, saveBudget } from "@/lib/conversation/budget";
+import { deleteConversationAudio } from "@/lib/conversation/recording";
 import { enroll, removeEnrollment, updateEnrollment } from "@/lib/admin/enrollments";
 import { gradeSubmission } from "@/lib/admin/grading";
 import { notifyChallengeReviewed, notifyWritingReviewed, runCoachDigest } from "@/lib/notifications";
@@ -622,7 +623,7 @@ export async function saveAiSettingsAction(_: State, form: FormData): Promise<St
   }
 }
 
-/** Speaking Partner budget (ElevenLabs plan credits, credits per minute, price, thresholds). Admins only. */
+/** Talk with Coach Ish budget (ElevenLabs plan credits, credits per minute, price, thresholds). Admins only. */
 export async function saveBudgetAction(_: State, form: FormData): Promise<State> {
   try {
     const me = await staffOrThrow();
@@ -632,6 +633,19 @@ export async function saveBudgetAction(_: State, form: FormData): Promise<State>
     return { success: "Budget saved." };
   } catch (e) {
     return e instanceof BudgetError ? { error: e.message } : fail(e);
+  }
+}
+
+/** Admins only: delete an AI role-play call's recording (learners can't). */
+export async function deleteConversationAudioAction(sessionId: string): Promise<{ error?: string; success?: string }> {
+  try {
+    const me = await staffOrThrow();
+    if (!me.isAdmin) throw new AdminError("Only administrators can delete a recording.");
+    if (!(await deleteConversationAudio(sessionId))) return { error: "No recording to delete." };
+    refresh();
+    return { success: "Recording deleted." };
+  } catch (e) {
+    return { error: e instanceof AdminError ? e.message : "Something went wrong: try again." };
   }
 }
 

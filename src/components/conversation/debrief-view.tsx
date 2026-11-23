@@ -1,5 +1,6 @@
 import {
   ArrowRight,
+  AudioLines,
   Check,
   ChevronDown,
   Lightbulb,
@@ -14,7 +15,7 @@ import { cn } from "cn";
 /*
  * Debrief of an AI role-play (spec AIC-04): summary and score, the five scores (pronunciation comes
  * with Azure scoring), goals checklist, the transcript with the learner's mistakes corrected under
- * each turn, « Coach Ish Tips » (better ways to say it + the tip), 3 phrases to reuse, then the conversation (folded). No hooks: used by the live
+ * each turn, the conversation (folded), « Conseils et astuces de Coach Ish » (better ways to say it + the tip), 3 phrases to reuse. No hooks: used by the live
  * player (client), the session page and the coach's page (server). Explanations are in French.
  */
 
@@ -36,12 +37,18 @@ export function DebriefView({
   score,
   aiName = "Partner",
   learnerName = "You",
+  audioUrl = null,
+  audioPending = false,
 }: {
   debrief: Debrief;
   transcript: ConversationTurn[];
   score: number | null;
   aiName?: string;
   learnerName?: string;
+  /** Signed URL of the call's recording, when stored. */
+  audioUrl?: string | null;
+  /** The recording is on its way (call just ended). */
+  audioPending?: boolean;
 }) {
   const byTurn = new Map<number, Debrief["corrections"]>();
   for (const c of debrief.corrections)
@@ -60,6 +67,97 @@ export function DebriefView({
             {debrief.summary}
           </p>
         </div>
+      </section>
+
+      {/* The call: its recording and its transcript (folded), together under the summary. */}
+      <section className="grid gap-3 rounded-3xl border border-border bg-card p-4 sm:p-5">
+        <h2 className="flex items-center gap-2 text-lg font-extrabold text-brand-deep">
+          <AudioLines className="size-5 text-primary" aria-hidden /> Your call
+        </h2>
+        {audioUrl ? (
+          <audio src={audioUrl} controls preload="none" className="w-full" />
+        ) : audioPending ? (
+          <p className="text-sm text-muted-foreground">
+            The recording will be available in a minute or two: refresh the
+            page.
+          </p>
+        ) : null}
+        <details className="group/conv rounded-2xl border border-border">
+          <summary className="flex cursor-pointer list-none items-center gap-3 rounded-2xl px-4 py-3 hover:bg-brand-soft/40 [&::-webkit-details-marker]:hidden">
+            <MessageCircle
+              className="size-5 shrink-0 text-primary"
+              aria-hidden
+            />
+            <span className="grid flex-1">
+              <span className="font-bold text-brand-deep">Transcript</span>
+              <span className="text-xs text-muted-foreground">
+                {transcript.length} turns
+                {debrief.corrections.length > 0 &&
+                  ` · ${debrief.corrections.length} correction${debrief.corrections.length === 1 ? "" : "s"} inside`}
+              </span>
+            </span>
+            <span className="text-xs font-semibold text-muted-foreground">
+              <span className="group-open/conv:hidden">Show</span>
+              <span className="hidden group-open/conv:inline">Hide</span>
+            </span>
+            <ChevronDown
+              className="size-5 shrink-0 text-muted-foreground transition group-open/conv:rotate-180 motion-reduce:transition-none"
+              aria-hidden
+            />
+          </summary>
+          <div className="grid gap-3 px-4 pb-4">
+            <ol className="grid gap-3">
+              {transcript.map((t, i) => {
+                const fixes = byTurn.get(i) ?? [];
+                const mine = t.role === "user";
+                return (
+                  <li
+                    key={i}
+                    className={cn(
+                      "grid max-w-[88%] gap-1.5",
+                      mine ? "justify-self-end" : "justify-self-start",
+                    )}
+                  >
+                    <p
+                      className={cn(
+                        "text-[11px] font-bold tracking-wide uppercase",
+                        mine
+                          ? "text-right text-primary"
+                          : "text-muted-foreground",
+                      )}
+                    >
+                      {mine ? learnerName : aiName} · {fmt(t.t)}
+                    </p>
+                    <p
+                      lang="en"
+                      className={cn(
+                        "rounded-2xl px-3.5 py-2.5 text-[15px] leading-snug",
+                        mine
+                          ? "rounded-tr-sm bg-brand-soft text-brand-deep"
+                          : "rounded-tl-sm bg-muted text-ink",
+                      )}
+                    >
+                      {t.text}
+                    </p>
+                    {fixes.map((c, k) => (
+                      <Correction key={k} c={c} />
+                    ))}
+                  </li>
+                );
+              })}
+            </ol>
+            {loose.length > 0 && (
+              <div className="grid gap-2">
+                <p className="text-sm font-bold text-brand-deep">
+                  Other corrections
+                </p>
+                {loose.map((c, k) => (
+                  <Correction key={k} c={c} />
+                ))}
+              </div>
+            )}
+          </div>
+        </details>
       </section>
 
       <section
@@ -152,7 +250,7 @@ export function DebriefView({
               height={40}
               className="size-10 rounded-full object-cover"
             />
-            Coach Ish Tips
+            <span lang="fr">Conseils et astuces de Coach Ish</span>
           </h2>
           {debrief.betterWays.length > 0 && (
             <div className="grid gap-2">
@@ -222,82 +320,6 @@ export function DebriefView({
           </ul>
         </section>
       )}
-
-      <details className="group/conv rounded-3xl border border-border bg-card">
-        <summary className="flex cursor-pointer list-none items-center gap-3 rounded-3xl p-4 hover:bg-brand-soft/40 sm:p-5 [&::-webkit-details-marker]:hidden">
-          <MessageCircle className="size-5 shrink-0 text-primary" aria-hidden />
-          <span className="grid flex-1">
-            <span className="text-lg font-extrabold text-brand-deep">
-              Your conversation
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {transcript.length} turns
-              {debrief.corrections.length > 0 &&
-                ` · ${debrief.corrections.length} correction${debrief.corrections.length === 1 ? "" : "s"} inside`}
-            </span>
-          </span>
-          <span className="text-xs font-semibold text-muted-foreground">
-            <span className="group-open/conv:hidden">Show</span>
-            <span className="hidden group-open/conv:inline">Hide</span>
-          </span>
-          <ChevronDown
-            className="size-5 shrink-0 text-muted-foreground transition group-open/conv:rotate-180 motion-reduce:transition-none"
-            aria-hidden
-          />
-        </summary>
-        <div className="grid gap-3 px-4 pb-4 sm:px-5 sm:pb-5">
-          <ol className="grid gap-3">
-            {transcript.map((t, i) => {
-              const fixes = byTurn.get(i) ?? [];
-              const mine = t.role === "user";
-              return (
-                <li
-                  key={i}
-                  className={cn(
-                    "grid max-w-[88%] gap-1.5",
-                    mine ? "justify-self-end" : "justify-self-start",
-                  )}
-                >
-                  <p
-                    className={cn(
-                      "text-[11px] font-bold tracking-wide uppercase",
-                      mine
-                        ? "text-right text-primary"
-                        : "text-muted-foreground",
-                    )}
-                  >
-                    {mine ? learnerName : aiName} · {fmt(t.t)}
-                  </p>
-                  <p
-                    lang="en"
-                    className={cn(
-                      "rounded-2xl px-3.5 py-2.5 text-[15px] leading-snug",
-                      mine
-                        ? "rounded-tr-sm bg-brand-soft text-brand-deep"
-                        : "rounded-tl-sm bg-muted text-ink",
-                    )}
-                  >
-                    {t.text}
-                  </p>
-                  {fixes.map((c, k) => (
-                    <Correction key={k} c={c} />
-                  ))}
-                </li>
-              );
-            })}
-          </ol>
-          {loose.length > 0 && (
-            <div className="grid gap-2">
-              <p className="text-sm font-bold text-brand-deep">
-                Other corrections
-              </p>
-              {loose.map((c, k) => (
-                <Correction key={k} c={c} />
-              ))}
-            </div>
-          )}
-        </div>
-      </details>
     </div>
   );
 }

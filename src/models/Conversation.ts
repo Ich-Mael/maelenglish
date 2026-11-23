@@ -5,7 +5,7 @@ import { defineModel } from "./define";
  * AI role-play sessions (spec AIC-01/04, `ConversationSession`): one per call. `status`:
  * started (signed URL given) → ended (transcript read from the provider) → debriefed (Claude's
  * debrief stored) | failed (no usable call). `stepId` when played as a unit activity step, null from
- * the Speaking Partner page. The transcript comes from the provider's server (never from the browser).
+ * the Talk with Coach Ish page. The transcript comes from the provider's server (never from the browser).
  */
 const turnShape = new Schema({ role: { type: String, enum: ["agent", "user"], required: true }, text: { type: String, default: "" }, t: { type: Number, default: 0 } }, { _id: false });
 
@@ -36,6 +36,8 @@ const conversationSessionSchema = new Schema(
     /** Staff only: why the last debrief attempt failed (shown on the admin conversation page). */
     debriefError: { type: String, default: "" },
     helpCount: { type: Number, default: 0 },
+    /** The call's audio (Media kind « conversation », copied to our storage after the call). Only admins delete it. */
+    audioMediaId: { type: Schema.Types.ObjectId, ref: "Media", default: null },
     startedAt: { type: Date, default: Date.now },
     endedAt: { type: Date, default: null },
   },

@@ -33,7 +33,7 @@ import { RepeatPlayer } from "@/components/lab/players/repeat-player";
 import { DictationPlayer } from "@/components/lab/players/dictation-player";
 import { WritingPlayer, type WritingInitial } from "@/components/lab/players/writing-player";
 import { RolePlayPlayer } from "@/components/conversation/role-play-player";
-import { partnerState, publicBrief } from "@/lib/conversation/queries";
+import { attemptsOn, partnerState, publicBrief } from "@/lib/conversation/queries";
 import { writingSendsAllowed, writingSendsLeft } from "@/lib/lab/writing";
 import type { WritingCorrection } from "@/lib/ai/types";
 
@@ -200,7 +200,7 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
   }
   if (so.kind === "activity" && activity.type === "role_play") {
     const rc = activity.content as RolePlayContent;
-    const state = await partnerState(me);
+    const [state, attempts] = await Promise.all([partnerState(me), attemptsOn(me.id, String(activity._id))]);
     return (
       <div className="mx-auto grid max-w-5xl gap-4">
         {header}
@@ -217,6 +217,7 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
           courseHref={course}
           nextHref={nextHref}
           preview={access.preview}
+          attempts={attempts}
         />
       </div>
     );

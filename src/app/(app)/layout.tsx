@@ -14,7 +14,7 @@ import { WordLookup } from "@/components/learn/word-lookup";
 /* Three links only (owner decision 2026-11-22): the rest — challenges, progress, notebook, dictionary, account — is on « My Learning Space ». */
 const NAV = [
   { href: "/mes-cours", label: "My Courses", short: "Courses", icon: BookOpen },
-  { href: "/partenaire", label: "Speaking Partner", short: "Partner", icon: MessagesSquare },
+  { href: "/partenaire", label: "Talk with Coach Ish", short: "Coach Ish", icon: MessagesSquare, brand: true },
   { href: "/mon-espace", label: "My Learning Space", short: "My Space", icon: LayoutGrid },
 ];
 
@@ -39,8 +39,18 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
               <Link key={n.href} href={n.href} title={n.label} className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-sm font-semibold whitespace-nowrap lg:px-3 text-ink/80 transition-colors hover:bg-brand-soft hover:text-brand-deep group-data-[scrolled=true]/hdr:text-white/85 group-data-[scrolled=true]/hdr:hover:bg-white/10 group-data-[scrolled=true]/hdr:hover:text-white">
                 <n.icon className="size-4.5" aria-hidden />
                 {/* Short labels on small desktops, full labels from lg. */}
-                <span className="lg:hidden">{n.short}</span>
-                <span className="hidden lg:inline">{n.label}</span>
+                {"brand" in n ? (
+                  // Brand colours: « Talk with » red, « Coach Ish » blue (white on the scrolled navy bar).
+                  <span>
+                    <span className="hidden text-coral-dark lg:inline group-data-[scrolled=true]/hdr:text-coral">Talk with </span>
+                    <span className="text-primary group-data-[scrolled=true]/hdr:text-white">Coach Ish</span>
+                  </span>
+                ) : (
+                  <>
+                    <span className="lg:hidden">{n.short}</span>
+                    <span className="hidden lg:inline">{n.label}</span>
+                  </>
+                )}
               </Link>
             ))}
           </nav>
@@ -62,7 +72,7 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
       <nav aria-label="Navigation" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-3 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] md:hidden">
         {NAV.map((n) => (
           <Link key={n.href} href={n.href} className="flex min-w-0 flex-col items-center gap-0.5 py-2 text-xs font-semibold text-ink/75">
-            <n.icon className="size-5.5" aria-hidden /> {n.short}
+            <n.icon className={"brand" in n ? "size-5.5 text-coral" : "size-5.5"} aria-hidden /> <span className={"brand" in n ? "text-primary" : undefined}>{n.short}</span>
           </Link>
         ))}
       </nav>
