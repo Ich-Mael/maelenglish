@@ -79,7 +79,7 @@ beforeEach(async () => {
 });
 
 describe("diagnostic sessions", () => {
-  const lead = { firstName: "Awa", email: "awa@example.com", consentAnalysis: true };
+  const lead = { firstName: "Awa", lastName: "Traoré", field: "Comptable", email: "awa@example.com", consentAnalysis: true };
 
   it("saves progress, needs email + consent, stores profile and AI report, never sends contact details to the AI", async () => {
     const { token } = await startDiagnostic({ source: "facebook" });
@@ -87,6 +87,8 @@ describe("diagnostic sessions", () => {
     expect((await Diagnostic.findOne().lean())!).toMatchObject({ lastSection: 1, utmSource: "facebook", answers: { q2: "very_good" } });
     await expect(submitDiagnostic(token, neutral, { ...lead, consentAnalysis: false })).rejects.toThrow(/accepter/);
     await expect(submitDiagnostic(token, neutral, { ...lead, email: "nope" })).rejects.toThrow(/email/);
+    await expect(submitDiagnostic(token, neutral, { ...lead, field: " " })).rejects.toThrow(/métier/);
+    await expect(submitDiagnostic(token, neutral, { ...lead, lastName: "" })).rejects.toThrow(/nom/);
 
     let seen = "";
     const fake = new FakeFeedbackService();
@@ -95,8 +97,10 @@ describe("diagnostic sessions", () => {
     expect([r.source, r.primary, r.firstName, r.report.profile_name]).toEqual(["ai", "speaking_block", "Awa", "Le bloqué à l'oral"]);
     expect(seen).not.toContain("awa@example.com");
     expect(seen).not.toContain("70 12");
+    expect(seen).not.toContain("Traoré");
+    expect(seen).toContain("Comptable");
     const d = (await Diagnostic.findOne().lean())!;
-    expect([d.lead?.email, d.lead?.consentMarketing, d.reportSource, !!d.completedAt, d.lastSection]).toEqual(["awa@example.com", true, "ai", true, 6]);
+    expect([d.lead?.email, d.lead?.lastName, d.lead?.field, d.lead?.consentMarketing, d.reportSource, !!d.completedAt, d.lastSection]).toEqual(["awa@example.com", "Traoré", "Comptable", true, "ai", true, 6]);
     expect((await getDiagnostic(token))?.report.headline).toBe("Awa, voici ce qui vous freine.");
     // Idempotent: a second submit returns the stored report.
     expect((await submitDiagnostic(token, {}, lead)).isNew).toBe(false);
@@ -110,5 +114,23 @@ describe("diagnostic sessions", () => {
     const r = await submitDiagnostic(token, { ...neutral, q13: "several", q15: "lt_1m", q16: ["time"], q32: "varies", q30: ["present"] }, lead);
     expect([calls, r.source, r.primary]).toEqual([2, "fallback", "inconsistent"]);
     expect(r.report.goal_reminder).toContain("présenter un projet ou un rapport");
+  });
+});
+
+describe("staff list", () => {
+  it("searches by name, email, field and phone, and filters by status and profile", async () => {
+    const { listDiagnostics, setDiagnosticStatus } = await import("@/lib/diagnostic/service");
+    for (const [first, email, field, phone] of [["Awa", "awa@x.com", "Comptable", "70 12 34 56"], ["Ibrahim", "ib@y.com", "Infirmier", ""]]) {
+      const { token } = await startDiagnostic();
+      await submitDiagnostic(token, neutral, { firstName: first, lastName: "K", field, email, phone, consentAnalysis: true });
+    }
+    expect((await listDiagnostics({ q: "infirm" })).done.map((d) => d.lead?.firstName)).toEqual(["Ibrahim"]);
+    expect((await listDiagnostics({ q: "awa@" })).done).toHaveLength(1);
+    expect((await listDiagnostics({ q: "123456" })).done.map((d) => d.lead?.firstName)).toEqual(["Awa"]);
+    expect((await listDiagnostics({ q: "(.*" })).done).toHaveLength(0); // regex characters are escaped
+    const all = await listDiagnostics();
+    await setDiagnosticStatus(String(all.done[0]._id), "contacted");
+    const r = await listDiagnostics({ status: "contacted" });
+    expect([r.done.length, r.completed, r.status.contacted]).toEqual([1, 2, 1]);
   });
 });

@@ -38,7 +38,7 @@ export const SECTIONS: Section[] = [
     id: "school",
     title: "Le parcours scolaire",
     questions: [
-      q({ id: "q1", type: "single", label: "À quel âge avez-vous commencé l'anglais ?", options: [o("college", "Au collège"), o("lycee", "Au lycée"), o("later", "Plus tard (études supérieures, travail)"), o("never_formal", "Je ne l'ai jamais vraiment étudié")] }),
+      q({ id: "q1", type: "single", label: "À quel âge avez-vous commencé l'anglais ?", options: [o("primaire", "À l'école primaire"), o("college", "Au collège"), o("lycee", "Au lycée"), o("later", "Plus tard (études supérieures, travail)"), o("never_formal", "Je ne l'ai jamais vraiment étudié")] }),
       q({ id: "q2", type: "single", label: "Quel genre d'élève étiez-vous en anglais ?", options: [o("very_good", "Très bon"), o("ok", "Correct"), o("struggling", "En difficulté"), o("hated", "Je détestais ça")] }),
       q({ id: "q3", type: "multi", label: "En cours, vous faisiez surtout…", options: [o("grammar", "De la grammaire et des exercices écrits"), o("reading", "De la lecture de textes"), o("speaking", "De l'oral"), o("mix", "Un peu de tout")] }),
       q({ id: "q4", type: "single", label: "Combien de fois avez-vous vraiment parlé anglais en classe ?", options: [o("often", "Souvent"), o("sometimes", "Parfois"), o("almost_never", "Presque jamais")] }),

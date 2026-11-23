@@ -4,12 +4,15 @@ import { defineModel } from "./define";
 /*
  * Learning-path diagnostic (DIAGNOSTIC_SPEC.md §9): one document per questionnaire, created when it
  * starts (abandons are measured by `lastSection`) and updated after each section. The browser holds
- * a random token; only its sha256 is stored (`tokenHash`). The lead (first name, email, optional
- * phone, consents) is captured before the report is shown.
+ * a random token; only its sha256 is stored (`tokenHash`). The lead (first and last name, field of
+ * work or study, email, optional phone, consents) is captured before the report is shown.
  */
 const leadShape = new Schema(
   {
     firstName: { type: String, required: true, trim: true, maxlength: 60 },
+    lastName: { type: String, default: "", trim: true, maxlength: 60 },
+    /** Field of work or study (e.g. « infirmière », « étudiant en droit »). */
+    field: { type: String, default: "", trim: true, maxlength: 120 },
     email: { type: String, required: true, trim: true, lowercase: true },
     phone: { type: String, default: "" },
     consentAnalysis: { type: Boolean, required: true },

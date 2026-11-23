@@ -9,7 +9,7 @@ import { fallbackReport } from "./fallback-reports";
 
 /*
  * Diagnostic sessions (DIAGNOSTIC_SPEC.md §3, §6, §7, §9). Framework-free (tests/diagnostic.test.ts).
- * The AI gets the first name and the answers in words — never the email or phone (§12).
+ * The AI gets the first name, the field of work / study and the answers — never the last name, email or phone (§12).
  */
 
 export class DiagnosticError extends Error {
@@ -46,18 +46,18 @@ export async function saveProgress(token: string, rawAnswers: unknown, section: 
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-export type LeadInput = { firstName?: string; email?: string; phone?: string; consentAnalysis?: boolean; consentMarketing?: boolean };
+export type LeadInput = { firstName?: string; lastName?: string; field?: string; email?: string; phone?: string; consentAnalysis?: boolean; consentMarketing?: boolean };
 export type DiagnosticResult = { firstName: string; report: DiagnosticReport; primary: ProfileId; secondary: ProfileId[]; source: "ai" | "fallback" };
 
 const labelsOf = (a: Answers, id: string) => (Array.isArray(a[id]) ? (a[id] as string[]) : []).map((v) => (v === "other" ? String(a[`${id}_other`] ?? "") : (QUESTION[id].options?.find((o) => o.value === v)?.label ?? v))).filter(Boolean);
 
 /** The AI's report, validated; retried once; else the profile's ready-written report. */
-async function writeReport(firstName: string, a: Answers, primary: ProfileId, secondary: ProfileId[], scores: Record<string, number>): Promise<{ report: DiagnosticReport; source: "ai" | "fallback"; usage?: { provider: string; tokens: number; costMicros: number } }> {
+async function writeReport(firstName: string, a: Answers, primary: ProfileId, secondary: ProfileId[], scores: Record<string, number>, field = ""): Promise<{ report: DiagnosticReport; source: "ai" | "fallback"; usage?: { provider: string; tokens: number; costMicros: number } }> {
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       const r = await aiServices().feedback.diagnosticReport({
         firstName,
-        answersText: answersInWords(a),
+        answersText: `${field ? `Métier ou domaine d'études : ${field}\n\n` : ""}${answersInWords(a)}`,
         primary: { id: primary, name: PROFILE_INFO[primary].name, need: PROFILE_INFO[primary].need },
         secondary: secondary.map((p) => ({ id: p, name: PROFILE_INFO[p].name })),
         scores,
@@ -80,7 +80,11 @@ export async function submitDiagnostic(token: string, rawAnswers: unknown, lead:
   }
   const firstName = clip(lead.firstName, 60);
   const email = clip(lead.email, 200).toLowerCase();
+  const lastName = clip(lead.lastName, 60);
+  const field = clip(lead.field, 120);
   if (!firstName) throw new DiagnosticError("Indiquez votre prénom.", "firstName");
+  if (!lastName) throw new DiagnosticError("Indiquez votre nom.", "lastName");
+  if (!field) throw new DiagnosticError("Indiquez votre métier ou votre domaine d'études.", "field");
   if (!EMAIL_RE.test(email)) throw new DiagnosticError("Indiquez une adresse email valide.", "email");
   const phoneRaw = clip(lead.phone, 40);
   if (phoneRaw && !normalizePhone(phoneRaw)) throw new DiagnosticError("Numéro WhatsApp invalide (ajoutez l'indicatif si vous n'êtes pas au Burkina Faso).", "phone");
@@ -89,7 +93,7 @@ export async function submitDiagnostic(token: string, rawAnswers: unknown, lead:
   const answers = cleanAnswers(rawAnswers);
   const { primary, secondary, scores } = computeProfiles(answers);
   const normalized = Object.fromEntries(Object.entries(scores).map(([k, v]) => [k, v.normalized]));
-  const written = await writeReport(firstName, answers, primary, secondary, normalized);
+  const written = await writeReport(firstName, answers, primary, secondary, normalized, field);
 
   d.answers = answers;
   d.markModified("answers");
@@ -99,7 +103,7 @@ export async function submitDiagnostic(token: string, rawAnswers: unknown, lead:
   d.secondaryProfiles = secondary;
   d.report = written.report;
   d.reportSource = written.source;
-  d.lead = { firstName, email, phone: phoneRaw ? (normalizePhone(phoneRaw) ?? phoneRaw) : "", consentAnalysis: true, consentMarketing: !!lead.consentMarketing, createdAt: now };
+  d.lead = { firstName, lastName, field, email, phone: phoneRaw ? (normalizePhone(phoneRaw) ?? phoneRaw) : "", consentAnalysis: true, consentMarketing: !!lead.consentMarketing, createdAt: now };
   d.completedAt = now;
   await d.save();
   return { firstName, report: written.report, primary, secondary, source: written.source, isNew: true, usage: written.usage };
@@ -114,14 +118,35 @@ export async function getDiagnostic(token: string): Promise<DiagnosticResult | n
 
 export type DiagnosticRow = Pick<DiagnosticDoc, "_id" | "createdAt" | "completedAt" | "primaryProfile" | "secondaryProfiles" | "lead" | "lastSection" | "status" | "reportSource" | "utmSource">;
 
-/** Staff list (Admin → Diagnostics): completed diagnostics first, newest first, and how many were abandoned. */
-export async function listDiagnostics(limit = 200) {
-  const [done, started, bySection] = await Promise.all([
-    Diagnostic.find({ completedAt: { $ne: null } }).select("createdAt completedAt primaryProfile secondaryProfiles lead status reportSource utmSource").sort({ completedAt: -1 }).limit(limit).lean(),
+/**
+ * Staff list (Admin → Diagnostics): completed diagnostics, newest first, filtered by a search (name,
+ * email, phone, field), the follow-up status and the main profile; plus overall counts and where
+ * unfinished diagnostics stopped.
+ */
+export async function listDiagnostics(filter: { q?: string; status?: string; profile?: string } = {}, limit = 300) {
+  const match: Record<string, unknown> = { completedAt: { $ne: null } };
+  if (filter.status && ["new", "contacted", "closed"].includes(filter.status)) match.status = filter.status;
+  if (filter.profile) match.primaryProfile = filter.profile;
+  const q = (filter.q ?? "").trim().slice(0, 80);
+  if (q) {
+    const re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+    const digits = q.replace(/\D/g, "");
+    match.$or = [{ "lead.firstName": re }, { "lead.lastName": re }, { "lead.email": re }, { "lead.field": re }, ...(digits.length >= 4 ? [{ "lead.phone": new RegExp(digits) }] : [])];
+  }
+  const [done, started, completed, byStatus, bySection] = await Promise.all([
+    Diagnostic.find(match).select("createdAt completedAt primaryProfile secondaryProfiles lead status reportSource utmSource").sort({ completedAt: -1 }).limit(limit).lean(),
     Diagnostic.countDocuments({}),
+    Diagnostic.countDocuments({ completedAt: { $ne: null } }),
+    Diagnostic.aggregate<{ _id: string; n: number }>([{ $match: { completedAt: { $ne: null } } }, { $group: { _id: "$status", n: { $sum: 1 } } }]),
     Diagnostic.aggregate<{ _id: number; n: number }>([{ $match: { completedAt: null } }, { $group: { _id: "$lastSection", n: { $sum: 1 } } }, { $sort: { _id: 1 } }]),
   ]);
-  return { done, started, abandoned: bySection.map((b) => ({ section: b._id ?? 0, count: b.n })) };
+  return {
+    done,
+    started,
+    completed,
+    status: Object.fromEntries(byStatus.map((x) => [x._id ?? "new", x.n])) as Record<string, number>,
+    abandoned: bySection.map((b) => ({ section: b._id ?? 0, count: b.n })),
+  };
 }
 
 export async function setDiagnosticStatus(id: string, status: string) {

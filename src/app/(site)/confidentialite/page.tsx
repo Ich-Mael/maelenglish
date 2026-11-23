@@ -78,9 +78,9 @@ export default function PrivacyPage() {
               coach qui vérifie et vous envoie le retour. Ces textes ne sont pas utilisés pour entraîner les modèles de ce prestataire.
             </li>
             <li>
-              <strong>Diagnostic de votre parcours (« /diagnostic »)</strong> : vos réponses au questionnaire, votre prénom, votre email
-              et, si vous le donnez, votre numéro WhatsApp sont enregistrés pour vous remettre votre rapport et vous recontacter à son
-              sujet (et vous envoyer nos conseils si vous l&apos;avez accepté). Votre prénom et vos réponses — jamais votre email ni
+              <strong>Diagnostic de votre parcours (« /diagnostic »)</strong> : vos réponses au questionnaire, vos nom et prénom, votre métier ou domaine
+              d&apos;études, votre email et, si vous le donnez, votre numéro WhatsApp sont enregistrés pour vous remettre votre rapport et vous recontacter à son
+              sujet (et vous envoyer nos conseils si vous l&apos;avez accepté). Votre prénom, votre métier et vos réponses — jamais votre nom, votre email ni
               votre téléphone — sont analysés automatiquement par un outil d&apos;IA (Anthropic) pour rédiger le rapport. Vous pouvez
               demander leur suppression à tout moment.
             </li>

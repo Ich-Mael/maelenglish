@@ -4,11 +4,8 @@ import { connectDB } from "@/lib/db";
 import { clientIp } from "@/lib/auth/session";
 import { hitRateLimit } from "@/lib/auth/service";
 import { DiagnosticError, getDiagnostic, saveProgress, startDiagnostic, submitDiagnostic, type DiagnosticResult, type LeadInput } from "@/lib/diagnostic/service";
-import { PROFILE_INFO } from "@/lib/diagnostic/profiles";
-import { adminEmails } from "@/lib/requests";
-import { sendDiagnosticLeadEmail } from "@/lib/email";
 
-/* Public learning-path diagnostic (DIAGNOSTIC_SPEC.md): no account needed, rate-limited per IP. */
+/* Public learning-path diagnostic (DIAGNOSTIC_SPEC.md): no account needed, rate-limited per IP. Leads stay in the platform (Admin → Diagnostics): no email to admins (owner decision 2026-11-23). */
 
 export async function startDiagnosticAction(utm: { source?: string; medium?: string; campaign?: string }): Promise<{ ok: true; token: string } | { ok: false; error: string }> {
   await connectDB();
@@ -33,16 +30,7 @@ export async function submitDiagnosticAction(token: string, answers: unknown, le
     const rl = await hitRateLimit(`diag-submit:${await clientIp()}`, 8, 3600_000);
     if (!rl.allowed) return { ok: false, error: "Trop de rapports demandés : réessayez dans une heure." };
     const done = await submitDiagnostic(token, answers, lead);
-    const { isNew } = done;
     const result: DiagnosticResult = { firstName: done.firstName, report: done.report, primary: done.primary, secondary: done.secondary, source: done.source };
-    if (isNew) {
-      try {
-        const to = await adminEmails();
-        if (to.length) await sendDiagnosticLeadEmail(to, { firstName: result.firstName, email: String(lead.email ?? "").trim().toLowerCase(), phone: String(lead.phone ?? "").trim(), profile: PROFILE_INFO[result.primary].name, secondary: result.secondary.map((p) => PROFILE_INFO[p].name), marketing: !!lead.consentMarketing });
-      } catch (e) {
-        console.error("[diagnostic] admin email", e);
-      }
-    }
     return { ok: true, result };
   } catch (e) {
     if (e instanceof DiagnosticError) return { ok: false, error: e.message, field: e.field };

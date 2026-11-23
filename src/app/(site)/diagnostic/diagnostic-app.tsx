@@ -346,7 +346,7 @@ function QuestionCard({ q, answers, intro, onChange, onNext, onBack }: { q: Ques
 
 type LeadErr = { error: string; field?: string } | null;
 
-function LeadForm({ onSubmit, onBack }: { onSubmit: (lead: { firstName: string; email: string; phone: string; consentAnalysis: boolean; consentMarketing: boolean }) => Promise<LeadErr>; onBack: () => void }) {
+function LeadForm({ onSubmit, onBack }: { onSubmit: (lead: { firstName: string; lastName: string; field: string; email: string; phone: string; consentAnalysis: boolean; consentMarketing: boolean }) => Promise<LeadErr>; onBack: () => void }) {
   const [err, setErr] = useState<LeadErr>(null);
   const [busy, setBusy] = useState(false);
   const field = "h-12 w-full rounded-2xl border-2 border-border bg-background px-4 text-base outline-none focus:border-primary aria-invalid:border-coral";
@@ -358,7 +358,7 @@ function LeadForm({ onSubmit, onBack }: { onSubmit: (lead: { firstName: string; 
         e.preventDefault();
         const f = new FormData(e.currentTarget);
         setBusy(true);
-        const r = await onSubmit({ firstName: String(f.get("firstName") ?? ""), email: String(f.get("email") ?? ""), phone: String(f.get("phone") ?? ""), consentAnalysis: f.get("consentAnalysis") === "on", consentMarketing: f.get("consentMarketing") === "on" });
+        const r = await onSubmit({ firstName: String(f.get("firstName") ?? ""), lastName: String(f.get("lastName") ?? ""), field: String(f.get("field") ?? ""), email: String(f.get("email") ?? ""), phone: String(f.get("phone") ?? ""), consentAnalysis: f.get("consentAnalysis") === "on", consentMarketing: f.get("consentMarketing") === "on" });
         setBusy(false);
         setErr(r);
       }}
@@ -374,9 +374,19 @@ function LeadForm({ onSubmit, onBack }: { onSubmit: (lead: { firstName: string; 
           {err.error}
         </p>
       )}
+      <div className="grid gap-5 sm:grid-cols-2">
+        <label className="grid gap-1.5">
+          <span className="text-sm font-semibold text-brand-deep">Prénom</span>
+          <input name="firstName" required autoComplete="given-name" aria-invalid={err?.field === "firstName"} className={field} />
+        </label>
+        <label className="grid gap-1.5">
+          <span className="text-sm font-semibold text-brand-deep">Nom</span>
+          <input name="lastName" required autoComplete="family-name" aria-invalid={err?.field === "lastName"} className={field} />
+        </label>
+      </div>
       <label className="grid gap-1.5">
-        <span className="text-sm font-semibold text-brand-deep">Prénom</span>
-        <input name="firstName" required autoComplete="given-name" aria-invalid={err?.field === "firstName"} className={field} />
+        <span className="text-sm font-semibold text-brand-deep">{fr("Votre métier ou domaine d'études")}</span>
+        <input name="field" required autoComplete="organization-title" maxLength={120} placeholder="Ex. infirmière, comptable, étudiant en droit…" aria-invalid={err?.field === "field"} className={field} />
       </label>
       <label className="grid gap-1.5">
         <span className="text-sm font-semibold text-brand-deep">Email</span>
