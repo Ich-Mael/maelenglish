@@ -5,7 +5,8 @@ import { AccountMenu } from "./account-menu";
 
 const cls =
   "inline-flex h-10 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-brand-deep transition-colors hover:bg-brand-soft group-data-[scrolled=true]/hdr:text-white group-data-[scrolled=true]/hdr:hover:bg-white/10";
-const signupCls = "hidden h-10 items-center gap-2 rounded-xl border-2 border-coral bg-white px-4 text-sm font-bold text-coral-dark transition hover:bg-coral-soft sm:inline-flex";
+const signupCls =
+  "hidden h-10 items-center gap-2 rounded-xl border-2 border-coral bg-white px-4 text-sm font-bold text-coral-dark shadow-[0_4px_0_0_var(--color-coral)] transition hover:bg-coral-soft active:translate-y-0.5 active:shadow-[0_1px_0_0_var(--color-coral)] sm:inline-flex";
 
 /**
  * Header account area — reads the session, so it renders inside <Suspense> (fallback: the

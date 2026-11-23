@@ -2,7 +2,7 @@ import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import * as z from "zod/v4";
-import type { DiagnosticReportInput, ConversationTurn, Debrief, DrillGrade, DrillGradeInput, FeedbackService, HelpSuggestion, LlmUsage, Persona, RolePlayBrief, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput } from "./types";
+import type { DailyWord, SentenceCheck, DiagnosticReportInput, ConversationTurn, Debrief, DrillGrade, DrillGradeInput, FeedbackService, HelpSuggestion, LlmUsage, Persona, RolePlayBrief, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput } from "./types";
 
 /*
  * Claude feedback (DECISIONS.md: Claude for feedback): writing correction for the Lab « writing
@@ -94,6 +94,23 @@ Write every explanation, the summary and the tip in simple, encouraging French. 
 - maelTip: one practical tip in French, in Coach Ish's voice (starts naturally, no "Coach Ish's tip:" prefix).`;
 
 const HELP_SYSTEM = `A French-speaking learner of English is in the middle of a spoken role-play and pressed « Help ». Suggest 3 different short things (5-15 words each) they could say NEXT, in natural, simple professional English at their level, that answer the last thing the AI said and move toward their goals. For each, give a short French translation (fr). No explanations.`;
+
+const DailySchema = z.object({ words: z.array(z.object({ word: z.string(), translation: z.string(), frNote: z.string(), examples: z.array(z.object({ en: z.string(), fr: z.string() })) })) });
+const SentenceSchema = z.object({ ok: z.boolean(), corrected: z.string(), explanation: z.string() });
+
+// Frozen (cache-friendly).
+const DAILY_SYSTEM = `You choose English vocabulary for French-speaking professionals in West Africa (A2-B2) who learn the English of their job.
+Given a profession (or field of study), return the requested number of genuinely useful, common English words that this person meets at work (not rare jargon, not basic words like "work" or "good").
+- word: ONE English word, lowercase, no spaces (a hyphen is allowed). Never one of the words to avoid. Never a word spelled the same (or almost) in French with the same meaning (e.g. "patient", "important", "hospital"): the learner must learn something new.
+- translation: the French translation, 1 to 3 words, correct accents.
+- frNote: one short sentence in simple French on when or how it is used in this job.
+- examples: exactly 2 different, natural English sentences (8-16 words) using the word in real situations of this job ("en"), each with its natural French translation ("fr").`;
+
+const SENTENCE_SYSTEM = `A French-speaking learner of English (A2-B2) wrote a sentence using a word from their vocabulary notebook. Check it.
+- ok: true if the sentence is correct, natural English AND uses the word with the right meaning (small punctuation issues don't count).
+- corrected: the sentence corrected and natural, keeping the learner's idea and the word; the same sentence if it was already correct.
+- explanation: one short, encouraging sentence in simple French: what was wrong and the rule, or why it is good.
+If the sentence doesn't use the word, ok is false and explanation says so in French.`;
 
 const DrillSchema = z.object({ verdict: z.enum(["correct", "almost", "incorrect"]), explanation: z.string(), modelAnswer: z.string() });
 
@@ -216,6 +233,31 @@ export class ClaudeFeedbackService implements FeedbackService {
     if (response.stop_reason === "refusal" || !response.parsed_output) throw new Error("Diagnostic report: no valid output.");
     const cost = model.includes("haiku") ? costMicros(response.usage.input_tokens, response.usage.output_tokens) : sonnetCost(response.usage.input_tokens, response.usage.output_tokens);
     return { report: response.parsed_output, usage: { inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens, costMicros: cost, provider: `anthropic:${model}` } };
+  }
+
+  async dailyVocabulary(input: { profession: string; count: number; avoid: string[] }): Promise<{ words: DailyWord[]; usage: LlmUsage }> {
+    const response = await this.client.messages.parse({
+      model: CLAUDE_FEEDBACK_MODEL,
+      max_tokens: 6000,
+      output_config: { effort: "low", format: zodOutputFormat(DailySchema) },
+      system: DAILY_SYSTEM,
+      messages: [{ role: "user", content: `Profession: ${input.profession}\nNumber of words: ${input.count}\nWords to avoid (already given): ${input.avoid.join(", ") || "none"}` }],
+    });
+    if (!response.parsed_output) throw new Error("Daily vocabulary unavailable.");
+    const words = response.parsed_output.words.map((w) => ({ ...w, examples: w.examples.slice(0, 2), example: w.examples[0]?.en ?? "" }));
+    return { words, usage: { inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens, costMicros: costMicros(response.usage.input_tokens, response.usage.output_tokens), provider: `anthropic:${CLAUDE_FEEDBACK_MODEL}` } };
+  }
+
+  async checkSentence(input: { word: string; translation: string; sentence: string }): Promise<{ result: SentenceCheck; usage: LlmUsage }> {
+    const response = await this.client.messages.parse({
+      model: CLAUDE_FEEDBACK_MODEL,
+      max_tokens: 800,
+      output_config: { effort: "low", format: zodOutputFormat(SentenceSchema) },
+      system: SENTENCE_SYSTEM,
+      messages: [{ role: "user", content: `Word: ${input.word}${input.translation ? ` (French: ${input.translation})` : ""}\nSentence: ${input.sentence}` }],
+    });
+    if (!response.parsed_output) throw new Error("Correction unavailable.");
+    return { result: response.parsed_output, usage: { inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens, costMicros: costMicros(response.usage.input_tokens, response.usage.output_tokens), provider: `anthropic:${CLAUDE_FEEDBACK_MODEL}` } };
   }
 
   async gradeDrill(input: DrillGradeInput): Promise<DrillGrade> {

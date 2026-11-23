@@ -6,7 +6,7 @@ import { baseCookie, SESSION_COOKIE, SESSION_MAX_AGE } from "@/lib/auth/cookies"
  * page when there is no session cookie, and the cookie's lifetime slides with
  * activity. The real check is `getCurrentUser()` in the Data Access Layer.
  */
-const PRIVATE = ["/compte", "/admin", "/mes-cours", "/mes-defis", "/apprendre", "/progression", "/partenaire", "/mon-espace", "/carnet", "/dictionnaire"];
+const PRIVATE = ["/compte", "/admin", "/mes-cours", "/mes-defis", "/apprendre", "/progression", "/partenaire", "/mon-espace", "/carnet", "/dictionnaire", "/vocabulaire"];
 
 export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;

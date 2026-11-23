@@ -116,6 +116,27 @@ export async function getDiagnostic(token: string): Promise<DiagnosticResult | n
   return { firstName: d.lead.firstName, report: d.report as DiagnosticReport, primary: d.primaryProfile as ProfileId, secondary: (d.secondaryProfiles ?? []) as ProfileId[], source: (d.reportSource || "ai") as "ai" | "fallback" };
 }
 
+/** Emails the report to the person (once), with a link back to it. `token`: the browser's token (in the link). */
+export async function emailReport(token: string, now = new Date()): Promise<boolean> {
+  const { sendDiagnosticReportEmail, appUrl } = await import("@/lib/email");
+  const d = await byToken(token).catch(() => null);
+  if (!d?.lead || !d.report || d.reportEmailedAt) return false;
+  const r = d.report as DiagnosticReport;
+  const res = await sendDiagnosticReportEmail(d.lead.email, {
+    firstName: d.lead.firstName,
+    profileName: r.profile_name,
+    headline: r.headline,
+    holdsBack: r.what_holds_you_back.map((x) => x.title),
+    reframe: r.reframe,
+    method: r.recommended_method,
+    firstStep: r.first_step_this_week,
+    url: appUrl(`/diagnostic/rapport/${token}`),
+  });
+  if (res.simulated) return false;
+  await Diagnostic.updateOne({ _id: d._id }, { $set: { reportEmailedAt: now } });
+  return true;
+}
+
 export type DiagnosticRow = Pick<DiagnosticDoc, "_id" | "createdAt" | "completedAt" | "primaryProfile" | "secondaryProfiles" | "lead" | "lastSection" | "status" | "reportSource" | "utmSource">;
 
 /**
@@ -134,7 +155,7 @@ export async function listDiagnostics(filter: { q?: string; status?: string; pro
     match.$or = [{ "lead.firstName": re }, { "lead.lastName": re }, { "lead.email": re }, { "lead.field": re }, ...(digits.length >= 4 ? [{ "lead.phone": new RegExp(digits) }] : [])];
   }
   const [done, started, completed, byStatus, bySection] = await Promise.all([
-    Diagnostic.find(match).select("createdAt completedAt primaryProfile secondaryProfiles lead status reportSource utmSource").sort({ completedAt: -1 }).limit(limit).lean(),
+    Diagnostic.find(match).select("createdAt completedAt primaryProfile secondaryProfiles lead status reportSource reportEmailedAt utmSource").sort({ completedAt: -1 }).limit(limit).lean(),
     Diagnostic.countDocuments({}),
     Diagnostic.countDocuments({ completedAt: { $ne: null } }),
     Diagnostic.aggregate<{ _id: string; n: number }>([{ $match: { completedAt: { $ne: null } } }, { $group: { _id: "$status", n: { $sum: 1 } } }]),

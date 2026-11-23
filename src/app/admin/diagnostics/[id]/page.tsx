@@ -60,7 +60,7 @@ async function Detail({ params }: { params: Promise<{ id: string }> }) {
               </p>
             )}
             <p className="mt-1 text-sm text-muted-foreground">
-              {[l?.email, l?.phone ? displayPhone(l.phone) : "", `completed ${fmtDate(d.completedAt ?? d.createdAt)}`, d.utmSource ? `via ${d.utmSource}` : "", l?.consentMarketing ? "newsletter: yes" : "newsletter: no"].filter(Boolean).join(" · ")}
+              {[l?.email, l?.phone ? displayPhone(l.phone) : "", `completed ${fmtDate(d.completedAt ?? d.createdAt)}`, d.utmSource ? `via ${d.utmSource}` : "", l?.consentMarketing ? "newsletter: yes" : "newsletter: no", d.reportEmailedAt ? `report emailed ${fmtDate(d.reportEmailedAt)}` : "report not emailed"].filter(Boolean).join(" · ")}
             </p>
           </div>
         </div>

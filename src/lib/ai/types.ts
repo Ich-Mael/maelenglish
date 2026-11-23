@@ -135,6 +135,11 @@ export type Debrief = {
 /** Help button (AIC-01): 2–3 things the learner could say now, English + French gloss. */
 export type HelpSuggestion = { en: string; fr: string };
 
+/** « My daily vocabulary »: words for a profession (single English words). */
+export type DailyWord = { word: string; translation: string; frNote: string; example: string; examples: { en: string; fr: string }[] };
+/** « My own sentences »: a learner's sentence with one of their words, corrected. */
+export type SentenceCheck = { ok: boolean; corrected: string; explanation: string };
+
 /** Diagnostic report input: never the learner's email or phone (spec §12). */
 export type DiagnosticReportInput = { firstName: string; answersText: string; primary: { id: string; name: string; need: string }; secondary: { id: string; name: string }[]; scores: Record<string, number> };
 
@@ -147,6 +152,8 @@ export interface FeedbackService {
   rolePlayHelp(input: { brief: RolePlayBrief; transcript: ConversationTurn[]; persona: Persona }): Promise<{ suggestions: HelpSuggestion[]; usage: LlmUsage }>;
   /** Learning-path diagnostic report (JSON validated by the caller against DiagnosticReportSchema). */
   diagnosticReport(input: DiagnosticReportInput): Promise<{ report: unknown; usage: LlmUsage }>;
+  dailyVocabulary(input: { profession: string; count: number; avoid: string[] }): Promise<{ words: DailyWord[]; usage: LlmUsage }>;
+  checkSentence(input: { word: string; translation: string; sentence: string }): Promise<{ result: SentenceCheck; usage: LlmUsage }>;
 }
 
 /** What the conversation provider needs to run one agent (src/lib/conversation/prompt.ts AgentSpec). */

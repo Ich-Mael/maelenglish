@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowDown, ArrowRight, BadgeCheck, Laptop, LayoutGrid, Quote, Crown, Sprout, UserPlus, Users, Zap } from "lucide-react";
+import { ArrowDown, ArrowRight, BadgeCheck, Laptop, LayoutGrid, Quote, Crown, Sprout, Stethoscope, UserPlus, Users, Zap } from "lucide-react";
 import { PROGRAMS, whatsappLink } from "@/lib/catalog";
 import { COACHING, METHOD_FACTS, METHOD_STEPS, STATS, TESTIMONIALS } from "@/lib/content";
 import { GOAL_ICONS } from "@/components/site/icons";
@@ -50,12 +50,23 @@ function Hero() {
               Voir les programmes <ArrowDown className="size-4" aria-hidden />
             </a>
           </div>
-          <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-ink/75">
-            <li className="flex items-center gap-1.5"><LayoutGrid className="size-4 text-primary" aria-hidden /> {PROGRAMS.length} programmes</li>
-            <li className="flex items-center gap-1.5"><Users className="size-4 text-primary" aria-hidden /> 40+ professionnels formés</li>
-            <li className="flex items-center gap-1.5"><BadgeCheck className="size-4 text-primary" aria-hidden /> Coach certifié TEFL</li>
-            <li className="flex items-center gap-1.5"><Laptop className="size-4 text-primary" aria-hidden /> 100 % en ligne</li>
+          {/* Key facts: 2 × 2, then the free diagnostic. */}
+          <ul className="mt-8 grid max-w-md grid-cols-2 gap-x-6 gap-y-3 text-sm font-semibold text-ink/75">
+            <li className="flex items-center gap-1.5"><LayoutGrid className="size-4 shrink-0 text-primary" aria-hidden /> {PROGRAMS.length} programmes</li>
+            <li className="flex items-center gap-1.5"><Users className="size-4 shrink-0 text-primary" aria-hidden /> 40+ professionnels formés</li>
+            <li className="flex items-center gap-1.5"><BadgeCheck className="size-4 shrink-0 text-primary" aria-hidden /> Coach certifié TEFL</li>
+            <li className="flex items-center gap-1.5"><Laptop className="size-4 shrink-0 text-primary" aria-hidden /> 100 % en ligne</li>
           </ul>
+          <Link href="/diagnostic" className="group mt-6 inline-flex max-w-md items-center gap-3 rounded-2xl border-2 border-coral bg-white p-3 pr-4 shadow-[0_4px_0_0_var(--color-coral)] transition hover:bg-coral-soft active:translate-y-0.5 active:shadow-[0_1px_0_0_var(--color-coral)]">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-coral-soft text-coral">
+              <Stethoscope className="size-5" aria-hidden />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-heading text-lg leading-tight font-extrabold text-brand-deep">Diagnostic gratuit</span>
+              <span className="block text-sm text-muted-foreground">Découvre ce qui freine ton anglais</span>
+            </span>
+            <ArrowRight className="size-5 shrink-0 text-coral transition group-hover:translate-x-0.5 motion-reduce:transition-none" aria-hidden />
+          </Link>
         </div>
 
         <div className="hero-photo relative mx-auto w-full max-w-md lg:max-w-none">

@@ -134,3 +134,22 @@ describe("staff list", () => {
     expect([r.done.length, r.completed, r.status.contacted]).toEqual([1, 2, 1]);
   });
 });
+
+describe("report email", () => {
+  it("summarises the report and links back to it", async () => {
+    const { diagnosticReportEmail } = await import("@/lib/email");
+    const m = diagnosticReportEmail({ firstName: "Awa", profileName: "Le bloqué à l'oral", headline: "Awa, il est temps d'oser parler.", holdsBack: ["La peur des fautes"], reframe: "Ce n'est pas vous.", method: [{ title: "Oral à faible enjeu", description: "5 minutes par jour." }], firstStep: "Enregistrez-vous 2 minutes.", url: "https://www.maelenglish.com/diagnostic/rapport/abc" });
+    expect(m.subject).toBe("Awa, votre diagnostic MaelEnglish");
+    for (const part of ["Le bloqué à l&#39;oral", "La peur des fautes", "Oral à faible enjeu", "Enregistrez-vous 2 minutes.", "https://www.maelenglish.com/diagnostic/rapport/abc", "Voir mon rapport complet"]) expect(m.html).toContain(part);
+    expect(m.text).toContain("Voir mon rapport complet : https://www.maelenglish.com/diagnostic/rapport/abc");
+  });
+
+  it("isn't marked sent while email is in simulation mode", async () => {
+    const { emailReport } = await import("@/lib/diagnostic/service");
+    const { token } = await startDiagnostic();
+    await submitDiagnostic(token, neutral, { firstName: "Awa", lastName: "T", field: "RH", email: "awa@example.com", consentAnalysis: true });
+    expect(await emailReport(token)).toBe(false);
+    expect((await Diagnostic.findOne().lean())!.reportEmailedAt).toBeNull();
+    expect(await emailReport("x".repeat(30))).toBe(false); // unknown token
+  });
+});

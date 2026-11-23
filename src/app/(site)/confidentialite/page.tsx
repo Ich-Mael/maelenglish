@@ -70,7 +70,8 @@ export default function PrivacyPage() {
               <strong>Dictionnaire et carnet</strong> : les mots que vous cherchez sont envoyés à un service de dictionnaire
               (dictionaryapi.dev), pour la traduction à un outil d&apos;IA (Anthropic) et, pour la prononciation, au service de voix
               de Microsoft (Azure AI Speech) — sans votre nom. Les mots que vous ajoutez à
-              votre carnet (avec la phrase où vous les avez trouvés) sont enregistrés sur votre compte.
+              votre carnet (avec la phrase où vous les avez trouvés), votre métier ou domaine d&apos;études et vos révisions sont
+              enregistrés sur votre compte. Les phrases que vous écrivez avec vos mots sont corrigées par un outil d&apos;IA (Anthropic).
             </li>
             <li>
               <strong>Expression écrite</strong> : les textes que vous écrivez dans les activités d&apos;expression écrite sont transmis à un
@@ -79,7 +80,7 @@ export default function PrivacyPage() {
             </li>
             <li>
               <strong>Diagnostic de votre parcours (« /diagnostic »)</strong> : vos réponses au questionnaire, vos nom et prénom, votre métier ou domaine
-              d&apos;études, votre email et, si vous le donnez, votre numéro WhatsApp sont enregistrés pour vous remettre votre rapport et vous recontacter à son
+              d&apos;études, votre email et, si vous le donnez, votre numéro WhatsApp sont enregistrés pour vous remettre votre rapport (affiché à l&apos;écran et envoyé par email) et vous recontacter à son
               sujet (et vous envoyer nos conseils si vous l&apos;avez accepté). Votre prénom, votre métier et vos réponses — jamais votre nom, votre email ni
               votre téléphone — sont analysés automatiquement par un outil d&apos;IA (Anthropic) pour rédiger le rapport. Vous pouvez
               demander leur suppression à tout moment.

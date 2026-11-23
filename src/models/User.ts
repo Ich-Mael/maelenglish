@@ -77,6 +77,10 @@ const userSchema = new Schema(
     about: { type: String, trim: true, default: "" },
     /** CEFR level A1…C2 (`ENGLISH_LEVELS`, src/lib/levels.ts); checked by `updateAccount`. */
     englishLevel: { type: String, trim: true },
+    /** Job or field of study, typed by the learner (« The Vocabulary I Need »: daily words for it). */
+    profession: { type: String, trim: true, default: "", maxlength: 120 },
+    /** First day of « my daily vocabulary » (set with the profession): missed days are caught up from here, never before. */
+    dailyWordsFrom: { type: String, default: "" },
     /** Staff: the name learners see (« Coach Ish »); empty = « Coach <first name> » (`coachLabel`, src/lib/coach-name.ts). */
     coachName: { type: String, trim: true, default: "", maxlength: 40 },
 

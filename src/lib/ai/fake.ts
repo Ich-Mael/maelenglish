@@ -1,4 +1,4 @@
-import type { DiagnosticReportInput, ConversationAgentSpec, ConversationEngine, ConversationTurn, Debrief, FinishedConversation, HelpSuggestion, Persona, RolePlayBrief, Voice, AudioInput, DrillGrade, DrillGradeInput, FeedbackService, LlmUsage, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput, PronunciationResult, PronunciationService, SpeechService, SynthesizedAudio, Transcript, TtsService } from "./types";
+import type { DailyWord, SentenceCheck, DiagnosticReportInput, ConversationAgentSpec, ConversationEngine, ConversationTurn, Debrief, FinishedConversation, HelpSuggestion, Persona, RolePlayBrief, Voice, AudioInput, DrillGrade, DrillGradeInput, FeedbackService, LlmUsage, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput, PronunciationResult, PronunciationService, SpeechService, SynthesizedAudio, Transcript, TtsService } from "./types";
 import { normalizeEnglish, words } from "./text";
 
 /*
@@ -152,6 +152,25 @@ export class FakeFeedbackService implements FeedbackService {
       },
       usage: { inputTokens: 0, outputTokens: 0, costMicros: 0, provider: "fake" },
     };
+  }
+
+  /** Deterministic: « <profession>word<a, b, c…> », skipping the words to avoid. */
+  async dailyVocabulary(input: { profession: string; count: number; avoid: string[] }): Promise<{ words: DailyWord[]; usage: LlmUsage }> {
+    const base = input.profession.toLowerCase().replace(/[^a-z]/g, "") || "job";
+    const words: DailyWord[] = [];
+    for (let n = 1; words.length < input.count; n++) {
+      const w = `${base}word${String.fromCharCode(96 + n)}`;
+      if (!input.avoid.includes(w)) words.push({ word: w, translation: `[FR] ${w}`, frNote: "Note.", example: `We use ${w} at work.`, examples: [{ en: `We use ${w} at work.`, fr: `[FR] exemple 1` }, { en: `I need ${w} today.`, fr: `[FR] exemple 2` }] });
+    }
+    return { words, usage: { inputTokens: 0, outputTokens: 0, costMicros: 0, provider: "fake" } };
+  }
+
+  /** Deterministic: ok when the sentence contains the word and starts with a capital. */
+  async checkSentence(input: { word: string; sentence: string }): Promise<{ result: SentenceCheck; usage: LlmUsage }> {
+    const has = input.sentence.toLowerCase().includes(input.word.toLowerCase());
+    const ok = has && /^[A-Z]/.test(input.sentence.trim());
+    const corrected = input.sentence.trim().replace(/^./, (c) => c.toUpperCase());
+    return { result: { ok, corrected, explanation: has ? (ok ? "Très bien." : "Une phrase commence par une majuscule.") : "La phrase n'utilise pas le mot." }, usage: { inputTokens: 0, outputTokens: 0, costMicros: 0, provider: "fake" } };
   }
 
   async rolePlayHelp(input: { brief: RolePlayBrief }): Promise<{ suggestions: HelpSuggestion[]; usage: LlmUsage }> {

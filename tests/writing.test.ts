@@ -46,7 +46,7 @@ describe("writing task (sent to the coach, AI draft for the coach)", () => {
     expect(await AiUsage.countDocuments({ userId: u._id, kind: "llm", feature: "writing_task" })).toBe(1);
 
     // The AI fails: the version still reaches the coach, without a draft.
-    const broken: FeedbackService = { name: "broken", gradeDrill: async () => ({ verdict: "incorrect", explanation: "", modelAnswer: "" }), correctWriting: async () => Promise.reject(new Error("down")), translateWord: async () => Promise.reject(new Error("down")), rolePlayDebrief: async () => Promise.reject(new Error("down")), rolePlayHelp: async () => Promise.reject(new Error("down")), diagnosticReport: async () => Promise.reject(new Error("down")) };
+    const broken: FeedbackService = { name: "broken", gradeDrill: async () => ({ verdict: "incorrect", explanation: "", modelAnswer: "" }), correctWriting: async () => Promise.reject(new Error("down")), translateWord: async () => Promise.reject(new Error("down")), rolePlayDebrief: async () => Promise.reject(new Error("down")), rolePlayHelp: async () => Promise.reject(new Error("down")), diagnosticReport: async () => Promise.reject(new Error("down")), dailyVocabulary: async () => Promise.reject(new Error("down")), checkSentence: async () => Promise.reject(new Error("down")) };
     setAiServicesForTests({ feedback: broken });
     const second = await sendWriting(String(u._id), t, answer + " Again.");
     expect([second.attempts, second.correction, second.history.length]).toEqual([2, null, 2]);

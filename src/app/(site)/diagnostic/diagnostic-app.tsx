@@ -39,6 +39,7 @@ export function DiagnosticApp() {
   const [answers, setAnswers] = useState<Answers>({});
   const [index, setIndex] = useState(0);
   const [result, setResult] = useState<DiagnosticResult | null>(null);
+  const [emailedTo, setEmailedTo] = useState("");
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
   const top = useRef<HTMLDivElement>(null);
@@ -133,7 +134,7 @@ export function DiagnosticApp() {
   if (phase === "report" && result) {
     return (
       <div ref={top} className="scroll-mt-24">
-        <DiagnosticReportView result={result} onRestart={restart} />
+        <DiagnosticReportView result={result} onRestart={restart} emailedTo={emailedTo} />
       </div>
     );
   }
@@ -166,6 +167,7 @@ export function DiagnosticApp() {
               return r;
             }
             setResult(r.result);
+            setEmailedTo(lead.email.trim());
             setPhase("report");
             return null;
           }}

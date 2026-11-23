@@ -19,3 +19,4 @@ export * from "./DictionaryEntry";
 export * from "./VocabWord";
 export * from "./Conversation";
 export * from "./Diagnostic";
+export * from "./ProfessionWords";

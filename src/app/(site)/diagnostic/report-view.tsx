@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Footprints, Heart, Printer, RotateCcw, Sparkles, Target, TriangleAlert } from "lucide-react";
+import { ArrowRight, Footprints, Heart, Mail, Printer, RotateCcw, Sparkles, Target, TriangleAlert } from "lucide-react";
 import { BUTTON, WhatsAppButton } from "@/components/site/ui";
 import { PROFILE_INFO } from "@/lib/diagnostic/profiles";
 import { WHATSAPP_NUMBER } from "@/lib/catalog";
@@ -20,13 +20,18 @@ const WHATSAPP = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Bo
 
 const Badge = ({ n }: { n: number }) => <span className="flex size-11 shrink-0 items-center justify-center rounded-full border-2 border-coral bg-white font-heading text-lg font-extrabold text-coral shadow-[0_4px_0_0_var(--color-coral)]">{n}</span>;
 
-export function DiagnosticReportView({ result, onRestart }: { result: DiagnosticResult; onRestart: () => void }) {
+export function DiagnosticReportView({ result, onRestart, emailedTo }: { result: DiagnosticResult; onRestart?: () => void; emailedTo?: string }) {
   const r = result.report;
   return (
     <article className="diagnostic-report grid gap-5">
       <header className="grid gap-2">
         <p className="text-sm font-bold tracking-wide text-coral-dark uppercase">{fr(`${result.firstName}, voici votre diagnostic`)}</p>
         <h1 className="font-heading text-3xl leading-tight font-extrabold text-brand-deep sm:text-4xl">{r.headline}</h1>
+        {emailedTo && (
+          <p className="no-print flex items-center gap-2 text-sm text-muted-foreground">
+            <Mail className="size-4 text-primary" aria-hidden /> {fr(`Nous vous envoyons aussi ce rapport par email (${emailedTo}) : vous pourrez le relire quand vous voulez.`)}
+          </p>
+        )}
       </header>
 
       <section className="relative overflow-clip rounded-[2rem] bg-gradient-to-br from-primary to-brand-deep p-6 text-white sm:p-8">
@@ -123,9 +128,15 @@ export function DiagnosticReportView({ result, onRestart }: { result: Diagnostic
         <button type="button" onClick={() => window.print()} className={cn(BUTTON.outline, "h-11 px-4 text-base")}>
           <Printer className="size-4" aria-hidden /> Télécharger en PDF
         </button>
-        <button type="button" onClick={onRestart} className="inline-flex h-11 items-center gap-1.5 rounded-xl px-3 text-sm font-semibold text-muted-foreground hover:bg-muted">
-          <RotateCcw className="size-4" aria-hidden /> Refaire le diagnostic
-        </button>
+        {onRestart ? (
+          <button type="button" onClick={onRestart} className="inline-flex h-11 items-center gap-1.5 rounded-xl px-3 text-sm font-semibold text-muted-foreground hover:bg-muted">
+            <RotateCcw className="size-4" aria-hidden /> Refaire le diagnostic
+          </button>
+        ) : (
+          <a href="/diagnostic" className="inline-flex h-11 items-center gap-1.5 rounded-xl px-3 text-sm font-semibold text-muted-foreground hover:bg-muted">
+            <RotateCcw className="size-4" aria-hidden /> Faire le diagnostic
+          </a>
+        )}
       </div>
       <p className="text-xs text-muted-foreground">Rapport généré automatiquement à partir de vos réponses.</p>
     </article>

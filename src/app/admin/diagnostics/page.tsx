@@ -140,6 +140,7 @@ async function Diagnostics({ searchParams }: { searchParams: Promise<{ q?: strin
                       </span>
                     ))}
                     {l.consentMarketing && <span className="rounded-full border border-primary/30 px-2.5 py-1 text-xs font-semibold text-primary">Newsletter</span>}
+                    {d.reportEmailedAt && <span className="rounded-full border border-border px-2.5 py-1 text-xs font-semibold text-muted-foreground">Report emailed</span>}
                   </div>
                 </div>
                 <DiagnosticActions lead={{ id: String(d._id), status: d.status ?? "new", firstName: l.firstName, lastName: l.lastName ?? "", email: l.email, phone: l.phone ?? "", profile: name(d.primaryProfile) }} createHref={createHref} detailHref={`/admin/diagnostics/${d._id}`} />

@@ -33,6 +33,8 @@ const diagnosticSchema = new Schema(
     primaryProfile: { type: String, default: "" },
     secondaryProfiles: { type: [String], default: [] },
     report: { type: Schema.Types.Mixed, default: null },
+    /** When the report was emailed to the person (null = not sent: email not configured or failed). */
+    reportEmailedAt: { type: Date, default: null },
     reportSource: { type: String, enum: ["ai", "fallback", ""], default: "" },
     lead: { type: leadShape, default: null },
     utmSource: { type: String, default: "" },

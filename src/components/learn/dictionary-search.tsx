@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore, useTransition } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, useTransition } from "react";
 import { Loader2, Search } from "lucide-react";
 import type { WordEntry } from "@/lib/dictionary";
 import { lookupWordAction } from "@/app/(app)/dictionary-actions";
@@ -21,8 +21,8 @@ const readRecent = (): string => {
   }
 };
 
-export function DictionarySearch() {
-  const [q, setQ] = useState("");
+export function DictionarySearch({ initial = "" }: { initial?: string }) {
+  const [q, setQ] = useState(initial);
   const [result, setResult] = useState<{ entry: WordEntry; saved: boolean } | null>(null);
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
@@ -33,6 +33,9 @@ export function DictionarySearch() {
   const search = (word: string) => {
     if (!word.trim()) return;
     setError("");
+    run(word);
+  };
+  const run = (word: string) =>
     start(async () => {
       const r = await lookupWordAction(word);
       if (!r.ok) {
@@ -48,7 +51,15 @@ export function DictionarySearch() {
         /* storage unavailable */
       }
     });
-  };
+
+  // A word passed in the URL (?q=, e.g. from « The Vocabulary I Need »): looked up once.
+  const ran = useRef(false);
+  useEffect(() => {
+    if (ran.current || !initial.trim()) return;
+    ran.current = true;
+    run(initial);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="grid gap-4">

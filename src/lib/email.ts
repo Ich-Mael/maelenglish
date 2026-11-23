@@ -320,3 +320,70 @@ export function sendAiBudgetEmail(to: string[], p: { percent: number; usedMinute
     text: `${intro}\n\n${url}`,
   });
 }
+
+/** The learning-path diagnostic report, sent to the person who took it (French). */
+export type DiagnosticReportEmail = {
+  firstName: string;
+  profileName: string;
+  headline: string;
+  holdsBack: string[];
+  reframe: string;
+  method: { title: string; description: string }[];
+  firstStep: string;
+  url: string;
+};
+
+export function sendDiagnosticReportEmail(to: string, p: DiagnosticReportEmail) {
+  return send({ to, ...diagnosticReportEmail(p) });
+}
+
+/** Subject, HTML and text of the diagnostic report email (separate for tests). */
+export function diagnosticReportEmail(p: DiagnosticReportEmail): Omit<Mail, "to"> {
+  const navy = "#141f4d";
+  const coral = "#ff5757";
+  const box = (title: string, body: string, color = "#eef1fb") => `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px;background:${color};border-radius:10px"><tr><td style="padding:14px 16px;font-size:15px;color:${navy}"><strong>${title}</strong><br>${body}</td></tr></table>`;
+  const extra = [
+    `<p style="margin:0 0 6px;font-size:13px;font-weight:bold;letter-spacing:.04em;text-transform:uppercase;color:${coral}">Votre profil</p>`,
+    `<p style="margin:0 0 16px;font-size:22px;font-weight:bold;color:${navy}">${esc(p.profileName)}</p>`,
+    box("Ce qui vous freine", p.holdsBack.map((x) => `• ${esc(x)}`).join("<br>")),
+    box("À retenir", esc(p.reframe), "#fff1f1"),
+    `<p style="margin:0 0 8px;font-weight:bold;color:${navy}">La méthode recommandée pour vous</p><table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 16px">${p.method
+      .map((m, i) => `<tr><td valign="top" style="padding:4px 10px 4px 0;color:${coral};font-weight:bold">${i + 1}.</td><td style="padding:4px 0;font-size:15px"><strong>${esc(m.title)}</strong><br>${esc(m.description)}</td></tr>`)
+      .join("")}</table>`,
+    box("Votre premier pas cette semaine", esc(p.firstStep)),
+  ].join("");
+  return {
+    subject: `${p.firstName}, votre diagnostic MaelEnglish`,
+    html: layout({
+      firstName: p.firstName,
+      intro: `Merci d’avoir fait votre diagnostic. Voici l’essentiel de votre rapport :<br><br><strong>${esc(p.headline)}</strong>`,
+      extra,
+      button: "Voir mon rapport complet",
+      url: p.url,
+      outro: `Une question sur votre rapport ? Écrivez-nous sur WhatsApp au ${esc(PHONE_DISPLAY)}.<br><br>À bientôt,<br>Coach Ish et l’équipe MaelEnglish`,
+    }),
+    text: [
+      `Bonjour ${p.firstName},`,
+      "",
+      "Merci d'avoir fait votre diagnostic. Voici l'essentiel de votre rapport :",
+      p.headline,
+      "",
+      `Votre profil : ${p.profileName}`,
+      "",
+      "Ce qui vous freine :",
+      ...p.holdsBack.map((x) => `- ${x}`),
+      "",
+      `À retenir : ${p.reframe}`,
+      "",
+      "La méthode recommandée pour vous :",
+      ...p.method.map((m, i) => `${i + 1}. ${m.title} — ${m.description}`),
+      "",
+      `Votre premier pas cette semaine : ${p.firstStep}`,
+      "",
+      `Voir mon rapport complet : ${p.url}`,
+      "",
+      `Une question ? WhatsApp : ${PHONE_DISPLAY}`,
+      "Coach Ish et l'équipe MaelEnglish",
+    ].join("\n"),
+  };
+}

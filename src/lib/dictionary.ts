@@ -245,13 +245,26 @@ export async function wordAudio(userId: string, raw: string, opts: { voice: Audi
 
 // ── Notebook ───────────────────────────────────────────────────────────────
 
-export async function saveWord(userId: string, raw: string, opts: { context?: string; translation?: string; courseId?: string | null; stepId?: string | null } = {}) {
+export async function saveWord(userId: string, raw: string, opts: { context?: string; translation?: string; courseId?: string | null; stepId?: string | null; source?: "dictionary" | "daily" } = {}) {
   const word = normalizeWord(raw);
   if (!word) throw new DictionaryError("Invalid word.");
   const id = (v?: string | null) => (v && Types.ObjectId.isValid(v) ? new Types.ObjectId(v) : null);
   await VocabWord.updateOne(
     { userId, word },
-    { $setOnInsert: { userId, word, context: (opts.context ?? "").replace(/\s+/g, " ").trim().slice(0, 300), translation: (opts.translation ?? "").slice(0, 120), courseId: id(opts.courseId), stepId: id(opts.stepId) } },
+    {
+      $setOnInsert: {
+        userId,
+        word,
+        context: (opts.context ?? "").replace(/\s+/g, " ").trim().slice(0, 300),
+        translation: (opts.translation ?? "").slice(0, 120),
+        courseId: id(opts.courseId),
+        stepId: id(opts.stepId),
+        source: opts.source ?? "dictionary",
+        // Spaced review: first test the next day.
+        stage: 0,
+        dueAt: new Date(Date.now() + 86_400_000),
+      },
+    },
     { upsert: true },
   );
 }

@@ -1,8 +1,10 @@
-import { BadgeCheck, Compass, Lightbulb, Plane, Quote, Trophy } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, BadgeCheck, Compass, Lightbulb, Plane, Quote, Stethoscope, Trophy } from "lucide-react";
 import { FOUNDER } from "@/lib/content";
 import { waLink } from "@/lib/site";
 import { Photo } from "./photo";
-import { Pill, WhatsAppButton } from "./ui";
+import { Pill } from "./ui";
+import { WhatsAppIcon } from "./icons";
 import { cn } from "cn";
 
 const talkLink = waLink(`Bonjour ${FOUNDER.nickname}, je souhaite des conseils pour choisir mon programme MaelEnglish.`);
@@ -104,7 +106,7 @@ export function FounderSection() {
           <figure className="reveal relative mt-10 overflow-hidden rounded-3xl bg-brand-deep p-6 text-white sm:p-8">
             <Quote className="absolute right-4 -bottom-4 size-28 text-white/10" aria-hidden />
             <blockquote className="relative font-heading text-xl leading-snug font-bold sm:text-2xl">« {FOUNDER.quote} »</blockquote>
-            <figcaption className="relative mt-4 flex items-center gap-3">
+            <figcaption className="relative mt-4 flex flex-wrap items-center gap-3">
               <span className="size-10 overflow-hidden rounded-full ring-2 ring-coral">
                 <Photo name={FOUNDER.photo} alt="" sizes="40px" position="center 25%" />
               </span>
@@ -112,14 +114,25 @@ export function FounderSection() {
                 <span className="block font-bold">{FOUNDER.nickname}</span>
                 <span className="block text-sm text-white/75">{FOUNDER.name}</span>
               </span>
+              {/* Talk to Coach Ish, inside the quote card: white button. */}
+              <a href={talkLink} target="_blank" rel="noopener" className="ml-auto inline-flex h-11 items-center gap-2 rounded-xl bg-white px-4 text-sm font-bold text-brand-deep shadow-[0_4px_0_0_rgb(255_255_255/0.35)] transition hover:bg-brand-soft active:translate-y-0.5 active:shadow-none">
+                <WhatsAppIcon className="size-5 text-[#25D366]" /> Parler à {FOUNDER.nickname}
+              </a>
             </figcaption>
           </figure>
 
-          <div className="reveal mt-8 flex flex-wrap gap-3">
-            <WhatsAppButton href={talkLink} variant="blue">
-              Parler à {FOUNDER.nickname}
-            </WhatsAppButton>
-          </div>
+
+          {/* The free diagnostic, under Coach Ish's story and contact (the left column is sticky: kept out of it). */}
+          <Link href="/diagnostic" className="group mt-6 flex items-center gap-3 rounded-2xl border-2 border-coral bg-white p-4 shadow-[0_4px_0_0_var(--color-coral)] transition hover:bg-coral-soft active:translate-y-0.5 active:shadow-[0_1px_0_0_var(--color-coral)]">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-coral-soft text-coral">
+              <Stethoscope className="size-5" aria-hidden />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-heading text-lg leading-tight font-extrabold text-brand-deep">Faire mon diagnostic gratuit</span>
+              <span className="mt-0.5 block text-sm text-muted-foreground">Qu&apos;est-ce qui freine votre anglais&nbsp;? 8 minutes, un rapport personnalisé.</span>
+            </span>
+            <ArrowRight className="size-5 shrink-0 text-coral transition group-hover:translate-x-0.5 motion-reduce:transition-none" aria-hidden />
+          </Link>
         </div>
       </div>
     </section>

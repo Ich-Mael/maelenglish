@@ -28,6 +28,9 @@ async function Carnet() {
   }));
   return (
     <div className="mx-auto grid max-w-4xl gap-5">
+      <Link href="/vocabulaire" className="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
+        ← The Vocabulary I Need
+      </Link>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-3xl font-extrabold text-brand-deep">My Notebook</h1>
