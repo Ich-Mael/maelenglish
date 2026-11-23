@@ -269,7 +269,10 @@ export async function saveWord(userId: string, raw: string, opts: { context?: st
   );
 }
 
-export const removeWord = (userId: string, raw: string) => VocabWord.deleteOne({ userId, word: normalizeWord(raw) ?? "" });
+/** The notebook key: a normalised single word, or a phrase in lowercase (Story Mode phrases). */
+export const notebookKey = (raw: string) => normalizeWord(raw) ?? raw.replace(/\s+/g, " ").trim().toLowerCase().slice(0, 150);
+
+export const removeWord = (userId: string, raw: string) => VocabWord.deleteOne({ userId, word: notebookKey(raw) });
 
 export const hasWord = async (userId: string, raw: string) => !!(await VocabWord.exists({ userId, word: normalizeWord(raw) ?? "" }));
 
@@ -289,5 +292,5 @@ export async function listWords(userId: string, filter: "all" | "learning" | "kn
 }
 
 export async function reviewWord(userId: string, raw: string, known: boolean) {
-  await VocabWord.updateOne({ userId, word: normalizeWord(raw) ?? "" }, { $set: { known, lastReviewedAt: new Date() }, $inc: { reviews: 1 } });
+  await VocabWord.updateOne({ userId, word: notebookKey(raw) }, { $set: { known, lastReviewedAt: new Date() }, $inc: { reviews: 1 } });
 }

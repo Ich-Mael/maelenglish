@@ -21,7 +21,7 @@ export const monthOf = (day: string) => day.slice(0, 7);
 
 export async function recordUsage(
   userId: string,
-  u: { kind: AiKind; feature: string; provider: string; seconds?: number; tokens?: number; costMicros?: number },
+  u: { kind: AiKind; feature: string; provider: string; seconds?: number; tokens?: number; costMicros?: number; ref?: string },
   now = new Date(),
 ) {
   const day = dayKey(now);
@@ -31,7 +31,8 @@ export async function recordUsage(
 /** Seconds counted against the cap this month. */
 export async function usedSecondsThisMonth(userId: string, now = new Date()): Promise<number> {
   const [row] = await AiUsage.aggregate<{ s: number }>([
-    { $match: { userId: new Types.ObjectId(userId), month: monthOf(dayKey(now)), kind: { $in: MINUTE_KINDS } } },
+    // Story Mode rows (`ref`) use their season's own pot, not the monthly minutes.
+    { $match: { userId: new Types.ObjectId(userId), month: monthOf(dayKey(now)), kind: { $in: MINUTE_KINDS }, ref: { $in: [null, ""] } } },
     { $group: { _id: null, s: { $sum: "$seconds" } } },
   ]);
   return row?.s ?? 0;

@@ -106,7 +106,6 @@ export function SignupForm({ program, kind }: { program: string; kind: "enroll" 
             ))}
           </optgroup>
           <optgroup label="Défi quotidien">
-            <option value="challenge">MaelEnglish Challenge (une mission par jour)</option>
           </optgroup>
           <optgroup label="Premium · cours individuels">
             <option value="coaching">Coaching : entretien, présentation, négociation, examen</option>

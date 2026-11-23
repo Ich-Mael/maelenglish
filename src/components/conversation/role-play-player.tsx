@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, AudioLines, Circle, Clock, Headphones, Loader2, MessagesSquare, Mic, Quote, RotateCcw, Sparkles, Target, X } from "lucide-react";
 import { finishRolePlayAction, startRolePlayAction } from "@/app/(app)/conversation-actions";
+import { ImageCarousel, type CallImage } from "./image-carousel";
 import type { FinishedRolePlay } from "@/lib/conversation/view";
 import type { PastAttempt } from "@/lib/conversation/queries";
 import { DIFFICULTY_HINT, DIFFICULTY_LABEL, ROLEPLAY_DIFFICULTIES } from "@/lib/lab/types";
@@ -50,6 +51,12 @@ export function RolePlayPlayer({
   historyHref = "/partenaire#conversations",
   preview,
   attempts = [],
+  story,
+  partner,
+  onFinished,
+  onContinueAnyway,
+  briefAudioUrl = null,
+  images = [],
 }: {
   activityId: string;
   courseId?: string;
@@ -70,12 +77,22 @@ export function RolePlayPlayer({
   preview?: boolean;
   /** The learner's earlier conversations on this scenario (latest first). */
   attempts?: PastAttempt[];
+  /** Story Mode: the episode this conversation proves (minutes from the season, mastery from the debrief score). */
+  story?: { storyId: string; episodeId: string };
+  /** Who the learner talks to (Story Mode character) instead of Coach Ish. */
+  partner?: { name: string; avatarSrc: string };
+  onFinished?: (r: FinishedRolePlay) => void;
+  onContinueAnyway?: () => void;
+  /** Coach Ish's briefing in French (goals and how the call works), when the role-play has one. */
+  briefAudioUrl?: string | null;
+  /** Pictures the learner has in front of them (map, menu, slides…): a carousel before and during the call. */
+  images?: CallImage[];
 }) {
   const [phase, setPhase] = useState<Phase>({ kind: "brief" });
   const [difficulty, setDifficulty] = useState(brief.difficulty);
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
-  const aiName = brief.aiRole.replace(/^(an?|the)\s+/i, "").split(/\s+(at|in|of|from|for)\s+/i)[0].slice(0, 40) || "Partner";
+  const aiName = partner?.name || brief.aiRole.replace(/^(an?|the)\s+/i, "").split(/\s+(at|in|of|from|for)\s+/i)[0].slice(0, 40) || "Partner";
 
   const begin = () => {
     setError("");
@@ -88,7 +105,7 @@ export function RolePlayPlayer({
         setError("Microphone unavailable: allow microphone access in your browser, then try again.");
         return;
       }
-      const r = await startRolePlayAction({ activityId, courseId: courseId ?? null, stepId: stepId ?? null }, difficulty);
+      const r = await startRolePlayAction({ activityId, courseId: courseId ?? null, stepId: stepId ?? null, story: story ?? null }, difficulty);
       if (!r.ok) return setError(r.error);
       setPhase({ kind: "call", sessionId: r.sessionId, signedUrl: r.signedUrl, limitS: r.limitS });
     });
@@ -100,6 +117,7 @@ export function RolePlayPlayer({
     if (!r.ok) return setPhase({ kind: "finishing", sessionId, error: r.error });
     if (r.result.reward) pushReward(r.result.reward);
     if (r.result.status === "debriefed") playSound("complete");
+    onFinished?.(r.result);
     setPhase({ kind: "done", result: r.result });
   };
 
@@ -112,13 +130,14 @@ export function RolePlayPlayer({
           signedUrl={phase.signedUrl}
           limitS={phase.limitS}
           aiName={aiName}
-          avatarSrc={PARTNER_AVATAR.src}
+          avatarSrc={partner?.avatarSrc ?? PARTNER_AVATAR.src}
           monthLeftS={minutesLeft !== null ? minutesLeft * 60 : null}
           onEnded={(_reason, err) => {
             if (err) setError(err);
             void finish(phase.sessionId);
           }}
         />
+        {images.length ? <ImageCarousel images={images} className="rounded-3xl border border-border bg-card p-3" /> : null}
       </div>
     );
   }
@@ -140,7 +159,7 @@ export function RolePlayPlayer({
               <span className="relative">
                 <span className="absolute -inset-2 animate-spin rounded-full border-4 border-primary/20 border-t-primary motion-reduce:animate-none" aria-hidden />
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={PARTNER_AVATAR.small} alt="" width={96} height={96} className="size-24 rounded-full object-cover" />
+                <img src={partner?.avatarSrc ?? PARTNER_AVATAR.small} alt="" width={96} height={96} className="size-24 rounded-full object-cover" />
               </span>
               <p className="font-heading text-lg font-extrabold text-brand-deep">Preparing your debrief…</p>
               <p className="text-sm text-muted-foreground">About 20 seconds: your coach is reading the conversation.</p>
@@ -158,6 +177,19 @@ export function RolePlayPlayer({
       <div className="mx-auto grid w-full max-w-2xl gap-4">
         <Header title={title} level={level} courseHref={courseHref} />
         {error && <p className="rounded-2xl border-2 border-coral bg-white px-3 py-2 text-sm font-semibold text-coral-dark">{error}</p>}
+        {r.story ? (
+          <div className={r.story.passed ? "rounded-3xl bg-gradient-to-br from-primary to-brand-deep p-4 text-white" : "rounded-3xl border-2 border-coral bg-white p-4"}>
+            <p className={r.story.passed ? "font-heading text-xl font-extrabold" : "font-heading text-xl font-extrabold text-coral-dark"}>{r.story.passed ? "Mastered! The story goes on." : `Score ${r.score ?? 0} — you need ${r.story.passScore} to go on`}</p>
+            <p className={r.story.passed ? "text-white/85" : "text-ink/75"} lang="fr">
+              {r.story.passed ? "Vous avez montré que vous savez utiliser ce que vous avez appris dans cet épisode." : "Relisez le bilan, révisez si besoin les leçons de l'épisode, puis recommencez la conversation."}
+            </p>
+            {!r.story.passed && r.story.canContinueAnyway && onContinueAnyway ? (
+              <button type="button" onClick={onContinueAnyway} className="mt-3 rounded-2xl px-4 py-2 font-semibold text-primary ring-2 ring-primary/30 hover:bg-brand-soft">
+                Continue anyway
+              </button>
+            ) : null}
+          </div>
+        ) : null}
         {r.debrief ? (
           <DebriefView debrief={r.debrief} transcript={r.transcript} score={r.score} aiName={aiName} />
         ) : (
@@ -224,7 +256,7 @@ export function RolePlayPlayer({
             </p>
           </div>
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-            <PartnerAvatar size="lg" />
+            <PartnerAvatar size="lg" src={partner?.avatarSrc} />
             <div className="grid min-w-0 gap-2">
               <h1 className="text-3xl leading-tight font-extrabold sm:text-4xl">{title}</h1>
               <p className="flex flex-wrap gap-1.5 text-xs font-bold">
@@ -248,6 +280,34 @@ export function RolePlayPlayer({
           </p>
         </div>
       </section>
+
+      {briefAudioUrl ? (
+        <section aria-labelledby="brief-audio" className="flex flex-wrap items-center gap-4 rounded-3xl border-2 border-coral bg-gradient-to-br from-white via-white to-coral-soft p-4 sm:p-5">
+          {/* eslint-disable-next-line @next/next/no-img-element -- pre-sized portrait */}
+          <img src={PARTNER_AVATAR.small} alt="" width={64} height={64} className="size-16 shrink-0 rounded-full object-cover ring-[3px] ring-coral ring-offset-2" />
+          <div className="grid min-w-0 flex-1 gap-2">
+            <h2 id="brief-audio" className="font-heading text-lg leading-tight font-extrabold">
+              <span className="text-coral-dark">Listen first:</span> <span className="text-primary">Coach Ish explains the call</span>
+            </h2>
+            <p lang="fr" className="text-sm text-ink/70">
+              Les objectifs, ce qui vous attend et comment réussir l&apos;appel, en français.
+            </p>
+            <audio controls preload="none" src={briefAudioUrl} className="w-full" />
+          </div>
+        </section>
+      ) : null}
+
+      {images.length ? (
+        <section aria-labelledby="call-pictures" className="grid gap-3 rounded-3xl border border-border bg-card p-4 sm:p-5">
+          <h2 id="call-pictures" className="font-heading text-lg font-extrabold text-brand-deep">
+            {images.length > 1 ? `${images.length} pictures for the call` : "A picture for the call"}
+          </h2>
+          <p lang="fr" className="-mt-2 text-sm text-ink/70">
+            Vous les aurez aussi sous les yeux pendant l&apos;appel.
+          </p>
+          <ImageCarousel images={images} />
+        </section>
+      ) : null}
 
       {attempts.length > 0 && <LastResult attempts={attempts} />}
 
@@ -401,11 +461,11 @@ function LastResult({ attempts }: { attempts: PastAttempt[] }) {
 /** The conversation partner's face (Coach Ish's illustrated portrait). */
 export const PARTNER_AVATAR = { src: "/images/coach-ish-512.webp", small: "/images/coach-ish-256.webp" };
 
-function PartnerAvatar({ size }: { size: "lg" | "md" }) {
+function PartnerAvatar({ size, src }: { size: "lg" | "md"; src?: string }) {
   return (
     <span className={cn("relative shrink-0", size === "lg" ? "size-28 sm:size-32" : "size-20")}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={size === "lg" ? PARTNER_AVATAR.src : PARTNER_AVATAR.small} alt="" width={256} height={256} className="size-full rounded-full object-cover ring-4 ring-white/90" />
+      <img src={src ?? (size === "lg" ? PARTNER_AVATAR.src : PARTNER_AVATAR.small)} alt="" width={256} height={256} className="size-full rounded-full object-cover ring-4 ring-white/90" />
       <span className="absolute right-1 bottom-1 size-4 rounded-full border-2 border-white bg-success" aria-hidden />
     </span>
   );

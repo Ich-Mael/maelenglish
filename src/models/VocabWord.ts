@@ -19,7 +19,14 @@ const vocabWordSchema = new Schema(
     known: { type: Boolean, default: false },
     lastReviewedAt: { type: Date, default: null },
     /** Where it came from: the dictionary card, or « my daily vocabulary » (profession words). */
-    source: { type: String, enum: ["dictionary", "daily"], default: "dictionary" },
+    source: { type: String, enum: ["dictionary", "daily", "story"], default: "dictionary" },
+    /** « word » for single words, « phrase » for whole phrases (Story Mode key phrases, corrections). */
+    kind: { type: String, enum: ["word", "phrase"], default: "word" },
+    /** How a phrase is written (the `word` key is its lowercase form). */
+    display: { type: String, default: "" },
+    /** Story Mode: where it was met (« storyId/episodeId ») and the situation (« at work », « at the market »). */
+    storyRef: { type: String, default: "" },
+    situation: { type: String, default: "" },
     /** Spaced review (src/lib/vocabulary.ts): successes in a row, and when it comes back (null = due now). */
     stage: { type: Number, default: 0, min: 0 },
     dueAt: { type: Date, default: null },

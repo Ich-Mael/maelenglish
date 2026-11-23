@@ -5,7 +5,7 @@ import { recordUsage } from "@/lib/ai/metering";
 import { hitRateLimit } from "@/lib/auth/service";
 import { dayKey } from "@/lib/gamification/rules";
 import { typedMatches } from "@/lib/vocabulary-match";
-import { saveWord } from "@/lib/dictionary";
+import { notebookKey, saveWord } from "@/lib/dictionary";
 import { normalizeWord } from "@/lib/dictionary-word";
 
 /*
@@ -207,28 +207,30 @@ export async function buildTest(userId: string, now = new Date()): Promise<TestQ
   const pool = [...new Set(all.map(fr).filter(Boolean))];
   return due.map((w, i): TestQuestion => {
     const meaning = fr(w);
-    const own = [...(w.sentences ?? [])].reverse().find((s) => s.ok && new RegExp(`\\b${w.word}\\b`, "i").test(s.corrected || s.text));
+    const re = new RegExp(`\\b${w.word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
+    const own = w.kind === "phrase" ? undefined : [...(w.sentences ?? [])].reverse().find((s) => s.ok && re.test(s.corrected || s.text));
     const kinds = [own ? "blank" : null, meaning ? "type" : null, meaning && pool.length >= 4 ? "choose" : null].filter(Boolean) as string[];
     const kind = kinds.length ? kinds[((w.stage ?? 0) + i) % kinds.length] : "type";
     if (kind === "blank" && own) {
       const s = own.corrected || own.text;
-      return { kind: "blank", word: w.word, sentence: s.replace(new RegExp(`\\b${w.word}\\b`, "i"), "_____"), hint: meaning };
+      return { kind: "blank", word: w.word, sentence: s.replace(re, "_____"), hint: meaning };
     }
     if (kind === "choose") {
       const wrong = shuffle(pool.filter((p) => p !== meaning), i + w.word.length).slice(0, 3);
-      return { kind: "choose", word: w.word, prompt: w.word, options: shuffle([meaning, ...wrong], i + 7), answer: meaning };
+      return { kind: "choose", word: w.display || w.word, prompt: w.display || w.word, options: shuffle([meaning, ...wrong], i + 7), answer: meaning };
     }
-    return { kind: "type", word: w.word, prompt: meaning || w.context || w.word, hint: `${w.word[0]}${"_".repeat(Math.max(0, w.word.length - 1))}` };
+    const shown = w.display || w.word;
+    return { kind: "type", word: shown, prompt: meaning || w.context || shown, hint: w.kind === "phrase" ? shown.replace(/[A-Za-z]+/g, (x) => x[0] + "_".repeat(x.length - 1)) : `${w.word[0]}${"_".repeat(Math.max(0, w.word.length - 1))}` };
   });
 }
 
 /** Records a test: each word moves on (or starts over); returns the score. The browser sends the answers, the server checks them. */
 export async function recordTest(userId: string, answers: { word: string; kind: string; answer: string }[], now = new Date()) {
-  const words = await VocabWord.find({ userId, word: { $in: answers.map((a) => normalizeWord(a.word) ?? "") } });
+  const words = await VocabWord.find({ userId, word: { $in: answers.map((a) => notebookKey(a.word)) } });
   const entries = await DictionaryEntry.find({ word: { $in: words.map((w) => w.word) } }).select("word translation").lean();
   const results: { word: string; correct: boolean; expected: string }[] = [];
   for (const a of answers.slice(0, TEST_SIZE)) {
-    const w = words.find((x) => x.word === normalizeWord(a.word));
+    const w = words.find((x) => x.word === notebookKey(a.word));
     if (!w) continue;
     const meaning = w.translation || entries.find((e) => e.word === w.word)?.translation || "";
     // A French meaning (choose) or the English word (type / blank).

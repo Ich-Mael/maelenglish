@@ -27,9 +27,9 @@ export async function partnerState(me: CurrentUser) {
   };
 }
 
-/** Ready scenarios, optionally filtered by level and theme. */
+/** Ready scenarios, optionally filtered by level and theme (conversations made for Story Mode seasons — tag « story » — are played there only). */
 export async function listScenarios(filter: { level?: string; theme?: string } = {}) {
-  const q: Record<string, unknown> = { type: "role_play", status: "ready" };
+  const q: Record<string, unknown> = { type: "role_play", status: "ready", tags: { $ne: "story" } };
   if (filter.level) q.level = filter.level;
   if (filter.theme) q.theme = filter.theme;
   return Activity.find(q).select("title level theme content durationMin").sort({ level: 1, title: 1 }).limit(200).lean<ActivityDoc[]>();

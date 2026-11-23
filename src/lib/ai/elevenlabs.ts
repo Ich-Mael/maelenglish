@@ -1,5 +1,5 @@
 import "server-only";
-import type { ConversationAgentSpec, ConversationEngine, ConversationTurn, FinishedConversation, Voice } from "./types";
+import type { AudioInput, ConversationAgentSpec, ConversationEngine, ConversationTurn, FinishedConversation, SpeechService, Transcript, Voice } from "./types";
 
 /*
  * ElevenLabs Agents — the AI speaking partner's voice, listening and turn-taking (DECISIONS.md
@@ -122,4 +122,39 @@ export class ElevenLabsConversationEngine implements ConversationEngine {
       .map((v) => ({ id: v.voice_id, name: v.name, accent: v.labels?.accent ?? "", gender: v.labels?.gender ?? "", previewUrl: v.preview_url ?? "" }))
       .sort((a, b) => a.name.localeCompare(b.name));
   }
+}
+
+// ── Speech-to-text (Scribe) and text-to-speech, used by Story Mode ─────────
+
+
+/** ElevenLabs Scribe: English transcript with word timings; confidence = exp(logprob). */
+export class ElevenLabsSpeechService implements SpeechService {
+  readonly name = "elevenlabs";
+  async transcribe(audio: AudioInput): Promise<Transcript> {
+    const fd = new FormData();
+    fd.append("model_id", "scribe_v1");
+    fd.append("language_code", "en");
+    fd.append("timestamps_granularity", "word");
+    const ext = audio.mime.includes("mp4") ? "m4a" : audio.mime.includes("ogg") ? "ogg" : audio.mime.includes("mpeg") ? "mp3" : "webm";
+    fd.append("file", new Blob([audio.data as BlobPart], { type: audio.mime }), `audio.${ext}`);
+    const res = await fetch(`${API}/v1/speech-to-text`, { method: "POST", headers: { "xi-api-key": process.env.ELEVENLABS_API_KEY! }, body: fd, signal: AbortSignal.timeout(45_000) });
+    if (!res.ok) throw new Error(`ElevenLabs STT ${res.status}: ${(await res.text().catch(() => "")).slice(0, 200)}`);
+    const j = (await res.json()) as { text?: string; words?: { text: string; start: number; end: number; type: string; logprob?: number }[] };
+    const words = (j.words ?? []).filter((w) => w.type === "word").map((w) => ({ text: w.text.trim(), start: w.start, end: w.end, confidence: typeof w.logprob === "number" ? Math.exp(w.logprob) : undefined }));
+    const durationS = words.length ? words[words.length - 1].end : audio.durationS;
+    return { text: (j.text ?? "").trim(), words, durationS: Math.max(durationS, audio.durationS || 0) };
+  }
+}
+
+/** ElevenLabs text-to-speech in a given voice (MP3, 64 kbit/s). */
+export async function elevenTts(voiceId: string, text: string): Promise<{ data: Uint8Array; mime: string }> {
+  const voice = voiceId || "JBFqnCBsd6RMkjVDRZzb";
+  const res = await fetch(`${API}/v1/text-to-speech/${encodeURIComponent(voice)}?output_format=mp3_44100_64`, {
+    method: "POST",
+    headers: { "xi-api-key": process.env.ELEVENLABS_API_KEY!, "Content-Type": "application/json" },
+    body: JSON.stringify({ text, model_id: "eleven_flash_v2_5" }),
+    signal: AbortSignal.timeout(30_000),
+  });
+  if (!res.ok) throw new Error(`ElevenLabs TTS ${res.status}: ${(await res.text().catch(() => "")).slice(0, 200)}`);
+  return { data: new Uint8Array(await res.arrayBuffer()), mime: "audio/mpeg" };
 }

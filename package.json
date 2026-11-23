@@ -14,7 +14,8 @@
     "typecheck": "tsc --noEmit",
     "seed:demo": "tsx scripts/seed-demo.ts",
     "check:storage": "tsx scripts/check-storage.ts",
-    "seed:roleplays": "tsx scripts/seed-roleplays.ts"
+    "seed:roleplays": "tsx scripts/seed-roleplays.ts",
+    "story:import": "tsx scripts/import-story.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.12.0",

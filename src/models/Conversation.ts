@@ -17,6 +17,9 @@ const conversationSessionSchema = new Schema(
     stepId: { type: Schema.Types.ObjectId, ref: "Step", default: null },
     /** Staff trying the scenario (Lab preview, course preview): never counted as learner progress. */
     preview: { type: Boolean, default: false },
+    /** Story Mode: played as the conversation of this season's episode (minutes from the season's pot). */
+    storyId: { type: String, default: "" },
+    storyEpisodeId: { type: String, default: "" },
     title: { type: String, default: "" },
     difficulty: { type: Number, min: 1, max: 5, default: 2 },
     status: { type: String, enum: ["started", "ended", "debriefed", "failed"], default: "started" },
@@ -57,6 +60,8 @@ const conversationAgentSchema = new Schema(
     difficulty: { type: Number, default: 2 },
     provider: { type: String, default: "" },
     agentId: { type: String, required: true },
+    /** "" = the scenario as written; « story:<season>:<character> » = played by a Story Mode character (own agent). */
+    variant: { type: String, default: "" },
   },
   { timestamps: true },
 );

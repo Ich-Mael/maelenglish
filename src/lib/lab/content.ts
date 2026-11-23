@@ -1,7 +1,28 @@
 import { normalizeRich, plainText } from "@/lib/rich-text";
 import { Types } from "mongoose";
 import { videoSource } from "@/lib/learn/media";
-import { MAX_PLAYS, MAX_SECONDS, PREP_SECONDS, PROMPT_TYPES, SENTENCE_AUDIO_WHEN, MATCH_PER_SCREEN, TFNG_ANSWERS, docSentences, type CompleteWordsContent, type RepeatContent, type WritingTaskContent, WRITING_MIN_WORDS, WRITING_MAX_WORDS, type DictationContent, DICTATION_PLAYS, type RolePlayContent, ROLEPLAY_MINUTES, ROLEPLAY_DIFFICULTIES, type TfngAnswer, type TfngContent, type TfngStatement, sentenceTiles, type MatchContent, type MatchPair, type PromptType, type SentenceContent, type SentenceItem, type ActivityContent, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type ListeningQuestion, type GapsContent, type ListenGapsContent, GAP_HINTS, parseGaps } from "./types";
+import { MAX_PLAYS, MAX_SECONDS, PREP_SECONDS, PROMPT_TYPES, SENTENCE_AUDIO_WHEN, MATCH_PER_SCREEN, TFNG_ANSWERS, docSentences, type CompleteWordsContent, type RepeatContent, type WritingTaskContent, WRITING_MIN_WORDS, WRITING_MAX_WORDS, type DictationContent, DICTATION_PLAYS, type RolePlayContent, type RolePlayImage, MAX_ROLEPLAY_IMAGES, ROLEPLAY_MINUTES, ROLEPLAY_DIFFICULTIES, type TfngAnswer, type TfngContent, type TfngStatement, sentenceTiles, type MatchContent, type MatchPair, type PromptType, type SentenceContent, type SentenceItem, type ActivityContent, type ActivityType, type SpeakingChallengeContent, type ListeningContent, type ListeningQuestion, type GapsContent, type ListenGapsContent, GAP_HINTS, parseGaps } from "./types";
+
+/** Role-play pictures: from the editor (a JSON string) or an import (an array); invalid ones dropped. */
+function rolePlayImages(v: unknown): RolePlayImage[] {
+  let xs: unknown = v;
+  if (typeof v === "string") {
+    try {
+      xs = JSON.parse(v || "[]");
+    } catch {
+      xs = [];
+    }
+  }
+  if (!Array.isArray(xs)) return [];
+  return xs
+    .flatMap((x) => {
+      const o = (x ?? {}) as Record<string, unknown>;
+      const mediaId = typeof o.mediaId === "string" ? o.mediaId : "";
+      if (!Types.ObjectId.isValid(mediaId)) return [];
+      return [{ mediaId, caption: String(o.caption ?? "").trim().slice(0, 200), description: String(o.description ?? "").trim().slice(0, 1500) }];
+    })
+    .slice(0, MAX_ROLEPLAY_IMAGES);
+}
 
 /*
  * Content rules per activity type (server: rich text is sanitised here). `cleanContent` turns what
@@ -264,6 +285,8 @@ export function cleanContent<T extends ActivityType>(type: T, raw: unknown): Act
         maxMinutes: pick(ROLEPLAY_MINUTES, r.maxMinutes, 5),
         voiceId: str(r.voiceId, 64).replace(/[^\w-]/g, ""),
         voiceName: str(r.voiceName, 100),
+        briefAudioMediaId: typeof r.briefAudioMediaId === "string" && Types.ObjectId.isValid(r.briefAudioMediaId) ? r.briefAudioMediaId : "",
+        images: rolePlayImages(r.images),
       } satisfies RolePlayContent as ActivityContent[T];
     }
     case "writing_task": {

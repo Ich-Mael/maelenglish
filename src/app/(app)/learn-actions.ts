@@ -15,6 +15,8 @@ import { starsFor } from "@/lib/lab/meta";
 import { recordAttempt } from "@/lib/lab/attempts";
 import { sendWriting, writingSendsLeft, WritingError } from "@/lib/lab/writing";
 import type { WritingTaskContent } from "@/lib/lab/types";
+import { parseStoryCtx } from "@/lib/story/paths";
+import { StoryError, afterStoryStep, storyStep } from "@/lib/story/service";
 
 /*
  * Learner mutations. Each action re-checks the session, the enrolment and that
@@ -54,6 +56,8 @@ async function reward(ctx: Ctx, items: AwardInput[]): Promise<Reward | null> {
 
 /** Lesson step: « Continuer » at the end of the page completes it. */
 export async function completeStep(courseId: string, stepId: string): Promise<{ ok: boolean; error?: string; reward?: Reward | null }> {
+  const story = parseStoryCtx(courseId);
+  if (story) return storyCompleteStep(story, stepId);
   try {
     const ctx = await context(courseId);
     const { step, outline } = stepOf(ctx, stepId);
@@ -83,6 +87,8 @@ export async function submitLabAttempt(
   stepId: string,
   input: { answers: Record<string, unknown>; bonus?: string[]; timeSpentS?: number; plays?: number },
 ): Promise<{ ok: true; result: LabResult } | { ok: false; error: string }> {
+  const story = parseStoryCtx(courseId);
+  if (story) return storyLabAttempt(story, stepId, input);
   try {
     const ctx = await context(courseId);
     const { step, outline } = stepOf(ctx, stepId);
@@ -129,6 +135,66 @@ export async function submitLabAttempt(
     return { ok: true, result: { score: graded.score, stars, bonus, items: graded.items, bestScore: best, reward: r } };
   } catch (e) {
     return { ok: false, error: (e as Error).message };
+  }
+}
+
+// ── Story Mode: a unit step played inside an episode (no course enrolment needed) ──
+
+async function storyViewer() {
+  const me = await readCurrentUser();
+  if (!me) throw new StoryError("Your session has expired: sign in again.");
+  return { me, viewer: { id: me.id, isStaff: me.isStaff } };
+}
+const storyFail = (e: unknown) => {
+  if (!(e instanceof StoryError)) console.error("[story step]", e);
+  return { ok: false as const, error: e instanceof StoryError ? e.message : "Something went wrong: try again in a moment." };
+};
+async function storyReward(isStaff: boolean, userId: string, items: AwardInput[]) {
+  if (isStaff) return null;
+  return award(userId, items).catch((e) => (console.error("award failed", e), null));
+}
+
+async function storyCompleteStep(story: { storyId: string; episodeId: string }, stepId: string): Promise<{ ok: boolean; error?: string; reward?: Reward | null }> {
+  try {
+    const { me, viewer } = await storyViewer();
+    const { current } = await storyStep(viewer, story.storyId, story.episodeId, stepId);
+    if (current.step.kind !== "lesson") return { ok: false, error: "This activity is completed another way." };
+    await StepProgress.updateOne({ userId: me.id, stepId: current.step._id }, { $setOnInsert: { courseId: current.step.courseId, completedAt: new Date() } }, { upsert: true });
+    const r = await storyReward(me.isStaff, me.id, [{ key: `step:${stepId}`, source: "lesson", amount: XP.lesson, counters: { lessonsCompleted: 1 } }]);
+    const stage = await afterStoryStep(viewer, story.storyId, story.episodeId);
+    refresh();
+    return { ok: true, reward: stage?.reward ?? r };
+  } catch (e) {
+    return storyFail(e);
+  }
+}
+
+async function storyLabAttempt(story: { storyId: string; episodeId: string }, stepId: string, input: { answers: Record<string, unknown>; bonus?: string[]; timeSpentS?: number; plays?: number }): Promise<{ ok: true; result: LabResult } | { ok: false; error: string }> {
+  try {
+    const { me, viewer } = await storyViewer();
+    const { current } = await storyStep(viewer, story.storyId, story.episodeId, stepId);
+    const { step, activity } = current;
+    if (step.kind !== "activity" || !activity || !isActivityType(activity.type)) return { ok: false, error: "Activity not found." };
+    const answers = input.answers && typeof input.answers === "object" ? input.answers : {};
+    const graded = gradeActivity(activity.type, activity.content, answers);
+    const correctIds = new Set(graded.items.filter((i) => i.correct).map((i) => i.id));
+    const bonus = new Set((input.bonus ?? []).filter((id) => correctIds.has(id))).size;
+    const stars = starsFor(graded.score);
+    const wasDone = current.state === "completed";
+    const previous = await StepProgress.findOne({ userId: me.id, stepId: step._id }).select("score").lean();
+    const best = Math.max(graded.score, previous?.score ?? 0);
+    await StepProgress.updateOne({ userId: me.id, stepId: step._id }, { $set: { score: best }, $inc: { attempts: 1 }, $setOnInsert: { courseId: step.courseId, completedAt: new Date() } }, { upsert: true });
+    await recordAttempt({ userId: me.id, courseId: step.courseId, stepId: step._id, activityId: activity._id, type: activity.type, score: graded.score, stars, bonus, timeSpentS: Number(input.timeSpentS) || 0, plays: Number(input.plays) || 0, items: graded.items, answers });
+    const items: AwardInput[] = wasDone
+      ? [{ key: `replay:${stepId}:${dayKey()}`, source: "practice_replay", amount: XP.practiceReplay }]
+      : [{ key: `step:${stepId}`, source: activity.type, amount: practiceXp(graded.score), counters: { lessonsCompleted: 1 } }];
+    if (graded.score >= 100) items.push({ key: `perfect:${stepId}`, source: "perfect", amount: 0, counters: { perfectPractices: 1 } });
+    const r = await storyReward(me.isStaff, me.id, items);
+    const stage = await afterStoryStep(viewer, story.storyId, story.episodeId);
+    refresh();
+    return { ok: true, result: { score: graded.score, stars, bonus, items: graded.items, bestScore: best, reward: stage?.reward ?? r } };
+  } catch (e) {
+    return storyFail(e);
   }
 }
 

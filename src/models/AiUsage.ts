@@ -19,6 +19,11 @@ const aiUsageSchema = new Schema(
     seconds: { type: Number, default: 0, min: 0 },
     tokens: { type: Number, default: 0, min: 0 },
     costMicros: { type: Number, default: 0, min: 0 },
+    /**
+     * Story Mode season slug (« story:<slug> ») for calls that use that season's own voice-minute
+     * pot; such rows don't count against the monthly AI minutes.
+     */
+    ref: { type: String, default: "" },
     /** Local calendar day (APP_TZ), YYYY-MM-DD; `month` = YYYY-MM. */
     day: { type: String, required: true },
     month: { type: String, required: true },
@@ -27,6 +32,7 @@ const aiUsageSchema = new Schema(
 );
 aiUsageSchema.index({ userId: 1, month: 1 });
 aiUsageSchema.index({ day: 1 });
+aiUsageSchema.index({ userId: 1, ref: 1 }, { partialFilterExpression: { ref: { $gt: "" } } });
 
 export type AiUsageDoc = InferSchemaType<typeof aiUsageSchema> & { _id: Types.ObjectId };
 export const AiUsage: Model<AiUsageDoc> = defineModel<AiUsageDoc>("AiUsage", aiUsageSchema);
@@ -48,6 +54,16 @@ const appSettingsSchema = new Schema(
       planPriceUsd: { type: Number, default: 0, min: 0 },
       warnPercent: { type: Number, default: 80, min: 1, max: 100 },
       stopPercent: { type: Number, default: 95, min: 1, max: 100 },
+    },
+    /**
+     * Story Mode pricing (season « Pricing » card): the cost of a conversation minute used until real
+     * costs are measured (when no ElevenLabs plan is set), scene voicing, the FCFA rate, the default margin.
+     */
+    storyPricing: {
+      convUsdPerMin: { type: Number, default: 0.06, min: 0 },
+      ttsUsdPerKChar: { type: Number, default: 0.03, min: 0 },
+      usdToFcfa: { type: Number, default: 600, min: 1 },
+      defaultMarginPct: { type: Number, default: 200, min: 0 },
     },
     /** Coach Ish persona (spec AIC-07): the coach's voice in role-play help and debriefs. */
     persona: {

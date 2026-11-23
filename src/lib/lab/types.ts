@@ -355,7 +355,17 @@ export type RolePlayContent = {
   maxMinutes: number;
   voiceId: string;
   voiceName: string;
+  /** Optional briefing in French (Media model-audio): Coach Ish explains the goals and how the call works. */
+  briefAudioMediaId?: string;
+  /**
+   * Optional pictures the learner has in front of them during the call (a map, a menu, slides…),
+   * shown as a carousel. `caption` is shown to the learner; `description` (English) tells the AI
+   * what's in the picture so it can talk about it.
+   */
+  images?: RolePlayImage[];
 };
+export type RolePlayImage = { mediaId: string; caption: string; description: string };
+export const MAX_ROLEPLAY_IMAGES = 12;
 /** Learner-facing names of the difficulty levels (AIC-03). */
 export const DIFFICULTY_LABEL: Record<number, string> = { 1: "Very patient", 2: "Patient", 3: "Natural", 4: "Demanding", 5: "Tough" };
 export const DIFFICULTY_HINT: Record<number, string> = { 1: "Slow, simple words, repeats when asked", 2: "Clear and calm, rephrases if you're lost", 3: "Normal speed, asks follow-up questions", 4: "Fast, precise questions, challenges vague answers", 5: "Interrupts, pushes back, uses idioms" };

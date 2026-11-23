@@ -8,6 +8,7 @@ import { myCourses, type MyCourse } from "@/lib/learn/queries";
 import { sameName, whatsappLink } from "@/lib/catalog";
 import { Photo } from "@/components/site/photo";
 import { PageSkeleton, ProgressBar, formatDate } from "@/components/learn/ui";
+import { PageBackdrop } from "@/components/learn/page-backdrop";
 import { cn } from "cn";
 import { BrandTitle } from "@/components/learn/brand-title";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
@@ -29,7 +30,9 @@ async function Courses({ searchParams }: { searchParams: Promise<Record<string, 
   const current = courses.find((c) => c.state === "active");
 
   return (
-    <div className="grid gap-6">
+    <div className="relative z-10 grid gap-6">
+      {/* Pexels 6334070 (Pexels licence, free use): a library, blurred behind the page. */}
+      <PageBackdrop src="/images/photos/courses-bg-960.webp" />
       {bienvenue && (
         <div role="status" className="flex animate-pop items-center gap-3 rounded-3xl bg-brand-deep p-5 text-white">
           <PartyPopper className="size-8 shrink-0 text-xp" aria-hidden />

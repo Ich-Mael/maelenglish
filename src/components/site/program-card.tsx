@@ -79,7 +79,7 @@ export function FeaturedProgramCard({ program: p }: { program: Program }) {
 }
 
 /** Job programme card (carousel slide). */
-export function ProgramCard({ program: p }: { program: Program }) {
+export function ProgramCard({ program: p, ribbon }: { program: Program; ribbon?: string }) {
   const Icon = ICONS[p.icon];
   return (
     <Link
@@ -103,7 +103,8 @@ export function ProgramCard({ program: p }: { program: Program }) {
         </span>
         <p className="absolute right-4 bottom-4 left-4 text-sm leading-snug font-semibold text-white">{p.tagline}</p>
       </div>
-      <div className="flex flex-1 flex-col p-5 sm:p-6">
+      <div className="relative flex flex-1 flex-col p-5 sm:p-6">
+        {ribbon ? <span className="absolute -top-3.5 left-5 rounded-full border-2 border-coral bg-white px-3 py-0.5 text-xs font-bold tracking-wide text-coral-dark uppercase shadow-sm">{ribbon}</span> : null}
         <h3 className="text-2xl font-extrabold text-primary">{shortProgramName(p)}</h3>
         <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{p.summary}</p>
         <ul className="mt-4 flex flex-wrap gap-1.5">

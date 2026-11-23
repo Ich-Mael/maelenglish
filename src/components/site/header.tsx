@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Menu, Sparkles } from "lucide-react";
+import { Menu } from "lucide-react";
 import {
   AccountLink,
   LoggedOut,
@@ -10,38 +10,15 @@ import {
 } from "./account-link";
 import { ScrollHeader } from "./scroll-header";
 
-const NAV = [
+const NAV: { href: string; label: string; badge?: string }[] = [
   { href: "/#programmes", label: "Programmes" },
   { href: "/#methode", label: "Méthode" },
   { href: "/coaching", label: "Coaching" },
-  { href: "/diagnostic", label: "Diagnostic", badge: "Gratuit" },
 ];
 
 export function SiteHeader() {
   return (
     <>
-      {/* Promo strip (scrolls away; the header below stays): the free diagnostic, the site's lead magnet. */}
-      <Link
-        href="/diagnostic"
-        className="group/promo relative block overflow-clip bg-brand-deep px-4 py-2 text-center text-[13px] font-semibold text-white sm:text-sm"
-      >
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 left-1/2 w-2/3 -translate-x-1/2 bg-[radial-gradient(ellipse_at_center,rgb(255_87_87/0.28),transparent_70%)]"
-        />
-        <span className="relative inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5">
-          <Sparkles className="size-4 text-coral" aria-hidden />
-            <span className="sm:hidden">Diagnostic gratuit de votre anglais · 8 min</span>
-            <span className="hidden sm:inline">Qu&apos;est-ce qui freine votre anglais&nbsp;? Diagnostic gratuit en 8 min</span>
-            <span className="inline-flex items-center gap-1 font-bold text-coral underline-offset-4 group-hover/promo:underline">
-            Commencer{" "}
-            <ArrowRight
-              className="size-3.5 transition group-hover/promo:translate-x-0.5 motion-reduce:transition-none"
-              aria-hidden
-            />
-          </span>
-        </span>
-      </Link>
       <ScrollHeader>
         <div className="mx-auto flex h-[4.5rem] max-w-6xl items-center gap-4 px-4">
           <Link

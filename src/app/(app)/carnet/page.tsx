@@ -17,7 +17,7 @@ async function Carnet() {
   const me = await requireUser("/carnet");
   await connectDB();
   const words: NotebookWord[] = (await listWords(me.id)).map((w) => ({
-    word: w.word,
+    word: w.display || w.word,
     context: w.context,
     translation: w.translation || w.entry?.translation || "",
     href: w.courseId && w.stepId ? stepPath(String(w.courseId), String(w.stepId)) : null,

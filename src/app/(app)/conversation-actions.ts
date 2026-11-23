@@ -14,6 +14,8 @@ import { ConversationError, attachRolePlay, finishRolePlay, rolePlayHelp, startR
 import type { HelpSuggestion } from "@/lib/ai/types";
 import { toFinished, type FinishedRolePlay } from "@/lib/conversation/view";
 import { remainingSeconds } from "@/lib/ai/metering";
+import { StoryError, creditStoryConversation, storyRolePlay } from "@/lib/story/service";
+import { voiceMinutes } from "@/lib/story/minutes";
 
 /*
  * AI role-play (Talk with Coach Ish page, unit activity steps, Lab preview). Every action re-checks the
@@ -22,13 +24,25 @@ import { remainingSeconds } from "@/lib/ai/metering";
  * Staff sessions are marked `preview` (not capped, never progress).
  */
 
-type Where = { activityId: string; courseId?: string | null; stepId?: string | null };
-type Allowed = { me: CurrentUser; activity: ActivityDoc; courseId: Types.ObjectId | null; stepId: Types.ObjectId | null; preview: boolean };
+type Where = { activityId: string; courseId?: string | null; stepId?: string | null; story?: { storyId: string; episodeId: string } | null };
+type Allowed = { me: CurrentUser; activity: ActivityDoc; courseId: Types.ObjectId | null; stepId: Types.ObjectId | null; preview: boolean; story?: { storyId: string; episodeId: string; variant: string; leftS: number | null } };
 
 async function allowed(where: Where): Promise<Allowed> {
   const me = await readCurrentUser();
   if (!me) throw new ConversationError("Your session has expired: sign in again.");
   if (!Types.ObjectId.isValid(where.activityId)) throw new ConversationError("Conversation not found.");
+
+  // Story Mode: the episode's role-play, played by its character, minutes from the season.
+  if (where.story) {
+    try {
+      const r = await storyRolePlay({ id: me.id, isStaff: me.isStaff }, where.story.storyId, where.story.episodeId);
+      if (String(r.activity._id) !== where.activityId) throw new ConversationError("Conversation not found.");
+      return { me, activity: r.activity, courseId: null, stepId: null, preview: me.isStaff, story: { storyId: where.story.storyId, episodeId: where.story.episodeId, variant: r.variant, leftS: r.leftS } };
+    } catch (e) {
+      if (e instanceof StoryError) throw new ConversationError(e.message);
+      throw e;
+    }
+  }
 
   if (where.courseId && where.stepId) {
     const access = await courseAccess(me, where.courseId);
@@ -47,7 +61,7 @@ async function allowed(where: Where): Promise<Allowed> {
   const activity = await Activity.findById(where.activityId).lean<ActivityDoc>();
   if (!activity || activity.type !== "role_play") throw new ConversationError("Conversation not found.");
   if (!me.isStaff) {
-    if (activity.status !== "ready") throw new ConversationError("Conversation not found.");
+    if (activity.status !== "ready" || (activity.tags ?? []).includes("story")) throw new ConversationError("Conversation not found.");
     const enrolments = await Enrollment.find({ userId: me.id }).select("status startDate endDate").lean();
     if (!enrolments.some((e) => accessState(e) === "active")) throw new ConversationError("Talk with Coach Ish is for learners with an active course.");
   }
@@ -59,7 +73,7 @@ const fail = (e: unknown) => ({ ok: false as const, error: e instanceof Conversa
 export async function startRolePlayAction(where: Where, difficulty: number): Promise<{ ok: true; sessionId: string; signedUrl: string; limitS: number } | { ok: false; error: string }> {
   try {
     const a = await allowed(where);
-    const r = await startRolePlay(a.me.id, { activity: a.activity, difficulty, courseId: a.courseId, stepId: a.stepId, preview: a.preview });
+    const r = await startRolePlay(a.me.id, { activity: a.activity, difficulty, courseId: a.courseId, stepId: a.stepId, preview: a.preview, story: a.story });
     return { ok: true, ...r };
   } catch (e) {
     if (!(e instanceof ConversationError)) console.error("[roleplay] start action", e);
@@ -99,15 +113,30 @@ export async function finishRolePlayAction(sessionId: string): Promise<{ ok: tru
   try {
     const me = await readCurrentUser();
     if (!me) throw new ConversationError("Your session has expired: sign in again.");
-    const own = Types.ObjectId.isValid(sessionId) ? await ConversationSession.findOne({ _id: sessionId, userId: me.id }).select("activityId courseId stepId status preview").lean() : null;
+    const own = Types.ObjectId.isValid(sessionId) ? await ConversationSession.findOne({ _id: sessionId, userId: me.id }).select("activityId courseId stepId status preview storyId storyEpisodeId").lean() : null;
     if (!own) throw new ConversationError("Conversation not found.");
-    const activity = await Activity.findById(own.activityId).select("title level content type").lean<ActivityDoc>();
+    const viewer = { id: me.id, isStaff: me.isStaff };
+    // A story call is debriefed with the character's role (as it was played).
+    const storyCtx = own.storyId ? await storyRolePlay(viewer, own.storyId, own.storyEpisodeId ?? "").catch(() => null) : null;
+    const activity = storyCtx?.activity ?? (await Activity.findById(own.activityId).select("title level content type").lean<ActivityDoc>());
     const wasDebriefed = own.status === "debriefed";
     const s = await finishRolePlay(me.id, sessionId, { activity });
     // The call's recording is copied to our storage after the response (ElevenLabs may need a moment).
     if (s.providerConversationId && !s.audioMediaId) after(() => storeConversationAudio(sessionId).then(() => undefined).catch((e) => console.error("[roleplay] store audio", e)));
 
     let reward: Reward | null = null;
+    let story: FinishedRolePlay["story"] = null;
+    if (s.storyId) {
+      // Story Mode: the debrief score decides if the episode's conversation is mastered (staff too: testing).
+      if (s.status === "debriefed") {
+        const credit = wasDebriefed ? null : await creditStoryConversation(viewer, s.storyId, s.storyEpisodeId ?? "", s.score ?? 0).catch((e) => (console.error("[story] credit", e), null));
+        reward = credit?.reward ?? null;
+        story = credit ? { passed: credit.passed, passScore: credit.passScore, canContinueAnyway: credit.canContinueAnyway, episodeFinished: credit.episodeFinished } : null;
+        refresh();
+      }
+      const vm = storyCtx ? await voiceMinutes(viewer, storyCtx.season) : null;
+      return { ok: true, result: { ...toFinished(s, reward, vm ? vm.leftS / 60 : null), story } };
+    }
     if (!wasDebriefed && s.status === "debriefed" && !s.preview) {
       reward = await creditProgress(me, s.activityId, s.stepId ? { stepId: s.stepId, courseId: s.courseId! } : null, s.score ?? 0);
       refresh();

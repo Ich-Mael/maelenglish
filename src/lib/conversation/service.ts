@@ -49,14 +49,14 @@ const learnerWords = (t: ConversationTurn[]) => t.filter((x) => x.role === "user
 const tooShort = (t: ConversationTurn[]) => t.filter((x) => x.role === "user").length < MIN_LEARNER_TURNS || learnerWords(t) < MIN_LEARNER_WORDS;
 
 /** The provider agent for this scenario version at this difficulty (created once, shared by learners). */
-async function agentFor(engine: ConversationEngine, activity: Pick<ActivityDoc, "_id" | "title" | "level" | "content">, difficulty: number): Promise<string> {
+async function agentFor(engine: ConversationEngine, activity: Pick<ActivityDoc, "_id" | "title" | "level" | "content">, difficulty: number, variant = ""): Promise<string> {
   const spec = agentSpec(activity.title, activity.content as RolePlayContent, difficulty, activity.level ?? "");
   const key = createHash("sha256").update(`${engine.name}\n${JSON.stringify(spec)}`).digest("hex").slice(0, 40);
   const found = await ConversationAgent.findOne({ key }).lean();
   if (found) return found.agentId;
   const agentId = await engine.createAgent(spec);
   try {
-    await ConversationAgent.create({ key, activityId: activity._id, difficulty, provider: engine.name, agentId });
+    await ConversationAgent.create({ key, activityId: activity._id, difficulty, provider: engine.name, agentId, variant });
   } catch (e) {
     // Two learners started at once: keep the first agent, drop ours.
     const winner = await ConversationAgent.findOne({ key }).lean();
@@ -67,7 +67,7 @@ async function agentFor(engine: ConversationEngine, activity: Pick<ActivityDoc, 
     throw e;
   }
   // Older versions of this scenario at this difficulty: no longer used.
-  const stale = await ConversationAgent.find({ activityId: activity._id, difficulty, provider: engine.name, key: { $ne: key } }).lean();
+  const stale = await ConversationAgent.find({ activityId: activity._id, difficulty, provider: engine.name, variant: variant ? variant : { $in: ["", null] }, key: { $ne: key } }).lean();
   for (const a of stale) {
     await engine.deleteAgent(a.agentId).catch((err) => console.error("[roleplay] delete agent", err));
     await ConversationAgent.deleteOne({ _id: a._id });
@@ -89,7 +89,15 @@ export type StartedRolePlay = { sessionId: string; signedUrl: string; limitS: nu
 
 export async function startRolePlay(
   userId: string,
-  input: { activity: Pick<ActivityDoc, "_id" | "title" | "level" | "type" | "content">; difficulty: unknown; courseId?: Types.ObjectId | string | null; stepId?: Types.ObjectId | string | null; preview?: boolean },
+  input: {
+    activity: Pick<ActivityDoc, "_id" | "title" | "level" | "type" | "content">;
+    difficulty: unknown;
+    courseId?: Types.ObjectId | string | null;
+    stepId?: Types.ObjectId | string | null;
+    preview?: boolean;
+    /** Story Mode: the episode it's played in, the character variant, and the seconds left in the season's pot (null = staff). */
+    story?: { storyId: string; episodeId: string; variant: string; leftS: number | null };
+  },
   now = new Date(),
 ): Promise<StartedRolePlay> {
   const engine = conversationEngine();
@@ -103,8 +111,8 @@ export async function startRolePlay(
   if (!rl.allowed) throw new ConversationError("You've started many conversations today: come back tomorrow.");
   // Calls the browser never reported finished are metered now, before checking the minutes left.
   await settleOpenSessions(userId, now);
-  const left = input.preview ? Infinity : await remainingSeconds(userId, now);
-  if (left < 60) throw new ConversationError("You've used your AI minutes for this month. They come back on the 1st of next month.");
+  const left = input.preview ? Infinity : input.story ? (input.story.leftS ?? Infinity) : await remainingSeconds(userId, now);
+  if (left < 60) throw new ConversationError(input.story ? "Your voice minutes for this season are used up: ask your coach for more." : "You've used your AI minutes for this month. They come back on the 1st of next month.");
   // The platform's monthly ElevenLabs budget, shared by everyone (staff previews included).
   const pool = await budgetState(now);
   if (pool.level === "stopped") throw new ConversationError("Talk with Coach Ish has reached its limit for this month: it comes back on the 1st.");
@@ -113,7 +121,7 @@ export async function startRolePlay(
   let agentId: string;
   let signedUrl: string;
   try {
-    agentId = await agentFor(engine, activity, difficulty);
+    agentId = await agentFor(engine, activity, difficulty, input.story?.variant ?? "");
     signedUrl = await engine.signedUrl(agentId);
   } catch (e) {
     console.error("[roleplay] start", e);
@@ -125,6 +133,8 @@ export async function startRolePlay(
     courseId: input.courseId ?? null,
     stepId: input.stepId ?? null,
     preview: !!input.preview,
+    storyId: input.story?.storyId ?? "",
+    storyEpisodeId: input.story?.episodeId ?? "",
     title: activity.title,
     difficulty,
     provider: engine.name,
@@ -197,7 +207,8 @@ export async function finishRolePlay(userId: string, sessionId: string, opts: { 
     s.status = "ended";
     await s.save();
     if (s.durationS > 0) {
-      await recordUsage(userId, { kind: "conversation", feature: "roleplay", provider: engine.name, seconds: s.durationS, costMicros: s.costMicros }, now).catch((e) => console.error("[roleplay] usage", e));
+      // Story Mode calls use their season's voice minutes (`ref`), not the monthly ones.
+      await recordUsage(userId, { kind: "conversation", feature: s.storyId ? "story_roleplay" : "roleplay", provider: engine.name, seconds: s.durationS, costMicros: s.costMicros, ref: s.storyId ? `story:${s.storyId}` : "" }, now).catch((e) => console.error("[roleplay] usage", e));
       await alertIfNeeded(now).catch((e) => console.error("[roleplay] budget alert", e));
     }
   }
@@ -220,7 +231,7 @@ export async function finishRolePlay(userId: string, sessionId: string, opts: { 
     try {
       const r = await aiServices().feedback.rolePlayDebrief(input);
       debrief = cleanDebrief(r.debrief, transcript, input.brief.goals);
-      await recordUsage(userId, { kind: "llm", feature: "roleplay_debrief", provider: r.usage.provider, tokens: r.usage.inputTokens + r.usage.outputTokens, costMicros: r.usage.costMicros }, now).catch(() => {});
+      await recordUsage(userId, { kind: "llm", feature: "roleplay_debrief", provider: r.usage.provider, tokens: r.usage.inputTokens + r.usage.outputTokens, costMicros: r.usage.costMicros, ref: s.storyId ? `story:${s.storyId}` : "" }, now).catch(() => {});
     } catch (e) {
       lastError = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
       console.error(`[roleplay] debrief attempt ${attempt + 1} failed for session ${s._id}:`, e);

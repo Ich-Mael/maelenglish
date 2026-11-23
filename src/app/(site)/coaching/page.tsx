@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowDown, ArrowRight, CalendarCheck, ChevronDown, Crown, Phone, UserCheck, Video } from "lucide-react";
 import { COACHING } from "@/lib/content";
 import { COACHING_WA, PHONE_DISPLAY, PHONE_TEL } from "@/lib/site";
-import { BUTTON, ButtonLink, Container, PhraseCard, Pill, SectionHead, WhatsAppButton } from "@/components/site/ui";
+import { BUTTON, Container, PhraseCard, Pill, SectionHead, WhatsAppButton } from "@/components/site/ui";
 import { FounderCard } from "@/components/site/founder";
 import { GOAL_ICONS } from "@/components/site/icons";
 
@@ -132,9 +132,6 @@ export default function CoachingPage() {
                 <a href={`tel:${PHONE_TEL}`} className={BUTTON.ghost}>
                   <Phone className="size-4" aria-hidden /> {PHONE_DISPLAY}
                 </a>
-                <ButtonLink href="/" variant="ghost">
-                  Découvrir MaelEnglish
-                </ButtonLink>
               </div>
             </div>
           </div>

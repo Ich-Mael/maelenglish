@@ -16,6 +16,7 @@ import { ImageInput } from "./image-input";
 import { DictationEditor } from "./dictation-editor";
 import { PromptField } from "./prompt-field";
 import { AudioInput } from "./audio-input";
+import { RolePlayImagesField } from "./roleplay-images-field";
 
 /*
  * Type-specific fields of a Labo activity, inside the activity form. Field names start with
@@ -62,6 +63,8 @@ export async function ActivityFields({ type, content }: { type: ActivityType; co
     case "role_play": {
       const c = content as Partial<RolePlayContent>;
       const voices = await (conversationEngine()?.listVoices() ?? Promise.resolve([])).catch((e) => (console.error("[roleplay] voices", e), []));
+      const briefUrl = c.briefAudioMediaId ? await reviewMediaUrl(c.briefAudioMediaId).catch(() => null) : null;
+      const imageUrls = Object.fromEntries(await Promise.all((c.images ?? []).map(async (im) => [im.mediaId, await reviewMediaUrl(im.mediaId).catch(() => null)] as const)));
       return (
         <>
           <RichTextEditor label="Situation (for the learner)" name="c_situation" minHeight={140} defaultValue={c.situation ?? ""} hint="In French, shown first. E.g. « Vous passez un premier entretien en visio pour un poste de chargé(e) de projet dans une ONG. »" />
@@ -73,6 +76,8 @@ export async function ActivityFields({ type, content }: { type: ActivityType; co
           <TextArea label="Learner's goals" name="c_goals" rows={4} defaultValue={(c.goals ?? []).join("\n")} placeholder={"Introduce yourself in under 60 seconds\nExplain why you want this role\nGive one example of teamwork\nAsk one question about the role"} hint="One per line, 8 max. Shown to the learner as their mission; the AI makes room for each one; the debrief says which were achieved." />
           <TextArea label="Useful phrases (optional)" name="c_targetPhrases" rows={3} defaultValue={(c.targetPhrases ?? []).join("\n")} placeholder={"I have X years of experience in...\nWhat attracted me to this role is..."} hint="In English, one per line. Shown before the call and used in the debrief." />
           <TextArea label="Twists (hidden from the learner)" name="c_twists" rows={2} defaultValue={(c.twists ?? []).join("\n")} placeholder={"Ask about a gap in the CV\nAsk about salary expectations"} hint="Complications the AI brings up at a natural moment. One per line, 5 max." />
+          <AudioInput name="c_briefAudioMediaId" label="Briefing audio in French (optional): Coach Ish explains the goals and how the call works" initialId={c.briefAudioMediaId ?? ""} initialUrl={briefUrl} />
+          <RolePlayImagesField initial={c.images ?? []} urls={imageUrls} />
           <Input label="AI's opening line" name="c_openingLine" defaultValue={c.openingLine ?? ""} placeholder="Hello, thanks for joining. Can you hear me well?" hint="In English: the first thing the learner hears." />
           <div className="grid gap-3 sm:grid-cols-3">
             <Select label="Default difficulty" name="c_difficulty" defaultValue={String(c.difficulty ?? 2)} options={ROLEPLAY_DIFFICULTIES.map((d) => ({ value: String(d), label: `${d} · ${DIFFICULTY_LABEL[d]}` }))} />

@@ -28,6 +28,9 @@ export const can = {
   editContent: (a: Actor, c: CourseLike) => isAdmin(a) || (isTeacher(a) && teaches(a, c)),
   /** Labo (reusable practice activities): admins and teachers. Adding one to a unit also needs `editContent` on its course. */
   useLab: (a: Actor) => isAdmin(a) || isTeacher(a),
+  /** Story Mode: create, publish, price and delete seasons (admins); edit seasons and episodes (also coaches / instructors). */
+  manageStory: (a: Actor) => isAdmin(a),
+  editStory: (a: Actor) => isAdmin(a) || isTeacher(a),
   manageEnrollments: (a: Actor) => isAdmin(a) || a.role === "account-manager",
   grade: (a: Actor, c: CourseLike) => isAdmin(a) || (isTeacher(a) && teaches(a, c)),
   /** One learner's submission: the course team, or the learner's main coach (`User.coachId`). */

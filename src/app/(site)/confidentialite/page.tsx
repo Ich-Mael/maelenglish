@@ -94,6 +94,12 @@ export default function PrivacyPage() {
               pouvez les écouter et les consulter ; seul un administrateur peut supprimer un enregistrement.
             </li>
             <li>
+              <strong>Mode histoire (« Story Mode »)</strong> : nous gardons votre personnage (nom choisi, métier, pays, avatar dessiné —
+              aucune photo), votre progression dans les saisons et ce que les personnages retiennent de vous (jamais de données sensibles ;
+              vous pouvez supprimer chaque information depuis la page de la saison). Les leçons et activités sont celles des cours, et les
+              conversations avec les personnages fonctionnent comme « Talk with Coach Ish » (voir ci-dessous).
+            </li>
+            <li>
               <strong>Exercices de prononciation (« Répétez après Coach Ish »)</strong> : nous n&apos;enregistrons pas votre voix sur nos serveurs.
               Pour vérifier ce que vous avez dit, l&apos;exercice utilise la reconnaissance vocale de votre navigateur : votre voix est alors
               envoyée au service de l&apos;éditeur du navigateur (par exemple Google pour Chrome, Apple pour Safari), qui la transcrit en

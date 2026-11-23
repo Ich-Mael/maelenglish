@@ -7,7 +7,7 @@ import { requireUser } from "@/lib/auth/dal";
 import { courseAccess, courseTree } from "@/lib/learn/queries";
 import { coursePath, examPath, stepPath } from "@/lib/learn/paths";
 import { stepAfter, stepBefore } from "@/lib/learn/sequence";
-import { ChallengeSubmission, User, WritingSubmission, type ChallengeSubmissionDoc, type WritingSubmissionDoc } from "@/models";
+import { ChallengeSubmission, User, WritingSubmission, type ActivityDoc, type ChallengeSubmissionDoc, type WritingSubmissionDoc } from "@/models";
 import type { GapsContent, ListenGapsContent, ListeningContent, MatchContent, SentenceContent, SpeakingChallengeContent, TfngContent, CompleteWordsContent, RepeatContent, WritingTaskContent, DictationContent, RolePlayContent } from "@/lib/lab/types";
 import { cleanLessonContent } from "@/lib/course/lesson-content";
 import { feedbackAudioUrl, mediaUrlFor } from "@/lib/media";
@@ -144,67 +144,18 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
   if (!activity) return <AccessProblem reason="not-found" />;
 
   // ── Activity: its Lab player ──
-  if (so.kind === "activity" && (activity.type === "fill_gaps" || activity.type === "listen_fill_gaps")) {
-    const lc = activity.type === "listen_fill_gaps" ? (activity.content as ListenGapsContent) : null;
-    const clip = lc?.audioMediaId ? (await mediaUrls(me.id, [lc.audioMediaId]))[lc.audioMediaId] : undefined;
-    return (
-      <div className="mx-auto grid max-w-2xl gap-4">
-        {header}
-        <div>
-          <GapsPlayer
-            courseId={courseId}
-            stepId={stepId}
-            passScore={so.passScore}
-            lessonHref={so.lessonId ? stepPath(courseId, so.lessonId) : null}
-            title={activity.title}
-            level={activity.level ?? ""}
-            skills={activity.skills ?? []}
-            instructions={activity.instructions ?? ""}
-            maelTip={activity.maelTip ?? ""}
-            content={activity.content as GapsContent}
-            listen={lc ? { audioUrl: clip ?? null, maxPlays: lc.maxPlays, context: lc.context ? <RichText lang="fr">{lc.context}</RichText> : null } : undefined}
-            courseHref={course}
-            nextHref={nextHref}
-            readOnly={access.readOnly}
-          />
-        </div>
-      </div>
-    );
-  }
-  if (so.kind === "activity" && activity.type === "dictation") {
-    const dc = activity.content as DictationContent;
-    const dcAudio = await mediaUrls(me.id, [...new Set(dc.items.map((i) => i.audioMediaId).filter(Boolean))]);
-    return (
-      <div className="mx-auto grid max-w-2xl gap-4">
-        {header}
-        <div>
-          <DictationPlayer
-            courseId={courseId}
-            stepId={stepId}
-            passScore={so.passScore}
-            lessonHref={so.lessonId ? stepPath(courseId, so.lessonId) : null}
-            title={activity.title}
-            level={activity.level ?? ""}
-            skills={activity.skills ?? []}
-            instructions={activity.instructions ?? ""}
-            maelTip={activity.maelTip ?? ""}
-            content={dc}
-            audioUrls={dcAudio}
-            courseHref={course}
-            nextHref={nextHref}
-            readOnly={access.readOnly}
-          />
-        </div>
-      </div>
-    );
-  }
   if (so.kind === "activity" && activity.type === "role_play") {
     const rc = activity.content as RolePlayContent;
+    const rpMedia = await mediaUrls(me.id, [rc.briefAudioMediaId ?? "", ...(rc.images ?? []).map((im) => im.mediaId)].filter(Boolean));
+    const briefAudioUrl = rc.briefAudioMediaId ? (rpMedia[rc.briefAudioMediaId] ?? null) : null;
+    const images = (rc.images ?? []).flatMap((im) => (rpMedia[im.mediaId] ? [{ url: rpMedia[im.mediaId], caption: im.caption }] : []));
     const [state, attempts] = await Promise.all([partnerState(me), attemptsOn(me.id, String(activity._id))]);
     return (
       <div className="mx-auto grid max-w-5xl gap-4">
         {header}
         <RolePlayPlayer
+          briefAudioUrl={briefAudioUrl}
+          images={images}
           activityId={String(activity._id)}
           courseId={courseId}
           stepId={stepId}
@@ -271,173 +222,9 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
       </div>
     );
   }
-  if (so.kind === "activity" && activity.type === "repeat_after") {
-    const rc = activity.content as RepeatContent;
-    const rcAudio = await mediaUrls(me.id, [...new Set(rc.phrases.map((p) => p.audioMediaId).filter(Boolean))]);
-    return (
-      <div className="mx-auto grid max-w-2xl gap-4">
-        {header}
-        <div>
-          <RepeatPlayer
-            courseId={courseId}
-            stepId={stepId}
-            passScore={so.passScore}
-            lessonHref={so.lessonId ? stepPath(courseId, so.lessonId) : null}
-            title={activity.title}
-            level={activity.level ?? ""}
-            skills={activity.skills ?? []}
-            instructions={activity.instructions ?? ""}
-            maelTip={activity.maelTip ?? ""}
-            content={rc}
-            audioUrls={rcAudio}
-            courseHref={course}
-            nextHref={nextHref}
-            readOnly={access.readOnly}
-          />
-        </div>
-      </div>
-    );
-  }
-  if (so.kind === "activity" && activity.type === "complete_words") {
-    const cw = activity.content as CompleteWordsContent;
-    const cwAudio = cw.audioMediaId ? (await mediaUrls(me.id, [cw.audioMediaId]))[cw.audioMediaId] : undefined;
-    return (
-      <div className="mx-auto grid max-w-3xl gap-4">
-        {header}
-        <div>
-          <CompleteWordsPlayer
-            courseId={courseId}
-            stepId={stepId}
-            passScore={so.passScore}
-            lessonHref={so.lessonId ? stepPath(courseId, so.lessonId) : null}
-            title={activity.title}
-            level={activity.level ?? ""}
-            skills={activity.skills ?? []}
-            instructions={activity.instructions ?? ""}
-            maelTip={activity.maelTip ?? ""}
-            content={cw}
-            audioUrl={cwAudio ?? null}
-            courseHref={course}
-            nextHref={nextHref}
-            readOnly={access.readOnly}
-          />
-        </div>
-      </div>
-    );
-  }
-  if (so.kind === "activity" && activity.type === "true_false_ng") {
-    const tf = activity.content as TfngContent;
-    const tfMedia = await mediaUrls(me.id, [tf.imageMediaId ?? "", ...tf.statements.map((s) => s.audioMediaId ?? "")].filter(Boolean));
-    const tfImage = tf.imageMediaId ? tfMedia[tf.imageMediaId] : undefined;
-    return (
-      <div className="mx-auto grid max-w-2xl gap-4">
-        {header}
-        <div>
-          <TfngPlayer
-            courseId={courseId}
-            stepId={stepId}
-            passScore={so.passScore}
-            lessonHref={so.lessonId ? stepPath(courseId, so.lessonId) : null}
-            title={activity.title}
-            level={activity.level ?? ""}
-            skills={activity.skills ?? []}
-            instructions={activity.instructions ?? ""}
-            maelTip={activity.maelTip ?? ""}
-            content={tf}
-            imageUrl={tfImage ?? null}
-            audioUrls={tfMedia}
-            courseHref={course}
-            nextHref={nextHref}
-            readOnly={access.readOnly}
-          />
-        </div>
-      </div>
-    );
-  }
-  if (so.kind === "activity" && (activity.type === "match_pairs" || activity.type === "listen_match")) {
-    const c = activity.content as MatchContent;
-    const audioUrls = await mediaUrls(me.id, [...new Set(c.pairs.flatMap((p) => [p.audioMediaId, p.rightAudioMediaId ?? ""]).filter(Boolean))]);
-    return (
-      <div className="mx-auto grid max-w-2xl gap-4">
-        {header}
-        <div>
-          <MatchPlayer
-            courseId={courseId}
-            stepId={stepId}
-            passScore={so.passScore}
-            lessonHref={so.lessonId ? stepPath(courseId, so.lessonId) : null}
-            title={activity.title}
-            level={activity.level ?? ""}
-            skills={activity.skills ?? []}
-            instructions={activity.instructions ?? ""}
-            maelTip={activity.maelTip ?? ""}
-            content={c}
-            audioUrls={audioUrls}
-            courseHref={course}
-            nextHref={nextHref}
-            readOnly={access.readOnly}
-            listen={activity.type === "listen_match"}
-          />
-        </div>
-      </div>
-    );
-  }
-  if (so.kind === "activity" && activity.type === "sentence_builder") {
-    const c = activity.content as SentenceContent;
-    const audioUrls = await mediaUrls(me.id, [...new Set(c.items.map((i) => i.audioMediaId).filter(Boolean))]);
-    return (
-      <div className="mx-auto grid max-w-2xl gap-4">
-        {header}
-        <div>
-          <SentencePlayer
-            courseId={courseId}
-            stepId={stepId}
-            passScore={so.passScore}
-            lessonHref={so.lessonId ? stepPath(courseId, so.lessonId) : null}
-            title={activity.title}
-            level={activity.level ?? ""}
-            skills={activity.skills ?? []}
-            instructions={activity.instructions ?? ""}
-            maelTip={activity.maelTip ?? ""}
-            content={c}
-            audioUrls={audioUrls}
-            courseHref={course}
-            nextHref={nextHref}
-            readOnly={access.readOnly}
-          />
-        </div>
-      </div>
-    );
-  }
   if (so.kind === "activity") {
-    if (activity.type !== "listen_choose") return <AccessProblem reason="not-found" />;
-    const c = activity.content as ListeningContent;
-    const audio = await mediaUrls(me.id, c.audioMediaId ? [c.audioMediaId] : []);
-    return (
-      <div className="mx-auto grid max-w-2xl gap-4">
-        {header}
-        {/* A block wrapper: the player centres itself (mx-auto), which would shrink it inside a grid cell. */}
-        <div>
-          <ListeningPlayer
-          courseId={courseId}
-          stepId={stepId}
-          passScore={so.passScore}
-          lessonHref={so.lessonId ? stepPath(courseId, so.lessonId) : null}
-          title={activity.title}
-          level={activity.level ?? ""}
-          skills={activity.skills ?? []}
-          instructions={activity.instructions ?? ""}
-          maelTip={activity.maelTip ?? ""}
-          context={c.context ? <RichText lang="fr">{c.context}</RichText> : null}
-          audioUrl={audio[c.audioMediaId] ?? null}
-          content={c}
-          courseHref={course}
-          nextHref={nextHref}
-          readOnly={access.readOnly}
-          />
-        </div>
-      </div>
-    );
+    const player = await activityPlayer(activity, { viewerId: me.id, courseId, stepId, passScore: so.passScore, lessonHref: so.lessonId ? stepPath(courseId, so.lessonId) : null, courseHref: course, nextHref, readOnly: access.readOnly, header });
+    return player ?? <AccessProblem reason="not-found" />;
   }
 
   // ── Speaking challenge ──
@@ -642,4 +429,237 @@ export async function ExamStep({ courseId }: { courseId: string }) {
       />
     </>
   );
+}
+
+/** What a Lab player needs from where it's played (a course unit, or a Story Mode episode). */
+export type PlayerCtx = { viewerId: string; courseId: string; stepId: string; passScore: number | null; lessonHref: string | null; courseHref: string; nextHref: string; readOnly: boolean; header: React.ReactNode };
+
+/**
+ * The learner screen of a practice Lab activity (shared by the course step player and Story Mode
+ * episodes). Null for types played elsewhere (role-play, writing task, speaking challenge).
+ */
+export async function activityPlayer(activity: ActivityDoc, ctx: PlayerCtx): Promise<React.ReactNode | null> {
+  if (activity.type === "fill_gaps" || activity.type === "listen_fill_gaps") {
+    const lc = activity.type === "listen_fill_gaps" ? (activity.content as ListenGapsContent) : null;
+    const clip = lc?.audioMediaId ? (await mediaUrls(ctx.viewerId, [lc.audioMediaId]))[lc.audioMediaId] : undefined;
+    return (
+      <div className="mx-auto grid max-w-2xl gap-4">
+        {ctx.header}
+        <div>
+          <GapsPlayer
+            courseId={ctx.courseId}
+            stepId={ctx.stepId}
+            passScore={ctx.passScore}
+            lessonHref={ctx.lessonHref}
+            title={activity.title}
+            level={activity.level ?? ""}
+            skills={activity.skills ?? []}
+            instructions={activity.instructions ?? ""}
+            maelTip={activity.maelTip ?? ""}
+            content={activity.content as GapsContent}
+            listen={lc ? { audioUrl: clip ?? null, maxPlays: lc.maxPlays, context: lc.context ? <RichText lang="fr">{lc.context}</RichText> : null } : undefined}
+            courseHref={ctx.courseHref}
+            nextHref={ctx.nextHref}
+            readOnly={ctx.readOnly}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (activity.type === "dictation") {
+    const dc = activity.content as DictationContent;
+    const dcAudio = await mediaUrls(ctx.viewerId, [...new Set(dc.items.map((i) => i.audioMediaId).filter(Boolean))]);
+    return (
+      <div className="mx-auto grid max-w-2xl gap-4">
+        {ctx.header}
+        <div>
+          <DictationPlayer
+            courseId={ctx.courseId}
+            stepId={ctx.stepId}
+            passScore={ctx.passScore}
+            lessonHref={ctx.lessonHref}
+            title={activity.title}
+            level={activity.level ?? ""}
+            skills={activity.skills ?? []}
+            instructions={activity.instructions ?? ""}
+            maelTip={activity.maelTip ?? ""}
+            content={dc}
+            audioUrls={dcAudio}
+            courseHref={ctx.courseHref}
+            nextHref={ctx.nextHref}
+            readOnly={ctx.readOnly}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (activity.type === "repeat_after") {
+    const rc = activity.content as RepeatContent;
+    const rcAudio = await mediaUrls(ctx.viewerId, [...new Set(rc.phrases.map((p) => p.audioMediaId).filter(Boolean))]);
+    return (
+      <div className="mx-auto grid max-w-2xl gap-4">
+        {ctx.header}
+        <div>
+          <RepeatPlayer
+            courseId={ctx.courseId}
+            stepId={ctx.stepId}
+            passScore={ctx.passScore}
+            lessonHref={ctx.lessonHref}
+            title={activity.title}
+            level={activity.level ?? ""}
+            skills={activity.skills ?? []}
+            instructions={activity.instructions ?? ""}
+            maelTip={activity.maelTip ?? ""}
+            content={rc}
+            audioUrls={rcAudio}
+            courseHref={ctx.courseHref}
+            nextHref={ctx.nextHref}
+            readOnly={ctx.readOnly}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (activity.type === "complete_words") {
+    const cw = activity.content as CompleteWordsContent;
+    const cwAudio = cw.audioMediaId ? (await mediaUrls(ctx.viewerId, [cw.audioMediaId]))[cw.audioMediaId] : undefined;
+    return (
+      <div className="mx-auto grid max-w-3xl gap-4">
+        {ctx.header}
+        <div>
+          <CompleteWordsPlayer
+            courseId={ctx.courseId}
+            stepId={ctx.stepId}
+            passScore={ctx.passScore}
+            lessonHref={ctx.lessonHref}
+            title={activity.title}
+            level={activity.level ?? ""}
+            skills={activity.skills ?? []}
+            instructions={activity.instructions ?? ""}
+            maelTip={activity.maelTip ?? ""}
+            content={cw}
+            audioUrl={cwAudio ?? null}
+            courseHref={ctx.courseHref}
+            nextHref={ctx.nextHref}
+            readOnly={ctx.readOnly}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (activity.type === "true_false_ng") {
+    const tf = activity.content as TfngContent;
+    const tfMedia = await mediaUrls(ctx.viewerId, [tf.imageMediaId ?? "", ...tf.statements.map((s) => s.audioMediaId ?? "")].filter(Boolean));
+    const tfImage = tf.imageMediaId ? tfMedia[tf.imageMediaId] : undefined;
+    return (
+      <div className="mx-auto grid max-w-2xl gap-4">
+        {ctx.header}
+        <div>
+          <TfngPlayer
+            courseId={ctx.courseId}
+            stepId={ctx.stepId}
+            passScore={ctx.passScore}
+            lessonHref={ctx.lessonHref}
+            title={activity.title}
+            level={activity.level ?? ""}
+            skills={activity.skills ?? []}
+            instructions={activity.instructions ?? ""}
+            maelTip={activity.maelTip ?? ""}
+            content={tf}
+            imageUrl={tfImage ?? null}
+            audioUrls={tfMedia}
+            courseHref={ctx.courseHref}
+            nextHref={ctx.nextHref}
+            readOnly={ctx.readOnly}
+          />
+        </div>
+      </div>
+    );
+  }
+  if ((activity.type === "match_pairs" || activity.type === "listen_match")) {
+    const c = activity.content as MatchContent;
+    const audioUrls = await mediaUrls(ctx.viewerId, [...new Set(c.pairs.flatMap((p) => [p.audioMediaId, p.rightAudioMediaId ?? ""]).filter(Boolean))]);
+    return (
+      <div className="mx-auto grid max-w-2xl gap-4">
+        {ctx.header}
+        <div>
+          <MatchPlayer
+            courseId={ctx.courseId}
+            stepId={ctx.stepId}
+            passScore={ctx.passScore}
+            lessonHref={ctx.lessonHref}
+            title={activity.title}
+            level={activity.level ?? ""}
+            skills={activity.skills ?? []}
+            instructions={activity.instructions ?? ""}
+            maelTip={activity.maelTip ?? ""}
+            content={c}
+            audioUrls={audioUrls}
+            courseHref={ctx.courseHref}
+            nextHref={ctx.nextHref}
+            readOnly={ctx.readOnly}
+            listen={activity.type === "listen_match"}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (activity.type === "sentence_builder") {
+    const c = activity.content as SentenceContent;
+    const audioUrls = await mediaUrls(ctx.viewerId, [...new Set(c.items.map((i) => i.audioMediaId).filter(Boolean))]);
+    return (
+      <div className="mx-auto grid max-w-2xl gap-4">
+        {ctx.header}
+        <div>
+          <SentencePlayer
+            courseId={ctx.courseId}
+            stepId={ctx.stepId}
+            passScore={ctx.passScore}
+            lessonHref={ctx.lessonHref}
+            title={activity.title}
+            level={activity.level ?? ""}
+            skills={activity.skills ?? []}
+            instructions={activity.instructions ?? ""}
+            maelTip={activity.maelTip ?? ""}
+            content={c}
+            audioUrls={audioUrls}
+            courseHref={ctx.courseHref}
+            nextHref={ctx.nextHref}
+            readOnly={ctx.readOnly}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (activity.type === "listen_choose") {
+    const c = activity.content as ListeningContent;
+    const audio = await mediaUrls(ctx.viewerId, c.audioMediaId ? [c.audioMediaId] : []);
+    return (
+      <div className="mx-auto grid max-w-2xl gap-4">
+        {ctx.header}
+        {/* A block wrapper: the player centres itself (mx-auto), which would shrink it inside a grid cell. */}
+        <div>
+          <ListeningPlayer
+          courseId={ctx.courseId}
+          stepId={ctx.stepId}
+          passScore={ctx.passScore}
+          lessonHref={ctx.lessonHref}
+          title={activity.title}
+          level={activity.level ?? ""}
+          skills={activity.skills ?? []}
+          instructions={activity.instructions ?? ""}
+          maelTip={activity.maelTip ?? ""}
+          context={c.context ? <RichText lang="fr">{c.context}</RichText> : null}
+          audioUrl={audio[c.audioMediaId] ?? null}
+          content={c}
+          courseHref={ctx.courseHref}
+          nextHref={ctx.nextHref}
+          readOnly={ctx.readOnly}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 }

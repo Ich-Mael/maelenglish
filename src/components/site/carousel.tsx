@@ -10,7 +10,7 @@ import { cn } from "cn";
  * JavaScript (it's just a scrollable row); JS only drives the arrows, the
  * progress bar and the edge fades.
  */
-export function Carousel({ label, heading, children }: { label: string; heading?: React.ReactNode; children: React.ReactNode }) {
+export function Carousel({ label, heading, children, prevLabel = "Précédent", nextLabel = "Suivant" }: { label: string; heading?: React.ReactNode; children: React.ReactNode; prevLabel?: string; nextLabel?: string }) {
   const track = useRef<HTMLDivElement>(null);
   const [state, setState] = useState({ start: true, end: false, thumb: 1, offset: 0 });
   const slides = Children.toArray(children);
@@ -58,10 +58,10 @@ export function Carousel({ label, heading, children }: { label: string; heading?
       <div className="mb-5 flex items-end justify-between gap-4">
         <div className="min-w-0">{heading}</div>
         <div className="hidden shrink-0 gap-2 sm:flex">
-          <button type="button" className={arrow} onClick={() => go(-1)} disabled={state.start} aria-label="Programmes précédents">
+          <button type="button" className={arrow} onClick={() => go(-1)} disabled={state.start} aria-label={prevLabel}>
             <ArrowLeft className="size-5" aria-hidden />
           </button>
-          <button type="button" className={arrow} onClick={() => go(1)} disabled={state.end} aria-label="Programmes suivants">
+          <button type="button" className={arrow} onClick={() => go(1)} disabled={state.end} aria-label={nextLabel}>
             <ArrowRight className="size-5" aria-hidden />
           </button>
         </div>

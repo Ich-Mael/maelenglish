@@ -110,9 +110,13 @@ async function Preview({ params }: { params: Promise<{ activityId: string }> }) 
     );
   } else if (type === "role_play") {
     const rc = a.content as RolePlayContent;
+    const briefAudioUrl = rc.briefAudioMediaId ? await reviewMediaUrl(rc.briefAudioMediaId).catch(() => null) : null;
+    const images = (await Promise.all((rc.images ?? []).map(async (im) => ({ url: await reviewMediaUrl(im.mediaId).catch(() => null), caption: im.caption })))).filter((x): x is { url: string; caption: string } => !!x.url);
     body = (
       <div className="mx-auto w-full max-w-5xl">
-        <RolePlayPlayer preview activityId={String(a._id)} title={a.title} level={a.level ?? ""} situation={rc.situation ? <RichText lang="fr">{rc.situation}</RichText> : null} brief={publicBrief(rc)} available={conversationEngine() !== null} minutesLeft={null} courseHref={back} />
+        <RolePlayPlayer
+          briefAudioUrl={briefAudioUrl}
+          images={images} preview activityId={String(a._id)} title={a.title} level={a.level ?? ""} situation={rc.situation ? <RichText lang="fr">{rc.situation}</RichText> : null} brief={publicBrief(rc)} available={conversationEngine() !== null} minutesLeft={null} courseHref={back} />
       </div>
     );
   } else if (type === "writing_task") {

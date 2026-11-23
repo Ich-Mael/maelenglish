@@ -56,7 +56,7 @@ export const COACHING = {
     { q: "Quel niveau faut-il pour commencer ?", a: "Aucun niveau minimum. Le diagnostic de départ sert justement à construire un programme adapté, du débutant qui veut oser parler au cadre qui veut perfectionner son anglais professionnel." },
     { q: "Les séances se font en ligne ?", a: "Oui, 100 % en ligne, en visioconférence : vous suivez votre coaching depuis votre ordinateur ou votre téléphone, où que vous soyez et selon votre emploi du temps." },
     { q: "Combien de temps dure un coaching ?", a: "Il est construit autour de votre échéance : les séances s’enchaînent jusqu’au jour J (votre entretien, votre présentation, votre examen). Le nombre et le rythme des séances sont fixés ensemble après le diagnostic." },
-    { q: "Quelle différence avec les programmes et le Challenge ?", a: "Les programmes et le Challenge sont des cours sur l’application, avec des leçons, des exercices et des devoirs corrigés. Le coaching est un accompagnement premium en cours individuels, en direct avec votre coach, entièrement consacré à un objectif précis." },
+    { q: "Quelle différence avec les programmes ?", a: "Les programmes sont des cours sur l’application, avec des leçons, des exercices et des devoirs corrigés. Le coaching est un accompagnement premium en cours individuels, en direct avec votre coach, entièrement consacré à un objectif précis." },
     { q: "Quel est le tarif ?", a: "Le tarif dépend de la formule choisie (nombre et fréquence des séances). Écrivez-nous sur WhatsApp : un conseiller vous envoie une proposition adaptée." },
     { q: "Mon entreprise peut-elle prendre en charge le coaching ?", a: "Oui. Nous établissons un devis et un programme pour l’entreprise, pour un collaborateur ou pour une équipe." },
   ],

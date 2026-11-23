@@ -63,6 +63,15 @@ All providers sit behind internal interfaces in `src/lib/ai/` (`SpeechService`, 
   - SDK: `@elevenlabs/react` 1.20.3 (published 2026-11-02), loaded only on the call screen.
 - **Superseded:** the earlier default « Option A: Azure STT → Claude → Azure TTS pipeline » (more engineering, flatter voice). Fallbacks if ElevenLabs fails the checks: that Azure pipeline, or a real-time speech-to-speech API (e.g. OpenAI Realtime, billed per audio token).
 
+### Story Mode (owner specs « Story Mode — Complete Specification », « Seasons & Avatars », decisions 2026-11-23)
+
+- **Built on existing content** (owner decision 2026-11-23): an episode = a video of the situation → the lessons and Lab activities of an existing course unit → a Talk with Coach Ish role-play played by a season character, whose debrief score proves mastery. No story-specific exercises, no separate speaking challenge, no second conversation engine: only the story layer (seasons, city, characters, places, scenes) and the conversations (Lab role-plays) are created for Story Mode. Supersedes the first version (own 7 exercise types, AI-scored recording, hold-to-talk conversation).
+- **Admin-built seasons**: created in Admin → Story Mode, stored in MongoDB; any city, one learning goal per season; self-contained (own cast, places, map; « copy characters » for sequels); the learner's character is shared by all seasons. JSON import / export.
+- **Paid**: access per season (`StoryEntitlement`, given by staff until payments exist); free preview episodes per season (0 by default). Conversations made for a season (Lab tag « story ») aren't offered on the free Talk with Coach Ish page.
+- **Price from conversation minutes**: each season includes minutes of role-play calls per learner, metered apart from the monthly Talk with Coach Ish minutes; the admin sees the cost of a minute (measured, else the ElevenLabs plan) and a suggested price with a margin, and types the final FCFA price. Minutes used up → the conversation can't start, « Continue anyway » keeps the story going; admins can add minutes.
+- **Character agents**: a role-play played by a story character gets its own ElevenLabs agent (name, personality, voice in the prompt / voice settings), kept apart from the scenario's own agent.
+- **Not built yet**: episode videos (placeholder), payments, certificates, test-out, placement, photo-based avatars (V2: consent, photo deleted after generation), reminders, AI drafting of episodes.
+
 ## Metering
 - `AiUsage` records every paid call: learner, kind, units (audio seconds or tokens), estimated cost, day.
 - Before any paid call, check the learner's monthly cap. The default is set in admin and can be overridden per learner. Staff previews don't count against learner caps.

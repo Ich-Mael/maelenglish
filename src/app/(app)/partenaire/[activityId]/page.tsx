@@ -8,6 +8,7 @@ import { connectDB } from "@/lib/db";
 import { Activity, type ActivityDoc } from "@/models";
 import { attemptsOn, canUsePartner, partnerState, publicBrief } from "@/lib/conversation/queries";
 import type { RolePlayContent } from "@/lib/lab/types";
+import { mediaUrlFor } from "@/lib/media";
 import { RolePlayPlayer } from "@/components/conversation/role-play-player";
 import { RichText } from "@/components/learn/rich-text";
 import { PageSkeleton } from "@/components/learn/ui";
@@ -21,12 +22,17 @@ async function Scenario({ params }: { params: Promise<{ activityId: string }> })
   await connectDB();
   if (!Types.ObjectId.isValid(activityId)) notFound();
   const a = await Activity.findById(activityId).lean<ActivityDoc>();
-  if (!a || a.type !== "role_play" || (a.status !== "ready" && !me.isStaff) || !(await canUsePartner(me))) notFound();
+  // Conversations made for a Story Mode season (tag « story ») are played in the season only.
+  if (!a || a.type !== "role_play" || ((a.status !== "ready" || (a.tags ?? []).includes("story")) && !me.isStaff) || !(await canUsePartner(me))) notFound();
   const c = a.content as RolePlayContent;
+  const briefAudioUrl = c.briefAudioMediaId ? await mediaUrlFor({ id: me.id, isAdmin: me.isStaff }, c.briefAudioMediaId).catch(() => null) : null;
+  const images = (await Promise.all((c.images ?? []).map(async (im) => ({ url: await mediaUrlFor({ id: me.id, isAdmin: me.isStaff }, im.mediaId).catch(() => null), caption: im.caption })))).filter((x): x is { url: string; caption: string } => !!x.url);
   const [state, attempts] = await Promise.all([partnerState(me), attemptsOn(me.id, activityId)]);
   return (
     <div className="mx-auto max-w-5xl">
       <RolePlayPlayer
+        briefAudioUrl={briefAudioUrl}
+        images={images}
         activityId={activityId}
         title={a.title}
         level={a.level ?? ""}

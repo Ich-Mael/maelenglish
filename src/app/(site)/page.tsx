@@ -1,11 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowDown, ArrowRight, BadgeCheck, Laptop, LayoutGrid, Quote, Crown, Sprout, Stethoscope, UserPlus, Users, Zap } from "lucide-react";
+import { ArrowDown, ArrowRight, BadgeCheck, Laptop, LayoutGrid, Mic, Quote, Crown, Stethoscope, UserPlus, Users } from "lucide-react";
 import { PROGRAMS, whatsappLink } from "@/lib/catalog";
-import { COACHING, METHOD_FACTS, METHOD_STEPS, STATS, TESTIMONIALS } from "@/lib/content";
+import { COACHING, METHOD_STEPS, STATS, TESTIMONIALS } from "@/lib/content";
 import { GOAL_ICONS } from "@/components/site/icons";
 import { signupHref } from "@/lib/site";
-import { FeaturedProgramCard, ProgramCard } from "@/components/site/program-card";
+import { ProgramCard } from "@/components/site/program-card";
 import { Carousel } from "@/components/site/carousel";
 import { Photo } from "@/components/site/photo";
 import { BUTTON, Container, PhraseCard, SectionHead, WhatsAppButton } from "@/components/site/ui";
@@ -14,6 +14,8 @@ import { FounderSection } from "@/components/site/founder";
 
 const featured = PROGRAMS.find((p) => p.featured);
 const jobs = PROGRAMS.filter((p) => !p.featured);
+/** The carousel: MaelEnglish Essentials first (the basics), then the job programmes. */
+const carousel = featured ? [featured, ...jobs] : jobs;
 
 export default function HomePage() {
   return (
@@ -38,35 +40,59 @@ function Hero() {
       <div aria-hidden className="pointer-events-none absolute top-40 -left-48 size-[30rem] bg-[radial-gradient(closest-side,var(--color-brand-soft),transparent)]" />
       <Container className="relative grid items-center gap-12 py-12 sm:py-16 lg:grid-cols-[1.15fr_1fr] lg:py-20">
         <div className="hero-in">
-          <h1 lang="en" className="text-4xl leading-[1.05] font-extrabold text-primary text-balance sm:text-5xl lg:text-6xl">
-            Speak the Language of <span className="text-coral">Your Profession</span>
+          {/* The slogan builds word by word, then a coral stroke draws under « Your Profession » (CSS only, off with reduced motion). */}
+          <h1 lang="en" aria-label="Speak the Language of Your Profession" className="hero-words text-4xl leading-[1.05] font-extrabold text-primary text-balance sm:text-5xl lg:text-6xl">
+            {["Speak", "the", "Language", "of"].map((w, i) => (
+              <span key={w} aria-hidden className="hero-word" style={{ "--i": i } as React.CSSProperties}>
+                {w}{" "}
+              </span>
+            ))}
+            <span aria-hidden className="hero-profession relative inline-block text-coral">
+              {["Your", "Profession"].map((w, i) => (
+                <span key={w} className="hero-word" style={{ "--i": i + 4 } as React.CSSProperties}>
+                  {w}
+                  {i === 0 ? " " : ""}
+                </span>
+              ))}
+              <svg viewBox="0 0 300 16" preserveAspectRatio="none" className="hero-stroke pointer-events-none absolute -bottom-2 left-0 h-3 w-full text-coral sm:-bottom-3 sm:h-4" aria-hidden>
+                <path d="M3 11 C 60 3, 140 3, 200 7 S 280 12, 297 5" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" pathLength={1} />
+              </svg>
+            </span>
           </h1>
           <p className="mt-5 max-w-xl text-lg text-muted-foreground text-pretty">
             Réunions, e-mails, entretiens, clients : pratiquez l&apos;anglais des situations que vous vivez vraiment au travail,
             avec un coach qui corrige chaque étape.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a href="#programmes" className={BUTTON.blue}>
-              Voir les programmes <ArrowDown className="size-4" aria-hidden />
+          {/* The two ways in, side by side and the same width: the programmes, and the free diagnostic. */}
+          <div className="mt-8 grid max-w-xl gap-3 sm:grid-cols-2">
+            <a href="#programmes" className="group flex items-center gap-3 rounded-2xl border-2 border-primary bg-primary p-3 pr-4 text-white shadow-[0_4px_0_0_var(--color-brand-deep)] transition hover:brightness-110 active:translate-y-0.5 active:shadow-[0_1px_0_0_var(--color-brand-deep)]">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/15">
+                <LayoutGrid className="size-5" aria-hidden />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-heading text-lg leading-tight font-extrabold">Nos programmes</span>
+                <span className="block text-sm text-white/85">Un anglais adapté à votre métier</span>
+              </span>
+              <ArrowDown className="size-5 shrink-0 transition group-hover:translate-y-0.5 motion-reduce:transition-none" aria-hidden />
             </a>
+            <Link href="/diagnostic" className="group flex items-center gap-3 rounded-2xl border-2 border-coral bg-white p-3 pr-4 shadow-[0_4px_0_0_var(--color-coral)] transition hover:bg-coral-soft active:translate-y-0.5 active:shadow-[0_1px_0_0_var(--color-coral)]">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-coral-soft text-coral">
+                <Stethoscope className="size-5" aria-hidden />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-heading text-lg leading-tight font-extrabold text-brand-deep">Diagnostic gratuit</span>
+                <span className="block text-sm text-muted-foreground">Découvre ce qui freine ton anglais</span>
+              </span>
+              <ArrowRight className="size-5 shrink-0 text-coral transition group-hover:translate-x-0.5 motion-reduce:transition-none" aria-hidden />
+            </Link>
           </div>
-          {/* Key facts: 2 × 2, then the free diagnostic. */}
-          <ul className="mt-8 grid max-w-md grid-cols-2 gap-x-6 gap-y-3 text-sm font-semibold text-ink/75">
+          {/* Key facts: 2 × 2. */}
+          <ul className="mt-6 grid max-w-md grid-cols-2 gap-x-6 gap-y-3 text-sm font-semibold text-ink/75">
             <li className="flex items-center gap-1.5"><LayoutGrid className="size-4 shrink-0 text-primary" aria-hidden /> {PROGRAMS.length} programmes</li>
             <li className="flex items-center gap-1.5"><Users className="size-4 shrink-0 text-primary" aria-hidden /> 40+ professionnels formés</li>
             <li className="flex items-center gap-1.5"><BadgeCheck className="size-4 shrink-0 text-primary" aria-hidden /> Coach certifié TEFL</li>
             <li className="flex items-center gap-1.5"><Laptop className="size-4 shrink-0 text-primary" aria-hidden /> 100 % en ligne</li>
           </ul>
-          <Link href="/diagnostic" className="group mt-6 inline-flex max-w-md items-center gap-3 rounded-2xl border-2 border-coral bg-white p-3 pr-4 shadow-[0_4px_0_0_var(--color-coral)] transition hover:bg-coral-soft active:translate-y-0.5 active:shadow-[0_1px_0_0_var(--color-coral)]">
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-coral-soft text-coral">
-              <Stethoscope className="size-5" aria-hidden />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block font-heading text-lg leading-tight font-extrabold text-brand-deep">Diagnostic gratuit</span>
-              <span className="block text-sm text-muted-foreground">Découvre ce qui freine ton anglais</span>
-            </span>
-            <ArrowRight className="size-5 shrink-0 text-coral transition group-hover:translate-x-0.5 motion-reduce:transition-none" aria-hidden />
-          </Link>
         </div>
 
         <div className="hero-photo relative mx-auto w-full max-w-md lg:max-w-none">
@@ -83,7 +109,7 @@ function Hero() {
 
 function Programmes() {
   return (
-    <section id="programmes" className="bg-brand-soft/60 py-16 sm:py-20">
+    <section id="programmes" className="relative border-t border-primary/10 bg-gradient-to-b from-[#e1e7f8] via-[#e9eefb] to-brand-soft py-16 sm:py-20">
       <Container>
         <SectionHead
           pill="Nos programmes"
@@ -96,74 +122,27 @@ function Programmes() {
         />
         <div className="reveal">
           <Carousel
-            label="Programmes métiers"
+            label="Programmes"
+            prevLabel="Programmes précédents"
+            nextLabel="Programmes suivants"
             heading={
               <>
-                <p className="text-xs font-bold tracking-wide text-coral-dark uppercase">L&apos;anglais de votre secteur</p>
+                <p className="text-xs font-bold tracking-wide text-coral-dark uppercase">Les bases, puis l&apos;anglais de votre secteur</p>
                 <h3 className="mt-1 text-2xl font-extrabold text-brand-deep sm:text-3xl">
-                  {jobs.length} programmes métiers <span className="text-muted-foreground">· 12 semaines</span>
+                  {carousel.length} programmes{" "}
+                  <span className="text-muted-foreground">
+                    · Essentials + {jobs.length} métiers
+                  </span>
                 </h3>
               </>
             }
           >
-            {jobs.map((p) => (
-              <ProgramCard key={p.slug} program={p} />
+            {carousel.map((p) => (
+              <ProgramCard key={p.slug} program={p} ribbon={p.featured ? "Pour commencer" : undefined} />
             ))}
           </Carousel>
         </div>
 
-        {featured && (
-          <div className="reveal mx-auto mt-16 mb-8 max-w-4xl">
-            <div className="relative flex flex-col gap-5 rounded-3xl border-2 border-coral bg-white p-6 shadow-[0_6px_0_0_var(--color-coral)] sm:flex-row sm:items-center sm:p-8">
-              <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-coral-soft text-coral-dark">
-                <Sprout className="size-7" aria-hidden />
-              </span>
-              <div className="flex-1">
-                <p className="font-heading text-2xl font-extrabold text-coral sm:text-[1.75rem]">Pas encore au niveau intermédiaire ?</p>
-                <p className="mt-1 text-lg font-bold text-brand-deep">
-                  Commencez par les bases, puis passez à <span className="text-primary">votre programme métier</span>.
-                </p>
-                <p className="mt-2 text-ink/80 text-pretty">
-                  Les programmes métiers sont conçus pour un niveau intermédiaire. Si vous débutez, ou si vous avez du mal à tenir
-                  une conversation simple, <strong className="text-brand-deep">MaelEnglish Essentials</strong> vous donne les
-                  fondamentaux en 2 niveaux de 8 semaines. Vous enchaînez ensuite sur l&apos;anglais de votre secteur, avec confiance.
-                </p>
-              </div>
-              <ArrowDown className="hidden size-7 shrink-0 animate-float text-coral sm:block" aria-hidden />
-            </div>
-          </div>
-        )}
-
-        {featured && (
-          <div className="reveal">
-            <FeaturedProgramCard program={featured} />
-          </div>
-        )}
-
-        {/* MaelEnglish Challenge: a product of its own — a course with daily, coach-validated checkpoints */}
-        <div className="reveal mt-5">
-          <Link
-            href={signupHref("challenge")}
-            className="group flex flex-col gap-4 rounded-3xl border-2 border-coral bg-white p-6 text-brand-deep shadow-[0_6px_0_0_var(--color-coral)] transition hover:-translate-y-1 sm:flex-row sm:items-center sm:p-7"
-          >
-            <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-coral-soft text-coral-dark">
-              <Zap className="size-7" aria-hidden />
-            </span>
-            <div className="flex-1">
-              <p className="text-xs font-bold tracking-wide text-coral-dark uppercase">Défi quotidien</p>
-              <h3 className="mt-0.5 text-2xl font-extrabold">
-                MaelEnglish <span className="text-coral">Challenge</span>
-              </h3>
-              <p className="mt-1 text-ink/80">
-                Une mission par jour, un point de contrôle validé par votre coach avant de passer au jour suivant : la régularité
-                qui fait progresser.
-              </p>
-            </div>
-            <span className="inline-flex items-center gap-1.5 font-bold text-coral-dark">
-              Relever le défi <ArrowRight className="size-4 transition group-hover:translate-x-1" aria-hidden />
-            </span>
-          </Link>
-        </div>
       </Container>
     </section>
   );
@@ -192,9 +171,6 @@ function CoachingPremium() {
                 <Link href="/coaching" className={BUTTON.coral}>
                   Découvrir le coaching <ArrowRight className="size-4" aria-hidden />
                 </Link>
-                <Link href="/diagnostic" className={BUTTON.ghost}>
-                  Demander mon diagnostic
-                </Link>
               </div>
             </div>
             <ul className="grid gap-3 sm:grid-cols-2">
@@ -220,7 +196,34 @@ function Method() {
   return (
     <section id="methode" className="bg-brand-soft/60 py-16 sm:py-20">
       <Container>
-        <SectionHead pill="Comment ça marche" title="Parler d'abord, la grammaire au service de la parole" />
+        <SectionHead pill="Comment ça marche" title="Parler d'abord, la grammaire au service de la parole" className="mb-6" />
+        {/* The two speaking features that set MaelEnglish apart. */}
+        <div className="reveal mx-auto mb-10 grid max-w-4xl gap-3 sm:grid-cols-2">
+          <p className="sm:col-span-2 text-center text-lg text-ink/80 text-pretty">
+            Avec MaelEnglish, l&apos;essentiel est de <strong className="text-brand-deep">parler</strong>. Deux rendez-vous vous font pratiquer à voix haute :
+          </p>
+          <div className="flex items-start gap-3 rounded-2xl border-2 border-coral bg-white p-4 shadow-[0_4px_0_0_var(--color-coral)]">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-coral-soft text-coral">
+              <Mic className="size-5" aria-hidden />
+            </span>
+            <span>
+              <span lang="en" className="block font-heading text-lg font-extrabold text-brand-deep">
+                Speaking Challenge
+              </span>
+              <span className="block text-sm text-ink/75">À la fin de chaque unité, vous vous enregistrez dans une situation de votre métier. Votre coach vous répond, par écrit ou en message vocal.</span>
+            </span>
+          </div>
+          <div className="flex items-start gap-3 rounded-2xl border-2 border-primary bg-white p-4 shadow-[0_4px_0_0_var(--color-primary)]">
+            {/* eslint-disable-next-line @next/next/no-img-element -- pre-sized portrait */}
+            <img src="/images/coach-ish-256.webp" alt="" width={40} height={40} className="size-10 shrink-0 rounded-xl object-cover" />
+            <span>
+              <span lang="en" className="block font-heading text-lg font-extrabold">
+                <span className="text-coral-dark">Talk with</span> <span className="text-primary">Coach Ish</span>
+              </span>
+              <span className="block text-sm text-ink/75">Une vraie conversation à voix haute avec une IA qui joue votre interlocuteur (recruteur, client, collègue…), puis un bilan avec vos corrections.</span>
+            </span>
+          </div>
+        </div>
         <ol className="grid gap-5 md:grid-cols-3">
           {METHOD_STEPS.map((s, i) => (
             <li key={s.title} className="reveal relative rounded-3xl border-2 border-border bg-card p-6">
@@ -232,13 +235,6 @@ function Method() {
             </li>
           ))}
         </ol>
-        <ul className="mt-8 flex flex-wrap justify-center gap-2.5">
-          {METHOD_FACTS.map((f) => (
-            <li key={f} className="rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold text-ink/80">
-              {f}
-            </li>
-          ))}
-        </ul>
       </Container>
     </section>
   );
@@ -269,13 +265,14 @@ function Testimonials() {
     <section id="temoignages" className="py-16 sm:py-20">
       <Container>
         <SectionHead pill="Ils parlent l'anglais de leur métier" title="Des résultats concrets" />
-        <div className="grid gap-5 sm:grid-cols-2">
+        {/* Carousel (swipe on phones, arrows on desktop). No .reveal inside: it would follow the horizontal scroller. */}
+        <Carousel label="Témoignages" prevLabel="Témoignages précédents" nextLabel="Témoignages suivants">
           {TESTIMONIALS.map((t) => (
-            <figure key={t.name} className="reveal flex flex-col rounded-3xl border-2 border-border bg-card p-6">
+            <figure key={t.name} className="flex w-full flex-col rounded-3xl border-2 border-border bg-card p-6 shadow-[0_1px_2px_rgb(20_31_77/0.05)]">
               <Quote className="mb-3 size-7 text-coral" aria-hidden />
               <blockquote className="flex-1 text-ink/90">« {t.text} »</blockquote>
               <figcaption className="mt-5 flex items-center gap-3">
-                <span className="flex size-10 items-center justify-center rounded-full bg-primary font-heading font-bold text-white" aria-hidden>
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary font-heading font-bold text-white" aria-hidden>
                   {t.name.charAt(0)}
                 </span>
                 <span>
@@ -285,7 +282,7 @@ function Testimonials() {
               </figcaption>
             </figure>
           ))}
-        </div>
+        </Carousel>
       </Container>
     </section>
   );

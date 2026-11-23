@@ -14,6 +14,8 @@ export type FinishedRolePlay = {
   reward: Reward | null;
   /** The learner's conversation minutes left this month after this call (null = not capped / unknown). */
   minutesLeft: number | null;
+  /** Story Mode: was the episode's conversation mastered (debrief score ≥ the pass score)? */
+  story?: { passed: boolean; passScore: number; canContinueAnyway: boolean; episodeFinished: boolean } | null;
 };
 
 export const toFinished = (s: Pick<ConversationSessionDoc, "_id" | "status" | "note" | "transcript" | "debrief" | "score" | "durationS">, reward: Reward | null = null, minutesLeft: number | null = null): FinishedRolePlay => ({

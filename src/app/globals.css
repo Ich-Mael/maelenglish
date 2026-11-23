@@ -267,6 +267,18 @@ html {
   from { transform: translateY(28px) scale(0.95); }
   to { transform: none; }
 }
+@keyframes word-in {
+  from { opacity: 0; transform: translateY(0.45em) rotate(2deg); filter: blur(4px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@keyframes stroke-draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes profession-glow {
+  0% { text-shadow: 0 0 0 rgb(255 87 87 / 0); }
+  35% { text-shadow: 0 0 24px rgb(255 87 87 / 0.45); }
+  100% { text-shadow: 0 0 0 rgb(255 87 87 / 0); }
+}
 @keyframes reveal-up {
   from { opacity: 0; transform: translateY(44px) scale(0.98); }
   to { opacity: 1; transform: none; }
@@ -278,6 +290,22 @@ html {
   .hero-in > :nth-child(4) { animation-delay: 0.24s; }
   .hero-in > :nth-child(5) { animation-delay: 0.32s; }
   .hero-photo { animation: photo-in 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s both; }
+
+  /* Slogan: words rise in one after another, then a coral stroke draws under « Your Profession »
+     and the two words get a soft glow, once. The h1 itself doesn't slide (its words do). */
+  .hero-in > .hero-words { animation: none; }
+  .hero-word {
+    display: inline-block;
+    white-space: pre;
+    animation: word-in 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-delay: calc(0.1s + var(--i, 0) * 0.09s);
+  }
+  .hero-stroke path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: stroke-draw 0.7s cubic-bezier(0.6, 0, 0.3, 1) 0.85s forwards;
+  }
+  .hero-profession { animation: profession-glow 1.6s ease-out 1.3s both; }
 
   @supports (animation-timeline: view()) {
     .reveal {

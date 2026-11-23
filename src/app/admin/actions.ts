@@ -717,3 +717,29 @@ export async function sendDigestNowAction(): Promise<State> {
     return fail(e);
   }
 }
+
+/** Story Mode: give / update / remove a learner's access to a season (admins and account managers). */
+export async function storyAccessAction(_: State, form: FormData): Promise<State> {
+  try {
+    const me = await staffOrThrow();
+    if (!can.manageEnrollments(actorOf(me))) return { error: "Only admins and account managers give story access." };
+    const { grantStory, revokeStory } = await import("@/lib/story/service");
+    const userId = str(form, "userId");
+    const storyId = str(form, "storyId");
+    // The « Remove » button is the submitter with grant=0.
+    if (str(form, "grant") === "0") {
+      await revokeStory(userId, storyId);
+      refresh();
+      return { success: "Access removed." };
+    }
+    const until = str(form, "expiresAt");
+    const expiresAt = until ? new Date(`${until}T23:59:59`) : null;
+    if (expiresAt && Number.isNaN(expiresAt.getTime())) return { error: "Invalid date." };
+    await grantStory(userId, storyId, me.id, { expiresAt, extraMinutes: Number(str(form, "extraMinutes") || 0) });
+    refresh();
+    return { success: "Access saved." };
+  } catch (e) {
+    if (e instanceof Error && e.name === "Error" && e.message === "Unknown season.") return { error: e.message };
+    return fail(e);
+  }
+}

@@ -36,22 +36,32 @@ async function Lab({ searchParams }: { searchParams: Promise<Record<string, stri
 
   return (
     <div className="grid max-w-5xl gap-5">
-      <PageHeader title="Lab" subtitle="Reusable practice activities: create them here, then add them to your courses' units." />
+      <PageHeader
+        title="Lab"
+        subtitle="Reusable practice activities: create them here, then add them to your courses' units."
+        actions={
+          <a href="#library" className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-white hover:brightness-110">
+            <FlaskConical className="size-4" aria-hidden /> My activities ({all.length})
+          </a>
+        }
+      />
 
-      {/* Library at a glance. */}
-      <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      {/* Library at a glance: each figure opens the matching list (the library is at the bottom of the page). */}
+      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[
-          { label: "Activities", value: all.length },
-          { label: "Ready", value: all.filter((x) => x.status === "ready").length },
-          { label: "Drafts", value: all.filter((x) => x.status !== "ready").length },
-          { label: "Used in units", value: all.filter((x) => x.uses).length },
+          { label: "Activities", value: all.length, href: "/admin/labo#library" },
+          { label: "Ready", value: all.filter((x) => x.status === "ready").length, href: "/admin/labo?statut=ready#library" },
+          { label: "Drafts", value: all.filter((x) => x.status !== "ready").length, href: "/admin/labo?statut=draft#library" },
+          { label: "Used in units", value: all.filter((x) => x.uses).length, href: "/admin/labo#library" },
         ].map((x) => (
-          <div key={x.label} className="flex flex-col-reverse rounded-2xl border border-border bg-card px-4 py-3">
-            <dt className="text-xs font-semibold text-muted-foreground">{x.label}</dt>
-            <dd className="font-heading text-2xl font-extrabold text-brand-deep tabular-nums">{x.value}</dd>
-          </div>
+          <li key={x.label}>
+            <Link href={x.href} className="flex flex-col-reverse rounded-2xl border border-border bg-card px-4 py-3 transition hover:border-primary/40 hover:bg-brand-soft/40">
+              <span className="text-xs font-semibold text-muted-foreground">{x.label} · see the list →</span>
+              <span className="font-heading text-2xl font-extrabold text-brand-deep tabular-nums">{x.value}</span>
+            </Link>
+          </li>
         ))}
-      </dl>
+      </ul>
 
       {/* The two speaking features side by side: Talk with Coach Ish (flagship, first) and the unit challenge. */}
       <div className="grid gap-4 lg:grid-cols-2">
@@ -201,7 +211,7 @@ async function Lab({ searchParams }: { searchParams: Promise<Record<string, stri
       </section>
 
       {/* The library folds away (open by default; <details>, no JS). */}
-      <details id="library" open className="group/lib rounded-2xl border border-border bg-card">
+      <details id="library" open className="group/lib scroll-mt-24 rounded-2xl border border-border bg-card">
         <summary className="flex cursor-pointer list-none items-center gap-3 rounded-2xl p-5 hover:bg-brand-soft/40 [&::-webkit-details-marker]:hidden">
           <span className="grid min-w-0 flex-1">
             <span className="text-lg font-bold text-brand-deep">Library</span>

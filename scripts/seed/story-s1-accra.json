@@ -1,0 +1,497 @@
+{
+  "format": "maelenglish-story-season",
+  "slug": "s1-arrival",
+  "title": "Season 1 — The Arrival",
+  "learning_goal_fr": "Je me débrouille au quotidien en anglais",
+  "level": "A1–A2",
+  "description": "",
+  "length_weeks": 8,
+  "city": "Accra",
+  "country": "Ghana",
+  "free_episodes": 0,
+  "ai_minutes_included": 60,
+  "price_fcfa": null,
+  "next_season_hook_fr": "Mr. Mensah vous propose un poste dans son équipe…",
+  "recap_scene": {
+    "lines": []
+  },
+  "characters": [
+    {
+      "id": "narrator",
+      "name": "Narrator",
+      "role": "Narrator of the story",
+      "personality": "Calm and warm",
+      "speaking_style": "Clear, simple English",
+      "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+      "voice_name": "",
+      "avatar": {
+        "face": "oval",
+        "skin": 4,
+        "hair": "short",
+        "hairColor": 0,
+        "outfit": "shirt",
+        "outfitColor": 1,
+        "glasses": false,
+        "beard": "none",
+        "earrings": false,
+        "bg": 0
+      }
+    },
+    {
+      "id": "officer",
+      "name": "Officer Asante",
+      "role": "Immigration officer at Kotoka International Airport",
+      "personality": "Polite, serious, efficient, but kind to nervous travellers",
+      "speaking_style": "Short official questions, slow and clear",
+      "voice_id": "nPczCjzI2devNBz1zQrb",
+      "voice_name": "",
+      "avatar": {
+        "face": "square",
+        "skin": 6,
+        "hair": "fade",
+        "hairColor": 0,
+        "outfit": "uniform",
+        "outfitColor": 2,
+        "glasses": false,
+        "beard": "short",
+        "earrings": false,
+        "bg": 1
+      }
+    },
+    {
+      "id": "ama",
+      "name": "Ama",
+      "role": "Your neighbour, a nurse at the city hospital",
+      "personality": "Friendly, curious, talkative, loves helping newcomers",
+      "speaking_style": "Warm and simple, asks many questions, laughs easily",
+      "voice_id": "cgSgspJ2msm6clMCkdW9",
+      "voice_name": "",
+      "avatar": {
+        "face": "oval",
+        "skin": 5,
+        "hair": "braids",
+        "hairColor": 0,
+        "outfit": "dress",
+        "outfitColor": 4,
+        "glasses": false,
+        "beard": "none",
+        "earrings": true,
+        "bg": 2
+      }
+    },
+    {
+      "id": "kojo",
+      "name": "Kojo",
+      "role": "Taxi driver who knows every street of Accra",
+      "personality": "Cheerful, chatty, a little cheeky about prices",
+      "speaking_style": "Relaxed, friendly, sometimes fast, uses simple words",
+      "voice_id": "CwhRBWXzGAHq8TQ4Fs17",
+      "voice_name": "",
+      "avatar": {
+        "face": "round",
+        "skin": 6,
+        "hair": "short",
+        "hairColor": 0,
+        "outfit": "polo",
+        "outfitColor": 5,
+        "glasses": false,
+        "beard": "full",
+        "earrings": false,
+        "bg": 3
+      }
+    },
+    {
+      "id": "mensah",
+      "name": "Mr. Mensah",
+      "role": "Manager at an international company in Accra",
+      "personality": "Professional, encouraging, values clear communication",
+      "speaking_style": "Polite business English, measured pace",
+      "voice_id": "onwK4e9ZLuTAKqWW03F9",
+      "voice_name": "",
+      "avatar": {
+        "face": "square",
+        "skin": 7,
+        "hair": "short",
+        "hairColor": 3,
+        "outfit": "blazer",
+        "outfitColor": 0,
+        "glasses": true,
+        "beard": "short",
+        "earrings": false,
+        "bg": 4
+      }
+    }
+  ],
+  "locations": [
+    {
+      "id": "airport",
+      "name": "Kotoka Airport",
+      "name_fr": "Aéroport de Kotoka",
+      "map_position": {
+        "x": 0.82,
+        "y": 0.18
+      },
+      "icon": "Plane"
+    },
+    {
+      "id": "taxi",
+      "name": "Liberation Road",
+      "name_fr": "Liberation Road",
+      "map_position": {
+        "x": 0.6,
+        "y": 0.38
+      },
+      "icon": "Car"
+    },
+    {
+      "id": "apartment",
+      "name": "Your apartment, Osu",
+      "name_fr": "Votre appartement, Osu",
+      "map_position": {
+        "x": 0.36,
+        "y": 0.62
+      },
+      "icon": "House"
+    },
+    {
+      "id": "phone-shop",
+      "name": "Phone shop",
+      "name_fr": "Boutique de téléphones",
+      "map_position": {
+        "x": 0.22,
+        "y": 0.4
+      },
+      "icon": "Smartphone"
+    },
+    {
+      "id": "pharmacy",
+      "name": "Pharmacy",
+      "name_fr": "Pharmacie",
+      "map_position": {
+        "x": 0.5,
+        "y": 0.78
+      },
+      "icon": "Cross"
+    },
+    {
+      "id": "market",
+      "name": "Makola Market",
+      "name_fr": "Marché de Makola",
+      "map_position": {
+        "x": 0.14,
+        "y": 0.72
+      },
+      "icon": "ShoppingBasket"
+    },
+    {
+      "id": "cafe",
+      "name": "Oxford Street café",
+      "name_fr": "Café d'Oxford Street",
+      "map_position": {
+        "x": 0.7,
+        "y": 0.66
+      },
+      "icon": "Coffee"
+    }
+  ],
+  "chapters": [
+    {
+      "id": "ch01",
+      "order": 1,
+      "title": "Settling in",
+      "summary_fr": "Premier mois à Accra : vous arrivez, vous rencontrez vos voisins et vous vous installez."
+    }
+  ],
+  "episodes": [
+    {
+      "id": "ep01-airport",
+      "order": 1,
+      "title": "Landing at the airport",
+      "location_id": "airport",
+      "characters": [
+        "officer"
+      ],
+      "estimated_minutes": 30,
+      "objectives": [
+        "Je sais saluer quelqu'un poliment",
+        "Je sais dire qui je suis et d'où je viens",
+        "Je sais répondre aux questions de l'immigration"
+      ],
+      "situation": "au voyage",
+      "day_increment": 1,
+      "intro_scene": {
+        "lines": [
+          {
+            "speaker": "narrator",
+            "text_fr": "Votre avion atterrit à Accra. Vous êtes fatigué(e), mais heureux(se) : une nouvelle vie commence."
+          },
+          {
+            "speaker": "narrator",
+            "text_fr": "Au contrôle des passeports, un agent vous fait signe d'avancer."
+          },
+          {
+            "speaker": "officer",
+            "text_en": "Good morning. Passport, please.",
+            "text_fr": "Bonjour. Passeport, s'il vous plaît.",
+            "audio": "auto"
+          },
+          {
+            "speaker": "narrator",
+            "text_fr": "Il va vous poser des questions en anglais… Comment répondre ?"
+          }
+        ]
+      },
+      "video": {
+        "provider": "placeholder",
+        "url": "",
+        "duration_seconds": 0,
+        "transcript_en": "",
+        "completion_threshold": 0.9
+      },
+      "conversation": {
+        "npc": "officer",
+        "role_play_id": "",
+        "pass_score": 60
+      },
+      "outro_scene": {
+        "lines": [
+          {
+            "speaker": "officer",
+            "text_en": "Thank you, {learner_name}. Welcome to Ghana!",
+            "text_fr": "Merci, {learner_name}. Bienvenue au Ghana !",
+            "audio": "auto"
+          },
+          {
+            "speaker": "narrator",
+            "text_fr": "Vous récupérez votre valise. Dehors, il fait chaud. Votre nouvel appartement vous attend à Osu."
+          }
+        ]
+      },
+      "next_episode_teaser_fr": "Prochain épisode : vous rencontrez votre voisine.",
+      "chapter": "ch01",
+      "status": "draft",
+      "unit_id": "",
+      "role_play_draft": {
+        "title": "Landing at the airport — Officer Asante",
+        "level": "A1",
+        "content": {
+          "situation": "<p>Votre avion atterrit à Accra. Vous êtes fatigué(e), mais heureux(se) : une nouvelle vie commence.</p>",
+          "aiRole": "Officer Asante, Immigration officer at Kotoka International Airport",
+          "learnerRole": "a French-speaking professional who has just moved to Accra for a new job",
+          "setting": "Passport control at Kotoka International Airport, Accra. The learner has just landed and arrives at your desk.",
+          "goals": [
+            "Give your name and your country",
+            "Explain why you are coming to Accra",
+            "Say how long you are staying"
+          ],
+          "targetPhrases": [
+            "Good morning.",
+            "My name is…",
+            "I'm from Burkina Faso.",
+            "I'm an accountant.",
+            "I'm here for work.",
+            "Sorry, can you repeat, please?"
+          ],
+          "twists": [
+            "Check the passport: ask the learner's name, nationality, the purpose of the visit, how long they will stay and where they will live. End with \"Welcome to Ghana\"."
+          ],
+          "openingLine": "Good morning. Passport, please. What is your name?",
+          "difficulty": 1,
+          "maxMinutes": 5,
+          "voiceId": "nPczCjzI2devNBz1zQrb",
+          "voiceName": ""
+        }
+      }
+    },
+    {
+      "id": "ep02-neighbour",
+      "order": 2,
+      "title": "Meeting the neighbour",
+      "location_id": "apartment",
+      "characters": [
+        "ama"
+      ],
+      "estimated_minutes": 35,
+      "objectives": [
+        "Je sais saluer quelqu'un",
+        "Je sais me présenter",
+        "Je sais poser des questions personnelles simples"
+      ],
+      "situation": "à la maison",
+      "day_increment": 1,
+      "intro_scene": {
+        "lines": [
+          {
+            "speaker": "narrator",
+            "text_fr": "Vous déballez vos affaires dans votre nouvel appartement. Quelqu'un frappe à la porte."
+          },
+          {
+            "speaker": "ama",
+            "text_en": "Hi! I'm Ama, I live next door. Welcome!",
+            "text_fr": "Salut ! Je suis Ama, j'habite à côté. Bienvenue !",
+            "audio": "auto"
+          },
+          {
+            "speaker": "narrator",
+            "text_fr": "Ama vous sourit et vous demande d'où vous venez… mais comment répondre ?"
+          }
+        ]
+      },
+      "video": {
+        "provider": "placeholder",
+        "url": "",
+        "duration_seconds": 0,
+        "transcript_en": "",
+        "completion_threshold": 0.9
+      },
+      "conversation": {
+        "npc": "ama",
+        "role_play_id": "",
+        "pass_score": 60
+      },
+      "outro_scene": {
+        "lines": [
+          {
+            "speaker": "ama",
+            "text_en": "It was lovely to meet you, {learner_name}. Knock if you need anything!",
+            "text_fr": "Ravie de vous rencontrer, {learner_name}. Frappez si vous avez besoin de quoi que ce soit !",
+            "audio": "auto"
+          },
+          {
+            "speaker": "narrator",
+            "text_fr": "Vous avez une amie dans l'immeuble. Mais vos valises sont encore chez un ami de l'autre côté de la ville…"
+          }
+        ]
+      },
+      "next_episode_teaser_fr": "Prochain épisode : un taxi à travers Accra.",
+      "chapter": "ch01",
+      "status": "draft",
+      "unit_id": "",
+      "role_play_draft": {
+        "title": "Meeting the neighbour — Ama",
+        "level": "A2",
+        "content": {
+          "situation": "<p>Vous déballez vos affaires dans votre nouvel appartement. Quelqu'un frappe à la porte.</p>",
+          "aiRole": "Ama, Your neighbour, a nurse at the city hospital",
+          "learnerRole": "a French-speaking professional who has just moved to Accra for a new job",
+          "setting": "Ama knocks on your door to welcome you to the building.",
+          "goals": [
+            "Introduce yourself",
+            "Ask Ama what she does",
+            "Say goodbye politely"
+          ],
+          "targetPhrases": [
+            "Nice to meet you.",
+            "Where are you from?",
+            "What do you do?",
+            "I live next door.",
+            "See you soon!"
+          ],
+          "twists": [
+            "Learn the learner's name, origin and job. Mention you are a nurse at the city hospital. Offer to show them the neighbourhood one day."
+          ],
+          "openingLine": "Hi! I'm Ama, I live next door. Welcome!",
+          "difficulty": 1,
+          "maxMinutes": 5,
+          "voiceId": "cgSgspJ2msm6clMCkdW9",
+          "voiceName": ""
+        }
+      }
+    },
+    {
+      "id": "ep03-taxi",
+      "order": 3,
+      "title": "Taxi to the apartment",
+      "location_id": "taxi",
+      "characters": [
+        "kojo"
+      ],
+      "estimated_minutes": 35,
+      "objectives": [
+        "Je sais donner une adresse",
+        "Je sais comprendre et discuter un prix",
+        "Je sais utiliser les nombres"
+      ],
+      "situation": "en ville",
+      "day_increment": 1,
+      "intro_scene": {
+        "lines": [
+          {
+            "speaker": "narrator",
+            "text_fr": "Vous devez rapporter vos valises jusqu'à votre appartement d'Osu. Vous arrêtez un taxi."
+          },
+          {
+            "speaker": "kojo",
+            "text_en": "Hello my friend! Where are you going?",
+            "text_fr": "Bonjour mon ami(e) ! Vous allez où ?",
+            "audio": "auto"
+          },
+          {
+            "speaker": "narrator",
+            "text_fr": "Il faut donner l'adresse… et se mettre d'accord sur le prix avant de partir."
+          }
+        ]
+      },
+      "video": {
+        "provider": "placeholder",
+        "url": "",
+        "duration_seconds": 0,
+        "transcript_en": "",
+        "completion_threshold": 0.9
+      },
+      "conversation": {
+        "npc": "kojo",
+        "role_play_id": "",
+        "pass_score": 60
+      },
+      "outro_scene": {
+        "lines": [
+          {
+            "speaker": "kojo",
+            "text_en": "Here we are, Oxford Street! Welcome to Osu, {learner_name}!",
+            "text_fr": "Nous y voilà, Oxford Street ! Bienvenue à Osu, {learner_name} !",
+            "audio": "auto"
+          },
+          {
+            "speaker": "narrator",
+            "text_fr": "Vous avez vos clés, vos valises et un nouveau quartier à découvrir. Demain, il vous faudra une carte SIM…"
+          }
+        ]
+      },
+      "next_episode_teaser_fr": "Prochain épisode : remplir un formulaire et récupérer vos clés.",
+      "chapter": "ch01",
+      "status": "draft",
+      "unit_id": "",
+      "role_play_draft": {
+        "title": "Taxi to the apartment — Kojo",
+        "level": "A1",
+        "content": {
+          "situation": "<p>Vous devez rapporter vos valises jusqu'à votre appartement d'Osu. Vous arrêtez un taxi.</p>",
+          "aiRole": "Kojo, Taxi driver who knows every street of Accra",
+          "learnerRole": "a French-speaking professional who has just moved to Accra for a new job",
+          "setting": "The learner gets into your taxi with two suitcases near the Accra Mall and must get to Osu.",
+          "goals": [
+            "Give the address",
+            "Ask the price",
+            "Negotiate and agree on a price"
+          ],
+          "targetPhrases": [
+            "Can you take me to Osu, please?",
+            "How much is it?",
+            "That's too expensive.",
+            "OK, it's a deal.",
+            "You can stop here, thank you."
+          ],
+          "twists": [
+            "Ask where the learner is going. Start with a high price (80 cedis) and accept around 50 if they negotiate politely. Chat about where they come from. Accept to stop at the right address."
+          ],
+          "openingLine": "Hello my friend! Where are you going?",
+          "difficulty": 1,
+          "maxMinutes": 5,
+          "voiceId": "CwhRBWXzGAHq8TQ4Fs17",
+          "voiceName": ""
+        }
+      }
+    }
+  ]
+}

@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { ArrowRight, BadgeCheck, Compass, Lightbulb, Plane, Quote, Stethoscope, Trophy } from "lucide-react";
+import { BadgeCheck, Compass, Lightbulb, Plane, Quote, Trophy } from "lucide-react";
 import { FOUNDER } from "@/lib/content";
 import { waLink } from "@/lib/site";
 import { Photo } from "./photo";
@@ -122,17 +121,6 @@ export function FounderSection() {
           </figure>
 
 
-          {/* The free diagnostic, under Coach Ish's story and contact (the left column is sticky: kept out of it). */}
-          <Link href="/diagnostic" className="group mt-6 flex items-center gap-3 rounded-2xl border-2 border-coral bg-white p-4 shadow-[0_4px_0_0_var(--color-coral)] transition hover:bg-coral-soft active:translate-y-0.5 active:shadow-[0_1px_0_0_var(--color-coral)]">
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-coral-soft text-coral">
-              <Stethoscope className="size-5" aria-hidden />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block font-heading text-lg leading-tight font-extrabold text-brand-deep">Faire mon diagnostic gratuit</span>
-              <span className="mt-0.5 block text-sm text-muted-foreground">Qu&apos;est-ce qui freine votre anglais&nbsp;? 8 minutes, un rapport personnalisé.</span>
-            </span>
-            <ArrowRight className="size-5 shrink-0 text-coral transition group-hover:translate-x-0.5 motion-reduce:transition-none" aria-hidden />
-          </Link>
         </div>
       </div>
     </section>
