@@ -12,9 +12,11 @@ export type FinishedRolePlay = {
   score: number | null;
   durationS: number;
   reward: Reward | null;
+  /** The learner's conversation minutes left this month after this call (null = not capped / unknown). */
+  minutesLeft: number | null;
 };
 
-export const toFinished = (s: Pick<ConversationSessionDoc, "_id" | "status" | "note" | "transcript" | "debrief" | "score" | "durationS">, reward: Reward | null = null): FinishedRolePlay => ({
+export const toFinished = (s: Pick<ConversationSessionDoc, "_id" | "status" | "note" | "transcript" | "debrief" | "score" | "durationS">, reward: Reward | null = null, minutesLeft: number | null = null): FinishedRolePlay => ({
   sessionId: String(s._id),
   status: s.status as FinishedRolePlay["status"],
   note: s.note ?? "",
@@ -23,6 +25,7 @@ export const toFinished = (s: Pick<ConversationSessionDoc, "_id" | "status" | "n
   score: s.score ?? null,
   durationS: s.durationS ?? 0,
   reward,
+  minutesLeft,
 });
 
 

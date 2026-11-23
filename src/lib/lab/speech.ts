@@ -1,7 +1,7 @@
 import { normalizeEnglish } from "@/lib/ai/text";
 
 /*
- * « Répétez après Mael » scoring (pure, shared by browser and server): what the browser's speech
+ * « Répétez après Coach Ish » scoring (pure, shared by browser and server): what the browser's speech
  * recognition heard is compared word by word with the phrase (case, punctuation and contractions
  * ignored, words in order — longest common subsequence). It checks that the words were
  * understood, not the accent (precise pronunciation scoring = a paid service, later).

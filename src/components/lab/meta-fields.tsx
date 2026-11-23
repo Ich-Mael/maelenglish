@@ -1,7 +1,7 @@
 import { Input, Select } from "@/components/admin/ui";
 import { CEFR_LEVELS, SKILLS, THEMES } from "@/lib/lab/meta";
 
-/** Common details of a Lab activity (admin form): level, skills, theme, minutes, instruction, Mael's tip. */
+/** Common details of a Lab activity (admin form): level, skills, theme, minutes, instruction, Coach Ish's tip. */
 export function MetaFields({ a }: { a: { level?: string | null; skills?: string[] | null; theme?: string | null; durationMin?: number | null; instructions?: string | null; maelTip?: string | null } }) {
   const skills = new Set(a.skills ?? []);
   return (
@@ -23,7 +23,7 @@ export function MetaFields({ a }: { a: { level?: string | null; skills?: string[
         </div>
       </div>
       <Input label="Instruction (French, for learners)" name="instructions" defaultValue={a.instructions ?? ""} maxLength={300} placeholder="E.g. Écoutez l'appel du fournisseur et répondez aux questions." hint="One line, shown at the top of the exercise." />
-      <Input label="Le conseil de Mael (French, optional)" name="maelTip" defaultValue={a.maelTip ?? ""} maxLength={600} placeholder="E.g. Au téléphone, « I'm afraid… » adoucit une mauvaise nouvelle." hint="Mael's personal tip, shown on the results screen." />
+      <Input label="Le conseil de Coach Ish (French, optional)" name="maelTip" defaultValue={a.maelTip ?? ""} maxLength={600} placeholder="E.g. Au téléphone, « I'm afraid… » adoucit une mauvaise nouvelle." hint="Coach Ish's personal tip, shown on the results screen." />
     </fieldset>
   );
 }

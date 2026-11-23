@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, ClipboardCheck, Cpu, FlaskConical, Gauge, Inbox, LayoutDashboard, MessagesSquare, Mic, Users } from "lucide-react";
+import { BookOpen, ClipboardCheck, Cpu, FlaskConical, Gauge, Inbox, LayoutDashboard, Stethoscope, MessagesSquare, Mic, Users } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { can } from "@/lib/admin/permissions";
 
@@ -11,6 +11,7 @@ export async function AdminNav({ mobile }: { mobile?: boolean }) {
   const items = [
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard, show: true },
     { href: "/admin/demandes", label: "Requests", icon: Inbox, show: can.manageUsers(a) },
+    { href: "/admin/diagnostics", label: "Diagnostics", icon: Stethoscope, show: can.manageUsers(a) },
     { href: "/admin/utilisateurs", label: "Users", icon: Users, show: can.manageUsers(a) },
     { href: "/admin/cours", label: "Courses", icon: BookOpen, show: true },
     { href: "/admin/labo", label: "Lab", icon: FlaskConical, show: can.useLab(a) },

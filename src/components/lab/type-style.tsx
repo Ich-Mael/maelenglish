@@ -69,7 +69,7 @@ export const TYPE_LOOK: Record<ActivityType, { band: string; tile: string; examp
     band: "bg-gradient-to-br from-primary to-brand-deep text-white",
     tile: "bg-gradient-to-br from-primary to-brand-deep text-white",
     example: "E.g. Accueillir un client",
-    perks: ["Hear Mael, then repeat", "Words understood shown", "Self-check fallback"],
+    perks: ["Hear Coach Ish, then repeat", "Words understood shown", "Self-check fallback"],
   },
   writing_task: {
     band: "bg-gradient-to-br from-white via-brand-soft to-brand-soft text-primary",

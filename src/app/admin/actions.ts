@@ -12,6 +12,7 @@ import * as steps from "@/lib/admin/steps";
 import { savePersona, setDefaultMonthlyMinutes } from "@/lib/ai/metering";
 import { BudgetError, saveBudget } from "@/lib/conversation/budget";
 import { deleteConversationAudio } from "@/lib/conversation/recording";
+import { setDiagnosticStatus } from "@/lib/diagnostic/service";
 import { enroll, removeEnrollment, updateEnrollment } from "@/lib/admin/enrollments";
 import { gradeSubmission } from "@/lib/admin/grading";
 import { notifyChallengeReviewed, notifyWritingReviewed, runCoachDigest } from "@/lib/notifications";
@@ -649,7 +650,20 @@ export async function deleteConversationAudioAction(sessionId: string): Promise<
   }
 }
 
-/** Mael persona (AIC-07): the coach's voice in role-play help and debriefs. Admins only. */
+/** Diagnostics follow-up status (admins and account managers). */
+export async function setDiagnosticStatusAction(id: string, status: string): Promise<{ error?: string }> {
+  try {
+    const me = await staffOrThrow();
+    if (!can.manageUsers(actorOf(me))) throw new AdminError("Not allowed.");
+    await setDiagnosticStatus(id, status);
+    refresh();
+    return {};
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Error." };
+  }
+}
+
+/** Coach Ish persona (AIC-07): the coach's voice in role-play help and debriefs. Admins only. */
 export async function savePersonaAction(_: State, form: FormData): Promise<State> {
   try {
     const me = await staffOrThrow();

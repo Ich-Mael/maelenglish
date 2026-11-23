@@ -11,6 +11,7 @@ import { DIFFICULTY_HINT, DIFFICULTY_LABEL, ROLEPLAY_DIFFICULTIES } from "@/lib/
 import { pushReward } from "@/components/gamify/reward-store";
 import { playSound } from "@/components/gamify/sound";
 import { DebriefView, TranscriptOnly } from "./debrief-view";
+import { MinutesMeter } from "./minutes-meter";
 import { cn } from "cn";
 
 /*
@@ -43,6 +44,7 @@ export function RolePlayPlayer({
   brief,
   available,
   minutesLeft,
+  capMinutes = null,
   courseHref,
   nextHref,
   historyHref = "/partenaire#conversations",
@@ -60,6 +62,8 @@ export function RolePlayPlayer({
   available: boolean;
   /** AI minutes left this month (null = not capped: staff). */
   minutesLeft: number | null;
+  /** The learner's monthly allowance in minutes (null = staff). */
+  capMinutes?: number | null;
   courseHref: string;
   nextHref?: string | null;
   historyHref?: string;
@@ -109,6 +113,7 @@ export function RolePlayPlayer({
           limitS={phase.limitS}
           aiName={aiName}
           avatarSrc={PARTNER_AVATAR.src}
+          monthLeftS={minutesLeft !== null ? minutesLeft * 60 : null}
           onEnded={(_reason, err) => {
             if (err) setError(err);
             void finish(phase.sessionId);
@@ -164,6 +169,11 @@ export function RolePlayPlayer({
                 <RotateCcw className="size-4" aria-hidden /> Prepare the debrief
               </button>
             )}
+          </div>
+        )}
+        {r.minutesLeft !== null && capMinutes !== null && (
+          <div className="rounded-3xl border border-border bg-card p-4">
+            <MinutesMeter left={r.minutesLeft} cap={capMinutes} />
           </div>
         )}
         <div className="flex flex-wrap gap-2">
@@ -313,11 +323,7 @@ export function RolePlayPlayer({
           <p className="flex items-start gap-2 text-sm text-muted-foreground">
             <Circle className="mt-1 size-3 shrink-0 fill-coral text-coral" aria-hidden /> This call is recorded: you and your coach can listen to it again with your debrief.
           </p>
-          {minutesLeft !== null && (
-            <p className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Clock className="size-4 text-primary" aria-hidden /> {Math.floor(minutesLeft)} AI minutes left this month
-            </p>
-          )}
+          {minutesLeft !== null && capMinutes !== null && <MinutesMeter left={minutesLeft} cap={capMinutes} />}
           <fieldset className="grid gap-2">
             <legend className="mb-2 w-full border-t border-border pt-4 font-heading text-lg font-extrabold text-brand-deep">How tough should your partner be?</legend>
             {ROLEPLAY_DIFFICULTIES.map((d) => (

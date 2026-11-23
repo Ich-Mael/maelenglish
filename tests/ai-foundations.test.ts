@@ -122,3 +122,22 @@ describe("AI metering", () => {
     await expect(updateAccount(actor, String(u._id), { ...base, aiMonthlyMinutes: -5 })).rejects.toThrow(/AI minutes/);
   });
 });
+
+describe("AI registry in production", () => {
+  it("gives Claude feedback even when speech providers aren't configured", async () => {
+    const { aiServices, setAiServicesForTests } = await import("@/lib/ai");
+    setAiServicesForTests(null);
+    const env = process.env as Record<string, string | undefined>;
+    const [node, key] = [env.NODE_ENV, env.ANTHROPIC_API_KEY];
+    env.NODE_ENV = "production";
+    env.ANTHROPIC_API_KEY = "sk-test";
+    try {
+      const ai = aiServices();
+      expect(ai.feedback.name).toBe("claude");
+      expect(() => ai.speech).toThrow(/non configuré/);
+    } finally {
+      env.NODE_ENV = node;
+      env.ANTHROPIC_API_KEY = key;
+    }
+  });
+});

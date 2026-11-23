@@ -234,7 +234,7 @@ export function WritingPlayer({
           )}
           {maelTip && (
             <p className="rounded-2xl bg-brand-soft px-4 py-3 text-sm text-ink">
-              <strong className="text-brand-deep">Mael’s tip:</strong> {maelTip}
+              <strong className="text-brand-deep">Coach Ish’s tip:</strong> {maelTip}
             </p>
           )}
           {state.redoAsked && <p className="rounded-2xl border-2 border-coral bg-white px-4 py-2.5 text-sm font-semibold text-coral-dark">Your coach asks you to send a new version that takes their corrections into account.</p>}

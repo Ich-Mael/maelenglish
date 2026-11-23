@@ -8,7 +8,7 @@ import { cn } from "cn";
 /*
  * Shared screens of Lab exercises (learner, French): header with progress, explained feedback,
  * the bottom « Vérifier » bar and the results screen (score, stars, time, items to review,
- * « Le conseil de Mael »). Each exercise type only renders its own items.
+ * « Le conseil de Coach Ish »). Each exercise type only renders its own items.
  */
 
 export type ExerciseMeta = { title: string; typeLabel: string; icon: React.ComponentType<{ className?: string }>; level?: string; skills?: string[]; instructions?: string };
@@ -123,7 +123,7 @@ export function Stars({ n, className }: { n: number; className?: string }) {
   );
 }
 
-/** End of exercise (catalogue: score, stars, time, the 3 items to review, Mael's tip). */
+/** End of exercise (catalogue: score, stars, time, the 3 items to review, Coach Ish's tip). */
 export function ResultsScreen({
   score,
   stars,
@@ -228,7 +228,7 @@ export function ResultsScreen({
             M
           </span>
           <div>
-            <h2 className="font-heading font-extrabold text-brand-deep">Mael’s tip</h2>
+            <h2 className="font-heading font-extrabold text-brand-deep">Coach Ish’s tip</h2>
             <p lang="fr" className="mt-1 text-ink">{maelTip}</p>
           </div>
         </section>

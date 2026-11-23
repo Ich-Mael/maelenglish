@@ -78,6 +78,13 @@ export default function PrivacyPage() {
               coach qui vérifie et vous envoie le retour. Ces textes ne sont pas utilisés pour entraîner les modèles de ce prestataire.
             </li>
             <li>
+              <strong>Diagnostic de votre parcours (« /diagnostic »)</strong> : vos réponses au questionnaire, votre prénom, votre email
+              et, si vous le donnez, votre numéro WhatsApp sont enregistrés pour vous remettre votre rapport et vous recontacter à son
+              sujet (et vous envoyer nos conseils si vous l&apos;avez accepté). Votre prénom et vos réponses — jamais votre email ni
+              votre téléphone — sont analysés automatiquement par un outil d&apos;IA (Anthropic) pour rédiger le rapport. Vous pouvez
+              demander leur suppression à tout moment.
+            </li>
+            <li>
               <strong>Conversations avec le partenaire IA (« Talk with Coach Ish »)</strong> : pendant une conversation, votre voix est
               transmise en direct au service ElevenLabs, qui la transcrit et fait répondre l&apos;IA (modèle d&apos;Anthropic) ; ElevenLabs
               conserve la conversation selon ses propres règles. Les appels sont enregistrés (vous en êtes informé(e) avant de
@@ -86,7 +93,7 @@ export default function PrivacyPage() {
               pouvez les écouter et les consulter ; seul un administrateur peut supprimer un enregistrement.
             </li>
             <li>
-              <strong>Exercices de prononciation (« Répétez après Mael »)</strong> : nous n&apos;enregistrons pas votre voix sur nos serveurs.
+              <strong>Exercices de prononciation (« Répétez après Coach Ish »)</strong> : nous n&apos;enregistrons pas votre voix sur nos serveurs.
               Pour vérifier ce que vous avez dit, l&apos;exercice utilise la reconnaissance vocale de votre navigateur : votre voix est alors
               envoyée au service de l&apos;éditeur du navigateur (par exemple Google pour Chrome, Apple pour Safari), qui la transcrit en
               texte ; une connexion internet est nécessaire. Ce traitement relève de la politique de confidentialité de cet éditeur. Nous

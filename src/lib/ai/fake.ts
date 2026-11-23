@@ -1,4 +1,4 @@
-import type { ConversationAgentSpec, ConversationEngine, ConversationTurn, Debrief, FinishedConversation, HelpSuggestion, Persona, RolePlayBrief, Voice, AudioInput, DrillGrade, DrillGradeInput, FeedbackService, LlmUsage, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput, PronunciationResult, PronunciationService, SpeechService, SynthesizedAudio, Transcript, TtsService } from "./types";
+import type { DiagnosticReportInput, ConversationAgentSpec, ConversationEngine, ConversationTurn, Debrief, FinishedConversation, HelpSuggestion, Persona, RolePlayBrief, Voice, AudioInput, DrillGrade, DrillGradeInput, FeedbackService, LlmUsage, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput, PronunciationResult, PronunciationService, SpeechService, SynthesizedAudio, Transcript, TtsService } from "./types";
 import { normalizeEnglish, words } from "./text";
 
 /*
@@ -131,6 +131,24 @@ export class FakeFeedbackService implements FeedbackService {
         betterWays: learner.slice(0, 3).map((t) => ({ original: t.text, improved: t.text, why: "Déjà correct." })),
         phrasesToReuse: input.brief.targetPhrases.slice(0, 3),
         maelTip: "Préparez trois phrases clés avant chaque réunion.",
+      },
+      usage: { inputTokens: 0, outputTokens: 0, costMicros: 0, provider: "fake" },
+    };
+  }
+
+  /** Deterministic: a valid report naming the first name and the given profile. */
+  async diagnosticReport(input: DiagnosticReportInput): Promise<{ report: unknown; usage: LlmUsage }> {
+    return {
+      report: {
+        headline: `${input.firstName}, voici ce qui vous freine.`,
+        profile_name: input.primary.name,
+        profile_summary: "Résumé de test.",
+        what_holds_you_back: [{ title: "Frein 1", explanation: "Explication." }, { title: "Frein 2", explanation: "Explication." }],
+        reframe: "Recadrage.",
+        your_strengths: ["Atout 1", "Atout 2"],
+        recommended_method: [{ title: "Étape 1", description: "D." }, { title: "Étape 2", description: "D." }, { title: "Étape 3", description: "D." }],
+        first_step_this_week: "Une action.",
+        goal_reminder: "Votre objectif.",
       },
       usage: { inputTokens: 0, outputTokens: 0, costMicros: 0, provider: "fake" },
     };

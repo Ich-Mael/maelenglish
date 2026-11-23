@@ -1,7 +1,7 @@
 import "server-only";
 import { Activity, ConversationSession, Enrollment, accessState, type ActivityDoc } from "@/models";
 import type { CurrentUser } from "@/lib/auth/dal";
-import { remainingSeconds } from "@/lib/ai/metering";
+import { monthlyCapSeconds, remainingSeconds } from "@/lib/ai/metering";
 import { conversationEngine } from "@/lib/ai";
 import type { RolePlayContent } from "@/lib/lab/types";
 import type { PublicRolePlay } from "@/components/conversation/role-play-player";
@@ -22,6 +22,8 @@ export async function partnerState(me: CurrentUser) {
   return {
     available: conversationEngine() !== null,
     minutesLeft: me.isStaff ? null : (await remainingSeconds(me.id)) / 60,
+    /** The learner's monthly allowance in minutes (null for staff). */
+    capMinutes: me.isStaff ? null : (await monthlyCapSeconds(me.id)) / 60,
   };
 }
 

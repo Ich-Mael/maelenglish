@@ -13,7 +13,7 @@ const activitySchema = new Schema(
     type: { type: String, enum: ACTIVITY_TYPES, required: true },
     title: { type: String, required: true, trim: true },
     // Common details (src/lib/lab/meta.ts): CEFR level, skills, business theme, minutes, short
-    // instruction and « Le conseil de Mael » (both French, for learners).
+    // instruction and « Le conseil de Coach Ish » (both French, for learners).
     level: { type: String, default: "" },
     skills: { type: [String], default: [] },
     theme: { type: String, default: "" },

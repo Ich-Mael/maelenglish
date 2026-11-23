@@ -18,3 +18,4 @@ export * from "./WritingSubmission";
 export * from "./DictionaryEntry";
 export * from "./VocabWord";
 export * from "./Conversation";
+export * from "./Diagnostic";

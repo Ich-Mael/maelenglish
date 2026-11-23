@@ -105,7 +105,7 @@ export type WordTranslation = { translation: string; frNote: string; businessExa
 /** One turn of a role-play transcript. `t`: seconds since the start of the call. */
 export type ConversationTurn = { role: "agent" | "user"; text: string; t: number };
 
-/** Mael persona (AIC-07): used by the coach voice (help, debrief), never by in-character roles. */
+/** Coach Ish persona (AIC-07): used by the coach voice (help, debrief), never by in-character roles. */
 export type Persona = { tone: string; catchphrases: string[]; tips: string[] };
 
 export type RolePlayBrief = {
@@ -135,6 +135,9 @@ export type Debrief = {
 /** Help button (AIC-01): 2–3 things the learner could say now, English + French gloss. */
 export type HelpSuggestion = { en: string; fr: string };
 
+/** Diagnostic report input: never the learner's email or phone (spec §12). */
+export type DiagnosticReportInput = { firstName: string; answersText: string; primary: { id: string; name: string; need: string }; secondary: { id: string; name: string }[]; scores: Record<string, number> };
+
 export interface FeedbackService {
   readonly name: string;
   gradeDrill(input: DrillGradeInput): Promise<DrillGrade>;
@@ -142,6 +145,8 @@ export interface FeedbackService {
   translateWord(input: WordTranslationInput): Promise<{ result: WordTranslation; usage: LlmUsage }>;
   rolePlayDebrief(input: { brief: RolePlayBrief; transcript: ConversationTurn[]; persona: Persona }): Promise<{ debrief: Debrief; usage: LlmUsage }>;
   rolePlayHelp(input: { brief: RolePlayBrief; transcript: ConversationTurn[]; persona: Persona }): Promise<{ suggestions: HelpSuggestion[]; usage: LlmUsage }>;
+  /** Learning-path diagnostic report (JSON validated by the caller against DiagnosticReportSchema). */
+  diagnosticReport(input: DiagnosticReportInput): Promise<{ report: unknown; usage: LlmUsage }>;
 }
 
 /** What the conversation provider needs to run one agent (src/lib/conversation/prompt.ts AgentSpec). */

@@ -304,3 +304,10 @@ html {
   .partner-face, .partner-idle .partner-face { transform: none; animation: none; }
   .partner-ring, .partner-ring-2, .partner-mic { transform: none; }
 }
+
+/* Printing (the diagnostic report's « Télécharger en PDF »): no site header / footer / buttons, white page. */
+@media print {
+  .no-print { display: none !important; }
+  body { background: #fff !important; }
+  .diagnostic-report section { break-inside: avoid; box-shadow: none !important; }
+}

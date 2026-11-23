@@ -24,14 +24,26 @@ function fallback<T>(name: string, make: () => T): T {
   return make();
 }
 
+/**
+ * Each provider is created only when it is used (getters): a missing key for one service (e.g.
+ * Azure speech in production) must never break the others (Claude feedback, dictionary, debriefs).
+ */
 export function aiServices(): AiServices {
   return {
-    speech: override?.speech ?? fallback("reconnaissance vocale", () => new FakeSpeechService()),
-    pronunciation: override?.pronunciation ?? fallback("évaluation de la prononciation", () => new FakePronunciationService()),
+    get speech() {
+      return override?.speech ?? fallback("reconnaissance vocale", () => new FakeSpeechService());
+    },
+    get pronunciation() {
+      return override?.pronunciation ?? fallback("évaluation de la prononciation", () => new FakePronunciationService());
+    },
     // Azure neural voices when AZURE_SPEECH_KEY + AZURE_SPEECH_REGION are set.
-    tts: override?.tts ?? (isAzureSpeechConfigured() ? new AzureTtsService() : fallback("synthèse vocale", () => new FakeTtsService())),
+    get tts() {
+      return override?.tts ?? (isAzureSpeechConfigured() ? new AzureTtsService() : fallback("synthèse vocale", () => new FakeTtsService()));
+    },
     // Claude when ANTHROPIC_API_KEY is set (also in development), else the fake (never in production).
-    feedback: override?.feedback ?? (process.env.ANTHROPIC_API_KEY ? new ClaudeFeedbackService() : fallback("correction IA", () => new FakeFeedbackService())),
+    get feedback() {
+      return override?.feedback ?? (process.env.ANTHROPIC_API_KEY ? new ClaudeFeedbackService() : fallback("correction IA", () => new FakeFeedbackService()));
+    },
   };
 }
 

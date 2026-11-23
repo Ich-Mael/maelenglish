@@ -3,9 +3,9 @@ import { PROGRAMS } from "./catalog";
 /* Editorial content of the public pages (from the original MaelEnglish storefront). */
 
 export const METHOD_STEPS = [
-  { title: "On fait le point", text: "Test de niveau, votre métier et vos objectifs : on vous oriente vers le bon programme." },
-  { title: "Vous pratiquez", text: "Des situations réelles de votre quotidien professionnel, à l'oral comme à l'écrit." },
-  { title: "Le coach corrige", text: "Des retours précis sur vos devoirs et vos prises de parole, pour progresser vite." },
+  { title: "On fait le point", text: "Test de niveau, votre métier, vos objectifs : je vous oriente vers le bon programme." },
+  { title: "Vous apprenez et pratiquez", text: "Des leçons et des exercices autour de vos réunions, emails et présentations, à l'oral comme à l'écrit." },
+  { title: "Feedback immédiat", text: "Chaque exercice reçoit un retour précis, pour corriger vos erreurs et progresser vite." },
 ];
 
 export const METHOD_FACTS = [

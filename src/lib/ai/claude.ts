@@ -2,7 +2,7 @@ import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import * as z from "zod/v4";
-import type { ConversationTurn, Debrief, DrillGrade, DrillGradeInput, FeedbackService, HelpSuggestion, LlmUsage, Persona, RolePlayBrief, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput } from "./types";
+import type { DiagnosticReportInput, ConversationTurn, Debrief, DrillGrade, DrillGradeInput, FeedbackService, HelpSuggestion, LlmUsage, Persona, RolePlayBrief, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput } from "./types";
 
 /*
  * Claude feedback (DECISIONS.md: Claude for feedback): writing correction for the Lab « writing
@@ -59,7 +59,7 @@ const HelpSchema = z.object({ suggestions: z.array(z.object({ en: z.string(), fr
 
 const personaText = (p: Persona) =>
   [
-    "You speak as Coach Mael (Ismaël Zerbo, founder of MaelEnglish, TEFL-certified, former aviation professional).",
+    "You speak as Coach Ish (Ismaël Zerbo, founder of MaelEnglish, TEFL-certified, former aviation professional).",
     p.tone ? `Tone: ${p.tone}` : "Tone: warm, direct, encouraging, practical; celebrates progress, then gives one clear next step.",
     p.catchphrases.length ? `Catchphrases you may use (sparingly): ${p.catchphrases.join(" | ")}` : "",
     p.tips.length ? `Signature tips you like to give:\n${p.tips.map((t) => `- ${t}`).join("\n")}` : "",
@@ -91,7 +91,7 @@ Write every explanation, the summary and the tip in simple, encouraging French. 
 - corrections: the learner's real mistakes, most important first, at most 10. turn = the [index] of the LEARNER turn; original = the learner's exact words (a few words); corrected = the corrected wording; explanation = one short French sentence with the rule; category grammar | vocabulary | tone.
 - betterWays: 3 to 6 of the learner's own sentences rewritten as a confident professional would say them (original = learner's words, improved = English rewrite, why = short French reason). Prefer sentences that were correct but basic.
 - phrasesToReuse: exactly 3 short, useful English phrases for this situation (from the target phrases or the better ways).
-- maelTip: one practical tip in French, in Coach Mael's voice (starts naturally, no "Mael's tip:" prefix).`;
+- maelTip: one practical tip in French, in Coach Ish's voice (starts naturally, no "Coach Ish's tip:" prefix).`;
 
 const HELP_SYSTEM = `A French-speaking learner of English is in the middle of a spoken role-play and pressed « Help ». Suggest 3 different short things (5-15 words each) they could say NEXT, in natural, simple professional English at their level, that answer the last thing the AI said and move toward their goals. For each, give a short French translation (fr). No explanations.`;
 
@@ -183,6 +183,39 @@ export class ClaudeFeedbackService implements FeedbackService {
       suggestions: response.parsed_output.suggestions.slice(0, 3),
       usage: { inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens, costMicros: costMicros(response.usage.input_tokens, response.usage.output_tokens), provider: `anthropic:${CLAUDE_FEEDBACK_MODEL}` },
     };
+  }
+
+  /** Diagnostic report (DIAGNOSTIC_SPEC.md §7): model from ANTHROPIC_MODEL (default Claude Sonnet 5.5), 30 s timeout. */
+  async diagnosticReport(input: DiagnosticReportInput): Promise<{ report: unknown; usage: LlmUsage }> {
+    const model = process.env.ANTHROPIC_MODEL || CLAUDE_DEBRIEF_MODEL;
+    const { DiagnosticReportSchema } = await import("@/lib/diagnostic/report-types");
+    const { REPORT_SYSTEM } = await import("@/lib/diagnostic/prompt");
+    const response = await this.client.messages.parse(
+      {
+        model,
+        max_tokens: 6000,
+        output_config: { effort: "low", format: zodOutputFormat(DiagnosticReportSchema) },
+        system: REPORT_SYSTEM,
+        messages: [
+          {
+            role: "user",
+            content: [
+              `Prénom : ${input.firstName}`,
+              `Profil principal (imposé) : ${input.primary.name} (${input.primary.id}) — besoin principal : ${input.primary.need}`,
+              `Profils secondaires : ${input.secondary.map((p) => `${p.name} (${p.id})`).join(", ") || "aucun"}`,
+              `Scores normalisés : ${Object.entries(input.scores).map(([k, v]) => `${k} ${v}`).join(", ")}`,
+              "",
+              "Réponses de l'apprenant :",
+              input.answersText,
+            ].join("\n"),
+          },
+        ],
+      },
+      { timeout: 30_000, maxRetries: 0 },
+    );
+    if (response.stop_reason === "refusal" || !response.parsed_output) throw new Error("Diagnostic report: no valid output.");
+    const cost = model.includes("haiku") ? costMicros(response.usage.input_tokens, response.usage.output_tokens) : sonnetCost(response.usage.input_tokens, response.usage.output_tokens);
+    return { report: response.parsed_output, usage: { inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens, costMicros: cost, provider: `anthropic:${model}` } };
   }
 
   async gradeDrill(input: DrillGradeInput): Promise<DrillGrade> {

@@ -7,11 +7,15 @@ export default function SiteLayout({ children }: LayoutProps<"/">) {
       <a href="#contenu-principal" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-xl focus:bg-card focus:px-4 focus:py-2 focus:shadow-lg">
         Aller au contenu
       </a>
-      <SiteHeader />
+      <div className="no-print contents">
+        <SiteHeader />
+      </div>
       <main id="contenu-principal" className="flex-1">
         {children}
       </main>
-      <SiteFooter />
+      <div className="no-print contents">
+        <SiteFooter />
+      </div>
     </>
   );
 }

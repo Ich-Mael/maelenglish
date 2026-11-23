@@ -94,7 +94,7 @@ export async function usageReport(now = new Date(), days = 14) {
   };
 }
 
-/** Mael persona (spec AIC-07), edited on the AI usage page. */
+/** Coach Ish persona (spec AIC-07), edited on the AI usage page. */
 export async function savePersona(raw: { tone?: string; catchphrases?: string; tips?: string }) {
   const lines = (v: string | undefined, n: number) => (v ?? "").split("\n").map((x) => x.trim().slice(0, 300)).filter(Boolean).slice(0, n);
   const persona = { tone: (raw.tone ?? "").trim().slice(0, 1000), catchphrases: lines(raw.catchphrases, 10), tips: lines(raw.tips, 15) };

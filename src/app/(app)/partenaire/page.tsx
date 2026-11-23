@@ -7,6 +7,7 @@ import { requireUser } from "@/lib/auth/dal";
 import { connectDB } from "@/lib/db";
 import { canUsePartner, partnerState, recentSessions, scenariosByLesson } from "@/lib/conversation/queries";
 import { ScenarioCard } from "@/components/conversation/scenario-card";
+import { MinutesMeter } from "@/components/conversation/minutes-meter";
 import { CEFR_LEVELS, THEMES } from "@/lib/lab/meta";
 import { PageSkeleton } from "@/components/learn/ui";
 import { cn } from "cn";
@@ -39,28 +40,31 @@ async function Partner({ searchParams }: { searchParams: Promise<{ niveau?: stri
   };
   return (
     <div className="mx-auto grid max-w-5xl gap-6">
-      <header className="relative overflow-clip rounded-[2rem] border-2 border-primary/10 bg-gradient-to-br from-white via-white to-brand-soft">
-        <span aria-hidden className="pointer-events-none absolute -top-24 right-0 size-80 rounded-full bg-[radial-gradient(circle,rgb(54_79_171/0.16),transparent_70%)]" />
-        <span aria-hidden className="pointer-events-none absolute -bottom-28 -left-16 size-72 rounded-full bg-[radial-gradient(circle,rgb(255_87_87/0.14),transparent_70%)]" />
-        <div className="relative grid items-center gap-6 p-6 sm:p-8 md:grid-cols-[1fr_auto]">
-          <div className="grid gap-3">
-            <h1 className="font-heading text-4xl leading-[1.05] font-extrabold sm:text-5xl lg:text-6xl">
-              <span className="whitespace-nowrap text-coral">Talk with</span> <span className="whitespace-nowrap text-primary">Coach Ish</span>
-            </h1>
-            <p className="max-w-xl text-lg text-ink/80">Practise real work conversations out loud, then get Coach Ish&apos;s feedback: your mistakes corrected, better ways to say it and his tips.</p>
-            <p className="flex flex-wrap gap-2 pt-1 text-sm font-semibold">
-              {state.minutesLeft !== null && <span className="rounded-full bg-brand-soft px-3 py-1 text-primary">{Math.floor(state.minutesLeft)} AI minutes left this month</span>}
-              {done > 0 && <span className="rounded-full border-2 border-coral bg-white px-3 py-0.5 text-coral-dark">{done} conversation{done === 1 ? "" : "s"} done</span>}
-            </p>
-          </div>
-          <div className="relative mx-auto hidden md:block">
-            <span aria-hidden className="absolute -inset-3 rounded-full border-2 border-primary/15" />
+      {/* A « suspended » 3D card: layered shadows + a soft ground shadow below; Coach Ish's portrait framed in white on the left. */}
+      <div className="relative pb-6">
+        <span aria-hidden className="pointer-events-none absolute inset-x-[8%] bottom-0 h-10 rounded-[50%] bg-[radial-gradient(closest-side,rgb(20_31_77/0.28),transparent)]" />
+        <header className="relative grid gap-3 rounded-[2rem] bg-white p-3 shadow-[inset_0_1px_0_rgb(255_255_255),0_1px_2px_rgb(20_31_77/0.06),0_8px_16px_-4px_rgb(20_31_77/0.10),0_28px_56px_-18px_rgb(20_31_77/0.38)] ring-1 ring-primary/5 md:grid-cols-[minmax(0,19rem)_1fr] md:gap-0">
+          <div className="relative h-60 overflow-clip rounded-[1.6rem] border-[5px] border-white bg-[radial-gradient(circle_at_50%_40%,#0b5bd9_0%,#05319a_38%,#011544_75%)] shadow-[0_14px_28px_-10px_rgb(1_21_68/0.55),0_0_0_1px_rgb(20_31_77/0.08)] md:h-auto md:min-h-80">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/coach-ish-512.webp" alt="Coach Ish" width={176} height={176} className="relative size-44 rounded-full object-cover ring-4 ring-coral" />
-            <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-1 text-xs font-extrabold whitespace-nowrap text-white shadow">Ready when you are!</span>
+            <img src="/images/coach-ish-640.webp" alt="Coach Ish" width={640} height={640} className="absolute inset-0 size-full object-cover object-[50%_18%]" />
+            <span className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full border-2 border-coral bg-white px-3.5 py-1 text-sm font-extrabold whitespace-nowrap text-primary shadow-lg">Ready when you are!</span>
           </div>
-        </div>
-      </header>
+          <div className="relative isolate grid content-center gap-6 overflow-clip rounded-[1.6rem] p-4 sm:p-6 lg:p-8">
+            <span aria-hidden className="pointer-events-none absolute -right-20 -bottom-32 -z-10 size-80 rounded-full bg-[radial-gradient(circle,rgb(255_87_87/0.10),transparent_70%)]" />
+            <span aria-hidden className="pointer-events-none absolute -top-28 -right-10 -z-10 size-72 rounded-full bg-[radial-gradient(circle,rgb(54_79_171/0.10),transparent_70%)]" />
+            <div className="grid gap-3">
+              <h1 className="font-heading text-4xl leading-[1.05] font-extrabold sm:text-5xl lg:text-6xl">
+                <span className="whitespace-nowrap text-coral">Talk with</span> <span className="whitespace-nowrap text-primary">Coach Ish</span>
+              </h1>
+              <p className="max-w-xl text-lg text-ink/80">Practise real work conversations out loud, then get Coach Ish&apos;s feedback: your mistakes corrected, better ways to say it and his tips.</p>
+              {state.minutesLeft !== null && state.capMinutes !== null && <MinutesMeter left={state.minutesLeft} cap={state.capMinutes} className="max-w-md pt-1" />}
+              <p className="flex flex-wrap gap-2 pt-1 text-sm font-semibold">
+                {done > 0 && <span className="rounded-full border-2 border-coral bg-white px-3 py-0.5 text-coral-dark">{done} conversation{done === 1 ? "" : "s"} done</span>}
+              </p>
+            </div>
+          </div>
+        </header>
+      </div>
 
       <nav aria-label="Filters" className="grid gap-2">
         <div className="flex flex-wrap gap-1.5">

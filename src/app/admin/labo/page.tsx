@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
-import { BookOpen, ChevronDown, FlaskConical, Headphones, Mail, Mic, Plus, Puzzle, Search, Speech, type LucideIcon } from "lucide-react";
+import { BookOpen, ChevronDown, FlaskConical, Headphones, Mail, MessagesSquare, Mic, Plus, Puzzle, Search, Speech, type LucideIcon } from "lucide-react";
 import { actorOf, requireStaff } from "@/lib/admin/context";
 import { can } from "@/lib/admin/permissions";
 import { listActivities } from "@/lib/lab/service";
@@ -31,8 +31,8 @@ async function Lab({ searchParams }: { searchParams: Promise<Record<string, stri
   const filtered = Object.values(filter).some(Boolean);
   const items = await listActivities(filter);
   const all = filtered ? await listActivities({}) : items;
-  // Practice types grouped by skill family (registry order); the challenge has its own card.
-  const practiceGroups = SKILL_FAMILIES.map((skill) => ({ skill, types: ACTIVITY_TYPES.filter((t) => ACTIVITY_INFO[t].role === "practice" && ACTIVITY_INFO[t].skill === skill) })).filter((g) => g.types.length);
+  // Practice types grouped by skill family (registry order); the challenge and Talk with Coach Ish (role_play) have their own cards at the top.
+  const practiceGroups = SKILL_FAMILIES.map((skill) => ({ skill, types: ACTIVITY_TYPES.filter((t) => ACTIVITY_INFO[t].role === "practice" && t !== "role_play" && ACTIVITY_INFO[t].skill === skill) })).filter((g) => g.types.length);
 
   return (
     <div className="grid max-w-5xl gap-5">
@@ -53,19 +53,56 @@ async function Lab({ searchParams }: { searchParams: Promise<Record<string, stri
         ))}
       </dl>
 
-      {/* The speaking challenge closes every unit: it gets the hero card. */}
-      <section aria-labelledby="new-challenge" className="relative isolate overflow-clip rounded-3xl bg-gradient-to-br from-brand-deep via-brand-deep to-brand-dark p-5 text-white sm:p-7">
+      {/* The two speaking features side by side: Talk with Coach Ish (flagship, first) and the unit challenge. */}
+      <div className="grid gap-4 lg:grid-cols-2">
+      {/* Talk with Coach Ish: the AI role-play, the flagship feature. */}
+      <section aria-labelledby="new-roleplay" className="relative isolate flex flex-col overflow-clip rounded-3xl bg-gradient-to-br from-primary via-brand-dark to-brand-deep p-5 text-white sm:p-7">
+        <div aria-hidden className="absolute -top-24 -right-16 -z-10 size-80 rounded-full bg-[radial-gradient(circle,rgb(255_255_255/0.18),transparent_70%)]" />
+        <div aria-hidden className="absolute -bottom-28 left-1/4 -z-10 size-72 rounded-full bg-[radial-gradient(circle,rgb(255_87_87/0.22),transparent_70%)]" />
+        <div className="flex flex-1 flex-col gap-3">
+          <div className="flex items-start justify-between gap-3">
+            <p className="inline-flex w-fit items-center gap-1.5 rounded-full border border-coral/70 bg-white/10 px-3 py-1 text-xs font-bold tracking-wide uppercase">
+              <span className="size-1.5 rounded-full bg-coral" /> AI role-play · flagship
+            </p>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/coach-ish-256.webp" alt="" width={64} height={64} className="-mt-1 size-16 shrink-0 rounded-full object-cover ring-4 ring-coral" />
+          </div>
+          <h2 id="new-roleplay" className="-mt-4 font-heading text-3xl leading-tight font-extrabold">
+            <span className="text-coral">Talk with</span> Coach Ish
+          </h2>
+          <p className="text-white/85">Learners talk by voice with an AI playing a work counterpart (interviewer, client, manager…), then get a debrief: scores, corrections, better ways to say it, Coach Ish&apos;s tips. Learners find ready ones on « Talk with Coach Ish »; add them to a unit to make them a lesson activity.</p>
+          <ul className="flex flex-wrap gap-2">
+            {TYPE_LOOK.role_play.perks.map((x) => (
+              <li key={x} className="rounded-full bg-white/12 px-3 py-1 text-sm font-semibold">
+                {x}
+              </li>
+            ))}
+          </ul>
+          <AdminForm action={createActivityAction} className="mt-auto grid gap-2 rounded-2xl bg-white/10 p-3 sm:grid-cols-[1fr_auto] sm:items-end">
+            <input type="hidden" name="type" value="role_play" />
+            <label className="grid gap-1 text-sm">
+              <span className="font-semibold text-white">Scenario title</span>
+              <input name="title" required placeholder={TYPE_LOOK.role_play.example} className={cn(inputCls, "border-white bg-white text-ink")} />
+            </label>
+            <button type="submit" className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border-2 border-coral bg-white px-5 font-bold text-coral-dark shadow-[0_4px_0_0_var(--color-coral)] transition hover:bg-coral-soft active:translate-y-0.5 active:shadow-none">
+              <MessagesSquare className="size-4" aria-hidden /> Create a scenario
+            </button>
+          </AdminForm>
+        </div>
+      </section>
+      {/* The speaking challenge closes every unit. */}
+      <section aria-labelledby="new-challenge" className="relative isolate flex flex-col overflow-clip rounded-3xl bg-gradient-to-br from-brand-deep via-brand-deep to-brand-dark p-5 text-white sm:p-7">
         <div aria-hidden className="absolute -top-24 -right-16 -z-10 size-80 rounded-full bg-[radial-gradient(circle,rgb(54_79_171/0.55),transparent_70%)]" />
         <div aria-hidden className="absolute -bottom-28 left-1/3 -z-10 size-72 rounded-full bg-[radial-gradient(circle,rgb(255_87_87/0.18),transparent_70%)]" />
-        <div className="grid items-center gap-6 md:grid-cols-[1fr_auto]">
-          <div className="grid gap-3">
+        <div className="flex flex-1 flex-col">
+          <div className="flex flex-1 flex-col gap-3">
             <p className="inline-flex w-fit items-center gap-1.5 rounded-full border border-coral/70 bg-white/10 px-3 py-1 text-xs font-bold tracking-wide uppercase">
               <span className="size-1.5 rounded-full bg-coral" /> Closes every unit
             </p>
             <h2 id="new-challenge" className="font-heading text-3xl leading-tight font-extrabold text-white">
               {ACTIVITY_INFO.speaking_challenge.label}
             </h2>
-            <p className="max-w-xl text-white/85">The moment learners speak for real: they record an answer, their coach replies with a grade, a comment or a voice note. Keep it short, concrete and tied to the unit&apos;s vocabulary.</p>
+            <p className="text-white/85">The moment learners speak for real: they record an answer, their coach replies with a grade, a comment or a voice note. Keep it short, concrete and tied to the unit&apos;s vocabulary.</p>
             <ul className="flex flex-wrap gap-2">
               {TYPE_LOOK.speaking_challenge.perks.map((x) => (
                 <li key={x} className="rounded-full bg-white/12 px-3 py-1 text-sm font-semibold">
@@ -73,7 +110,7 @@ async function Lab({ searchParams }: { searchParams: Promise<Record<string, stri
                 </li>
               ))}
             </ul>
-            <AdminForm action={createActivityAction} className="mt-1 grid gap-2 rounded-2xl bg-white/10 p-3 sm:grid-cols-[1fr_auto] sm:items-end">
+            <AdminForm action={createActivityAction} className="mt-auto grid gap-2 rounded-2xl bg-white/10 p-3 sm:grid-cols-[1fr_auto] sm:items-end">
               <input type="hidden" name="type" value="speaking_challenge" />
               <label className="grid gap-1 text-sm">
                 <span className="font-semibold text-white">Challenge title</span>
@@ -84,9 +121,10 @@ async function Lab({ searchParams }: { searchParams: Promise<Record<string, stri
               </button>
             </AdminForm>
           </div>
-          <TypeArt type="speaking_challenge" className="mx-auto hidden md:block" />
         </div>
       </section>
+
+      </div>
 
       {/* Practice activities, grouped by skill. */}
       <section aria-labelledby="new-practice" className="grid gap-4">

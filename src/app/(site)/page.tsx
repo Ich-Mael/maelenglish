@@ -181,7 +181,7 @@ function CoachingPremium() {
                 <Link href="/coaching" className={BUTTON.coral}>
                   Découvrir le coaching <ArrowRight className="size-4" aria-hidden />
                 </Link>
-                <Link href={signupHref("coaching")} className={BUTTON.ghost}>
+                <Link href="/diagnostic" className={BUTTON.ghost}>
                   Demander mon diagnostic
                 </Link>
               </div>

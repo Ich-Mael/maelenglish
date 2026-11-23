@@ -9,7 +9,7 @@ import type { RepeatContent, RepeatPhrase } from "@/lib/lab/types";
 import { cn } from "cn";
 
 /*
- * S1 « Repeat after Mael » editor (Labo, English): short phrases, each with the model audio
+ * S1 « Repeat after Coach Ish » editor (Labo, English): short phrases, each with the model audio
  * (required: record it in the browser or upload it) and an optional French translation; « Paste a
  * list » adds many at once (one per line, « = » before the translation). Sent as « c_json ».
  */

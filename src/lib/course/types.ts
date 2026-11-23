@@ -32,5 +32,5 @@ export const SECTION_LABEL: Record<SectionType, { admin: string; learner: string
   vocabulary: { admin: "Vocabulary", learner: "Vocabulary" },
   grammar_rule: { admin: "Grammar rule", learner: "The rule" },
   dialogue: { admin: "Dialogue", learner: "Dialogue" },
-  tip: { admin: "Mael's tip", learner: "Mael's tip" },
+  tip: { admin: "Coach Ish's tip", learner: "Coach Ish's tip" },
 };

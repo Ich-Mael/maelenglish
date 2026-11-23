@@ -19,7 +19,7 @@ export type LiveLine = { role: "agent" | "user"; text: string };
 
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 
-type Props = { sessionId: string; signedUrl: string; limitS: number; aiName: string; avatarSrc: string; onEnded: (reason: "user" | "time" | "agent" | "error", error?: string) => void };
+type Props = { sessionId: string; signedUrl: string; limitS: number; aiName: string; avatarSrc: string; monthLeftS?: number | null; onEnded: (reason: "user" | "time" | "agent" | "error", error?: string) => void };
 
 export default function LiveCall(props: Props) {
   return (
@@ -29,7 +29,7 @@ export default function LiveCall(props: Props) {
   );
 }
 
-function Call({ sessionId, signedUrl, limitS, aiName, avatarSrc, onEnded }: Props) {
+function Call({ sessionId, signedUrl, limitS, aiName, avatarSrc, monthLeftS = null, onEnded }: Props) {
   const [lines, setLines] = useState<LiveLine[]>([]);
   const [showText, setShowText] = useState(true);
   const [left, setLeft] = useState(limitS);
@@ -146,9 +146,15 @@ function Call({ sessionId, signedUrl, limitS, aiName, avatarSrc, onEnded }: Prop
     <div className="grid gap-4">
       <div ref={stage} className={cn("partner-stage relative grid place-items-center gap-4 overflow-clip rounded-[2rem] bg-gradient-to-b from-brand-deep via-brand-deep to-brand-dark px-4 pt-10 pb-7 text-white", !isSpeaking && "partner-idle")}>
         <span aria-hidden className="pointer-events-none absolute -top-20 left-1/2 size-80 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgb(54_79_171/0.9),transparent_70%)]" />
-        <p className="absolute top-3 right-4 rounded-full bg-white/15 px-2.5 py-1 font-mono text-sm font-bold tabular-nums" aria-label={`Time left ${fmt(left)}`}>
+        <p className="absolute top-3 right-4 rounded-full bg-white/15 px-2.5 py-1 font-mono text-sm font-bold tabular-nums" aria-label={`Time left in this call ${fmt(left)}`}>
           {fmt(left)}
         </p>
+        {monthLeftS !== null && (
+          // This month's conversation time, going down while the learner talks.
+          <p className="absolute top-3 left-4 rounded-full bg-white/10 px-2.5 py-1 text-xs font-semibold text-white/85 tabular-nums">
+            {Math.max(0, Math.floor((monthLeftS - (limitS - left)) / 60))} min left this month
+          </p>
+        )}
         <span className="relative flex size-44 items-center justify-center sm:size-52">
           {/* Rings driven by the partner's voice level. */}
           <span aria-hidden className="partner-ring-2 absolute inset-0 rounded-full border-2 border-white/60" />

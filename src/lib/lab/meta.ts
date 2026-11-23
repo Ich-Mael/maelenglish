@@ -1,6 +1,6 @@
 /*
  * Common details of every Lab activity (catalogue: level-tagged, skill, business theme, short
- * sessions, « Le conseil de Mael »). Shared by browser and server, no imports. Labels: `en` for the
+ * sessions, « Le conseil de Coach Ish »). Shared by browser and server, no imports. Labels: `en` for the
  * admin, `fr` for learners.
  */
 
@@ -42,7 +42,7 @@ export type ActivityMeta = {
   durationMin: number;
   /** Short instruction shown at the top of the exercise (French). */
   instructions: string;
-  /** « Le conseil de Mael », shown on the results screen (French). */
+  /** « Le conseil de Coach Ish », shown on the results screen (French). */
   maelTip: string;
 };
 

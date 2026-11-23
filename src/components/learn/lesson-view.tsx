@@ -8,7 +8,7 @@ import { AudioButton } from "./audio-button";
 import { cn } from "cn";
 
 /*
- * Lesson step page (owner spec §6 LessonView): the intro, Mael's video, an optional audio, then the
+ * Lesson step page (owner spec §6 LessonView): the intro, Coach Ish's video, an optional audio, then the
  * sections in order. Labels are French; the taught content is English (`lang="en"`).
  * `audio`: media id → playable URL (resolved by the page).
  */

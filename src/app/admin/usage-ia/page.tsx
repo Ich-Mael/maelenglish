@@ -70,7 +70,7 @@ async function Usage() {
         </AdminForm>
       </Card>
 
-      <Card title="Mael persona" description="Coach Mael's voice in the AI role-play debriefs (« Mael's tip ») and the « Help » suggestions. The roles the AI plays (interviewer, client…) don't use it.">
+      <Card title="Coach Ish persona" description="Coach Ish's voice in the AI role-play debriefs (« Coach Ish's tip ») and the « Help » suggestions. The roles the AI plays (interviewer, client…) don't use it.">
         <AdminForm action={savePersonaAction} className="grid gap-3">
           <TextArea label="Tone" name="tone" rows={2} defaultValue={r.persona.tone} placeholder="Warm, direct and encouraging. Celebrates progress, then gives one clear, practical next step." />
           <TextArea label="Catchphrases (one per line)" name="catchphrases" rows={3} defaultValue={r.persona.catchphrases.join("\n")} placeholder={"Speak the language of your profession!\nOne step at a time."} />

@@ -7,6 +7,7 @@ import { requireUser } from "@/lib/auth/dal";
 import { connectDB } from "@/lib/db";
 import { ChallengeSubmission, ConversationSession, VocabWord } from "@/models";
 import { statsFor } from "@/lib/gamification/service";
+import { monthlyCapSeconds, remainingSeconds } from "@/lib/ai/metering";
 import { PageSkeleton } from "@/components/learn/ui";
 import { cn } from "cn";
 
@@ -24,7 +25,7 @@ async function Space() {
   await connection();
   const me = await requireUser("/mon-espace");
   await connectDB();
-  const [stats, toRedo, waiting, words, toReview, talks, lastTalk] = await Promise.all([
+  const [stats, toRedo, waiting, words, toReview, talks, lastTalk, leftS, capS] = await Promise.all([
     statsFor(me.id),
     ChallengeSubmission.countDocuments({ userId: me.id, status: "returned" }),
     ChallengeSubmission.countDocuments({ userId: me.id, status: "pending" }),
@@ -32,7 +33,10 @@ async function Space() {
     VocabWord.countDocuments({ userId: me.id, known: false }),
     ConversationSession.countDocuments({ userId: me.id, status: { $in: ["ended", "debriefed"] } }),
     ConversationSession.findOne({ userId: me.id, status: "debriefed" }).sort({ createdAt: -1 }).select("score title").lean(),
+    remainingSeconds(me.id),
+    monthlyCapSeconds(me.id),
   ]);
+  const minutesLine = `${Math.floor(leftS / 60)} of ${Math.round(capS / 60)} min left this month`;
   const sent = stats.counters.assignmentsSubmitted ?? 0;
   const tiles: Tile[] = [
     {
@@ -49,7 +53,7 @@ async function Space() {
       title: "My Conversations",
       text: "Your AI role-plays and their debriefs: scores, corrections, Coach Ish Tips.",
       icon: MessagesSquare,
-      stat: talks ? `${talks} conversation${talks === 1 ? "" : "s"}${lastTalk?.score != null ? ` · last score ${lastTalk.score} / 100` : ""}` : "No conversation yet: try the Talk with Coach Ish",
+      stat: `${talks ? `${talks} conversation${talks === 1 ? "" : "s"}${lastTalk?.score != null ? ` · last score ${lastTalk.score} / 100` : ""}` : "No conversation yet"} · ${minutesLine}`,
     },
     { href: "/progression", title: "My Progress", text: "Level, streak, daily goal and badges.", icon: Trophy, stat: `Level ${stats.level.level} · ${stats.xp} XP` },
     { href: "/carnet", title: "My Notebook", text: "The words you saved, and flashcards to review them.", icon: NotebookPen, stat: words ? `${words} words · ${toReview} to review` : "No word saved yet" },

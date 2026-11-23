@@ -3,7 +3,7 @@ import { defineModel } from "./define";
 
 /**
  * One finished run of a Lab activity by a learner (catalogue: data tracked per attempt —
- * score, time spent, plays, answers, date). Feeds recommendations and shows Mael where learners
+ * score, time spent, plays, answers, date). Feeds recommendations and shows Coach Ish where learners
  * struggle. Staff previews are not recorded.
  */
 const labAttemptSchema = new Schema(

@@ -320,3 +320,15 @@ export function sendAiBudgetEmail(to: string[], p: { percent: number; usedMinute
     text: `${intro}\n\n${url}`,
   });
 }
+
+/** Admins: a new learning-path diagnostic lead (English). */
+export function sendDiagnosticLeadEmail(to: string[], p: { firstName: string; email: string; phone: string; profile: string; secondary: string[]; marketing: boolean }) {
+  const url = appUrl("/admin/diagnostics");
+  const lines = [`Name: ${p.firstName}`, `Email: ${p.email}`, p.phone ? `WhatsApp: ${p.phone}` : "", `Profile: ${p.profile}${p.secondary.length ? ` (also: ${p.secondary.join(", ")})` : ""}`, `Newsletter: ${p.marketing ? "yes" : "no"}`].filter(Boolean);
+  return send({
+    to: to.join(", "),
+    subject: `New diagnostic: ${p.firstName} — ${p.profile}`,
+    html: layout({ lang: "en", firstName: "team", intro: `Someone just completed the learning-path diagnostic.<br><br>${lines.map(esc).join("<br>")}`, button: "Open the diagnostics", url, outro: "Get in touch within 24–48 hours while the report is fresh." }),
+    text: `New diagnostic\n\n${lines.join("\n")}\n\n${url}`,
+  });
+}

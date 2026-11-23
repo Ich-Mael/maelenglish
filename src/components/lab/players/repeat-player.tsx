@@ -15,7 +15,7 @@ import { ExerciseHeader, ResultsScreen, type ExerciseMeta } from "../shell/parts
 import { cn } from "cn";
 
 /*
- * S1 — Répétez après Mael (catalogue): one phrase per screen. The learner hears Mael's model, taps
+ * S1 — Répétez après Coach Ish (catalogue): one phrase per screen. The learner hears Coach Ish's model, taps
  * the mic and repeats; the browser's speech recognition (free, en-US) gives what it heard, and each
  * word of the phrase is shown heard (blue) or missed (red) with a percentage — the words
  * understood, not the accent. Retries allowed, the best try counts (≥ REPEAT_PASS % = right).
@@ -117,7 +117,7 @@ export function RepeatPlayer({
 
   const ph: RepeatPhrase | undefined = phrases[index];
   const isLast = index === phrases.length - 1;
-  const meta: ExerciseMeta = { title, typeLabel: "Repeat after Mael", icon: Speech, level, skills, instructions: instructions || "Listen to Mael, then repeat the sentence out loud." };
+  const meta: ExerciseMeta = { title, typeLabel: "Repeat after Coach Ish", icon: Speech, level, skills, instructions: instructions || "Listen to Coach Ish, then repeat the sentence out loud." };
   const modelUrl = ph?.audioMediaId ? audioUrls[ph.audioMediaId] : undefined;
 
   const playModel = (p?: RepeatPhrase) => {
@@ -244,7 +244,7 @@ export function RepeatPlayer({
                   <li key={p.id} className="grid gap-1 rounded-2xl bg-muted/50 px-3 py-2.5">
                     <div className="flex items-start gap-2">
                       <div className="min-w-0 flex-1">{a && "heard" in a ? <Words text={p.text} heard={a.heard} /> : <Words text={p.text} />}</div>
-                      <button type="button" onClick={() => playModel(p)} className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-primary" aria-label="Listen to Mael again">
+                      <button type="button" onClick={() => playModel(p)} className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-primary" aria-label="Listen to Coach Ish again">
                         <Volume2 className="size-4" aria-hidden />
                       </button>
                     </div>
@@ -275,13 +275,13 @@ export function RepeatPlayer({
         <p className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
           Sentence {index + 1} of {phrases.length}
         </p>
-        {/* 1. Hear Mael. */}
+        {/* 1. Hear Coach Ish. */}
         <button type="button" onClick={() => playModel()} disabled={!modelUrl} className="flex items-center gap-3 rounded-2xl border-2 border-primary/25 bg-brand-soft p-3 text-left transition hover:border-primary/50">
           <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-[0_4px_0_0_var(--color-brand-dark)]">
             {playing ? <Pause className="size-5" aria-hidden /> : <Play className="size-5 translate-x-px" aria-hidden />}
           </span>
           <span className="grid">
-            <span className="font-heading font-extrabold text-brand-deep">Listen to Mael</span>
+            <span className="font-heading font-extrabold text-brand-deep">Listen to Coach Ish</span>
             <span className="text-sm text-muted-foreground">As often as you like.</span>
           </span>
         </button>
@@ -312,18 +312,18 @@ export function RepeatPlayer({
             </p>
             {lastPct !== null && (
               <p role="status" className={cn("rounded-full px-3 py-1 text-sm font-bold", lastPct >= REPEAT_PASS ? "bg-gradient-to-r from-primary to-brand-deep text-white" : "border-2 border-coral bg-white text-coral-dark")}>
-                {lastPct >= REPEAT_PASS ? `Well said! ${lastPct} % of the words understood` : `${lastPct} % of the words understood: listen to Mael again and try again`}
+                {lastPct >= REPEAT_PASS ? `Well said! ${lastPct} % of the words understood` : `${lastPct} % of the words understood: listen to Coach Ish again and try again`}
               </p>
             )}
             {micError && <p className="text-center text-sm font-semibold text-coral-dark">{micError}</p>}
           </div>
         )}
         {canRecognise === false && (
-          // No speech recognition here: record, compare with Mael, self-assess.
+          // No speech recognition here: record, compare with Coach Ish, self-assess.
           <div className="grid gap-3">
-            <p className="text-sm text-muted-foreground">Your browser can’t recognise speech: record yourself, compare with Mael, then rate yourself honestly.</p>
+            <p className="text-sm text-muted-foreground">Your browser can’t recognise speech: record yourself, compare with Coach Ish, then rate yourself honestly.</p>
             {!own ? (
-              <Recorder key={`${ph.id}:${index}`} maxSeconds={15} onUse={(r) => setOwn(URL.createObjectURL(r.blob))} useLabel="Compare with Mael" />
+              <Recorder key={`${ph.id}:${index}`} maxSeconds={15} onUse={(r) => setOwn(URL.createObjectURL(r.blob))} useLabel="Compare with Coach Ish" />
             ) : (
               <div className="grid gap-2">
                 <p className="text-xs font-semibold text-muted-foreground">You</p>

@@ -172,7 +172,7 @@
             "prepSeconds": 30,
             "recordSeconds": 60,
             "mustInclude": ["une salutation", "votre nom", "votre métier et votre entreprise (verbe to be)", "ce que vous faites (présent simple)", "une formule de politesse pour finir"],
-            "modelAnswer": { "text": "Good evening, nice to meet you. I'm Mael. I'm an English coach, and I work with professionals who want to communicate with confidence..." }
+            "modelAnswer": { "text": "Good evening, nice to meet you. I'm Coach Ish. I'm an English coach, and I work with professionals who want to communicate with confidence..." }
           }
         ]
       }

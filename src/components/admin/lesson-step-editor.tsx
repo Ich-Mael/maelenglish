@@ -11,9 +11,9 @@ import { cn } from "cn";
 
 /*
  * Lesson step editor (admin, English UI; the taught content is English, explanations may be French):
- * Mael's video link, an optional audio, then the sections in order — vocabulary (word, meaning,
+ * Coach Ish's video link, an optional audio, then the sections in order — vocabulary (word, meaning,
  * example, audio), grammar rule (rule, table, examples), dialogue (with audio) and « Le conseil de
- * Mael ». Tables, examples and dialogue lines are typed as plain text (one row / line per line).
+ * Coach Ish ». Tables, examples and dialogue lines are typed as plain text (one row / line per line).
  * Sends everything but the rich intro as JSON in « content » (cleaned on the server).
  */
 
@@ -111,7 +111,7 @@ export function LessonStepEditor({ initial, urls: initialUrls }: { initial: Less
     <div className="grid gap-5">
       <input type="hidden" name="content" value={json} />
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Mael's video (optional)" hint="YouTube, Vimeo or a video file link.">
+        <Field label="Coach Ish's video (optional)" hint="YouTube, Vimeo or a video file link.">
           <input className={inputCls} value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="https://youtu.be/…" />
         </Field>
         <AudioField
@@ -221,7 +221,7 @@ export function LessonStepEditor({ initial, urls: initialUrls }: { initial: Less
               )}
 
               {s.type === "tip" && (
-                <Field label="Mael's tip (French)">
+                <Field label="Coach Ish's tip (French)">
                   <textarea className={cn(inputCls, "h-auto min-h-20 py-2")} value={s.text} onChange={(e) => update(s.id, { text: e.target.value })} placeholder="Ne répondez jamais « Me too » à « Nice to meet you » : dites « Nice to meet you too »." />
                 </Field>
               )}

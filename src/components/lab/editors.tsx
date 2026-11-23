@@ -80,7 +80,7 @@ export async function ActivityFields({ type, content }: { type: ActivityType; co
             <VoicePicker voices={voices} initialId={c.voiceId ?? ""} initialName={c.voiceName ?? ""} />
           </div>
           <p className="rounded-xl bg-brand-soft px-3 py-2 text-xs text-brand-deep">
-            The learner talks with the AI by voice (ElevenLabs, Claude Haiku 5.5 as the brain) and may pick a difficulty from 1 (very patient, slow) to 5 (fast, interrupts, pushes back). The AI never corrects during the call. At the end, Claude Sonnet 5.5 writes the debrief: scores, goals achieved, corrections, better ways to say it, 3 phrases to reuse and Mael&apos;s tip (persona in AI usage → Mael persona). Calls count against the learner&apos;s monthly AI minutes. Learners find ready role-plays on the Talk with Coach Ish page, and you can add them to a unit as an activity.
+            The learner talks with the AI by voice (ElevenLabs, Claude Haiku 5.5 as the brain) and may pick a difficulty from 1 (very patient, slow) to 5 (fast, interrupts, pushes back). The AI never corrects during the call. At the end, Claude Sonnet 5.5 writes the debrief: scores, goals achieved, corrections, better ways to say it, 3 phrases to reuse and Coach Ish&apos;s tip (persona in AI usage → Coach Ish persona). Calls count against the learner&apos;s monthly AI minutes. Learners find ready role-plays on the Talk with Coach Ish page, and you can add them to a unit as an activity.
           </p>
         </>
       );
@@ -216,7 +216,7 @@ function SpeakingChallengeFields({ c, modelUrl, promptUrl }: { c: Partial<Speaki
         name="c_modelAnswerText"
         rows={4}
         defaultValue={c.modelAnswerText ?? ""}
-        placeholder="Good evening, nice to meet you. I'm Mael. I'm an English coach…"
+        placeholder="Good evening, nice to meet you. I'm Coach Ish. I'm an English coach…"
         hint="In English. Shown to the learner once their recording is sent."
       />
       <AudioInput name="c_modelAnswerAudioMediaId" label="Model answer audio (optional)" initialId={c.modelAnswerAudioMediaId ?? ""} initialUrl={modelUrl} />

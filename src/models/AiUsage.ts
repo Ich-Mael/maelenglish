@@ -49,7 +49,7 @@ const appSettingsSchema = new Schema(
       warnPercent: { type: Number, default: 80, min: 1, max: 100 },
       stopPercent: { type: Number, default: 95, min: 1, max: 100 },
     },
-    /** Mael persona (spec AIC-07): the coach's voice in role-play help and debriefs. */
+    /** Coach Ish persona (spec AIC-07): the coach's voice in role-play help and debriefs. */
     persona: {
       tone: { type: String, default: "" },
       catchphrases: { type: [String], default: [] },

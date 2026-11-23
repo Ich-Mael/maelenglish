@@ -13,6 +13,7 @@ import { XP, dayKey, practiceXp } from "@/lib/gamification/rules";
 import { ConversationError, attachRolePlay, finishRolePlay, rolePlayHelp, startRolePlay } from "@/lib/conversation/service";
 import type { HelpSuggestion } from "@/lib/ai/types";
 import { toFinished, type FinishedRolePlay } from "@/lib/conversation/view";
+import { remainingSeconds } from "@/lib/ai/metering";
 
 /*
  * AI role-play (Talk with Coach Ish page, unit activity steps, Lab preview). Every action re-checks the
@@ -111,7 +112,8 @@ export async function finishRolePlayAction(sessionId: string): Promise<{ ok: tru
       reward = await creditProgress(me, s.activityId, s.stepId ? { stepId: s.stepId, courseId: s.courseId! } : null, s.score ?? 0);
       refresh();
     }
-    return { ok: true, result: toFinished(s, reward) };
+    const minutesLeft = me.isStaff ? null : (await remainingSeconds(me.id)) / 60;
+    return { ok: true, result: toFinished(s, reward, minutesLeft) };
   } catch (e) {
     if (!(e instanceof ConversationError)) console.error("[roleplay] finish action", e);
     return fail(e);

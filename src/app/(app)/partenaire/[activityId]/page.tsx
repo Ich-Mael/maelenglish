@@ -34,6 +34,7 @@ async function Scenario({ params }: { params: Promise<{ activityId: string }> })
         brief={publicBrief(c)}
         available={state.available}
         minutesLeft={state.minutesLeft}
+          capMinutes={state.capMinutes}
         courseHref="/partenaire"
         attempts={attempts}
       />

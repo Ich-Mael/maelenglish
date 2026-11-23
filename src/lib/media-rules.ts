@@ -24,7 +24,7 @@ export const MAX_BYTES: Record<MediaKind, number> = {
   "voice-note": 10 * MB,
   "model-audio": 10 * MB,
   clip: 30 * MB,
-  instruction: 60 * MB, // short instruction video recorded by Mael
+  instruction: 60 * MB, // short instruction video recorded by Coach Ish
   avatar: 2 * MB, // resized to 320 px in the browser (≈ 20 KB)
   image: 3 * MB, // challenge prompt pictures, resized to 1600 px in the browser (≈ 150 KB)
   conversation: 40 * MB, // AI role-play call audio (MP3 from ElevenLabs, ≈ 1 MB per minute), written by the server

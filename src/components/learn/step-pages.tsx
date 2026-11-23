@@ -214,6 +214,7 @@ export async function StepPage({ courseId, stepId }: { courseId: string; stepId:
           brief={publicBrief(rc)}
           available={state.available && !access.readOnly}
           minutesLeft={state.minutesLeft}
+          capMinutes={state.capMinutes}
           courseHref={course}
           nextHref={nextHref}
           preview={access.preview}

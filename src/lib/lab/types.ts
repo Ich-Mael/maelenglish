@@ -13,7 +13,7 @@ export type ActivityRole = "practice" | "challenge";
 /**
  * Skill family of a type, for the learner's skill badges (src/lib/gamification/rules.ts): listening
  * (L…), language = grammar & vocabulary (V…), reading (R…), writing (W…), pronunciation (S1 repeat
- * after Mael), speaking (the unit challenge, counted separately).
+ * after Coach Ish), speaking (the unit challenge, counted separately).
  */
 export const SKILL_FAMILIES = ["listening", "language", "reading", "writing", "pronunciation", "speaking"] as const;
 export type SkillFamily = (typeof SKILL_FAMILIES)[number];
@@ -68,7 +68,7 @@ export const ACTIVITY_INFO: Record<ActivityType, { label: string; description: s
     skill: "language",
   },
   "repeat_after": {
-    label: "Repeat after Mael",
+    label: "Repeat after Coach Ish",
     description: "Short phrases to hear and repeat: the browser's speech recognition shows which words were understood (self-assessment where it isn't available).",
     role: "practice",
     skill: "pronunciation",
@@ -87,7 +87,7 @@ export const ACTIVITY_INFO: Record<ActivityType, { label: string; description: s
   },
   "role_play": {
     label: "AI role-play",
-    description: "A spoken conversation with an AI that plays a professional counterpart (interviewer, client, manager…), followed by a debrief: scores, corrections, better ways to say it, Mael's tip.",
+    description: "A spoken conversation with an AI that plays a professional counterpart (interviewer, client, manager…), followed by a debrief: scores, corrections, better ways to say it, Coach Ish's tip.",
     role: "practice",
     skill: "speaking",
   },
@@ -305,7 +305,7 @@ export function autoBlank(text: string): string {
   return head + tail;
 }
 
-/** S1 — Répétez après Mael: phrases (English), each with its model audio (required) and an optional French translation. */
+/** S1 — Répétez après Coach Ish: phrases (English), each with its model audio (required) and an optional French translation. */
 export type RepeatPhrase = { id: string; text: string; translation: string; audioMediaId: string };
 export type RepeatContent = { phrases: RepeatPhrase[] };
 

@@ -166,7 +166,7 @@ export const BADGES: readonly Badge[] = [
   b("oral", "challenge-15", "Leader's voice", "Send 15 speaking challenges", "Megaphone", "assignmentsSubmitted", 15, 3),
   b("oral", "validated-1", "Coach approved", "Get a speaking challenge validated by your coach", "BadgeCheck", "challengesValidated", 1, 1),
   b("oral", "validated-10", "Coach won over", "Get 10 speaking challenges validated", "Award", "challengesValidated", 10, 3),
-  b("oral", "pron-1", "Good pronunciation", "Finish a « Repeat after Mael » exercise", "Speech", "pronunciation", 1, 1),
+  b("oral", "pron-1", "Good pronunciation", "Finish a « Repeat after Coach Ish » exercise", "Speech", "pronunciation", 1, 1),
   b("oral", "pron-20", "Accent mastered", "Finish 20 pronunciation exercises", "AudioLines", "pronunciation", 20, 2),
 
   b("ecoute", "listen-1", "All ears", "Finish your first listening activity", "Headphones", "listening", 1, 1),

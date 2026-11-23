@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowDown, ArrowRight, CalendarCheck, ChevronDown, Crown, Phone, UserCheck, Video } from "lucide-react";
 import { COACHING } from "@/lib/content";
-import { COACHING_WA, PHONE_DISPLAY, PHONE_TEL, signupHref } from "@/lib/site";
+import { COACHING_WA, PHONE_DISPLAY, PHONE_TEL } from "@/lib/site";
 import { BUTTON, ButtonLink, Container, PhraseCard, Pill, SectionHead, WhatsAppButton } from "@/components/site/ui";
 import { FounderCard } from "@/components/site/founder";
 import { GOAL_ICONS } from "@/components/site/icons";
@@ -35,7 +35,7 @@ export default function CoachingPage() {
               une présentation, une négociation ou un examen. Chaque séance prépare votre jour J.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href={signupHref("coaching")} className={BUTTON.coral}>
+              <Link href="/diagnostic" className={BUTTON.coral}>
                 Demander mon diagnostic <ArrowRight className="size-5" aria-hidden />
               </Link>
               <a href="#deroulement" className={BUTTON.outline}>
