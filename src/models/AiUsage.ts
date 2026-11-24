@@ -65,6 +65,11 @@ const appSettingsSchema = new Schema(
       usdToFcfa: { type: Number, default: 600, min: 1 },
       defaultMarginPct: { type: Number, default: 200, min: 0 },
     },
+    /** ElevenLabs voices reading the vocabulary (dictionary, daily words) — American and British. */
+    vocabularyVoices: {
+      us: { id: { type: String, default: "cgSgspJ2msm6clMCkdW9" }, name: { type: String, default: "Jessica" } },
+      gb: { id: { type: String, default: "JBFqnCBsd6RMkjVDRZzb" }, name: { type: String, default: "George" } },
+    },
     /** Coach Ish persona (spec AIC-07): the coach's voice in role-play help and debriefs. */
     persona: {
       tone: { type: String, default: "" },

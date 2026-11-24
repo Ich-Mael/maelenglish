@@ -5,7 +5,7 @@ import { recordUsage } from "@/lib/ai/metering";
 import { hitRateLimit } from "@/lib/auth/service";
 import { dayKey } from "@/lib/gamification/rules";
 import { typedMatches } from "@/lib/vocabulary-match";
-import { notebookKey, saveWord } from "@/lib/dictionary";
+import { notebookKey, saveWord, speakFor } from "@/lib/dictionary";
 import { normalizeWord } from "@/lib/dictionary-word";
 
 /*
@@ -256,4 +256,20 @@ export async function vocabularyStats(userId: string, now = new Date()) {
     VocabWord.aggregate<{ n: number }>([{ $match: { userId: new Types.ObjectId(userId) } }, { $project: { n: { $size: { $ifNull: ["$sentences", []] } } } }, { $group: { _id: null, n: { $sum: "$n" } } }]),
   ]);
   return { words, due, known, sentences: sentences[0]?.n ?? 0 };
+}
+
+
+/**
+ * A daily word's example sentence read aloud (`i` = 0 or 1). Only the examples the AI wrote for a
+ * profession can be voiced (no arbitrary text). Shared cache: one generation for everyone.
+ */
+export async function dailyExampleAudio(userId: string, rawWord: string, i: number, opts: { voice: "us" | "gb"; slow?: boolean }) {
+  const word = String(rawWord ?? "").trim().toLowerCase().slice(0, 60);
+  if (!word || !Number.isInteger(i) || i < 0 || i > 3) return null;
+  const doc = await ProfessionWords.findOne({ "items.word": { $regex: `^${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" } }).sort({ day: -1 }).lean();
+  const item = (doc?.items ?? []).find((x) => String(x.word ?? "").toLowerCase() === word);
+  const examples = item?.examples?.length ? item.examples.map((e) => e.en ?? "") : item?.example ? [item.example] : [];
+  const text = examples[i];
+  if (!text) return null;
+  return speakFor(userId, text, { voice: opts.voice, slow: opts.slow, feature: "daily_vocabulary" });
 }

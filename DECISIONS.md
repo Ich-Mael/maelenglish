@@ -72,6 +72,10 @@ All providers sit behind internal interfaces in `src/lib/ai/` (`SpeechService`, 
 - **Character agents**: a role-play played by a story character gets its own ElevenLabs agent (name, personality, voice in the prompt / voice settings), kept apart from the scenario's own agent.
 - **Not built yet**: episode videos (placeholder), payments, certificates, test-out, placement, photo-based avatars (V2: consent, photo deleted after generation), reminders, AI drafting of episodes.
 
+### Vocabulary voices until Azure (owner decision 2026-11-23)
+
+- Dictionary words, « At work » sentences, daily words and their example sentences are read by **ElevenLabs** (already connected for Talk with Coach Ish) while Azure isn't configured; Azure neural voices take over as soon as `AZURE_SPEECH_KEY` / `AZURE_SPEECH_REGION` are set. Each text is generated once and shared (≈ 2 words + 4 sentences a day per profession: negligible on the Pro plan). The device's voice remains the fallback.
+
 ## Metering
 - `AiUsage` records every paid call: learner, kind, units (audio seconds or tokens), estimated cost, day.
 - Before any paid call, check the learner's monthly cap. The default is set in admin and can be overridden per learner. Staff previews don't count against learner caps.

@@ -1,8 +1,8 @@
 import { Types } from "mongoose";
 import { DictionaryContext, DictionaryEntry, VocabWord, type DictionaryContextDoc, type DictionaryEntryDoc, type VocabWordDoc } from "@/models";
-import { aiServices, realTts } from "@/lib/ai";
-import { AZURE_TTS_MICROS_PER_CHAR } from "@/lib/ai/azure";
-import { putObject, signedReadUrl, storageDriver } from "@/lib/storage";
+import { aiServices } from "@/lib/ai";
+import { speechProvider, spoken } from "@/lib/ai/spoken";
+import { signedReadUrl } from "@/lib/storage";
 import { recordUsage } from "@/lib/ai/metering";
 import { hitRateLimit } from "@/lib/auth/service";
 import { lemmaOf, normalizeWord } from "./dictionary-word";
@@ -204,15 +204,9 @@ export const SLOW_RATE = 0.75;
 /** Audio generations per learner and hour (stored audio doesn't count). */
 export const AUDIO_PER_HOUR = 120;
 
-/** A real voice and somewhere to keep its audio. */
+/** A real voice (Azure, else ElevenLabs) and somewhere to keep its audio. */
 function voicesAvailable() {
-  if (!realTts()) return false;
-  try {
-    storageDriver();
-    return true;
-  } catch {
-    return false;
-  }
+  return speechProvider() !== null;
 }
 
 /**
@@ -226,21 +220,24 @@ export async function wordAudio(userId: string, raw: string, opts: { voice: Audi
   const what = opts.what ?? "word";
   const name = `${what}-${opts.voice}${opts.slow ? "-slow" : ""}`;
   const doc = await DictionaryEntry.findOne({ word }).lean<DictionaryEntryDoc>();
-  if (!doc) return null;
-  const stored = (doc.tts as unknown as Record<string, string> | undefined)?.[name];
+  // Audio made earlier with Azure (kept on the entry).
+  const stored = (doc?.tts as unknown as Record<string, string> | undefined)?.[name];
   if (stored) return signedReadUrl(stored);
-  const text = what === "word" ? doc.word : doc.businessExample;
-  const tts = realTts();
-  if (!text || !tts || !voicesAvailable()) return null;
+  // A word needs no dictionary entry (daily words); its « At work » sentence does.
+  const text = what === "word" ? word : (doc?.businessExample ?? "");
+  if (!text || !voicesAvailable()) return null;
+  return speakFor(userId, text, { voice: opts.voice, slow: opts.slow, feature: "dictionary" });
+}
+
+/** Shared voice (cached for everyone); a learner's new generations are rate-limited and metered. */
+export async function speakFor(userId: string, text: string, opts: { voice: AudioVoice; slow?: boolean; feature: string }): Promise<string | null> {
+  const known = await spoken(text, { accent: opts.voice, slow: opts.slow, dryRun: true });
+  if (known) return known.url;
   const limit = await hitRateLimit(`dictionary-audio:${userId}`, AUDIO_PER_HOUR, 60 * 60_000);
   if (!limit.allowed) throw new DictionaryError("You've played a lot of new words: try again in a few minutes.");
-  const audio = await tts.synthesize(text, { accent: AUDIO_VOICES[opts.voice], rate: opts.slow ? SLOW_RATE : 1 });
-  const ext = audio.mime === "audio/mpeg" ? "mp3" : audio.mime === "audio/wav" ? "wav" : "bin";
-  const key = `courses_audios/dictionary/${new Date().toISOString().slice(0, 7)}/${new Types.ObjectId().toHexString()}.${ext}`;
-  await putObject(key, audio.data, audio.mime);
-  await DictionaryEntry.updateOne({ word }, { $set: { [`tts.${name}`]: key } });
-  await recordUsage(userId, { kind: "tts", feature: "dictionary", provider: tts.name, costMicros: text.length * AZURE_TTS_MICROS_PER_CHAR }).catch(() => {});
-  return signedReadUrl(key);
+  const r = await spoken(text, { accent: opts.voice, slow: opts.slow });
+  if (r?.fresh) await recordUsage(userId, { kind: "tts", feature: opts.feature, provider: r.provider, costMicros: r.costMicros }).catch(() => {});
+  return r?.url ?? null;
 }
 
 // ── Notebook ───────────────────────────────────────────────────────────────

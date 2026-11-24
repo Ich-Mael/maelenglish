@@ -147,12 +147,12 @@ export class ElevenLabsSpeechService implements SpeechService {
 }
 
 /** ElevenLabs text-to-speech in a given voice (MP3, 64 kbit/s). */
-export async function elevenTts(voiceId: string, text: string): Promise<{ data: Uint8Array; mime: string }> {
+export async function elevenTts(voiceId: string, text: string, opts: { speed?: number } = {}): Promise<{ data: Uint8Array; mime: string }> {
   const voice = voiceId || "JBFqnCBsd6RMkjVDRZzb";
   const res = await fetch(`${API}/v1/text-to-speech/${encodeURIComponent(voice)}?output_format=mp3_44100_64`, {
     method: "POST",
     headers: { "xi-api-key": process.env.ELEVENLABS_API_KEY!, "Content-Type": "application/json" },
-    body: JSON.stringify({ text, model_id: "eleven_flash_v2_5" }),
+    body: JSON.stringify({ text, model_id: "eleven_flash_v2_5", ...(opts.speed && opts.speed !== 1 ? { voice_settings: { speed: Math.min(1.2, Math.max(0.7, opts.speed)) } } : {}) }),
     signal: AbortSignal.timeout(30_000),
   });
   if (!res.ok) throw new Error(`ElevenLabs TTS ${res.status}: ${(await res.text().catch(() => "")).slice(0, 200)}`);

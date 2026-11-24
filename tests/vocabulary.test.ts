@@ -127,3 +127,18 @@ describe("the vocabulary I need", () => {
     expect((await recordTest(u, [{ word: "delay", kind: "choose", answer: "delay" }], now)).right).toBe(0);
   });
 });
+
+describe("daily word examples read aloud", () => {
+  it("voices only the examples written for a profession, once (shared)", async () => {
+    const { FakeTtsService } = await import("@/lib/ai/fake");
+    const { dailyExampleAudio } = await import("@/lib/vocabulary");
+    setAiServicesForTests({ feedback: new FakeFeedbackService(), tts: new FakeTtsService() });
+    const u = await learner();
+    await ProfessionWords.create({ key: "nurse", profession: "Nurse", day: "2026-11-23", items: [{ word: "shift", translation: "garde", frNote: "", examples: [{ en: "I am working the night shift this week.", fr: "Je fais la garde de nuit." }] }] });
+    const url = await dailyExampleAudio(u, "Shift", 0, { voice: "us" });
+    expect(url).toMatch(/\/api\/media\/local\?/);
+    expect(await dailyExampleAudio(u, "shift", 0, { voice: "us" })).toBe(url);
+    expect(await dailyExampleAudio(u, "shift", 1, { voice: "us" })).toBeNull();
+    expect(await dailyExampleAudio(u, "other", 0, { voice: "us" })).toBeNull();
+  });
+});

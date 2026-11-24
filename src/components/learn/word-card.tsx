@@ -50,7 +50,7 @@ export function setVoice(v: Voice) {
 type Speakable = { word: string; audioUrl: string; voices: boolean; businessExample?: string };
 
 /** The browser's own voice (last resort). */
-function synth(text: string, voice: Voice, slow: boolean) {
+export function synth(text: string, voice: Voice, slow: boolean) {
   try {
     const u = new SpeechSynthesisUtterance(text);
     u.lang = voice === "gb" ? "en-GB" : "en-US";

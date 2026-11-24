@@ -637,6 +637,20 @@ export async function saveBudgetAction(_: State, form: FormData): Promise<State>
   }
 }
 
+/** Admins only: the ElevenLabs voices reading the vocabulary (dictionary, daily words). */
+export async function saveVocabularyVoicesAction(_: State, form: FormData): Promise<State> {
+  try {
+    const me = await staffOrThrow();
+    if (!me.isAdmin) throw new AdminError("Administrators only.");
+    const { saveVocabularyVoices } = await import("@/lib/ai/spoken");
+    const v = await saveVocabularyVoices({ us: { id: str(form, "usId"), name: str(form, "usName") }, gb: { id: str(form, "gbId"), name: str(form, "gbName") } });
+    refresh();
+    return { success: `Voices saved: ${v.us.name || "US voice"} (US), ${v.gb.name || "UK voice"} (UK). New words and sentences use them from now on.` };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
 /** Admins only: delete an AI role-play call's recording (learners can't). */
 export async function deleteConversationAudioAction(sessionId: string): Promise<{ error?: string; success?: string }> {
   try {

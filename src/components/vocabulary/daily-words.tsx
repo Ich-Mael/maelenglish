@@ -4,7 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Loader2, PenLine, Plus, Volume2 } from "lucide-react";
 import { saveDailyWordAction } from "@/app/(app)/vocabulary-actions";
-import { playPronunciation, useVoice } from "@/components/learn/word-card";
+import { playPronunciation, synth, useVoice } from "@/components/learn/word-card";
 import type { DailyWord } from "@/lib/ai/types";
 
 /** Daily words for the learner's profession: hear it, French meaning, note, two examples at work (with French), « Add to my notebook », « Write my own sentence ». */
@@ -26,9 +26,22 @@ export function WordTile({ w }: { w: DailyWord & { saved: boolean } }) {
   const router = useRouter();
   const audio = useRef<HTMLAudioElement>(null);
   const voice = useVoice();
-  // The word: neural voice when the dictionary has it, else the browser's; the examples (ours): the browser's voice.
+  // The word and its examples: a natural voice (Azure, else ElevenLabs — made once, shared); the browser's voice if unavailable.
   const speakWord = () => playPronunciation(audio.current, { word: w.word, audioUrl: "", voices: true }, { voice });
-  const speakText = (text: string) => playPronunciation(null, { word: w.word, audioUrl: "", voices: false, businessExample: text }, { voice, what: "example" });
+  const speakText = (k: number, text: string) => {
+    const el = audio.current;
+    if (!el) return synth(text, voice, false);
+    let fellBack = false;
+    const fallback = () => {
+      if (fellBack) return;
+      fellBack = true;
+      el.onerror = null;
+      synth(text, voice, false);
+    };
+    el.onerror = fallback;
+    el.src = `/api/vocabulary/audio?${new URLSearchParams({ word: w.word, i: String(k), voice })}`;
+    void el.play().catch((err: Error) => err.name !== "AbortError" && fallback());
+  };
   const add = async () => {
     const r = await saveDailyWordAction(w.word);
     if (!r.ok) {
@@ -63,7 +76,7 @@ export function WordTile({ w }: { w: DailyWord & { saved: boolean } }) {
         <ol className="grid gap-2">
           {examples.map((e, k) => (
             <li key={k} className="flex gap-2 text-sm">
-              <button type="button" onClick={() => speakText(e.en)} className="mt-0.5 shrink-0 text-primary" aria-label={`Hear example ${k + 1}`}>
+              <button type="button" onClick={() => speakText(k, e.en)} className="mt-0.5 shrink-0 text-primary" aria-label={`Hear example ${k + 1}`}>
                 <Volume2 className="size-4" aria-hidden />
               </button>
               <span>

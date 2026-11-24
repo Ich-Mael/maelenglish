@@ -10,6 +10,9 @@ import { AdminForm, Submit } from "@/components/admin/forms";
 import { PageSkeleton } from "@/components/learn/ui";
 import { saveAiSettingsAction, saveBudgetAction, savePersonaAction } from "../actions";
 import { budgetState } from "@/lib/conversation/budget";
+import { conversationEngine } from "@/lib/ai";
+import { speechProvider, vocabularyVoices } from "@/lib/ai/spoken";
+import { VocabularyVoicesForm } from "@/components/admin/vocabulary-voices-form";
 import { cn } from "cn";
 
 export const metadata: Metadata = { title: "AI usage" };
@@ -21,7 +24,8 @@ async function Usage() {
   const me = await requireStaff("/admin/usage-ia");
   if (!me.isAdmin) redirect("/admin");
   await connection();
-  const [r, pool] = await Promise.all([usageReport(), budgetState()]);
+  const [r, pool, vocabVoices, voices] = await Promise.all([usageReport(), budgetState(), vocabularyVoices(), (conversationEngine()?.listVoices() ?? Promise.resolve([])).catch(() => [])]);
+  const provider = speechProvider();
   const b = pool.budget;
   return (
     <div className="grid max-w-5xl gap-5">
@@ -59,6 +63,19 @@ async function Usage() {
             <Submit>Save the budget</Submit>
           </div>
         </AdminForm>
+      </Card>
+
+      <Card
+        title="Vocabulary voices"
+        description={
+          provider === "azure"
+            ? "Azure neural voices are connected and read the vocabulary: these ElevenLabs voices are only used if Azure is removed."
+            : provider === "elevenlabs"
+              ? "The ElevenLabs voices reading the dictionary words, the « At work » sentences and the daily words with their examples. Learners choose US or UK English on the word card. Each text is generated once and shared; choosing another voice makes new audio from the next play."
+              : "No voice service or storage is configured: learners hear their device's voice."
+        }
+      >
+        <VocabularyVoicesForm voices={voices} initial={vocabVoices} />
       </Card>
 
       <Card title="AI minutes per learner" description="Speech analysed and AI conversations, per month. Written feedback isn't counted.">

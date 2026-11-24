@@ -105,7 +105,7 @@ describe("dictionary", () => {
     expect(ssml("delay")).toContain('<voice name="en-US-JennyNeural">delay</voice>');
   });
 
-  it("makes pronunciation audio once per word / voice / speed, stores it, and re-makes the example after a new enrichment", async () => {
+  it("makes pronunciation audio once per text / voice / speed (shared cache), a new example gets its own audio", async () => {
     const u = await learner();
     const tts = new FakeTtsService();
     const spy = vi.spyOn(tts, "synthesize");
@@ -118,18 +118,12 @@ describe("dictionary", () => {
     await wordAudio(String(u._id), "delay", { voice: "us" });
     await wordAudio(String(u._id), "delay", { voice: "us", what: "example" });
     expect((spy.mock.calls as unknown as [string, { accent?: string; rate?: number }?][]).map(([t, o]) => [t, o?.accent, o?.rate])).toEqual([["delay", "british", 0.75], ["delay", "american", 1], ['We use "delay" at work every day.', "american", 1]]);
-    const tts1 = (await DictionaryEntry.findOne({ word: "delay" }).lean())?.tts as unknown as Record<string, string>;
-    expect(Object.keys(tts1).sort()).toEqual(["example-us", "word-gb-slow", "word-us"]);
     expect(await AiUsage.countDocuments({ kind: "tts" })).toBe(3);
-    // A newer enrichment (new business example) drops the example audio, keeps the word audio.
-    await DictionaryEntry.updateOne({ word: "delay" }, { $set: { enrichVersion: 1 } });
-    await lookup(String(u._id), "delay");
-    const tts2 = (await DictionaryEntry.findOne({ word: "delay" }).lean())?.tts as unknown as Record<string, string>;
-    expect(Object.keys(tts2).sort()).toEqual(["word-gb-slow", "word-us"]);
+    // A word the dictionary doesn't know (e.g. a daily word) can still be read aloud.
+    expect(await wordAudio(String(u._id), "unknownword", { voice: "us" })).toMatch(/\/api\/media\/local\?/);
     // No voice configured: nothing generated (the browser falls back).
     setAiServicesForTests({ feedback: new FakeFeedbackService() });
-    expect([await wordAudio(String(u._id), "delay", { voice: "gb" }), (await lookup(String(u._id), "delay")).voices]).toEqual([null, false]);
-    expect(await wordAudio(String(u._id), "unknownword", { voice: "us" })).toBeNull();
+    expect([await wordAudio(String(u._id), "otherword", { voice: "gb" }), (await lookup(String(u._id), "delay")).voices]).toEqual([null, false]);
   });
 
   it("notebook: save once (with context), list with entries, review, remove", async () => {
@@ -146,5 +140,14 @@ describe("dictionary", () => {
     expect([list.length, list[0].reviews, (await listWords(String(u._id), "learning")).length]).toEqual([1, 1, 0]);
     await removeWord(String(u._id), "delay");
     expect(await VocabWord.countDocuments()).toBe(0);
+  });
+});
+
+describe("vocabulary voices setting", () => {
+  it("defaults to Jessica (US) / George (UK) and keeps the admin's choice", async () => {
+    const { vocabularyVoices, saveVocabularyVoices, DEFAULT_VOCAB_VOICES } = await import("@/lib/ai/spoken");
+    expect(await vocabularyVoices()).toEqual(DEFAULT_VOCAB_VOICES);
+    await saveVocabularyVoices({ us: { id: "abc-123", name: "Sarah" }, gb: { id: "" } });
+    expect(await vocabularyVoices()).toEqual({ us: { id: "abc-123", name: "Sarah" }, gb: DEFAULT_VOCAB_VOICES.gb });
   });
 });
