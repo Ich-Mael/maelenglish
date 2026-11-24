@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { connection } from "next/server";
-import { ArrowRight, Award, BookOpen, BookOpenCheck, Flame, MessagesSquare, Mic, NotebookPen, RotateCcw, Target, Trophy, type LucideIcon } from "lucide-react";
+import { ArrowRight, Award, BookOpen, BookOpenCheck, Flame, GraduationCap, MessagesSquare, Mic, NotebookPen, RotateCcw, Target, Trophy, Video, type LucideIcon } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
 import { connectDB } from "@/lib/db";
-import { ChallengeSubmission, ConversationSession, EpisodeProgress, StoryProfile, UserBadge, VocabWord } from "@/models";
+import { ChallengeSubmission, Coaching, CoachingEntry, CoachingSession, ConversationSession, EpisodeProgress, StoryProfile, UserBadge, VocabWord } from "@/models";
+import { Types } from "mongoose";
 import { statsFor, xpByDay } from "@/lib/gamification/service";
 import { dueCount } from "@/lib/vocabulary";
 import { monthlyCapSeconds, remainingSeconds } from "@/lib/ai/metering";
@@ -13,6 +14,9 @@ import { PageSkeleton } from "@/components/learn/ui";
 import { Avatar } from "@/components/story/avatar";
 import type { AvatarConfig } from "@/lib/story/schema";
 import { cn } from "cn";
+
+/** A moment in the past (sessions still joinable 90 min after their start). */
+const minutesAgo = (m: number) => new Date(Date.now() - m * 60_000);
 
 export const metadata: Metadata = {
   title: "My Learning Space",
@@ -61,6 +65,18 @@ async function Space() {
     StoryProfile.findOne({ userId: me.id }).select("storyDay characterName avatar").lean(),
     EpisodeProgress.countDocuments({ userId: me.id, status: "completed" }),
   ]);
+  // MaelEnglish Coaching: only for people coached (premium).
+  const coachings = await Coaching.find({ memberIds: new Types.ObjectId(me.id), status: { $ne: "completed" } }).select("_id title").lean();
+  const coachingIds = coachings.map((c) => c._id);
+  const myThreads = { $in: [null, new Types.ObjectId(me.id)] };
+  const [coachUnread, nextSession] = coachingIds.length
+    ? await Promise.all([
+        CoachingEntry.countDocuments({ coachingId: { $in: coachingIds }, forUserId: myThreads, readBy: { $ne: new Types.ObjectId(me.id) } }),
+        CoachingSession.findOne({ coachingId: { $in: coachingIds }, forUserId: myThreads, status: "scheduled", startsAt: { $gte: minutesAgo(90) } }).sort({ startsAt: 1 }).select("startsAt coachingId").lean(),
+      ])
+    : [0, null];
+  const coachingHref = coachings.length === 1 ? `/mon-coaching/${coachings[0]._id}` : "/mon-coaching";
+  const sessionLabel = nextSession ? new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: process.env.APP_TZ || "Africa/Ouagadougou" }).format(nextSession.startsAt) : "";
   const minutesLeft = Math.floor(leftS / 60);
   const weekXp = week.reduce((n, d) => n + d.xp, 0);
   const maxDay = Math.max(1, ...week.map((d) => d.xp));
@@ -68,6 +84,8 @@ async function Space() {
   const sent = stats.counters.assignmentsSubmitted ?? 0;
 
   const todo: Todo[] = [
+    coachUnread ? { href: `${coachingHref}${coachings.length === 1 ? "?tab=feedback" : ""}`, label: `${coachUnread} new message${coachUnread === 1 ? "" : "s"} from your coach`, icon: GraduationCap, urgent: true } : null,
+    nextSession ? { href: `/mon-coaching/${nextSession.coachingId}?tab=sessions`, label: `Coaching session · ${sessionLabel}`, icon: Video } : null,
     due
       ? {
           href: "/vocabulaire/test",
@@ -106,6 +124,19 @@ async function Space() {
   ].filter((x): x is Todo => !!x);
 
   const tiles: Tile[] = [
+    ...(coachings.length
+      ? [
+          {
+            href: coachingHref,
+            title: "My Coaching",
+            text: coachings.length === 1 ? coachings[0].title : `${coachings.length} coachings with your coach.`,
+            icon: GraduationCap,
+            stat: [nextSession ? `Next session ${sessionLabel}` : "Goals, feedback, resources and sessions", coachUnread ? `${coachUnread} new` : ""].filter(Boolean).join(" · "),
+            alert: coachUnread ? `${coachUnread} new message${coachUnread === 1 ? "" : "s"}` : undefined,
+            tone: "navy" as const,
+          },
+        ]
+      : []),
     {
       href: "/partenaire#conversations",
       title: "My Conversation with Coach Ish",

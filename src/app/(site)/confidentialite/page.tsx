@@ -94,6 +94,13 @@ export default function PrivacyPage() {
               pouvez les écouter et les consulter ; seul un administrateur peut supprimer un enregistrement.
             </li>
             <li>
+              <strong>Coaching (« MaelEnglish Coaching »)</strong> : votre coach et vous (et, pour un coaching de groupe, les autres
+              participants, qui ne voient que votre prénom) partagez un espace avec vos objectifs, vos messages et messages vocaux, les
+              documents et vos enregistrements. Les messages privés et vos enregistrements ne sont visibles que par vous, votre coach et
+              les administrateurs. Les séances en direct passent par le service de visioconférence Daily (audio, vidéo, partage
+              d&apos;écran) ; elles ne sont pas enregistrées.
+            </li>
+            <li>
               <strong>Mode histoire (« Story Mode »)</strong> : nous gardons votre personnage (nom choisi, métier, pays, avatar dessiné —
               aucune photo), votre progression dans les saisons et ce que les personnages retiennent de vous (jamais de données sensibles ;
               vous pouvez supprimer chaque information depuis la page de la saison). Les leçons et activités sont celles des cours, et les

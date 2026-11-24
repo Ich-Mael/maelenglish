@@ -17,6 +17,8 @@ import { sendWriting, writingSendsLeft, WritingError } from "@/lib/lab/writing";
 import type { WritingTaskContent } from "@/lib/lab/types";
 import { parseStoryCtx } from "@/lib/story/paths";
 import { StoryError, afterStoryStep, storyStep } from "@/lib/story/service";
+import { parseCoachingCtx } from "@/lib/coaching/paths";
+import { CoachingError, openTask, saveLabProgress } from "@/lib/coaching/service";
 
 /*
  * Learner mutations. Each action re-checks the session, the enrolment and that
@@ -89,6 +91,8 @@ export async function submitLabAttempt(
 ): Promise<{ ok: true; result: LabResult } | { ok: false; error: string }> {
   const story = parseStoryCtx(courseId);
   if (story) return storyLabAttempt(story, stepId, input);
+  const coachingTask = parseCoachingCtx(courseId);
+  if (coachingTask) return coachingLabAttempt(coachingTask, input);
   try {
     const ctx = await context(courseId);
     const { step, outline } = stepOf(ctx, stepId);
@@ -320,5 +324,33 @@ export async function submitFinalExam(courseId: string, answers: Record<string, 
     };
   } catch (e) {
     return { ok: false, error: (e as Error).message };
+  }
+}
+
+// ── Coaching: a Lab activity assigned by the coach (no course step behind it) ──
+
+async function coachingLabAttempt(taskId: string, input: { answers: Record<string, unknown>; bonus?: string[]; timeSpentS?: number; plays?: number }): Promise<{ ok: true; result: LabResult } | { ok: false; error: string }> {
+  try {
+    const me = await readCurrentUser();
+    if (!me) throw new CoachingError("Your session has expired: sign in again.");
+    const { task, role, activity } = await openTask({ id: me.id, role: me.role }, taskId);
+    if (task.kind !== "lab" || !activity || !isActivityType(activity.type)) throw new CoachingError("Activity not found.");
+    const answers = input.answers && typeof input.answers === "object" ? input.answers : {};
+    const graded = gradeActivity(activity.type, activity.content, answers);
+    const correctIds = new Set(graded.items.filter((i) => i.correct).map((i) => i.id));
+    const bonus = new Set((input.bonus ?? []).filter((id) => correctIds.has(id))).size;
+    const stars = starsFor(graded.score);
+    // The coach trying the activity: graded, nothing saved.
+    if (role === "coach") return { ok: true, result: { score: graded.score, stars, bonus, items: graded.items, bestScore: graded.score, reward: null } };
+    const { first, best } = await saveLabProgress(me.id, taskId, graded.score);
+    const items: AwardInput[] = first
+      ? [{ key: `coaching:${taskId}`, source: activity.type, amount: practiceXp(graded.score), counters: { lessonsCompleted: 1 } }]
+      : [{ key: `coaching-replay:${taskId}:${dayKey()}`, source: "practice_replay", amount: XP.practiceReplay }];
+    const r = await award(me.id, items).catch((e) => (console.error("award failed", e), null));
+    refresh();
+    return { ok: true, result: { score: graded.score, stars, bonus, items: graded.items, bestScore: best, reward: r } };
+  } catch (e) {
+    if (!(e instanceof CoachingError)) console.error("[coaching lab]", e);
+    return { ok: false, error: e instanceof CoachingError ? e.message : "Something went wrong: try again in a moment." };
   }
 }

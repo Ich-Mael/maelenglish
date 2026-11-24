@@ -17,6 +17,7 @@ const AUDIO: Record<string, string> = {
 };
 const VIDEO: Record<string, string> = { "video/mp4": "mp4", "video/webm": "webm" };
 const IMAGE: Record<string, string> = { "image/webp": "webp", "image/jpeg": "jpg", "image/png": "png" };
+const DOCUMENT: Record<string, string> = { "application/pdf": "pdf", ...IMAGE };
 
 const MB = 1024 * 1024;
 export const MAX_BYTES: Record<MediaKind, number> = {
@@ -28,6 +29,7 @@ export const MAX_BYTES: Record<MediaKind, number> = {
   avatar: 2 * MB, // resized to 320 px in the browser (≈ 20 KB)
   image: 3 * MB, // challenge prompt pictures, resized to 1600 px in the browser (≈ 150 KB)
   conversation: 40 * MB, // AI role-play call audio (MP3 from ElevenLabs, ≈ 1 MB per minute), written by the server
+  document: 20 * MB, // coaching resources (PDF, pictures), private to the coaching
 };
 
 /** Base type without parameters: "audio/webm;codecs=opus" → "audio/webm". */
@@ -36,6 +38,7 @@ export const baseMime = (mime: string) => mime.split(";")[0].trim().toLowerCase(
 export function extensionFor(kind: MediaKind, mime: string): string | null {
   const m = baseMime(mime);
   if (kind === "avatar" || kind === "image") return IMAGE[m] ?? null;
+  if (kind === "document") return DOCUMENT[m] ?? null;
   return AUDIO[m] ?? (kind === "instruction" ? VIDEO[m] : undefined) ?? null;
 }
 
@@ -46,14 +49,14 @@ export function canUpload(kind: MediaKind, viewer: { isStaff: boolean }): boolea
 }
 
 /** Course content and profile photos are readable by any signed-in user; recordings and voice notes are private. */
-export const visibilityFor = (kind: MediaKind): "private" | "public" => (kind === "recording" || kind === "voice-note" || kind === "conversation" ? "private" : "public");
+export const visibilityFor = (kind: MediaKind): "private" | "public" => (kind === "recording" || kind === "voice-note" || kind === "conversation" || kind === "document" ? "private" : "public");
 
 /**
  * Top-level bucket folder (owner's R2 layout): learners' audio (their recordings, coach voice
  * notes to them — private) vs course audio uploaded by staff (clips, model answers, instructions),
  * plus profile photos.
  */
-export const MEDIA_FOLDER: Record<MediaKind, "students_audio" | "courses_audios" | "courses_images" | "profile_photos"> = {
+export const MEDIA_FOLDER: Record<MediaKind, "students_audio" | "courses_audios" | "courses_images" | "profile_photos" | "coaching_files"> = {
   recording: "students_audio",
   "voice-note": "students_audio",
   clip: "courses_audios",
@@ -62,6 +65,7 @@ export const MEDIA_FOLDER: Record<MediaKind, "students_audio" | "courses_audios"
   avatar: "profile_photos",
   image: "courses_images",
   conversation: "students_audio",
+  document: "coaching_files",
 };
 
 /** `<folder>/<kind>/<yyyy-mm>/<id>.<ext>`, e.g. `students_audio/recording/2026-11/…webm`. Older files keep their stored key. */

@@ -15,6 +15,7 @@ import type { HelpSuggestion } from "@/lib/ai/types";
 import { toFinished, type FinishedRolePlay } from "@/lib/conversation/view";
 import { remainingSeconds } from "@/lib/ai/metering";
 import { StoryError, creditStoryConversation, storyRolePlay } from "@/lib/story/service";
+import { CoachingError, openTask } from "@/lib/coaching/service";
 import { voiceMinutes } from "@/lib/story/minutes";
 
 /*
@@ -24,7 +25,7 @@ import { voiceMinutes } from "@/lib/story/minutes";
  * Staff sessions are marked `preview` (not capped, never progress).
  */
 
-type Where = { activityId: string; courseId?: string | null; stepId?: string | null; story?: { storyId: string; episodeId: string } | null };
+type Where = { activityId: string; courseId?: string | null; stepId?: string | null; story?: { storyId: string; episodeId: string } | null; coachingTaskId?: string | null };
 type Allowed = { me: CurrentUser; activity: ActivityDoc; courseId: Types.ObjectId | null; stepId: Types.ObjectId | null; preview: boolean; story?: { storyId: string; episodeId: string; variant: string; leftS: number | null } };
 
 async function allowed(where: Where): Promise<Allowed> {
@@ -44,6 +45,17 @@ async function allowed(where: Where): Promise<Allowed> {
     }
   }
 
+  // A role-play assigned in a coaching (monthly AI minutes apply; the coach trying it = preview).
+  if (where.coachingTaskId) {
+    try {
+      const t = await openTask({ id: me.id, role: me.role }, where.coachingTaskId);
+      if (t.task.kind !== "roleplay" || !t.activity || String(t.activity._id) !== where.activityId || t.activity.type !== "role_play") throw new ConversationError("Conversation not found.");
+      return { me, activity: t.activity, courseId: null, stepId: null, preview: t.role === "coach" };
+    } catch (e) {
+      if (e instanceof CoachingError) throw new ConversationError(e.message);
+      throw e;
+    }
+  }
   if (where.courseId && where.stepId) {
     const access = await courseAccess(me, where.courseId);
     if (!access.ok) throw new ConversationError("You don't have access to this course.");

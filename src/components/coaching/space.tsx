@@ -1,0 +1,622 @@
+import Link from "next/link";
+import { BookOpen, CalendarClock, CheckCircle2, ChevronRight, ExternalLink, FileText, Flag, GraduationCap, Headphones, Link2, ListChecks, MessagesSquare, Mic, PlayCircle, Settings, Target, Users, Video } from "lucide-react";
+import type { Viewer } from "@/lib/coaching/service";
+import { assignOptions, loadSpace, loadSubmissions, loadThread, type Space } from "@/lib/coaching/queries";
+import { coachingSessionPath, coachingTaskPath } from "@/lib/coaching/paths";
+import { User } from "@/models";
+import { Avatar } from "@/components/account/avatar";
+import { RichText } from "@/components/learn/rich-text";
+import { VoiceNote } from "@/components/learn/voice-note";
+import { Composer, DeleteItem, GoalStatus, MarkRead } from "./controls";
+import { GoalForm, MembersEditor, ResourceForm, ReviewForm, SessionForm, SessionStatusButtons, SessionSummaryForm, SettingsForm, TaskForm } from "./coach-forms";
+import { cn } from "cn";
+
+/*
+ * The coaching space (owner decisions 2026-11-24): the same screen for the people coached
+ * (/mon-coaching/[id]) and the coach (/admin/coaching/[id], editable, with a member filter for groups).
+ * Tabs: Overview, Goals, Feedback, Resources, Tasks, Sessions (+ Settings for the coach).
+ */
+
+export const TABS = ["overview", "goals", "feedback", "resources", "tasks", "sessions", "settings"] as const;
+export type Tab = (typeof TABS)[number];
+const TAB_LABEL: Record<Tab, string> = { overview: "Overview", goals: "Goals", feedback: "Feedback", resources: "Resources", tasks: "Tasks", sessions: "Sessions", settings: "Settings" };
+const TAB_ICON = { overview: Flag, goals: Target, feedback: MessagesSquare, resources: FileText, tasks: ListChecks, sessions: Video, settings: Settings };
+const TASK_LABEL: Record<string, string> = { lab: "Practice", challenge: "Speaking challenge", roleplay: "Talk with Coach Ish", course: "Course" };
+const TASK_ICON = { lab: PlayCircle, challenge: Mic, roleplay: MessagesSquare, course: BookOpen };
+
+const card = "rounded-3xl border-2 border-border bg-card p-4 sm:p-5";
+
+type Props = { viewer: Viewer; coachingId: string; base: string; tab: string; member?: string; thread?: string };
+
+function href(base: string, p: Record<string, string | undefined>) {
+  const q = new URLSearchParams(Object.entries(p).filter((e): e is [string, string] => !!e[1]));
+  const s = q.toString();
+  return s ? `${base}?${s}` : base;
+}
+
+export async function CoachingSpace({ viewer, coachingId, base, tab: rawTab, member: rawMember, thread }: Props) {
+  const s = await loadSpace(viewer, coachingId, { member: rawMember });
+  const coach = s.role === "coach";
+  const tabs = TABS.filter((t) => t !== "settings" || coach);
+  const tab = (tabs as readonly string[]).includes(rawTab) ? (rawTab as Tab) : "overview";
+  const group = s.members.length > 1;
+  const link = (p: Record<string, string | undefined>) => href(base, { tab, member: s.member || undefined, ...p });
+  const forName = (id: string) => (id ? (s.members.find((m) => m.id === id)?.firstName ?? "") : "");
+
+  return (
+    <div className="grid gap-5">
+      <Hero s={s} coach={coach} />
+
+      {coach && group && (
+        <nav aria-label="Show" className="flex flex-wrap items-center gap-2 text-sm">
+          <span className="font-semibold text-muted-foreground">Show:</span>
+          <Link href={href(base, { tab })} className={cn("rounded-full px-3 py-1.5 font-semibold", !s.member ? "bg-brand-deep text-white" : "bg-muted text-brand-deep hover:bg-brand-soft")}>
+            Everyone
+          </Link>
+          {s.members.map((m) => (
+            <Link key={m.id} href={href(base, { tab, member: m.id })} className={cn("rounded-full px-3 py-1.5 font-semibold", s.member === m.id ? "bg-brand-deep text-white" : "bg-muted text-brand-deep hover:bg-brand-soft")}>
+              {m.fullName}
+            </Link>
+          ))}
+        </nav>
+      )}
+
+      <nav aria-label="Coaching sections" className="-mx-4 overflow-x-auto px-4">
+        <ul className="flex min-w-max gap-1 rounded-2xl bg-muted p-1">
+          {tabs.map((t) => {
+            const Icon = TAB_ICON[t];
+            return (
+              <li key={t}>
+                <Link href={link({ tab: t === "overview" ? undefined : t, thread: undefined })} aria-current={tab === t ? "page" : undefined} className={cn("flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold transition", tab === t ? "bg-white text-brand-deep shadow-sm" : "text-muted-foreground hover:text-brand-deep")}>
+                  <Icon className="size-4" aria-hidden /> {TAB_LABEL[t]}
+                  {t === "feedback" && s.unread > 0 && <span className="rounded-full border-2 border-coral bg-white px-1.5 text-xs font-bold text-coral-dark">{s.unread}</span>}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+
+      {tab === "overview" && <Overview s={s} coach={coach} base={base} viewerId={viewer.id} />}
+      {tab === "goals" && <Goals s={s} coach={coach} forName={forName} />}
+      {tab === "feedback" && <Feedback s={s} viewer={viewer} coach={coach} thread={thread} link={link} />}
+      {tab === "resources" && <Resources s={s} coach={coach} forName={forName} />}
+      {tab === "tasks" && <Tasks s={s} viewer={viewer} coach={coach} forName={forName} />}
+      {tab === "sessions" && <Sessions s={s} coach={coach} forName={forName} />}
+      {tab === "settings" && coach && <SettingsTab s={s} viewer={viewer} />}
+    </div>
+  );
+}
+
+function Hero({ s, coach }: { s: Space; coach: boolean }) {
+  const c = s.coaching;
+  return (
+    <header className="relative isolate overflow-clip rounded-3xl bg-gradient-to-br from-brand-deep via-brand-dark to-primary p-5 text-white sm:p-7">
+      <div className="pointer-events-none absolute -top-24 -right-24 -z-10 size-72 rounded-full bg-[radial-gradient(circle,rgba(255,87,87,0.35),transparent_70%)]" aria-hidden />
+      <p className="flex items-center gap-2 text-xs font-bold tracking-wide text-white/80 uppercase">
+        <GraduationCap className="size-4" aria-hidden /> MaelEnglish Coaching · {c.kind === "group" ? "Group" : "One-on-one"}
+        {c.status !== "active" && <span className="rounded-full bg-white/15 px-2 py-0.5 normal-case">{c.status === "paused" ? "Paused" : "Completed"}</span>}
+      </p>
+      <h1 className="mt-2 text-2xl font-extrabold sm:text-3xl">{c.title}</h1>
+      <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
+        {s.coach && (
+          <span className="flex items-center gap-2.5">
+            <Avatar src={s.coach.avatarUrl} name={s.coach.firstName} className="size-11 ring-2 ring-white" />
+            <span className="leading-tight">
+              <span className="block text-xs text-white/75">Coach</span>
+              <span className="font-bold">{coach ? s.coach.fullName : s.coach.label}</span>
+            </span>
+          </span>
+        )}
+        <span className="flex items-center gap-2.5">
+          <span className="flex -space-x-2">
+            {s.members.slice(0, 6).map((m) => (
+              <Avatar key={m.id} src={m.avatarUrl} name={m.firstName} className="size-9 text-sm ring-2 ring-brand-deep" />
+            ))}
+          </span>
+          <span className="text-sm leading-tight">
+            <span className="block text-xs text-white/75">{s.members.length > 1 ? `${s.members.length} people` : "Coached"}</span>
+            <span className="font-semibold">{s.members.map((m) => (coach ? m.fullName : m.firstName)).join(", ")}</span>
+          </span>
+        </span>
+      </div>
+    </header>
+  );
+}
+
+function SectionTitle({ icon: Icon, children, aside }: { icon: typeof Flag; children: React.ReactNode; aside?: React.ReactNode }) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-2">
+      <h2 className="flex items-center gap-2 text-lg font-extrabold text-brand-deep">
+        <Icon className="size-5 text-primary" aria-hidden /> {children}
+      </h2>
+      {aside}
+    </div>
+  );
+}
+
+const Empty = ({ children }: { children: React.ReactNode }) => <p className="rounded-2xl border-2 border-dashed border-border p-6 text-center text-sm text-muted-foreground">{children}</p>;
+const ForTag = ({ name }: { name: string }) => (name ? <span className="rounded-full bg-coral-soft px-2 py-0.5 text-[11px] font-bold text-coral-dark">Only {name}</span> : null);
+
+function Overview({ s, coach, base, viewerId }: { s: Space; coach: boolean; base: string; viewerId: string }) {
+  const id = String(s.coaching._id);
+  const next = s.sessions.find((x) => x.upcoming);
+  const done = s.goals.filter((g) => g.status === "done").length;
+  const pct = s.goals.length ? Math.round((done / s.goals.length) * 100) : 0;
+  // Learner: their open tasks. Coach: tasks someone still has to do.
+  const todo = s.tasks.filter((t) => (coach ? Object.values(t.states).some((x) => !x.done) : !t.states[viewerId]?.done));
+  const finished = s.tasks.length - todo.length;
+  return (
+    <div className="grid gap-5">
+      <div className="grid gap-4 lg:grid-cols-[1.3fr_1fr]">
+        <section className={cn(card, "grid content-start gap-4")}>
+          <SectionTitle icon={Flag}>The goal</SectionTitle>
+          {s.coaching.goal ? <RichText lang="fr" className="text-[17px]">{s.coaching.goal}</RichText> : <p className="text-sm text-muted-foreground">{coach ? "Describe the goal in Settings." : "Your coach will write your goal here."}</p>}
+          {s.goals.length ? (
+            <div className="grid gap-3 rounded-2xl bg-brand-soft/50 p-3 sm:p-4">
+              <div className="flex items-center gap-3">
+                <span className="h-2.5 flex-1 overflow-hidden rounded-full bg-white">
+                  <span className="block h-full rounded-full bg-gradient-to-r from-primary to-brand-deep" style={{ width: `${pct}%` }} />
+                </span>
+                <span className="shrink-0 text-sm font-bold text-brand-deep">
+                  {done} / {s.goals.length} reached
+                </span>
+              </div>
+              <ul className="grid gap-1.5">
+                {s.goals.slice(0, 4).map((g) => (
+                  <li key={g.id} className="flex items-start gap-2 text-sm">
+                    <CheckCircle2 className={cn("mt-0.5 size-4 shrink-0", g.status === "done" ? "text-primary" : g.status === "in_progress" ? "text-primary/50" : "text-border")} aria-hidden />
+                    <span lang="fr" className={cn("font-semibold", g.status === "done" ? "text-muted-foreground line-through" : "text-brand-deep")}>
+                      {g.title}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <Link href={`${base}?tab=goals`} className="w-fit text-sm font-semibold text-primary hover:underline">
+                {s.goals.length > 4 ? `All ${s.goals.length} goals` : "See the goals"}
+              </Link>
+            </div>
+          ) : (
+            <p className="rounded-2xl border-2 border-dashed border-border p-3 text-sm text-muted-foreground">{coach ? "No step-by-step goals yet: add them in the Goals tab." : "Your coach will break this goal into small steps."}</p>
+          )}
+        </section>
+
+        {next ? (
+          <section className="relative isolate grid content-start gap-3 overflow-clip rounded-3xl bg-gradient-to-br from-brand-deep to-primary p-5 text-white">
+            <div className="pointer-events-none absolute -right-16 -bottom-16 -z-10 size-48 rounded-full bg-[radial-gradient(circle,rgba(255,87,87,0.35),transparent_70%)]" aria-hidden />
+            <p className="flex items-center gap-2 text-xs font-bold tracking-wide text-white/80 uppercase">
+              <CalendarClock className="size-4" aria-hidden /> Next live session
+            </p>
+            <p className="font-heading text-2xl font-extrabold">{next.when}</p>
+            <p className="text-sm text-white/85">
+              {next.durationMin} min{next.title ? ` · ${next.title}` : ""}
+            </p>
+            <Link href={coachingSessionPath(id, next.id)} className="mt-1 inline-flex h-12 w-fit items-center gap-2 rounded-2xl border-2 border-coral bg-white px-5 text-[19px] font-bold text-coral shadow-[0_4px_0_0_var(--color-coral)] hover:bg-coral-soft">
+              <Video className="size-5" aria-hidden /> Join the session
+            </Link>
+            <p className="text-xs text-white/70">The room opens 10 minutes before the start.</p>
+          </section>
+        ) : (
+          <section className={cn(card, "grid content-start gap-2")}>
+            <SectionTitle icon={CalendarClock}>Next live session</SectionTitle>
+            <p className="text-sm text-muted-foreground">{coach ? "No session scheduled: plan one in the Sessions tab." : "No session scheduled yet. Your coach will plan the next one."}</p>
+          </section>
+        )}
+      </div>
+
+      <section className="grid gap-3">
+        <SectionTitle
+          icon={ListChecks}
+          aside={
+            <Link href={`${base}?tab=tasks`} className="text-sm font-semibold text-primary hover:underline">
+              All tasks{s.tasks.length ? ` (${finished} / ${s.tasks.length} done)` : ""}
+            </Link>
+          }
+        >
+          To do
+        </SectionTitle>
+        {todo.length ? (
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {todo.slice(0, 6).map((t) => {
+              const Icon = TASK_ICON[t.kind as keyof typeof TASK_ICON] ?? ListChecks;
+              const mine = t.states[viewerId];
+              const waiting = Object.values(t.states).filter((x) => !x.done).length;
+              const href = coach ? `${base}?tab=tasks` : t.kind === "course" ? `/apprendre/${t.courseId}` : coachingTaskPath(id, t.id);
+              const redo = mine?.label === "To redo";
+              return (
+                <li key={t.id}>
+                  <Link href={href} className="group flex h-full items-center gap-3 rounded-3xl border-2 border-border bg-card p-4 transition hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-[0_12px_24px_-16px_rgb(20_31_77/0.4)] motion-reduce:transition-none">
+                    <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-brand-deep text-white">
+                      <Icon className="size-6" aria-hidden />
+                    </span>
+                    <span className="grid min-w-0 flex-1 gap-0.5">
+                      <span className="text-[11px] font-bold tracking-wide text-coral-dark uppercase">{TASK_LABEL[t.kind]}</span>
+                      <span className="font-bold break-words text-brand-deep group-hover:text-primary">{t.title}</span>
+                      <span className="flex flex-wrap items-center gap-1.5 text-xs font-semibold">
+                        {t.due && <span className={cn("rounded-full px-2 py-0.5", t.late ? "border border-coral bg-coral-soft text-coral-dark" : "bg-muted text-muted-foreground")}>{t.late ? "Late · " : "Due "}{t.due}</span>}
+                        {coach ? (
+                          <span className="rounded-full bg-muted px-2 py-0.5 text-muted-foreground">{s.members.length > 1 ? `${waiting} still to do` : (Object.values(t.states)[0]?.label ?? "To do")}</span>
+                        ) : (
+                          <span className={cn("rounded-full px-2 py-0.5", redo ? "border border-coral bg-coral-soft text-coral-dark" : "bg-brand-soft text-primary")}>{mine?.label ?? "To do"}</span>
+                        )}
+                      </span>
+                    </span>
+                    <span className={cn("hidden shrink-0 items-center gap-1 rounded-xl border-2 border-coral bg-white px-3 py-2 text-sm font-bold text-coral-dark group-hover:bg-coral-soft sm:inline-flex", coach && "border-border text-brand-deep group-hover:bg-brand-soft")}>
+                      {coach ? "Follow" : redo ? "Redo" : "Start"} <ChevronRight className="size-4" aria-hidden />
+                    </span>
+                    <ChevronRight className="size-5 shrink-0 text-muted-foreground sm:hidden" aria-hidden />
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <p className="rounded-3xl border-2 border-dashed border-border p-6 text-center text-sm text-muted-foreground">{s.tasks.length ? "Everything is done. Well done! 🎉" : coach ? "No task yet: assign content in the Tasks tab." : "Nothing to do yet. Your coach will give you activities here."}</p>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function Goals({ s, coach, forName }: { s: Space; coach: boolean; forName: (id: string) => string }) {
+  const id = String(s.coaching._id);
+  const members = s.members.map((m) => ({ id: m.id, fullName: m.fullName }));
+  return (
+    <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+      <section className="grid content-start gap-3">
+        <SectionTitle icon={Target}>Goals</SectionTitle>
+        {s.goals.length ? (
+          <ol className="grid gap-3">
+            {s.goals.map((g, i) => (
+              <li key={g.id} className={cn(card, "grid gap-2", g.status === "done" && "border-primary/30 bg-brand-soft/40")}>
+                <div className="flex items-start gap-3">
+                  <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-full font-heading font-extrabold", g.status === "done" ? "bg-primary text-white" : "bg-brand-soft text-primary")}>{i + 1}</span>
+                  <div className="min-w-0 flex-1">
+                    <p lang="fr" className="font-bold text-brand-deep">
+                      {g.title} <ForTag name={forName(g.forUserId)} />
+                    </p>
+                    {g.details && (
+                      <p lang="fr" className="mt-0.5 text-sm text-muted-foreground">
+                        {g.details}
+                      </p>
+                    )}
+                    {g.targetDate && <p className="mt-1 text-xs font-semibold text-muted-foreground">Target: {g.targetDate}</p>}
+                  </div>
+                  {coach && <DeleteItem kind="goal" coachingId={id} id={g.id} label="Delete the goal" />}
+                </div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <GoalStatus coachingId={id} goalId={g.id} status={g.status} />
+                  {coach && !g.forUserId && s.members.length > 1 && (
+                    <span className="flex flex-wrap gap-1.5 text-xs">
+                      {s.members.map((m) => {
+                        const st = g.memberStatus[m.id] ?? "todo";
+                        return (
+                          <span key={m.id} className={cn("rounded-full px-2 py-0.5 font-semibold", st === "done" ? "bg-primary text-white" : st === "in_progress" ? "bg-brand-soft text-primary" : "bg-muted text-muted-foreground")} title={`${m.fullName}: ${st.replace("_", " ")}`}>
+                            {m.firstName}
+                          </span>
+                        );
+                      })}
+                    </span>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <Empty>{coach ? "Add the first goal: small, concrete steps towards the big objective." : "Your coach will set your goals here."}</Empty>
+        )}
+      </section>
+      {coach && (
+        <section className={cn(card, "grid content-start gap-3")}>
+          <SectionTitle icon={Target}>New goal</SectionTitle>
+          <GoalForm coachingId={id} members={members} member={s.member} />
+        </section>
+      )}
+    </div>
+  );
+}
+
+async function Feedback({ s, viewer, coach, thread: rawThread, link }: { s: Space; viewer: Viewer; coach: boolean; thread?: string; link: (p: Record<string, string | undefined>) => string }) {
+  const id = String(s.coaching._id);
+  const group = s.members.length > 1;
+  // Threads: individual = one; group = shared + private (the coach: one private thread per member).
+  let thread = "";
+  if (group) {
+    if (coach) thread = rawThread && s.members.some((m) => m.id === rawThread) ? rawThread : rawThread === "group" ? "" : s.member;
+    else thread = rawThread === "me" ? viewer.id : "";
+  }
+  const entries = await loadThread(viewer, s.coaching, s.role, thread);
+  const authors = await User.find({ _id: { $in: [...new Set(entries.map((e) => e.authorId))] } }).select("name surname coachName avatarUrl").lean();
+  const who = (uid: string) => {
+    const u = authors.find((a) => String(a._id) === uid);
+    if (!u) return { name: "—", avatar: null as string | null, isCoach: false };
+    const isCoach = uid === String(s.coaching.coachId);
+    return { name: isCoach && !coach ? (s.coach?.label ?? u.name) : coach ? `${u.name} ${u.surname ?? ""}`.trim() : u.name, avatar: u.avatarUrl ?? null, isCoach };
+  };
+  const threads = group ? (coach ? [{ key: "group", label: "Group thread", on: !thread }, ...s.members.map((m) => ({ key: m.id, label: `Private · ${m.firstName}`, on: thread === m.id }))] : [{ key: "", label: "Group", on: !thread }, { key: "me", label: "Private with my coach", on: !!thread }]) : [];
+  const unread = entries.filter((e) => e.unread).length;
+
+  return (
+    <section className="mx-auto grid w-full max-w-3xl gap-4">
+      <MarkRead coachingId={id} unread={unread} />
+      <SectionTitle icon={MessagesSquare}>Feedback</SectionTitle>
+      {threads.length > 0 && (
+        <nav aria-label="Threads" className="flex flex-wrap gap-2">
+          {threads.map((t) => (
+            <Link key={t.key || "group"} href={link({ tab: "feedback", thread: t.key || undefined })} aria-current={t.on ? "page" : undefined} className={cn("rounded-full px-3 py-1.5 text-sm font-semibold", t.on ? "bg-brand-deep text-white" : "bg-muted text-brand-deep hover:bg-brand-soft")}>
+              {t.label}
+            </Link>
+          ))}
+        </nav>
+      )}
+      {thread && group && <p className="text-sm text-muted-foreground">{coach ? "Only this person and you see this thread." : "Only you and your coach see this thread."}</p>}
+      {entries.length ? (
+        <ol className="grid gap-3">
+          {entries.map((e) => {
+            const a = who(e.authorId);
+            const mine = e.authorId === viewer.id;
+            return (
+              <li key={e.id} className={cn("flex gap-2.5", mine && "flex-row-reverse")}>
+                <Avatar src={a.avatar} name={a.name} className="mt-1 size-9 text-sm" />
+                <div className={cn("grid max-w-[85%] min-w-0 gap-2 rounded-2xl p-3 sm:p-4", e.kind === "session_summary" ? "border-2 border-primary/30 bg-brand-soft/60" : e.kind === "feedback" ? "border-2 border-coral/40 bg-white" : mine ? "bg-primary/10" : "bg-muted")}>
+                  <p className="flex flex-wrap items-center gap-2 text-xs font-semibold text-muted-foreground">
+                    <span className="font-bold text-brand-deep">{a.name}</span>
+                    {e.kind === "feedback" && <span className="rounded-full bg-coral-soft px-2 py-0.5 text-[11px] font-bold text-coral-dark">Feedback</span>}
+                    {e.kind === "session_summary" && <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-bold text-primary">Session summary</span>}
+                    <span>{e.when}</span>
+                    {(mine || coach) && <DeleteItem kind="entry" coachingId={id} id={e.id} label="Delete the message" />}
+                  </p>
+                  {e.audioUrl && <VoiceNote src={e.audioUrl} seed={e.id} durationS={e.audioS} coachName={a.name} coachAvatar={a.avatar} />}
+                  {e.text && <RichText lang="fr" className="text-[15px]">{e.text}</RichText>}
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      ) : (
+        <Empty>{coach ? "No message yet. Write the first feedback." : "No message yet. Ask your coach a question, or tell them how it's going."}</Empty>
+      )}
+      <Composer coachingId={id} thread={coach ? thread : thread ? viewer.id : ""} coach={coach} placeholder={coach ? "Your feedback…" : "Write to your coach…"} />
+    </section>
+  );
+}
+
+function Resources({ s, coach, forName }: { s: Space; coach: boolean; forName: (id: string) => string }) {
+  const id = String(s.coaching._id);
+  return (
+    <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+      <section className="grid content-start gap-3">
+        <SectionTitle icon={FileText}>Resources</SectionTitle>
+        {s.resources.length ? (
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {s.resources.map((r) => {
+              const Icon = r.kind === "file" ? FileText : r.kind === "video" ? PlayCircle : Link2;
+              return (
+                <li key={r.id} className={cn(card, "grid content-start gap-2")}>
+                  <div className="flex items-start gap-3">
+                    <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-brand-soft text-primary">
+                      <Icon className="size-5" aria-hidden />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p lang="fr" className="font-bold break-words text-brand-deep">
+                        {r.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {r.kind === "file" ? (r.mime === "application/pdf" ? "PDF" : "Picture") : r.kind === "video" ? "Video" : "Link"} · {r.added} <ForTag name={forName(r.forUserId)} />
+                      </p>
+                    </div>
+                    {coach && <DeleteItem kind="resource" coachingId={id} id={r.id} label="Delete the resource" />}
+                  </div>
+                  {r.note && (
+                    <p lang="fr" className="text-sm text-muted-foreground">
+                      {r.note}
+                    </p>
+                  )}
+                  {r.url ? (
+                    <a href={r.url} target="_blank" rel="noopener noreferrer" className="inline-flex w-fit items-center gap-1.5 text-sm font-bold text-primary hover:underline">
+                      {r.kind === "file" ? "Open the file" : "Open"} <ExternalLink className="size-4" aria-hidden />
+                    </a>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">File unavailable.</p>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <Empty>{coach ? "Add documents, links or videos for this coaching." : "Your coach will share documents and links here."}</Empty>
+        )}
+      </section>
+      {coach && (
+        <section className={cn(card, "grid content-start gap-3")}>
+          <SectionTitle icon={FileText}>Add a resource</SectionTitle>
+          <ResourceForm coachingId={id} members={s.members.map((m) => ({ id: m.id, fullName: m.fullName }))} member={s.member} />
+        </section>
+      )}
+    </div>
+  );
+}
+
+async function Tasks({ s, viewer, coach, forName }: { s: Space; viewer: Viewer; coach: boolean; forName: (id: string) => string }) {
+  const id = String(s.coaching._id);
+  const subs = await loadSubmissions(viewer, s.coaching, s.role);
+  const waiting = coach ? subs.filter((x) => x.status === "pending" && (!s.member || x.userId === s.member)) : [];
+  const options = coach ? await assignOptions() : null;
+  const name = (uid: string) => s.members.find((m) => m.id === uid)?.fullName ?? "";
+  return (
+    <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+      <div className="grid content-start gap-4">
+        {waiting.length > 0 && (
+          <section className={cn(card, "grid gap-3 border-coral/50")}>
+            <SectionTitle icon={Headphones}>Waiting for your feedback ({waiting.length})</SectionTitle>
+            {waiting.map((w) => (
+              <div key={w.id} className="grid gap-3 rounded-2xl bg-muted/60 p-3">
+                <p className="text-sm font-semibold text-brand-deep">
+                  {name(w.userId)} · {s.tasks.find((t) => t.id === w.taskId)?.title} · send {w.sends} · {w.submitted}
+                </p>
+                {w.recordingUrl && <audio src={w.recordingUrl} controls preload="none" className="h-10 w-full" />}
+                <ReviewForm submissionId={w.id} />
+              </div>
+            ))}
+          </section>
+        )}
+        <section className="grid content-start gap-3">
+          <SectionTitle icon={ListChecks}>Tasks</SectionTitle>
+          {s.tasks.length ? (
+            <ul className="grid gap-3">
+              {s.tasks.map((t) => {
+                const Icon = TASK_ICON[t.kind as keyof typeof TASK_ICON] ?? ListChecks;
+                const mine = t.states[viewer.id];
+                const open = t.kind === "course" ? `/apprendre/${t.courseId}` : coachingTaskPath(id, t.id);
+                const entries = Object.entries(t.states);
+                return (
+                  <li key={t.id} className={cn(card, "grid gap-3", !coach && mine?.done && "border-primary/30 bg-brand-soft/40")}>
+                    <div className="flex items-start gap-3">
+                      <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-brand-deep text-white">
+                        <Icon className="size-5" aria-hidden />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11px] font-bold tracking-wide text-coral-dark uppercase">{TASK_LABEL[t.kind]}</p>
+                        <p className="font-bold break-words text-brand-deep">
+                          {t.title} <ForTag name={forName(t.forUserId)} />
+                        </p>
+                        {t.note && (
+                          <p lang="fr" className="mt-0.5 text-sm text-muted-foreground">
+                            {t.note}
+                          </p>
+                        )}
+                        {t.due && <p className={cn("mt-1 text-xs font-bold", t.late && !mine?.done ? "text-coral-dark" : "text-muted-foreground")}>Due {t.due}</p>}
+                      </div>
+                      {coach && <DeleteItem kind="task" coachingId={id} id={t.id} label="Remove the task" />}
+                    </div>
+                    {coach ? (
+                      <div className="flex flex-wrap items-center gap-2">
+                        {entries.map(([uid, st]) => (
+                          <span key={uid} className={cn("rounded-full px-2.5 py-1 text-xs font-semibold", st.done ? "bg-primary text-white" : st.label === "To redo" ? "border border-coral bg-coral-soft text-coral-dark" : "bg-muted text-muted-foreground")}>
+                            {s.members.length > 1 ? `${s.members.find((m) => m.id === uid)?.firstName ?? ""}: ` : ""}
+                            {st.label}
+                          </span>
+                        ))}
+                        <Link href={open} className="ml-auto text-sm font-semibold text-primary hover:underline">
+                          {t.kind === "course" ? "See the course" : "Try it"}
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="flex flex-wrap items-center gap-3">
+                        <span className={cn("rounded-full px-2.5 py-1 text-xs font-bold", mine?.done ? "bg-primary text-white" : mine?.label === "To redo" ? "border border-coral bg-coral-soft text-coral-dark" : "bg-muted text-muted-foreground")}>{mine?.label ?? "To do"}</span>
+                        <Link href={open} className="ml-auto inline-flex h-10 items-center gap-2 rounded-xl border-2 border-coral bg-white px-4 font-bold text-coral-dark hover:bg-coral-soft">
+                          {mine?.done ? "Open again" : "Start"}
+                        </Link>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <Empty>{coach ? "Assign Lab activities, speaking challenges, role-plays or a course." : "Your coach will give you activities here."}</Empty>
+          )}
+        </section>
+      </div>
+      {coach && options && (
+        <section className={cn(card, "grid content-start gap-3")}>
+          <SectionTitle icon={ListChecks}>Assign</SectionTitle>
+          <TaskForm coachingId={id} members={s.members.map((m) => ({ id: m.id, fullName: m.fullName }))} options={options} member={s.member} />
+        </section>
+      )}
+    </div>
+  );
+}
+
+function Sessions({ s, coach, forName }: { s: Space; coach: boolean; forName: (id: string) => string }) {
+  const id = String(s.coaching._id);
+  const upcoming = s.sessions.filter((x) => x.upcoming);
+  const past = s.sessions.filter((x) => !upcoming.includes(x)).reverse();
+  const planned = s.coaching.sessionsPlanned;
+  const done = s.sessions.filter((x) => x.status === "done").length;
+  return (
+    <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+      <div className="grid content-start gap-4">
+        <SectionTitle icon={Video} aside={planned ? <span className="text-sm font-semibold text-muted-foreground">{done} / {planned} sessions done</span> : null}>
+          Upcoming sessions
+        </SectionTitle>
+        {upcoming.length ? (
+          <ul className="grid gap-3">
+            {upcoming.map((x) => (
+              <li key={x.id} className={cn(card, "flex flex-wrap items-center gap-3 border-primary/40")}>
+                <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-brand-deep text-white">
+                  <Video className="size-6" aria-hidden />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="font-bold text-brand-deep">{x.when}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {x.durationMin} min{x.title ? ` · ${x.title}` : ""} <ForTag name={forName(x.forUserId)} />
+                  </p>
+                </div>
+                <Link href={coachingSessionPath(id, x.id)} className="inline-flex h-11 items-center gap-2 rounded-2xl border-2 border-coral bg-white px-4 font-bold text-coral-dark shadow-[0_3px_0_0_var(--color-coral)] hover:bg-coral-soft">
+                  Session room
+                </Link>
+                {coach && (
+                  <div className="w-full">
+                    <SessionStatusButtons sessionId={x.id} />
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <Empty>{coach ? "Schedule the next session: everyone concerned gets an email and a reminder." : "No session scheduled. Your coach will plan the next one."}</Empty>
+        )}
+        {past.length > 0 && (
+          <>
+            <SectionTitle icon={CalendarClock}>Past sessions</SectionTitle>
+            <ul className="grid gap-3">
+              {past.map((x) => (
+                <li key={x.id} className={cn(card, "grid gap-2")}>
+                  <p className="flex flex-wrap items-center gap-2 font-bold text-brand-deep">
+                    {x.when}
+                    <span className={cn("rounded-full px-2 py-0.5 text-xs font-bold", x.status === "done" ? "bg-brand-soft text-primary" : x.status === "cancelled" ? "bg-muted text-muted-foreground" : "bg-coral-soft text-coral-dark")}>{x.status === "scheduled" ? "To close" : x.status === "done" ? "Done" : x.status === "cancelled" ? "Cancelled" : "Missed"}</span>
+                    <ForTag name={forName(x.forUserId)} />
+                  </p>
+                  {x.summary && <RichText lang="fr" className="text-sm">{x.summary}</RichText>}
+                  {coach && x.status !== "cancelled" && <SessionSummaryForm sessionId={x.id} summary={x.summary} />}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
+      {coach && (
+        <section className={cn(card, "grid content-start gap-3")}>
+          <SectionTitle icon={CalendarClock}>Schedule a session</SectionTitle>
+          <SessionForm coachingId={id} members={s.members.map((m) => ({ id: m.id, fullName: m.fullName }))} member={s.member} />
+          <p className="text-xs text-muted-foreground">The video room opens 10 minutes before. Reminders are emailed the day before and 1 hour before.</p>
+        </section>
+      )}
+    </div>
+  );
+}
+
+async function SettingsTab({ s, viewer }: { s: Space; viewer: Viewer }) {
+  const c = s.coaching;
+  const manager = ["admin", "super-admin", "account-manager"].includes(viewer.role);
+  const coaches = manager ? await User.find({ role: { $in: ["english-coach", "instructor", "admin", "super-admin"] }, isActive: { $ne: false } }).select("name surname coachName").sort({ name: 1 }).lean() : [];
+  const day = (d: Date | null | undefined) => (d ? d.toISOString().slice(0, 10) : "");
+  return (
+    <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+      <section className={cn(card, "grid content-start gap-3")}>
+        <SectionTitle icon={Settings}>Settings</SectionTitle>
+        <SettingsForm
+          manager={manager}
+          coaches={coaches.map((u) => ({ value: String(u._id), label: `${u.name} ${u.surname ?? ""}`.trim() + (u.coachName ? ` (${u.coachName})` : "") }))}
+          c={{ id: String(c._id), title: c.title, goal: c.goal ?? "", startDate: day(c.startDate), endDate: day(c.endDate), sessionsPlanned: c.sessionsPlanned != null ? String(c.sessionsPlanned) : "", meetingUrl: c.meetingUrl ?? "", status: c.status, coachId: String(c.coachId) }}
+        />
+      </section>
+      <section className={cn(card, "grid content-start gap-3")}>
+        <SectionTitle icon={Users}>People coached</SectionTitle>
+        <p className="text-sm text-muted-foreground">Add people to turn it into a group coaching. Members see each other&apos;s first names only.</p>
+        <MembersEditor coachingId={String(c._id)} members={s.members.map((m) => ({ id: m.id, fullName: m.fullName }))} />
+      </section>
+    </div>
+  );
+}

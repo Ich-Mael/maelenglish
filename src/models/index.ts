@@ -21,3 +21,4 @@ export * from "./Conversation";
 export * from "./Diagnostic";
 export * from "./ProfessionWords";
 export * from "./Story";
+export * from "./Coaching";

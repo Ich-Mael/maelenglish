@@ -387,3 +387,13 @@ export function diagnosticReportEmail(p: DiagnosticReportEmail): Omit<Mail, "to"
     ].join("\n"),
   };
 }
+
+/** MaelEnglish Coaching notifications (French for learners, English for coaches — like the rest). */
+export function sendCoachingEmail(to: string, p: { firstName: string; subject: string; intro: string; button: string; url: string; outro?: string; lang?: "fr" | "en" }) {
+  return send({
+    to,
+    subject: p.subject,
+    html: layout({ firstName: p.firstName, intro: p.intro, button: p.button, url: p.url, outro: p.outro ?? "", lang: p.lang }),
+    text: `${p.lang === "en" ? "Hello" : "Bonjour"} ${p.firstName},\n\n${p.intro.replace(/<[^>]+>/g, "")}\n${p.url}\n\n${p.outro ?? ""}`,
+  });
+}

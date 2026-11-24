@@ -181,6 +181,10 @@ export function startDigestScheduler() {
       await connectDB();
       const r = await runCoachDigest();
       if (r.ran) console.info(`[digest] sent ${r.emails} email(s) · ${r.pending} pending · ${r.late} late`);
+      // Coaching session reminders (the day before, 1 h before).
+      const { runSessionReminders } = await import("@/lib/coaching/notify");
+      const rem = await runSessionReminders();
+      if (rem.sent) console.info(`[coaching] ${rem.sent} session reminder(s)`);
     } catch (e) {
       console.error("[digest]", e);
     }

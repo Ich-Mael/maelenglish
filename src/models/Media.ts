@@ -9,7 +9,7 @@ import { defineModel } from "./define";
  * (`status` pending → ready). Learner recordings and voice notes are private.
  */
 /** `conversation`: the audio of an AI role-play call, copied from ElevenLabs by the server (never uploaded by a browser). */
-export const MEDIA_KINDS = ["recording", "voice-note", "clip", "model-audio", "instruction", "avatar", "image", "conversation"] as const;
+export const MEDIA_KINDS = ["recording", "voice-note", "clip", "model-audio", "instruction", "avatar", "image", "conversation", "document"] as const;
 export type MediaKind = (typeof MEDIA_KINDS)[number];
 
 const mediaSchema = new Schema(

@@ -57,6 +57,7 @@ export function RolePlayPlayer({
   onContinueAnyway,
   briefAudioUrl = null,
   images = [],
+  coachingTaskId,
 }: {
   activityId: string;
   courseId?: string;
@@ -79,6 +80,8 @@ export function RolePlayPlayer({
   attempts?: PastAttempt[];
   /** Story Mode: the episode this conversation proves (minutes from the season, mastery from the debrief score). */
   story?: { storyId: string; episodeId: string };
+  /** A role-play assigned in a coaching (access = the task). */
+  coachingTaskId?: string;
   /** Who the learner talks to (Story Mode character) instead of Coach Ish. */
   partner?: { name: string; avatarSrc: string };
   onFinished?: (r: FinishedRolePlay) => void;
@@ -105,7 +108,7 @@ export function RolePlayPlayer({
         setError("Microphone unavailable: allow microphone access in your browser, then try again.");
         return;
       }
-      const r = await startRolePlayAction({ activityId, courseId: courseId ?? null, stepId: stepId ?? null, story: story ?? null }, difficulty);
+      const r = await startRolePlayAction({ activityId, courseId: courseId ?? null, stepId: stepId ?? null, story: story ?? null, coachingTaskId: coachingTaskId ?? null }, difficulty);
       if (!r.ok) return setError(r.error);
       setPhase({ kind: "call", sessionId: r.sessionId, signedUrl: r.signedUrl, limitS: r.limitS });
     });

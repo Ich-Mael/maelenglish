@@ -76,6 +76,13 @@ All providers sit behind internal interfaces in `src/lib/ai/` (`SpeechService`, 
 
 - Dictionary words, « At work » sentences, daily words and their example sentences are read by **ElevenLabs** (already connected for Talk with Coach Ish) while Azure isn't configured; Azure neural voices take over as soon as `AZURE_SPEECH_KEY` / `AZURE_SPEECH_REGION` are set. Each text is generated once and shared (≈ 2 words + 4 sentences a day per profession: negligible on the Pro plan). The device's voice remains the fallback.
 
+### MaelEnglish Coaching space (owner decisions 2026-11-24)
+
+- A **coaching** = one coach + **one person or a group** (a company team). Opened by admins / account managers (no online payment yet); the coach sees only their coachings, admins all.
+- Inside: goals (a member's own progress on a group goal), feedback threads (group + one private thread per member, text and voice notes), resources (PDF / pictures — new private Media kind `document`, R2 folder `coaching_files/` — and links), **tasks on existing content** (Lab practice activities played with the regular players, speaking challenges reviewed by the coach, Talk with Coach Ish role-plays on the learner's monthly minutes, whole courses = enrolment). Items have `forUserId` (empty = everyone); members never see another member's private items, and see each other's first names only.
+- **Live sessions = Daily Prebuilt embedded in an iframe** (camera, mic, screen sharing, chat; no SDK package — the room URL + a meeting token per person, the coach as owner). One private room per session, expiring 30 min after its end, opened 10 min before. **Screen sharing is the « show on screen » tool — no whiteboard** (owner). Recording off. Without `DAILY_API_KEY`: the coaching's backup link (Zoom / Meet). Reminders by email the day before and 1 h before (digest scheduler). Cost: Daily counts participant-minutes (10,000 free a month).
+- Lab attempts in a coaching keep their best score in `CoachingTaskProgress` (no `LabAttempt` / mistake bank: those need a course step).
+
 ## Metering
 - `AiUsage` records every paid call: learner, kind, units (audio seconds or tokens), estimated cost, day.
 - Before any paid call, check the learner's monthly cap. The default is set in admin and can be overridden per learner. Staff previews don't count against learner caps.

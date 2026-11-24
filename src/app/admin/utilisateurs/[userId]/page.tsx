@@ -13,7 +13,7 @@ import { Card, Input, PageHeader, Pill, ROLE_LABELS, Select, fmtDate } from "@/c
 import { ActionButton, AdminForm, Submit } from "@/components/admin/forms";
 import { AccountLinkForm } from "@/components/admin/user-forms";
 import { revokeDeviceAction, setCoachAction, storyAccessAction, toggleUserAction, updateUserAction } from "../../actions";
-import { StoryEntitlement } from "@/models";
+import { Coaching, StoryEntitlement } from "@/models";
 import { listSeasons } from "@/lib/story/content";
 import { storySecondsUsed } from "@/lib/story/minutes";
 import { coachOptions } from "@/lib/admin/coaching";
@@ -51,6 +51,7 @@ async function UserView({ params }: { params: Promise<{ userId: string }> }) {
   const storyEnts = stories.length ? await StoryEntitlement.find({ userId: u._id }).lean() : [];
   const storyUsed = await Promise.all(stories.map((s) => (storyEnts.some((e) => e.storyId === s.id) ? storySecondsUsed(String(u._id), s.id) : 0)));
   const isSelf = String(u._id) === me.id;
+  const coachings = u.role === "user" ? await Coaching.find({ memberIds: u._id }).select("title status kind").sort({ updatedAt: -1 }).lean() : [];
 
   return (
     <div className="grid max-w-5xl gap-5">
@@ -154,6 +155,23 @@ async function UserView({ params }: { params: Promise<{ userId: string }> }) {
           <Card title="Profile photo" description="Shown in the navigation bars and to coaches.">
             <AvatarPicker userId={String(u._id)} src={u.avatarUrl ?? null} name={u.name || u.username} locale="en" />
           </Card>
+          {u.role === "user" && (
+            <Card title="Coaching" description="MaelEnglish Coaching: goals, feedback, resources, tasks and live sessions.">
+              <div className="grid gap-2">
+                {coachings.map((c) => (
+                  <Link key={String(c._id)} href={`/admin/coaching/${c._id}`} className="flex items-center justify-between gap-2 rounded-xl border border-border px-3 py-2 text-sm font-semibold text-brand-deep hover:bg-brand-soft">
+                    <span className="truncate">{c.title}</span>
+                    <span className="shrink-0 text-xs text-muted-foreground">{c.kind === "group" ? "Group" : "One-on-one"} · {c.status}</span>
+                  </Link>
+                ))}
+                {can.manageUsers(actorOf(me)) && (
+                  <Link href={`/admin/coaching/nouveau?user=${u._id}`} className="inline-flex h-10 w-fit items-center rounded-xl border-2 border-coral bg-white px-4 text-sm font-bold text-coral-dark hover:bg-coral-soft">
+                    Start a coaching
+                  </Link>
+                )}
+              </div>
+            </Card>
+          )}
           {u.role === "user" && can.assignCoach(actorOf(me)) && (
             <Card title="Main coach" description="Reviews this learner's speaking challenges and receives the daily email about them. Without one, the course's teaching team does.">
               <AdminForm action={setCoachAction}>

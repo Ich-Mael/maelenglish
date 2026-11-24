@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, ClipboardCheck, Cpu, FlaskConical, Gauge, Inbox, LayoutDashboard, Stethoscope, MessagesSquare, Mic, Users, BookMarked } from "lucide-react";
+import { BookOpen, ClipboardCheck, Cpu, FlaskConical, Gauge, Inbox, LayoutDashboard, Stethoscope, MessagesSquare, Mic, Users, BookMarked, GraduationCap } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { can } from "@/lib/admin/permissions";
 
@@ -16,6 +16,7 @@ export async function AdminNav({ mobile }: { mobile?: boolean }) {
     { href: "/admin/cours", label: "Courses", icon: BookOpen, show: true },
     { href: "/admin/labo", label: "Lab", icon: FlaskConical, show: can.useLab(a) },
     { href: "/admin/story", label: "Story Mode", icon: BookMarked, show: can.editStory(a) },
+    { href: "/admin/coaching", label: "Coaching", icon: GraduationCap, show: a.role !== "user" },
     { href: "/admin/corrections", label: "Grading", icon: ClipboardCheck, show: a.role !== "account-manager" },
     { href: "/admin/conversations", label: "AI conversations", icon: MessagesSquare, show: ["admin", "super-admin", "english-coach", "instructor"].includes(a.role) },
     { href: "/admin/suivi", label: "Coach oversight", icon: Gauge, show: can.overseeCoaches(a) },

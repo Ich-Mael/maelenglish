@@ -12,7 +12,22 @@ import { cn } from "cn";
  * Media kind « voice-note » (private to the coach, shared with the learner it answers by the
  * submission). Sends the media id in a hidden input `name` ("" = no voice note).
  */
-export function VoiceNoteField({ name, initialId, initialUrl }: { name: string; initialId: string; initialUrl: string | null }) {
+export function VoiceNoteField({
+  name,
+  initialId,
+  initialUrl,
+  kind = "voice-note",
+  label = "Voice note for the learner (optional)",
+  hint = "Up to 3 minutes. Learners often understand a spoken correction better: model the right pronunciation, then explain in French.",
+}: {
+  name: string;
+  initialId: string;
+  initialUrl: string | null;
+  /** « recording » when a learner records it (learners may only upload recordings). */
+  kind?: "voice-note" | "recording";
+  label?: string;
+  hint?: string;
+}) {
   const [id, setId] = useState(initialId);
   const [url, setUrl] = useState(initialUrl);
   const [recording, setRecording] = useState(false);
@@ -23,7 +38,7 @@ export function VoiceNoteField({ name, initialId, initialUrl }: { name: string; 
     setError("");
     setBusy(true);
     try {
-      const mediaId = await uploadMedia(blob, { kind: "voice-note", durationS });
+      const mediaId = await uploadMedia(blob, { kind, durationS });
       setId(mediaId);
       setUrl(URL.createObjectURL(blob));
       setRecording(false);
@@ -39,10 +54,10 @@ export function VoiceNoteField({ name, initialId, initialUrl }: { name: string; 
       <input type="hidden" name={name} value={id} />
       <div className="flex items-center justify-between gap-2">
         <span className="flex items-center gap-2 text-sm font-semibold text-brand-deep">
-          <Mic className="size-4 text-primary" aria-hidden /> Voice note for the learner (optional)
+          <Mic className="size-4 text-primary" aria-hidden /> {label}
         </span>
       </div>
-      <p className="text-xs text-muted-foreground">Up to 3 minutes. Learners often understand a spoken correction better: model the right pronunciation, then explain in French.</p>
+      {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
 
       {id && !recording && (
         <div className="flex items-center gap-2">
@@ -69,10 +84,10 @@ export function VoiceNoteField({ name, initialId, initialUrl }: { name: string; 
           <button type="button" className={cn(btn.secondary, "h-9")} onClick={() => setRecording(true)}>
             <Mic className="size-4" aria-hidden /> {id ? "Record again" : "Record a voice note"}
           </button>
-          <label className={cn(btn.secondary, "h-9 cursor-pointer")}>
+          {kind === "voice-note" && <label className={cn(btn.secondary, "h-9 cursor-pointer")}>
             <Upload className="size-4" aria-hidden /> Upload
             <input type="file" accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/aac,audio/wav,audio/x-wav,audio/ogg,audio/webm" className="sr-only" onChange={(e) => e.target.files?.[0] && void upload(e.target.files[0])} />
-          </label>
+          </label>}
         </div>
       )}
       {error && <p className="text-sm font-semibold text-coral-dark">{error}</p>}
