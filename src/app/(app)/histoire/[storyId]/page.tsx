@@ -16,6 +16,7 @@ import type { AvatarConfig } from "@/lib/story/schema";
 import { Avatar } from "@/components/story/avatar";
 import { CityMap, type MapPin } from "@/components/story/city-map";
 import { FactsList } from "@/components/story/facts-list";
+import { BuyButton } from "@/components/shop/buy-button";
 import { PageSkeleton } from "@/components/learn/ui";
 
 export const metadata: Metadata = { title: "Story Mode", robots: { index: false } };
@@ -99,9 +100,18 @@ async function Home({ params }: { params: Promise<{ storyId: string }> }) {
               Saison complète : {st.items.length} épisodes{story.aiMinutesIncluded ? `, ${story.aiMinutesIncluded} minutes de conversation avec les personnages` : ""}{story.priceFcfa != null ? ` — ${formatFcfa(story.priceFcfa)}` : ""}.
             </p>
           </div>
-          <a href={waLink(`Bonjour, je voudrais accéder à la saison « ${story.title} » du mode histoire MaelEnglish.`)} target="_blank" rel="noopener" className="inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-coral bg-white px-5 py-2.5 text-[19px] font-bold text-coral shadow-[0_4px_0_0_var(--color-coral)] hover:bg-coral-soft">
-            <MessageCircle className="size-5" /> Ask for access
-          </a>
+          {story.priceFcfa ? (
+            <div className="grid justify-items-start gap-1 sm:justify-items-end">
+              <BuyButton kind="story" itemId={story.id} label={`Buy the season · ${formatFcfa(story.priceFcfa)}`} />
+              <a href={waLink(`Bonjour, je voudrais accéder à la saison « ${story.title} » du mode histoire MaelEnglish.`)} target="_blank" rel="noopener" className="text-sm font-semibold text-primary hover:underline">
+                Questions? Ask us on WhatsApp
+              </a>
+            </div>
+          ) : (
+            <a href={waLink(`Bonjour, je voudrais accéder à la saison « ${story.title} » du mode histoire MaelEnglish.`)} target="_blank" rel="noopener" className="inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-coral bg-white px-5 py-2.5 text-[19px] font-bold text-coral shadow-[0_4px_0_0_var(--color-coral)] hover:bg-coral-soft">
+              <MessageCircle className="size-5" /> Ask for access
+            </a>
+          )}
         </div>
       ) : null}
 

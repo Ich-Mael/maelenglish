@@ -137,6 +137,8 @@ export type HelpSuggestion = { en: string; fr: string };
 
 /** « My daily vocabulary »: words for a profession (single English words). */
 export type DailyWord = { word: string; translation: string; frNote: string; example: string; examples: { en: string; fr: string }[] };
+/** Coaching daily vocabulary: a word or expression for the coaching's goal. */
+export type GoalExpression = { text: string; translation: string; frNote: string; example: string; exampleFr: string };
 /** « My own sentences »: a learner's sentence with one of their words, corrected. */
 export type SentenceCheck = { ok: boolean; corrected: string; explanation: string };
 
@@ -154,6 +156,7 @@ export interface FeedbackService {
   diagnosticReport(input: DiagnosticReportInput): Promise<{ report: unknown; usage: LlmUsage }>;
   dailyVocabulary(input: { profession: string; count: number; avoid: string[] }): Promise<{ words: DailyWord[]; usage: LlmUsage }>;
   checkSentence(input: { word: string; translation: string; sentence: string }): Promise<{ result: SentenceCheck; usage: LlmUsage }>;
+  goalVocabulary(input: { title: string; goal: string; steps: string[]; count: number; avoid: string[] }): Promise<{ items: GoalExpression[]; usage: LlmUsage }>;
 }
 
 /** What the conversation provider needs to run one agent (src/lib/conversation/prompt.ts AgentSpec). */

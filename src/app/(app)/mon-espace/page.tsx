@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { connection } from "next/server";
-import { ArrowRight, Award, BookOpen, BookOpenCheck, Flame, GraduationCap, MessagesSquare, Mic, NotebookPen, RotateCcw, Target, Trophy, Video, type LucideIcon } from "lucide-react";
+import { ArrowRight, Award, BookOpen, BookOpenCheck, Flame, GraduationCap, MessagesSquare, Mic, NotebookPen, Languages, RotateCcw, ShoppingBag, Target, Trophy, Video, type LucideIcon } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
 import { connectDB } from "@/lib/db";
-import { ChallengeSubmission, Coaching, CoachingEntry, CoachingSession, ConversationSession, EpisodeProgress, StoryProfile, UserBadge, VocabWord } from "@/models";
+import { ChallengeSubmission, Coaching, CoachingEntry, CoachingSentence, CoachingSession, CoachingVocab, ConversationSession, EpisodeProgress, StoryProfile, UserBadge, VocabWord } from "@/models";
 import { Types } from "mongoose";
 import { statsFor, xpByDay } from "@/lib/gamification/service";
+import { dayKey } from "@/lib/gamification/rules";
 import { dueCount } from "@/lib/vocabulary";
 import { monthlyCapSeconds, remainingSeconds } from "@/lib/ai/metering";
 import { PageSkeleton } from "@/components/learn/ui";
@@ -66,7 +67,7 @@ async function Space() {
     EpisodeProgress.countDocuments({ userId: me.id, status: "completed" }),
   ]);
   // MaelEnglish Coaching: only for people coached (premium).
-  const coachings = await Coaching.find({ memberIds: new Types.ObjectId(me.id), status: { $ne: "completed" } }).select("_id title").lean();
+  const coachings = await Coaching.find({ memberIds: new Types.ObjectId(me.id), status: { $ne: "completed" } }).select("_id title status").lean();
   const coachingIds = coachings.map((c) => c._id);
   const myThreads = { $in: [null, new Types.ObjectId(me.id)] };
   const [coachUnread, nextSession] = coachingIds.length
@@ -75,6 +76,14 @@ async function Space() {
         CoachingSession.findOne({ coachingId: { $in: coachingIds }, forUserId: myThreads, status: "scheduled", startsAt: { $gte: minutesAgo(90) } }).sort({ startsAt: 1 }).select("startsAt coachingId").lean(),
       ])
     : [0, null];
+  // Today's coaching vocabulary not finished yet (3 expressions × 2 sentences).
+  const activeCoaching = coachings.find((c) => c.status === "active");
+  let vocabLeft = 0;
+  if (activeCoaching) {
+    const v = await CoachingVocab.findOne({ coachingId: activeCoaching._id, day: dayKey() }).select("items").lean();
+    const mineToday = v ? await CoachingSentence.countDocuments({ vocabId: v._id, userId: me.id }) : 0;
+    vocabLeft = v ? Math.max(0, v.items.length * 2 - mineToday) : 6;
+  }
   const coachingHref = coachings.length === 1 ? `/mon-coaching/${coachings[0]._id}` : "/mon-coaching";
   const sessionLabel = nextSession ? new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: process.env.APP_TZ || "Africa/Ouagadougou" }).format(nextSession.startsAt) : "";
   const minutesLeft = Math.floor(leftS / 60);
@@ -85,6 +94,7 @@ async function Space() {
 
   const todo: Todo[] = [
     coachUnread ? { href: `${coachingHref}${coachings.length === 1 ? "?tab=feedback" : ""}`, label: `${coachUnread} new message${coachUnread === 1 ? "" : "s"} from your coach`, icon: GraduationCap, urgent: true } : null,
+    activeCoaching && vocabLeft ? { href: `/mon-coaching/${activeCoaching._id}?tab=vocabulary`, label: `Coaching vocabulary · ${vocabLeft} sentence${vocabLeft === 1 ? "" : "s"} to write`, icon: Languages, urgent: true } : null,
     nextSession ? { href: `/mon-coaching/${nextSession.coachingId}?tab=sessions`, label: `Coaching session · ${sessionLabel}`, icon: Video } : null,
     due
       ? {
@@ -162,6 +172,14 @@ async function Space() {
       stat: words ? `${words} words · ${due} to review today` : "Start with today's words",
       alert: due ? `${due} to review` : undefined,
       tone: "blue",
+    },
+    {
+      href: "/boutique",
+      title: "Shop",
+      text: "Courses, Story Mode seasons and more minutes with Coach Ish. Orange Money, Moov Money or card.",
+      icon: ShoppingBag,
+      stat: "One payment, no subscription",
+      tone: "white",
     },
   ];
 

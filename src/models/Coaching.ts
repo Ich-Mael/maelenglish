@@ -164,3 +164,49 @@ sessionSchema.index({ coachingId: 1, startsAt: 1 });
 sessionSchema.index({ status: 1, startsAt: 1 });
 export type CoachingSessionDoc = InferSchemaType<typeof sessionSchema> & { _id: Types.ObjectId };
 export const CoachingSession: Model<CoachingSessionDoc> = defineModel<CoachingSessionDoc>("CoachingSession", sessionSchema);
+
+/** Daily vocabulary of a coaching (owner decision 2026-11-24): 3 words / expressions a day for the coaching's goal, shared by the group. */
+const vocabItemSchema = new Schema(
+  {
+    id: { type: String, required: true },
+    text: { type: String, required: true, maxlength: 120 },
+    translation: { type: String, default: "", maxlength: 160 },
+    frNote: { type: String, default: "", maxlength: 400 },
+    example: { type: String, default: "", maxlength: 300 },
+    exampleFr: { type: String, default: "", maxlength: 300 },
+  },
+  { _id: false },
+);
+const vocabSchema = new Schema(
+  {
+    coachingId: { type: Schema.Types.ObjectId, ref: "Coaching", required: true },
+    /** YYYY-MM-DD in APP_TZ. */
+    day: { type: String, required: true },
+    items: { type: [vocabItemSchema], default: [] },
+    source: { type: String, default: "ai" },
+  },
+  { timestamps: true },
+);
+vocabSchema.index({ coachingId: 1, day: 1 }, { unique: true });
+export type CoachingVocabDoc = InferSchemaType<typeof vocabSchema> & { _id: Types.ObjectId };
+export const CoachingVocab: Model<CoachingVocabDoc> = defineModel<CoachingVocabDoc>("CoachingVocab", vocabSchema);
+
+/** A member's own sentence with a daily expression (2 per expression), corrected; the whole group reads them. */
+const sentenceSchema = new Schema(
+  {
+    coachingId: { type: Schema.Types.ObjectId, ref: "Coaching", required: true },
+    vocabId: { type: Schema.Types.ObjectId, ref: "CoachingVocab", required: true },
+    itemId: { type: String, required: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    text: { type: String, required: true, maxlength: 300 },
+    /** AI check (null when it wasn't available). */
+    ok: { type: Boolean, default: null },
+    corrected: { type: String, default: "" },
+    explanation: { type: String, default: "" },
+  },
+  { timestamps: true },
+);
+sentenceSchema.index({ vocabId: 1, itemId: 1, createdAt: 1 });
+sentenceSchema.index({ coachingId: 1, userId: 1 });
+export type CoachingSentenceDoc = InferSchemaType<typeof sentenceSchema> & { _id: Types.ObjectId };
+export const CoachingSentence: Model<CoachingSentenceDoc> = defineModel<CoachingSentenceDoc>("CoachingSentence", sentenceSchema);

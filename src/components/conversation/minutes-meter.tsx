@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Clock } from "lucide-react";
 import { cn } from "cn";
 
@@ -24,10 +25,13 @@ export function MinutesMeter({ left, cap, tone = "light", className }: { left: n
       <span className={cn("h-2 overflow-hidden rounded-full", dark ? "bg-white/15" : "bg-muted")} aria-hidden>
         <span className={cn("block h-full rounded-full", low ? "bg-coral" : dark ? "bg-white" : "bg-gradient-to-r from-primary to-brand-deep")} style={{ width: `${pct}%` }} />
       </span>
-      {l === 0 ? (
-        <p className={cn("text-xs", dark ? "text-white/70" : "text-muted-foreground")}>Your minutes come back on the 1st of next month.</p>
-      ) : low ? (
-        <p className={cn("text-xs", dark ? "text-white/70" : "text-muted-foreground")}>Almost used up for this month: they come back on the 1st.</p>
+      {l === 0 || low ? (
+        <p className={cn("text-xs", dark ? "text-white/70" : "text-muted-foreground")}>
+          {l === 0 ? "Your minutes come back on the 1st of next month." : "Almost used up for this month: they come back on the 1st."}{" "}
+          <Link href="/boutique" className={cn("font-bold underline", dark ? "text-white" : "text-primary")}>
+            Buy more minutes
+          </Link>
+        </p>
       ) : null}
     </div>
   );

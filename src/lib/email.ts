@@ -397,3 +397,21 @@ export function sendCoachingEmail(to: string, p: { firstName: string; subject: s
     text: `${p.lang === "en" ? "Hello" : "Bonjour"} ${p.firstName},\n\n${p.intro.replace(/<[^>]+>/g, "")}\n${p.url}\n\n${p.outro ?? ""}`,
   });
 }
+
+/** Receipt after a confirmed online payment (French, like the other learner emails). */
+export function sendPaymentReceiptEmail(to: string, p: { firstName: string; label: string; amount: string; reference: string; method: string; date: string; url: string; button: string }) {
+  const rows = [
+    ["Achat", p.label],
+    ["Montant", p.amount],
+    ["Moyen de paiement", p.method || "—"],
+    ["Date", p.date],
+    ["Référence", p.reference],
+  ];
+  const extra = `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:0 0 20px;border-collapse:collapse;font-size:14px">${rows.map(([k, v]) => `<tr><td style="padding:6px 0;color:#5b6283">${k}</td><td style="padding:6px 0;text-align:right;font-weight:bold">${esc(v)}</td></tr>`).join("")}</table>`;
+  return send({
+    to,
+    subject: `Paiement confirmé : ${p.label}`,
+    html: layout({ firstName: p.firstName, intro: "Merci ! Votre paiement est confirmé et votre accès est ouvert.", extra, button: p.button, url: p.url, outro: "Gardez cet email : il vous sert de reçu." }),
+    text: `Bonjour ${p.firstName},\n\nVotre paiement est confirmé.\n${rows.map(([k, v]) => `${k} : ${v}`).join("\n")}\n\n${p.url}`,
+  });
+}

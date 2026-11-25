@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, CalendarClock, CheckCircle2, ChevronRight, ExternalLink, FileText, Flag, GraduationCap, Headphones, Link2, ListChecks, MessagesSquare, Mic, PlayCircle, Settings, Target, Users, Video } from "lucide-react";
+import { BookOpen, CalendarClock, CheckCircle2, ChevronRight, Languages, Library, ExternalLink, FileText, Flag, GraduationCap, Headphones, Link2, ListChecks, MessagesSquare, Mic, PlayCircle, Settings, Target, Users, Video } from "lucide-react";
 import type { Viewer } from "@/lib/coaching/service";
 import { assignOptions, loadSpace, loadSubmissions, loadThread, type Space } from "@/lib/coaching/queries";
 import { coachingSessionPath, coachingTaskPath } from "@/lib/coaching/paths";
@@ -8,6 +8,8 @@ import { Avatar } from "@/components/account/avatar";
 import { RichText } from "@/components/learn/rich-text";
 import { VoiceNote } from "@/components/learn/voice-note";
 import { Composer, DeleteItem, GoalStatus, MarkRead } from "./controls";
+import { VocabDay } from "./vocab-day";
+import { dayProgress, pastVocab, sentencesOn, todayVocab } from "@/lib/coaching/vocabulary";
 import { GoalForm, MembersEditor, ResourceForm, ReviewForm, SessionForm, SessionStatusButtons, SessionSummaryForm, SettingsForm, TaskForm } from "./coach-forms";
 import { cn } from "cn";
 
@@ -17,10 +19,10 @@ import { cn } from "cn";
  * Tabs: Overview, Goals, Feedback, Resources, Tasks, Sessions (+ Settings for the coach).
  */
 
-export const TABS = ["overview", "goals", "feedback", "resources", "tasks", "sessions", "settings"] as const;
+export const TABS = ["overview", "vocabulary", "goals", "feedback", "tasks", "sessions", "library", "settings"] as const;
 export type Tab = (typeof TABS)[number];
-const TAB_LABEL: Record<Tab, string> = { overview: "Overview", goals: "Goals", feedback: "Feedback", resources: "Resources", tasks: "Tasks", sessions: "Sessions", settings: "Settings" };
-const TAB_ICON = { overview: Flag, goals: Target, feedback: MessagesSquare, resources: FileText, tasks: ListChecks, sessions: Video, settings: Settings };
+const TAB_LABEL: Record<Tab, string> = { overview: "Overview", vocabulary: "Daily vocabulary", goals: "Goals", feedback: "Feedback", tasks: "Tasks", sessions: "Sessions", library: "Learning space", settings: "Settings" };
+const TAB_ICON = { overview: Flag, vocabulary: Languages, goals: Target, feedback: MessagesSquare, tasks: ListChecks, sessions: Video, library: Library, settings: Settings };
 const TASK_LABEL: Record<string, string> = { lab: "Practice", challenge: "Speaking challenge", roleplay: "Talk with Coach Ish", course: "Course" };
 const TASK_ICON = { lab: PlayCircle, challenge: Mic, roleplay: MessagesSquare, course: BookOpen };
 
@@ -38,7 +40,8 @@ export async function CoachingSpace({ viewer, coachingId, base, tab: rawTab, mem
   const s = await loadSpace(viewer, coachingId, { member: rawMember });
   const coach = s.role === "coach";
   const tabs = TABS.filter((t) => t !== "settings" || coach);
-  const tab = (tabs as readonly string[]).includes(rawTab) ? (rawTab as Tab) : "overview";
+  const wanted = rawTab === "resources" ? "library" : rawTab; // older links
+  const tab = (tabs as readonly string[]).includes(wanted) ? (wanted as Tab) : "overview";
   const group = s.members.length > 1;
   const link = (p: Record<string, string | undefined>) => href(base, { tab, member: s.member || undefined, ...p });
   const forName = (id: string) => (id ? (s.members.find((m) => m.id === id)?.firstName ?? "") : "");
@@ -77,10 +80,11 @@ export async function CoachingSpace({ viewer, coachingId, base, tab: rawTab, mem
         </ul>
       </nav>
 
-      {tab === "overview" && <Overview s={s} coach={coach} base={base} viewerId={viewer.id} />}
+      {tab === "overview" && <Overview s={s} coach={coach} base={base} viewerId={viewer.id} today={await todayProgress(s, viewer)} />}
       {tab === "goals" && <Goals s={s} coach={coach} forName={forName} />}
       {tab === "feedback" && <Feedback s={s} viewer={viewer} coach={coach} thread={thread} link={link} />}
-      {tab === "resources" && <Resources s={s} coach={coach} forName={forName} />}
+      {tab === "vocabulary" && <DailyVocab s={s} viewer={viewer} coach={coach} />}
+      {tab === "library" && <LearningSpace s={s} viewer={viewer} coach={coach} forName={forName} />}
       {tab === "tasks" && <Tasks s={s} viewer={viewer} coach={coach} forName={forName} />}
       {tab === "sessions" && <Sessions s={s} coach={coach} forName={forName} />}
       {tab === "settings" && coach && <SettingsTab s={s} viewer={viewer} />}
@@ -138,7 +142,17 @@ function SectionTitle({ icon: Icon, children, aside }: { icon: typeof Flag; chil
 const Empty = ({ children }: { children: React.ReactNode }) => <p className="rounded-2xl border-2 border-dashed border-border p-6 text-center text-sm text-muted-foreground">{children}</p>;
 const ForTag = ({ name }: { name: string }) => (name ? <span className="rounded-full bg-coral-soft px-2 py-0.5 text-[11px] font-bold text-coral-dark">Only {name}</span> : null);
 
-function Overview({ s, coach, base, viewerId }: { s: Space; coach: boolean; base: string; viewerId: string }) {
+/** Today's expressions for the Overview card (made on the first visit of the day). */
+async function todayProgress(s: Space, viewer: Viewer) {
+  const vocab = await todayVocab(viewer, String(s.coaching._id)).catch(() => null);
+  if (!vocab) return null;
+  const sentences = await sentencesOn([vocab._id]);
+  const mine = dayProgress(vocab, sentences, viewer.id);
+  const writers = new Set(sentences.map((x) => x.userId)).size;
+  return { items: vocab.items.map((i) => i.text), done: mine.done, total: mine.total, count: sentences.length, writers };
+}
+
+function Overview({ s, coach, base, viewerId, today }: { s: Space; coach: boolean; base: string; viewerId: string; today: Awaited<ReturnType<typeof todayProgress>> }) {
   const id = String(s.coaching._id);
   const next = s.sessions.find((x) => x.upcoming);
   const done = s.goals.filter((g) => g.status === "done").length;
@@ -148,6 +162,28 @@ function Overview({ s, coach, base, viewerId }: { s: Space; coach: boolean; base
   const finished = s.tasks.length - todo.length;
   return (
     <div className="grid gap-5">
+      {today && (
+        <Link href={`${base}?tab=vocabulary`} className="group flex flex-wrap items-center gap-4 rounded-3xl border-2 border-primary/30 bg-gradient-to-r from-brand-soft to-white p-4 transition hover:border-primary/60 sm:p-5">
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-brand-deep text-white">
+            <Languages className="size-6" aria-hidden />
+          </span>
+          <span className="grid min-w-0 flex-1 gap-0.5">
+            <span className="text-[11px] font-bold tracking-wide text-coral-dark uppercase">Today&apos;s vocabulary for your goal</span>
+            <span lang="en" className="font-bold break-words text-brand-deep group-hover:text-primary">
+              {today.items.join(" · ")}
+            </span>
+            <span className="text-xs font-semibold text-muted-foreground">{coach ? `${today.count} sentence${today.count === 1 ? "" : "s"} by ${today.writers} ${today.writers === 1 ? "person" : "people"}` : today.done >= today.total ? "All your sentences are written. Read the others'!" : `${today.done} / ${today.total} sentences written`}</span>
+          </span>
+          {!coach && (
+            <span className="h-2.5 w-full overflow-hidden rounded-full bg-white ring-1 ring-primary/20 sm:w-40">
+              <span className="block h-full rounded-full bg-gradient-to-r from-primary to-brand-deep" style={{ width: `${Math.round((today.done / Math.max(1, today.total)) * 100)}%` }} />
+            </span>
+          )}
+          <span className="inline-flex items-center gap-1 rounded-xl border-2 border-coral bg-white px-3 py-2 text-sm font-bold text-coral-dark group-hover:bg-coral-soft">
+            {coach ? "See" : today.done >= today.total ? "Read" : "Write"} <ChevronRight className="size-4" aria-hidden />
+          </span>
+        </Link>
+      )}
       <div className="grid gap-4 lg:grid-cols-[1.3fr_1fr]">
         <section className={cn(card, "grid content-start gap-4")}>
           <SectionTitle icon={Flag}>The goal</SectionTitle>
@@ -378,6 +414,86 @@ async function Feedback({ s, viewer, coach, thread: rawThread, link }: { s: Spac
       )}
       <Composer coachingId={id} thread={coach ? thread : thread ? viewer.id : ""} coach={coach} placeholder={coach ? "Your feedback…" : "Write to your coach…"} />
     </section>
+  );
+}
+
+async function DailyVocab({ s, viewer, coach }: { s: Space; viewer: Viewer; coach: boolean }) {
+  const id = String(s.coaching._id);
+  const vocab = await todayVocab(viewer, id).catch(() => null);
+  const sentences = vocab ? await sentencesOn([vocab._id]) : [];
+  const mine = dayProgress(vocab, sentences, viewer.id);
+  return (
+    <section className="grid gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <SectionTitle icon={Languages}>Daily vocabulary</SectionTitle>
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{coach ? "3 words or expressions a day, chosen for this coaching's goal. Each person writes 2 sentences of their own per expression; everyone reads the group's sentences. Earlier days move to the Learning space." : "3 expressions a day for your goal. Write 2 sentences of your own with each one: they are corrected at once and shared with the group. Read the others' sentences too!"}</p>
+        </div>
+        {vocab && !coach && (
+          <div className="grid w-full gap-1 sm:w-56">
+            <p className="flex justify-between text-sm font-bold text-brand-deep">
+              <span>Today</span>
+              <span>
+                {mine.done} / {mine.total}
+              </span>
+            </p>
+            <span className="h-2.5 overflow-hidden rounded-full bg-brand-soft">
+              <span className="block h-full rounded-full bg-gradient-to-r from-primary to-brand-deep" style={{ width: `${Math.round((mine.done / Math.max(1, mine.total)) * 100)}%` }} />
+            </span>
+          </div>
+        )}
+      </div>
+      {vocab ? (
+        <VocabDay vocab={vocab} sentences={sentences} viewerId={viewer.id} coach={coach} coachingId={id} />
+      ) : (
+        <Empty>{s.coaching.status !== "active" ? "This coaching is paused or completed: no new expressions." : "Today's expressions aren't ready. Come back in a moment."}</Empty>
+      )}
+    </section>
+  );
+}
+
+async function LearningSpace({ s, viewer, coach, forName }: { s: Space; viewer: Viewer; coach: boolean; forName: (id: string) => string }) {
+  const id = String(s.coaching._id);
+  const days = await pastVocab(viewer, id);
+  const sentences = days.length ? await sentencesOn(days.map((d) => d._id)) : [];
+  const total = days.reduce((n, d) => n + d.items.length, 0);
+  const fmt = (day: string) => new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(new Date(`${day}T12:00:00Z`));
+  return (
+    <div className="grid gap-8">
+      <section className="grid gap-3">
+        <SectionTitle icon={Languages} aside={total ? <span className="text-sm font-semibold text-muted-foreground">{total} expressions</span> : null}>
+          Vocabulary of earlier days
+        </SectionTitle>
+        {days.length ? (
+          <div className="grid gap-3">
+            {days.map((d, i) => {
+              const p = dayProgress(d, sentences, viewer.id);
+              const count = sentences.filter((x) => x.vocabId === String(d._id)).length;
+              return (
+                <details key={String(d._id)} open={i === 0} className="group rounded-3xl border-2 border-border bg-card">
+                  <summary className="flex cursor-pointer list-none flex-wrap items-center gap-3 p-4">
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-xs font-bold tracking-wide text-muted-foreground uppercase">{fmt(d.day)}</span>
+                      <span lang="en" className="font-bold break-words text-brand-deep">
+                        {d.items.map((it) => it.text).join(" · ")}
+                      </span>
+                    </span>
+                    <span className={cn("rounded-full px-2.5 py-1 text-xs font-bold", !coach && p.done >= p.total ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>{coach ? `${count} sentences` : `${p.done} / ${p.total} written`}</span>
+                    <ChevronRight className="size-5 text-muted-foreground transition group-open:rotate-90" aria-hidden />
+                  </summary>
+                  <div className="border-t border-border p-4">
+                    <VocabDay vocab={d} sentences={sentences} viewerId={viewer.id} coach={coach} coachingId={id} />
+                  </div>
+                </details>
+              );
+            })}
+          </div>
+        ) : (
+          <Empty>The expressions of each day come here the next day, with everyone&apos;s sentences.</Empty>
+        )}
+      </section>
+      <Resources s={s} coach={coach} forName={forName} />
+    </div>
   );
 }
 

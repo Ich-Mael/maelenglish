@@ -2,7 +2,7 @@ import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import * as z from "zod/v4";
-import type { DailyWord, SentenceCheck, DiagnosticReportInput, ConversationTurn, Debrief, DrillGrade, DrillGradeInput, FeedbackService, HelpSuggestion, LlmUsage, Persona, RolePlayBrief, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput } from "./types";
+import type { DailyWord, GoalExpression, SentenceCheck, DiagnosticReportInput, ConversationTurn, Debrief, DrillGrade, DrillGradeInput, FeedbackService, HelpSuggestion, LlmUsage, Persona, RolePlayBrief, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput } from "./types";
 
 /*
  * Claude feedback (DECISIONS.md: Claude for feedback): writing correction for the Lab « writing
@@ -96,6 +96,7 @@ Write every explanation, the summary and the tip in simple, encouraging French. 
 const HELP_SYSTEM = `A French-speaking learner of English is in the middle of a spoken role-play and pressed « Help ». Suggest 3 different short things (5-15 words each) they could say NEXT, in natural, simple professional English at their level, that answer the last thing the AI said and move toward their goals. For each, give a short French translation (fr). No explanations.`;
 
 const DailySchema = z.object({ words: z.array(z.object({ word: z.string(), translation: z.string(), frNote: z.string(), examples: z.array(z.object({ en: z.string(), fr: z.string() })) })) });
+const GoalVocabSchema = z.object({ items: z.array(z.object({ text: z.string(), translation: z.string(), frNote: z.string(), example: z.string(), exampleFr: z.string() })) });
 const SentenceSchema = z.object({ ok: z.boolean(), corrected: z.string(), explanation: z.string() });
 
 // Frozen (cache-friendly).
@@ -105,6 +106,14 @@ Given a profession (or field of study), return the requested number of genuinely
 - translation: the French translation, 1 to 3 words, correct accents.
 - frNote: one short sentence in simple French on when or how it is used in this job.
 - examples: exactly 2 different, natural English sentences (8-16 words) using the word in real situations of this job ("en"), each with its natural French translation ("fr").`;
+
+const GOAL_VOCAB_SYSTEM = `You choose English vocabulary for a coaching: French-speaking professionals in West Africa (A2-B2) preparing one precise goal in English (a job interview, a client presentation, a negotiation, an exam…).
+Given the coaching's title, goal and steps, return the requested number of words or expressions they will really need to reach that goal — favour useful multi-word expressions and collocations ("walk you through", "to follow up on", "a track record of") over single basic words.
+- text: the English word or expression, as it is used (lowercase unless it needs a capital). Never one of the items to avoid, never a word spelled the same in French with the same meaning.
+- translation: natural French equivalent, correct accents.
+- frNote: one short sentence in simple French: when and how to use it for this goal.
+- example: one natural English sentence (8-18 words) using it in the situation of the goal; exampleFr: its French translation.
+The items of one day must be different from each other and varied (verbs, phrases, nouns).`;
 
 const SENTENCE_SYSTEM = `A French-speaking learner of English (A2-B2) wrote a sentence using a word from their vocabulary notebook. Check it.
 - ok: true if the sentence is correct, natural English AND uses the word with the right meaning (small punctuation issues don't count).
@@ -246,6 +255,23 @@ export class ClaudeFeedbackService implements FeedbackService {
     if (!response.parsed_output) throw new Error("Daily vocabulary unavailable.");
     const words = response.parsed_output.words.map((w) => ({ ...w, examples: w.examples.slice(0, 2), example: w.examples[0]?.en ?? "" }));
     return { words, usage: { inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens, costMicros: costMicros(response.usage.input_tokens, response.usage.output_tokens), provider: `anthropic:${CLAUDE_FEEDBACK_MODEL}` } };
+  }
+
+  async goalVocabulary(input: { title: string; goal: string; steps: string[]; count: number; avoid: string[] }): Promise<{ items: GoalExpression[]; usage: LlmUsage }> {
+    const response = await this.client.messages.parse({
+      model: CLAUDE_FEEDBACK_MODEL,
+      max_tokens: 3000,
+      output_config: { effort: "low", format: zodOutputFormat(GoalVocabSchema) },
+      system: GOAL_VOCAB_SYSTEM,
+      messages: [
+        {
+          role: "user",
+          content: `Coaching: ${input.title}\nGoal: ${input.goal || "(not written yet: infer it from the title)"}\nSteps: ${input.steps.join(" | ") || "none"}\nNumber of items: ${input.count}\nItems to avoid (already given): ${input.avoid.join(", ") || "none"}`,
+        },
+      ],
+    });
+    if (!response.parsed_output) throw new Error("Coaching vocabulary unavailable.");
+    return { items: response.parsed_output.items.slice(0, input.count), usage: { inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens, costMicros: costMicros(response.usage.input_tokens, response.usage.output_tokens), provider: `anthropic:${CLAUDE_FEEDBACK_MODEL}` } };
   }
 
   async checkSentence(input: { word: string; translation: string; sentence: string }): Promise<{ result: SentenceCheck; usage: LlmUsage }> {

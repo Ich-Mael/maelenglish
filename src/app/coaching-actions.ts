@@ -197,3 +197,26 @@ export async function updateSessionAction(_: State, f: FormData): Promise<State>
 export async function joinSessionAction(sessionId: string) {
   return call(async (v) => ({ join: await svc.joinSession(v, sessionId) }));
 }
+
+// ── Daily vocabulary ─────────────────────────────────────────────────────
+
+export async function writeSentenceAction(coachingId: string, vocabId: string, itemId: string, text: string) {
+  return call(async (v) => {
+    const { writeCoachingSentence } = await import("@/lib/coaching/vocabulary");
+    const s = await writeCoachingSentence(v, coachingId, vocabId, itemId, text);
+    return { result: { ok: s.ok ?? null, corrected: s.corrected ?? "", explanation: s.explanation ?? "" } };
+  });
+}
+export async function deleteSentenceAction(coachingId: string, sentenceId: string) {
+  return call(async (v) => {
+    const { deleteCoachingSentence } = await import("@/lib/coaching/vocabulary");
+    await deleteCoachingSentence(v, coachingId, sentenceId);
+  });
+}
+export async function editVocabItemAction(_: State, f: FormData): Promise<State> {
+  return form(async (v) => {
+    const { editVocabItem } = await import("@/lib/coaching/vocabulary");
+    await editVocabItem(v, str(f, "coachingId"), str(f, "vocabId"), str(f, "itemId"), { text: str(f, "text"), translation: str(f, "translation"), frNote: str(f, "frNote"), example: str(f, "example"), exampleFr: str(f, "exampleFr") });
+    return "Expression updated.";
+  });
+}

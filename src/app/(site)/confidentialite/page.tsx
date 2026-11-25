@@ -94,6 +94,11 @@ export default function PrivacyPage() {
               pouvez les écouter et les consulter ; seul un administrateur peut supprimer un enregistrement.
             </li>
             <li>
+              <strong>Paiements en ligne</strong> : les paiements (Orange Money, Moov Money, carte bancaire) sont traités par
+              CinetPay ; nous transmettons votre nom, votre email et votre numéro pour le paiement, et nous gardons la référence, le
+              montant, la date et le moyen de paiement. Nous ne voyons jamais votre code secret ni votre numéro de carte.
+            </li>
+            <li>
               <strong>Coaching (« MaelEnglish Coaching »)</strong> : votre coach et vous (et, pour un coaching de groupe, les autres
               participants, qui ne voient que votre prénom) partagez un espace avec vos objectifs, vos messages et messages vocaux, les
               documents et vos enregistrements. Les messages privés et vos enregistrements ne sont visibles que par vous, votre coach et

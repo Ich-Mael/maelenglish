@@ -1,4 +1,4 @@
-import type { DailyWord, SentenceCheck, DiagnosticReportInput, ConversationAgentSpec, ConversationEngine, ConversationTurn, Debrief, FinishedConversation, HelpSuggestion, Persona, RolePlayBrief, Voice, AudioInput, DrillGrade, DrillGradeInput, FeedbackService, LlmUsage, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput, PronunciationResult, PronunciationService, SpeechService, SynthesizedAudio, Transcript, TtsService } from "./types";
+import type { DailyWord, GoalExpression, SentenceCheck, DiagnosticReportInput, ConversationAgentSpec, ConversationEngine, ConversationTurn, Debrief, FinishedConversation, HelpSuggestion, Persona, RolePlayBrief, Voice, AudioInput, DrillGrade, DrillGradeInput, FeedbackService, LlmUsage, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput, PronunciationResult, PronunciationService, SpeechService, SynthesizedAudio, Transcript, TtsService } from "./types";
 import { normalizeEnglish, words } from "./text";
 
 /*
@@ -163,6 +163,16 @@ export class FakeFeedbackService implements FeedbackService {
       if (!input.avoid.includes(w)) words.push({ word: w, translation: `[FR] ${w}`, frNote: "Note.", example: `We use ${w} at work.`, examples: [{ en: `We use ${w} at work.`, fr: `[FR] exemple 1` }, { en: `I need ${w} today.`, fr: `[FR] exemple 2` }] });
     }
     return { words, usage: { inputTokens: 0, outputTokens: 0, costMicros: 0, provider: "fake" } };
+  }
+
+  /** Deterministic: « expression a, b, c… » for the coaching, skipping the ones to avoid. */
+  async goalVocabulary(input: { title: string; count: number; avoid: string[] }): Promise<{ items: GoalExpression[]; usage: LlmUsage }> {
+    const items: GoalExpression[] = [];
+    for (let n = 1; items.length < input.count; n++) {
+      const t = `expression ${n}`;
+      if (!input.avoid.includes(t)) items.push({ text: t, translation: `[FR] ${t}`, frNote: "Note.", example: `I use ${t} for my goal.`, exampleFr: "[FR] exemple" });
+    }
+    return { items, usage: { inputTokens: 0, outputTokens: 0, costMicros: 0, provider: "fake" } };
   }
 
   /** Deterministic: ok when the sentence contains the word and starts with a capital. */

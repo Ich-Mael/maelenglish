@@ -142,9 +142,14 @@ async function Catalogue() {
               <SeasonCard key={r.s.id} r={r} />
             ))}
           </div>
-          <a href={waLink("Bonjour, je voudrais accéder au mode histoire MaelEnglish.")} target="_blank" rel="noopener" className="inline-flex items-center gap-2 justify-self-start rounded-2xl border-2 border-coral bg-white px-5 py-2.5 text-[19px] font-bold text-coral shadow-[0_4px_0_0_var(--color-coral)] hover:bg-coral-soft">
-            <MessageCircle className="size-5" /> Ask for access
-          </a>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link href="/boutique" className="inline-flex items-center gap-2 rounded-2xl border-2 border-coral bg-white px-5 py-2.5 text-[19px] font-bold text-coral shadow-[0_4px_0_0_var(--color-coral)] hover:bg-coral-soft">
+              Buy a season
+            </Link>
+            <a href={waLink("Bonjour, je voudrais accéder au mode histoire MaelEnglish.")} target="_blank" rel="noopener" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
+              <MessageCircle className="size-4" /> Ask us on WhatsApp
+            </a>
+          </div>
         </section>
       ) : null}
 

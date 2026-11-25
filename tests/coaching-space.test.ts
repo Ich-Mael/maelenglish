@@ -210,3 +210,46 @@ describe("live sessions", () => {
     void Types;
   });
 });
+
+describe("daily vocabulary", () => {
+  it("3 shared expressions a day, 2 sentences each per member, everyone reads them, past days kept", async () => {
+    const { coach, awa, kofi, id } = await setup();
+    const { todayVocab, writeCoachingSentence, sentencesOn, pastVocab, dayProgress, deleteCoachingSentence } = await import("@/lib/coaching/vocabulary");
+    const day1 = new Date("2026-11-20T10:00:00Z");
+    const v1 = (await todayVocab(awa, id, day1))!;
+    expect(v1.items.length).toBe(3);
+    // Same set for the whole group and the coach that day.
+    expect(String((await todayVocab(kofi, id, day1))!._id)).toBe(String(v1._id));
+    const item = v1.items[0];
+    await writeCoachingSentence(awa, id, String(v1._id), item.id, `I can explain ${item.text} clearly.`);
+    await writeCoachingSentence(awa, id, String(v1._id), item.id, `My manager asked about ${item.text} today.`);
+    await expect(writeCoachingSentence(awa, id, String(v1._id), item.id, `One more sentence with ${item.text}.`)).rejects.toThrow("already wrote 2");
+    await expect(writeCoachingSentence(awa, id, String(v1._id), item.id, "Too short")).rejects.toThrow("full sentence");
+    await expect(writeCoachingSentence(coach, id, String(v1._id), item.id, `The coach writes ${item.text} here.`)).rejects.toThrow("Only the people coached");
+    const k = await writeCoachingSentence(kofi, id, String(v1._id), item.id, `we talk about ${item.text} at work.`);
+    expect(k.ok).toBe(false); // fake check: no capital letter
+    const all = await sentencesOn([v1._id]);
+    expect(all.map((s) => s.userId)).toEqual([awa.id, awa.id, kofi.id]);
+    expect(all[2].firstName).toMatch(/^U\d+$/);
+    expect(dayProgress(v1, all, awa.id)).toEqual({ done: 2, total: 6 });
+    await expect(deleteCoachingSentence(kofi, id, all[0].id)).rejects.toThrow("your own");
+    await deleteCoachingSentence(coach, id, all[0].id);
+    // Next day: new expressions, never the same; day 1 is in the Learning space.
+    const v2 = (await todayVocab(awa, id, new Date("2026-11-21T10:00:00Z")))!;
+    expect(v2.items.map((i) => i.text).some((t) => v1.items.some((o) => o.text === t))).toBe(false);
+    expect((await pastVocab(kofi, id, new Date("2026-11-21T10:00:00Z"))).map((p) => p.day)).toEqual(["2026-11-20"]);
+  });
+
+  it("read aloud: only for the coaching's people, text from the database", async () => {
+    const { awa, kofi, outsider, id } = await setup();
+    const { todayVocab, writeCoachingSentence, vocabAudio } = await import("@/lib/coaching/vocabulary");
+    const v = (await todayVocab(awa, id))!;
+    const s = await writeCoachingSentence(awa, id, String(v._id), "e1", `I can explain ${v.items[0].text} clearly.`);
+    const opts = { voice: "us" as const };
+    // No voice configured in tests: null = the browser's voice; but the checks run first.
+    expect(await vocabAudio(kofi, id, String(v._id), "e1", { ...opts, what: "sentence", sentenceId: String(s._id) })).toBeNull();
+    await expect(vocabAudio(outsider, id, String(v._id), "e1", { ...opts, what: "text" })).rejects.toThrow(CoachingError);
+    await expect(vocabAudio(awa, id, String(v._id), "e9", { ...opts, what: "text" })).rejects.toThrow("Expression not found");
+    await expect(vocabAudio(awa, id, String(v._id), "e2", { ...opts, what: "sentence", sentenceId: String(s._id) })).rejects.toThrow("Sentence not found");
+  });
+});

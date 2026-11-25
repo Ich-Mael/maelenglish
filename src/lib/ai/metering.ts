@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { AiUsage, AppSettings, User, type AiKind } from "@/models";
+import { AiTopUp, AiUsage, AppSettings, User, type AiKind } from "@/models";
 import { dayKey } from "@/lib/gamification/rules";
 
 /*
@@ -26,6 +26,30 @@ export async function recordUsage(
 ) {
   const day = dayKey(now);
   await AiUsage.create({ userId: new Types.ObjectId(userId), ...u, day, month: monthOf(day) });
+  // Seconds beyond the monthly allowance come out of bought minutes (oldest first).
+  if (MINUTE_KINDS.includes(u.kind) && !u.ref && u.seconds) {
+    const [cap, used] = await Promise.all([monthlyCapSeconds(userId), usedSecondsThisMonth(userId, now)]);
+    const over = Math.min(u.seconds, Math.max(0, used - cap));
+    if (over > 0) await consumeTopUps(userId, over, now);
+  }
+}
+
+/** Bought minutes still valid (seconds). */
+export async function topUpSeconds(userId: string, now = new Date()): Promise<number> {
+  const [row] = await AiTopUp.aggregate<{ s: number }>([{ $match: { userId: new Types.ObjectId(userId), expiresAt: { $gt: now }, secondsLeft: { $gt: 0 } } }, { $group: { _id: null, s: { $sum: "$secondsLeft" } } }]);
+  return row?.s ?? 0;
+}
+
+async function consumeTopUps(userId: string, seconds: number, now: Date) {
+  let left = seconds;
+  const packs = await AiTopUp.find({ userId, expiresAt: { $gt: now }, secondsLeft: { $gt: 0 } }).sort({ expiresAt: 1 });
+  for (const p of packs) {
+    if (left <= 0) break;
+    const take = Math.min(left, p.secondsLeft);
+    p.secondsLeft -= take;
+    left -= take;
+    await p.save();
+  }
 }
 
 /** Seconds counted against the cap this month. */
@@ -46,9 +70,10 @@ export async function monthlyCapSeconds(userId: string): Promise<number> {
   return (s?.aiMonthlyMinutes ?? 60) * 60;
 }
 
+/** Monthly minutes left plus bought minutes still valid. */
 export async function remainingSeconds(userId: string, now = new Date()): Promise<number> {
-  const [cap, used] = await Promise.all([monthlyCapSeconds(userId), usedSecondsThisMonth(userId, now)]);
-  return Math.max(0, cap - used);
+  const [cap, used, bought] = await Promise.all([monthlyCapSeconds(userId), usedSecondsThisMonth(userId, now), topUpSeconds(userId, now)]);
+  return Math.max(0, cap - used) + bought;
 }
 
 /** Throws AiQuotaError when the learner can't afford `seconds` more this month. */

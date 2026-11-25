@@ -65,6 +65,14 @@ const appSettingsSchema = new Schema(
       usdToFcfa: { type: Number, default: 600, min: 1 },
       defaultMarginPct: { type: Number, default: 200, min: 0 },
     },
+    /** AI minute packs learners can buy (Shop): id, minutes, price in FCFA. */
+    minutePacks: {
+      type: [{ id: { type: String, required: true }, minutes: { type: Number, required: true, min: 1 }, priceFcfa: { type: Number, required: true, min: 5 }, _id: false }],
+      default: [
+        { id: "m30", minutes: 30, priceFcfa: 2500 },
+        { id: "m60", minutes: 60, priceFcfa: 4500 },
+      ],
+    },
     /** ElevenLabs voices reading the vocabulary (dictionary, daily words) — American and British. */
     vocabularyVoices: {
       us: { id: { type: String, default: "cgSgspJ2msm6clMCkdW9" }, name: { type: String, default: "Jessica" } },

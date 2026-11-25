@@ -89,7 +89,7 @@ const STEPS: { icon: LucideIcon; title: string; body: React.ReactNode }[] = [
     title: "Give access",
     body: (
       <>
-        Story Mode is paid: on the learner&apos;s page (Users → the learner → <i>Story Mode</i>), « Give access » to a season, optionally until a date, and add <b>extra conversation minutes</b> when they&apos;ve used theirs. Learners without access see the season, its price and « Ask for access » (WhatsApp).
+        Story Mode is paid: on the learner&apos;s page (Users → the learner → <i>Story Mode</i>), « Give access » to a season, optionally until a date, and add <b>extra conversation minutes</b> when they&apos;ve used theirs. Learners without access see the season and its price, and can buy it online (« Buy the season », CinetPay) or ask on WhatsApp.
       </>
     ),
   },

@@ -37,7 +37,7 @@ export function CourseFields({ course, settings, wide }: { course?: Partial<Cour
           inputMode="numeric"
           placeholder="E.g. 30,000"
           defaultValue={course?.price != null ? formatFcfa(course.price, false) : ""}
-          hint="For information only: no online payment."
+          hint="Sale price in the learners' Shop (published courses). Empty = not sold online."
         />
         <Input label="Image (link)" name="imageUrl" type="url" defaultValue={course?.imageUrl ?? ""} hint="Optional: otherwise the programme photo." />
         <Input label="Session start" name="startDate" type="date" defaultValue={isoDate(course?.startDate)} hint="Default dates for new enrolments." />
