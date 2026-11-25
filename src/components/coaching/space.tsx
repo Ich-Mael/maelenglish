@@ -12,7 +12,7 @@ import { Composer, DeleteItem, GoalStatus, MarkRead } from "./controls";
 import { VocabDay } from "./vocab-day";
 import { ProgressTab } from "./progress";
 import { dayProgress, pastVocab, reviewState, savedItems, sentencesOn, todayVocab } from "@/lib/coaching/vocabulary";
-import { AttendanceForm, NextStepCheck, PrepareForm } from "./session-forms";
+import { AttendanceForm, NextStepCheck, PrepareForm, WeeklyEmailToggle } from "./session-forms";
 import { GoalForm, MembersEditor, ResourceForm, ReviewForm, SessionForm, SessionStatusButtons, SessionSummaryForm, SettingsForm, TaskForm } from "./coach-forms";
 import { cn } from "cn";
 
@@ -333,6 +333,7 @@ function Overview({ s, coach, base, viewerId, today, test }: { s: Space; coach: 
           <p className="rounded-3xl border-2 border-dashed border-border p-6 text-center text-sm text-muted-foreground">{s.tasks.length ? "Everything is done. Well done! 🎉" : coach ? "No task yet: assign content in the Tasks tab." : "Nothing to do yet. Your coach will give you activities here."}</p>
         )}
       </section>
+      {!coach && <WeeklyEmailToggle coachingId={id} on={!(s.coaching.weeklyOff ?? []).some((x) => String(x) === viewerId)} />}
     </div>
   );
 }

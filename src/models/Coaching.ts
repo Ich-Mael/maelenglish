@@ -26,6 +26,8 @@ const coachingSchema = new Schema(
     /** Fallback video link (Zoom / Google Meet) when the embedded call isn't configured. */
     meetingUrl: { type: String, default: "" },
     createdBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
+    /** Members who turned the weekly summary email off. */
+    weeklyOff: { type: [Schema.Types.ObjectId], default: [] },
   },
   { timestamps: true },
 );

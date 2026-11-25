@@ -259,6 +259,13 @@ export async function reviewAssessmentAction(_: State, f: FormData): Promise<Sta
   });
 }
 
+export async function setWeeklyEmailAction(coachingId: string, on: boolean) {
+  return call(async (v) => {
+    const { setWeeklyEmail } = await import("@/lib/coaching/weekly");
+    await setWeeklyEmail(v, coachingId, !!on);
+  });
+}
+
 // ── Progress report ──────────────────────────────────────────────────────
 
 export async function saveReportCommentAction(_: State, f: FormData): Promise<State> {

@@ -389,12 +389,12 @@ export function diagnosticReportEmail(p: DiagnosticReportEmail): Omit<Mail, "to"
 }
 
 /** MaelEnglish Coaching notifications (French for learners, English for coaches — like the rest). */
-export function sendCoachingEmail(to: string, p: { firstName: string; subject: string; intro: string; button: string; url: string; outro?: string; lang?: "fr" | "en" }) {
+export function sendCoachingEmail(to: string, p: { firstName: string; subject: string; intro: string; button: string; url: string; outro?: string; lang?: "fr" | "en"; /** HTML block under the intro, and its plain-text version. */ extra?: string; extraText?: string }) {
   return send({
     to,
     subject: p.subject,
-    html: layout({ firstName: p.firstName, intro: p.intro, button: p.button, url: p.url, outro: p.outro ?? "", lang: p.lang }),
-    text: `${p.lang === "en" ? "Hello" : "Bonjour"} ${p.firstName},\n\n${p.intro.replace(/<[^>]+>/g, "")}\n${p.url}\n\n${(p.outro ?? "").replace(/<br>/g, "\n").replace(/<[^>]+>/g, "")}`,
+    html: layout({ firstName: p.firstName, intro: p.intro, button: p.button, url: p.url, outro: p.outro ?? "", lang: p.lang, extra: p.extra }),
+    text: `${p.lang === "en" ? "Hello" : "Bonjour"} ${p.firstName},\n\n${p.intro.replace(/<[^>]+>/g, "")}\n${p.extraText ? `\n${p.extraText}\n` : ""}${p.url}\n\n${(p.outro ?? "").replace(/<br>/g, "\n").replace(/<[^>]+>/g, "")}`,
   });
 }
 

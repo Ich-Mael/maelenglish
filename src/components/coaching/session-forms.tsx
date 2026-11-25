@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Check, Loader2, UserCheck } from "lucide-react";
-import { prepareSessionAction, setAttendanceAction, toggleNextStepAction } from "@/app/coaching-actions";
+import { Check, Loader2, Mail, UserCheck } from "lucide-react";
+import { prepareSessionAction, setAttendanceAction, setWeeklyEmailAction, toggleNextStepAction } from "@/app/coaching-actions";
 import { AdminForm, Submit } from "@/components/admin/forms";
 import { Checkbox, TextArea } from "@/components/admin/ui";
 import { cn } from "cn";
@@ -103,6 +103,32 @@ export function NextStepCheck({ sessionId, id, text, done }: { sessionId: string
       <span lang="fr" className={cn("text-sm", on ? "text-muted-foreground line-through" : "text-ink")}>
         {text}
       </span>
+    </label>
+  );
+}
+
+/** A member turns the Monday summary email on or off. */
+export function WeeklyEmailToggle({ coachingId, on: initial }: { coachingId: string; on: boolean }) {
+  const [on, setOn] = useState(initial);
+  const [pending, start] = useTransition();
+  return (
+    <label className={cn("flex w-fit cursor-pointer items-center gap-2 text-sm text-muted-foreground", pending && "opacity-60")}>
+      <Mail className="size-4 text-primary" aria-hidden />
+      <input
+        type="checkbox"
+        checked={on}
+        disabled={pending}
+        onChange={(e) => {
+          const next = e.target.checked;
+          setOn(next);
+          start(async () => {
+            const r = await setWeeklyEmailAction(coachingId, next);
+            if (!r.ok) setOn(!next);
+          });
+        }}
+        className="size-4 accent-[var(--color-primary)]"
+      />
+      Send me a summary of my week by email (Mondays)
     </label>
   );
 }

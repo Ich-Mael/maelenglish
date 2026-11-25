@@ -185,6 +185,10 @@ export function startDigestScheduler() {
       const { runSessionReminders } = await import("@/lib/coaching/notify");
       const rem = await runSessionReminders();
       if (rem.sent) console.info(`[coaching] ${rem.sent} session reminder(s)`);
+      // Weekly coaching summary to members (Mondays from 8:00).
+      const { runCoachingWeekly } = await import("@/lib/coaching/weekly");
+      const wk = await runCoachingWeekly();
+      if (wk.ran) console.info(`[coaching] weekly summary: ${wk.emails} email(s)`);
     } catch (e) {
       console.error("[digest]", e);
     }
