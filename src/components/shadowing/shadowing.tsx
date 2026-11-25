@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Mic, Pause, Play, Square } from "lucide-react";
 import { phraseAccuracy } from "@/lib/lab/speech";
+import { SHADOW_GOAL, cheerFor } from "@/lib/shadowing";
+
+export { SHADOW_GOAL };
 import { useVoice } from "@/components/learn/word-card";
 import { playSound } from "@/components/gamify/sound";
 import { cn } from "cn";
@@ -16,7 +19,6 @@ import { cn } from "cn";
  * decision 2026-11-25, practice only.
  */
 
-export const SHADOW_GOAL = 80;
 
 type SR = {
   lang: string;
@@ -42,17 +44,7 @@ const useSupport = () =>
     () => "recognition",
   );
 
-/** The cheer for a score (text, emoji, colour). */
-export function cheerFor(percent: number): { text: string; emoji: string; good: boolean } {
-  if (percent >= 98) return { text: "Excellent!", emoji: "🏆", good: true };
-  if (percent >= 90) return { text: "Awesome!", emoji: "🤩", good: true };
-  if (percent >= SHADOW_GOAL) return { text: "Well done!", emoji: "🎉", good: true };
-  if (percent >= 60) return { text: "Not bad!", emoji: "👍", good: false };
-  if (percent >= 40) return { text: "Almost there!", emoji: "💪", good: false };
-  return { text: "Try again!", emoji: "🔁", good: false };
-}
-
-export function Shadowing({ text, listen }: { text: string; listen?: React.ReactNode }) {
+export function Shadowing({ text, fr, listen }: { text: string; fr?: string; listen?: React.ReactNode }) {
   const support = useSupport();
   const voice = useVoice();
   const [listening, setListening] = useState(false);
@@ -217,6 +209,11 @@ export function Shadowing({ text, listen }: { text: string; listen?: React.React
             ))
           : text}
       </p>
+      {fr && (
+        <p lang="fr" className="-mt-2 text-base text-muted-foreground italic">
+          {fr}
+        </p>
+      )}
 
       <div className="flex flex-wrap items-center gap-3">
         {listen}

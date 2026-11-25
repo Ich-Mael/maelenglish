@@ -4,6 +4,9 @@ import { useState, useTransition } from "react";
 import { Check, Loader2, PenLine, Trash2, X } from "lucide-react";
 import { deleteSentenceAction, writeSentenceAction } from "@/app/(app)/vocabulary-actions";
 import type { SentenceCheck } from "@/lib/ai/types";
+import { ShadowingModal } from "@/components/shadowing/listen";
+import { ShadowList } from "@/components/shadowing/list";
+import { SHADOW_GOAL } from "@/lib/shadowing";
 import { cn } from "cn";
 
 /*
@@ -70,6 +73,9 @@ export function SentencesBoard({ words, initialWord }: { words: WordWithSentence
               <SentenceRow key={s.id} word={current.word} s={s} />
             ))}
           </ul>
+          <ShadowingModal title={current.word} count={current.sentences.length} kicker="Your sentences" intro={`Listen to each of your sentences (corrected when needed) and say it the same way: reach ${SHADOW_GOAL}% to master it.`}>
+            <ShadowList items={[...current.sentences].reverse().map((s, k, all) => ({ id: s.id, label: `Sentence ${all.length - k}`, text: s.ok || !s.corrected ? s.text : s.corrected, src: `/api/vocabulary/sentence-audio?${new URLSearchParams({ word: current.word, id: s.id })}` }))} />
+          </ShadowingModal>
         </section>
       )}
 

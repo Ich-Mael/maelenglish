@@ -3,18 +3,17 @@
 import { useRef, useState } from "react";
 import { ChevronRight, Mic, Snail, Volume2, X } from "lucide-react";
 import { setVoice, synth, useVoice } from "@/components/learn/word-card";
-import { SHADOW_GOAL } from "./vocab-shadow";
+import { SHADOW_GOAL } from "@/lib/shadowing";
 import { cn } from "cn";
 
 /*
- * Coaching daily vocabulary, read aloud: natural voices from /api/coaching/vocab-audio (Azure,
- * else ElevenLabs — made once, shared), the browser's voice when unavailable. The US / UK accent
- * is the same choice as the dictionary's (remembered on the device).
+ * Read aloud + shadowing modal, shared by the coaching daily vocabulary and The Vocabulary I Need.
+ * `Listen` plays `src` (an audio route that redirects to natural voices — Azure, else ElevenLabs,
+ * made once and shared — given `voice` / `slow`), the browser's voice when unavailable. The US / UK
+ * accent is the same choice as the dictionary's (remembered on the device).
  */
 
-type Target = { coachingId: string; vocabId: string; itemId: string; what: "text" | "example" | "sentence"; sentenceId?: string };
-
-export function Listen({ target, text, slow, label, className, iconClass = "size-4", tone = "light" }: { target: Target; text: string; slow?: boolean; label: string; className?: string; iconClass?: string; tone?: "light" | "dark" }) {
+export function Listen({ src, text, slow, label, className, iconClass = "size-4", tone = "light" }: { src: string; text: string; slow?: boolean; label: string; className?: string; iconClass?: string; tone?: "light" | "dark" }) {
   const audio = useRef<HTMLAudioElement>(null);
   const voice = useVoice();
   const [playing, setPlaying] = useState(false);
@@ -31,8 +30,7 @@ export function Listen({ target, text, slow, label, className, iconClass = "size
     };
     el.onerror = fallback;
     el.onended = () => setPlaying(false);
-    const q = new URLSearchParams({ c: target.coachingId, v: target.vocabId, i: target.itemId, what: target.what, voice, ...(target.sentenceId ? { s: target.sentenceId } : {}), ...(slow ? { slow: "1" } : {}) });
-    el.src = `/api/coaching/vocab-audio?${q}`;
+    el.src = `${src}${src.includes("?") ? "&" : "?"}${new URLSearchParams({ voice, ...(slow ? { slow: "1" } : {}) })}`;
     setPlaying(true);
     void el.play().catch((err: Error) => err.name !== "AbortError" && fallback());
   };
@@ -76,8 +74,8 @@ export function AccentSwitch({ tone = "light" }: { tone?: "light" | "dark" }) {
   );
 }
 
-/** « Practice Shadowing with Examples »: every sentence of the group for one expression, in a modal (bottom sheet on phones). */
-export function AllSentences({ title, count, children }: { title: string; count: number; children: React.ReactNode }) {
+/** « Practice Shadowing with Examples »: a card that opens the sentences to practise in a modal (bottom sheet on phones). */
+export function ShadowingModal({ title, count, kicker = "The group's sentences", intro, children }: { title: string; count: number; kicker?: string; intro?: string; children: React.ReactNode }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const open = () => {
     const d = dialog.current;
@@ -116,12 +114,14 @@ export function AllSentences({ title, count, children }: { title: string; count:
         ref={dialog}
         onClose={onClose}
         onClick={(e) => e.target === e.currentTarget && dialog.current?.close()}
-        aria-label={`The group's sentences with « ${title} »`}
+        aria-label={`Practice shadowing with « ${title} »`}
         className="m-0 mt-auto max-h-[94dvh] w-full max-w-none rounded-t-3xl bg-background p-0 text-foreground backdrop:bg-ink/50 sm:m-auto sm:max-h-[92dvh] sm:w-[min(56rem,calc(100vw-3rem))] sm:rounded-3xl"
       >
         <div className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-border bg-background px-5 py-4">
           <div className="min-w-0">
-            <p className="text-xs font-bold tracking-wide text-muted-foreground uppercase">The group&apos;s sentences ({count})</p>
+            <p className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
+              {kicker} ({count})
+            </p>
             <p lang="en" className="font-heading text-2xl font-extrabold text-brand-deep sm:text-3xl">
               {title}
             </p>
@@ -134,7 +134,7 @@ export function AllSentences({ title, count, children }: { title: string; count:
           </div>
         </div>
         <div className="px-4 py-4 sm:px-6 sm:py-5">
-          <p className="mb-3 text-base text-muted-foreground">Read everyone&apos;s sentences, listen, and practise saying the corrected ones: reach {SHADOW_GOAL}% to master them.</p>
+          <p className="mb-3 text-base text-muted-foreground">{intro ?? `Listen to each sentence and say it the same way: reach ${SHADOW_GOAL}% to master it.`}</p>
           {children}
         </div>
       </dialog>

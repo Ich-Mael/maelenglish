@@ -142,3 +142,26 @@ describe("daily word examples read aloud", () => {
     expect(await dailyExampleAudio(u, "other", 0, { voice: "us" })).toBeNull();
   });
 });
+
+describe("shadowing practice", () => {
+  it("cheers by score, the goal being 80%", async () => {
+    const { cheerFor, SHADOW_GOAL } = await import("@/lib/shadowing");
+    expect(SHADOW_GOAL).toBe(80);
+    expect([100, 92, 80, 79, 45, 10].map((p) => cheerFor(p).text)).toEqual(["Excellent!", "Awesome!", "Well done!", "Not bad!", "Almost there!", "Try again!"]);
+    expect(cheerFor(80).good && !cheerFor(79).good).toBe(true);
+  });
+
+  it("reads aloud only the learner's own sentences", async () => {
+    const { FakeTtsService } = await import("@/lib/ai/fake");
+    const { ownSentenceAudio } = await import("@/lib/vocabulary");
+    setAiServicesForTests({ feedback: new FakeFeedbackService(), tts: new FakeTtsService() });
+    const u = await learner();
+    const other = String((await User.create({ name: "Kofi", surname: "M", username: "kofi", email: "kofi@example.com" }))._id);
+    await saveWord(u, "delay");
+    await writeSentence(u, "delay", "there is a delay today");
+    const s = (await VocabWord.findOne({ userId: u, word: "delay" }).lean())!.sentences[0] as { _id: unknown };
+    expect(await ownSentenceAudio(u, "delay", String(s._id), { voice: "us" })).toMatch(/\/api\/media\/local\?/);
+    expect(await ownSentenceAudio(other, "delay", String(s._id), { voice: "us" })).toBeNull();
+    expect(await ownSentenceAudio(u, "delay", "nope", { voice: "us" })).toBeNull();
+  });
+});

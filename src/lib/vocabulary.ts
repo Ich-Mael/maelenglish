@@ -167,6 +167,16 @@ export async function deleteSentence(userId: string, rawWord: string, sentenceId
   await VocabWord.updateOne({ userId, word: normalizeWord(rawWord) ?? "" }, { $pull: { sentences: { _id: new Types.ObjectId(sentenceId) } } });
 }
 
+/** One of the learner's own sentences read aloud (the corrected one when it was wrong) — for shadowing. Their own words only. */
+export async function ownSentenceAudio(userId: string, rawWord: string, sentenceId: string, opts: { voice: "us" | "gb"; slow?: boolean }) {
+  if (!Types.ObjectId.isValid(sentenceId)) return null;
+  const w = await VocabWord.findOne({ userId, word: normalizeWord(rawWord) ?? "" }).select("sentences").lean<VocabWordDoc>();
+  const s = (w?.sentences ?? []).find((x) => String((x as { _id?: unknown })._id) === sentenceId);
+  const text = s ? (!s.ok && s.corrected ? s.corrected : s.text) : "";
+  if (!text.trim()) return null;
+  return speakFor(userId, text.trim(), { voice: opts.voice, slow: opts.slow, feature: "own_sentences" });
+}
+
 // ── Tests on my own words (spaced review) ────────────────────────────────
 
 /** After an answer: the next stage and when the word comes back. */

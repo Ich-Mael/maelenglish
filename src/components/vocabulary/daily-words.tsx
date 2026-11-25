@@ -6,6 +6,8 @@ import { Check, Loader2, PenLine, Plus, Volume2 } from "lucide-react";
 import { saveDailyWordAction } from "@/app/(app)/vocabulary-actions";
 import { playPronunciation, synth, useVoice } from "@/components/learn/word-card";
 import type { DailyWord } from "@/lib/ai/types";
+import { ShadowingModal } from "@/components/shadowing/listen";
+import { ShadowList } from "@/components/shadowing/list";
 
 /** Daily words for the learner's profession: hear it, French meaning, note, two examples at work (with French), « Add to my notebook », « Write my own sentence ». */
 export function DailyWords({ words }: { words: (DailyWord & { saved: boolean })[] }) {
@@ -93,6 +95,11 @@ export function WordTile({ w }: { w: DailyWord & { saved: boolean } }) {
           ))}
         </ol>
       </div>
+      {examples.length > 0 && (
+        <ShadowingModal title={w.word} count={examples.length} kicker="Examples at work">
+          <ShadowList items={examples.map((e, k) => ({ id: String(k), label: `Example ${k + 1}`, text: e.en, fr: e.fr, src: `/api/vocabulary/audio?${new URLSearchParams({ word: w.word, i: String(k) })}` }))} />
+        </ShadowingModal>
+      )}
       <div className="flex flex-wrap items-center gap-2">
         {saved ? (
           <p className="inline-flex h-10 items-center gap-1.5 px-1 text-sm font-bold text-primary">

@@ -3,8 +3,10 @@ import type { CoachingVocabDoc } from "@/models";
 import { SENTENCES_PER_ITEM, type SharedSentence } from "@/lib/coaching/vocabulary";
 import { Avatar } from "@/components/account/avatar";
 import { DeleteSentence, EditItem, SentenceForm } from "./vocab-forms";
-import { AccentSwitch, AllSentences, Listen } from "./vocab-audio";
-import { Shadowing } from "./vocab-shadow";
+import { AccentSwitch, Listen, ShadowingModal } from "@/components/shadowing/listen";
+import { ListenPair, ShadowList } from "@/components/shadowing/list";
+import { Shadowing } from "@/components/shadowing/shadowing";
+import { SHADOW_GOAL, coachingAudioSrc } from "@/lib/shadowing";
 import { cn } from "cn";
 
 /*
@@ -45,8 +47,8 @@ export function VocabDay({ vocab, sentences, viewerId, coach, coachingId, compac
                 </p>
               )}
               <div className="mt-1 flex flex-wrap items-center gap-2">
-                <Listen target={{ ...target, what: "text" }} text={item.text} label={`Hear « ${item.text} »`} tone="dark" className="size-10" iconClass="size-5" />
-                <Listen target={{ ...target, what: "text" }} text={item.text} slow label={`Hear « ${item.text} » slowly`} tone="dark" className="size-10" iconClass="size-5" />
+                <Listen src={coachingAudioSrc({ ...target, what: "text" })} text={item.text} label={`Hear « ${item.text} »`} tone="dark" className="size-10" iconClass="size-5" />
+                <Listen src={coachingAudioSrc({ ...target, what: "text" })} text={item.text} slow label={`Hear « ${item.text} » slowly`} tone="dark" className="size-10" iconClass="size-5" />
                 <span className="ml-auto">
                   <AccentSwitch tone="dark" />
                 </span>
@@ -60,7 +62,7 @@ export function VocabDay({ vocab, sentences, viewerId, coach, coachingId, compac
               )}
               {item.example && (
                 <div className="flex items-start gap-2 rounded-2xl bg-brand-soft/60 p-3 text-sm">
-                  <Listen target={{ ...target, what: "example" }} text={item.example} label="Hear the example" className="-ml-1 size-8 bg-white" />
+                  <Listen src={coachingAudioSrc({ ...target, what: "example" })} text={item.example} label="Hear the example" className="-ml-1 size-8 bg-white" />
                   <div className="min-w-0 flex-1">
                     <p lang="en" className="font-semibold text-brand-deep">
                       <Sparkles className="mr-1 inline size-3.5 text-primary" aria-hidden />
@@ -80,17 +82,20 @@ export function VocabDay({ vocab, sentences, viewerId, coach, coachingId, compac
               <p className="flex items-center gap-1.5 text-xs font-bold tracking-wide text-muted-foreground uppercase">
                 <MessageSquareQuote className="size-4 text-primary" aria-hidden /> The group&apos;s sentences ({list.length})
               </p>
-              {preview ? (
-                <>
-                  <ul className="grid gap-2">{row(preview)}</ul>
-                  {list.length > 0 && (
-                    <AllSentences title={item.text} count={list.length}>
-                      <ul className="grid gap-3">{list.map((s) => row(s, true))}</ul>
-                    </AllSentences>
-                  )}
-                </>
-              ) : (
-                <p className="text-sm text-muted-foreground">No sentence yet.{!coach ? " Be the first!" : ""}</p>
+              {preview ? <ul className="grid gap-2">{row(preview)}</ul> : <p className="text-sm text-muted-foreground">No sentence yet.{!coach ? " Be the first!" : ""}</p>}
+              {/* Shadowing: the expression's example first, then the group's sentences (corrected). */}
+              {(item.example || list.length > 0) && (
+                <ShadowingModal title={item.text} count={list.length + (item.example ? 1 : 0)} kicker="Examples" intro={`Listen to the example and the group's sentences (corrected), then say them the same way: reach ${SHADOW_GOAL}% to master them.`}>
+                  <div className="grid gap-3">
+                    {item.example && <ShadowList items={[{ id: "example", label: "Example", text: item.example, fr: item.exampleFr, src: coachingAudioSrc({ ...target, what: "example" }) }]} />}
+                    {list.length > 0 && (
+                      <>
+                        <p className="mt-2 text-sm font-bold tracking-wide text-muted-foreground uppercase">The group&apos;s sentences ({list.length})</p>
+                        <ul className="grid gap-3">{list.map((s) => row(s, true))}</ul>
+                      </>
+                    )}
+                  </div>
+                </ShadowingModal>
               )}
               {!coach && left > 0 && <SentenceForm coachingId={coachingId} vocabId={vocabId} itemId={item.id} text={item.text} left={left} />}
             </div>
@@ -120,7 +125,7 @@ function SentenceRow({ s, viewerId, coach, coachingId, target, big }: { s: Share
             s.firstName
           )}
           <span className="flex items-center gap-0.5">
-            <Listen target={{ ...target, what: "sentence", sentenceId: s.id }} text={spoken} label={s.ok === false ? "Hear the corrected sentence" : "Hear the sentence"} className={big ? "size-11 bg-white" : "size-7"} iconClass={big ? "size-5" : "size-3.5"} />
+            <Listen src={coachingAudioSrc({ ...target, what: "sentence", sentenceId: s.id })} text={spoken} label={s.ok === false ? "Hear the corrected sentence" : "Hear the sentence"} className={big ? "size-11 bg-white" : "size-7"} iconClass={big ? "size-5" : "size-3.5"} />
             {(mine || coach) && <DeleteSentence coachingId={coachingId} id={s.id} />}
           </span>
         </p>
@@ -145,16 +150,7 @@ function SentenceRow({ s, viewerId, coach, coachingId, target, big }: { s: Share
           </div>
         )}
         {big && (
-          <Shadowing
-            text={spoken}
-            listen={
-              <span className="inline-flex h-14 items-center gap-2 rounded-full bg-brand-soft pr-4 pl-1 text-base font-semibold text-primary">
-                <Listen target={{ ...target, what: "sentence", sentenceId: s.id }} text={spoken} label="Listen to the model" className="size-12 bg-white" iconClass="size-6" />
-                <Listen target={{ ...target, what: "sentence", sentenceId: s.id }} text={spoken} slow label="Listen slowly" className="size-10" iconClass="size-5" />
-                Listen
-              </span>
-            }
-          />
+          <Shadowing text={spoken} listen={<ListenPair src={coachingAudioSrc({ ...target, what: "sentence", sentenceId: s.id })} text={spoken} />} />
         )}
       </div>
     </li>
