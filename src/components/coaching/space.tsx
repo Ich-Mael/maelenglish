@@ -2,7 +2,8 @@ import Link from "next/link";
 import { BarChart3, BookOpen, CalendarClock, CheckCircle2, ChevronRight, Languages, Library, ExternalLink, FileText, Flag, GraduationCap, Headphones, Link2, ListChecks, MessagesSquare, Mic, PlayCircle, Settings, Target, Users, Video } from "lucide-react";
 import type { Viewer } from "@/lib/coaching/service";
 import { assignOptions, loadSpace, loadSubmissions, loadThread, type Space } from "@/lib/coaching/queries";
-import { coachingSessionPath, coachingTaskPath } from "@/lib/coaching/paths";
+import { coachingAssessmentPath, coachingSessionPath, coachingTaskPath } from "@/lib/coaching/paths";
+import { assessmentsFor } from "@/lib/coaching/assessment";
 import { User } from "@/models";
 import { Avatar } from "@/components/account/avatar";
 import { RichText } from "@/components/learn/rich-text";
@@ -82,7 +83,7 @@ export async function CoachingSpace({ viewer, coachingId, base, tab: rawTab, mem
         </ul>
       </nav>
 
-      {tab === "overview" && <Overview s={s} coach={coach} base={base} viewerId={viewer.id} today={await todayProgress(s, viewer)} />}
+      {tab === "overview" && <Overview s={s} coach={coach} base={base} viewerId={viewer.id} today={await todayProgress(s, viewer)} test={coach ? null : await pendingAssessment(viewer, coachingId)} />}
       {tab === "goals" && <Goals s={s} coach={coach} forName={forName} />}
       {tab === "feedback" && <Feedback s={s} viewer={viewer} coach={coach} thread={thread} link={link} />}
       {tab === "vocabulary" && <DailyVocab s={s} viewer={viewer} coach={coach} />}
@@ -155,7 +156,18 @@ async function todayProgress(s: Space, viewer: Viewer) {
   return { items: vocab.items.map((i) => i.text), done: mine.done, total: mine.total, count: sentences.length, writers };
 }
 
-function Overview({ s, coach, base, viewerId, today }: { s: Space; coach: boolean; base: string; viewerId: string; today: Awaited<ReturnType<typeof todayProgress>> }) {
+/** A member's assessment still to take (the end one first), for the Overview. */
+async function pendingAssessment(viewer: Viewer, coachingId: string) {
+  const t = await assessmentsFor(viewer, coachingId).catch(() => null);
+  if (!t) return null;
+  for (const ph of ["end", "start"] as const) {
+    const a = t[ph];
+    if (a.assessment && !a.rows[0]?.submitted) return { phase: ph, answered: a.rows[0]?.answers.length ?? 0, total: a.assessment.prompts.length };
+  }
+  return null;
+}
+
+function Overview({ s, coach, base, viewerId, today, test }: { s: Space; coach: boolean; base: string; viewerId: string; today: Awaited<ReturnType<typeof todayProgress>>; test: Awaited<ReturnType<typeof pendingAssessment>> }) {
   const id = String(s.coaching._id);
   const next = s.sessions.find((x) => x.upcoming);
   const done = s.goals.filter((g) => g.status === "done").length;
@@ -167,6 +179,18 @@ function Overview({ s, coach, base, viewerId, today }: { s: Space; coach: boolea
   const steps = coach ? [] : [...s.sessions].reverse().filter((x) => x.status === "done").flatMap((x) => x.nextSteps.filter((n) => !n.done).map((n) => ({ ...n, sessionId: x.id, when: x.when })));
   return (
     <div className="grid gap-5">
+      {test && (
+        <Link href={coachingAssessmentPath(id, test.phase)} className="group flex flex-wrap items-center gap-4 rounded-3xl border-2 border-coral bg-white p-4 shadow-[0_4px_0_0_var(--color-coral)] transition hover:bg-coral-soft sm:p-5">
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-full border-2 border-coral bg-white text-coral">
+            <Mic className="size-6" aria-hidden />
+          </span>
+          <span className="grid min-w-0 flex-1 gap-0.5">
+            <span className="font-heading text-lg font-extrabold text-brand-deep">{test.phase === "start" ? "Your start speaking assessment" : "Your end speaking assessment"}</span>
+            <span className="text-sm text-muted-foreground">{test.answered ? `${test.answered} / ${test.total} answered: finish and send it to your coach.` : `${test.total} questions to answer out loud, about 5 minutes.`}</span>
+          </span>
+          <ChevronRight className="size-6 text-coral" aria-hidden />
+        </Link>
+      )}
       {steps.length > 0 && (
         <section className={cn(card, "grid gap-2 border-primary/30")}>
           <SectionTitle icon={ListChecks} aside={<span className="text-sm font-semibold text-muted-foreground">{steps.length} to do</span>}>

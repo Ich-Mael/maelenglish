@@ -237,3 +237,49 @@ const reportSchema = new Schema(
 reportSchema.index({ coachingId: 1, month: 1 }, { unique: true });
 export type CoachingReportDoc = InferSchemaType<typeof reportSchema> & { _id: Types.ObjectId };
 export const CoachingReport: Model<CoachingReportDoc> = defineModel<CoachingReportDoc>("CoachingReport", reportSchema);
+
+/**
+ * Speaking assessment at the start and the end of a coaching (owner decision 2026-11-25): the
+ * coach sets 2–5 prompts (French instructions, answered in English), each member records an
+ * answer per prompt, the coach scores the whole on 5 criteria. One per coaching and phase.
+ */
+const assessmentSchema = new Schema(
+  {
+    coachingId: { type: Schema.Types.ObjectId, ref: "Coaching", required: true },
+    phase: { type: String, enum: ["start", "end"], required: true },
+    prompts: { type: [new Schema({ id: { type: String, required: true }, text: { type: String, required: true, maxlength: 400 } }, { _id: false })], default: [] },
+    maxSeconds: { type: Number, default: 90, min: 30, max: 300 },
+    createdBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
+  },
+  { timestamps: true },
+);
+assessmentSchema.index({ coachingId: 1, phase: 1 }, { unique: true });
+export type CoachingAssessmentDoc = InferSchemaType<typeof assessmentSchema> & { _id: Types.ObjectId };
+export const CoachingAssessment: Model<CoachingAssessmentDoc> = defineModel<CoachingAssessmentDoc>("CoachingAssessment", assessmentSchema);
+
+/** A member's recorded answers to an assessment, and the coach's scores (0–10 per criterion). */
+const assessmentAnswerSchema = new Schema(
+  {
+    assessmentId: { type: Schema.Types.ObjectId, ref: "CoachingAssessment", required: true },
+    coachingId: { type: Schema.Types.ObjectId, ref: "Coaching", required: true },
+    phase: { type: String, enum: ["start", "end"], required: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    answers: { type: [new Schema({ promptId: { type: String, required: true }, mediaId: { type: Schema.Types.ObjectId, ref: "Media", required: true }, durationS: { type: Number, default: 0 }, at: { type: Date, default: Date.now } }, { _id: false })], default: [] },
+    submittedAt: { type: Date, default: null },
+    scores: {
+      fluency: { type: Number, default: null },
+      vocabulary: { type: Number, default: null },
+      grammar: { type: Number, default: null },
+      pronunciation: { type: Number, default: null },
+      clarity: { type: Number, default: null },
+    },
+    comment: { type: String, default: "", maxlength: 3000 },
+    reviewedAt: { type: Date, default: null },
+    reviewedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
+  },
+  { timestamps: true },
+);
+assessmentAnswerSchema.index({ assessmentId: 1, userId: 1 }, { unique: true });
+assessmentAnswerSchema.index({ coachingId: 1, phase: 1 });
+export type CoachingAssessmentAnswerDoc = InferSchemaType<typeof assessmentAnswerSchema> & { _id: Types.ObjectId };
+export const CoachingAssessmentAnswer: Model<CoachingAssessmentAnswerDoc> = defineModel<CoachingAssessmentAnswerDoc>("CoachingAssessmentAnswer", assessmentAnswerSchema);

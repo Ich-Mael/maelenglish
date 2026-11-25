@@ -225,6 +225,40 @@ export async function joinSessionAction(sessionId: string) {
   return call(async (v) => ({ join: await svc.joinSession(v, sessionId) }));
 }
 
+// ── Speaking assessment (start / end) ────────────────────────────────────
+
+export async function setupAssessmentAction(_: State, f: FormData): Promise<State> {
+  return form(async (v) => {
+    const { setupAssessment } = await import("@/lib/coaching/assessment");
+    const phase = str(f, "phase");
+    const { coaching, created } = await setupAssessment(v, str(f, "coachingId"), phase, { prompts: String(f.get("prompts") ?? ""), maxSeconds: str(f, "maxSeconds") });
+    if (created) after(() => notifyMembers(coaching._id, null, "assessment", phase));
+    return created ? "Assessment open: everyone gets an email." : "Saved.";
+  });
+}
+export async function answerAssessmentAction(coachingId: string, phase: string, promptId: string, mediaId: string) {
+  return call(async (v) => {
+    const { answerPrompt } = await import("@/lib/coaching/assessment");
+    return answerPrompt(v, coachingId, phase, promptId, mediaId);
+  });
+}
+export async function submitAssessmentAction(coachingId: string, phase: string) {
+  return call(async (v) => {
+    const { submitAssessment } = await import("@/lib/coaching/assessment");
+    const { coaching } = await submitAssessment(v, coachingId, phase);
+    after(() => notifyCoach(coaching._id, v.id, "assessment"));
+  });
+}
+export async function reviewAssessmentAction(_: State, f: FormData): Promise<State> {
+  return form(async (v) => {
+    const { reviewAssessment, CRITERIA } = await import("@/lib/coaching/assessment");
+    const raw = Object.fromEntries(CRITERIA.map((c) => [c, str(f, c)]));
+    const { answer } = await reviewAssessment(v, str(f, "answerId"), { ...raw, comment: String(f.get("comment") ?? "") });
+    after(() => notifyMembers(answer.coachingId, answer.userId, "assessment_review"));
+    return "Scores sent to the learner.";
+  });
+}
+
 // ── Progress report ──────────────────────────────────────────────────────
 
 export async function saveReportCommentAction(_: State, f: FormData): Promise<State> {

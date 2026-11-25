@@ -13,6 +13,8 @@ import { PageSkeleton } from "@/components/learn/ui";
 import { RichText } from "@/components/learn/rich-text";
 import { monthLabel } from "@/components/coaching/progress";
 import { PrintButton, ReportCommentForm } from "@/components/coaching/report-controls";
+import { levelsFor } from "@/lib/coaching/assessment";
+import { LevelChange, ScoreBars } from "@/components/coaching/assessment-ui";
 import { cn } from "cn";
 
 /*
@@ -46,7 +48,13 @@ async function Report({ params, searchParams }: P) {
   const { coaching, role, period, members, group } = data;
   if (role !== "coach") notFound();
   const month = period.month ?? monthsOf(coaching, now)[0];
-  const [comment, coachUser] = await Promise.all([reportComment(viewer, coachingId, month), User.findById(coaching.coachId).select("name surname coachName").lean()]);
+  const [comment, coachUser, levels] = await Promise.all([reportComment(viewer, coachingId, month), User.findById(coaching.coachId).select("name surname coachName").lean(), levelsFor(coaching, members.map((m) => m.id))]);
+  const tested = members.filter((m) => levels[m.id]?.start || levels[m.id]?.end);
+  const mean = (xs: (number | null | undefined)[]) => {
+    const ok = xs.filter((x): x is number => typeof x === "number");
+    return ok.length ? Math.round((ok.reduce((a, b) => a + b, 0) / ok.length) * 10) / 10 : null;
+  };
+  const both = tested.filter((m) => levels[m.id]?.start?.overall != null && levels[m.id]?.end?.overall != null);
   const back = `/admin/coaching/${coachingId}?tab=progress&period=${month}`;
   const last = new Date(period.to.getTime() - 1);
 
@@ -118,6 +126,33 @@ async function Report({ params, searchParams }: P) {
                 {p}
               </p>
             ))}
+          </section>
+        )}
+
+        {tested.length > 0 && (
+          <section className="avoid-break grid gap-3">
+            <h3 className="text-sm font-bold tracking-wide text-muted-foreground uppercase">Évaluation orale (début → fin du coaching)</h3>
+            <p className="text-sm text-muted-foreground">Les mêmes questions au début et à la fin, réponses enregistrées et notées par le coach sur 10 (aisance, vocabulaire, grammaire, prononciation, clarté du message).</p>
+            {both.length > 1 && (
+              <p className="text-[15px]">
+                Moyenne du groupe : <LevelChange fr start={mean(both.map((m) => levels[m.id].start!.overall))} end={mean(both.map((m) => levels[m.id].end!.overall))} />
+              </p>
+            )}
+            <div className="grid gap-3 sm:grid-cols-2">
+              {tested.map((m) => {
+                const l = levels[m.id];
+                const latest = l.end ?? l.start;
+                return (
+                  <div key={m.id} className="avoid-break grid gap-2 rounded-2xl border-2 border-border p-4">
+                    <p className="flex flex-wrap items-baseline justify-between gap-2">
+                      <span className="font-bold text-brand-deep">{m.fullName}</span>
+                      <LevelChange fr start={l.start?.overall} end={l.end?.overall} />
+                    </p>
+                    {latest && <ScoreBars fr scores={latest.scores} before={l.end ? l.start?.scores : null} />}
+                  </div>
+                );
+              })}
+            </div>
           </section>
         )}
 

@@ -1,7 +1,10 @@
 import Link from "next/link";
-import { AlertTriangle, BarChart3, BookmarkCheck, CalendarCheck, FileText, Languages, ListChecks, MessagesSquare, Mic, Target, Video } from "lucide-react";
+import { AlertTriangle, BarChart3, ChevronRight, BookmarkCheck, CalendarCheck, FileText, Languages, ListChecks, MessagesSquare, Mic, Target, Video } from "lucide-react";
 import type { Viewer } from "@/lib/coaching/service";
 import { coachingProgress, monthsOf, type Flag, type MemberProgress } from "@/lib/coaching/progress";
+import { assessmentsFor, levelsFor } from "@/lib/coaching/assessment";
+import { coachingAssessmentPath } from "@/lib/coaching/paths";
+import { LevelChange } from "./assessment-ui";
 import { Avatar } from "@/components/account/avatar";
 import { cn } from "cn";
 
@@ -27,6 +30,7 @@ export async function ProgressTab({ viewer, coachingId, period: raw, member, bas
   const months = monthsOf(coaching, now);
   const link = (p: string) => `${base}?${new URLSearchParams({ tab: "progress", period: p, ...(member ? { member } : {}) })}`;
   const report = reportHref ? `${reportHref}?mois=${period.month ?? months[0]}` : null;
+  const [tests, levels] = await Promise.all([assessmentsFor(viewer, coachingId), levelsFor(coaching, members.map((m) => m.id))]);
   return (
     <section className="grid gap-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -41,6 +45,42 @@ export async function ProgressTab({ viewer, coachingId, period: raw, member, bas
             <FileText className="size-4" aria-hidden /> Monthly report
           </Link>
         )}
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        {(["start", "end"] as const).map((ph) => {
+          const t = tests[ph];
+          const sent = t.rows.filter((r) => r.submitted).length;
+          const scored = t.rows.filter((r) => r.reviewed).length;
+          const mine = t.rows[0];
+          const status = !t.assessment ? (coach ? (ph === "start" ? "Set it up when the coaching starts" : "Set it up near the end, with the same questions") : "Not open yet") : coach ? `${sent} / ${t.rows.length} sent · ${scored} scored` : mine?.reviewed ? `Your score: ${mine.overall}/10` : mine?.submitted ? "Sent · waiting for your coach" : `${mine?.answers.length ?? 0} / ${t.assessment.prompts.length} answered`;
+          const cta = !t.assessment ? (coach ? "Set up" : null) : coach ? (sent > scored ? "Score" : "Open") : mine?.submitted ? "See" : "Take it";
+          const card = (
+            <>
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl border-2 border-coral bg-white text-coral">
+                <Mic className="size-5" aria-hidden />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-bold text-brand-deep">{ph === "start" ? "Start speaking assessment" : "End speaking assessment"}</span>
+                <span className="block text-sm text-muted-foreground">{status}</span>
+              </span>
+              {cta && (
+                <span className="inline-flex items-center gap-1 text-sm font-bold text-primary">
+                  {cta} <ChevronRight className="size-4" aria-hidden />
+                </span>
+              )}
+            </>
+          );
+          return cta ? (
+            <Link key={ph} href={coachingAssessmentPath(coachingId, ph)} className="flex items-center gap-3 rounded-3xl border-2 border-border bg-card p-4 hover:border-primary/40">
+              {card}
+            </Link>
+          ) : (
+            <div key={ph} className="flex items-center gap-3 rounded-3xl border-2 border-border bg-card p-4 opacity-80">
+              {card}
+            </div>
+          );
+        })}
       </div>
 
       <nav aria-label="Period" className="-mx-4 overflow-x-auto px-4">
@@ -72,7 +112,7 @@ export async function ProgressTab({ viewer, coachingId, period: raw, member, bas
       {members.length ? (
         <div className="grid gap-4 lg:grid-cols-2">
           {members.map((m) => (
-            <MemberCard key={m.id} m={m} coach={coach} now={now} />
+            <MemberCard key={m.id} m={m} coach={coach} now={now} level={levels[m.id]} />
           ))}
         </div>
       ) : (
@@ -93,7 +133,7 @@ function Tile({ label, value, hint }: { label: string; value: string; hint: stri
   );
 }
 
-function MemberCard({ m, coach, now }: { m: MemberProgress; coach: boolean; now: Date }) {
+function MemberCard({ m, coach, now, level }: { m: MemberProgress; coach: boolean; now: Date; level?: { start: { overall: number | null } | null; end: { overall: number | null } | null } }) {
   const rows: { icon: typeof Languages; label: string; value: string; detail?: string; bar?: number }[] = [
     { icon: Languages, label: "Daily vocabulary", value: m.vocab.expected ? `${m.vocab.written} / ${m.vocab.expected} sentences` : "No expressions in this period", detail: m.vocab.checked ? `${Math.round((m.vocab.correct / m.vocab.checked) * 100)}% correct first time · ${m.vocab.activeDays} of ${m.vocab.days} days` : undefined, bar: m.vocab.expected ? m.vocab.rate : undefined },
     { icon: BookmarkCheck, label: "Expressions in the notebook", value: `${m.notebook.saved}`, detail: m.notebook.saved ? `${m.notebook.known} known` : undefined },
@@ -122,6 +162,12 @@ function MemberCard({ m, coach, now }: { m: MemberProgress; coach: boolean; now:
             </li>
           ))}
         </ul>
+      )}
+      {(level?.start || level?.end) && (
+        <p className="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-brand-soft/50 px-3 py-2 text-sm">
+          <span className="font-semibold text-muted-foreground">Speaking level (assessment)</span>
+          <LevelChange start={level.start?.overall} end={level.end?.overall} />
+        </p>
       )}
       <ul className="grid gap-2.5">
         {rows.map((r) => (

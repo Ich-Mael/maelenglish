@@ -9,3 +9,4 @@ export const coachingPath = (id: string, tab?: string) => `/mon-coaching/${id}${
 export const coachingTaskPath = (id: string, taskId: string) => `/mon-coaching/${id}/taches/${taskId}`;
 export const coachingSessionPath = (id: string, sessionId: string) => `/mon-coaching/${id}/seance/${sessionId}`;
 export const adminCoachingPath = (id: string, tab?: string) => `/admin/coaching/${id}${tab ? `?tab=${tab}` : ""}`;
+export const coachingAssessmentPath = (id: string, phase: "start" | "end", member?: string) => `/mon-coaching/${id}/evaluation/${phase}${member ? `?member=${member}` : ""}`;
