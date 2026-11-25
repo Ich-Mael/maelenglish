@@ -42,7 +42,7 @@ async function Room({ params }: P) {
         <h1 className="text-2xl font-extrabold text-brand-deep">{r.session.title || coachingDates.when(r.session.startsAt)}</h1>
         {r.session.title && <p className="text-muted-foreground">{coachingDates.when(r.session.startsAt)}</p>}
       </div>
-      {r.session.status === "cancelled" ? <p className="rounded-2xl bg-muted p-6 text-center font-semibold text-brand-deep">This session was cancelled.</p> : <LiveRoom sessionId={sessionId} opensAt={w.opens.toISOString()} closesAt={w.closes.toISOString()} backHref={back} coach={coach} />}
+      {r.session.status === "cancelled" ? <p className="rounded-2xl bg-muted p-6 text-center font-semibold text-brand-deep">This session was cancelled.</p> : <LiveRoom sessionId={sessionId} title={r.session.title || r.coaching.title} opensAt={w.opens.toISOString()} closesAt={w.closes.toISOString()} backHref={back} coach={coach} />}
     </div>
   );
 }
