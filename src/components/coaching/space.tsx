@@ -19,7 +19,7 @@ import { cn } from "cn";
  * Tabs: Overview, Goals, Feedback, Resources, Tasks, Sessions (+ Settings for the coach).
  */
 
-export const TABS = ["overview", "vocabulary", "goals", "feedback", "tasks", "sessions", "library", "settings"] as const;
+export const TABS = ["overview", "goals", "vocabulary", "tasks", "sessions", "library", "feedback", "settings"] as const;
 export type Tab = (typeof TABS)[number];
 const TAB_LABEL: Record<Tab, string> = { overview: "Overview", vocabulary: "Daily vocabulary", goals: "Goals", feedback: "Feedback", tasks: "Tasks", sessions: "Sessions", library: "Learning space", settings: "Settings" };
 const TAB_ICON = { overview: Flag, vocabulary: Languages, goals: Target, feedback: MessagesSquare, tasks: ListChecks, sessions: Video, library: Library, settings: Settings };

@@ -155,6 +155,8 @@
   --animate-pop: pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   --animate-shake: shake 0.4s ease-in-out;
   --animate-float: float 6s ease-in-out infinite;
+  --animate-cheer: cheer 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-cheer-icon: cheer-icon 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 
   @keyframes pop {
     0% { transform: scale(0.92); }
@@ -170,10 +172,22 @@
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-8px); }
   }
+  /* Shadowing feedback (coaching vocabulary): the text pops in, the emoji jumps and wiggles. */
+  @keyframes cheer {
+    0% { opacity: 0; transform: scale(0.4) translateY(12px); }
+    60% { opacity: 1; transform: scale(1.12) translateY(-2px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  @keyframes cheer-icon {
+    0% { opacity: 0; transform: scale(0) rotate(-30deg); }
+    50% { opacity: 1; transform: scale(1.35) rotate(12deg); }
+    75% { transform: scale(0.95) rotate(-6deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0); }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-pop, .animate-shake, .animate-float { animation: none; }
+  .animate-pop, .animate-shake, .animate-float, .animate-cheer, .animate-cheer-icon { animation: none; }
 }
 
 /* Matching pairs arrows (components/lab/players/match-player.tsx): paths use pathLength="1". A right

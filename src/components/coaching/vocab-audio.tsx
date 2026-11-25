@@ -1,8 +1,9 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { MessageSquareQuote, Snail, Volume2, X } from "lucide-react";
+import { ChevronRight, Mic, Snail, Volume2, X } from "lucide-react";
 import { setVoice, synth, useVoice } from "@/components/learn/word-card";
+import { SHADOW_GOAL } from "./vocab-shadow";
 import { cn } from "cn";
 
 /*
@@ -75,7 +76,7 @@ export function AccentSwitch({ tone = "light" }: { tone?: "light" | "dark" }) {
   );
 }
 
-/** « See all the examples »: every sentence of the group for one expression, in a modal (bottom sheet on phones). */
+/** « Practice Shadowing with Examples »: every sentence of the group for one expression, in a modal (bottom sheet on phones). */
 export function AllSentences({ title, count, children }: { title: string; count: number; children: React.ReactNode }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const open = () => {
@@ -90,20 +91,38 @@ export function AllSentences({ title, count, children }: { title: string; count:
   };
   return (
     <>
-      <button type="button" onClick={open} aria-haspopup="dialog" className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border-2 border-primary/20 bg-white px-4 text-sm font-semibold text-primary hover:bg-brand-soft">
-        <MessageSquareQuote className="size-4" aria-hidden /> See all the examples ({count})
+      <button
+        type="button"
+        onClick={open}
+        aria-haspopup="dialog"
+        className="group mt-1 mb-1 flex w-full items-center gap-3 rounded-2xl border-2 border-coral bg-white p-3 text-left shadow-[0_4px_0_0_var(--color-coral)] transition-[transform,box-shadow,background-color] hover:bg-coral-soft/60 active:translate-y-1 active:shadow-[0_0_0_0_var(--color-coral)]"
+      >
+        <span className="relative flex size-12 shrink-0 items-center justify-center rounded-full border-2 border-coral bg-white text-coral" aria-hidden>
+          <span className="absolute inset-0 animate-ping rounded-full border-2 border-coral/40 [animation-duration:2.4s] motion-reduce:hidden" />
+          <Mic className="size-6" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-heading text-[17px] leading-tight font-extrabold text-brand-deep">Practice Shadowing with Examples</span>
+          <span className="mt-1 block text-sm text-muted-foreground">
+            <b className="font-semibold text-coral-dark">
+              {count} {count > 1 ? "examples" : "example"}
+            </b>{" "}
+            to listen to and repeat · goal <b className="text-primary">{SHADOW_GOAL}%</b>
+          </span>
+        </span>
+        <ChevronRight className="size-5 shrink-0 text-coral transition-transform group-hover:translate-x-0.5" aria-hidden />
       </button>
       <dialog
         ref={dialog}
         onClose={onClose}
         onClick={(e) => e.target === e.currentTarget && dialog.current?.close()}
         aria-label={`The group's sentences with « ${title} »`}
-        className="m-0 mt-auto max-h-[88dvh] w-full max-w-none rounded-t-3xl bg-background p-0 text-foreground backdrop:bg-ink/50 sm:m-auto sm:max-w-xl sm:rounded-3xl"
+        className="m-0 mt-auto max-h-[94dvh] w-full max-w-none rounded-t-3xl bg-background p-0 text-foreground backdrop:bg-ink/50 sm:m-auto sm:max-h-[92dvh] sm:w-[min(56rem,calc(100vw-3rem))] sm:rounded-3xl"
       >
         <div className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-border bg-background px-5 py-4">
           <div className="min-w-0">
             <p className="text-xs font-bold tracking-wide text-muted-foreground uppercase">The group&apos;s sentences ({count})</p>
-            <p lang="en" className="font-heading text-xl font-extrabold text-brand-deep">
+            <p lang="en" className="font-heading text-2xl font-extrabold text-brand-deep sm:text-3xl">
               {title}
             </p>
           </div>
@@ -114,7 +133,10 @@ export function AllSentences({ title, count, children }: { title: string; count:
             </button>
           </div>
         </div>
-        <div className="px-5 py-4">{children}</div>
+        <div className="px-4 py-4 sm:px-6 sm:py-5">
+          <p className="mb-3 text-base text-muted-foreground">Read everyone&apos;s sentences, listen, and practise saying the corrected ones: reach {SHADOW_GOAL}% to master them.</p>
+          {children}
+        </div>
       </dialog>
     </>
   );

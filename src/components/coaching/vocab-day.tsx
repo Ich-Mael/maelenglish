@@ -4,13 +4,14 @@ import { SENTENCES_PER_ITEM, type SharedSentence } from "@/lib/coaching/vocabula
 import { Avatar } from "@/components/account/avatar";
 import { DeleteSentence, EditItem, SentenceForm } from "./vocab-forms";
 import { AccentSwitch, AllSentences, Listen } from "./vocab-audio";
+import { Shadowing } from "./vocab-shadow";
 import { cn } from "cn";
 
 /*
  * One day of a coaching's vocabulary: each expression (hear it — normal / slow, US / UK —,
  * translation, note, example read aloud), then one of the group's sentences (the viewer's latest
- * when they wrote one, so they see their correction, else the first) with « See all the examples »
- * opening every sentence in a modal, then the viewer's box while they still owe sentences.
+ * when they wrote one, so they see their correction, else the first) with « Practice Shadowing with Examples »
+ * opening every sentence in a modal (bigger text, with shadowing practice on each corrected sentence), then the viewer's box while they still owe sentences.
  * Server component (no hooks).
  */
 export function VocabDay({ vocab, sentences, viewerId, coach, coachingId, compact }: { vocab: CoachingVocabDoc; sentences: SharedSentence[]; viewerId: string; coach: boolean; coachingId: string; compact?: boolean }) {
@@ -23,7 +24,7 @@ export function VocabDay({ vocab, sentences, viewerId, coach, coachingId, compac
         const left = SENTENCES_PER_ITEM - own.length;
         const preview = own.at(-1) ?? list[0];
         const target = { coachingId, vocabId, itemId: item.id };
-        const row = (s: SharedSentence) => <SentenceRow key={s.id} s={s} viewerId={viewerId} coach={coach} coachingId={coachingId} target={target} />;
+        const row = (s: SharedSentence, big = false) => <SentenceRow key={s.id} s={s} viewerId={viewerId} coach={coach} coachingId={coachingId} target={target} big={big} />;
         return (
           <li key={item.id} className="grid content-start gap-3 overflow-hidden rounded-3xl border-2 border-border bg-card">
             <div className="grid gap-1.5 bg-gradient-to-br from-brand-deep to-primary p-4 text-white">
@@ -82,9 +83,9 @@ export function VocabDay({ vocab, sentences, viewerId, coach, coachingId, compac
               {preview ? (
                 <>
                   <ul className="grid gap-2">{row(preview)}</ul>
-                  {list.length > 1 && (
+                  {list.length > 0 && (
                     <AllSentences title={item.text} count={list.length}>
-                      <ul className="grid gap-2">{list.map(row)}</ul>
+                      <ul className="grid gap-3">{list.map((s) => row(s, true))}</ul>
                     </AllSentences>
                   )}
                 </>
@@ -100,31 +101,40 @@ export function VocabDay({ vocab, sentences, viewerId, coach, coachingId, compac
   );
 }
 
-function SentenceRow({ s, viewerId, coach, coachingId, target }: { s: SharedSentence; viewerId: string; coach: boolean; coachingId: string; target: { coachingId: string; vocabId: string; itemId: string } }) {
+function SentenceRow({ s, viewerId, coach, coachingId, target, big }: { s: SharedSentence; viewerId: string; coach: boolean; coachingId: string; target: { coachingId: string; vocabId: string; itemId: string }; big?: boolean }) {
   const mine = s.userId === viewerId;
   const spoken = s.ok === false && s.corrected ? s.corrected : s.text;
   return (
-    <li className={cn("flex gap-2 rounded-2xl p-2.5", mine ? "bg-primary/8" : "bg-muted/60")}>
-      <Avatar src={s.avatarUrl} name={s.firstName} className="size-7 text-xs" />
-      <div className="min-w-0 flex-1 text-sm">
-        <p className="flex items-center justify-between gap-1 text-xs font-bold text-brand-deep">
-          {mine ? "You" : s.firstName}
+    <li className={cn("flex rounded-2xl", big ? "gap-3 p-3 sm:p-4" : "gap-2 p-2.5", mine ? "bg-primary/8" : "bg-muted/60")}>
+      {!big && <Avatar src={s.avatarUrl} name={s.firstName} className="size-7 text-xs" />}
+      <div className={cn("min-w-0 flex-1", big ? "text-base" : "text-sm")}>
+        <p className={cn("flex items-center justify-between gap-1 font-bold text-brand-deep", big ? "mb-1 text-base" : "text-xs")}>
+          {big ? (
+            <span className="flex items-center gap-2">
+              <Avatar src={s.avatarUrl} name={s.firstName} className="size-9 text-sm" />
+              {mine ? "You" : s.firstName}
+            </span>
+          ) : mine ? (
+            "You"
+          ) : (
+            s.firstName
+          )}
           <span className="flex items-center gap-0.5">
-            <Listen target={{ ...target, what: "sentence", sentenceId: s.id }} text={spoken} label={s.ok === false ? "Hear the corrected sentence" : "Hear the sentence"} className="size-7" iconClass="size-3.5" />
+            <Listen target={{ ...target, what: "sentence", sentenceId: s.id }} text={spoken} label={s.ok === false ? "Hear the corrected sentence" : "Hear the sentence"} className={big ? "size-11 bg-white" : "size-7"} iconClass={big ? "size-5" : "size-3.5"} />
             {(mine || coach) && <DeleteSentence coachingId={coachingId} id={s.id} />}
           </span>
         </p>
-        <p lang="en" className="text-ink">
+        <p lang="en" className={cn("text-ink", big && "text-lg leading-relaxed sm:text-xl")}>
           {s.text}
         </p>
         {s.ok === true && (
-          <p className="mt-1 flex items-center gap-1 text-xs font-semibold text-primary">
+          <p className={cn("mt-1 flex items-center gap-1 font-semibold text-primary", big ? "text-base" : "text-xs")}>
             <CheckCircle2 className="size-3.5" aria-hidden /> Correct{s.explanation ? ` · ${s.explanation}` : ""}
           </p>
         )}
         {s.ok === false && (
-          <div className="mt-1 rounded-xl border border-coral/40 bg-white p-2 text-xs">
-            <p lang="en" className="font-semibold text-brand-deep">
+          <div className={cn("mt-1 rounded-xl border border-coral/40 bg-white", big ? "mt-2 p-3 text-base" : "p-2 text-xs")}>
+            <p lang="en" className={cn("font-semibold text-brand-deep", big && "text-lg sm:text-xl")}>
               → {s.corrected}
             </p>
             {s.explanation && (
@@ -133,6 +143,18 @@ function SentenceRow({ s, viewerId, coach, coachingId, target }: { s: SharedSent
               </p>
             )}
           </div>
+        )}
+        {big && (
+          <Shadowing
+            text={spoken}
+            listen={
+              <span className="inline-flex h-14 items-center gap-2 rounded-full bg-brand-soft pr-4 pl-1 text-base font-semibold text-primary">
+                <Listen target={{ ...target, what: "sentence", sentenceId: s.id }} text={spoken} label="Listen to the model" className="size-12 bg-white" iconClass="size-6" />
+                <Listen target={{ ...target, what: "sentence", sentenceId: s.id }} text={spoken} slow label="Listen slowly" className="size-10" iconClass="size-5" />
+                Listen
+              </span>
+            }
+          />
         )}
       </div>
     </li>
