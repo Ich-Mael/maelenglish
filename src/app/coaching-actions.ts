@@ -198,6 +198,16 @@ export async function joinSessionAction(sessionId: string) {
   return call(async (v) => ({ join: await svc.joinSession(v, sessionId) }));
 }
 
+// ── Progress report ──────────────────────────────────────────────────────
+
+export async function saveReportCommentAction(_: State, f: FormData): Promise<State> {
+  return form(async (v) => {
+    const { saveReportComment } = await import("@/lib/coaching/progress");
+    await saveReportComment(v, str(f, "coachingId"), str(f, "month"), String(f.get("comment") ?? ""));
+    return "Comment saved: it's in the report.";
+  });
+}
+
 // ── Daily vocabulary ─────────────────────────────────────────────────────
 
 export async function writeSentenceAction(coachingId: string, vocabId: string, itemId: string, text: string) {

@@ -10,7 +10,7 @@ import { PageSkeleton } from "@/components/learn/ui";
 
 export const metadata: Metadata = { title: "Coaching" };
 
-type P = { params: Promise<{ coachingId: string }>; searchParams: Promise<{ tab?: string; member?: string; thread?: string }> };
+type P = { params: Promise<{ coachingId: string }>; searchParams: Promise<{ tab?: string; member?: string; thread?: string; period?: string }> };
 
 async function Space({ params, searchParams }: P) {
   await connection();
@@ -27,7 +27,7 @@ async function Space({ params, searchParams }: P) {
     return (
       <div className="grid max-w-6xl gap-4">
         <PageHeader title="Coaching" back={{ href: "/admin/coaching", label: "All coachings" }} />
-        <CoachingSpace viewer={{ id: me.id, role: me.role }} coachingId={coachingId} base={`/admin/coaching/${coachingId}`} tab={sp.tab ?? ""} member={sp.member} thread={sp.thread} />
+        <CoachingSpace viewer={{ id: me.id, role: me.role }} coachingId={coachingId} base={`/admin/coaching/${coachingId}`} tab={sp.tab ?? ""} member={sp.member} thread={sp.thread} period={sp.period} reportHref={`/admin/coaching/${coachingId}/rapport`} />
       </div>
     );
   }

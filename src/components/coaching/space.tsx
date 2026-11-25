@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, CalendarClock, CheckCircle2, ChevronRight, Languages, Library, ExternalLink, FileText, Flag, GraduationCap, Headphones, Link2, ListChecks, MessagesSquare, Mic, PlayCircle, Settings, Target, Users, Video } from "lucide-react";
+import { BarChart3, BookOpen, CalendarClock, CheckCircle2, ChevronRight, Languages, Library, ExternalLink, FileText, Flag, GraduationCap, Headphones, Link2, ListChecks, MessagesSquare, Mic, PlayCircle, Settings, Target, Users, Video } from "lucide-react";
 import type { Viewer } from "@/lib/coaching/service";
 import { assignOptions, loadSpace, loadSubmissions, loadThread, type Space } from "@/lib/coaching/queries";
 import { coachingSessionPath, coachingTaskPath } from "@/lib/coaching/paths";
@@ -9,6 +9,7 @@ import { RichText } from "@/components/learn/rich-text";
 import { VoiceNote } from "@/components/learn/voice-note";
 import { Composer, DeleteItem, GoalStatus, MarkRead } from "./controls";
 import { VocabDay } from "./vocab-day";
+import { ProgressTab } from "./progress";
 import { dayProgress, pastVocab, reviewState, savedItems, sentencesOn, todayVocab } from "@/lib/coaching/vocabulary";
 import { GoalForm, MembersEditor, ResourceForm, ReviewForm, SessionForm, SessionStatusButtons, SessionSummaryForm, SettingsForm, TaskForm } from "./coach-forms";
 import { cn } from "cn";
@@ -16,19 +17,19 @@ import { cn } from "cn";
 /*
  * The coaching space (owner decisions 2026-11-24): the same screen for the people coached
  * (/mon-coaching/[id]) and the coach (/admin/coaching/[id], editable, with a member filter for groups).
- * Tabs: Overview, Goals, Feedback, Resources, Tasks, Sessions (+ Settings for the coach).
+ * Tabs: Overview, Goals, Daily vocabulary, Tasks, Sessions, Learning space, Progress, Feedback (+ Settings for the coach).
  */
 
-export const TABS = ["overview", "goals", "vocabulary", "tasks", "sessions", "library", "feedback", "settings"] as const;
+export const TABS = ["overview", "goals", "vocabulary", "tasks", "sessions", "library", "progress", "feedback", "settings"] as const;
 export type Tab = (typeof TABS)[number];
-const TAB_LABEL: Record<Tab, string> = { overview: "Overview", vocabulary: "Daily vocabulary", goals: "Goals", feedback: "Feedback", tasks: "Tasks", sessions: "Sessions", library: "Learning space", settings: "Settings" };
-const TAB_ICON = { overview: Flag, vocabulary: Languages, goals: Target, feedback: MessagesSquare, tasks: ListChecks, sessions: Video, library: Library, settings: Settings };
+const TAB_LABEL: Record<Tab, string> = { overview: "Overview", vocabulary: "Daily vocabulary", goals: "Goals", feedback: "Feedback", tasks: "Tasks", sessions: "Sessions", library: "Learning space", progress: "Progress", settings: "Settings" };
+const TAB_ICON = { overview: Flag, vocabulary: Languages, goals: Target, feedback: MessagesSquare, tasks: ListChecks, sessions: Video, library: Library, progress: BarChart3, settings: Settings };
 const TASK_LABEL: Record<string, string> = { lab: "Practice", challenge: "Speaking challenge", roleplay: "Talk with Coach Ish", course: "Course" };
 const TASK_ICON = { lab: PlayCircle, challenge: Mic, roleplay: MessagesSquare, course: BookOpen };
 
 const card = "rounded-3xl border-2 border-border bg-card p-4 sm:p-5";
 
-type Props = { viewer: Viewer; coachingId: string; base: string; tab: string; member?: string; thread?: string };
+type Props = { viewer: Viewer; coachingId: string; base: string; tab: string; member?: string; thread?: string; period?: string; /** The coach's monthly report page (admin). */ reportHref?: string };
 
 function href(base: string, p: Record<string, string | undefined>) {
   const q = new URLSearchParams(Object.entries(p).filter((e): e is [string, string] => !!e[1]));
@@ -36,7 +37,7 @@ function href(base: string, p: Record<string, string | undefined>) {
   return s ? `${base}?${s}` : base;
 }
 
-export async function CoachingSpace({ viewer, coachingId, base, tab: rawTab, member: rawMember, thread }: Props) {
+export async function CoachingSpace({ viewer, coachingId, base, tab: rawTab, member: rawMember, thread, period, reportHref }: Props) {
   const s = await loadSpace(viewer, coachingId, { member: rawMember });
   const coach = s.role === "coach";
   const tabs = TABS.filter((t) => t !== "settings" || coach);
@@ -71,7 +72,7 @@ export async function CoachingSpace({ viewer, coachingId, base, tab: rawTab, mem
             return (
               <li key={t}>
                 <Link href={link({ tab: t === "overview" ? undefined : t, thread: undefined })} aria-current={tab === t ? "page" : undefined} className={cn("flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold transition", tab === t ? "bg-white text-brand-deep shadow-sm" : "text-muted-foreground hover:text-brand-deep")}>
-                  <Icon className="size-4" aria-hidden /> {TAB_LABEL[t]}
+                  <Icon className="size-4" aria-hidden /> {t === "progress" && !coach ? "My progress" : TAB_LABEL[t]}
                   {t === "feedback" && s.unread > 0 && <span className="rounded-full border-2 border-coral bg-white px-1.5 text-xs font-bold text-coral-dark">{s.unread}</span>}
                 </Link>
               </li>
@@ -87,6 +88,7 @@ export async function CoachingSpace({ viewer, coachingId, base, tab: rawTab, mem
       {tab === "library" && <LearningSpace s={s} viewer={viewer} coach={coach} forName={forName} />}
       {tab === "tasks" && <Tasks s={s} viewer={viewer} coach={coach} forName={forName} />}
       {tab === "sessions" && <Sessions s={s} coach={coach} forName={forName} />}
+      {tab === "progress" && <ProgressTab viewer={viewer} coachingId={coachingId} period={period} member={s.member || undefined} base={base} reportHref={coach ? reportHref : undefined} />}
       {tab === "settings" && coach && <SettingsTab s={s} viewer={viewer} />}
     </div>
   );
@@ -227,9 +229,9 @@ function Overview({ s, coach, base, viewerId, today }: { s: Space; coach: boolea
             <p className="text-sm text-white/85">
               {next.durationMin} min{next.title ? ` · ${next.title}` : ""}
             </p>
-            <Link href={coachingSessionPath(id, next.id)} className="mt-1 inline-flex h-12 w-fit items-center gap-2 rounded-2xl border-2 border-coral bg-white px-5 text-[19px] font-bold text-coral shadow-[0_4px_0_0_var(--color-coral)] hover:bg-coral-soft">
+            <a href={coachingSessionPath(id, next.id)} className="mt-1 inline-flex h-12 w-fit items-center gap-2 rounded-2xl border-2 border-coral bg-white px-5 text-[19px] font-bold text-coral shadow-[0_4px_0_0_var(--color-coral)] hover:bg-coral-soft">
               <Video className="size-5" aria-hidden /> Join the session
-            </Link>
+            </a>
             <p className="text-xs text-white/70">The room opens 10 minutes before the start.</p>
           </section>
         ) : (
@@ -697,9 +699,9 @@ function Sessions({ s, coach, forName }: { s: Space; coach: boolean; forName: (i
                     {x.durationMin} min{x.title ? ` · ${x.title}` : ""} <ForTag name={forName(x.forUserId)} />
                   </p>
                 </div>
-                <Link href={coachingSessionPath(id, x.id)} className="inline-flex h-11 items-center gap-2 rounded-2xl border-2 border-coral bg-white px-4 font-bold text-coral-dark shadow-[0_3px_0_0_var(--color-coral)] hover:bg-coral-soft">
+                <a href={coachingSessionPath(id, x.id)} className="inline-flex h-11 items-center gap-2 rounded-2xl border-2 border-coral bg-white px-4 font-bold text-coral-dark shadow-[0_3px_0_0_var(--color-coral)] hover:bg-coral-soft">
                   Session room
-                </Link>
+                </a>
                 {coach && (
                   <div className="w-full">
                     <SessionStatusButtons sessionId={x.id} />

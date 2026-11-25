@@ -551,6 +551,8 @@ export async function joinSession(v: Viewer, sessionId: string, now = new Date()
   const w = sessionWindow(session);
   if (now < w.opens) return { mode: "none", reason: "not_open", opensAt: w.opens.toISOString() };
   if (now > w.closes) return { mode: "none", reason: "closed" };
+  // Attendance: a member who gets the call (embedded or the backup link) counts as present.
+  if (role === "member") await CoachingSession.updateOne({ _id: session._id }, { $addToSet: { joinedIds: new Types.ObjectId(v.id) } });
   const { videoProvider } = await import("@/lib/video/daily");
   const video = videoProvider();
   if (!video) return coaching.meetingUrl ? { mode: "link", url: coaching.meetingUrl } : { mode: "none", reason: "no_video" };

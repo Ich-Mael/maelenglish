@@ -10,7 +10,7 @@ import { PageSkeleton } from "@/components/learn/ui";
 
 export const metadata: Metadata = { title: "My Coaching", robots: { index: false } };
 
-type P = { params: Promise<{ coachingId: string }>; searchParams: Promise<{ tab?: string; thread?: string }> };
+type P = { params: Promise<{ coachingId: string }>; searchParams: Promise<{ tab?: string; thread?: string; period?: string }> };
 
 async function Space({ params, searchParams }: P) {
   await connection();
@@ -27,7 +27,7 @@ async function Space({ params, searchParams }: P) {
   {
     return (
       <div className="mx-auto max-w-6xl">
-        <CoachingSpace viewer={{ id: me.id, role: me.role }} coachingId={coachingId} base={`/mon-coaching/${coachingId}`} tab={sp.tab ?? ""} thread={sp.thread} />
+        <CoachingSpace viewer={{ id: me.id, role: me.role }} coachingId={coachingId} base={`/mon-coaching/${coachingId}`} tab={sp.tab ?? ""} thread={sp.thread} period={sp.period} />
       </div>
     );
   }

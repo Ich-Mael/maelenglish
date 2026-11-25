@@ -157,6 +157,8 @@ const sessionSchema = new Schema(
     roomUrl: { type: String, default: "" },
     summary: { type: String, default: "" },
     remindersSent: { type: [String], default: [] },
+    /** Members who joined the call (recorded by joinSession): attendance for the progress view and the report. */
+    joinedIds: { type: [Schema.Types.ObjectId], default: [] },
   },
   { timestamps: true },
 );
@@ -210,3 +212,17 @@ sentenceSchema.index({ vocabId: 1, itemId: 1, createdAt: 1 });
 sentenceSchema.index({ coachingId: 1, userId: 1 });
 export type CoachingSentenceDoc = InferSchemaType<typeof sentenceSchema> & { _id: Types.ObjectId };
 export const CoachingSentence: Model<CoachingSentenceDoc> = defineModel<CoachingSentenceDoc>("CoachingSentence", sentenceSchema);
+
+/** The coach's comment on a month's report for the company (one per coaching and month « YYYY-MM »). */
+const reportSchema = new Schema(
+  {
+    coachingId: { type: Schema.Types.ObjectId, ref: "Coaching", required: true },
+    month: { type: String, required: true },
+    comment: { type: String, default: "", maxlength: 4000 },
+    updatedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
+  },
+  { timestamps: true },
+);
+reportSchema.index({ coachingId: 1, month: 1 }, { unique: true });
+export type CoachingReportDoc = InferSchemaType<typeof reportSchema> & { _id: Types.ObjectId };
+export const CoachingReport: Model<CoachingReportDoc> = defineModel<CoachingReportDoc>("CoachingReport", reportSchema);
