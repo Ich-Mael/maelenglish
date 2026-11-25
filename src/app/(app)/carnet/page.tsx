@@ -7,6 +7,7 @@ import { requireUser } from "@/lib/auth/dal";
 import { connectDB } from "@/lib/db";
 import { listWords } from "@/lib/dictionary";
 import { stepPath } from "@/lib/learn/paths";
+import { coachingPath } from "@/lib/coaching/paths";
 import { Notebook, type NotebookWord } from "@/components/learn/notebook";
 import { PageSkeleton } from "@/components/learn/ui";
 
@@ -20,7 +21,8 @@ async function Carnet() {
     word: w.display || w.word,
     context: w.context,
     translation: w.translation || w.entry?.translation || "",
-    href: w.courseId && w.stepId ? stepPath(String(w.courseId), String(w.stepId)) : null,
+    href: w.courseId && w.stepId ? stepPath(String(w.courseId), String(w.stepId)) : w.coachingId ? coachingPath(String(w.coachingId), "vocabulary") : null,
+    hrefLabel: w.coachingId && !w.stepId ? "See in my coaching" : "See in the lesson",
     known: w.known,
     reviews: w.reviews,
     addedAt: new Date(w.createdAt).toISOString(),

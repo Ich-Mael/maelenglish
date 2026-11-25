@@ -15,7 +15,7 @@ import { cn } from "cn";
  * « Review » = flashcards one by one (word + audio → show the translation → « I knew it » / « Not yet »).
  */
 
-export type NotebookWord = { word: string; context: string; translation: string; href: string | null; known: boolean; reviews: number; addedAt: string; entry: WordEntry | null };
+export type NotebookWord = { word: string; context: string; translation: string; href: string | null; hrefLabel?: string; known: boolean; reviews: number; addedAt: string; entry: WordEntry | null };
 
 export function Notebook({ words }: { words: NotebookWord[] }) {
   const router = useRouter();
@@ -187,7 +187,7 @@ export function Notebook({ words }: { words: NotebookWord[] }) {
               {w.known ? <span className="rounded-full bg-gradient-to-r from-primary to-brand-deep px-2 py-0.5 font-bold text-white">Known</span> : <span className="rounded-full border border-coral bg-white px-2 py-0.5 font-bold text-coral-dark">To review</span>}
               {w.href && (
                 <Link href={w.href} className="font-semibold text-primary hover:underline">
-                  See in the lesson
+                  {w.hrefLabel ?? "See in the lesson"}
                 </Link>
               )}
             </p>

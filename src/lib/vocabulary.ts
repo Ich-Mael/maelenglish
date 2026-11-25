@@ -218,7 +218,7 @@ export async function buildTest(userId: string, now = new Date()): Promise<TestQ
   return due.map((w, i): TestQuestion => {
     const meaning = fr(w);
     const re = new RegExp(`\\b${w.word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
-    const own = w.kind === "phrase" ? undefined : [...(w.sentences ?? [])].reverse().find((s) => s.ok && re.test(s.corrected || s.text));
+    const own = [...(w.sentences ?? [])].reverse().find((s) => s.ok && re.test(s.corrected || s.text));
     const kinds = [own ? "blank" : null, meaning ? "type" : null, meaning && pool.length >= 4 ? "choose" : null].filter(Boolean) as string[];
     const kind = kinds.length ? kinds[((w.stage ?? 0) + i) % kinds.length] : "type";
     if (kind === "blank" && own) {

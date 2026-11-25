@@ -267,7 +267,11 @@ export async function saveWord(userId: string, raw: string, opts: { context?: st
 }
 
 /** The notebook key: a normalised single word, or a phrase in lowercase (Story Mode phrases). */
-export const notebookKey = (raw: string) => normalizeWord(raw) ?? raw.replace(/\s+/g, " ").trim().toLowerCase().slice(0, 150);
+export const notebookKey = (raw: string) => {
+  const t = raw.replace(/\s+/g, " ").trim();
+  // Several words = a phrase (normalizeWord would cut « expression 1 » down to « expression »).
+  return (t.includes(" ") ? null : normalizeWord(t)) ?? t.toLowerCase().slice(0, 150);
+};
 
 export const removeWord = (userId: string, raw: string) => VocabWord.deleteOne({ userId, word: notebookKey(raw) });
 

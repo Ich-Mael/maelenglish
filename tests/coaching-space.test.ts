@@ -240,6 +240,46 @@ describe("daily vocabulary", () => {
     expect((await pastVocab(kofi, id, new Date("2026-11-21T10:00:00Z"))).map((p) => p.day)).toEqual(["2026-11-20"]);
   });
 
+  it("expressions go into the member's notebook with their sentences and come back in the vocabulary test", async () => {
+    const { coach, awa, kofi, id } = await setup();
+    const { todayVocab, writeCoachingSentence, deleteCoachingSentence, saveExpression, savedItems, reviewState } = await import("@/lib/coaching/vocabulary");
+    const { buildTest, recordTest } = await import("@/lib/vocabulary");
+    const { VocabWord } = await import("@/models");
+    const day = new Date();
+    const v = (await todayVocab(awa, id, day))!;
+    const [e1, e2] = v.items;
+    // Writing a sentence saves the expression (a phrase), with the sentence.
+    const s = await writeCoachingSentence(awa, id, String(v._id), e1.id, `I can explain ${e1.text} clearly.`);
+    const w = (await VocabWord.findOne({ userId: awa.id, word: e1.text }).lean())!;
+    expect(w).toMatchObject({ source: "coaching", kind: "phrase", display: e1.text, translation: e1.translation, context: e1.example });
+    expect(String(w.coachingId)).toBe(id);
+    expect(w.sentences.map((x) => [String(x._id), x.ok])).toEqual([[String(s._id), true]]);
+    // Only the author's notebook.
+    expect(await VocabWord.countDocuments({ userId: kofi.id })).toBe(0);
+    // « Add to my notebook » without writing; members only; saving twice is harmless.
+    await saveExpression(awa, id, String(v._id), e2.id);
+    await saveExpression(awa, id, String(v._id), e2.id);
+    await expect(saveExpression(coach, id, String(v._id), e2.id)).rejects.toThrow("Only the people coached");
+    await expect(saveExpression(awa, id, String(v._id), "e9")).rejects.toThrow("Expression not found");
+    expect((await savedItems(awa.id, [v])).sort()).toEqual([`${v._id}:${e1.id}`, `${v._id}:${e2.id}`]);
+    expect(await savedItems(kofi.id, [v])).toEqual([]);
+    expect(await reviewState(awa.id, id, day)).toEqual({ saved: 2, due: 0 });
+    // Tomorrow both are due; the one with a correct sentence can be a « fill the blank » question.
+    const tomorrow = new Date(day.getTime() + 2 * 86_400_000);
+    expect(await reviewState(awa.id, id, tomorrow)).toEqual({ saved: 2, due: 2 });
+    const test = await buildTest(awa.id, tomorrow);
+    expect(test.map((q) => q.word.toLowerCase()).sort()).toEqual([e1.text, e2.text].sort());
+    const blank = test.find((q) => q.kind === "blank");
+    if (blank && blank.kind === "blank") expect(blank.sentence).toBe("I can explain _____ clearly.");
+    const r = await recordTest(awa.id, test.map((q) => ({ word: q.word, kind: q.kind, answer: q.kind === "choose" ? q.answer : q.word })), tomorrow);
+    expect(r.score).toBe(100);
+    expect(await reviewState(awa.id, id, tomorrow)).toEqual({ saved: 2, due: 0 });
+    // Deleting the sentence leaves the expression in the notebook.
+    await deleteCoachingSentence(awa, id, String(s._id));
+    const after = (await VocabWord.findOne({ userId: awa.id, word: e1.text }).lean())!;
+    expect(after.sentences).toEqual([]);
+  });
+
   it("read aloud: only for the coaching's people, text from the database", async () => {
     const { awa, kofi, outsider, id } = await setup();
     const { todayVocab, writeCoachingSentence, vocabAudio } = await import("@/lib/coaching/vocabulary");

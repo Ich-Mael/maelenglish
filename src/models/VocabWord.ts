@@ -18,8 +18,10 @@ const vocabWordSchema = new Schema(
     reviews: { type: Number, default: 0 },
     known: { type: Boolean, default: false },
     lastReviewedAt: { type: Date, default: null },
-    /** Where it came from: the dictionary card, or « my daily vocabulary » (profession words). */
-    source: { type: String, enum: ["dictionary", "daily", "story"], default: "dictionary" },
+    /** Where it came from: the dictionary card, « my daily vocabulary » (profession words), Story Mode, or a coaching's daily expressions. */
+    source: { type: String, enum: ["dictionary", "daily", "story", "coaching"], default: "dictionary" },
+    /** Coaching expressions: the coaching it came from (« See in my coaching »). */
+    coachingId: { type: Schema.Types.ObjectId, ref: "Coaching", default: null },
     /** « word » for single words, « phrase » for whole phrases (Story Mode key phrases, corrections). */
     kind: { type: String, enum: ["word", "phrase"], default: "word" },
     /** How a phrase is written (the `word` key is its lowercase form). */

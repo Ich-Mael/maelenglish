@@ -213,6 +213,12 @@ export async function deleteSentenceAction(coachingId: string, sentenceId: strin
     await deleteCoachingSentence(v, coachingId, sentenceId);
   });
 }
+export async function saveExpressionAction(coachingId: string, vocabId: string, itemId: string) {
+  return call(async (v) => {
+    const { saveExpression } = await import("@/lib/coaching/vocabulary");
+    await saveExpression(v, coachingId, vocabId, itemId);
+  });
+}
 export async function editVocabItemAction(_: State, f: FormData): Promise<State> {
   return form(async (v) => {
     const { editVocabItem } = await import("@/lib/coaching/vocabulary");

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Loader2, Pencil, Send, Trash2 } from "lucide-react";
-import { deleteSentenceAction, editVocabItemAction, writeSentenceAction } from "@/app/coaching-actions";
+import { BookmarkCheck, BookmarkPlus, Loader2, Pencil, Send, Trash2 } from "lucide-react";
+import { deleteSentenceAction, editVocabItemAction, saveExpressionAction, writeSentenceAction } from "@/app/coaching-actions";
 import { AdminForm, Submit } from "@/components/admin/forms";
 import { Input } from "@/components/admin/ui";
 import { cn } from "cn";
@@ -43,6 +43,35 @@ export function SentenceForm({ coachingId, vocabId, itemId, text, left }: { coac
       </button>
       {error && <p className="text-sm font-semibold text-coral-dark">{error}</p>}
     </form>
+  );
+}
+
+/** « Add to my notebook » on an expression (it then comes back in the vocabulary tests). */
+export function SaveExpression({ coachingId, vocabId, itemId, saved }: { coachingId: string; vocabId: string; itemId: string; saved: boolean }) {
+  const [pending, start] = useTransition();
+  const [error, setError] = useState("");
+  if (saved)
+    return (
+      <span className="inline-flex h-10 w-fit items-center gap-1.5 rounded-xl bg-white/15 px-3 text-sm font-semibold text-white" title="It comes back in your vocabulary tests">
+        <BookmarkCheck className="size-4" aria-hidden /> In my notebook
+      </span>
+    );
+  return (
+    <button
+      type="button"
+      disabled={pending}
+      onClick={() =>
+        start(async () => {
+          setError("");
+          const r = await saveExpressionAction(coachingId, vocabId, itemId);
+          if (!r.ok) setError(r.error);
+        })
+      }
+      className="inline-flex h-10 w-fit items-center gap-1.5 rounded-xl bg-white px-3 text-sm font-bold text-primary shadow-[0_3px_0_0_var(--color-brand-dark)] disabled:opacity-60"
+      title={error || "Save it to review it in your vocabulary tests"}
+    >
+      {pending ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <BookmarkPlus className="size-4" aria-hidden />} {error ? "Try again" : "Add to my notebook"}
+    </button>
   );
 }
 

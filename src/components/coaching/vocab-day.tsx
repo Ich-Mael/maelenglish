@@ -2,7 +2,7 @@ import { CheckCircle2, MessageSquareQuote, Sparkles } from "lucide-react";
 import type { CoachingVocabDoc } from "@/models";
 import { SENTENCES_PER_ITEM, type SharedSentence } from "@/lib/coaching/vocabulary";
 import { Avatar } from "@/components/account/avatar";
-import { DeleteSentence, EditItem, SentenceForm } from "./vocab-forms";
+import { DeleteSentence, EditItem, SaveExpression, SentenceForm } from "./vocab-forms";
 import { AccentSwitch, Listen, ShadowingModal } from "@/components/shadowing/listen";
 import { ListenPair, ShadowList } from "@/components/shadowing/list";
 import { Shadowing } from "@/components/shadowing/shadowing";
@@ -16,7 +16,7 @@ import { cn } from "cn";
  * opening every sentence in a modal (bigger text, with shadowing practice on each corrected sentence), then the viewer's box while they still owe sentences.
  * Server component (no hooks).
  */
-export function VocabDay({ vocab, sentences, viewerId, coach, coachingId, compact }: { vocab: CoachingVocabDoc; sentences: SharedSentence[]; viewerId: string; coach: boolean; coachingId: string; compact?: boolean }) {
+export function VocabDay({ vocab, sentences, viewerId, coach, coachingId, saved = [], compact }: { vocab: CoachingVocabDoc; sentences: SharedSentence[]; viewerId: string; coach: boolean; coachingId: string; /** « vocabId:itemId » already in the viewer's notebook. */ saved?: string[]; compact?: boolean }) {
   const vocabId = String(vocab._id);
   return (
     <ol className={cn("grid gap-4", !compact && "lg:grid-cols-3")}>
@@ -53,6 +53,7 @@ export function VocabDay({ vocab, sentences, viewerId, coach, coachingId, compac
                   <AccentSwitch tone="dark" />
                 </span>
               </div>
+              {!coach && <SaveExpression coachingId={coachingId} vocabId={vocabId} itemId={item.id} saved={saved.includes(`${vocabId}:${item.id}`)} />}
             </div>
             <div className="grid gap-3 px-4">
               {item.frNote && (

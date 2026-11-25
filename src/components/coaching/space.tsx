@@ -9,7 +9,7 @@ import { RichText } from "@/components/learn/rich-text";
 import { VoiceNote } from "@/components/learn/voice-note";
 import { Composer, DeleteItem, GoalStatus, MarkRead } from "./controls";
 import { VocabDay } from "./vocab-day";
-import { dayProgress, pastVocab, sentencesOn, todayVocab } from "@/lib/coaching/vocabulary";
+import { dayProgress, pastVocab, reviewState, savedItems, sentencesOn, todayVocab } from "@/lib/coaching/vocabulary";
 import { GoalForm, MembersEditor, ResourceForm, ReviewForm, SessionForm, SessionStatusButtons, SessionSummaryForm, SettingsForm, TaskForm } from "./coach-forms";
 import { cn } from "cn";
 
@@ -422,6 +422,7 @@ async function DailyVocab({ s, viewer, coach }: { s: Space; viewer: Viewer; coac
   const vocab = await todayVocab(viewer, id).catch(() => null);
   const sentences = vocab ? await sentencesOn([vocab._id]) : [];
   const mine = dayProgress(vocab, sentences, viewer.id);
+  const [saved, review] = coach ? [[], null] : await Promise.all([savedItems(viewer.id, vocab ? [vocab] : []), reviewState(viewer.id, id)]);
   return (
     <section className="grid gap-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -443,12 +444,38 @@ async function DailyVocab({ s, viewer, coach }: { s: Space; viewer: Viewer; coac
           </div>
         )}
       </div>
+      {review && review.due > 0 && <ReviewCard {...review} />}
       {vocab ? (
-        <VocabDay vocab={vocab} sentences={sentences} viewerId={viewer.id} coach={coach} coachingId={id} />
+        <VocabDay vocab={vocab} sentences={sentences} viewerId={viewer.id} coach={coach} coachingId={id} saved={saved} />
       ) : (
         <Empty>{s.coaching.status !== "active" ? "This coaching is paused or completed: no new expressions." : "Today's expressions aren't ready. Come back in a moment."}</Empty>
       )}
+      {review && !review.due && <ReviewCard {...review} />}
     </section>
+  );
+}
+
+/** The member's coaching expressions in their notebook: tested with spaced review in The Vocabulary I Need. */
+function ReviewCard({ saved, due }: { saved: number; due: number }) {
+  return (
+    <div className="flex flex-wrap items-center gap-3 rounded-3xl border-2 border-primary/25 bg-brand-soft/50 p-4">
+      <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white text-primary">
+        <GraduationCap className="size-6" aria-hidden />
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="font-bold text-brand-deep">{due ? `${due} coaching expression${due > 1 ? "s" : ""} to review today` : saved ? `${saved} coaching expression${saved > 1 ? "s" : ""} in your notebook` : "Keep the expressions you learn"}</p>
+        <p className="text-sm text-muted-foreground">{saved ? "They come back in your vocabulary tests: the next day, then after 3, 7, 14 and 30 days." : "Each expression you write a sentence with goes into your notebook and comes back in your vocabulary tests."}</p>
+      </div>
+      {due > 0 ? (
+        <Link href="/vocabulaire/test" className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-white shadow-[0_4px_0_0_var(--color-brand-dark)]">
+          Test my words <ChevronRight className="size-4" aria-hidden />
+        </Link>
+      ) : saved > 0 ? (
+        <Link href="/carnet" className="inline-flex h-11 items-center gap-2 rounded-xl border-2 border-border bg-white px-4 text-sm font-bold text-brand-deep hover:border-primary/40">
+          My notebook <ChevronRight className="size-4" aria-hidden />
+        </Link>
+      ) : null}
+    </div>
   );
 }
 
@@ -456,6 +483,7 @@ async function LearningSpace({ s, viewer, coach, forName }: { s: Space; viewer: 
   const id = String(s.coaching._id);
   const days = await pastVocab(viewer, id);
   const sentences = days.length ? await sentencesOn(days.map((d) => d._id)) : [];
+  const saved = coach ? [] : await savedItems(viewer.id, days);
   const total = days.reduce((n, d) => n + d.items.length, 0);
   const fmt = (day: string) => new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(new Date(`${day}T12:00:00Z`));
   return (
@@ -482,7 +510,7 @@ async function LearningSpace({ s, viewer, coach, forName }: { s: Space; viewer: 
                     <ChevronRight className="size-5 text-muted-foreground transition group-open:rotate-90" aria-hidden />
                   </summary>
                   <div className="border-t border-border p-4">
-                    <VocabDay vocab={d} sentences={sentences} viewerId={viewer.id} coach={coach} coachingId={id} />
+                    <VocabDay vocab={d} sentences={sentences} viewerId={viewer.id} coach={coach} coachingId={id} saved={saved} />
                   </div>
                 </details>
               );

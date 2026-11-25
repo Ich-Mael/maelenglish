@@ -1,8 +1,8 @@
 import { Types } from "mongoose";
-import { Coaching, CoachingGoal, CoachingSentence, CoachingVocab, User, type CoachingDoc, type CoachingSentenceDoc, type CoachingVocabDoc } from "@/models";
+import { Coaching, CoachingGoal, CoachingSentence, CoachingVocab, User, VocabWord, type CoachingDoc, type CoachingSentenceDoc, type CoachingVocabDoc } from "@/models";
 import { aiServices } from "@/lib/ai";
 import { recordUsage } from "@/lib/ai/metering";
-import { speakFor } from "@/lib/dictionary";
+import { notebookKey, speakFor } from "@/lib/dictionary";
 import { hitRateLimit } from "@/lib/auth/service";
 import { dayKey } from "@/lib/gamification/rules";
 import { plainText } from "@/lib/rich-text";
@@ -13,6 +13,8 @@ import { CoachingError, openCoaching, type Viewer } from "./service";
  * for the coaching's goal (Claude Haiku, made on the first visit of the day, shared by the whole
  * group). Each member writes 2 sentences of their own per expression; each sentence is corrected
  * at once and the group reads everyone's. Past days stay in the « Learning space ».
+ * Each expression a member writes with (or saves) goes into their notebook (VocabWord, source
+ * « coaching ») with their sentences, so it comes back in the spaced-review tests of The Vocabulary I Need.
  * Framework-free (tests/coaching-space.test.ts).
  */
 
@@ -100,6 +102,15 @@ export async function writeCoachingSentence(v: Viewer, coachingId: string, vocab
   }
   const s = await CoachingSentence.create({ coachingId: coaching._id, vocabId: vocab._id, itemId, userId: new Types.ObjectId(v.id), text, ...check });
   await Coaching.updateOne({ _id: coaching._id }, { $set: { updatedAt: new Date() } });
+  // Into the learner's notebook, with this sentence (the « fill the blank » test question uses correct ones).
+  await toNotebook(v.id, coaching, item)
+    .then(() =>
+      VocabWord.updateOne(
+        { userId: v.id, word: notebookKey(item.text), "sentences.19": { $exists: false } },
+        { $push: { sentences: { _id: s._id, text, corrected: check.corrected, ok: check.ok === true, explanation: check.explanation, at: new Date() } } },
+      ),
+    )
+    .catch((e) => console.error("[coaching notebook]", e));
   return s.toObject() as CoachingSentenceDoc;
 }
 
@@ -110,6 +121,8 @@ export async function deleteCoachingSentence(v: Viewer, coachingId: string, sent
   if (!s) return;
   if (role !== "coach" && String(s.userId) !== v.id) throw new CoachingError("You can only delete your own sentences.");
   await s.deleteOne();
+  // The expression stays in the notebook; only this sentence leaves it.
+  await VocabWord.updateOne({ userId: s.userId, "sentences._id": s._id }, { $pull: { sentences: { _id: s._id } } });
 }
 
 /** The coach adjusts an expression of the day (wording, translation, note, example). */
@@ -144,4 +157,61 @@ export async function vocabAudio(v: Viewer, coachingId: string, vocabId: string,
   }
   if (!text?.trim()) return null;
   return speakFor(v.id, text.trim(), { voice: opts.voice, slow: opts.slow, feature: "coaching_vocab" });
+}
+
+// ── Notebook & spaced review ─────────────────────────────────────────────
+
+type Expression = Pick<CoachingVocabDoc["items"][number], "text" | "translation" | "example">;
+
+/** Saves an expression in a learner's notebook (once; first test the next day, like every saved word). */
+async function toNotebook(userId: string, coaching: Pick<CoachingDoc, "_id" | "title">, item: Expression, now = new Date()) {
+  const display = item.text.replace(/\s+/g, " ").trim();
+  const word = notebookKey(display);
+  if (!word) return;
+  await VocabWord.updateOne(
+    { userId, word },
+    {
+      $setOnInsert: {
+        userId,
+        word,
+        display,
+        kind: /\s/.test(display) ? "phrase" : "word",
+        translation: (item.translation ?? "").slice(0, 160),
+        context: (item.example ?? "").slice(0, 300),
+        source: "coaching",
+        coachingId: coaching._id,
+        situation: (coaching.title ?? "").slice(0, 120),
+        stage: 0,
+        dueAt: new Date(now.getTime() + 86_400_000),
+      },
+    },
+    { upsert: true },
+  );
+}
+
+/** « Add to my notebook » on an expression (members; also done automatically when they write a sentence with it). */
+export async function saveExpression(v: Viewer, coachingId: string, vocabId: string, itemId: string) {
+  const { coaching, role } = await openCoaching(v, coachingId);
+  if (role !== "member") throw new CoachingError("Only the people coached save expressions here.");
+  const vocab = await CoachingVocab.findOne({ _id: oid(vocabId), coachingId: coaching._id }).lean<CoachingVocabDoc>();
+  const item = vocab?.items.find((i) => i.id === itemId);
+  if (!vocab || !item) throw new CoachingError("Expression not found.");
+  await toNotebook(v.id, coaching, item);
+}
+
+/** The expressions of these days already in the learner's notebook, as « vocabId:itemId ». */
+export async function savedItems(userId: string, days: Pick<CoachingVocabDoc, "_id" | "items">[]) {
+  const all = days.flatMap((d) => d.items.map((i) => ({ ref: `${String(d._id)}:${i.id}`, key: notebookKey(i.text) })));
+  if (!all.length) return [];
+  const rows = await VocabWord.find({ userId, word: { $in: [...new Set(all.map((a) => a.key))] } }).select("word").lean();
+  const keys = new Set(rows.map((r) => r.word));
+  return all.filter((a) => keys.has(a.key)).map((a) => a.ref);
+}
+
+/** The learner's coaching expressions in the notebook: how many, and how many are due for a test now. */
+export async function reviewState(userId: string, coachingId: string, now = new Date()) {
+  if (!Types.ObjectId.isValid(coachingId)) return { saved: 0, due: 0 };
+  const base = { userId, source: "coaching" as const, coachingId: new Types.ObjectId(coachingId) };
+  const [saved, due] = await Promise.all([VocabWord.countDocuments(base), VocabWord.countDocuments({ ...base, $or: [{ dueAt: null }, { dueAt: { $lte: now } }] })]);
+  return { saved, due };
 }
