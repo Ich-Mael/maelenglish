@@ -132,7 +132,7 @@ async function Report({ params, searchParams }: P) {
 
         <footer className="border-t border-border pt-4 text-xs text-muted-foreground">
           <p>
-            <strong>Comment lire ce rapport.</strong> Vocabulaire : chaque jour, 3 expressions liées à l&apos;objectif ; chaque participant écrit 2 phrases par expression, corrigées aussitôt. « Correctes du premier coup » = phrases justes avant correction. Présence : participants connectés à la séance depuis l&apos;application. Exercices, défis et objectifs : état à la date du rapport.
+            <strong>Comment lire ce rapport.</strong> Vocabulaire : chaque jour, 3 expressions liées à l&apos;objectif ; chaque participant écrit 2 phrases par expression, corrigées aussitôt. « Correctes du premier coup » = phrases justes avant correction. Présence : confirmée par le coach après chaque séance (à défaut, connexion à la séance depuis l&apos;application). Exercices, défis et objectifs : état à la date du rapport.
           </p>
           <p className="mt-2">MaelEnglish · Speak the Language of Your Profession</p>
         </footer>

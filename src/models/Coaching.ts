@@ -159,6 +159,17 @@ const sessionSchema = new Schema(
     remindersSent: { type: [String], default: [] },
     /** Members who joined the call (recorded by joinSession): attendance for the progress view and the report. */
     joinedIds: { type: [Schema.Types.ObjectId], default: [] },
+    /** Before: the agenda and what to prepare (plain text, French usually), shown to the people concerned. */
+    agenda: { type: String, default: "", maxlength: 2000 },
+    prep: { type: String, default: "", maxlength: 1000 },
+    /** After: attendance confirmed by the coach (`presentIds`); until then the people who joined count. */
+    attendanceConfirmed: { type: Boolean, default: false },
+    presentIds: { type: [Schema.Types.ObjectId], default: [] },
+    /** After: next steps from the summary; each member ticks them off (`doneBy`). */
+    nextSteps: {
+      type: [new Schema({ id: { type: String, required: true }, text: { type: String, required: true, maxlength: 300 }, doneBy: { type: [Schema.Types.ObjectId], default: [] } }, { _id: false })],
+      default: [],
+    },
   },
   { timestamps: true },
 );

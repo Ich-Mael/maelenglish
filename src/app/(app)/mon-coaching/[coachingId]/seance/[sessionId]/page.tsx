@@ -42,6 +42,28 @@ async function Room({ params }: P) {
         <h1 className="text-2xl font-extrabold text-brand-deep">{r.session.title || coachingDates.when(r.session.startsAt)}</h1>
         {r.session.title && <p className="text-muted-foreground">{coachingDates.when(r.session.startsAt)}</p>}
       </div>
+      {(r.session.agenda || r.session.prep) && r.session.status !== "cancelled" && (
+        <div className="grid gap-3 rounded-3xl border-2 border-border bg-card p-4 sm:grid-cols-2 sm:p-5">
+          {r.session.agenda && (
+            <div>
+              <p className="text-xs font-bold tracking-wide text-primary uppercase">Agenda</p>
+              <ul lang="fr" className="mt-1 grid list-disc gap-0.5 pl-5 text-[15px]">
+                {r.session.agenda.split("\n").filter(Boolean).map((l, i) => (
+                  <li key={i}>{l}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {r.session.prep && (
+            <div>
+              <p className="text-xs font-bold tracking-wide text-coral-dark uppercase">To prepare</p>
+              <p lang="fr" className="mt-1 text-[15px] whitespace-pre-line">
+                {r.session.prep}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
       {r.session.status === "cancelled" ? <p className="rounded-2xl bg-muted p-6 text-center font-semibold text-brand-deep">This session was cancelled.</p> : <LiveRoom sessionId={sessionId} title={r.session.title || r.coaching.title} opensAt={w.opens.toISOString()} closesAt={w.closes.toISOString()} backHref={back} coach={coach} />}
     </div>
   );

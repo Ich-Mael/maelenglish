@@ -93,8 +93,8 @@ describe("coaching progress", () => {
     expect(a.notebook).toEqual({ saved: 2, known: 0 });
     expect(a.goals).toEqual({ total: 1, done: 1, inProgress: 0 });
     expect(k.goals).toEqual({ total: 2, done: 0, inProgress: 0 });
-    expect(a.sessions).toEqual({ held: 1, attended: 1 });
-    expect(k.sessions).toEqual({ held: 1, attended: 0 });
+    expect(a.sessions).toEqual({ held: 1, attended: 1, missedLast: false });
+    expect(k.sessions).toEqual({ held: 1, attended: 0, missedLast: true });
     expect(a.messages).toBe(1);
     expect(a.lastActive).not.toBeNull();
     expect(k.lastActive).toBeNull();

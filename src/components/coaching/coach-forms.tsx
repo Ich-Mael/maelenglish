@@ -112,11 +112,12 @@ export function SessionForm({ coachingId, members, member }: { coachingId: strin
   );
 }
 
-export function SessionSummaryForm({ sessionId, summary }: { sessionId: string; summary: string }) {
+export function SessionSummaryForm({ sessionId, summary, nextSteps = [] }: { sessionId: string; summary: string; nextSteps?: string[] }) {
   return (
     <AdminForm action={updateSessionAction}>
       <input type="hidden" name="sessionId" value={sessionId} />
-      <TextArea label="Session summary (posted in the feedback)" name="summary" rows={3} defaultValue={summary.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()} placeholder="Ce que nous avons travaillé, ce qui progresse, à faire pour la prochaine fois." />
+      <TextArea label="Session summary (posted in the feedback)" name="summary" rows={3} defaultValue={summary.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()} placeholder="Ce que nous avons travaillé, ce qui progresse." />
+      <TextArea label="Next steps (one per line, max 8)" name="nextSteps" rows={3} defaultValue={nextSteps.join("\n")} hint="Each person gets them as a checklist to tick off before the next session." placeholder={"Refaire le pitch en 1 minute 30\nApprendre les 5 phrases pour gagner du temps"} />
       <Submit className="w-fit">Save the summary</Submit>
     </AdminForm>
   );

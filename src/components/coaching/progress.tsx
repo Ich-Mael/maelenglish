@@ -11,7 +11,7 @@ import { cn } from "cn";
  * a member sees their own card (« My progress »). Server component.
  */
 
-const FLAG_LABEL: Record<Flag, string> = { inactive: "No activity for 7 days", vocab_low: "Under half the vocabulary sentences", tasks_late: "Late tasks", redo: "Challenge to redo" };
+const FLAG_LABEL: Record<Flag, string> = { inactive: "No activity for 7 days", vocab_low: "Under half the vocabulary sentences", tasks_late: "Late tasks", redo: "Challenge to redo", missed_session: "Missed the last session" };
 const TZ = process.env.APP_TZ || "Africa/Ouagadougou";
 export const monthLabel = (key: string, locale = "en-GB") => new Intl.DateTimeFormat(locale, { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${key}-15T12:00:00Z`));
 const ago = (iso: string | null, now: Date) => {
@@ -78,7 +78,7 @@ export async function ProgressTab({ viewer, coachingId, period: raw, member, bas
       ) : (
         <p className="rounded-2xl border-2 border-dashed border-border p-6 text-center text-sm text-muted-foreground">No one in this coaching yet.</p>
       )}
-      {coach && <p className="text-xs text-muted-foreground">Session attendance counts the people who joined the call from the app (recorded since 25 November 2026). Times in {TZ}.</p>}
+      {coach && <p className="text-xs text-muted-foreground">Session attendance: what you confirmed after each session, else the people who joined the call from the app (recorded since 25 November 2026). Times in {TZ}.</p>}
     </section>
   );
 }

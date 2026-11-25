@@ -11,6 +11,7 @@ import { Composer, DeleteItem, GoalStatus, MarkRead } from "./controls";
 import { VocabDay } from "./vocab-day";
 import { ProgressTab } from "./progress";
 import { dayProgress, pastVocab, reviewState, savedItems, sentencesOn, todayVocab } from "@/lib/coaching/vocabulary";
+import { AttendanceForm, NextStepCheck, PrepareForm } from "./session-forms";
 import { GoalForm, MembersEditor, ResourceForm, ReviewForm, SessionForm, SessionStatusButtons, SessionSummaryForm, SettingsForm, TaskForm } from "./coach-forms";
 import { cn } from "cn";
 
@@ -162,8 +163,23 @@ function Overview({ s, coach, base, viewerId, today }: { s: Space; coach: boolea
   // Learner: their open tasks. Coach: tasks someone still has to do.
   const todo = s.tasks.filter((t) => (coach ? Object.values(t.states).some((x) => !x.done) : !t.states[viewerId]?.done));
   const finished = s.tasks.length - todo.length;
+  // Learner: next steps from earlier sessions not ticked yet (newest session first).
+  const steps = coach ? [] : [...s.sessions].reverse().filter((x) => x.status === "done").flatMap((x) => x.nextSteps.filter((n) => !n.done).map((n) => ({ ...n, sessionId: x.id, when: x.when })));
   return (
     <div className="grid gap-5">
+      {steps.length > 0 && (
+        <section className={cn(card, "grid gap-2 border-primary/30")}>
+          <SectionTitle icon={ListChecks} aside={<span className="text-sm font-semibold text-muted-foreground">{steps.length} to do</span>}>
+            Your next steps
+          </SectionTitle>
+          <p className="text-sm text-muted-foreground">From your last sessions with your coach: tick them off once done.</p>
+          <div className="grid gap-0.5">
+            {steps.slice(0, 8).map((n) => (
+              <NextStepCheck key={`${n.sessionId}-${n.id}`} sessionId={n.sessionId} id={n.id} text={n.text} done={false} />
+            ))}
+          </div>
+        </section>
+      )}
       {today && (
         <Link href={`${base}?tab=vocabulary`} className="group flex flex-wrap items-center gap-4 rounded-3xl border-2 border-primary/30 bg-gradient-to-r from-brand-soft to-white p-4 transition hover:border-primary/60 sm:p-5">
           <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-brand-deep text-white">
@@ -229,6 +245,7 @@ function Overview({ s, coach, base, viewerId, today }: { s: Space; coach: boolea
             <p className="text-sm text-white/85">
               {next.durationMin} min{next.title ? ` · ${next.title}` : ""}
             </p>
+            <SessionPlan agenda={next.agenda} prep={next.prep} tone="dark" />
             <a href={coachingSessionPath(id, next.id)} className="mt-1 inline-flex h-12 w-fit items-center gap-2 rounded-2xl border-2 border-coral bg-white px-5 text-[19px] font-bold text-coral shadow-[0_4px_0_0_var(--color-coral)] hover:bg-coral-soft">
               <Video className="size-5" aria-hidden /> Join the session
             </a>
@@ -674,8 +691,37 @@ async function Tasks({ s, viewer, coach, forName }: { s: Space; viewer: Viewer; 
   );
 }
 
+/** A session's agenda and what to prepare (both sides). */
+function SessionPlan({ agenda, prep, tone = "light" }: { agenda: string; prep: string; tone?: "light" | "dark" }) {
+  if (!agenda && !prep) return null;
+  const dark = tone === "dark";
+  return (
+    <div className={cn("grid w-full gap-3 rounded-2xl p-3 sm:grid-cols-2", dark ? "bg-white/10" : "bg-brand-soft/40")}>
+      {agenda && (
+        <div>
+          <p className={cn("text-xs font-bold tracking-wide uppercase", dark ? "text-white/75" : "text-primary")}>Agenda</p>
+          <ul lang="fr" className="mt-1 grid list-disc gap-0.5 pl-5 text-sm">
+            {agenda.split("\n").filter(Boolean).map((l, i) => (
+              <li key={i}>{l}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {prep && (
+        <div>
+          <p className={cn("text-xs font-bold tracking-wide uppercase", dark ? "text-white/75" : "text-coral-dark")}>To prepare</p>
+          <p lang="fr" className="mt-1 text-sm whitespace-pre-line">
+            {prep}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Sessions({ s, coach, forName }: { s: Space; coach: boolean; forName: (id: string) => string }) {
   const id = String(s.coaching._id);
+  const people = (forUserId: string) => s.members.filter((m) => !forUserId || m.id === forUserId).map((m) => ({ id: m.id, name: m.fullName }));
   const upcoming = s.sessions.filter((x) => x.upcoming);
   const past = s.sessions.filter((x) => !upcoming.includes(x)).reverse();
   const planned = s.coaching.sessionsPlanned;
@@ -702,8 +748,18 @@ function Sessions({ s, coach, forName }: { s: Space; coach: boolean; forName: (i
                 <a href={coachingSessionPath(id, x.id)} className="inline-flex h-11 items-center gap-2 rounded-2xl border-2 border-coral bg-white px-4 font-bold text-coral-dark shadow-[0_3px_0_0_var(--color-coral)] hover:bg-coral-soft">
                   Session room
                 </a>
+                <SessionPlan agenda={x.agenda} prep={x.prep} />
                 {coach && (
-                  <div className="w-full">
+                  <div className="grid w-full gap-2">
+                    <details className="group rounded-2xl border border-border">
+                      <summary className="flex cursor-pointer list-none items-center gap-1.5 px-3 py-2 text-sm font-semibold text-primary">
+                        <ChevronRight className="size-4 transition group-open:rotate-90" aria-hidden /> {x.agenda || x.prep ? "Edit the agenda and preparation" : "Prepare the session: agenda and what to prepare"}
+                      </summary>
+                      <div className="border-t border-border p-3">
+                        <PrepareForm sessionId={x.id} agenda={x.agenda} prep={x.prep} />
+                      </div>
+                    </details>
+                    {x.started && x.attendance && <AttendanceForm sessionId={x.id} people={people(x.forUserId)} present={x.attendance.present} confirmed={x.attendance.confirmed} />}
                     <SessionStatusButtons sessionId={x.id} />
                   </div>
                 )}
@@ -724,8 +780,34 @@ function Sessions({ s, coach, forName }: { s: Space; coach: boolean; forName: (i
                     <span className={cn("rounded-full px-2 py-0.5 text-xs font-bold", x.status === "done" ? "bg-brand-soft text-primary" : x.status === "cancelled" ? "bg-muted text-muted-foreground" : "bg-coral-soft text-coral-dark")}>{x.status === "scheduled" ? "To close" : x.status === "done" ? "Done" : x.status === "cancelled" ? "Cancelled" : "Missed"}</span>
                     <ForTag name={forName(x.forUserId)} />
                   </p>
+                  {x.attendance && x.status !== "cancelled" && x.attendance.absent.length > 0 && (
+                    <p className="flex flex-wrap items-center gap-1.5 text-xs font-semibold text-coral-dark">
+                      Absent: {x.attendance.absent.map((a) => forName(a) || "—").join(", ")}
+                      {!x.attendance.confirmed && <span className="font-normal text-muted-foreground">(not confirmed yet)</span>}
+                    </p>
+                  )}
                   {x.summary && <RichText lang="fr" className="text-sm">{x.summary}</RichText>}
-                  {coach && x.status !== "cancelled" && <SessionSummaryForm sessionId={x.id} summary={x.summary} />}
+                  {x.nextSteps.length > 0 && (
+                    <div className="grid gap-1 rounded-2xl bg-brand-soft/40 p-3">
+                      <p className="text-xs font-bold tracking-wide text-primary uppercase">Next steps</p>
+                      {coach ? (
+                        <ul className="grid gap-1 text-sm">
+                          {x.nextSteps.map((n) => (
+                            <li key={n.id} className="flex items-start justify-between gap-2">
+                              <span lang="fr">{n.text}</span>
+                              <span className="shrink-0 text-xs font-semibold text-muted-foreground">
+                                {n.doneBy.length} / {(x.attendance?.present.length ?? 0) + (x.attendance?.absent.length ?? 0)} done
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        x.nextSteps.map((n) => <NextStepCheck key={n.id} sessionId={x.id} id={n.id} text={n.text} done={n.done} />)
+                      )}
+                    </div>
+                  )}
+                  {coach && x.status !== "cancelled" && x.attendance && <AttendanceForm sessionId={x.id} people={people(x.forUserId)} present={x.attendance.present} confirmed={x.attendance.confirmed} />}
+                  {coach && x.status !== "cancelled" && <SessionSummaryForm sessionId={x.id} summary={x.summary} nextSteps={x.nextSteps.map((n) => n.text)} />}
                 </li>
               ))}
             </ul>

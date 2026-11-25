@@ -17,7 +17,7 @@ async function recipients(c: Pick<CoachingDoc, "memberIds">, forUserId: unknown)
   return User.find({ _id: { $in: ids }, isActive: { $ne: false }, email: { $nin: [null, ""] } }).select("name email").lean();
 }
 
-export type CoachingEvent = "feedback" | "resource" | "task" | "session" | "summary";
+export type CoachingEvent = "feedback" | "resource" | "task" | "session" | "summary" | "prep";
 
 /** Members concerned by something the coach added. */
 export async function notifyMembers(coachingId: unknown, forUserId: unknown, event: CoachingEvent, detail = "") {
@@ -32,6 +32,7 @@ export async function notifyMembers(coachingId: unknown, forUserId: unknown, eve
       resource: { subject: "Nouvelle ressource dans votre coaching", intro: `${esc(who)} a ajouté une ressource dans « ${esc(c.title)} »${detail ? ` : <strong>${esc(detail)}</strong>` : ""}.` },
       task: { subject: "Nouvelle activité à faire", intro: `${esc(who)} vous a donné une activité dans « ${esc(c.title)} »${detail ? ` : <strong>${esc(detail)}</strong>` : ""}.` },
       session: { subject: "Séance de coaching programmée", intro: `Une séance est prévue ${esc(detail)} avec ${esc(who)} (« ${esc(c.title)} »). Vous la rejoindrez directement depuis votre espace coaching.` },
+      prep: { subject: "Préparez votre prochaine séance", intro: `${esc(who)} a partagé le programme de votre séance ${esc(detail)} (« ${esc(c.title)} ») et ce qu'il faut préparer.` },
       summary: { subject: "Le résumé de votre séance", intro: `${esc(who)} a ajouté le résumé de votre séance dans « ${esc(c.title)} ».` },
     };
     for (const u of await recipients(c, forUserId)) {
@@ -84,7 +85,7 @@ export async function runSessionReminders(now = new Date()) {
         intro: `Votre séance avec ${esc(coach ? coachLabel(coach) : "votre coach")} est prévue ${esc(when)}. Le bouton « Rejoindre » s'active 10 minutes avant.`,
         button: "Ouvrir mon espace coaching",
         url: appUrl(`/mon-coaching/${String(c._id)}`),
-        outro: "Pensez à vous installer dans un endroit calme, avec vos écouteurs.",
+        outro: `${s.prep ? `À préparer : ${esc(s.prep).replace(/\n/g, "<br>")}<br><br>` : ""}Pensez à vous installer dans un endroit calme, avec vos écouteurs.`,
       });
       sent++;
     }

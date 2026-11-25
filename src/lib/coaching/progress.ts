@@ -2,6 +2,7 @@ import { Types } from "mongoose";
 import { CoachingEntry, CoachingReport, CoachingSentence, CoachingSession, CoachingSubmission, CoachingTask, CoachingTaskProgress, CoachingVocab, ConversationSession, User, VocabWord, type CoachingDoc, type CoachingGoalDoc, type CoachingTaskDoc } from "@/models";
 import { CoachingError, goalsOf, openCoaching, taskStates, type Viewer } from "./service";
 import { SENTENCES_PER_ITEM } from "./vocabulary";
+import { attendanceOf } from "./sessions";
 
 /*
  * Coaching progress (owner decision 2026-11-25): what each member did over a period — the daily
@@ -48,7 +49,7 @@ export function monthsOf(coaching: Pick<CoachingDoc, "startDate" | "createdAt">,
   return out;
 }
 
-export type Flag = "inactive" | "vocab_low" | "tasks_late" | "redo";
+export type Flag = "inactive" | "vocab_low" | "tasks_late" | "redo" | "missed_session";
 
 export type MemberProgress = {
   id: string;
@@ -60,7 +61,7 @@ export type MemberProgress = {
   tasks: { total: number; done: number; late: number; avgScore: number | null };
   challenges: { sent: number; validated: number; redo: number; avgGrade: number | null };
   calls: { count: number; avgScore: number | null };
-  sessions: { held: number; attended: number };
+  sessions: { held: number; attended: number; missedLast: boolean };
   goals: { total: number; done: number; inProgress: number };
   messages: number;
   lastActive: string | null;
@@ -95,7 +96,7 @@ export async function coachingProgress(v: Viewer, coachingId: string, rawPeriod:
     CoachingVocab.find({ coachingId: coaching._id, day: { $gte: dayFrom, $lte: dayTo } }).select("day items.id").lean(),
     CoachingTask.find({ coachingId: coaching._id, createdAt: { $lt: period.to } }).lean<CoachingTaskDoc[]>(),
     goalsOf(v, coaching._id, "coach"),
-    CoachingSession.find({ coachingId: coaching._id, startsAt: range, status: "done" }).select("forUserId joinedIds startsAt").lean(),
+    CoachingSession.find({ coachingId: coaching._id, startsAt: range, status: "done" }).select("forUserId joinedIds presentIds attendanceConfirmed startsAt").sort({ startsAt: 1 }).lean(),
     CoachingEntry.find({ coachingId: coaching._id, authorId: { $in: oids }, createdAt: range }).select("authorId createdAt").lean(),
     ConversationSession.find({ userId: { $in: oids }, status: "debriefed", createdAt: range }).select("userId activityId score createdAt").lean(),
     CoachingSubmission.find({ coachingId: coaching._id, userId: { $in: oids } }).select("userId status grade submittedAt").lean(),
@@ -130,6 +131,7 @@ export async function coachingProgress(v: Viewer, coachingId: string, rawPeriod:
     const mySubs = subs.filter((s) => String(s.userId) === m);
     const myCalls = calls.filter((c) => String(c.userId) === m && roleplayIds.has(String(c.activityId)));
     const mySessions = sessions.filter((s) => concerns(s, m));
+    const wasThere = (s: (typeof sessions)[number]) => attendanceOf(s, coaching).present.includes(m);
     const myGoals = goals.filter((g) => concerns(g, m)).map((g) => goalStatus(g, m));
     const myEntries = entries.filter((e) => String(e.authorId) === m);
     const lastActive = latest(
@@ -138,7 +140,7 @@ export async function coachingProgress(v: Viewer, coachingId: string, rawPeriod:
       ...myCalls.map((c) => c.createdAt),
       ...mySubs.map((s) => s.submittedAt),
       ...labs.filter((l) => String(l.userId) === m && taskIds.has(String(l.taskId))).map((l) => l.updatedAt),
-      ...mySessions.filter((s) => (s.joinedIds ?? []).some((j) => String(j) === m)).map((s) => s.startsAt),
+      ...mySessions.filter(wasThere).map((s) => s.startsAt),
     );
     const row: MemberProgress = {
       id: m,
@@ -150,7 +152,7 @@ export async function coachingProgress(v: Viewer, coachingId: string, rawPeriod:
       tasks: { total: myTasks.length, done: st.filter(({ s }) => s?.done).length, late, avgScore: avg(st.map(({ s }) => s?.score)) },
       challenges: { sent: mySubs.length, validated: mySubs.filter((s) => s.status === "validated").length, redo: mySubs.filter((s) => s.status === "returned").length, avgGrade: avg(mySubs.filter((s) => s.status === "validated").map((s) => s.grade)) },
       calls: { count: myCalls.length, avgScore: avg(myCalls.map((c) => c.score)) },
-      sessions: { held: mySessions.length, attended: mySessions.filter((s) => (s.joinedIds ?? []).some((j) => String(j) === m)).length },
+      sessions: { held: mySessions.length, attended: mySessions.filter(wasThere).length, missedLast: mySessions.length > 0 && !wasThere(mySessions[mySessions.length - 1]) },
       goals: { total: myGoals.length, done: myGoals.filter((s) => s === "done").length, inProgress: myGoals.filter((s) => s === "in_progress").length },
       messages: myEntries.length,
       lastActive: lastActive ? lastActive.toISOString() : null,
@@ -166,7 +168,7 @@ export type CoachingProgress = Awaited<ReturnType<typeof coachingProgress>>;
 const goalStatus = (g: CoachingGoalDoc, m: string) => (g.forUserId ? g.status : (((g.memberStatus as unknown as Map<string, string> | Record<string, string>) instanceof Map ? (g.memberStatus as unknown as Map<string, string>).get(m) : (g.memberStatus as unknown as Record<string, string>)?.[m]) ?? "todo"));
 
 /** What needs the coach's attention (pure). */
-export function flagsFor(r: Pick<MemberProgress, "vocab" | "tasks" | "challenges" | "lastActive">, now: Date, period: Pick<Period, "from">): Flag[] {
+export function flagsFor(r: Pick<MemberProgress, "vocab" | "tasks" | "challenges" | "lastActive"> & { sessions?: Pick<MemberProgress["sessions"], "missedLast"> }, now: Date, period: Pick<Period, "from">): Flag[] {
   const out: Flag[] = [];
   const since = r.lastActive ? new Date(r.lastActive) : null;
   // No activity for 7 days (only once the period is a week old, so a new month isn't flagged on the 2nd).
@@ -174,6 +176,7 @@ export function flagsFor(r: Pick<MemberProgress, "vocab" | "tasks" | "challenges
   if (r.vocab.days >= 3 && r.vocab.rate < 50) out.push("vocab_low");
   if (r.tasks.late > 0) out.push("tasks_late");
   if (r.challenges.redo > 0) out.push("redo");
+  if (r.sessions?.missedLast) out.push("missed_session");
   return out;
 }
 

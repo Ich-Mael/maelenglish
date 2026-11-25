@@ -394,7 +394,7 @@ export function sendCoachingEmail(to: string, p: { firstName: string; subject: s
     to,
     subject: p.subject,
     html: layout({ firstName: p.firstName, intro: p.intro, button: p.button, url: p.url, outro: p.outro ?? "", lang: p.lang }),
-    text: `${p.lang === "en" ? "Hello" : "Bonjour"} ${p.firstName},\n\n${p.intro.replace(/<[^>]+>/g, "")}\n${p.url}\n\n${p.outro ?? ""}`,
+    text: `${p.lang === "en" ? "Hello" : "Bonjour"} ${p.firstName},\n\n${p.intro.replace(/<[^>]+>/g, "")}\n${p.url}\n\n${(p.outro ?? "").replace(/<br>/g, "\n").replace(/<[^>]+>/g, "")}`,
   });
 }
 

@@ -1,4 +1,5 @@
 import "server-only";
+import { attendanceOf } from "./sessions";
 import { Types } from "mongoose";
 import { Activity, Course, CoachingEntry, CoachingSession, Media, User, type ActivityDoc, type CoachingDoc } from "@/models";
 import { coachLabel } from "@/lib/coach-name";
@@ -103,6 +104,12 @@ export async function loadSpace(v: Viewer, coachingId: string, opts: { member?: 
       closesAt: new Date(s.startsAt.getTime() + ((s.durationMin ?? 60) + 30) * 60_000).toISOString(),
       /** Still to come (scheduled and not past its closing time). */
       upcoming: s.status === "scheduled" && s.startsAt.getTime() + ((s.durationMin ?? 60) + 30) * 60_000 > Date.now(),
+      started: s.startsAt.getTime() <= Date.now(),
+      agenda: s.agenda ?? "",
+      prep: s.prep ?? "",
+      nextSteps: (s.nextSteps ?? []).map((x) => ({ id: x.id, text: x.text, done: (x.doneBy ?? []).some((d) => String(d) === v.id), doneBy: role === "coach" ? (x.doneBy ?? []).map(String) : [] })),
+      /** The coach only: who was there (confirmed, else who joined from the app). */
+      attendance: role === "coach" ? attendanceOf(s, coaching) : null,
     })),
   };
 }

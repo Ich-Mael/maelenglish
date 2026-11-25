@@ -189,8 +189,35 @@ export async function updateSessionAction(_: State, f: FormData): Promise<State>
     if (f.has("status")) raw.status = str(f, "status");
     if (f.has("summary")) raw.summary = str(f, "summary");
     const { session, summaryPosted } = await svc.updateSession(v, str(f, "sessionId"), raw);
+    if (f.has("nextSteps")) {
+      const { saveNextSteps } = await import("@/lib/coaching/sessions");
+      await saveNextSteps(v, str(f, "sessionId"), String(f.get("nextSteps") ?? ""));
+    }
     if (summaryPosted) after(() => notifyMembers(session.coachingId, session.forUserId, "summary"));
     return "Session updated.";
+  });
+}
+
+export async function prepareSessionAction(_: State, f: FormData): Promise<State> {
+  return form(async (v) => {
+    const { prepareSession } = await import("@/lib/coaching/sessions");
+    const { session, filled } = await prepareSession(v, str(f, "sessionId"), { agenda: String(f.get("agenda") ?? ""), prep: String(f.get("prep") ?? "") });
+    if (filled && f.get("notify") === "on") after(() => notifyMembers(session.coachingId, session.forUserId, "prep", sessionWhen(session.startsAt)));
+    return filled && f.get("notify") === "on" ? "Saved: the people concerned get an email." : "Saved.";
+  });
+}
+
+export async function setAttendanceAction(sessionId: string, presentIds: string[]) {
+  return call(async (v) => {
+    const { setAttendance } = await import("@/lib/coaching/sessions");
+    return { attendance: await setAttendance(v, sessionId, (presentIds ?? []).map(String)) };
+  });
+}
+
+export async function toggleNextStepAction(sessionId: string, stepId: string, done: boolean) {
+  return call(async (v) => {
+    const { toggleNextStep } = await import("@/lib/coaching/sessions");
+    await toggleNextStep(v, sessionId, String(stepId), !!done);
   });
 }
 
