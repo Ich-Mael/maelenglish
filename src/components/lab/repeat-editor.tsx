@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ClipboardPaste } from "lucide-react";
+import { AudioLines, ClipboardPaste, Loader2 } from "lucide-react";
+import { generateModelAudioAction } from "@/app/admin/labo/actions";
+import { TtsVoiceProvider, useTtsVoice, type TtsVoices } from "./tts-voice";
 import { ItemListEditor, newItemId } from "./item-list-editor";
 import { AudioField } from "@/components/admin/audio-field";
 import { btn, inputCls } from "@/components/admin/ui";
@@ -10,14 +12,57 @@ import { cn } from "cn";
 
 /*
  * S1 « Repeat after Coach Ish » editor (Labo, English): short phrases, each with the model audio
- * (required: record it in the browser or upload it) and an optional French translation; « Paste a
+ * (required: record it in the browser, upload it, or generate it with an ElevenLabs voice) and an optional French translation; « Paste a
  * list » adds many at once (one per line, « = » before the translation). Sent as « c_json ».
  */
 
 type Phrase = RepeatPhrase & { audioUrl: string | null };
 const blank = (id = newItemId()): Phrase => ({ id, text: "", translation: "", audioMediaId: "", audioUrl: null });
 
-export function RepeatEditor({ initial, audioUrls }: { initial: Partial<RepeatContent>; audioUrls: Record<string, string | null> }) {
+export function RepeatEditor(props: { initial: Partial<RepeatContent>; audioUrls: Record<string, string | null>; tts?: TtsVoices }) {
+  return (
+    <TtsVoiceProvider tts={props.tts ?? null}>
+      <RepeatFields {...props} />
+    </TtsVoiceProvider>
+  );
+}
+
+/** « Generate all missing »: every phrase written without audio, one after another. */
+function GenerateMissing({ phrases, setAudio }: { phrases: Phrase[]; setAudio: (id: string, mediaId: string, url: string) => void }) {
+  const tts = useTtsVoice();
+  const [left, setLeft] = useState(0);
+  const [error, setError] = useState("");
+  const missing = phrases.filter((p) => p.text.trim() && !p.audioMediaId);
+  if (!tts || (!missing.length && !left)) return null;
+  return (
+    <span className="grid gap-1">
+      <button
+        type="button"
+        className={btn.secondary}
+        disabled={left > 0}
+        onClick={async () => {
+          setError("");
+          setLeft(missing.length);
+          for (const p of missing) {
+            const r = await generateModelAudioAction(p.text, tts.voiceId).catch(() => ({ ok: false as const, error: "Something went wrong: try again." }));
+            if (!r.ok) {
+              setError(r.error);
+              break;
+            }
+            setAudio(p.id, r.mediaId, r.url);
+            setLeft((n) => n - 1);
+          }
+          setLeft(0);
+        }}
+      >
+        {left ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <AudioLines className="size-4" aria-hidden />} {left ? `Generating… ${left} left` : `Generate the ${missing.length} missing audio${missing.length > 1 ? "s" : ""}`}
+      </button>
+      {error && <span className="text-xs font-semibold text-coral-dark">{error}</span>}
+    </span>
+  );
+}
+
+function RepeatFields({ initial, audioUrls }: { initial: Partial<RepeatContent>; audioUrls: Record<string, string | null> }) {
   const [phrases, setPhrases] = useState<Phrase[]>(() => (initial.phrases?.length ? initial.phrases.map((p) => ({ ...p, audioUrl: p.audioMediaId ? (audioUrls[p.audioMediaId] ?? null) : null })) : [blank("r1")])); // fixed id: a random one differs between the server render and hydration
   const [paste, setPaste] = useState("");
   const [pasteOpen, setPasteOpen] = useState(false);
@@ -33,6 +78,7 @@ export function RepeatEditor({ initial, audioUrls }: { initial: Partial<RepeatCo
       <input type="hidden" name="c_json" value={json} />
       <div className="flex flex-wrap items-center gap-2">
         <p className="flex-1 text-xs text-muted-foreground">Short, useful phrases (3–12 words) said at natural speed. Learners repeat after your audio; the browser&apos;s speech recognition shows which words it understood.</p>
+        <GenerateMissing phrases={phrases} setAudio={(id, mediaId, url) => setPhrases((cur) => cur.map((x) => (x.id === id ? { ...x, audioMediaId: mediaId, audioUrl: url } : x)))} />
         <button type="button" className={btn.secondary} onClick={() => setPasteOpen((o) => !o)}>
           <ClipboardPaste className="size-4" aria-hidden /> Paste a list
         </button>
@@ -55,7 +101,7 @@ export function RepeatEditor({ initial, audioUrls }: { initial: Partial<RepeatCo
           >
             Add {parsed.length || ""} phrase{parsed.length === 1 ? "" : "s"}
           </button>
-          <span className="text-xs text-muted-foreground">Then record the audio of each phrase below. 20 phrases at most.</span>
+          <span className="text-xs text-muted-foreground">Then record the audio of each phrase below, or generate it with an ElevenLabs voice. 20 phrases at most.</span>
         </div>
       )}
       <ItemListEditor
@@ -78,7 +124,7 @@ export function RepeatEditor({ initial, audioUrls }: { initial: Partial<RepeatCo
                 <input className={inputCls} value={p.translation} maxLength={200} onChange={(e) => update({ translation: e.target.value })} placeholder="Bonjour, que puis-je pour vous ?" />
               </label>
             </div>
-            <AudioField label="Your audio (required: learners repeat after it)" value={p.audioMediaId} url={p.audioUrl} onChange={(id, url) => update({ audioMediaId: id, audioUrl: url })} compact />
+            <AudioField label="Your audio (required: learners repeat after it)" value={p.audioMediaId} url={p.audioUrl} onChange={(id, url) => update({ audioMediaId: id, audioUrl: url })} speakText={p.text} compact />
           </div>
         )}
       />

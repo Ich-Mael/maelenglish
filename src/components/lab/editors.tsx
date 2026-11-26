@@ -12,6 +12,9 @@ import { MatchEditor } from "./match-editor";
 import { TfngEditor } from "./tfng-editor";
 import { CompleteWordsEditor } from "./complete-words-editor";
 import { RepeatEditor } from "./repeat-editor";
+import type { TtsVoices } from "./tts-voice";
+import { isElevenLabsConfigured } from "@/lib/ai/elevenlabs";
+import { vocabularyVoices } from "@/lib/ai/spoken";
 import { ImageInput } from "./image-input";
 import { DictationEditor } from "./dictation-editor";
 import { PromptField } from "./prompt-field";
@@ -25,6 +28,13 @@ import { RolePlayImagesField } from "./roleplay-images-field";
  */
 
 const seconds = (n: number) => (n === 0 ? "None" : n < 60 ? `${n} seconds` : n === 60 ? "1 minute" : n % 60 ? `${Math.floor(n / 60)} min ${n % 60}` : `${n / 60} minutes`);
+
+/** ElevenLabs voices for « Generate with ElevenLabs » (null when ElevenLabs isn't configured). */
+async function ttsVoices(): Promise<TtsVoices> {
+  if (!isElevenLabsConfigured()) return null;
+  const [voices, defaults] = await Promise.all([(conversationEngine()?.listVoices() ?? Promise.resolve([])).catch((e) => (console.error("[lab tts] voices", e), [])), vocabularyVoices()]);
+  return { voices, defaultId: defaults.us.id };
+}
 
 export async function ActivityFields({ type, content }: { type: ActivityType; content: unknown }) {
   switch (type) {
@@ -58,7 +68,7 @@ export async function ActivityFields({ type, content }: { type: ActivityType; co
       const c = content as Partial<DictationContent>;
       const ids = [...new Set((c.items ?? []).map((i) => i.audioMediaId).filter(Boolean))];
       const audioUrls = Object.fromEntries(await Promise.all(ids.map(async (id) => [id, await reviewMediaUrl(id).catch(() => null)] as const)));
-      return <DictationEditor initial={c} audioUrls={audioUrls} />;
+      return <DictationEditor initial={c} audioUrls={audioUrls} tts={await ttsVoices()} />;
     }
     case "role_play": {
       const c = content as Partial<RolePlayContent>;
@@ -133,7 +143,7 @@ export async function ActivityFields({ type, content }: { type: ActivityType; co
       const c = content as Partial<RepeatContent>;
       const ids = [...new Set((c.phrases ?? []).map((p) => p.audioMediaId).filter(Boolean))];
       const audioUrls = Object.fromEntries(await Promise.all(ids.map(async (id) => [id, await reviewMediaUrl(id).catch(() => null)] as const)));
-      return <RepeatEditor initial={c} audioUrls={audioUrls} />;
+      return <RepeatEditor initial={c} audioUrls={audioUrls} tts={await ttsVoices()} />;
     }
     case "complete_words": {
       const c = content as Partial<CompleteWordsContent>;

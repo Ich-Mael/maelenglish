@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ClipboardPaste } from "lucide-react";
 import { ItemListEditor, newItemId } from "./item-list-editor";
 import { AudioField } from "@/components/admin/audio-field";
+import { TtsVoiceProvider, type TtsVoices } from "./tts-voice";
 import { btn, inputCls } from "@/components/admin/ui";
 import { DICTATION_PLAYS, type DictationContent, type DictationItem } from "@/lib/lab/types";
 import { cn } from "cn";
@@ -18,7 +19,15 @@ import { cn } from "cn";
 type Phrase = DictationItem & { audioUrl: string | null };
 const blank = (id = newItemId()): Phrase => ({ id, text: "", translation: "", audioMediaId: "", audioUrl: null });
 
-export function DictationEditor({ initial, audioUrls }: { initial: Partial<DictationContent>; audioUrls: Record<string, string | null> }) {
+export function DictationEditor(props: { initial: Partial<DictationContent>; audioUrls: Record<string, string | null>; tts?: TtsVoices }) {
+  return (
+    <TtsVoiceProvider tts={props.tts ?? null}>
+      <DictationFields {...props} />
+    </TtsVoiceProvider>
+  );
+}
+
+function DictationFields({ initial, audioUrls }: { initial: Partial<DictationContent>; audioUrls: Record<string, string | null> }) {
   const [maxPlays, setMaxPlays] = useState(initial.maxPlays ?? 0);
   const [phrases, setPhrases] = useState<Phrase[]>(() => (initial.items?.length ? initial.items.map((p) => ({ ...p, audioUrl: p.audioMediaId ? (audioUrls[p.audioMediaId] ?? null) : null })) : [blank("d1")])); // fixed id: a random one differs between the server render and hydration
   const [paste, setPaste] = useState("");
@@ -90,7 +99,7 @@ export function DictationEditor({ initial, audioUrls }: { initial: Partial<Dicta
                 <input className={inputCls} value={p.translation} maxLength={300} onChange={(e) => update({ translation: e.target.value })} placeholder="Le vol AF 512 pour Paris est retardé." />
               </label>
             </div>
-            <AudioField label="Audio of the sentence (required)" value={p.audioMediaId} url={p.audioUrl} onChange={(id, url) => update({ audioMediaId: id, audioUrl: url })} compact />
+            <AudioField label="Audio of the sentence (required)" value={p.audioMediaId} url={p.audioUrl} onChange={(id, url) => update({ audioMediaId: id, audioUrl: url })} speakText={p.text} compact />
           </div>
         )}
       />

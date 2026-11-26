@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, Mic, Upload, X } from "lucide-react";
+import { AudioLines, Loader2, Mic, Upload, X } from "lucide-react";
+import { generateModelAudioAction } from "@/app/admin/labo/actions";
+import { useTtsVoice } from "@/components/lab/tts-voice";
 import { Recorder } from "@/components/audio/recorder";
 import { uploadMedia } from "@/components/audio/upload";
 import { btn } from "./ui";
@@ -12,8 +14,10 @@ import { cn } from "cn";
  * or record in the browser, stored as Media kind « model-audio » (public to signed-in users).
  * Controlled: `value` = media id, `url` = playable URL of the current value (null = not loaded).
  */
-export function AudioField({ value, url, onChange, label, compact }: { value: string; url: string | null; onChange: (mediaId: string, url: string | null) => void; label: string; compact?: boolean }) {
+export function AudioField({ value, url, onChange, label, compact, speakText }: { value: string; url: string | null; onChange: (mediaId: string, url: string | null) => void; label: string; compact?: boolean; /** With an ElevenLabs voice chosen above (TtsVoiceProvider): « Generate with ElevenLabs » reads this text. */ speakText?: string }) {
+  const tts = useTtsVoice();
   const [busy, setBusy] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const [recording, setRecording] = useState(false);
   const [error, setError] = useState("");
 
@@ -31,6 +35,16 @@ export function AudioField({ value, url, onChange, label, compact }: { value: st
     }
   };
 
+  const generate = async () => {
+    if (!tts || !speakText?.trim()) return;
+    setError("");
+    setGenerating(true);
+    const r = await generateModelAudioAction(speakText, tts.voiceId).catch(() => ({ ok: false as const, error: "Something went wrong: try again." }));
+    setGenerating(false);
+    if (!r.ok) return setError(r.error);
+    onChange(r.mediaId, r.url);
+  };
+
   return (
     <div className={cn("grid gap-2", compact && "text-sm")}>
       <span className="text-sm font-medium">{label}</span>
@@ -42,9 +56,9 @@ export function AudioField({ value, url, onChange, label, compact }: { value: st
           </button>
         </div>
       )}
-      {busy ? (
+      {busy || generating ? (
         <p className="flex items-center gap-2 text-sm font-semibold text-brand-deep" aria-live="polite">
-          <Loader2 className="size-4 animate-spin" aria-hidden /> Uploading…
+          <Loader2 className="size-4 animate-spin" aria-hidden /> {generating ? "Generating with ElevenLabs…" : "Uploading…"}
         </p>
       ) : recording ? (
         <div className="grid gap-2">
@@ -62,6 +76,11 @@ export function AudioField({ value, url, onChange, label, compact }: { value: st
           <button type="button" className={cn(btn.secondary, "h-9")} onClick={() => setRecording(true)}>
             <Mic className="size-4" aria-hidden /> Record
           </button>
+          {tts && speakText !== undefined && (
+            <button type="button" className={cn(btn.secondary, "h-9")} disabled={!speakText.trim()} onClick={() => void generate()} title={speakText.trim() ? "Read this phrase with the ElevenLabs voice chosen above" : "Write the phrase first"}>
+              <AudioLines className="size-4" aria-hidden /> {value ? "Regenerate" : "Generate with ElevenLabs"}
+            </button>
+          )}
         </div>
       )}
       {error && <p className="text-sm font-semibold text-coral-dark">{error}</p>}

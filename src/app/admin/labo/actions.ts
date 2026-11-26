@@ -9,6 +9,7 @@ import { AdminError, errorMessage } from "@/lib/admin/errors";
 import * as lab from "@/lib/lab/service";
 import { Activity, Course, Step, Unit, type ActivityDoc, type CourseDoc } from "@/models";
 import { previewCorrection, WritingError } from "@/lib/lab/writing";
+import { LabTtsError, generateModelAudio } from "@/lib/lab/tts";
 import type { WritingTaskContent } from "@/lib/lab/types";
 import type { WritingCorrection } from "@/lib/ai";
 import type { CurrentUser } from "@/lib/auth/dal";
@@ -133,5 +134,16 @@ export async function previewWritingAction(activityId: string, text: string): Pr
     return { ok: true, correction };
   } catch (e) {
     return { ok: false, error: e instanceof WritingError ? e.message : errorMessage(e) };
+  }
+}
+
+/** « Generate with ElevenLabs » in the Lab editors: the phrase read by the chosen voice → a model-audio Media. */
+export async function generateModelAudioAction(text: string, voiceId: string): Promise<{ ok: true; mediaId: string; url: string } | { ok: false; error: string }> {
+  try {
+    const me = await labUser();
+    const r = await generateModelAudio(me.id, String(text ?? ""), String(voiceId ?? ""));
+    return { ok: true, mediaId: r.mediaId, url: r.url };
+  } catch (e) {
+    return { ok: false, error: e instanceof LabTtsError ? e.message : errorMessage(e) };
   }
 }
