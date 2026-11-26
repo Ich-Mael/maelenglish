@@ -10,12 +10,17 @@ export const metadata: Metadata = {
 };
 
 /*
- * ⚠ Texts in [crochets] must be completed by the owner (legal entity, contact email).
+ * Entity, contact email and retention period confirmed by the owner (2026-11-26).
  * Not legal advice: have it reviewed before publication.
  */
 const UPDATED = "18 novembre 2026";
-const ENTITY = "[Nom de la structure juridique, adresse — à compléter]";
-const EMAIL = "[adresse email de contact — à compléter]";
+const ENTITY = "Afro House of Knowledge, Ouagadougou (Burkina Faso)";
+const EMAIL_ADDRESS = "maelenglish@afrohk.com";
+const EMAIL = (
+  <a href={`mailto:${EMAIL_ADDRESS}`} className="font-semibold text-primary underline">
+    {EMAIL_ADDRESS}
+  </a>
+);
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -156,7 +161,7 @@ export default function PrivacyPage() {
 
         <Section title="Combien de temps nous les gardons">
           <p>
-            Vos données sont conservées tant que votre compte est actif, puis [3 ans après votre dernière activité — durée à confirmer], sauf
+            Vos données sont conservées tant que votre compte est actif, puis 3 ans après votre dernière activité, sauf
             obligation légale. Les sessions de connexion expirent après 30 jours d&apos;inactivité, et les liens d&apos;activation et de
             réinitialisation après 7 jours et 1 heure.
           </p>

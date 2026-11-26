@@ -1,20 +1,17 @@
 import Link from "next/link";
-import { ArrowRight, BarChart3, CircleCheck, Hourglass, Laptop, PlayCircle, Timer } from "lucide-react";
+import { ArrowRight, BarChart3, Hourglass, Laptop, PlayCircle, Timer } from "lucide-react";
 import { shortProgramName, type Program } from "@/lib/catalog";
 import { ICONS } from "./icons";
 import { Photo } from "./photo";
 import { PhraseCard } from "./ui";
 
-export function StatusBadge({ program, long }: { program: Program; long?: boolean }) {
+/** Only « Bientôt » is shown; open programmes have no badge (owner decision 2026-11-26: « Ouvert » removed). */
+export function StatusBadge({ program }: { program: Program; long?: boolean }) {
   return program.status === "soon" ? (
     <span className="inline-flex items-center gap-1 rounded-full bg-xp px-2.5 py-1 text-xs font-bold text-brand-deep shadow-sm">
       <Hourglass className="size-3.5" aria-hidden /> Bientôt
     </span>
-  ) : (
-    <span className="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-xs font-bold text-success shadow-sm ring-1 ring-success/20">
-      <CircleCheck className="size-3.5" aria-hidden /> {long ? "Inscriptions ouvertes" : "Ouvert"}
-    </span>
-  );
+  ) : null;
 }
 
 function Chip({ icon: Icon, children }: { icon: React.ComponentType<{ className?: string }>; children: React.ReactNode }) {

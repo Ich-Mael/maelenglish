@@ -2,6 +2,7 @@ import { Types } from "mongoose";
 import { EnrollmentRequest, REQUEST_LEVELS, REQUEST_STATUSES, User, ADMIN_ROLES, type EnrollmentRequestDoc } from "@/models";
 import { PROGRAM_SLUGS, findProgram } from "@/lib/catalog";
 import { normalizePhone } from "@/lib/phone";
+import { OTHER_COUNTRY, countryOf } from "@/lib/countries";
 
 /* Public sign-up requests (framework-free; tested in tests/requests.test.ts). */
 
@@ -16,6 +17,7 @@ export type RequestInput = {
   lastName: string;
   phoneNumber: string;
   email?: string;
+  country?: string;
   program?: string;
   kind?: string;
   level?: string;
@@ -37,8 +39,11 @@ export async function createRequest(input: RequestInput): Promise<EnrollmentRequ
   const lastName = input.lastName?.trim() ?? "";
   if (!firstName) throw new RequestError("Indiquez votre prénom.", "firstName");
   if (!lastName) throw new RequestError("Indiquez votre nom.", "lastName");
-  const phoneE164 = normalizePhone(input.phoneNumber ?? "");
-  if (!phoneE164) throw new RequestError("Indiquez un numéro WhatsApp valide (avec l'indicatif si vous n'êtes pas au Burkina Faso).", "phoneNumber");
+  const country = countryOf(input.country) ? input.country! : input.country === OTHER_COUNTRY ? OTHER_COUNTRY : "";
+  if (!country) throw new RequestError("Choisissez votre pays.", "country");
+  // Typed without the calling code: the chosen country's (« Autre pays » = the number must have it).
+  const phoneE164 = normalizePhone(input.phoneNumber ?? "", countryOf(country)?.dial, { keepZero: countryOf(country)?.keepZero });
+  if (!phoneE164 || (country === OTHER_COUNTRY && !/^\s*(\+|00)/.test(input.phoneNumber ?? ""))) throw new RequestError(country === OTHER_COUNTRY ? "Indiquez votre numéro WhatsApp avec l'indicatif du pays (ex. +44…)." : "Indiquez un numéro WhatsApp valide.", "phoneNumber");
   const email = input.email?.trim().toLowerCase() ?? "";
   if (email && !EMAIL_RE.test(email)) throw new RequestError("Adresse email invalide.", "email");
   if (!input.consent) throw new RequestError("Merci d'accepter que nous vous recontactions.", "consent");
@@ -50,6 +55,7 @@ export async function createRequest(input: RequestInput): Promise<EnrollmentRequ
     phoneNumber: input.phoneNumber.trim(),
     phoneE164,
     email,
+    country,
     program,
     kind: input.kind === "notify" ? "notify" : "enroll",
     level: ((REQUEST_LEVELS as readonly string[]).includes(input.level ?? "") ? input.level : "unknown") as EnrollmentRequestDoc["level"],

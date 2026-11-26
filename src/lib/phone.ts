@@ -13,7 +13,11 @@ export function defaultCountryCode(): string {
   return String(process.env.WHATSAPP_DEFAULT_COUNTRY_CODE || "226").replace(/\D/g, "");
 }
 
-export function normalizePhone(raw: string | null | undefined): string | null {
+/**
+ * `dial`: the calling code for a number typed without it (default: WHATSAPP_DEFAULT_COUNTRY_CODE).
+ * `keepZero`: countries whose leading 0 is part of the number (Côte d'Ivoire: +225 07 07 …).
+ */
+export function normalizePhone(raw: string | null | undefined, dial?: string, opts: { keepZero?: boolean } = {}): string | null {
   if (raw === undefined || raw === null) return null;
   const s = String(raw).trim();
   if (!s) return null;
@@ -22,7 +26,7 @@ export function normalizePhone(raw: string | null | undefined): string | null {
   if (s.startsWith("00")) digits = digits.slice(2);
   // A local number (≤ 10 digits, possibly with a trunk 0) gets the default country code.
   if (!international && digits.length <= 10) {
-    digits = defaultCountryCode() + digits.replace(/^0+/, "");
+    digits = (dial?.replace(/\D/g, "") || defaultCountryCode()) + (opts.keepZero ? digits : digits.replace(/^0+/, ""));
   }
   if (digits.length < 8 || digits.length > 15) return null;
   return digits;

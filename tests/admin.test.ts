@@ -35,7 +35,10 @@ describe("updateAccount", () => {
 
     await updateAccount(admin, String(learner._id), { ...base, role: "instructor" });
     expect((await User.findById(learner._id))?.role).toBe("instructor");
-    await expect(updateAccount(manager, String(learner._id), { ...base, role: "account-manager" })).rejects.toThrow(/assign this role/);
+    // The account is an instructor now: above an account manager, who can't touch it at all.
+    await expect(updateAccount(manager, String(learner._id), { ...base, role: "user" })).rejects.toThrow(/Only an administrator/);
+    const other = await mk("kofi");
+    await expect(updateAccount(manager, String(other._id), { name: "Kofi", surname: "T", username: "kofi", email: "kofi@example.com", role: "account-manager" })).rejects.toThrow(/assign this role/);
     await expect(updateAccount(admin, String(learner._id), { ...base, role: "admin" })).rejects.toThrow(/assign this role/);
     await expect(updateAccount(admin, String(admin._id), { name: "B", surname: "T", username: "boss", email: "boss@example.com", role: "user" })).rejects.toThrow(/only be changed in the database/);
     await expect(updateAccount(manager, String(admin._id), { name: "B", surname: "T", username: "boss", email: "boss@example.com" })).rejects.toThrow(/Only an administrator/);

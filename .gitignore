@@ -49,3 +49,4 @@ next-env.d.ts
 
 # local storage driver (development uploads)
 /.uploads/
+testimonials.docx

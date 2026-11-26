@@ -6,7 +6,7 @@ import { refresh } from "next/cache";
 import { actorOf, allowed, staffOrThrow } from "@/lib/admin/context";
 import { can } from "@/lib/admin/permissions";
 import { errorMessage, AdminError } from "@/lib/admin/errors";
-import { revokeDevice, searchLearners, updateAccount, type LearnerMatch } from "@/lib/admin/users";
+import { assertCanManage, revokeDevice, searchLearners, updateAccount, type LearnerMatch } from "@/lib/admin/users";
 import * as content from "@/lib/admin/content";
 import * as steps from "@/lib/admin/steps";
 import { savePersona, setDefaultMonthlyMinutes } from "@/lib/ai/metering";
@@ -122,6 +122,7 @@ export async function updateUserAction(_: State, form: FormData): Promise<State>
 export async function toggleUserAction(form: FormData) {
   const me = await usersGuard();
   const userId = str(form, "userId");
+  await assertCanManage(actorOf(me), userId);
   if (str(form, "op") === "restore") await restoreUser(userId);
   else await deactivateUser({ _id: new Types.ObjectId(me.id), role: me.role }, userId);
   refresh();
@@ -130,8 +131,9 @@ export async function toggleUserAction(form: FormData) {
 /** New activation link (never activated) or reset link; emailed when possible, always shown to copy. */
 export async function accountLinkAction(_: State, form: FormData): Promise<State> {
   try {
-    await usersGuard();
+    const me = await usersGuard();
     const userId = str(form, "userId");
+    await assertCanManage(actorOf(me), userId);
     const user = await User.findById(userId).lean();
     if (!user) return { error: "Account not found." };
     const kind = str(form, "kind") === "activation" ? "activation" : "reset";
@@ -159,7 +161,8 @@ export async function accountLinkAction(_: State, form: FormData): Promise<State
 }
 
 export async function revokeDeviceAction(form: FormData) {
-  await usersGuard();
+  const me = await usersGuard();
+  await assertCanManage(actorOf(me), str(form, "userId"));
   await revokeDevice(str(form, "userId"), str(form, "deviceId"));
   refresh();
 }

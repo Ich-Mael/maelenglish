@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { countryName } from "@/lib/countries";
 import { Suspense } from "react";
 import Link from "next/link";
 import { connection } from "next/server";
@@ -53,7 +54,7 @@ async function Requests({ searchParams }: { searchParams: Promise<Record<string,
             const st = STATUS[r.status as keyof typeof STATUS];
             const offer = offerName(r.program ?? "");
             const hello = waLink(`Bonjour ${r.firstName}, ici l'équipe MaelEnglish. Merci pour votre demande (${offer}). `).replace(/^https:\/\/wa\.me\/\d+/, `https://wa.me/${r.phoneE164}`);
-            const create = `/admin/utilisateurs/nouveau?${new URLSearchParams({ prenom: r.firstName, nom: r.lastName, tel: r.phoneNumber, email: r.email ?? "" })}`;
+            const create = `/admin/utilisateurs/nouveau?${new URLSearchParams({ prenom: r.firstName, nom: r.lastName, tel: `+${r.phoneE164}`, email: r.email ?? "" })}`;
             return (
               <li key={String(r._id)} className="rounded-2xl border border-border bg-card p-4">
                 <div className="flex flex-wrap items-start gap-3">
@@ -66,7 +67,7 @@ async function Requests({ searchParams }: { searchParams: Promise<Record<string,
                     <p className="mt-1 text-sm text-muted-foreground">
                       {displayPhone(r.phoneE164)}
                       {r.email ? ` · ${r.email}` : ""} · {LEVEL[r.level ?? "unknown"]}
-                      {r.profession ? ` · ${r.profession}` : ""} · received on {fmtDate(r.createdAt)}
+                      {countryName(r.country) ? ` · ${countryName(r.country)}` : ""}{r.profession ? ` · ${r.profession}` : ""} · received on {fmtDate(r.createdAt)}
                     </p>
                     {r.message && <p className="mt-2 rounded-xl bg-muted/60 px-3 py-2 text-sm whitespace-pre-line text-ink/85">{r.message}</p>}
                   </div>

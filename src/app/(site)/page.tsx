@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowDown, ArrowRight, BadgeCheck, Laptop, LayoutGrid, Mic, Quote, Crown, Stethoscope, UserPlus, Users } from "lucide-react";
+import { ArrowDown, ArrowRight, BadgeCheck, Headphones, Laptop, LayoutGrid, Mic, Quote, Crown, Stethoscope, UserPlus, Users } from "lucide-react";
 import { PROGRAMS, whatsappLink } from "@/lib/catalog";
 import { COACHING, METHOD_STEPS, STATS, TESTIMONIALS } from "@/lib/content";
 import { GOAL_ICONS } from "@/components/site/icons";
@@ -244,7 +244,7 @@ function Stats() {
   return (
     <section aria-label="MaelEnglish en chiffres" className="bg-brand-deep py-12 text-white">
       <Container>
-        <dl className="grid grid-cols-2 gap-8 text-center lg:grid-cols-4">
+        <dl className="grid grid-cols-2 gap-8 text-center sm:grid-cols-3 [&>div:last-child:nth-child(odd)]:col-span-2 sm:[&>div:last-child:nth-child(odd)]:col-span-1">
           {STATS.map((s) => (
             <div key={s.label} className="reveal flex flex-col">
               <dt className="order-2 mt-1 text-sm text-white/70">{s.label}</dt>
@@ -260,26 +260,87 @@ function Stats() {
   );
 }
 
+/** « Coach Ish » and « Shadowing » stand out in the testimonials (the two things learners name most). */
+function Highlight({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/(Coach Ish|Shadowing)/g).map((part, i) =>
+        part === "Coach Ish" || part === "Shadowing" ? (
+          <strong key={i} className="font-semibold text-primary">
+            {part}
+          </strong>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+}
+
+// Brand rule: no solid red backgrounds — blue gradients, or white with a red ring.
+const AVATAR_TONES = ["bg-gradient-to-br from-primary to-brand-deep text-white", "border-2 border-coral bg-white text-coral-dark", "bg-gradient-to-br from-brand-deep to-primary text-white"];
+
 function Testimonials() {
+  // What learners name, counted from their own words (no invented figure).
+  const cited = (w: string) => TESTIMONIALS.filter((t) => t.text.includes(w)).length;
+  const themes = [
+    { icon: Mic, label: "Conversations avec Coach Ish", n: cited("Coach Ish") },
+    { icon: Headphones, label: "Shadowing pour la prononciation", n: cited("Shadowing") },
+  ].filter((x) => x.n > 0);
   return (
     <section id="temoignages" className="py-16 sm:py-20">
       <Container>
-        <SectionHead pill="Ils parlent l'anglais de leur métier" title="Des résultats concrets" />
+        <SectionHead pill="Ils parlent l'anglais de leur métier" title="Ce que disent nos apprenants" text="Des professionnels et des étudiants d'Afrique de l'Ouest, d'Afrique centrale et d'ailleurs racontent leur pratique sur MaelEnglish." />
+        <ul className="reveal mb-8 flex flex-wrap justify-center gap-2.5">
+          {themes.map((x) => (
+            <li key={x.label} className="flex items-center gap-2.5 rounded-full border-2 border-primary/15 bg-white py-1.5 pr-4 pl-1.5 text-sm text-brand-deep shadow-[0_1px_2px_rgb(20_31_77/0.06)]">
+              <span className="flex size-8 items-center justify-center rounded-full bg-brand-soft text-primary">
+                <x.icon className="size-4" aria-hidden />
+              </span>
+              <span>
+                <strong className="font-heading text-base">{x.label}</strong>
+                <span className="block text-muted-foreground sm:inline"><span className="hidden sm:inline"> · </span>cité par {x.n} apprenant{x.n > 1 ? "s" : ""} sur {TESTIMONIALS.length}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
         {/* Carousel (swipe on phones, arrows on desktop). No .reveal inside: it would follow the horizontal scroller. */}
         <Carousel label="Témoignages" prevLabel="Témoignages précédents" nextLabel="Témoignages suivants">
-          {TESTIMONIALS.map((t) => (
-            <figure key={t.name} className="flex w-full flex-col rounded-3xl border-2 border-border bg-card p-6 shadow-[0_1px_2px_rgb(20_31_77/0.05)]">
-              <Quote className="mb-3 size-7 text-coral" aria-hidden />
-              <blockquote className="flex-1 text-ink/90">« {t.text} »</blockquote>
-              <figcaption className="mt-5 flex items-center gap-3">
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary font-heading font-bold text-white" aria-hidden>
-                  {t.name.charAt(0)}
-                </span>
-                <span>
-                  <span className="block font-bold text-brand-deep">{t.name}</span>
-                  <span className="text-sm text-muted-foreground">{t.role}</span>
-                </span>
-              </figcaption>
+          {TESTIMONIALS.map((t, i) => (
+            <figure key={t.name} className="relative flex w-full flex-col overflow-clip rounded-3xl border-2 border-border bg-card shadow-[0_1px_2px_rgb(20_31_77/0.05),0_18px_36px_-24px_rgb(20_31_77/0.35)]">
+              <span aria-hidden className="h-1.5 bg-gradient-to-r from-primary via-primary to-coral" />
+              <div className="flex flex-1 flex-col p-6">
+                <div className="mb-4 flex flex-wrap items-center gap-2 text-xs font-bold">
+                  {t.program ? (
+                    <Link href={t.program === "coaching" ? "/coaching" : `/programmes/${t.program}`} className="rounded-full bg-brand-soft px-3 py-1 text-primary hover:bg-primary hover:text-white">
+                      {t.programLabel}
+                    </Link>
+                  ) : (
+                    <span className="rounded-full bg-brand-soft px-3 py-1 text-primary">{t.programLabel}</span>
+                  )}
+                </div>
+                <Quote className="mb-2 size-8 shrink-0 fill-coral/15 text-coral" aria-hidden />
+                <blockquote className="flex flex-1 flex-col gap-3">
+                  <p className="font-heading text-xl leading-snug font-extrabold text-balance text-brand-deep">« {t.headline} »</p>
+                  <p className="text-[15px] leading-relaxed text-ink/75">
+                    <Highlight text={t.text} />
+                  </p>
+                </blockquote>
+                <figcaption className="mt-6 flex items-center gap-3 border-t border-border pt-4">
+                  <span className={`flex size-11 shrink-0 items-center justify-center rounded-full ${AVATAR_TONES[i % AVATAR_TONES.length]} font-heading text-lg font-bold`} aria-hidden>
+                    {t.name.charAt(0)}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block font-bold text-brand-deep">{t.name}</span>
+                    <span className="block text-sm text-muted-foreground">
+                      {t.role} ·{" "}
+                      <span className="whitespace-nowrap">
+                        <span aria-hidden>{t.flag}</span> {t.country}
+                      </span>
+                    </span>
+                  </span>
+                </figcaption>
+              </div>
             </figure>
           ))}
         </Carousel>

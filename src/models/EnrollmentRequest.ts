@@ -17,6 +17,8 @@ const enrollmentRequestSchema = new Schema(
     phoneNumber: { type: String, required: true, trim: true },
     phoneE164: { type: String, required: true, index: true },
     email: { type: String, trim: true, lowercase: true, default: "" },
+    /** Country code from src/lib/countries.ts (« BF », « CI »…, « OTHER »), "" for older requests. */
+    country: { type: String, default: "", maxlength: 8 },
     /** Catalogue slug, « coaching », « challenge » or "" (not sure). */
     program: { type: String, default: "" },
     kind: { type: String, enum: ["enroll", "notify"], default: "enroll" },

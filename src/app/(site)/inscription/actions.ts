@@ -1,5 +1,6 @@
 "use server";
 
+import { countryName } from "@/lib/countries";
 import { connectDB } from "@/lib/db";
 import { clientIp } from "@/lib/auth/session";
 import { hitRateLimit } from "@/lib/auth/service";
@@ -20,6 +21,7 @@ export async function submitSignup(_: SignupState, form: FormData): Promise<Sign
     lastName: str(form, "lastName"),
     phoneNumber: str(form, "phoneNumber"),
     email: str(form, "email"),
+    country: str(form, "country"),
     program: str(form, "program"),
     kind: str(form, "kind"),
     level: str(form, "level"),
@@ -33,13 +35,16 @@ export async function submitSignup(_: SignupState, form: FormData): Promise<Sign
     await connectDB();
     const limit = await hitRateLimit(`signup:ip:${await clientIp()}`, 5, 60 * 60 * 1000);
     if (!limit.allowed) return { error: "Vous avez déjà envoyé plusieurs demandes. Réessayez plus tard ou écrivez-nous sur WhatsApp.", values };
+    // Backstop for the whole site (each request emails the admins).
+    const all = await hitRateLimit("signup:all", 60, 60 * 60 * 1000);
+    if (!all.allowed) return { error: "Trop de demandes en ce moment. Réessayez dans une heure ou écrivez-nous sur WhatsApp.", values };
 
     const r = await createRequest({ ...values, consent: form.get("consent") === "on" });
     const offer = offerName(r.program ?? "");
     try {
       const to = await adminEmails();
       if (to.length) {
-        await sendNewRequestEmail(to, { name: `${r.firstName} ${r.lastName}`, phone: displayPhone(r.phoneE164), email: r.email ?? "", offer, kind: r.kind ?? "enroll", message: r.message ?? "" });
+        await sendNewRequestEmail(to, { name: `${r.firstName} ${r.lastName}`, phone: displayPhone(r.phoneE164), email: r.email ?? "", country: countryName(r.country), offer, kind: r.kind ?? "enroll", message: r.message ?? "" });
       }
     } catch (e) {
       console.error("signup notification", e); // the request is saved anyway
@@ -47,6 +52,7 @@ export async function submitSignup(_: SignupState, form: FormData): Promise<Sign
     const summary = [
       `Bonjour, je viens d'envoyer une demande ${r.kind === "notify" ? "d'information" : "d'inscription"} sur le site MaelEnglish.`,
       `Nom : ${r.firstName} ${r.lastName}`,
+      ...(countryName(r.country) ? [`Pays : ${countryName(r.country)}`] : []),
       `Programme : ${offer}`,
     ].join("\n");
     return { ok: true, firstName: r.firstName, offer, kind: r.kind ?? "enroll", summary };

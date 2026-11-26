@@ -170,9 +170,9 @@ export function enrollmentEmail(p: EnrollmentEmail): Omit<Mail, "to"> {
 }
 
 /** Staff notification: a new sign-up request arrived from /inscription. */
-export function sendNewRequestEmail(to: string[], r: { name: string; phone: string; email: string; offer: string; kind: string; message: string }) {
+export function sendNewRequestEmail(to: string[], r: { name: string; phone: string; email: string; country?: string; offer: string; kind: string; message: string }) {
   const url = appUrl("/admin/demandes");
-  const lines = [`Nom : ${r.name}`, `WhatsApp : ${r.phone}`, r.email && `Email : ${r.email}`, `Programme : ${r.offer}`, r.message && `Message : ${r.message}`].filter(Boolean) as string[];
+  const lines = [`Nom : ${r.name}`, r.country && `Pays : ${r.country}`, `WhatsApp : ${r.phone}`, r.email && `Email : ${r.email}`, `Programme : ${r.offer}`, r.message && `Message : ${r.message}`].filter(Boolean) as string[];
   return send({
     to: to.join(", "),
     subject: `${r.kind === "notify" ? "Demande d'information" : "Nouvelle demande d'inscription"} : ${r.name}`,

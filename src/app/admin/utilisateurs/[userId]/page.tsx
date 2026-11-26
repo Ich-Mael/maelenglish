@@ -7,7 +7,7 @@ import { Monitor, Smartphone, Tablet } from "lucide-react";
 import { requireStaff, actorOf } from "@/lib/admin/context";
 import { can } from "@/lib/admin/permissions";
 import { assignableRoles } from "@/lib/auth/accounts";
-import { userDetail } from "@/lib/admin/users";
+import { canManageAccount, userDetail } from "@/lib/admin/users";
 import { accessState, ADMIN_ROLES } from "@/models";
 import { Card, Input, PageHeader, Pill, ROLE_LABELS, Select, fmtDate } from "@/components/admin/ui";
 import { ActionButton, AdminForm, Submit } from "@/components/admin/forms";
@@ -51,6 +51,8 @@ async function UserView({ params }: { params: Promise<{ userId: string }> }) {
   const storyEnts = stories.length ? await StoryEntitlement.find({ userId: u._id }).lean() : [];
   const storyUsed = await Promise.all(stories.map((s) => (storyEnts.some((e) => e.storyId === s.id) ? storySecondsUsed(String(u._id), s.id) : 0)));
   const isSelf = String(u._id) === me.id;
+  // Account managers can't act on admin or instructor accounts (reset links would let them take them over).
+  const manageable = canManageAccount(actorOf(me), u);
   const coachings = u.role === "user" ? await Coaching.find({ memberIds: u._id }).select("title status kind").sort({ updatedAt: -1 }).lean() : [];
 
   return (
@@ -69,7 +71,7 @@ async function UserView({ params }: { params: Promise<{ userId: string }> }) {
           </span>
         }
         actions={
-          !isSelf && !isAdminAccount ? (
+          !isSelf && !isAdminAccount && manageable ? (
             <ActionButton
               action={toggleUserAction}
               fields={{ userId: String(u._id), op: active ? "deactivate" : "restore" }}
@@ -189,7 +191,7 @@ async function UserView({ params }: { params: Promise<{ userId: string }> }) {
             </Card>
           )}
           <Card title={d.activated ? "Password" : "Activation"} description={d.activated ? "Forgotten password? Generate a link valid for 1 hour." : "The person hasn't chosen their password yet."}>
-            <AccountLinkForm userId={String(u._id)} kind={d.activated ? "reset" : "activation"} hasEmail={!!u.email} />
+            {manageable ? <AccountLinkForm userId={String(u._id)} kind={d.activated ? "reset" : "activation"} hasEmail={!!u.email} /> : <p className="text-sm text-muted-foreground">Only an administrator can send this account a link.</p>}
           </Card>
         </div>
       </div>
@@ -318,9 +320,9 @@ async function UserView({ params }: { params: Promise<{ userId: string }> }) {
                       Seen on {fmtDate(dv.lastLogin)} · IP {dv.ipAddress || "?"}
                     </span>
                   </span>
-                  <ActionButton action={revokeDeviceAction} fields={{ userId: String(u._id), deviceId: dv.deviceId }} variant="secondary" confirm="Remove this device and sign it out?">
+                  {manageable && <ActionButton action={revokeDeviceAction} fields={{ userId: String(u._id), deviceId: dv.deviceId }} variant="secondary" confirm="Remove this device and sign it out?">
                     Remove
-                  </ActionButton>
+                  </ActionButton>}
                 </li>
               );
             })}

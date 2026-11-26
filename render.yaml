@@ -64,3 +64,11 @@ services:
         sync: false
       - key: ELEVENLABS_API_KEY
         sync: false
+      - key: DAILY_API_KEY # coaching live sessions (Daily Prebuilt)
+        sync: false
+      - key: CINETPAY_API_KEY # online payments (Shop)
+        sync: false
+      - key: CINETPAY_SITE_ID
+        sync: false
+      - key: NEXT_PUBLIC_PROGRAM_URL # diagnostic report CTA — read at BUILD time (redeploy after changing it)
+        sync: false

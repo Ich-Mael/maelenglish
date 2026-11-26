@@ -30,6 +30,9 @@ export async function submitDiagnosticAction(token: string, answers: unknown, le
     await connectDB();
     const rl = await hitRateLimit(`diag-submit:${await clientIp()}`, 8, 3600_000);
     if (!rl.allowed) return { ok: false, error: "Trop de rapports demandés : réessayez dans une heure." };
+    // Backstop for the whole site: each report is a paid AI call and an email to the address typed.
+    const all = await hitRateLimit("diag-submit:all", 120, 3600_000);
+    if (!all.allowed) return { ok: false, error: "Le service est très demandé en ce moment : réessayez dans une heure." };
     const done = await submitDiagnostic(token, answers, lead);
     const result: DiagnosticResult = { firstName: done.firstName, report: done.report, primary: done.primary, secondary: done.secondary, source: done.source };
     // The report is also emailed to the person, after the response (never delays the screen).

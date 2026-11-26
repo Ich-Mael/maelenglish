@@ -18,7 +18,7 @@ beforeEach(async () => {
   await Promise.all(mongoose.modelNames().map((n) => mongoose.model(n).deleteMany({})));
 });
 
-const valid = { firstName: "Awa", lastName: "Ouédraogo", phoneNumber: "70 12 34 56", consent: true };
+const valid = { firstName: "Awa", lastName: "Ouédraogo", phoneNumber: "70 12 34 56", country: "BF", consent: true };
 
 describe("sign-up requests", () => {
   it("validates required fields, phone, email and consent", async () => {
@@ -26,6 +26,12 @@ describe("sign-up requests", () => {
     await expect(createRequest({ ...valid, phoneNumber: "12" })).rejects.toThrow(/WhatsApp valide/);
     await expect(createRequest({ ...valid, email: "not-an-email" })).rejects.toThrow(/email/);
     await expect(createRequest({ ...valid, consent: false })).rejects.toThrow(/recontactions/);
+    // The country: required; its calling code completes a number typed without one.
+    await expect(createRequest({ ...valid, country: "" })).rejects.toThrow(/pays/);
+    expect((await createRequest({ ...valid, country: "CI", phoneNumber: "07 07 12 34 56" })).phoneE164).toBe("2250707123456");
+    expect((await createRequest({ ...valid, country: "CI", phoneNumber: "+226 70 12 34 56" })).phoneE164).toBe("22670123456");
+    await expect(createRequest({ ...valid, country: "OTHER", phoneNumber: "7700 900123" })).rejects.toThrow(/indicatif/);
+    expect((await createRequest({ ...valid, country: "OTHER", phoneNumber: "+44 7700 900123" })).country).toBe("OTHER");
   });
 
   it("normalises the phone, keeps known offers only, defaults the rest", async () => {

@@ -7,11 +7,12 @@
  * - never caches POST (server actions), admin, auth or account pages.
  * Bump VERSION to invalidate the caches.
  */
-const VERSION = "v3";
+const VERSION = "v4";
 const STATIC = `me-static-${VERSION}`;
 const PAGES = `me-pages-${VERSION}`;
 const OFFLINE_URL = "/offline.html"; // self-contained (no Next.js scripts), always renders
-const NO_CACHE = /^\/(admin|api|compte|connexion|activer|reinitialiser|installation|mot-de-passe-oublie)(\/|$)/;
+// Also never kept: payments, private diagnostic reports (the link is the key) and live sessions (meeting tokens).
+const NO_CACHE = /^\/(admin|api|compte|connexion|activer|reinitialiser|installation|mot-de-passe-oublie|paiement|diagnostic\/rapport)(\/|$)|^\/mon-coaching\/[^/]+\/seance\//;
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

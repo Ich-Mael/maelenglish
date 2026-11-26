@@ -25,6 +25,23 @@ export type UserEdit = {
 };
 
 /**
+ * May this staff member act on this account (edit, reset / activation link, devices, deactivate /
+ * restore)? Admins: any account (admin accounts only by admins). Account managers: only the roles
+ * they can assign (learners, English coaches) — otherwise a reset link would let them take over an
+ * admin's or an instructor's account.
+ */
+export function canManageAccount(actor: { role?: string | null }, target: { role?: string | null }): boolean {
+  if (hasRole(actor, ADMIN_ROLES)) return true;
+  return assignableRoles(actor as Actor).includes((target.role ?? "user") as Role); // only the role is read
+}
+
+export async function assertCanManage(actor: { role?: string | null }, userId: string): Promise<void> {
+  const target = Types.ObjectId.isValid(userId) ? await User.findById(userId).select("role").lean() : null;
+  if (!target) throw new AdminError("Account not found.");
+  if (!canManageAccount(actor, target)) throw new AdminError(hasRole(target, ADMIN_ROLES) ? "Only an administrator can manage this account." : "Only an administrator can manage this account (its role is above yours).");
+}
+
+/**
  * Profile edit by staff. Role rules (from the original app): admin / super-admin roles are
  * never granted or removed from the app, and the role must be assignable by
  * the actor (account managers cannot escalate).
@@ -32,7 +49,7 @@ export type UserEdit = {
 export async function updateAccount(actor: Actor, userId: string, data: UserEdit): Promise<void> {
   const user = await User.findById(userId);
   if (!user) throw new AdminError("Account not found.");
-  if (hasRole(user, ADMIN_ROLES) && !hasRole(actor, ADMIN_ROLES)) throw new AdminError("Only an administrator can edit this account.");
+  if (!canManageAccount(actor, user)) throw new AdminError("Only an administrator can edit this account.");
 
   if (data.role && data.role !== user.role) {
     if (hasRole(user, ADMIN_ROLES)) throw new AdminError("An administrator's role can only be changed in the database.");

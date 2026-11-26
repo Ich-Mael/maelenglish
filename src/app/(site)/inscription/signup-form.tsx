@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 import { PROGRAMS, shortProgramName } from "@/lib/catalog";
+import { COUNTRIES, OTHER_COUNTRY, countryOf } from "@/lib/countries";
 import { waLink } from "@/lib/site";
 import { FormMessage, SubmitButton } from "@/components/auth/form-parts";
 import { WhatsAppButton } from "@/components/site/ui";
@@ -35,6 +36,7 @@ function Field({ label, name, hint, error, children }: { label: string; name: st
 export function SignupForm({ program, kind }: { program: string; kind: "enroll" | "notify" }) {
   const [state, action] = useActionState<SignupState, FormData>(submitSignup, undefined);
   const [level, setLevel] = useState("unknown");
+  const [countryPicked, setCountry] = useState<string | null>(null);
 
   if (state && "ok" in state) {
     return (
@@ -62,6 +64,8 @@ export function SignupForm({ program, kind }: { program: string; kind: "enroll" 
   const v = (state && "values" in state && state.values) || {};
   const err = state && "error" in state ? state : undefined;
   const bad = (f: string) => err?.field === f;
+  const country = countryPicked ?? v.country ?? "BF";
+  const dial = countryOf(country)?.dial ?? "";
 
   return (
     <form action={action} className="grid gap-5" noValidate>
@@ -83,8 +87,19 @@ export function SignupForm({ program, kind }: { program: string; kind: "enroll" 
         </Field>
       </div>
 
+      <Field label="Pays" name="country" error={bad("country")} hint={bad("country") ? "Choisissez votre pays." : undefined}>
+        <select id="country" name="country" required value={country} onChange={(e) => setCountry(e.target.value)} aria-invalid={bad("country")} className={cn(input, "pr-10")}>
+          {COUNTRIES.map((c) => (
+            <option key={c.code} value={c.code}>
+              {c.name}
+            </option>
+          ))}
+          <option value={OTHER_COUNTRY}>Autre pays</option>
+        </select>
+      </Field>
+
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Numéro WhatsApp" name="phoneNumber" hint="Ex. 70 12 34 56, ou +225… hors du Burkina Faso." error={bad("phoneNumber")}>
+        <Field label="Numéro WhatsApp" name="phoneNumber" hint={dial ? `Sans l'indicatif : +${dial} est ajouté automatiquement.` : "Avec l'indicatif du pays, ex. +44 7700 900123."} error={bad("phoneNumber")}>
           <input id="phoneNumber" name="phoneNumber" type="tel" required autoComplete="tel" inputMode="tel" defaultValue={v.phoneNumber} aria-invalid={bad("phoneNumber")} className={input} />
         </Field>
         <Field label="Email (facultatif)" name="email" error={bad("email")}>

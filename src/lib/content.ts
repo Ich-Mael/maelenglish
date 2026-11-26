@@ -18,15 +18,67 @@ export const METHOD_FACTS = [
 export const STATS = [
   { value: "40", suffix: "+", label: "Professionnels formés par Coach Ish" },
   { value: String(PROGRAMS.length), suffix: "", label: "Programmes, de l'anglais général aux métiers" },
-  { value: "50", suffix: " h", label: "De contenu par programme métier" },
   { value: "100", suffix: " %", label: "En ligne, sur ordinateur ou téléphone" },
 ];
 
-export const TESTIMONIALS = [
-  { text: "Grâce au coaching MaelEnglish, j'ai pu décrocher un poste à l'international. La méthode est incroyablement efficace et pragmatique.", name: "Sarah K.", role: "Directrice Marketing · Coaching" },
-  { text: "L'ambiance des cours en groupe est géniale. On apprend sans stress, et les progrès sont visibles dès les premières semaines.", name: "Mohamed D.", role: "Ingénieur logiciel · Cours en groupe" },
-  { text: "J'avais peur de parler anglais, mais les coachs m'ont donné confiance. Aujourd'hui, je mène des réunions en anglais sans hésitation.", name: "Aminata T.", role: "Entrepreneure" },
-  { text: "Une formation adaptée aux réalités du business. Mon anglais est maintenant un atout majeur pour mes négociations.", name: "Jean-Marc B.", role: "Commercial" },
+/**
+ * Real learners' testimonials (owner document « testimonials.docx », 2026-11-26), published with their
+ * agreement. Only light edits: brand spellings (« Coach Ish », « MaelEnglish », catalogue programme
+ * names) and Moussa's country flag (🇨🇮, the document had 🇧🇯). `program` = catalogue slug or « coaching »
+ * (linked), null = no page. Ibrahim followed a coaching with his team (the document said « English for Project Management »).
+ */
+export type Testimonial = { program: string | null; programLabel: string; headline: string; text: string; name: string; role: string; country: string; flag: string };
+export const TESTIMONIALS: Testimonial[] = [
+  {
+    program: "aviation",
+    programLabel: "MaelEnglish for Aviation",
+    headline: "Je n'apprends pas seulement le vocabulaire aéronautique, je m'entraîne réellement à communiquer.",
+    text: "Les exercices de Shadowing m'ont beaucoup aidé à améliorer ma prononciation et ma compréhension orale. J'apprécie également la possibilité de simuler des conversations professionnelles avec Coach Ish, l'assistant conversationnel basé sur l'IA. Même si la formation est entièrement en ligne, je suis constamment amené à pratiquer l'anglais.",
+    name: "Moussa Traoré",
+    role: "Professionnel de l'aviation",
+    country: "Côte d'Ivoire",
+    flag: "🇨🇮",
+  },
+  {
+    program: "coaching",
+    programLabel: "MaelEnglish Coaching · en équipe",
+    headline: "Ce que j'apprécie le plus, c'est que je pratique réellement l'anglais au lieu de simplement l'étudier.",
+    text: "En tant que chef de projet, j'ai besoin de l'anglais pour participer aux réunions, présenter mes idées et collaborer avec des partenaires internationaux. Les activités proposées sur la plateforme me permettent de travailler le vocabulaire professionnel et de développer mon expression orale. Avec Coach Ish, je peux également m'entraîner à des conversations proches de situations réelles.",
+    name: "Ibrahim Diarra",
+    role: "Chef de projet",
+    country: "Mali",
+    flag: "🇲🇱",
+  },
+  {
+    program: "business",
+    programLabel: "MaelEnglish for Business",
+    headline: "Je peux désormais pratiquer mon anglais professionnel à mon propre rythme.",
+    text: "Ce que j'aime particulièrement chez MaelEnglish, c'est son approche pratique. Je peux améliorer ma compréhension orale, répéter des expressions utiles grâce au Shadowing et simuler des conversations professionnelles avec Coach Ish. La plateforme me permet d'apprendre à mon rythme tout en développant des compétences directement utiles dans mon travail.",
+    name: "Nadine Moussavou",
+    role: "Responsable commerciale",
+    country: "Gabon",
+    flag: "🇬🇦",
+  },
+  {
+    program: "essentials",
+    programLabel: "MaelEnglish Essentials",
+    headline: "J'ai enfin davantage d'occasions de parler anglais et de gagner en confiance.",
+    text: "Je comprenais quelques expressions en anglais, mais j'avais beaucoup de difficultés à m'exprimer. Grâce aux activités interactives et aux conversations avec Coach Ish, je peux maintenant m'entraîner régulièrement. J'apprécie particulièrement de pouvoir discuter avec l'intelligence artificielle sans avoir peur de faire des erreurs. Les exercices de Shadowing m'aident également à améliorer ma prononciation.",
+    name: "Kevin Ahouandjinou",
+    role: "Étudiant",
+    country: "Bénin",
+    flag: "🇧🇯",
+  },
+  {
+    program: "essentials",
+    programLabel: "MaelEnglish Essentials",
+    headline: "Une formation en ligne qui vous pousse réellement à passer à la pratique.",
+    text: "J'apprécie la flexibilité de la plateforme, mais ce qui fait vraiment la différence, c'est l'importance accordée à la pratique. Entre les exercices de compréhension orale, le Shadowing et les conversations avec Coach Ish, je suis constamment encouragée à utiliser l'anglais. C'est beaucoup plus motivant que de simplement regarder des vidéos ou mémoriser des règles de grammaire.",
+    name: "Aminata Diallo",
+    role: "Assistante administrative",
+    country: "France",
+    flag: "🇫🇷",
+  },
 ];
 
 /**

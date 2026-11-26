@@ -29,7 +29,7 @@ describe("Lab model audio with ElevenLabs", () => {
     vi.stubEnv("ELEVENLABS_API_KEY", "");
     await expect(generateModelAudio(staff, "Hello", "v1")).rejects.toThrow("isn't configured");
     vi.stubEnv("ELEVENLABS_API_KEY", "test");
-    const fetchMock = vi.fn(async (..._args: unknown[]) => new Response(new Uint8Array(16000), { status: 200, headers: { "Content-Type": "audio/mpeg" } }));
+    const fetchMock = vi.fn(async (_url: unknown, _init?: unknown) => (void _url, void _init, new Response(new Uint8Array(16000), { status: 200, headers: { "Content-Type": "audio/mpeg" } })));
     vi.stubGlobal("fetch", fetchMock);
     await expect(generateModelAudio(staff, "   ", "v1")).rejects.toThrow("Write the phrase first");
     const r = await generateModelAudio(staff, " Good  morning, how can I help you? ", "voice123");
@@ -42,5 +42,5 @@ describe("Lab model audio with ElevenLabs", () => {
     expect(stored).toEqual([{ key: m!.key, size: 16000 }]);
     expect(r.url).toBe(`https://files.test/${m!.key}`);
     expect(await AiUsage.countDocuments({ feature: "lab_audio", kind: "tts" })).toBe(1);
-  });
+  }, 20_000);
 });

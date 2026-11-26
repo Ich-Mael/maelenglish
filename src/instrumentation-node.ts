@@ -38,6 +38,12 @@ export function checkConfig() {
   if (!process.env.ELEVENLABS_API_KEY) {
     warn("ELEVENLABS_API_KEY non configuré : le partenaire de conversation IA (Talk with Coach Ish) n'est pas disponible.");
   }
+  if (!process.env.DAILY_API_KEY) {
+    warn("DAILY_API_KEY non configuré : les séances de coaching en direct utilisent le lien de secours (Zoom / Meet) du coaching.");
+  }
+  if (!process.env.CINETPAY_API_KEY || !process.env.CINETPAY_SITE_ID) {
+    warn("CINETPAY_API_KEY / CINETPAY_SITE_ID non configurés : la boutique n'accepte pas de paiement en ligne (WhatsApp proposé).");
+  }
   if (!process.env.AZURE_SPEECH_KEY || !process.env.AZURE_SPEECH_REGION) {
     warn("AZURE_SPEECH_KEY / AZURE_SPEECH_REGION non configurés : le dictionnaire utilise les enregistrements disponibles ou la voix du navigateur.");
   }
