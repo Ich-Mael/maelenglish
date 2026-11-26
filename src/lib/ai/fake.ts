@@ -1,4 +1,4 @@
-import type { DailyWord, GoalExpression, SentenceCheck, DiagnosticReportInput, ConversationAgentSpec, ConversationEngine, ConversationTurn, Debrief, FinishedConversation, HelpSuggestion, Persona, RolePlayBrief, Voice, AudioInput, DrillGrade, DrillGradeInput, FeedbackService, LlmUsage, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput, PronunciationResult, PronunciationService, SpeechService, SynthesizedAudio, Transcript, TtsService } from "./types";
+import type { DailyWord, GapPracticeInput, GapPracticeText, GoalExpression, SentenceCheck, DiagnosticReportInput, ConversationAgentSpec, ConversationEngine, ConversationTurn, Debrief, FinishedConversation, HelpSuggestion, Persona, RolePlayBrief, Voice, AudioInput, DrillGrade, DrillGradeInput, FeedbackService, LlmUsage, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput, PronunciationResult, PronunciationService, SpeechService, SynthesizedAudio, Transcript, TtsService } from "./types";
 import { normalizeEnglish, words } from "./text";
 
 /*
@@ -173,6 +173,16 @@ export class FakeFeedbackService implements FeedbackService {
       if (!input.avoid.includes(t)) items.push({ text: t, translation: `[FR] ${t}`, frNote: "Note.", example: `I use ${t} for my goal.`, exampleFr: "[FR] exemple" });
     }
     return { items, usage: { inputTokens: 0, outputTokens: 0, costMicros: 0, provider: "fake" } };
+  }
+
+  /** Deterministic: one sentence per item, or a story of two items per paragraph. */
+  async gapPractice(input: GapPracticeInput): Promise<{ text: GapPracticeText; usage: LlmUsage }> {
+    const sentence = (t: string) => `At work today, I had to use [${t}] with a client.`;
+    const lines =
+      input.mode === "sentences"
+        ? input.items.map((i) => ({ en: sentence(i.text), fr: `[FR] ${i.text}` }))
+        : Array.from({ length: Math.ceil(input.items.length / 2) }, (_, n) => ({ en: input.items.slice(n * 2, n * 2 + 2).map((i) => sentence(i.text)).join(" "), fr: "[FR] paragraphe" }));
+    return { text: { title: input.mode === "story" ? "A busy day" : "Expressions at work", lines }, usage: { inputTokens: 0, outputTokens: 0, costMicros: 0, provider: "fake" } };
   }
 
   /** Deterministic: ok when the sentence contains the word and starts with a capital. */

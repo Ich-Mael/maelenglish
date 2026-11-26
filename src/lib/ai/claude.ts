@@ -2,7 +2,7 @@ import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import * as z from "zod/v4";
-import type { DailyWord, GoalExpression, SentenceCheck, DiagnosticReportInput, ConversationTurn, Debrief, DrillGrade, DrillGradeInput, FeedbackService, HelpSuggestion, LlmUsage, Persona, RolePlayBrief, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput } from "./types";
+import type { DailyWord, GapPracticeInput, GapPracticeText, GoalExpression, SentenceCheck, DiagnosticReportInput, ConversationTurn, Debrief, DrillGrade, DrillGradeInput, FeedbackService, HelpSuggestion, LlmUsage, Persona, RolePlayBrief, WordTranslation, WordTranslationInput, WritingCorrection, WritingCorrectionInput } from "./types";
 
 /*
  * Claude feedback (DECISIONS.md: Claude for feedback): writing correction for the Lab « writing
@@ -97,6 +97,17 @@ const HELP_SYSTEM = `A French-speaking learner of English is in the middle of a 
 
 const DailySchema = z.object({ words: z.array(z.object({ word: z.string(), translation: z.string(), frNote: z.string(), examples: z.array(z.object({ en: z.string(), fr: z.string() })) })) });
 const GoalVocabSchema = z.object({ items: z.array(z.object({ text: z.string(), translation: z.string(), frNote: z.string(), example: z.string(), exampleFr: z.string() })) });
+const GapsSchema = z.object({ title: z.string(), lines: z.array(z.object({ en: z.string(), fr: z.string() })) });
+const GAPS_SYSTEM = `You write fill-the-gaps practice for French-speaking professionals in West Africa learning English (A2-B2). You get the English words or expressions the learner is learning (with their French meaning) and the learner's work context.
+
+Mode "sentences": one sentence per item, NOT in the order given. Each sentence: 8 to 20 words, natural English at work in the learner's context, with enough context to guess the missing item. Each sentence uses exactly one item. One sentence per entry of "lines".
+Mode "story": a short, coherent story (120 to 180 words) about one working day of a person in the learner's context, in 3 to 5 paragraphs (one paragraph per entry of "lines"). Use EVERY item exactly once, spread across the story, each where its meaning is clear.
+
+Brackets: write each item inside square brackets, exactly as given when the grammar allows; otherwise inflect it (verb tense, plural, third person -s) and keep the rest of the item unchanged. If an item contains a placeholder (someone, something, one's), replace it with real words, inside the brackets. Never put anything else in square brackets. Never use the characters "|" or "@".
+The rest of the text: simple, clear English (A2-B2), correct grammar and punctuation.
+fr: the natural French translation of that sentence / paragraph, without brackets.
+title: a short English title (the story's title; for sentences, e.g. "Expressions at work").`;
+
 const SentenceSchema = z.object({ ok: z.boolean(), corrected: z.string(), explanation: z.string() });
 
 // Frozen (cache-friendly).
@@ -272,6 +283,18 @@ export class ClaudeFeedbackService implements FeedbackService {
     });
     if (!response.parsed_output) throw new Error("Coaching vocabulary unavailable.");
     return { items: response.parsed_output.items.slice(0, input.count), usage: { inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens, costMicros: costMicros(response.usage.input_tokens, response.usage.output_tokens), provider: `anthropic:${CLAUDE_FEEDBACK_MODEL}` } };
+  }
+
+  async gapPractice(input: GapPracticeInput): Promise<{ text: GapPracticeText; usage: LlmUsage }> {
+    const response = await this.client.messages.parse({
+      model: CLAUDE_FEEDBACK_MODEL,
+      max_tokens: 4000,
+      output_config: { effort: "low", format: zodOutputFormat(GapsSchema) },
+      system: GAPS_SYSTEM,
+      messages: [{ role: "user", content: `Mode: ${input.mode}\nLearner's context: ${input.context || "a professional in an office"}\nItems:\n${input.items.map((i, n) => `${n + 1}. ${i.text}${i.translation ? ` (French: ${i.translation})` : ""}`).join("\n")}` }],
+    });
+    if (!response.parsed_output) throw new Error("Fill-the-gaps practice unavailable.");
+    return { text: response.parsed_output, usage: { inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens, costMicros: costMicros(response.usage.input_tokens, response.usage.output_tokens), provider: `anthropic:${CLAUDE_FEEDBACK_MODEL}` } };
   }
 
   async checkSentence(input: { word: string; translation: string; sentence: string }): Promise<{ result: SentenceCheck; usage: LlmUsage }> {

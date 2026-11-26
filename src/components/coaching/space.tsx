@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BarChart3, BookOpen, CalendarClock, CheckCircle2, ChevronRight, Languages, Library, ExternalLink, FileText, Flag, GraduationCap, Headphones, Link2, ListChecks, MessagesSquare, Mic, PlayCircle, Settings, Target, Users, Video } from "lucide-react";
+import { BarChart3, BookOpen, CalendarClock, CheckCircle2, ChevronRight, Languages, Library, ExternalLink, FileText, Flag, GraduationCap, Headphones, Link2, ListChecks, MessagesSquare, Mic, PlayCircle, Settings, Target, TextCursorInput, Users, Video } from "lucide-react";
 import type { Viewer } from "@/lib/coaching/service";
 import { assignOptions, loadSpace, loadSubmissions, loadThread, type Space } from "@/lib/coaching/queries";
 import { coachingAssessmentPath, coachingSessionPath, coachingTaskPath } from "@/lib/coaching/paths";
@@ -494,8 +494,33 @@ async function DailyVocab({ s, viewer, coach }: { s: Space; viewer: Viewer; coac
       ) : (
         <Empty>{s.coaching.status !== "active" ? "This coaching is paused or completed: no new expressions." : "Today's expressions aren't ready. Come back in a moment."}</Empty>
       )}
+      {vocab && <GapsCard coachingId={id} coach={coach} />}
       {review && !review.due && <ReviewCard {...review} />}
     </section>
+  );
+}
+
+/** Fill the gaps with the last 7 days' expressions (sentences or a story), shared by the group. */
+function GapsCard({ coachingId, coach }: { coachingId: string; coach: boolean }) {
+  const href = (m: string) => `/mon-coaching/${coachingId}/trous?mode=${m}`;
+  return (
+    <div className="flex flex-wrap items-center gap-3 rounded-3xl border-2 border-border bg-card p-4">
+      <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-brand-soft text-primary">
+        <TextCursorInput className="size-6" aria-hidden />
+      </span>
+      <div className="min-w-[12rem] flex-1">
+        <p className="font-bold text-brand-deep">Fill the gaps with this week&apos;s expressions</p>
+        <p className="text-sm text-muted-foreground">{coach ? "A new text every day from the last 7 days' expressions, the same for the whole group. Try it and see everyone's score." : "Unrelated sentences, or a short story using them all. A new text every day, the same for the whole group."}</p>
+      </div>
+      <div className="flex w-full gap-2 sm:w-auto [&>a]:flex-1 [&>a]:justify-center sm:[&>a]:flex-none">
+        <Link href={href("sentences")} className="inline-flex h-11 items-center gap-1.5 rounded-xl bg-primary px-4 text-sm font-bold text-white shadow-[0_4px_0_0_var(--color-brand-dark)]">
+          Sentences
+        </Link>
+        <Link href={href("story")} className="inline-flex h-11 items-center gap-1.5 rounded-xl border-2 border-primary/30 bg-white px-4 text-sm font-bold text-brand-deep hover:border-primary">
+          Story
+        </Link>
+      </div>
+    </div>
   );
 }
 

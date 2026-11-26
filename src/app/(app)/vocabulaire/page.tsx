@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { connection } from "next/server";
-import { ArrowRight, BookOpenCheck, CalendarClock, NotebookPen, PenLine, Search, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpenCheck, CalendarClock, NotebookPen, PenLine, Search, Sparkles, TextCursorInput } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
 import { connectDB } from "@/lib/db";
 import { User } from "@/models";
@@ -110,6 +110,25 @@ async function Vocabulary() {
           <p className="text-muted-foreground">Use your words in sentences about your work: they are corrected at once, and come back in your tests.</p>
           <p className="text-sm font-bold text-primary">{stats.sentences ? `${stats.sentences} sentence${stats.sentences === 1 ? "" : "s"} written` : "Write your first sentence"} →</p>
         </Link>
+
+        <div className="grid content-start gap-2 rounded-[2rem] border border-border bg-card p-6">
+          <p className="flex items-center gap-2 font-heading text-xl font-extrabold text-brand-deep">
+            <TextCursorInput className="size-6 text-primary" aria-hidden /> Fill the gaps
+          </p>
+          <p className="text-muted-foreground">Your own words in sentences about your work, or in a short story: find the missing word. They count as a review.</p>
+          {stats.words >= 3 ? (
+            <div className="mt-1 flex flex-wrap gap-2">
+              <Link href="/vocabulaire/trous?mode=sentences" className="inline-flex h-11 items-center rounded-xl bg-primary px-4 font-bold text-white shadow-[0_4px_0_0_var(--color-brand-dark)]">
+                Sentences
+              </Link>
+              <Link href="/vocabulaire/trous?mode=story" className="inline-flex h-11 items-center rounded-xl border-2 border-primary/30 bg-white px-4 font-bold text-brand-deep hover:border-primary">
+                A story
+              </Link>
+            </div>
+          ) : (
+            <p className="text-sm font-bold text-muted-foreground">Save at least 3 words to start.</p>
+          )}
+        </div>
 
         <Link href="/carnet" className="group grid content-start gap-2 rounded-[2rem] border border-border bg-card p-6 transition hover:-translate-y-0.5 hover:border-primary/40 motion-reduce:transition-none">
           <p className="flex items-center gap-2 font-heading text-xl font-extrabold text-brand-deep group-hover:text-primary">

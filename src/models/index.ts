@@ -23,3 +23,4 @@ export * from "./ProfessionWords";
 export * from "./Story";
 export * from "./Coaching";
 export * from "./Payment";
+export * from "./GapPractice";

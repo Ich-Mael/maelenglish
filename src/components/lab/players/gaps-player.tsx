@@ -4,6 +4,7 @@ import { useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { AudioLines, Check, Headphones, TextCursorInput, X } from "lucide-react";
 import { submitLabAttempt } from "@/app/(app)/learn-actions";
+import type { Reward } from "@/lib/gamification/service";
 import { pushReward } from "@/components/gamify/reward-store";
 import { playSound } from "@/components/gamify/sound";
 import { checkItem, gradeActivity } from "@/lib/lab/grade";
@@ -27,6 +28,8 @@ import { cn } from "cn";
  */
 
 export type ListenMode = { audioUrl: string | null; maxPlays: number; context?: React.ReactNode };
+/** Outside a course (fill the gaps with my expressions): sends the first check's answers somewhere else. */
+export type GapsSubmit = (answers: Record<string, string>, timeSpentS: number) => Promise<{ ok: true; result: { score: number; stars: number; items: { id: string; correct: boolean }[]; reward?: Reward | null } } | { ok: false; error: string }>;
 
 type Result = { score: number; stars: number; bestScore?: number; xp?: number; items: { id: string; correct: boolean }[] };
 
@@ -54,6 +57,10 @@ export function GapsPlayer({
   readOnly,
   preview,
   listen,
+  submit,
+  typeLabel,
+  resultsExtra,
+  feedbackExtra,
 }: {
   courseId?: string;
   stepId?: string;
@@ -70,6 +77,12 @@ export function GapsPlayer({
   readOnly?: boolean;
   preview?: boolean;
   listen?: ListenMode;
+  submit?: GapsSubmit;
+  typeLabel?: string;
+  /** Shown under the results (e.g. the French translation, « New practice »). */
+  resultsExtra?: React.ReactNode;
+  /** Shown under the feedback after a check. */
+  feedbackExtra?: React.ReactNode;
 }) {
   const router = useRouter();
   const timed = !!listen;
@@ -89,7 +102,7 @@ export function GapsPlayer({
   const [pending, start] = useTransition();
   const startedAt = useRef<number | null>(null);
 
-  const meta: ExerciseMeta = listen ? { title, typeLabel: "Listen and fill the gaps", icon: AudioLines, level, skills, instructions } : { title, typeLabel: "Fill the gaps", icon: TextCursorInput, level, skills, instructions };
+  const meta: ExerciseMeta = listen ? { title, typeLabel: "Listen and fill the gaps", icon: AudioLines, level, skills, instructions } : { title, typeLabel: typeLabel ?? "Fill the gaps", icon: TextCursorInput, level, skills, instructions };
   const open = gaps.filter((g) => states[g.id] !== "right");
   const filled = gaps.filter((g) => joined(values[g.id])).length;
   const allRight = gaps.length > 0 && gaps.every((g) => states[g.id] === "right");
@@ -137,6 +150,18 @@ export function GapsPlayer({
     const answers = firstTry ?? {};
     const timeSpentS = startedAt.current ? Math.round((Date.now() - startedAt.current) / 1000) : 0;
     setTimeS(timeSpentS);
+    if (submit) {
+      setError("");
+      start(async () => {
+        const r = await submit(answers, timeSpentS);
+        if (!r.ok) return setError(r.error);
+        if (r.result.reward) pushReward(r.result.reward);
+        setResult({ score: r.result.score, stars: r.result.stars, items: r.result.items, xp: r.result.reward?.xpGained });
+        setPhase("done");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+      return;
+    }
     if (preview || !courseId || !stepId) {
       const g = gradeActivity(listen ? "listen_fill_gaps" : "fill_gaps", content, answers);
       setResult({ score: g.score, stars: starsFor(g.score), items: g.items });
@@ -213,6 +238,7 @@ export function GapsPlayer({
               </div>
             </details>
           )}
+          {resultsExtra}
         </ResultsScreen>
       </div>
     );
@@ -295,6 +321,7 @@ export function GapsPlayer({
             </ul>
           )}
           {firstCheck && !allRight && <p className="text-xs text-muted-foreground">Try the red blanks again to practise: your score is from your first check.</p>}
+          {feedbackExtra}
         </div>
       )}
 

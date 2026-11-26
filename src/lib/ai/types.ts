@@ -142,6 +142,10 @@ export type GoalExpression = { text: string; translation: string; frNote: string
 /** « My own sentences »: a learner's sentence with one of their words, corrected. */
 export type SentenceCheck = { ok: boolean; corrected: string; explanation: string };
 
+/** Fill-the-gaps practice: the AI's text, each expression in [brackets] (checked by src/lib/gap-practice.ts). */
+export type GapPracticeInput = { mode: "sentences" | "story"; items: { text: string; translation: string }[]; context: string };
+export type GapPracticeText = { title: string; lines: { en: string; fr: string }[] };
+
 /** Diagnostic report input: never the learner's email or phone (spec §12). */
 export type DiagnosticReportInput = { firstName: string; answersText: string; primary: { id: string; name: string; need: string }; secondary: { id: string; name: string }[]; scores: Record<string, number> };
 
@@ -157,6 +161,7 @@ export interface FeedbackService {
   dailyVocabulary(input: { profession: string; count: number; avoid: string[] }): Promise<{ words: DailyWord[]; usage: LlmUsage }>;
   checkSentence(input: { word: string; translation: string; sentence: string }): Promise<{ result: SentenceCheck; usage: LlmUsage }>;
   goalVocabulary(input: { title: string; goal: string; steps: string[]; count: number; avoid: string[] }): Promise<{ items: GoalExpression[]; usage: LlmUsage }>;
+  gapPractice(input: GapPracticeInput): Promise<{ text: GapPracticeText; usage: LlmUsage }>;
 }
 
 /** What the conversation provider needs to run one agent (src/lib/conversation/prompt.ts AgentSpec). */
