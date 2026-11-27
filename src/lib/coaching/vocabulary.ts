@@ -15,7 +15,8 @@ import { CoachingError, openCoaching, type Viewer } from "./service";
  * at once and the group reads everyone's. Past days stay in the « Learning space ».
  * Each expression a member writes with (or saves) goes into their notebook (VocabWord, source
  * « coaching ») with their sentences, so it comes back in the spaced-review tests of The Vocabulary I Need.
- * Framework-free (tests/coaching-space.test.ts).
+ * The coach may add their own expressions to today or queue them for the coming days (owner request 2026-11-26).
+ * Framework-free (tests/coaching-space.test.ts, tests/coaching-vocab-suggest.test.ts).
  */
 
 export const VOCAB_PER_DAY = 3;
@@ -36,30 +37,133 @@ export async function todayVocab(v: Viewer, coachingId: string, now = new Date()
 }
 
 async function generate(coaching: CoachingDoc, day: string, userId: string): Promise<CoachingVocabDoc | null> {
-  const [previous, steps] = await Promise.all([
-    CoachingVocab.find({ coachingId: coaching._id }).sort({ day: -1 }).limit(60).select("items.text").lean(),
-    CoachingGoal.find({ coachingId: coaching._id, forUserId: null }).select("title").limit(12).lean(),
-  ]);
-  const avoid = previous.flatMap((p) => p.items.map((i) => i.text.toLowerCase()));
-  try {
-    const r = await aiServices().feedback.goalVocabulary({ title: coaching.title, goal: plainText(coaching.goal ?? "").slice(0, 1500), steps: steps.map((g) => g.title), count: VOCAB_PER_DAY, avoid });
-    await recordUsage(userId, { kind: "llm", feature: "coaching_vocab", provider: r.usage.provider, tokens: r.usage.inputTokens + r.usage.outputTokens, costMicros: r.usage.costMicros }).catch(() => {});
-    const seen = new Set(avoid);
-    const items = r.items
-      .filter((i) => i.text.trim() && !seen.has(i.text.trim().toLowerCase()))
-      .slice(0, VOCAB_PER_DAY)
-      .map((i, n) => ({ id: `e${n + 1}`, text: i.text.trim().slice(0, 120), translation: i.translation.slice(0, 160), frNote: i.frNote.slice(0, 400), example: i.example.slice(0, 300), exampleFr: i.exampleFr.slice(0, 300) }));
-    if (!items.length) return null;
-    // Two members opening at the same moment: the unique index keeps the first set.
+  // The coach's suggestions for the coming days come first; the AI completes the day.
+  const queued = (coaching.vocabQueue ?? []).slice(0, VOCAB_PER_DAY);
+  const items: VocabItem[] = queued.map((q) => ({ id: q.id, text: q.text, translation: q.translation ?? "", frNote: q.frNote ?? "", example: q.example ?? "", exampleFr: q.exampleFr ?? "", by: "coach" }));
+  if (items.length < VOCAB_PER_DAY) {
+    const [previous, steps] = await Promise.all([
+      CoachingVocab.find({ coachingId: coaching._id }).sort({ day: -1 }).limit(60).select("items.text").lean(),
+      CoachingGoal.find({ coachingId: coaching._id, forUserId: null }).select("title").limit(12).lean(),
+    ]);
+    const avoid = [...previous.flatMap((p) => p.items.map((i) => i.text.toLowerCase())), ...(coaching.vocabQueue ?? []).map((q) => q.text.toLowerCase())];
+    const count = VOCAB_PER_DAY - items.length;
     try {
-      return (await CoachingVocab.create({ coachingId: coaching._id, day, items })).toObject() as CoachingVocabDoc;
-    } catch {
-      return CoachingVocab.findOne({ coachingId: coaching._id, day }).lean<CoachingVocabDoc>();
+      const r = await aiServices().feedback.goalVocabulary({ title: coaching.title, goal: plainText(coaching.goal ?? "").slice(0, 1500), steps: steps.map((g) => g.title), count, avoid });
+      await recordUsage(userId, { kind: "llm", feature: "coaching_vocab", provider: r.usage.provider, tokens: r.usage.inputTokens + r.usage.outputTokens, costMicros: r.usage.costMicros }).catch(() => {});
+      const seen = new Set(avoid);
+      r.items
+        .filter((i) => i.text.trim() && !seen.has(i.text.trim().toLowerCase()))
+        .slice(0, count)
+        .forEach((i, n) => items.push({ id: `e${n + 1}`, text: i.text.trim().slice(0, 120), translation: i.translation.slice(0, 160), frNote: i.frNote.slice(0, 400), example: i.example.slice(0, 300), exampleFr: i.exampleFr.slice(0, 300), by: "ai" }));
+    } catch (e) {
+      console.error("[coaching vocab]", e); // the coach's expressions alone still make the day
     }
-  } catch (e) {
-    console.error("[coaching vocab]", e);
-    return null;
   }
+  if (!items.length) return null;
+  // Two members opening at the same moment: the unique index keeps the first set (and only that one takes the queued expressions).
+  try {
+    const created = (await CoachingVocab.create({ coachingId: coaching._id, day, items })).toObject() as CoachingVocabDoc;
+    if (queued.length) await Coaching.updateOne({ _id: coaching._id }, { $pull: { vocabQueue: { id: { $in: queued.map((q) => q.id) } } } });
+    return created;
+  } catch {
+    return CoachingVocab.findOne({ coachingId: coaching._id, day }).lean<CoachingVocabDoc>();
+  }
+}
+
+// ── The coach's own expressions ──────────────────────────────────────────
+
+/** A day holds at most this many expressions (the AI's 3 + the coach's). */
+export const MAX_PER_DAY = 6;
+export const MAX_QUEUE = 30;
+type VocabItem = { id: string; text: string; translation: string; frNote: string; example: string; exampleFr: string; by: "ai" | "coach" };
+const newId = () => `c${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+
+/** « expression » or « expression = traduction » (or a tab), one per line; duplicates and empty lines left out. */
+export function parseSuggestions(raw: string) {
+  const seen = new Set<string>();
+  return String(raw ?? "")
+    .split(/\r?\n/)
+    .map((line) => {
+      const [text, ...rest] = line.split(/\t|\s=\s|=/);
+      return { text: (text ?? "").replace(/\s+/g, " ").trim().slice(0, 120), translation: rest.join(" ").replace(/\s+/g, " ").trim().slice(0, 160) };
+    })
+    .filter((i) => i.text && !seen.has(i.text.toLowerCase()) && seen.add(i.text.toLowerCase()))
+    .slice(0, 10);
+}
+
+/**
+ * The coach suggests words or expressions: added to today's (« today », up to MAX_PER_DAY a day) or
+ * queued for the coming days (« next »: each new day takes up to 3 of them before the AI completes it).
+ * The AI writes what the coach left out (translation, French note, example); without it they're kept as typed.
+ */
+export async function suggestVocab(v: Viewer, coachingId: string, raw: string, when: "today" | "next", now = new Date()) {
+  const { coaching, role } = await openCoaching(v, coachingId);
+  if (role !== "coach") throw new CoachingError("Only the coach can do this.");
+  const wanted = parseSuggestions(raw);
+  if (!wanted.length) throw new CoachingError("Write at least one word or expression (one per line).");
+  const day = dayKey(now);
+  const [recent, todayDoc] = await Promise.all([
+    CoachingVocab.find({ coachingId: coaching._id }).sort({ day: -1 }).limit(60).select("items.text").lean(),
+    CoachingVocab.findOne({ coachingId: coaching._id, day }).lean<CoachingVocabDoc>(),
+  ]);
+  const given = new Set([...recent.flatMap((d) => d.items.map((i) => i.text.toLowerCase())), ...(coaching.vocabQueue ?? []).map((q) => q.text.toLowerCase())]);
+  const fresh = wanted.filter((i) => !given.has(i.text.toLowerCase()));
+  if (!fresh.length) throw new CoachingError(wanted.length > 1 ? "These expressions were already given or are already planned." : "This expression was already given or is already planned.");
+  if (when === "today") {
+    if (coaching.status !== "active") throw new CoachingError("This coaching is paused or completed: no new expressions today.");
+    const room = MAX_PER_DAY - (todayDoc?.items.length ?? 0);
+    if (fresh.length > room) throw new CoachingError(room > 0 ? `Today can take ${room} more expression${room > 1 ? "s" : ""} (${MAX_PER_DAY} a day at most): put the others in the coming days.` : `Today already has ${MAX_PER_DAY} expressions: put these in the coming days.`);
+  } else if ((coaching.vocabQueue?.length ?? 0) + fresh.length > MAX_QUEUE) {
+    throw new CoachingError(`Up to ${MAX_QUEUE} expressions can wait for the coming days.`);
+  }
+  const rl = await hitRateLimit(`coaching-suggest:${v.id}`, 30, 3600_000);
+  if (!rl.allowed) throw new CoachingError("Many suggestions this hour: try again later.");
+
+  let done: VocabItem[] = fresh.map((i) => ({ id: newId(), text: i.text, translation: i.translation, frNote: "", example: "", exampleFr: "", by: "coach" }));
+  try {
+    const r = await aiServices().feedback.completeExpressions({ title: coaching.title, goal: plainText(coaching.goal ?? "").slice(0, 1500), items: fresh });
+    await recordUsage(v.id, { kind: "llm", feature: "coaching_vocab", provider: r.usage.provider, tokens: r.usage.inputTokens + r.usage.outputTokens, costMicros: r.usage.costMicros }).catch(() => {});
+    done = done.map((d, n) => {
+      const a = r.items[n];
+      if (!a) return d;
+      return { ...d, translation: (d.translation || a.translation).slice(0, 160), frNote: a.frNote.slice(0, 400), example: a.example.slice(0, 300), exampleFr: a.exampleFr.slice(0, 300) };
+    });
+  } catch (e) {
+    console.error("[coaching suggest]", e); // kept as typed; the coach can complete them with « Edit »
+  }
+
+  if (when === "next") {
+    await Coaching.updateOne({ _id: coaching._id }, { $push: { vocabQueue: { $each: done.map((q) => ({ id: q.id, text: q.text, translation: q.translation, frNote: q.frNote, example: q.example, exampleFr: q.exampleFr, addedAt: now })) } } });
+  } else if (todayDoc) {
+    await CoachingVocab.updateOne({ _id: todayDoc._id }, { $push: { items: { $each: done } } });
+  } else {
+    // Nobody opened the coaching yet today: make the day with the coach's expressions (the AI's are not added on top).
+    try {
+      await CoachingVocab.create({ coachingId: coaching._id, day, items: done });
+    } catch {
+      await CoachingVocab.updateOne({ coachingId: coaching._id, day }, { $push: { items: { $each: done } } });
+    }
+  }
+  await Coaching.updateOne({ _id: coaching._id }, { $set: { updatedAt: new Date() } });
+  return { added: done.length, skipped: wanted.length - fresh.length };
+}
+
+/** The coach removes an expression of a day nobody wrote a sentence with yet (a day keeps at least one). */
+export async function removeVocabItem(v: Viewer, coachingId: string, vocabId: string, itemId: string) {
+  const { coaching, role } = await openCoaching(v, coachingId);
+  if (role !== "coach") throw new CoachingError("Only the coach can do this.");
+  const vocab = await CoachingVocab.findOne({ _id: oid(vocabId), coachingId: coaching._id }).lean<CoachingVocabDoc>();
+  if (!vocab?.items.some((i) => i.id === itemId)) throw new CoachingError("Expression not found.");
+  if (vocab.items.length <= 1) throw new CoachingError("A day keeps at least one expression: edit it instead.");
+  if (await CoachingSentence.exists({ vocabId: vocab._id, itemId })) throw new CoachingError("Someone already wrote a sentence with it: edit it instead.");
+  await CoachingVocab.updateOne({ _id: vocab._id }, { $pull: { items: { id: itemId } } });
+}
+
+/** The coach takes an expression out of the coming days. */
+export async function removeQueuedVocab(v: Viewer, coachingId: string, id: string) {
+  const { coaching, role } = await openCoaching(v, coachingId);
+  if (role !== "coach") throw new CoachingError("Only the coach can do this.");
+  await Coaching.updateOne({ _id: coaching._id }, { $pull: { vocabQueue: { id: String(id) } } });
 }
 
 /** Earlier days (newest first), for the Learning space. */

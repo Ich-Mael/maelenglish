@@ -126,6 +126,12 @@ Given the coaching's title, goal and steps, return the requested number of words
 - example: one natural English sentence (8-18 words) using it in the situation of the goal; exampleFr: its French translation.
 The items of one day must be different from each other and varied (verbs, phrases, nouns).`;
 
+const COMPLETE_VOCAB_SYSTEM = `A coach chose English words or expressions for a coaching: French-speaking professionals in West Africa (A2-B2) preparing one precise goal in English. For EACH item, in the same order, return:
+- text: the item exactly as given (only fix an obvious spelling mistake).
+- translation: the French given by the coach when there is one (fix only accents / typos), else a natural French equivalent with correct accents, in the meaning that fits the goal.
+- frNote: one short sentence in simple French: when and how to use it for this goal.
+- example: one natural English sentence (8-18 words) using it in the situation of the goal; exampleFr: its French translation.`;
+
 const SENTENCE_SYSTEM = `A French-speaking learner of English (A2-B2) wrote a sentence using a word from their vocabulary notebook. Check it.
 - ok: true if the sentence is correct, natural English AND uses the word with the right meaning (small punctuation issues don't count).
 - corrected: the sentence corrected and natural, keeping the learner's idea and the word; the same sentence if it was already correct.
@@ -283,6 +289,23 @@ export class ClaudeFeedbackService implements FeedbackService {
     });
     if (!response.parsed_output) throw new Error("Coaching vocabulary unavailable.");
     return { items: response.parsed_output.items.slice(0, input.count), usage: { inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens, costMicros: costMicros(response.usage.input_tokens, response.usage.output_tokens), provider: `anthropic:${CLAUDE_FEEDBACK_MODEL}` } };
+  }
+
+  async completeExpressions(input: { title: string; goal: string; items: { text: string; translation: string }[] }): Promise<{ items: GoalExpression[]; usage: LlmUsage }> {
+    const response = await this.client.messages.parse({
+      model: CLAUDE_FEEDBACK_MODEL,
+      max_tokens: 4000,
+      output_config: { effort: "low", format: zodOutputFormat(GoalVocabSchema) },
+      system: COMPLETE_VOCAB_SYSTEM,
+      messages: [
+        {
+          role: "user",
+          content: `Coaching: ${input.title}\nGoal: ${input.goal || "(not written yet: infer it from the title)"}\nItems:\n${input.items.map((i, n) => `${n + 1}. ${i.text}${i.translation ? ` (coach's French: ${i.translation})` : ""}`).join("\n")}`,
+        },
+      ],
+    });
+    if (!response.parsed_output) throw new Error("Expressions unavailable.");
+    return { items: response.parsed_output.items.slice(0, input.items.length), usage: { inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens, costMicros: costMicros(response.usage.input_tokens, response.usage.output_tokens), provider: `anthropic:${CLAUDE_FEEDBACK_MODEL}` } };
   }
 
   async gapPractice(input: GapPracticeInput): Promise<{ text: GapPracticeText; usage: LlmUsage }> {

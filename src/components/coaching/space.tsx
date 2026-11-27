@@ -11,7 +11,8 @@ import { VoiceNote } from "@/components/learn/voice-note";
 import { Composer, DeleteItem, GoalStatus, MarkRead } from "./controls";
 import { VocabDay } from "./vocab-day";
 import { ProgressTab } from "./progress";
-import { dayProgress, pastVocab, reviewState, savedItems, sentencesOn, todayVocab } from "@/lib/coaching/vocabulary";
+import { MAX_PER_DAY, dayProgress, pastVocab, reviewState, savedItems, sentencesOn, todayVocab } from "@/lib/coaching/vocabulary";
+import { SuggestVocab } from "./vocab-suggest";
 import { AttendanceForm, NextStepCheck, PrepareForm, WeeklyEmailToggle } from "./session-forms";
 import { GoalForm, MembersEditor, ResourceForm, ReviewForm, SessionForm, SessionStatusButtons, SessionSummaryForm, SettingsForm, TaskForm } from "./coach-forms";
 import { cn } from "cn";
@@ -472,7 +473,7 @@ async function DailyVocab({ s, viewer, coach }: { s: Space; viewer: Viewer; coac
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <SectionTitle icon={Languages}>Daily vocabulary</SectionTitle>
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{coach ? "3 words or expressions a day, chosen for this coaching's goal. Each person writes 2 sentences of their own per expression; everyone reads the group's sentences. Earlier days move to the Learning space." : "3 expressions a day for your goal. Write 2 sentences of your own with each one: they are corrected at once and shared with the group. Read the others' sentences too!"}</p>
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{coach ? "3 words or expressions a day for this coaching's goal, chosen by the AI — or by you: suggest your own below, for today or the coming days. Each person writes 2 sentences of their own per expression; everyone reads the group's sentences. Earlier days move to the Learning space." : "New expressions every day for your goal. Write 2 sentences of your own with each one: they are corrected at once and shared with the group. Read the others' sentences too!"}</p>
         </div>
         {vocab && !coach && (
           <div className="grid w-full gap-1 sm:w-56">
@@ -494,6 +495,7 @@ async function DailyVocab({ s, viewer, coach }: { s: Space; viewer: Viewer; coac
       ) : (
         <Empty>{s.coaching.status !== "active" ? "This coaching is paused or completed: no new expressions." : "Today's expressions aren't ready. Come back in a moment."}</Empty>
       )}
+      {coach && <SuggestVocab coachingId={id} queue={(s.coaching.vocabQueue ?? []).map((q) => ({ id: q.id, text: q.text, translation: q.translation ?? "" }))} todayCount={vocab?.items.length ?? 0} max={MAX_PER_DAY} active={s.coaching.status === "active"} />}
       {vocab && <GapsCard coachingId={id} coach={coach} />}
       {review && !review.due && <ReviewCard {...review} />}
     </section>

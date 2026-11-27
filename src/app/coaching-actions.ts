@@ -304,3 +304,25 @@ export async function editVocabItemAction(_: State, f: FormData): Promise<State>
     return "Expression updated.";
   });
 }
+export async function suggestVocabAction(_: State, f: FormData): Promise<State> {
+  return form(async (v) => {
+    const { suggestVocab } = await import("@/lib/coaching/vocabulary");
+    const when = str(f, "when") === "today" ? "today" : "next";
+    const r = await suggestVocab(v, str(f, "coachingId"), String(f.get("items") ?? ""), when);
+    const what = `${r.added} expression${r.added > 1 ? "s" : ""}`;
+    const skipped = r.skipped ? ` (${r.skipped} already given or planned, left out)` : "";
+    return when === "today" ? `${what} added to today${skipped}.` : `${what} planned for the coming days${skipped}.`;
+  });
+}
+export async function removeVocabItemAction(coachingId: string, vocabId: string, itemId: string) {
+  return call(async (v) => {
+    const { removeVocabItem } = await import("@/lib/coaching/vocabulary");
+    await removeVocabItem(v, coachingId, vocabId, itemId);
+  });
+}
+export async function removeQueuedVocabAction(coachingId: string, id: string) {
+  return call(async (v) => {
+    const { removeQueuedVocab } = await import("@/lib/coaching/vocabulary");
+    await removeQueuedVocab(v, coachingId, id);
+  });
+}

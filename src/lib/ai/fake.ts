@@ -175,6 +175,12 @@ export class FakeFeedbackService implements FeedbackService {
     return { items, usage: { inputTokens: 0, outputTokens: 0, costMicros: 0, provider: "fake" } };
   }
 
+  /** Deterministic: the coach's French kept, else « [FR] text ». */
+  async completeExpressions(input: { items: { text: string; translation: string }[] }): Promise<{ items: GoalExpression[]; usage: LlmUsage }> {
+    const items = input.items.map((i) => ({ text: i.text, translation: i.translation || `[FR] ${i.text}`, frNote: "Note.", example: `I use ${i.text} for my goal.`, exampleFr: "[FR] exemple" }));
+    return { items, usage: { inputTokens: 0, outputTokens: 0, costMicros: 0, provider: "fake" } };
+  }
+
   /** Deterministic: one sentence per item, or a story of two items per paragraph. */
   async gapPractice(input: GapPracticeInput): Promise<{ text: GapPracticeText; usage: LlmUsage }> {
     const sentence = (t: string) => `At work today, I had to use [${t}] with a client.`;

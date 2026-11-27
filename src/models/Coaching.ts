@@ -28,6 +28,24 @@ const coachingSchema = new Schema(
     createdBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
     /** Members who turned the weekly summary email off. */
     weeklyOff: { type: [Schema.Types.ObjectId], default: [] },
+    /** Expressions the coach suggested for the coming days (owner request 2026-11-26): each new day takes them first, the AI completes the day. */
+    vocabQueue: {
+      type: [
+        new Schema(
+          {
+            id: { type: String, required: true },
+            text: { type: String, required: true, maxlength: 120 },
+            translation: { type: String, default: "", maxlength: 160 },
+            frNote: { type: String, default: "", maxlength: 400 },
+            example: { type: String, default: "", maxlength: 300 },
+            exampleFr: { type: String, default: "", maxlength: 300 },
+            addedAt: { type: Date, default: Date.now },
+          },
+          { _id: false },
+        ),
+      ],
+      default: [],
+    },
   },
   { timestamps: true },
 );
@@ -189,6 +207,8 @@ const vocabItemSchema = new Schema(
     frNote: { type: String, default: "", maxlength: 400 },
     example: { type: String, default: "", maxlength: 300 },
     exampleFr: { type: String, default: "", maxlength: 300 },
+    /** « ai » or « coach » (suggested by the coach). */
+    by: { type: String, default: "ai" },
   },
   { _id: false },
 );

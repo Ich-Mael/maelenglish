@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { BookmarkCheck, BookmarkPlus, Loader2, Pencil, Send, Trash2 } from "lucide-react";
-import { deleteSentenceAction, editVocabItemAction, saveExpressionAction, writeSentenceAction } from "@/app/coaching-actions";
+import { deleteSentenceAction, editVocabItemAction, removeVocabItemAction, saveExpressionAction, writeSentenceAction } from "@/app/coaching-actions";
 import { AdminForm, Submit } from "@/components/admin/forms";
 import { Input } from "@/components/admin/ui";
 import { cn } from "cn";
@@ -111,5 +111,30 @@ export function EditItem({ coachingId, vocabId, item }: { coachingId: string; vo
         </AdminForm>
       </div>
     </details>
+  );
+}
+
+/** The coach removes an expression nobody wrote a sentence with yet. */
+export function RemoveItem({ coachingId, vocabId, itemId }: { coachingId: string; vocabId: string; itemId: string }) {
+  const [pending, start] = useTransition();
+  const [error, setError] = useState("");
+  return (
+    <span className="inline-flex items-center gap-2">
+      <button
+        type="button"
+        disabled={pending}
+        onClick={() =>
+          start(async () => {
+            if (!window.confirm("Remove this expression from the day?")) return;
+            const r = await removeVocabItemAction(coachingId, vocabId, itemId);
+            setError(r.ok ? "" : r.error);
+          })
+        }
+        className="inline-flex cursor-pointer items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-destructive disabled:opacity-50"
+      >
+        {pending ? <Loader2 className="size-3.5 animate-spin" aria-hidden /> : <Trash2 className="size-3.5" aria-hidden />} Remove
+      </button>
+      {error && <span className="text-xs font-semibold text-coral-dark">{error}</span>}
+    </span>
   );
 }

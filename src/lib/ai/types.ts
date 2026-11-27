@@ -161,6 +161,8 @@ export interface FeedbackService {
   dailyVocabulary(input: { profession: string; count: number; avoid: string[] }): Promise<{ words: DailyWord[]; usage: LlmUsage }>;
   checkSentence(input: { word: string; translation: string; sentence: string }): Promise<{ result: SentenceCheck; usage: LlmUsage }>;
   goalVocabulary(input: { title: string; goal: string; steps: string[]; count: number; avoid: string[] }): Promise<{ items: GoalExpression[]; usage: LlmUsage }>;
+  /** The coach's own expressions completed (translation kept when given, French note, example + French), same order. */
+  completeExpressions(input: { title: string; goal: string; items: { text: string; translation: string }[] }): Promise<{ items: GoalExpression[]; usage: LlmUsage }>;
   gapPractice(input: GapPracticeInput): Promise<{ text: GapPracticeText; usage: LlmUsage }>;
 }
 

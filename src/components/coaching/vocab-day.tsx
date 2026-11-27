@@ -2,7 +2,7 @@ import { CheckCircle2, MessageSquareQuote, Sparkles } from "lucide-react";
 import type { CoachingVocabDoc } from "@/models";
 import { SENTENCES_PER_ITEM, type SharedSentence } from "@/lib/coaching/vocabulary";
 import { Avatar } from "@/components/account/avatar";
-import { DeleteSentence, EditItem, SaveExpression, SentenceForm } from "./vocab-forms";
+import { DeleteSentence, EditItem, RemoveItem, SaveExpression, SentenceForm } from "./vocab-forms";
 import { AccentSwitch, Listen, ShadowingModal } from "@/components/shadowing/listen";
 import { ListenPair, ShadowList } from "@/components/shadowing/list";
 import { Shadowing } from "@/components/shadowing/shadowing";
@@ -31,7 +31,10 @@ export function VocabDay({ vocab, sentences, viewerId, coach, coachingId, saved 
           <li key={item.id} className="grid content-start gap-3 overflow-hidden rounded-3xl border-2 border-border bg-card">
             <div className="grid gap-1.5 bg-gradient-to-br from-brand-deep to-primary p-4 text-white">
               <p className="flex items-center justify-between gap-2 text-xs font-bold tracking-wide text-white/75 uppercase">
-                <span>Expression {n + 1}</span>
+                <span className="flex items-center gap-2">
+                  Expression {n + 1}
+                  {item.by === "coach" && <span className="rounded-full bg-white px-2 py-0.5 text-primary normal-case">From {coach ? "the coach" : "your coach"}</span>}
+                </span>
                 {!coach && (
                   <span className={cn("rounded-full px-2 py-0.5 normal-case", left <= 0 ? "bg-white text-primary" : "bg-white/15 text-white")}>
                     {left <= 0 ? "✓ Done" : `${own.length} / ${SENTENCES_PER_ITEM}`}
@@ -77,7 +80,12 @@ export function VocabDay({ vocab, sentences, viewerId, coach, coachingId, saved 
                   </div>
                 </div>
               )}
-              {coach && <EditItem coachingId={coachingId} vocabId={vocabId} item={item} />}
+              {coach && (
+                <div className="flex flex-wrap items-start gap-x-4 gap-y-1">
+                  <EditItem coachingId={coachingId} vocabId={vocabId} item={item} />
+                  {list.length === 0 && vocab.items.length > 1 && <RemoveItem coachingId={coachingId} vocabId={vocabId} itemId={item.id} />}
+                </div>
+              )}
             </div>
             <div className="grid gap-2 border-t border-border px-4 pt-3 pb-4">
               <p className="flex items-center gap-1.5 text-xs font-bold tracking-wide text-muted-foreground uppercase">
